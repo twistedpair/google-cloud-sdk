@@ -114,6 +114,11 @@ encoding.AddCustomJsonFieldMapping(
     .BinaryauthorizationProjectsPolicyGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 
+run_message_v1 = core_apis.GetMessagesModule('run', 'v1')
+encoding.AddCustomJsonFieldMapping(
+    run_message_v1.RunProjectsLocationsServicesGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+
 MANAGED_BY = (
     msgs.IamProjectsServiceAccountsKeysListRequest.KeyTypesValueValuesEnum)
 CREATE_KEY_TYPES = (

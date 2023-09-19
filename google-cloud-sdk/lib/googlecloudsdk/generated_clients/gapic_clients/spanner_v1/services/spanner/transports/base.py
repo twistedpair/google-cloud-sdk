@@ -273,7 +273,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                    predicate=retries.i
             ),
             self.batch_write: gapic_v1.method.wrap_method(
                 self.batch_write,
-                default_timeout=None,
+                default_timeout=3600.0,
                 client_info=client_info,
             ),
          }

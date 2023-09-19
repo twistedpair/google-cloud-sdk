@@ -229,6 +229,13 @@ class Binding(_messages.Message):
       either specific to the binding or clarify *how* the binding works. The
       configuration has an associated typekit-specified JSONSchema
       (https://json-schema.org/) that defines the expected shape.
+    configVersion: Optional. Config version denotes the JSON schema version
+      used to create the resource as specified in the config field. If this is
+      not provided then it will default to the latest version as specified by
+      the Typekit. The scheme used for the version is semantic versioning. A
+      valid version would be in the form of MAJOR.MINOR.PATCH, for example:
+      "1.0.0". If an invalid version is chosen then a validation error will be
+      returned.
     targetRef: TargetRef describes the target resource.
   """
 
@@ -260,7 +267,8 @@ class Binding(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   config = _messages.MessageField('ConfigValue', 1)
-  targetRef = _messages.MessageField('ResourceRef', 2)
+  configVersion = _messages.StringField(2)
+  targetRef = _messages.MessageField('ResourceRef', 3)
 
 
 class BindingStatus(_messages.Message):
@@ -1152,7 +1160,7 @@ class RedisInstanceConfig(_messages.Message):
 
 
 class Resource(_messages.Message):
-  r"""Resource defines a Stacks resource. Next tag: 6
+  r"""Resource defines a Stacks resource. Next tag: 7
 
   Messages:
     ConfigValue: Configuration is the typekit-specified set of fields that
@@ -1167,6 +1175,13 @@ class Resource(_messages.Message):
     config: Configuration is the typekit-specified set of fields that define
       the resource. The configuration has an associated typekit-specified
       JSONSchema (https://json-schema.org/) that defines the expected shape.
+    configVersion: Optional. Config version denotes the JSON schema version
+      used to create the resource as specified in the config field. If this is
+      not provided then it will default to the latest version as specified by
+      the Typekit. The scheme used for the version is semantic versioning. A
+      valid version would be in the form of MAJOR.MINOR.PATCH, for example:
+      "1.0.0". If an invalid version is chosen then a validation error will be
+      returned.
     id: Resource ID describes the resource that's bound.
     latestDeployment: Output only. The deployment name for the most recent
       deployment that has been triggered for a given resource. If a resource
@@ -1204,9 +1219,10 @@ class Resource(_messages.Message):
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   config = _messages.MessageField('ConfigValue', 2)
-  id = _messages.MessageField('ResourceID', 3)
-  latestDeployment = _messages.StringField(4)
-  subresources = _messages.MessageField('Resource', 5, repeated=True)
+  configVersion = _messages.StringField(3)
+  id = _messages.MessageField('ResourceID', 4)
+  latestDeployment = _messages.StringField(5)
+  subresources = _messages.MessageField('Resource', 6, repeated=True)
 
 
 class ResourceComponentStatus(_messages.Message):

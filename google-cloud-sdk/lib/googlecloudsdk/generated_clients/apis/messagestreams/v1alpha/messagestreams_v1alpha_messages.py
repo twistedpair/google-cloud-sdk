@@ -28,28 +28,9 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class CloudRun(_messages.Message):
-  r"""Represents a Cloud Run destination.
-
-  Fields:
-    path: Optional. The relative path on the Cloud Run service the stream
-      sends data to. The value must conform to the definition of a URI path
-      segment (section 3.3 of RFC2396). Examples: "/route", "route",
-      "route/subroute".
-    region: Required. The region the Cloud Run service is deployed in.
-    service: Required. The name of the Cloud Run service being addressed. See
-      https://cloud.google.com/run/docs/reference/rest/v1/namespaces.services.
-      Only services located in the same project as the stream object can be
-      addressed.
-  """
-
-  path = _messages.StringField(1)
-  region = _messages.StringField(2)
-  service = _messages.StringField(3)
-
-
 class Destination(_messages.Message):
-  r"""Represents a target of an invocation over HTTP.
+  r"""Specifications of a destination to which the request should be routed
+  to.
 
   Fields:
     authenticationConfig: Optional. An authentication config used to
@@ -57,21 +38,18 @@ class Destination(_messages.Message):
       source. For example, this can be used with private GCP destinations that
       require GCP crendential to access like Cloud Run. This field is optional
       and should be set only by users interested in authenticated push.
-    cloudFunction: The Cloud Function resource name. Only Cloud Functions V2
-      is supported. Format:
-      `projects/{project}/locations/{location}/functions/{function}`
-    cloudRun: Cloud Run fully-managed resource that receives the data. The
-      resource should be in the same region as the stream.
-    httpEndpoint: An HTTP endpoint destination described by an URI.
     networkConfig: Optional. Network config is used to configure how Message
       Streams resolves and connect to a destination.
+    serviceEndpoint: Required. The URL of a endpoint to route traffic to. If a
+      DNS FQDN is provided as the endpoint, Message Streams will create a
+      peering zone to the consumer VPC and forward DNS requests to the VPC
+      specified by network config to resolve the service endpoint. See:
+      https://cloud.google.com/dns/docs/zones/zones-overview#peering_zones
   """
 
   authenticationConfig = _messages.MessageField('AuthenticationConfig', 1)
-  cloudFunction = _messages.StringField(2)
-  cloudRun = _messages.MessageField('CloudRun', 3)
-  httpEndpoint = _messages.MessageField('HttpEndpoint', 4)
-  networkConfig = _messages.MessageField('NetworkConfig', 5)
+  networkConfig = _messages.MessageField('NetworkConfig', 2)
+  serviceEndpoint = _messages.StringField(3)
 
 
 class Empty(_messages.Message):
@@ -93,41 +71,9 @@ class GoogleOidc(_messages.Message):
     audience: Optional. Audience to be used to generate the OIDC Token. The
       audience claim identifies the recipient that the JWT is intended for. If
       unspecified, the destination URI will be used.
-    serviceAccount: Required. Service account email used to generate the OIDC
-      Token. The principal who calls this API must have
-      `iam.serviceAccounts.actAs` permission in the service account. See
-      https://cloud.google.com/iam/docs/understanding-service-
-      accounts?hl=en#sa_common for more information. Stream service account
-      must have `iam.serviceAccounts.getOpenIdToken` permission (included in
-      the `roles/roles/iam.serviceAccountOpenIdTokenCreator` role) to allow
-      Message Stream to create OIDC tokens for authenticated requests.
   """
 
   audience = _messages.StringField(1)
-  serviceAccount = _messages.StringField(2)
-
-
-class HttpEndpoint(_messages.Message):
-  r"""Represents a HTTP endpoint destination.
-
-  Fields:
-    forwardDnsRequests: Optional. Forwards DNS requests to the VPC specified
-      by network config to resolve the HTTP endpoint. Default to false. If set
-      to true, Message Streams will create a peering zone to the consumer VPC
-      and forward DNS requests. See:
-      https://cloud.google.com/dns/docs/zones/zones-overview#peering_zones
-      Enable this if the URI uses an internal DNS name or a private Cloud DNS
-      zone.
-    uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
-      URI string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
-      central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
-      The host can be either a static IP addressable from the VPC specified by
-      the network config, or an internal DNS hostname of the service
-      resolvable via Cloud DNS.
-  """
-
-  forwardDnsRequests = _messages.BooleanField(1)
-  uri = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -450,8 +396,9 @@ class NetworkConfig(_messages.Message):
 
   Fields:
     networkAttachment: Required. Name of the NetworkAttachment that allows
-      access to the consumer VPC. Format: `projects/{PROJECT_ID}/regions/{REGI
-      ON}/networkAttachments/{NETWORK_ATTACHMENT_NAME}`
+      access to the consumer VPC. The NetworkAttachment must be in the same
+      region as the Stream. Format: `projects/{PROJECT_ID}/regions/{REGION}/ne
+      tworkAttachments/{NETWORK_ATTACHMENT_NAME}`
   """
 
   networkAttachment = _messages.StringField(1)
@@ -592,17 +539,6 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class Source(_messages.Message):
-  r"""Represents the source where we stream data from.
-
-  Fields:
-    pubsubSubscription: The name of the Pub/Sub subscription to stream from.
-      Format: `projects/{PROJECT_ID}/subscriptions/{SUBSCRIPTION_NAME}`.
-  """
-
-  pubsubSubscription = _messages.StringField(1)
-
-
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -721,32 +657,30 @@ class Stream(_messages.Message):
   r"""The representation of the stream resource.
 
   Messages:
-    AnnotationsValue: User-defined annotations. See
+    AnnotationsValue: Optional. User-defined annotations. See
       https://google.aip.dev/128#annotations
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    annotations: User-defined annotations. See
+    annotations: Optional. User-defined annotations. See
       https://google.aip.dev/128#annotations
     createTime: Output only. [Output only] Create time stamp
-    destination: Required. Destination specifies where the stream sends data
-      to. Streams are created in the same region as the destination.
-    displayName: Display name of resource.
+    displayName: Optional. Display name of resource.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
-    labels: Labels as key value pairs
+    labels: Optional. Labels as key value pairs
     name: The resource name of the stream. Must be unique within the location
       of the project and must be in
       `projects/{project}/locations/{location}/streams/{stream}` format.
     serviceAccount: Required. The IAM service account email associated with
       the stream. The service account represents the identity of the stream.
-      If not provided, the stream runs as the Message Streams' Service Agent.
       The principal who calls this API must have `iam.serviceAccounts.actAs`
       permission in the service account. See
       https://cloud.google.com/iam/docs/understanding-service-
       accounts?hl=en#sa_common for more information.
-    source: Required. Source specifies where the stream reads data from.
+    streamAction: Required. The specifications for routing messaging traffic
+      and applying associated policies.
     uid: Output only. Server-assigned unique identifier for the stream. The
       value is a UUID4 string and guaranteed to remain unchanged until the
       resource is deleted.
@@ -755,7 +689,8 @@ class Stream(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""User-defined annotations. See https://google.aip.dev/128#annotations
+    r"""Optional. User-defined annotations. See
+    https://google.aip.dev/128#annotations
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -780,7 +715,7 @@ class Stream(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Optional. Labels as key value pairs
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -804,15 +739,26 @@ class Stream(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  destination = _messages.MessageField('Destination', 3)
-  displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  serviceAccount = _messages.StringField(8)
-  source = _messages.MessageField('Source', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  displayName = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  serviceAccount = _messages.StringField(7)
+  streamAction = _messages.MessageField('StreamAction', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class StreamAction(_messages.Message):
+  r"""The specifications for routing messaging traffic and applying associated
+  policies.
+
+  Fields:
+    destinations: Required. The destination to which traffic should be
+      forwarded. Currently, only a single destination is supported.
+  """
+
+  destinations = _messages.MessageField('Destination', 1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

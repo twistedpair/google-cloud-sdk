@@ -82,7 +82,9 @@ class DefaultPrinter(yaml_printer.YamlPrinter):
 class DisablePrinter(resource_printer_base.ResourcePrinter):
   """Disables formatted output and does not consume the resources.
 
-  Disables formatted output and does not consume the resources.
+  Disables formatted output and does not consume the resources. Equivalent to
+  the *none* format, but also short-circuits early for commands that return
+  pageable lists.
   """
 
   def __init__(self, *args, **kwargs):

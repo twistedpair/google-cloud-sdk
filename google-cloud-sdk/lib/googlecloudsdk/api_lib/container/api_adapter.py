@@ -700,6 +700,7 @@ class CreateClusterOptions(object):
       in_transit_encryption=None,
       containerd_config_from_file=None,
       resource_manager_tags=None,
+      autoprovisioning_resource_manager_tags=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -906,6 +907,9 @@ class CreateClusterOptions(object):
     self.in_transit_encryption = in_transit_encryption
     self.containerd_config_from_file = containerd_config_from_file
     self.resource_manager_tags = resource_manager_tags
+    self.autoprovisioning_resource_manager_tags = (
+        autoprovisioning_resource_manager_tags
+    )
 
 
 class UpdateClusterOptions(object):
@@ -1045,6 +1049,7 @@ class UpdateClusterOptions(object):
       in_transit_encryption=None,
       enable_multi_networking=None,
       containerd_config_from_file=None,
+      autoprovisioning_resource_manager_tags=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1181,6 +1186,9 @@ class UpdateClusterOptions(object):
     self.in_transit_encryption = in_transit_encryption
     self.enable_multi_networking = enable_multi_networking
     self.containerd_config_from_file = containerd_config_from_file
+    self.autoprovisioning_resource_manager_tags = (
+        autoprovisioning_resource_manager_tags
+    )
 
 
 class SetMasterAuthOptions(object):
@@ -1758,8 +1766,9 @@ class APIAdapter(object):
       cluster.subnetwork = options.subnetwork
     if options.addons:
       addons = self._AddonsConfig(
-          disable_ingress=INGRESS not in options.addons,
-          disable_hpa=HPA not in options.addons,
+          disable_ingress=INGRESS not in options.addons
+          and not options.autopilot,
+          disable_hpa=HPA not in options.addons and not options.autopilot,
           disable_dashboard=DASHBOARD not in options.addons,
           disable_network_policy=(NETWORK_POLICY not in options.addons),
           enable_node_local_dns=(NODELOCALDNS in options.addons or None),
@@ -2042,6 +2051,14 @@ class APIAdapter(object):
       cluster.nodePoolAutoConfig.networkTags = (
           self.messages.NetworkTags(tags=options.autoprovisioning_network_tags))
 
+    if options.autoprovisioning_resource_manager_tags is not None:
+      if cluster.nodePoolAutoConfig is None:
+        cluster.nodePoolAutoConfig = self.messages.NodePoolAutoConfig()
+      rm_tags = self._ResourceManagerTags(
+          options.autoprovisioning_resource_manager_tags
+      )
+      cluster.nodePoolAutoConfig.resourceManagerTags = rm_tags
+
     if options.enable_image_streaming:
       if cluster.nodePoolDefaults is None:
         cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
@@ -2318,7 +2335,8 @@ class APIAdapter(object):
     self._AddNodeTaintsToNodeConfig(node_config, options)
 
     if options.resource_manager_tags is not None:
-      node_config.resourceManagerTags = self._ResourceManagerTags(options)
+      tags = options.resource_manager_tags
+      node_config.resourceManagerTags = self._ResourceManagerTags(tags)
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
@@ -3433,6 +3451,12 @@ class APIAdapter(object):
           desiredNodePoolAutoConfigNetworkTags=self.messages.NetworkTags(
               tags=options.autoprovisioning_network_tags))
 
+    if options.autoprovisioning_resource_manager_tags is not None:
+      tags = options.autoprovisioning_resource_manager_tags
+      rm_tags = self._ResourceManagerTags(tags)
+      update = self.messages.ClusterUpdate(
+          desiredNodePoolAutoConfigResourceManagerTags=rm_tags)
+
     if options.enable_image_streaming is not None:
       update = self.messages.ClusterUpdate(
           desiredGcfsConfig=self.messages.GcfsConfig(
@@ -3824,25 +3848,34 @@ class APIAdapter(object):
     node_config.localSsdVolumeConfigs = local_ssd_volume_configs_list
 
   def _AddEphemeralStorageToNodeConfig(self, node_config, options):
-    if not options.ephemeral_storage:
+    if options.ephemeral_storage is None:
       return
     config = options.ephemeral_storage
+    count = None
+    if 'local-ssd-count' in config:
+      count = config['local-ssd-count']
     node_config.ephemeralStorageConfig = self.messages.EphemeralStorageConfig(
-        localSsdCount=config['local-ssd-count'])
+        localSsdCount=count)
 
   def _AddEphemeralStorageLocalSsdToNodeConfig(self, node_config, options):
-    if not options.ephemeral_storage_local_ssd:
+    if options.ephemeral_storage_local_ssd is None:
       return
     config = options.ephemeral_storage_local_ssd
+    count = None
+    if 'count' in config:
+      count = config['count']
     node_config.ephemeralStorageLocalSsdConfig = self.messages.EphemeralStorageLocalSsdConfig(
-        localSsdCount=config['count'])
+        localSsdCount=count)
 
   def _AddLocalNvmeSsdBlockToNodeConfig(self, node_config, options):
-    if not options.local_nvme_ssd_block:
+    if options.local_nvme_ssd_block is None:
       return
     config = options.local_nvme_ssd_block
+    count = None
+    if 'count' in config:
+      count = config['count']
     node_config.localNvmeSsdBlockConfig = self.messages.LocalNvmeSsdBlockConfig(
-        localSsdCount=config['count'])
+        localSsdCount=count)
 
   def _AddNodeTaintsToNodeConfig(self, node_config, options):
     """Add nodeTaints to nodeConfig."""
@@ -3871,15 +3904,15 @@ class APIAdapter(object):
 
     node_config.taints = taints
 
-  def _ResourceManagerTags(self, options):
-    if options.resource_manager_tags is None:
+  def _ResourceManagerTags(self, tags):
+    if tags is None:
       return
-    tags = self.messages.ResourceManagerTags.TagsValue()
+    rm_tags = self.messages.ResourceManagerTags.TagsValue()
     props = []
-    for key, value in six.iteritems(options.resource_manager_tags):
-      props.append(tags.AdditionalProperty(key=key, value=value))
-    tags.additionalProperties = props
-    return self.messages.ResourceManagerTags(tags=tags)
+    for key, value in six.iteritems(tags):
+      props.append(rm_tags.AdditionalProperty(key=key, value=value))
+    rm_tags.additionalProperties = props
+    return self.messages.ResourceManagerTags(tags=rm_tags)
 
   def _AddWorkloadMetadataToNodeConfig(self, node_config, options, messages):
     """Adds WorkLoadMetadata to NodeConfig."""
@@ -4094,7 +4127,8 @@ class APIAdapter(object):
     self._AddNodeTaintsToNodeConfig(node_config, options)
 
     if options.resource_manager_tags is not None:
-      node_config.resourceManagerTags = self._ResourceManagerTags(options)
+      tags = options.resource_manager_tags
+      node_config.resourceManagerTags = self._ResourceManagerTags(tags)
 
     if options.preemptible:
       node_config.preemptible = options.preemptible
@@ -4572,7 +4606,8 @@ class APIAdapter(object):
         windows_node_config.osVersion = self.messages.WindowsNodeConfig.OsVersionValueValuesEnum.OS_VERSION_LTSC2019
       update_request.windowsNodeConfig = windows_node_config
     elif options.resource_manager_tags is not None:
-      update_request.resourceManagerTags = self._ResourceManagerTags(options)
+      tags = options.resource_manager_tags
+      update_request.resourceManagerTags = self._ResourceManagerTags(tags)
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):

@@ -24,6 +24,7 @@ import collections
 import copy
 import itertools
 import json
+import typing
 
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import job
@@ -1440,4 +1441,27 @@ class RuntimeChange(ConfigChanger):
 
   def Adjust(self, resource):
     resource.template.spec.runtimeClassName = self._runtime
+    return resource
+
+
+class RemoveContainersChange(ConfigChanger):
+  """Removes the specified containers."""
+
+  def __init__(self, containers: typing.Iterable[str]):
+    """RemoveContainersChange constructor.
+
+    Args:
+      containers: A list of containers to remove.
+    """
+    super(RemoveContainersChange, self).__init__(adjusts_template=True)
+    self._containers = frozenset(containers)
+
+  def Adjust(
+      self, resource: k8s_object.KubernetesObject
+  ) -> k8s_object.KubernetesObject:
+    for container in self._containers:
+      try:
+        del resource.template.containers[container]
+      except KeyError:
+        continue
     return resource

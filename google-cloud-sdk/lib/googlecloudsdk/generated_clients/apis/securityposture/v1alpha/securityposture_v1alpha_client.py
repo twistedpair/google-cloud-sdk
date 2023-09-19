@@ -663,7 +663,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""========================== Postures ========================== Lists Postures in a given organization and location.
+      r"""========================== Postures ========================== Lists Postures in a given organization and location. In case a posture has multiple revisions, the latest revision as per CreateTime will be returned.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesListRequest) input message
@@ -717,7 +717,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates an existing Posture. A new revision of the posture might be created as a result of a successful update operation. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the Posture does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the Posture. If a Posture revision in `ACTIVE` state is updated, it will result in creation of a new revision. A revision update for a Posture in `DRAFT` state will not result in creation of a new revision, the same revision will be updated.
+      r"""Updates an existing Posture. A new revision of the posture will be created if the revision to be updated is currently deployed on a workload. Returns a `google.rpc.Status` with `google.rpc.Code.NOT_FOUND` if the Posture does not exist. Returns a `google.rpc.Status` with `google.rpc.Code.ABORTED` if the etag supplied in the request does not match the persisted etag of the Posture. Updatable fields are state, description and policy_sets. State update operation cannot be clubbed with update of description and policy_sets. An ACTIVE posture can be updated to both DRAFT or DEPRECATED states. Postures in DRAFT or DEPRECATED states can only be updated to ACTIVE state.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesPatchRequest) input message

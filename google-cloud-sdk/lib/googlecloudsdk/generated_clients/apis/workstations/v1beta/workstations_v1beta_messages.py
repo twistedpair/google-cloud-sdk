@@ -238,6 +238,20 @@ class CustomerEncryptionKey(_messages.Message):
   kmsKeyServiceAccount = _messages.StringField(2)
 
 
+class EphemeralDirectory(_messages.Message):
+  r"""An ephemeral directory which won't persist across workstation sessions.
+  It is freshly created on every workstation start operation.
+
+  Fields:
+    gcePd: An EphemeralDirectory backed by a Compute Engine persistent disk.
+    mountPath: Required. Location of this directory in the running
+      workstation.
+  """
+
+  gcePd = _messages.MessageField('GcePersistentDisk', 1)
+  mountPath = _messages.StringField(2)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -356,6 +370,10 @@ class GceInstance(_messages.Message):
       where no one has that permission. If not set, VMs run with a service
       account provided by the Cloud Workstations service, and the image must
       be publicly accessible.
+    serviceAccountScopes: Optional. Scopes to grant to the service_account.
+      Various scopes are automatically added based on feature usage. When
+      specified, users of workstations under this configuration must have
+      `iam.serviceAccounts.actAs` on the service account.
     shieldedInstanceConfig: Optional. A set of Compute Engine Shielded
       instance options.
     tags: Optional. Network tags to add to the Compute Engine VMs backing the
@@ -376,8 +394,32 @@ class GceInstance(_messages.Message):
   poolSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   pooledInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   serviceAccount = _messages.StringField(9)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 10)
-  tags = _messages.StringField(11, repeated=True)
+  serviceAccountScopes = _messages.StringField(10, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 11)
+  tags = _messages.StringField(12, repeated=True)
+
+
+class GcePersistentDisk(_messages.Message):
+  r"""An EphemeralDirectory is backed by a Compute Engine persistent disk.
+
+  Fields:
+    diskType: Optional. Type of the disk to use. Defaults to `"pd-standard"`.
+    readOnly: Optional. Whether the disk is read only. If true, the disk may
+      be shared by multiple VMs and source_snapshot must be set.
+    sourceImage: Optional. Name of the disk image to use as the source for the
+      disk. Must be empty if source_snapshot is set. Updating source_image
+      will update content in the ephemeral directory after the workstation is
+      restarted. This field is mutable.
+    sourceSnapshot: Optional. Name of the snapshot to use as the source for
+      the disk. Must be empty if source_image is set. Updating source_snapshot
+      will update content in the ephemeral directory after the workstation is
+      restarted. This field is mutable.
+  """
+
+  diskType = _messages.StringField(1)
+  readOnly = _messages.BooleanField(2)
+  sourceImage = _messages.StringField(3)
+  sourceSnapshot = _messages.StringField(4)
 
 
 class GceRegionalPersistentDisk(_messages.Message):
@@ -1074,6 +1116,8 @@ class Workstation(_messages.Message):
     name: Full name of this workstation.
     reconciling: Output only. Indicates whether this workstation is currently
       being updated to match its intended state.
+    startTime: Output only. Time when this workstation was most recently
+      successfully started, regardless of the workstation's initial state.
     state: Output only. Current state of the workstation.
     uid: Output only. A system-assigned unique identifier for this
       workstation.
@@ -1185,9 +1229,10 @@ class Workstation(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 8)
   name = _messages.StringField(9)
   reconciling = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class WorkstationCluster(_messages.Message):
@@ -1359,6 +1404,8 @@ class WorkstationConfig(_messages.Message):
       might be lost. If the encryption key is revoked, the workstation session
       automatically stops within 7 hours. Immutable after the workstation
       configuration is created.
+    ephemeralDirectories: Optional. Ephemeral directories which won't persist
+      across workstation sessions.
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
@@ -1384,6 +1431,12 @@ class WorkstationConfig(_messages.Message):
       codes.
     reconciling: Output only. Indicates whether this workstation configuration
       is currently being updated to match its intended state.
+    replicaZones: Optional. Immutable. Specifies the zones used to replicate
+      the VM and disk resources within the region. If set, exactly two zones
+      within the workstation cluster's region must be specified-for example,
+      `['us-central1-a', 'us-central1-f']`. If this field is empty, two
+      default zones within the region are used. Immutable after the
+      workstation configuration is created.
     runningTimeout: Optional. Number of seconds that a workstation can run
       until it is automatically shut down. We recommend that workstations be
       shut down daily to reduce costs and so that security updates can be
@@ -1464,17 +1517,19 @@ class WorkstationConfig(_messages.Message):
   displayName = _messages.StringField(7)
   enableAuditAgent = _messages.BooleanField(8)
   encryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  etag = _messages.StringField(10)
-  host = _messages.MessageField('Host', 11)
-  idleTimeout = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 15, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 16, repeated=True)
-  reconciling = _messages.BooleanField(17)
-  runningTimeout = _messages.StringField(18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 10, repeated=True)
+  etag = _messages.StringField(11)
+  host = _messages.MessageField('Host', 12)
+  idleTimeout = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 16, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 17, repeated=True)
+  reconciling = _messages.BooleanField(18)
+  replicaZones = _messages.StringField(19, repeated=True)
+  runningTimeout = _messages.StringField(20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

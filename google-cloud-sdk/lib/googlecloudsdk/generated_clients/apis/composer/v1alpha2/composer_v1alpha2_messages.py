@@ -235,6 +235,21 @@ class ComposerProjectsLocationsEnvironmentsDagsDagRunsListRequest(_messages.Mess
   parent = _messages.StringField(4, required=True)
 
 
+class ComposerProjectsLocationsEnvironmentsDagsDagRunsTaskInstancesGetRequest(_messages.Message):
+  r"""A
+  ComposerProjectsLocationsEnvironmentsDagsDagRunsTaskInstancesGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the task instance to retrieve. Must
+      be in the form: "projects/{projectId}/locations/{locationId}/environment
+      s/{environmentId}/dags/{dagId}/dagRuns/{dagRunId}/taskInstances/{taskIdW
+      ithOptionalMapIndex}".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsDagsDagRunsTaskInstancesListRequest(_messages.Message):
   r"""A
   ComposerProjectsLocationsEnvironmentsDagsDagRunsTaskInstancesListRequest

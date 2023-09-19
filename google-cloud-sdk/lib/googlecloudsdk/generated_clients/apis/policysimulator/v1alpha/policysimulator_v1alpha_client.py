@@ -42,6 +42,7 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
     self.folders_locations_orgPolicyViolationsPreviews_operations = self.FoldersLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.folders_locations_orgPolicyViolationsPreviews = self.FoldersLocationsOrgPolicyViolationsPreviewsService(self)
     self.folders_locations_replays_operations = self.FoldersLocationsReplaysOperationsService(self)
+    self.folders_locations_replays_results = self.FoldersLocationsReplaysResultsService(self)
     self.folders_locations_replays = self.FoldersLocationsReplaysService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
@@ -50,12 +51,14 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
     self.organizations_locations_orgPolicyViolationsPreviews_orgPolicyViolations = self.OrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyViolationsService(self)
     self.organizations_locations_orgPolicyViolationsPreviews = self.OrganizationsLocationsOrgPolicyViolationsPreviewsService(self)
     self.organizations_locations_replays_operations = self.OrganizationsLocationsReplaysOperationsService(self)
+    self.organizations_locations_replays_results = self.OrganizationsLocationsReplaysResultsService(self)
     self.organizations_locations_replays = self.OrganizationsLocationsReplaysService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
     self.projects_locations_orgPolicyViolationsPreviews_operations = self.ProjectsLocationsOrgPolicyViolationsPreviewsOperationsService(self)
     self.projects_locations_orgPolicyViolationsPreviews = self.ProjectsLocationsOrgPolicyViolationsPreviewsService(self)
     self.projects_locations_replays_operations = self.ProjectsLocationsReplaysOperationsService(self)
+    self.projects_locations_replays_results = self.ProjectsLocationsReplaysResultsService(self)
     self.projects_locations_replays = self.ProjectsLocationsReplaysService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -171,6 +174,43 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class FoldersLocationsReplaysResultsService(base_api.BaseApiService):
+    """Service class for the folders_locations_replays_results resource."""
+
+    _NAME = 'folders_locations_replays_results'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.FoldersLocationsReplaysResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the results of running a Replay.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsReplaysResultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListReplayResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/replays/{replaysId}/results',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.replays.results.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/results',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsReplaysResultsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListReplayResultsResponse',
+        supports_download=False,
+    )
+
   class FoldersLocationsReplaysService(base_api.BaseApiService):
     """Service class for the folders_locations_replays resource."""
 
@@ -180,6 +220,87 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
       super(PolicysimulatorV1alpha.FoldersLocationsReplaysService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and starts a Replay using the given ReplayConfig.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsReplaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/replays',
+        http_method='POST',
+        method_id='policysimulator.folders.locations.replays.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/replays',
+        request_field='googleCloudPolicysimulatorV1alphaReplay',
+        request_type_name='PolicysimulatorFoldersLocationsReplaysCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified Replay. Each `Replay` is available for at least 7 days.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsReplaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaReplay) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/replays/{replaysId}',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.replays.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsReplaysGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaReplay',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists each Replay in a project, folder, or organization. Each `Replay` is available for at least 7 days.
+
+      Args:
+        request: (PolicysimulatorFoldersLocationsReplaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListReplaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/replays',
+        http_method='GET',
+        method_id='policysimulator.folders.locations.replays.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/replays',
+        request_field='',
+        request_type_name='PolicysimulatorFoldersLocationsReplaysListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListReplaysResponse',
+        supports_download=False,
+    )
 
   class FoldersLocationsService(base_api.BaseApiService):
     """Service class for the folders_locations resource."""
@@ -467,6 +588,43 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsReplaysResultsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_replays_results resource."""
+
+    _NAME = 'organizations_locations_replays_results'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.OrganizationsLocationsReplaysResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the results of running a Replay.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsReplaysResultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListReplayResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/replays/{replaysId}/results',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.replays.results.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/results',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsReplaysResultsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListReplayResultsResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsReplaysService(base_api.BaseApiService):
     """Service class for the organizations_locations_replays resource."""
 
@@ -476,6 +634,87 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
       super(PolicysimulatorV1alpha.OrganizationsLocationsReplaysService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and starts a Replay using the given ReplayConfig.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsReplaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/replays',
+        http_method='POST',
+        method_id='policysimulator.organizations.locations.replays.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/replays',
+        request_field='googleCloudPolicysimulatorV1alphaReplay',
+        request_type_name='PolicysimulatorOrganizationsLocationsReplaysCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified Replay. Each `Replay` is available for at least 7 days.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsReplaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaReplay) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/replays/{replaysId}',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.replays.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsReplaysGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaReplay',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists each Replay in a project, folder, or organization. Each `Replay` is available for at least 7 days.
+
+      Args:
+        request: (PolicysimulatorOrganizationsLocationsReplaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListReplaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/replays',
+        http_method='GET',
+        method_id='policysimulator.organizations.locations.replays.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/replays',
+        request_field='',
+        request_type_name='PolicysimulatorOrganizationsLocationsReplaysListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListReplaysResponse',
+        supports_download=False,
+    )
 
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
@@ -635,6 +874,43 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsReplaysResultsService(base_api.BaseApiService):
+    """Service class for the projects_locations_replays_results resource."""
+
+    _NAME = 'projects_locations_replays_results'
+
+    def __init__(self, client):
+      super(PolicysimulatorV1alpha.ProjectsLocationsReplaysResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the results of running a Replay.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsReplaysResultsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListReplayResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/replays/{replaysId}/results',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.replays.results.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/results',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsReplaysResultsListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListReplayResultsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsReplaysService(base_api.BaseApiService):
     """Service class for the projects_locations_replays resource."""
 
@@ -644,6 +920,87 @@ class PolicysimulatorV1alpha(base_api.BaseApiClient):
       super(PolicysimulatorV1alpha.ProjectsLocationsReplaysService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Create(self, request, global_params=None):
+      r"""Creates and starts a Replay using the given ReplayConfig.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsReplaysCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/replays',
+        http_method='POST',
+        method_id='policysimulator.projects.locations.replays.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/replays',
+        request_field='googleCloudPolicysimulatorV1alphaReplay',
+        request_type_name='PolicysimulatorProjectsLocationsReplaysCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the specified Replay. Each `Replay` is available for at least 7 days.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsReplaysGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaReplay) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/replays/{replaysId}',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.replays.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsReplaysGetRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaReplay',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists each Replay in a project, folder, or organization. Each `Replay` is available for at least 7 days.
+
+      Args:
+        request: (PolicysimulatorProjectsLocationsReplaysListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudPolicysimulatorV1alphaListReplaysResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/replays',
+        http_method='GET',
+        method_id='policysimulator.projects.locations.replays.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/replays',
+        request_field='',
+        request_type_name='PolicysimulatorProjectsLocationsReplaysListRequest',
+        response_type_name='GoogleCloudPolicysimulatorV1alphaListReplaysResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""

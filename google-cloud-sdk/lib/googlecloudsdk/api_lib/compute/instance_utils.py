@@ -849,7 +849,7 @@ def ResolveInstantSnapshotURI(user_project, instant_snapshot, resource_parser):
   return None
 
 
-def GetReservationAffinity(args, client):
+def GetReservationAffinity(args, client, support_specific_then_x_affinity):
   """Returns the message of reservation affinity for the instance."""
   if args.IsSpecified('reservation_affinity'):
     type_msgs = (
@@ -859,10 +859,23 @@ def GetReservationAffinity(args, client):
     reservation_key = None
     reservation_values = []
 
+    specific_affinities_map = {
+        'specific': type_msgs.SPECIFIC_RESERVATION,
+    }
+    if support_specific_then_x_affinity:
+      specific_affinities_map.update({
+          'specific-then-any-reservation': (
+              type_msgs.SPECIFIC_THEN_ANY_RESERVATION
+          ),
+          'specific-then-no-reservation': (
+              type_msgs.SPECIFIC_THEN_NO_RESERVATION
+          ),
+      })
+
     if args.reservation_affinity == 'none':
       reservation_type = type_msgs.NO_RESERVATION
-    elif args.reservation_affinity == 'specific':
-      reservation_type = type_msgs.SPECIFIC_RESERVATION
+    elif args.reservation_affinity in specific_affinities_map:
+      reservation_type = specific_affinities_map[args.reservation_affinity]
       # Currently, the key is fixed and the value is the name of the
       # reservation.
       # The value being a repeated field is reserved for future use when user

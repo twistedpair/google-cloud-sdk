@@ -90,40 +90,45 @@ class VolumesClient(object):
         request,
         field=constants.VOLUME_RESOURCE,
         limit=limit,
-        batch_size_attribute='pageSize')
+        batch_size_attribute='pageSize',
+    )
 
   def CreateVolume(self, volume_ref, async_, config):
     """Create a Cloud NetApp Volume."""
     request = self.messages.NetappProjectsLocationsVolumesCreateRequest(
         parent=volume_ref.Parent().RelativeName(),
         volumeId=volume_ref.Name(),
-        volume=config)
+        volume=config,
+    )
     create_op = self.client.projects_locations_volumes.Create(request)
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=constants.OPERATIONS_COLLECTION)
+        create_op.name, collection=constants.OPERATIONS_COLLECTION
+    )
     return self.WaitForOperation(operation_ref)
 
-  def ParseVolumeConfig(self,
-                        name=None,
-                        capacity=None,
-                        description=None,
-                        storage_pool=None,
-                        protocols=None,
-                        share_name=None,
-                        export_policy=None,
-                        unix_permissions=None,
-                        smb_settings=None,
-                        snapshot_policy=None,
-                        snap_reserve=None,
-                        snapshot_directory=None,
-                        security_style=None,
-                        enable_kerberos=None,
-                        snapshot=None,
-                        restricted_actions=None,
-                        labels=None):
-
+  def ParseVolumeConfig(
+      self,
+      name=None,
+      capacity=None,
+      description=None,
+      storage_pool=None,
+      protocols=None,
+      share_name=None,
+      export_policy=None,
+      unix_permissions=None,
+      smb_settings=None,
+      snapshot_policy=None,
+      snap_reserve=None,
+      snapshot_directory=None,
+      security_style=None,
+      enable_kerberos=None,
+      snapshot=None,
+      restricted_actions=None,
+      backup_config=None,
+      labels=None,
+  ):
     """Parses the command line arguments for Create Volume into a config."""
     return self._adapter.ParseVolumeConfig(
         name=name,
@@ -142,6 +147,7 @@ class VolumesClient(object):
         enable_kerberos=enable_kerberos,
         snapshot=snapshot,
         restricted_actions=restricted_actions,
+        backup_config=backup_config,
         labels=labels,
     )
 
@@ -179,24 +185,27 @@ class VolumesClient(object):
     )
     return self.WaitForOperation(operation_ref)
 
-  def ParseUpdatedVolumeConfig(self,
-                               volume_config,
-                               description=None,
-                               labels=None,
-                               storage_pool=None,
-                               protocols=None,
-                               share_name=None,
-                               export_policy=None,
-                               capacity=None,
-                               unix_permissions=None,
-                               smb_settings=None,
-                               snapshot_policy=None,
-                               snap_reserve=None,
-                               snapshot_directory=None,
-                               security_style=None,
-                               enable_kerberos=None,
-                               snapshot=None,
-                               restricted_actions=None):
+  def ParseUpdatedVolumeConfig(
+      self,
+      volume_config,
+      description=None,
+      labels=None,
+      storage_pool=None,
+      protocols=None,
+      share_name=None,
+      export_policy=None,
+      capacity=None,
+      unix_permissions=None,
+      smb_settings=None,
+      snapshot_policy=None,
+      snap_reserve=None,
+      snapshot_directory=None,
+      security_style=None,
+      enable_kerberos=None,
+      snapshot=None,
+      restricted_actions=None,
+      backup_config=None,
+  ):
     """Parses updates into a volume config."""
     return self._adapter.ParseUpdatedVolumeConfig(
         volume_config,
@@ -215,7 +224,8 @@ class VolumesClient(object):
         security_style=security_style,
         enable_kerberos=enable_kerberos,
         snapshot=snapshot,
-        restricted_actions=restricted_actions)
+        restricted_actions=restricted_actions,
+        backup_config=backup_config)
 
   def UpdateVolume(self, volume_ref, volume_config, update_mask, async_):
     """Updates a Cloud NetApp Volume.
@@ -375,6 +385,7 @@ class VolumesAdapter(object):
       enable_kerberos=None,
       snapshot=None,
       restricted_actions=None,
+      backup_config=None,
       labels=None,
   ):
     """Parses the command line arguments for Create Volume into a config.
@@ -396,6 +407,7 @@ class VolumesAdapter(object):
       enable_kerberos: Bool on whether to use kerberos for Volume
       snapshot: the snapshot name to create Volume from
       restricted_actions: the actions to be restricted on a Volume
+      backup_config: the Backup Config attached to the Volume
       labels: the parsed labels value.
 
     Returns:
@@ -424,6 +436,8 @@ class VolumesAdapter(object):
         else None
     )
     volume.restrictedActions = restricted_actions
+    if backup_config is not None:
+      self.ParseBackupConfig(volume, backup_config)
     return volume
 
   def ParseUpdatedVolumeConfig(
@@ -446,6 +460,7 @@ class VolumesAdapter(object):
       active_directory=None,
       snapshot=None,
       restricted_actions=None,
+      backup_config=None,
   ):
     """Parse update information into an updated Volume message."""
     if description is not None:
@@ -484,7 +499,30 @@ class VolumesAdapter(object):
       )
     if restricted_actions is not None:
       volume_config.restrictedActions = restricted_actions
+    if backup_config is not None:
+      self.ParseBackupConfig(volume_config, backup_config)
     return volume_config
+
+  def ParseBackupConfig(self, volume, backup_config):
+    """Parses Backup Config for Volume into a config.
+
+    Args:
+      volume: The Cloud NetApp Volume message object.
+      backup_config: the Backup Config message object.
+
+    Returns:
+      Volume message populated with Backup Config values.
+
+    """
+    backup_config_message = self.messages.BackupConfig()
+    # Iterate through backup_config.
+    for backup_policy in backup_config.get('backup-policies', []):
+      backup_config_message.backupPolicies.append(backup_policy)
+    backup_config_message.backupVault = backup_config.get('backup-vault', '')
+    backup_config_message.scheduledBackupEnabled = (
+        backup_config.get('enable-scheduled-backups', False)
+    )
+    volume.backupConfig = backup_config_message
 
 
 class BetaVolumesAdapter(VolumesAdapter):

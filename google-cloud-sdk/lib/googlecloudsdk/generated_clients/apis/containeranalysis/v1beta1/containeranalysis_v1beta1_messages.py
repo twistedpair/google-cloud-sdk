@@ -1937,6 +1937,23 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1BuiltImage(_messages.Message):
   pushTiming = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1TimeSpan', 3)
 
 
+class ContaineranalysisGoogleDevtoolsCloudbuildV1ConnectedRepository(_messages.Message):
+  r"""Location of the source in a 2nd-gen Google Cloud Build repository
+  resource.
+
+  Fields:
+    dir: Directory, relative to the source root, in which to run the build.
+    repository: Required. Name of the Google Cloud Build repository, formatted
+      as `projects/*/locations/*/connections/*/repositories/*`.
+    revision: The revision to fetch from the Git repository such as a branch,
+      a tag, a commit SHA, or any Git ref.
+  """
+
+  dir = _messages.StringField(1)
+  repository = _messages.StringField(2)
+  revision = _messages.StringField(3)
+
+
 class ContaineranalysisGoogleDevtoolsCloudbuildV1FileHashes(_messages.Message):
   r"""Container message for hashes of byte content of files, used in
   SourceProvenance messages to verify integrity of source input to the build.
@@ -2130,7 +2147,7 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Results(_messages.Message):
       in the order corresponding to build step indices. [Cloud
       Builders](https://cloud.google.com/cloud-build/docs/cloud-builders) can
       produce this output by writing to `$BUILDER_OUTPUT/output`. Only the
-      first 4KB of data is stored.
+      first 50KB of data is stored.
     images: Container images that were built as a part of the build.
     mavenArtifacts: Maven artifacts uploaded to Artifact Registry at the end
       of the build.
@@ -2242,6 +2259,8 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Source(_messages.Message):
   r"""Location of the source in a supported storage service.
 
   Fields:
+    connectedRepository: Optional. If provided, get the source from this 2nd-
+      gen Google Cloud Build repository resource.
     gitSource: If provided, get the source from this Git repository.
     repoSource: If provided, get the source from this location in a Cloud
       Source Repository.
@@ -2253,10 +2272,11 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1Source(_messages.Message):
       builders/tree/master/gcs-fetcher).
   """
 
-  gitSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource', 1)
-  repoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 2)
-  storageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 3)
-  storageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 4)
+  connectedRepository = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ConnectedRepository', 1)
+  gitSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource', 2)
+  repoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 3)
+  storageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 4)
+  storageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 5)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Message):
@@ -2935,6 +2955,7 @@ class Discovered(_messages.Message):
     continuousAnalysis: Whether the resource is continuously analyzed.
     lastAnalysisTime: The last time continuous analysis was done for this
       resource. Deprecated, do not use.
+    lastScanTime: The last time this resource was scanned.
     sbomStatus: The status of an SBOM generation.
   """
 
@@ -2977,7 +2998,8 @@ class Discovered(_messages.Message):
   analysisStatusError = _messages.MessageField('Status', 4)
   continuousAnalysis = _messages.EnumField('ContinuousAnalysisValueValuesEnum', 5)
   lastAnalysisTime = _messages.StringField(6)
-  sbomStatus = _messages.MessageField('SBOMStatus', 7)
+  lastScanTime = _messages.StringField(7)
+  sbomStatus = _messages.MessageField('SBOMStatus', 8)
 
 
 class Discovery(_messages.Message):
@@ -3082,7 +3104,7 @@ class Distribution(_messages.Message):
 
 class DocumentNote(_messages.Message):
   r"""DocumentNote represents an SPDX Document Creation Information section:
-  https://spdx.github.io/spdx-spec/v2.3/document-creation-information/
+  https://spdx.github.io/spdx-spec/2-document-creation-information/
 
   Fields:
     dataLicence: Compliance with the SPDX specification includes populating
@@ -3098,8 +3120,7 @@ class DocumentNote(_messages.Message):
 
 class DocumentOccurrence(_messages.Message):
   r"""DocumentOccurrence represents an SPDX Document Creation Information
-  section: https://spdx.github.io/spdx-spec/v2.3/document-creation-
-  information/
+  section: https://spdx.github.io/spdx-spec/2-document-creation-information/
 
   Fields:
     createTime: Identify when the SPDX file was originally created. The date

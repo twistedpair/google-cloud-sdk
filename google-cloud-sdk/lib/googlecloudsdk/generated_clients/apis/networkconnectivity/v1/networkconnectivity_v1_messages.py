@@ -37,6 +37,16 @@ class AcceptHubSpokeRequest(_messages.Message):
   spokeUri = _messages.StringField(2)
 
 
+class AcceptHubSpokeResponse(_messages.Message):
+  r"""The response for HubService.AcceptHubSpoke.
+
+  Fields:
+    spoke: The spoke that was operated on.
+  """
+
+  spoke = _messages.MessageField('Spoke', 1)
+
+
 class AcceptSpokeRequest(_messages.Message):
   r"""The request for HubService.AcceptSpoke.
 
@@ -3571,6 +3581,16 @@ class RejectHubSpokeRequest(_messages.Message):
   details = _messages.StringField(1)
   requestId = _messages.StringField(2)
   spokeUri = _messages.StringField(3)
+
+
+class RejectHubSpokeResponse(_messages.Message):
+  r"""The response for HubService.RejectHubSpoke.
+
+  Fields:
+    spoke: The spoke that was operated on.
+  """
+
+  spoke = _messages.MessageField('Spoke', 1)
 
 
 class RejectSpokeRequest(_messages.Message):

@@ -148,7 +148,7 @@ class BackupsClient(object):
             name=backup_ref.RelativeName()
         )
     )
-    return self.client.projects_locations_backupVaults.Get(request)
+    return self.client.projects_locations_backupVaults_backups.Get(request)
 
   def DeleteBackup(self, backup_ref, async_):
     """Deletes an existing Cloud NetApp Backup."""
@@ -194,19 +194,15 @@ class BackupsClient(object):
     )
     return self.WaitForOperation(operation_ref)
 
-  def ParseUpdatedBackupVault(
+  def ParseUpdatedBackup(
       self,
       backup,
-      source_snapshot=None,
-      source_volume=None,
       description=None,
       labels=None,
   ):
     """Parses updates into a Backup."""
     return self._adapter.ParseUpdatedBackup(
         backup,
-        source_snapshot=source_snapshot,
-        source_volume=source_volume,
         description=description,
         labels=labels,
     )
@@ -227,8 +223,6 @@ class BetaBackupsAdapter(object):
   def ParseUpdatedBackup(
       self,
       backup,
-      source_snapshot=None,
-      source_volume=None,
       description=None,
       labels=None,
   ):

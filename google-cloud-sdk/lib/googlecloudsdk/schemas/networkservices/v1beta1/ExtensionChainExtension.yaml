@@ -1,0 +1,86 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1beta1 ExtensionChainExtension export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- authority
+- name
+- service
+- timeout
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  authority:
+    description: |-
+      The :authority header in the gRPC request sent from Envoy to the extension
+      service.
+    type: string
+  failOpen:
+    description: |-
+      Determines how the proxy should behave if the call to the extension fails
+      or times out. When set to TRUE, request/response processing continues
+      without error. Any subsequent extensions in the ExtensionChain will also
+      execute. When set to FALSE: * If Response Headers have not been delivered
+      to the downstream client, a generic 500 error is returned to the client.
+      The error response can be tailored by configuring a custom error response
+      in the Load Balancer, the error response. * If Response Headers have been
+      delivered, then the HTTP stream to the downstream client will be reset.
+      Default is False.
+    type: boolean
+  forwardHeaders:
+    description: |-
+      List of HTTP headers (from the client or backend) to forward to the
+      Extension. If omitted, all headers will be sent.
+    type: array
+    items:
+      type: string
+  name:
+    description: |-
+      The name for this extension. The name will be logged as part of HTTP
+      request logs.
+    type: string
+  service:
+    description: |-
+      The reference to the service that will run the extension. Must be a
+      reference to a Backend Service (https://cloud.googl
+      e.com/compute/docs/reference/rest/v1/backendServices).
+    type: string
+  supportedEvents:
+    description: |-
+      A set of events during request or response processing for which this
+      extension should be called. Note that usage of this field is only
+      allowed and is required for LbTrafficExtension resource.
+    type: array
+    items:
+      type: string
+      enum:
+      - EVENT_TYPE_UNSPECIFIED
+      - REQUEST_BODY
+      - REQUEST_HEADERS
+      - RESPONSE_BODY
+      - RESPONSE_HEADERS
+  timeout:
+    description: |-
+      Specifies the timeout for each individual message on the stream.
+      The timeout must be between 10-1000 milliseconds.
+    type: string

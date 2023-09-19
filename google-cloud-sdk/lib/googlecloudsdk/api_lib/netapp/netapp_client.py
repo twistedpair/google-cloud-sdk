@@ -26,11 +26,6 @@ from googlecloudsdk.calliope import base
 API_NAME = 'netapp'
 ALPHA_API_VERSION = 'v1alpha1'
 
-VOLUMES_COLLECTION = 'netapp.projects.locations.volumes'
-STORAGEPOOLS_COLLECTION = 'netapp.projects.locations.storagepools'
-OPERATIONS_COLLECTION = 'netapp.projects.locations.operations'
-LOCATIONS_COLLECTION = 'netapp.projects.locations'
-
 
 class NetAppClient(object):
   """Wrapper for working with the Cloud NetApp Files API Client."""

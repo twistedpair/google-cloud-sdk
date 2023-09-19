@@ -80,7 +80,7 @@ class SnapshotsClient(object):
     if async_:
       return create_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        create_op.name, collection=netapp_api_util.OPERATIONS_COLLECTION
+        create_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 

@@ -153,6 +153,40 @@ class CidrBlock(_messages.Message):
   displayName = _messages.StringField(2)
 
 
+class ComputeDeploymentStatusResponse(_messages.Message):
+  r"""Response object for `ComputeDeploymentStatus`.
+
+  Enums:
+    StatusValueValuesEnum: Output only. Aggregated status of a deployment.
+
+  Fields:
+    name: The name of the deployment.
+    resourceStatusDetail: Output only. Resource level status details in
+      deployments.
+    status: Output only. Aggregated status of a deployment.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. Aggregated status of a deployment.
+
+    Values:
+      STATUS_UNSPECIFIED: Unknown state.
+      STATUS_IN_PROGRESS: Under progress.
+      STATUS_ACTIVE: Running and ready to serve traffic.
+      STATUS_FAILED: Failed or stalled.
+      STATUS_PEERING: NFDeploy specific status.
+    """
+    STATUS_UNSPECIFIED = 0
+    STATUS_IN_PROGRESS = 1
+    STATUS_ACTIVE = 2
+    STATUS_FAILED = 3
+    STATUS_PEERING = 4
+
+  name = _messages.StringField(1)
+  resourceStatusDetail = _messages.MessageField('ResourceStatusDetail', 2, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 3)
+
+
 class Deployment(_messages.Message):
   r"""Deployment contains a collection of YAML files (This collection is also
   known as package) that can to applied on an orchestration cluster (GKE
@@ -247,40 +281,6 @@ class Deployment(_messages.Message):
   sourceProvider = _messages.StringField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
   updateTime = _messages.StringField(12)
-
-
-class DeploymentStatusResponse(_messages.Message):
-  r"""Response of deployment status.
-
-  Enums:
-    StatusValueValuesEnum: Output only. Aggregated status of a deployment.
-
-  Fields:
-    name: Deployment name.
-    resourceStatusDetail: Output only. Resource level status details in
-      deployments.
-    status: Output only. Aggregated status of a deployment.
-  """
-
-  class StatusValueValuesEnum(_messages.Enum):
-    r"""Output only. Aggregated status of a deployment.
-
-    Values:
-      STATUS_UNSPECIFIED: Unknown state.
-      STATUS_IN_PROGRESS: Under progress.
-      STATUS_ACTIVE: Running and ready to serve traffic.
-      STATUS_FAILED: Failed or stalled.
-      STATUS_PEERING: NFDeploy specific status.
-    """
-    STATUS_UNSPECIFIED = 0
-    STATUS_IN_PROGRESS = 1
-    STATUS_ACTIVE = 2
-    STATUS_FAILED = 3
-    STATUS_PEERING = 4
-
-  name = _messages.StringField(1)
-  resourceStatusDetail = _messages.MessageField('ResourceStatusDetail', 2, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
 class DiscardBlueprintChangesRequest(_messages.Message):
@@ -484,6 +484,8 @@ class HydratedDeployment(_messages.Message):
       deployment will not be changed.
     name: Output only. The name of the hydrated deployment.
     state: Output only. State of the hydrated deployment (DRAFT, APPLIED).
+    workloadCluster: Output only. WorkloadCluster identifies which workload
+      cluster will the hydrated deployment will be deployed on.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -504,6 +506,7 @@ class HydratedDeployment(_messages.Message):
   files = _messages.MessageField('File', 1, repeated=True)
   name = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
+  workloadCluster = _messages.StringField(4)
 
 
 class ListBlueprintRevisionsResponse(_messages.Message):
@@ -1008,6 +1011,10 @@ class RejectBlueprintRequest(_messages.Message):
   r"""Request object for `RejectBlueprint`."""
 
 
+class RemoveDeploymentRequest(_messages.Message):
+  r"""Request object for `RemoveDeployment`."""
+
+
 class ResourceStatusDetail(_messages.Message):
   r"""Status of a deployment resource.
 
@@ -1060,6 +1067,32 @@ class RollbackDeploymentRequest(_messages.Message):
   """
 
   revisionId = _messages.StringField(1)
+
+
+class SearchBlueprintRevisionsResponse(_messages.Message):
+  r"""Response object for `SearchBlueprintRevisions`.
+
+  Fields:
+    blueprints: The list of requested blueprint revisions.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  blueprints = _messages.MessageField('Blueprint', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class SearchDeploymentRevisionsResponse(_messages.Message):
+  r"""Response object for `SearchDeploymentRevisions`.
+
+  Fields:
+    deployments: The list of requested deployment revisions.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  deployments = _messages.MessageField('Deployment', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class StandardManagementConfig(_messages.Message):
@@ -1299,36 +1332,6 @@ class TelcoautomationProjectsLocationsEdgeSlmsListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class TelcoautomationProjectsLocationsEdgeSlmsPatchRequest(_messages.Message):
-  r"""A TelcoautomationProjectsLocationsEdgeSlmsPatchRequest object.
-
-  Fields:
-    edgeSlm: A EdgeSlm resource to be passed as the request body.
-    name: Name of the EdgeSlm resource.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the EdgeSlm resource by the update. The fields specified
-      in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
-  """
-
-  edgeSlm = _messages.MessageField('EdgeSlm', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
 
 
 class TelcoautomationProjectsLocationsGetRequest(_messages.Message):
@@ -1608,6 +1611,30 @@ class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsRejectReque
   rejectBlueprintRequest = _messages.MessageField('RejectBlueprintRequest', 2)
 
 
+class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsSearchRevisionsRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsSearchR
+  evisionsRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of blueprints revisions to return
+      per page. max page size = 100, default page size = 20.
+    pageToken: Optional. The page token, received from a previous search call.
+      It can be provided to retrieve the subsequent page.
+    parent: Required. The name of parent orchestration cluster resource.
+      Format should be - "projects/{project_id}/locations/{location_name}/orch
+      estrationClusters/{orchestration_cluster}".
+    query: Required. Supported queries: 1. "" : Lists all revisions across all
+      blueprints. 2. "latest=true" : Lists latest revisions across all
+      blueprints. 3. "name=" : Lists all revisions of blueprint with name . 4.
+      "name= latest=true": Lists latest revision of blueprint with name
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  query = _messages.StringField(4)
+
+
 class TelcoautomationProjectsLocationsOrchestrationClustersCreateRequest(_messages.Message):
   r"""A TelcoautomationProjectsLocationsOrchestrationClustersCreateRequest
   object.
@@ -1682,7 +1709,7 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsComputeDep
   eDeploymentStatusRequest object.
 
   Fields:
-    name: Required. The unique deployment name across orchestration cluster.
+    name: Required. The name of the deployment.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1901,6 +1928,20 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsPatchReque
   updateMask = _messages.StringField(3)
 
 
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRemoveRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRemove
+  Request object.
+
+  Fields:
+    name: Required. The name of deployment to initiate delete.
+    removeDeploymentRequest: A RemoveDeploymentRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  removeDeploymentRequest = _messages.MessageField('RemoveDeploymentRequest', 2)
+
+
 class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRollbackRequest(_messages.Message):
   r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRollba
   ckRequest object.
@@ -1913,6 +1954,30 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRollbackRe
 
   name = _messages.StringField(1, required=True)
   rollbackDeploymentRequest = _messages.MessageField('RollbackDeploymentRequest', 2)
+
+
+class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsSearchRevisionsRequest(_messages.Message):
+  r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsSearch
+  RevisionsRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of deployment revisions to return
+      per page. max page size = 100, default page size = 20.
+    pageToken: Optional. The page token, received from a previous search call.
+      It can be provided to retrieve the subsequent page.
+    parent: Required. The name of parent orchestration cluster resource.
+      Format should be - "projects/{project_id}/locations/{location_name}/orch
+      estrationClusters/{orchestration_cluster}".
+    query: Required. Supported queries: 1. "" : Lists all revisions across all
+      deployments. 2. "latest=true" : Lists latest revisions across all
+      deployments. 3. "name=" : Lists all revisions of deployment with name .
+      4. "name= latest=true": Lists latest revision of deployment with name
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  query = _messages.StringField(4)
 
 
 class TelcoautomationProjectsLocationsOrchestrationClustersGetRequest(_messages.Message):
@@ -1944,38 +2009,6 @@ class TelcoautomationProjectsLocationsOrchestrationClustersListRequest(_messages
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
-
-
-class TelcoautomationProjectsLocationsOrchestrationClustersPatchRequest(_messages.Message):
-  r"""A TelcoautomationProjectsLocationsOrchestrationClustersPatchRequest
-  object.
-
-  Fields:
-    name: Name of the orchestration cluster.
-    orchestrationCluster: A OrchestrationCluster resource to be passed as the
-      request body.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the OrchestrationCluster resource by the update. The
-      fields specified in the update_mask are relative to the resource, not
-      the full request. A field will be overwritten if it is in the mask. If
-      the user does not provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  orchestrationCluster = _messages.MessageField('OrchestrationCluster', 2)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
 
 
 class TelcoautomationProjectsLocationsPublicBlueprintsGetRequest(_messages.Message):

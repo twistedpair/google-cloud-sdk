@@ -506,6 +506,7 @@ class FirewallEndpoint(_messages.Message):
       FirewallEndpointAssociations pointing at this endpoint. A network will
       only appear in this list after traffic routing is fully configured.
       Format: projects/{project}/global/networks/{name}.
+    billingProjectId: Optional. Project to bill on endpoint uptime usage.
     createTime: Output only. Create time stamp
     labels: Optional. Labels as key value pairs
     name: Output only. name of resource
@@ -556,12 +557,13 @@ class FirewallEndpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   associatedNetworks = _messages.StringField(1, repeated=True)
-  createTime = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  reconciling = _messages.BooleanField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  updateTime = _messages.StringField(7)
+  billingProjectId = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  reconciling = _messages.BooleanField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class FirewallEndpointAssociation(_messages.Message):

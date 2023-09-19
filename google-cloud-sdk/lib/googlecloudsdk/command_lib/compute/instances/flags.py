@@ -2848,29 +2848,65 @@ def AddHostnameArg(parser):
       """)
 
 
-def AddReservationAffinityGroup(parser, group_text, affinity_text):
+def AddReservationAffinityGroup(
+    parser,
+    group_text,
+    affinity_text,
+    support_specific_then_x_affinity,
+):
   """Adds the argument group to handle reservation affinity configurations."""
   group = parser.add_group(help=group_text)
+  choices = {
+      'any': 'Consume any available, matching reservation.',
+      'none': 'Do not consume from any reserved capacity.',
+      'specific': 'Must consume from a specific reservation.',
+  }
+  if support_specific_then_x_affinity:
+    choices.update({
+        'specific-then-any-reservation': (
+            'Prefer to consume from a specific reservation, but still'
+            ' consume any available matching reservation if the specified'
+            ' reservation is not available or exhausted.'
+        ),
+        'specific-then-no-reservation': (
+            'Prefer to consume from a specific reservation, but still'
+            ' consume from the on-demand pool if the specified reservation'
+            ' is not available or exhausted.'
+        ),
+    })
   group.add_argument(
       '--reservation-affinity',
-      choices=['any', 'none', 'specific'],
+      choices=choices,
       default='any',
-      help=affinity_text)
+      help=affinity_text,
+  )
+  if support_specific_then_x_affinity:
+    reservation_help_text = """
+The name of the reservation, required when `--reservation-affinity` is one of: `specific`, `specific-then-any-reservation` or `specific-then-no-reservation`.
+"""
+  else:
+    reservation_help_text = """
+The name of the reservation, required when `--reservation-affinity=specific`.
+"""
   group.add_argument(
       '--reservation',
-      help="""
-The name of the reservation, required when `--reservation-affinity=specific`.
-""")
+      help=reservation_help_text,
+  )
 
 
 def ValidateReservationAffinityGroup(args):
   """Validates flags specifying reservation affinity."""
   affinity = getattr(args, 'reservation_affinity', None)
-  if affinity == 'specific':
+  if affinity in [
+      'specific',
+      'specific-then-any-reservation',
+      'specific-then-no-reservation',
+  ]:
     if not args.IsSpecified('reservation'):
       raise exceptions.InvalidArgumentException(
           '--reservation',
-          'The name the specific reservation must be specified.')
+          'The name the specific reservation must be specified.',
+      )
 
 
 def _GetContainerMountDescriptionAndNameDescription(for_update=False):

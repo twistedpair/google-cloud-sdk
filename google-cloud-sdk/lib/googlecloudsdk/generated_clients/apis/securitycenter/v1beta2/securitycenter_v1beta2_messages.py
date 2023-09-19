@@ -1111,6 +1111,8 @@ class Finding(_messages.Message):
       OBSERVATION: Describes a security observation that is for informational
         purposes.
       SCC_ERROR: Describes an error that prevents some SCC functionality.
+      POSTURE_VIOLATION: Describes a potential security risk due to a change
+        in the security posture.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -1118,6 +1120,7 @@ class Finding(_messages.Message):
     MISCONFIGURATION = 3
     OBSERVATION = 4
     SCC_ERROR = 5
+    POSTURE_VIOLATION = 6
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or
@@ -4198,10 +4201,12 @@ class Subscription(_messages.Message):
       TIER_UNSPECIFIED: Default value. This value is unused.
       STANDARD: The standard tier.
       PREMIUM: The premium tier.
+      ENTERPRISE: The enterprise tier.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
     PREMIUM = 2
+    ENTERPRISE = 3
 
   details = _messages.MessageField('Details', 1)
   name = _messages.StringField(2)

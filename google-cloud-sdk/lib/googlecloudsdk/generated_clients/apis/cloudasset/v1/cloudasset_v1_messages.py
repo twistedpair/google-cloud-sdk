@@ -2976,6 +2976,9 @@ class GoogleIdentityAccesscontextmanagerV1Condition(_messages.Message):
       which does not exist is an error. All access levels listed must be
       granted for the Condition to be true. Example:
       "`accessPolicies/MY_POLICY/accessLevels/LEVEL_NAME"`
+    vpcNetworkSources: The request must originate from one of the provided VPC
+      networks in Google Cloud. Cannot specify this field together with
+      `ip_subnetworks`.
   """
 
   devicePolicy = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1DevicePolicy', 1)
@@ -2984,6 +2987,7 @@ class GoogleIdentityAccesscontextmanagerV1Condition(_messages.Message):
   negate = _messages.BooleanField(4)
   regions = _messages.StringField(5, repeated=True)
   requiredAccessLevels = _messages.StringField(6, repeated=True)
+  vpcNetworkSources = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1VpcNetworkSource', 7, repeated=True)
 
 
 class GoogleIdentityAccesscontextmanagerV1CustomLevel(_messages.Message):
@@ -3081,6 +3085,9 @@ class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
     IdentityTypeValueValuesEnum: Specifies the type of identities that are
       allowed access to outside the perimeter. If left unspecified, then
       members of `identities` field will be allowed access.
+    SourceRestrictionValueValuesEnum: Whether to enforce traffic restrictions
+      based on `sources` field. If the `sources` fields is non-empty, then
+      this field must be set to `SOURCE_RESTRICTION_ENABLED`.
 
   Fields:
     identities: A list of identities that are allowed access through this
@@ -3089,6 +3096,12 @@ class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
+    sourceRestriction: Whether to enforce traffic restrictions based on
+      `sources` field. If the `sources` fields is non-empty, then this field
+      must be set to `SOURCE_RESTRICTION_ENABLED`.
+    sources: Sources that this EgressPolicy authorizes access from. If this
+      field is not empty, then `source_restriction` must be set to
+      `SOURCE_RESTRICTION_ENABLED`.
   """
 
   class IdentityTypeValueValuesEnum(_messages.Enum):
@@ -3110,8 +3123,27 @@ class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
     ANY_USER_ACCOUNT = 2
     ANY_SERVICE_ACCOUNT = 3
 
+  class SourceRestrictionValueValuesEnum(_messages.Enum):
+    r"""Whether to enforce traffic restrictions based on `sources` field. If
+    the `sources` fields is non-empty, then this field must be set to
+    `SOURCE_RESTRICTION_ENABLED`.
+
+    Values:
+      SOURCE_RESTRICTION_UNSPECIFIED: Enforcement preference unspecified, will
+        not enforce traffic restrictions based on `sources` in EgressFrom.
+      SOURCE_RESTRICTION_ENABLED: Enforcement preference enabled, traffic
+        restrictions will be enforced based on `sources` in EgressFrom.
+      SOURCE_RESTRICTION_DISABLED: Enforcement preference disabled, will not
+        enforce traffic restrictions based on `sources` in EgressFrom.
+    """
+    SOURCE_RESTRICTION_UNSPECIFIED = 0
+    SOURCE_RESTRICTION_ENABLED = 1
+    SOURCE_RESTRICTION_DISABLED = 2
+
   identities = _messages.StringField(1, repeated=True)
   identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+  sourceRestriction = _messages.EnumField('SourceRestrictionValueValuesEnum', 3)
+  sources = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1EgressSource', 4, repeated=True)
 
 
 class GoogleIdentityAccesscontextmanagerV1EgressPolicy(_messages.Message):
@@ -3137,6 +3169,25 @@ class GoogleIdentityAccesscontextmanagerV1EgressPolicy(_messages.Message):
 
   egressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1EgressFrom', 1)
   egressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1EgressTo', 2)
+
+
+class GoogleIdentityAccesscontextmanagerV1EgressSource(_messages.Message):
+  r"""The source that EgressPolicy authorizes access from inside the
+  ServicePerimeter to somewhere outside the ServicePerimeter boundaries.
+
+  Fields:
+    accessLevel: An AccessLevel resource name that allows protected resources
+      inside the ServicePerimeters to access outside the ServicePerimeter
+      boundaries. AccessLevels listed must be in the same policy as this
+      ServicePerimeter. Referencing a nonexistent AccessLevel will cause an
+      error. If an AccessLevel name is not specified, only resources within
+      the perimeter can be accessed through Google Cloud calls with request
+      origins within the perimeter. Example:
+      `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
+      specified for `access_level`, then all EgressSources will be allowed.
+  """
+
+  accessLevel = _messages.StringField(1)
 
 
 class GoogleIdentityAccesscontextmanagerV1EgressTo(_messages.Message):
@@ -3478,6 +3529,37 @@ class GoogleIdentityAccesscontextmanagerV1VpcAccessibleServices(_messages.Messag
 
   allowedServices = _messages.StringField(1, repeated=True)
   enableRestriction = _messages.BooleanField(2)
+
+
+class GoogleIdentityAccesscontextmanagerV1VpcNetworkSource(_messages.Message):
+  r"""The originating network source in Google Cloud.
+
+  Fields:
+    vpcSubnetwork: Sub-segment ranges of a VPC network.
+  """
+
+  vpcSubnetwork = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1VpcSubNetwork', 1)
+
+
+class GoogleIdentityAccesscontextmanagerV1VpcSubNetwork(_messages.Message):
+  r"""Sub-segment ranges inside of a VPC Network.
+
+  Fields:
+    network: Required. Network name. If the network is not part of the
+      organization, the `compute.network.get` permission must be granted to
+      the caller. Format: `//compute.googleapis.com/projects/{PROJECT_ID}/glob
+      al/networks/{NETWORK_NAME}` Example:
+      `//compute.googleapis.com/projects/my-project/global/networks/network-1`
+    vpcIpSubnetworks: CIDR block IP subnetwork specification. The IP address
+      must be an IPv4 address and can be a public or private IP address. Note
+      that for a CIDR IP address block, the specified IP address portion must
+      be properly truncated (i.e. all the host bits must be zero) or the input
+      is considered malformed. For example, "192.0.2.0/24" is accepted but
+      "192.0.2.1/24" is not. If empty, all IP addresses are allowed.
+  """
+
+  network = _messages.StringField(1)
+  vpcIpSubnetworks = _messages.StringField(2, repeated=True)
 
 
 class IamPolicyAnalysis(_messages.Message):

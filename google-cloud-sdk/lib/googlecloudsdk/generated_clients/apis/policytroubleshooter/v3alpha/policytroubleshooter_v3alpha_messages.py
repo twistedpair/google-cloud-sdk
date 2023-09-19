@@ -3037,6 +3037,9 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom(_mess
     IdentityTypeValueValuesEnum: Specifies the type of identities that are
       allowed access to outside the perimeter. If left unspecified, then
       members of `identities` field will be allowed access.
+    SourceRestrictionValueValuesEnum: Whether to enforce traffic restrictions
+      based on `sources` field. If the `sources` fields is non-empty, then
+      this field must be set to `SOURCE_RESTRICTION_ENABLED`.
 
   Fields:
     identities: A list of identities that are allowed access through this
@@ -3045,6 +3048,12 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom(_mess
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
+    sourceRestriction: Whether to enforce traffic restrictions based on
+      `sources` field. If the `sources` fields is non-empty, then this field
+      must be set to `SOURCE_RESTRICTION_ENABLED`.
+    sources: Sources that this EgressPolicy authorizes access from. If this
+      field is not empty, then `source_restriction` must be set to
+      `SOURCE_RESTRICTION_ENABLED`.
   """
 
   class IdentityTypeValueValuesEnum(_messages.Enum):
@@ -3066,8 +3075,27 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom(_mess
     ANY_USER_ACCOUNT = 2
     ANY_SERVICE_ACCOUNT = 3
 
+  class SourceRestrictionValueValuesEnum(_messages.Enum):
+    r"""Whether to enforce traffic restrictions based on `sources` field. If
+    the `sources` fields is non-empty, then this field must be set to
+    `SOURCE_RESTRICTION_ENABLED`.
+
+    Values:
+      SOURCE_RESTRICTION_UNSPECIFIED: Enforcement preference unspecified, will
+        not enforce traffic restrictions based on `sources` in EgressFrom.
+      SOURCE_RESTRICTION_ENABLED: Enforcement preference enabled, traffic
+        restrictions will be enforced based on `sources` in EgressFrom.
+      SOURCE_RESTRICTION_DISABLED: Enforcement preference disabled, will not
+        enforce traffic restrictions based on `sources` in EgressFrom.
+    """
+    SOURCE_RESTRICTION_UNSPECIFIED = 0
+    SOURCE_RESTRICTION_ENABLED = 1
+    SOURCE_RESTRICTION_DISABLED = 2
+
   identities = _messages.StringField(1, repeated=True)
   identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+  sourceRestriction = _messages.EnumField('SourceRestrictionValueValuesEnum', 3)
+  sources = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressSource', 4, repeated=True)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressPolicy(_messages.Message):
@@ -3093,6 +3121,34 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressPolicy(_me
 
   egressFrom = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom', 1)
   egressTo = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressTo', 2)
+
+
+class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressSource(_messages.Message):
+  r"""The source that EgressPolicy authorizes access from inside the
+  ServicePerimeter to somewhere outside the ServicePerimeter boundaries.
+
+  Fields:
+    accessLevel: An AccessLevel resource name that allows protected resources
+      inside the ServicePerimeters to access outside the ServicePerimeter
+      boundaries. AccessLevels listed must be in the same policy as this
+      ServicePerimeter. Referencing a nonexistent AccessLevel will cause an
+      error. If an AccessLevel name is not specified, only resources within
+      the perimeter can be accessed through Google Cloud calls with request
+      origins within the perimeter. Example:
+      `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
+      specified for `access_level`, then all EgressSources will be allowed.
+    resource: A Google Cloud resource that is allowed to egress the perimeter.
+      Requests from these resources are allowed to access data outside the.
+      perimeter. Only projects and VPCs are allowed. Project format:
+      `projects/{project_number}`. VPC format: `//compute.googleapis.com/proje
+      cts/{PROJECT_ID}/global/networks/{NETWORK_NAME}`. The resource might be
+      in any Google Cloud organization, not just the organization that the
+      perimeter is defined in. `*` is not allowed, the case of allowing all
+      Google Cloud resources only is not supported.
+  """
+
+  accessLevel = _messages.StringField(1)
+  resource = _messages.StringField(2)
 
 
 class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressTo(_messages.Message):

@@ -437,9 +437,9 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
   r"""A Repository for storing artifacts with a specific format.
 
   Enums:
-    FormatValueValuesEnum: The format of packages that are stored in the
-      repository.
-    ModeValueValuesEnum: The mode of the repository.
+    FormatValueValuesEnum: Optional. The format of packages that are stored in
+      the repository.
+    ModeValueValuesEnum: Optional. The mode of the repository.
 
   Messages:
     LabelsValue: Labels with user-defined metadata. This field may contain up
@@ -450,7 +450,8 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
   Fields:
     createTime: Output only. The time when the repository was created.
     description: The user-provided description of the repository.
-    format: The format of packages that are stored in the repository.
+    format: Optional. The format of packages that are stored in the
+      repository.
     kmsKeyName: The Cloud KMS resource name of the customer managed encryption
       key that's used to encrypt the contents of the Repository. Has the form:
       `projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-
@@ -460,7 +461,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
       entries. Label keys and values may be no longer than 63 characters.
       Label keys must begin with a lowercase letter and may only contain
       lowercase letters, numeric characters, underscores, and dashes.
-    mode: The mode of the repository.
+    mode: Optional. The mode of the repository.
     name: The name of the repository, for example: "projects/p1/locations/us-
       central1/repositories/repo1".
     satisfiesPzs: Output only. If set, the repository satisfies physical zone
@@ -472,7 +473,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    r"""The format of packages that are stored in the repository.
+    r"""Optional. The format of packages that are stored in the repository.
 
     Values:
       FORMAT_UNSPECIFIED: Unspecified package format.
@@ -494,7 +495,7 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
     PYTHON = 7
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""The mode of the repository.
+    r"""Optional. The mode of the repository.
 
     Values:
       MODE_UNSPECIFIED: Unspecified mode.

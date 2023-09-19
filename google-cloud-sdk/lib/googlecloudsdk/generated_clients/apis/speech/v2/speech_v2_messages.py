@@ -14,6 +14,33 @@ from apitools.base.py import extra_types
 package = 'speech'
 
 
+class AccessMetadata(_messages.Message):
+  r"""The metadata related to access associated with the location for a given
+  region. This can occur if the org policy for the given project disallows a
+  particular region.
+
+  Enums:
+    ConstraintTypeValueValuesEnum: Describes the type of constraint that
+      occurred.
+
+  Fields:
+    constraintType: Describes the type of constraint that occurred.
+  """
+
+  class ConstraintTypeValueValuesEnum(_messages.Enum):
+    r"""Describes the type of constraint that occurred.
+
+    Values:
+      CONSTRAINT_TYPE_UNSPECIFIED: Unspecified constraint occurred.
+      RESOURCE_LOCATIONS_ORG_POLICY_CREATE_CONSTRAINT: The project's org
+        policy disallows the given region.
+    """
+    CONSTRAINT_TYPE_UNSPECIFIED = 0
+    RESOURCE_LOCATIONS_ORG_POLICY_CREATE_CONSTRAINT = 1
+
+  constraintType = _messages.EnumField('ConstraintTypeValueValuesEnum', 1)
+
+
 class AdaptationPhraseSet(_messages.Message):
   r"""A biasing PhraseSet, which can be either a string referencing the name
   of an existing PhraseSets resource, or an inline definition of a PhraseSet.
@@ -760,12 +787,15 @@ class LocationsMetadata(_messages.Message):
   the metadata about locales, models, and features
 
   Fields:
+    accessMetadata: Information about access metadata for the region and given
+      project.
     languages: Information about available locales, models, and features
       represented in the hierarchical structure of locales -> models ->
       features
   """
 
-  languages = _messages.MessageField('LanguageMetadata', 1)
+  accessMetadata = _messages.MessageField('AccessMetadata', 1)
+  languages = _messages.MessageField('LanguageMetadata', 2)
 
 
 class ModelFeature(_messages.Message):

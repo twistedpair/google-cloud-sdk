@@ -1480,6 +1480,8 @@ class Finding(_messages.Message):
       OBSERVATION: Describes a security observation that is for informational
         purposes.
       SCC_ERROR: Describes an error that prevents some SCC functionality.
+      POSTURE_VIOLATION: Describes a potential security risk due to a change
+        in the security posture.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -1487,6 +1489,7 @@ class Finding(_messages.Message):
     MISCONFIGURATION = 3
     OBSERVATION = 4
     SCC_ERROR = 5
+    POSTURE_VIOLATION = 6
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or

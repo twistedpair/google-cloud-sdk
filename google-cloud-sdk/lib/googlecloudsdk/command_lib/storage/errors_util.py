@@ -68,3 +68,8 @@ def raise_error_if_not_gcs(command_list, url):
   ):
     _raise_error_for_wrong_resource_type(command_list, 'Google Cloud Storage',
                                          'gs://bucket', url)
+
+
+def raise_error_if_not_gcs_bucket(command_list, url):
+  raise_error_if_not_gcs(command_list, url)
+  raise_error_if_not_bucket(command_list, url)

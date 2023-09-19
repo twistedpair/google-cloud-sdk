@@ -38,6 +38,13 @@ class Collections(enum.Enum):
       ['bucket'],
       True
   )
+  BUCKETS_OPERATIONS = (
+      'buckets.operations',
+      'b/{bucket}/operations/{operationId}',
+      {},
+      ['bucket', 'operationId'],
+      True
+  )
   DEFAULTOBJECTACCESSCONTROLS = (
       'defaultObjectAccessControls',
       'b/{bucket}/defaultObjectAcl/{entity}',

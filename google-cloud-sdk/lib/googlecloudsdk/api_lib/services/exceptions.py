@@ -136,6 +136,30 @@ class ListGroupMembersPermissionDeniedException(Error):
   pass
 
 
+class FetchValueInfoPermissionDeniedException(Error):
+  """Permission denied exception for fetch value info group members."""
+
+  pass
+
+
+class GetEffectiverPolicyPermissionDeniedException(Error):
+  """Permission denied exception for get effective policy."""
+
+  pass
+
+
+class FetchPublicValueInfoPermissionDeniedException(Error):
+  """Permission denied exception for fetch public value info group members."""
+
+  pass
+
+
+class CheckValuePermissionDeniedException(Error):
+  """Permission denied exception for check value."""
+
+  pass
+
+
 class OperationErrorException(Error):
   """Exception for operation error."""
   pass

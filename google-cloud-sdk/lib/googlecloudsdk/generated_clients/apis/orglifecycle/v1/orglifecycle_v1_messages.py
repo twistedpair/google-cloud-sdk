@@ -164,7 +164,7 @@ class ManagedOrganization(_messages.Message):
     name: Output only. The resource name of the managed organization. Format:
       organizations/{organization_id}/locations/{location}/managedOrganization
       s/{managed_organization_id}
-    organizationDisplayName: Required. The display name of the
+    organizationDisplayName: Required. Immutable. The display name of the
       cloudresourcemanager.googleapis.com/Organization created on behalf of
       the customer.
     organizationNumber: Output only. System generated ID for the

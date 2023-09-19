@@ -591,6 +591,32 @@ class CommitFunctionUpgradeRequest(_messages.Message):
   r"""Request for the `CommitFunctionUpgrade` method."""
 
 
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class EventFilter(_messages.Message):
   r"""Filters events based on exact matches on the CloudEvents attributes.
 
@@ -1843,6 +1869,8 @@ class Runtime(_messages.Message):
       GA, etc.
 
   Fields:
+    decommissionDate: Decommission date for the runtime.
+    deprecationDate: Deprecation date for the runtime.
     displayName: The user facing name, eg 'Go 1.13', 'Node.js 12', etc.
     environment: The environment for the runtime.
     name: The name of the runtime, e.g., 'go113', 'nodejs12', etc.
@@ -1882,11 +1910,13 @@ class Runtime(_messages.Message):
     DEPRECATED = 5
     DECOMMISSIONED = 6
 
-  displayName = _messages.StringField(1)
-  environment = _messages.EnumField('EnvironmentValueValuesEnum', 2)
-  name = _messages.StringField(3)
-  stage = _messages.EnumField('StageValueValuesEnum', 4)
-  warnings = _messages.StringField(5, repeated=True)
+  decommissionDate = _messages.MessageField('Date', 1)
+  deprecationDate = _messages.MessageField('Date', 2)
+  displayName = _messages.StringField(3)
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  stage = _messages.EnumField('StageValueValuesEnum', 6)
+  warnings = _messages.StringField(7, repeated=True)
 
 
 class SecretEnvVar(_messages.Message):

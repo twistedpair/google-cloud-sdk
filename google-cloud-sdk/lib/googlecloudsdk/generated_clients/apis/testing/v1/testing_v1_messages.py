@@ -455,6 +455,10 @@ class AppBundle(_messages.Message):
   bundleLocation = _messages.MessageField('FileReference', 1)
 
 
+class CancelDeviceSessionRequest(_messages.Message):
+  r"""The request object for cancelling a Device Session."""
+
+
 class CancelTestMatrixResponse(_messages.Message):
   r"""Response containing the current state of the specified test matrix.
 
@@ -623,6 +627,102 @@ class DeviceIpBlockCatalog(_messages.Message):
   ipBlocks = _messages.MessageField('DeviceIpBlock', 1, repeated=True)
 
 
+class DeviceSession(_messages.Message):
+  r"""Protobuf message describing the device message, used from several RPCs.
+
+  Enums:
+    StateValueValuesEnum: Output only. Current state of the DeviceSession.
+
+  Fields:
+    activeStartTime: Output only. The timestamp that the session first became
+      ACTIVE.
+    androidDevice: Required. The requested device
+    androidDeviceList: Optional. The list of requested devices. At most two
+      devices may be simultaneously requested.
+    createTime: Output only. The time that the Session was created.
+    displayName: Output only. The title of the DeviceSession to be presented
+      in the UI.
+    expireTime: Optional. If the device is still in use at this time, any
+      connections will be ended and the SessionState will transition from
+      ACTIVE to FINISHED.
+    inactivityTimeout: Output only. The interval of time that this device must
+      be interacted with before it transitions from ACTIVE to
+      TIMEOUT_INACTIVITY.
+    name: Optional. Name of the DeviceSession, e.g.
+      "projects/{project_id}/deviceSessions/{session_id}"
+    state: Output only. Current state of the DeviceSession.
+    stateHistories: Output only. The historical state transitions of the
+      session_state message including the current session state.
+    ttl: Optional. The amount of time that a device will be initially
+      allocated for. This can eventually be extended with the
+      ExtendDeviceSession RPC. Default: 30 minutes.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the DeviceSession.
+
+    Values:
+      SESSION_STATE_UNSPECIFIED: Default value. This value is unused.
+      REQUESTED: Initial state of a session request. The session is being
+        validated for correctness and a device is not yet requested.
+      PENDING: The session has been validated and is in the queue for a
+        device.
+      ACTIVE: The session has been granted and the device is accepting
+        connections.
+      EXPIRED: The session duration exceeded the device's reservation time
+        period and timed out automatically.
+      FINISHED: The user is finished with the session and it was canceled by
+        the user while the request was still getting allocated or after
+        allocation and during device usage period.
+      UNAVAILABLE: Unable to complete the session because the device was
+        unavailable and it failed to allocate through the scheduler. For
+        example, a device not in the catalog was requested or the request
+        expired in the allocation queue.
+      ERROR: Unable to complete the session for an internal reason, such as an
+        infrastructure failure.
+    """
+    SESSION_STATE_UNSPECIFIED = 0
+    REQUESTED = 1
+    PENDING = 2
+    ACTIVE = 3
+    EXPIRED = 4
+    FINISHED = 5
+    UNAVAILABLE = 6
+    ERROR = 7
+
+  activeStartTime = _messages.StringField(1)
+  androidDevice = _messages.MessageField('AndroidDevice', 2)
+  androidDeviceList = _messages.MessageField('AndroidDeviceList', 3)
+  createTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  expireTime = _messages.StringField(6)
+  inactivityTimeout = _messages.StringField(7)
+  name = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stateHistories = _messages.MessageField('SessionStateEvent', 10, repeated=True)
+  ttl = _messages.StringField(11)
+
+
+class DirectAccessVersionInfo(_messages.Message):
+  r"""Denotes whether Direct Access is supported, and by which client
+  versions. DirectAccessService is currently available as a preview to select
+  developers. You can register today on behalf of you and your team at
+  https://developer.android.com/studio/preview/android-device-streaming
+
+  Fields:
+    directAccessSupported: Whether direct access is supported at all. Clients
+      are expected to filter down the device list to only android models and
+      versions which support Direct Access when that is the user intent.
+    minimumAndroidStudioVersion: Output only. Indicates client-device
+      compatibility, where a device is known to work only with certain
+      workarounds implemented in the Android Studio client. Expected format
+      "major.minor.micro.patch", e.g. "5921.22.2211.8881706".
+  """
+
+  directAccessSupported = _messages.BooleanField(1)
+  minimumAndroidStudioVersion = _messages.StringField(2)
+
+
 class Distribution(_messages.Message):
   r"""Data about the relative number of devices running a given configuration
   of the Android platform.
@@ -635,6 +735,15 @@ class Distribution(_messages.Message):
 
   marketShare = _messages.FloatField(1)
   measurementTime = _messages.StringField(2)
+
+
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
 
 
 class Environment(_messages.Message):
@@ -983,6 +1092,20 @@ class LauncherActivityIntent(_messages.Message):
   r"""Specifies an intent that starts the main launcher activity."""
 
 
+class ListDeviceSessionsResponse(_messages.Message):
+  r"""A list of device sessions.
+
+  Fields:
+    deviceSessions: The sessions matching the specified filter in the given
+      cloud project.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  deviceSessions = _messages.MessageField('DeviceSession', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class Locale(_messages.Message):
   r"""A location/region designation for language.
 
@@ -1096,6 +1219,8 @@ class PerAndroidVersionInfo(_messages.Message):
 
   Fields:
     deviceCapacity: The number of online devices for an Android version.
+    directAccessVersionInfo: Output only. Identifies supported clients for
+      DirectAccess for this Android version.
     versionId: An Android version.
   """
 
@@ -1136,7 +1261,8 @@ class PerAndroidVersionInfo(_messages.Message):
     DEVICE_CAPACITY_NONE = 4
 
   deviceCapacity = _messages.EnumField('DeviceCapacityValueValuesEnum', 1)
-  versionId = _messages.StringField(2)
+  directAccessVersionInfo = _messages.MessageField('DirectAccessVersionInfo', 2)
+  versionId = _messages.StringField(3)
 
 
 class PerIosVersionInfo(_messages.Message):
@@ -1322,6 +1448,58 @@ class Service(_messages.Message):
 
   intentFilter = _messages.MessageField('IntentFilter', 1, repeated=True)
   name = _messages.StringField(2)
+
+
+class SessionStateEvent(_messages.Message):
+  r"""A message encapsulating a series of Session states and the time that the
+  DeviceSession first entered those states.
+
+  Enums:
+    SessionStateValueValuesEnum: Output only. The session_state tracked by
+      this event
+
+  Fields:
+    eventTime: Output only. The time that the session_state first encountered
+      that state.
+    sessionState: Output only. The session_state tracked by this event
+    stateMessage: Output only. A human-readable message to explain the state.
+  """
+
+  class SessionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The session_state tracked by this event
+
+    Values:
+      SESSION_STATE_UNSPECIFIED: Default value. This value is unused.
+      REQUESTED: Initial state of a session request. The session is being
+        validated for correctness and a device is not yet requested.
+      PENDING: The session has been validated and is in the queue for a
+        device.
+      ACTIVE: The session has been granted and the device is accepting
+        connections.
+      EXPIRED: The session duration exceeded the device's reservation time
+        period and timed out automatically.
+      FINISHED: The user is finished with the session and it was canceled by
+        the user while the request was still getting allocated or after
+        allocation and during device usage period.
+      UNAVAILABLE: Unable to complete the session because the device was
+        unavailable and it failed to allocate through the scheduler. For
+        example, a device not in the catalog was requested or the request
+        expired in the allocation queue.
+      ERROR: Unable to complete the session for an internal reason, such as an
+        infrastructure failure.
+    """
+    SESSION_STATE_UNSPECIFIED = 0
+    REQUESTED = 1
+    PENDING = 2
+    ACTIVE = 3
+    EXPIRED = 4
+    FINISHED = 5
+    UNAVAILABLE = 6
+    ERROR = 7
+
+  eventTime = _messages.StringField(1)
+  sessionState = _messages.EnumField('SessionStateValueValuesEnum', 2)
+  stateMessage = _messages.StringField(3)
 
 
 class Shard(_messages.Message):
@@ -1856,7 +2034,8 @@ class TestSetup(_messages.Message):
     account: The device will be logged in on this account for the duration of
       the test.
     additionalApks: APKs to install in addition to those being directly
-      tested. Currently capped at 100.
+      tested. These will be installed after the app under test. Currently
+      capped at 100.
     directoriesToPull: List of directories on the device to upload to GCS at
       the end of the test; they must be absolute paths under /sdcard, /storage
       or /data/local/tmp. Path names are restricted to characters a-z A-Z 0-9
@@ -1934,6 +2113,77 @@ class TestTargetsForShard(_messages.Message):
   """
 
   testTargets = _messages.StringField(1, repeated=True)
+
+
+class TestingProjectsDeviceSessionsCancelRequest(_messages.Message):
+  r"""A TestingProjectsDeviceSessionsCancelRequest object.
+
+  Fields:
+    cancelDeviceSessionRequest: A CancelDeviceSessionRequest resource to be
+      passed as the request body.
+    name: Required. Name of the DeviceSession, e.g.
+      "projects/{project_id}/deviceSessions/{session_id}"
+  """
+
+  cancelDeviceSessionRequest = _messages.MessageField('CancelDeviceSessionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class TestingProjectsDeviceSessionsCreateRequest(_messages.Message):
+  r"""A TestingProjectsDeviceSessionsCreateRequest object.
+
+  Fields:
+    deviceSession: A DeviceSession resource to be passed as the request body.
+    parent: Required. The Compute Engine project under which this device will
+      be allocated. "projects/{project_id}"
+  """
+
+  deviceSession = _messages.MessageField('DeviceSession', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class TestingProjectsDeviceSessionsGetRequest(_messages.Message):
+  r"""A TestingProjectsDeviceSessionsGetRequest object.
+
+  Fields:
+    name: Required. Name of the DeviceSession, e.g.
+      "projects/{project_id}/deviceSessions/{session_id}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TestingProjectsDeviceSessionsListRequest(_messages.Message):
+  r"""A TestingProjectsDeviceSessionsListRequest object.
+
+  Fields:
+    filter: Optional. If specified, responses will be filtered by the given
+      filter. Allowed fields are: session_state.
+    pageSize: Optional. The maximum number of DeviceSessions to return.
+    pageToken: Optional. A continuation token for paging.
+    parent: Required. The name of the parent to request, e.g.
+      "projects/{project_id}"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class TestingProjectsDeviceSessionsPatchRequest(_messages.Message):
+  r"""A TestingProjectsDeviceSessionsPatchRequest object.
+
+  Fields:
+    deviceSession: A DeviceSession resource to be passed as the request body.
+    name: Optional. Name of the DeviceSession, e.g.
+      "projects/{project_id}/deviceSessions/{session_id}"
+    updateMask: Required. The list of fields to update.
+  """
+
+  deviceSession = _messages.MessageField('DeviceSession', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class TestingProjectsTestMatricesCancelRequest(_messages.Message):

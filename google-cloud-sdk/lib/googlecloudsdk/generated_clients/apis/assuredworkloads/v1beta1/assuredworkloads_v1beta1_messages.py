@@ -59,11 +59,6 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(
       "projects/{PROJECT_NUMBER}" or "projects/{PROJECT_ID}" For example:
       "projects/951040570662" when specifying a project number, or
       "projects/my-project-123" when specifying a project ID.
-    source: The source type is a project-based workload. Specify the
-      workloads's relative resource name, formatted as: "organizations/{ORGANI
-      ZATION_ID}/locations/{LOCATION_ID}/workloads/{WORKLOAD_ID}" For example:
-      "organizations/123/locations/us-east1/workloads/assured-workload-1".
-      This option is no longer supported.
     target: Required. The resource ID of the folder-based destination
       workload. This workload is where the source resource will hypothetically
       be moved to. Specify the workload's relative resource name, formatted
@@ -76,8 +71,7 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   project = _messages.StringField(4)
-  source = _messages.StringField(5)
-  target = _messages.StringField(6, required=True)
+  target = _messages.StringField(5, required=True)
 
 
 class AssuredworkloadsOrganizationsLocationsWorkloadsCreateRequest(_messages.Message):
@@ -297,15 +291,11 @@ class GoogleCloudAssuredworkloadsV1beta1AnalyzeWorkloadMoveResponse(_messages.Me
 
   Fields:
     assetMoveAnalyses: List of analysis results for each asset in scope.
-    blockers: A list of blockers that should be addressed before moving the
-      source project or project-based workload to the destination folder-based
-      workload. This field is now deprecated and will not be populated.
     nextPageToken: The next page token. Is empty if the last page is reached.
   """
 
   assetMoveAnalyses = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1AssetMoveAnalysis', 1, repeated=True)
-  blockers = _messages.StringField(2, repeated=True)
-  nextPageToken = _messages.StringField(3)
+  nextPageToken = _messages.StringField(2)
 
 
 class GoogleCloudAssuredworkloadsV1beta1AssetMoveAnalysis(_messages.Message):

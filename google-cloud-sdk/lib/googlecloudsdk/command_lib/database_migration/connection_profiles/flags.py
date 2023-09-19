@@ -93,7 +93,7 @@ def AddPortFlag(parser, required=False):
 
 
 def AddSslConfigGroup(parser, release_track):
-  """Adds --password and --prompt-for-password flags to the given parser."""
+  """Adds ssl server only & server client config group to the given parser."""
   ssl_config = parser.add_group()
   AddCaCertificateFlag(ssl_config, True)
   client_cert = ssl_config.add_group()
@@ -104,11 +104,17 @@ def AddSslConfigGroup(parser, release_track):
     AddClientCertificateFlag(client_cert, required=True)
 
 
+def AddSslServerOnlyConfigGroup(parser):
+  """Adds ssl server only config group to the given parser."""
+  ssl_config = parser.add_group()
+  AddCaCertificateFlag(ssl_config, True)
+
+
 def AddCaCertificateFlag(parser, required=False):
   """Adds --ca-certificate flag to the given parser."""
   help_text = """\
     x509 PEM-encoded certificate of the CA that signed the database
-    server's certificate. The replica will use this certificate to verify
+    server's certificate. Database Migration Service will use this certificate to verify
     it's connecting to the correct host. Database Migration Service encrypts the
     value when storing it.
   """

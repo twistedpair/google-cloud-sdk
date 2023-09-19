@@ -55,7 +55,7 @@ class CloudVpn(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""A Google Distributed Cloud Edge Kubernetes cluster. Next: 24
+  r"""A Google Distributed Cloud Edge Kubernetes cluster. Next: 25
 
   Enums:
     ReleaseChannelValueValuesEnum: Optional. The release channel a cluster is
@@ -97,6 +97,9 @@ class Cluster(_messages.Message):
     port: Output only. The port number of the Kubernetes API server.
     releaseChannel: Optional. The release channel a cluster is subscribed to.
     status: Output only. The current status of the cluster.
+    survivabilityConfig: Optional. Configuration of the cluster survivability,
+      e.g., for the case when network connectivity is lost. Note: This only
+      applies to local control plane clusters.
     systemAddonsConfig: Optional. The configuration of the system add-ons.
     targetVersion: Optional. The target cluster version. For example: "1.5.0".
     updateTime: Output only. The time when the cluster was last updated.
@@ -178,9 +181,10 @@ class Cluster(_messages.Message):
   port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
   releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 18)
   status = _messages.EnumField('StatusValueValuesEnum', 19)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 20)
-  targetVersion = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  survivabilityConfig = _messages.MessageField('SurvivabilityConfig', 20)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 21)
+  targetVersion = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class ClusterNetworking(_messages.Message):
@@ -374,6 +378,17 @@ class EdgecontainerProjectsLocationsClustersDeleteRequest(_messages.Message):
 
 class EdgecontainerProjectsLocationsClustersGenerateAccessTokenRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsClustersGenerateAccessTokenRequest
+  object.
+
+  Fields:
+    cluster: Required. The resource name of the cluster.
+  """
+
+  cluster = _messages.StringField(1, required=True)
+
+
+class EdgecontainerProjectsLocationsClustersGenerateOfflineCredentialRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsClustersGenerateOfflineCredentialRequest
   object.
 
   Fields:
@@ -751,6 +766,24 @@ class GenerateAccessTokenResponse(_messages.Message):
 
   accessToken = _messages.StringField(1)
   expireTime = _messages.StringField(2)
+
+
+class GenerateOfflineCredentialResponse(_messages.Message):
+  r"""An offline credential for a cluster.
+
+  Fields:
+    clientCertificate: Output only. Client certificate to authenticate to k8s
+      api-server.
+    clientKey: Output only. Client private key to authenticate to k8s api-
+      server.
+    expireTime: Output only. Timestamp at which this credential will expire.
+    userId: Output only. Client's identity.
+  """
+
+  clientCertificate = _messages.StringField(1)
+  clientKey = _messages.StringField(2)
+  expireTime = _messages.StringField(3)
+  userId = _messages.StringField(4)
 
 
 class Ingress(_messages.Message):
@@ -1658,6 +1691,19 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class SurvivabilityConfig(_messages.Message):
+  r"""Configuration of the cluster survivability, e.g., for the case when
+  network connectivity is lost.
+
+  Fields:
+    offlineRebootTtl: Optional. Time period that allows the cluster nodes to
+      be rebooted and become functional without network connectivity to
+      Google. The default 0 means not allowed. The maximum is 7 days.
+  """
+
+  offlineRebootTtl = _messages.StringField(1)
 
 
 class SystemAddonsConfig(_messages.Message):

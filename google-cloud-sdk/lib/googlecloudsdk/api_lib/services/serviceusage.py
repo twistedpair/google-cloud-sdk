@@ -18,8 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import copy
 import enum
+import sys
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -39,11 +41,12 @@ _PROJECT_SERVICE_RESOURCE = 'projects/%s/services/%s'
 _FOLDER_SERVICE_RESOURCE = 'folders/%s/services/%s'
 _ORG_SERVICE_RESOURCE = 'organizations/%s/services/%s'
 _SERVICE_RESOURCE = 'services/%s'
-# TODO(b/274633761) Switch to '/groups/dependencies' after b/292271220 is done.
-_DEPENDENCY_GROUP = '/groups/suv1-dependencies'
+_DEPENDENCY_GROUP = '/groups/dependencies'
 _REVERSE_CLOSURE = '/reverseClosure'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
 _CONSUMER_POLICY_DEFAULT = '/consumerPolicies/default'
+_EFFECTIVE_POLICY = '/effectivePolicy'
+_GOOGLE_GROUP_RESOURCE = 'groups/googleServices'
 _LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
 _VALID_CONSUMER_PREFIX = frozenset({'projects/', 'folders/', 'organizations/'})
 _V1_VERSION = 'v1'
@@ -86,7 +89,7 @@ def GetConsumerPolicy(policy_name):
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    The consumer Policy
+    The consumer policy
   """
   client = _GetClientInstance('v2')
   messages = client.MESSAGES_MODULE
@@ -101,6 +104,142 @@ def GetConsumerPolicy(policy_name):
   ) as e:
     exceptions.ReraiseError(
         e, exceptions.GetConsumerPolicyPermissionDeniedException
+    )
+
+
+def CheckValue(name, service):
+  """Make API call to check value.
+
+  Args:
+    name: Parent resource to check the value against hierarchically.
+      format-"projects/100", "folders/101" or "organizations/102".
+    service: Service name to check if the targeted resource can use this
+      service. Current supported value: SERVICE (format: "services/{service}").
+
+  Raises:
+    exceptions.CheckValuePermissionDeniedException: when checking value for a
+      service and resource.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Checked Value.
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageCheckValueRequest(
+      name=name,
+      checkValueRequest=messages.CheckValueRequest(checkedValue=service),
+  )
+
+  try:
+    return client.v2.CheckValue(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(e, exceptions.CheckValuePermissionDeniedException)
+
+
+def GetEffectivePolicy(name):
+  """Make API call to get a effective policy.
+
+  Args:
+    name: The name of the effective policy.Currently supported format
+      '{resource_type}/{resource_name}/effectivePolicy'. For example,
+      'projects/100/effectivePolicy'.
+
+  Raises:
+    exceptions.GetEffectiverPolicyPermissionDeniedException: when getting a
+      effective policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The Effective Policy
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageGetEffectivePolicyRequest(name=name)
+
+  try:
+    return client.v2.GetEffectivePolicy(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GetEffectiverPolicyPermissionDeniedException
+    )
+
+
+def FetchValueInfo(resource, values):
+  """Make API call to fetch value info for the services.
+
+  Args:
+    resource: The target resource.
+    values: The name of the value to get metadata. A single request can get a
+      maximum of 20 services at a time. If more than 20 services are specified,
+      the request will fail.
+
+  Raises:
+    exceptions.FetchValueInfoPermissionDeniedException: when
+      fetching  value info fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Value Info for the specificed values.
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageFetchValueInfoRequest(
+      fetchValueInfoRequest=messages.FetchValueInfoRequest(values=values),
+      name=resource,
+  )
+
+  try:
+    return client.v2.FetchValueInfo(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.FetchValueInfoPermissionDeniedException
+    )
+
+
+def FetchPublicValueInfo(values):
+  """Make API call to fetch public value info for the services.
+
+  Args:
+    values: The name of the value to get metadata. A single request can get a
+      maximum of 20 services at a time. If more than 20 services are specified,
+      the request will fail.
+
+  Raises:
+    exceptions.FetchPublicValueInfoPermissionDeniedException: when
+      fetching public value info fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+   Public Value Info for the specificed values.
+  """
+  client = _GetClientInstance('v2')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.FetchPublicValueInfoRequest(
+      values=values,
+  )
+
+  try:
+    return client.publicValueInfo.Fetch(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.FetchPublicValueInfoPermissionDeniedException
     )
 
 
@@ -186,7 +325,7 @@ def ListFlattenedMembers(resource, service_group):
     resource: The target resource.
     service_group: Service group which owns this collection of flattened
       members, for example,
-      'services/compute.googleapis.com/groups/suv1-dependencies'.
+      'services/compute.googleapis.com/groups/dependencies'.
 
   Raises:
     exceptions.ListFlattenedMembersPermissionDeniedException: when listing
@@ -214,13 +353,15 @@ def ListFlattenedMembers(resource, service_group):
     )
 
 
-def ListGroupMembers(resource, service_group):
+def ListGroupMembers(resource, service_group, page_size=50, limit=sys.maxsize):
   """Make API call to list group members of a specific service group.
 
   Args:
     resource: The target resource.
     service_group: Service group which owns a collection of group members, for
-      example, 'services/compute.googleapis.com/groups/suv1-dependencies'.
+      example, 'services/compute.googleapis.com/groups/dependencies'.
+    page_size: The page size to list.default=50
+    limit: The max number of services to display.
 
   Raises:
     exceptions.ListGroupMembersPermissionDeniedException: when listing
@@ -238,7 +379,14 @@ def ListGroupMembers(resource, service_group):
   )
 
   try:
-    return client.services_groups_members.List(request)
+    return list_pager.YieldFromList(
+        _Lister(client.services_groups_members),
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='groupMembers',
+    )
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
@@ -598,6 +746,89 @@ class _Lister:
   @http_retry.RetryOnHttpStatus(_TOO_MANY_REQUESTS)
   def List(self, request, global_params=None):
     return self.service_usage.List(request, global_params=global_params)
+
+
+def ListServicesV2(
+    project,
+    enabled,
+    page_size,
+    limit=sys.maxsize,
+    folder=None,
+    organization=None,
+):
+  """Make API call to list services.
+
+  Args:
+    project: The project for which to list services.
+    enabled: List only enabled services.
+    page_size: The page size to list.
+    limit: The max number of services to display.
+    folder: The folder for which to list services.
+    organization: The organization for which to list services.
+
+  Raises:
+    exceptions.ListServicesPermissionDeniedException: when listing services
+    fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The list of services
+  """
+  resource_name = _PROJECT_RESOURCE % project
+  if folder:
+    resource_name = _FOLDER_RESOURCE % folder
+
+  if organization:
+    resource_name = _ORGANIZATION_RESOURCE % organization
+
+  services = {}
+  try:
+    if enabled:
+      policy_name = resource_name + _EFFECTIVE_POLICY
+      consumerpolicy = GetEffectivePolicy(policy_name).consumerPolicy
+
+      for rules in consumerpolicy.enableRules:
+        for value in rules.values:
+          if limit == 0:
+            break
+          services[value] = ''
+          limit -= 1
+
+      service_list = list(services.keys())
+      for value in range(0, len(service_list), 20):
+        response = FetchValueInfo(
+            resource_name, values=service_list[value : value + 20]
+        )
+        for value_info in response.valueInfos:
+          services[value_info.serviceValue.name] = value_info.title
+
+    else:
+      for members_info in ListGroupMembers(
+          resource_name, _GOOGLE_GROUP_RESOURCE, page_size, limit
+      ):
+        services[members_info.name] = ''
+
+      service_list = list(services.keys())
+      # TODO(b/274633761)Switch to FetchValueInfo once the IAM permission manual
+      # check issue is fixed and test it.
+      for value in range(0, len(service_list), 20):
+        response = FetchPublicValueInfo(values=service_list[value : value + 20])
+        for value_info in response.valueInfos:
+          services[value_info.serviceValue.name] = value_info.title
+
+    result = []
+    service_info = collections.namedtuple('ServiceList', ['name', 'title'])
+    for service in service_list:
+      result.append(service_info(name=service, title=services[service]))
+
+    return result
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.EnableServicePermissionDeniedException
+    )
 
 
 def ListServices(project, enabled, page_size, limit):

@@ -93,7 +93,7 @@ CLOUDSDK_ROOT_DIR=$(_cloudsdk_root_dir "$0")
 
 setup_cloudsdk_python() {
   # if $CLOUDSDK_PYTHON is not set, look for bundled python else
-  # prefer python3 over python2
+  # prefer python3 over python
   if [ -z "$CLOUDSDK_PYTHON" ]; then
     # Is bundled python present and working?
     ARCH=$(uname -m 2>/dev/null)
@@ -117,7 +117,7 @@ setup_cloudsdk_python() {
           . "$GLOBAL_CONFIG/virtenv/bin/activate"
         fi
       fi
-      CLOUDSDK_PYTHON=$(order_python python3 python2 python2.7 python)
+      CLOUDSDK_PYTHON=$(order_python python3 python)
     fi
   fi
 }

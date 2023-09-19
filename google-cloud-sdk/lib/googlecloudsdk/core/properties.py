@@ -3442,7 +3442,6 @@ class _SectionStorage(_Section):
             '/gcloud/tmp/parallel_composite_uploads/'
             'see_gcloud_storage_cp_help_for_details/'
         ),
-        hidden=True,
         help_text=(
             'The prefix used when naming temporary components created by'
             ' composite uploads. If the prefix begins with a `/`, the temporary'
@@ -3454,8 +3453,10 @@ class _SectionStorage(_Section):
             ' `/prefix` means temporary components use names like'
             ' `gs://bucket/prefix/COMPONENT_NAME`. Using a prefix of `prefix`'
             ' means temporary components use names like'
-            ' `gs://bucket/dir1/dir2/prefix/COMPONENT_NAME`. If this property'
-            ' is not specified, gcloud storage uses the prefix'
+            ' `gs://bucket/dir1/dir2/prefix/COMPONENT_NAME`. Note that this can'
+            ' complicate cleaning up temporary components, as they will not all'
+            ' share a common prefix. If this property is not specified, gcloud'
+            ' storage uses the prefix'
             ' `/gcloud/tmp/parallel_composite_uploads/see_gcloud_storage_cp_help_for_details/`.'
             ' If a chosen prefix results in temporary component names longer'
             ' than the maximum length Cloud Storage allows, gcloud storage'

@@ -1006,7 +1006,7 @@ class GoogleCloudGkemulticloudV1AttachedCluster(_messages.Message):
     description: Optional. A human readable description of this cluster.
       Cannot be longer than 255 UTF-8 encoded bytes.
     distribution: Required. The Kubernetes distribution of the underlying
-      attached cluster. Supported values: ["eks", "aks"].
+      attached cluster. Supported values: ["eks", "aks", "generic"].
     errors: Output only. A set of errors found in the cluster.
     etag: Allows clients to perform consistent read-modify-writes through
       optimistic concurrency control. Can be sent on update and delete

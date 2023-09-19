@@ -178,6 +178,12 @@ def _ParseConnectorEnforcement(sql_messages, connector_enforcement):
   )
 
 
+def _ParseSslMode(sql_messages, ssl_mode):
+  return sql_messages.IpConfiguration.SslModeValueValuesEnum.lookup_by_name(
+      ssl_mode.upper()
+  )
+
+
 # TODO(b/122660263): Remove when V1 instances are no longer supported.
 def ShowV1DeprecationWarning(plural=False):
   message = (
@@ -406,6 +412,13 @@ class _BaseInstances(object):
       if args.replication_lag_max_seconds_for_recreate is not None:
         settings.replicationLagMaxSeconds = (
             args.replication_lag_max_seconds_for_recreate
+        )
+
+      if args.IsSpecified('ssl_mode'):
+        if not settings.ipConfiguration:
+          settings.ipConfiguration = sql_messages.IpConfiguration()
+        settings.ipConfiguration.sslMode = _ParseSslMode(
+            sql_messages, args.ssl_mode
         )
     return settings
 

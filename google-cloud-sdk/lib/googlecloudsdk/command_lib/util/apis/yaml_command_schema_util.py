@@ -24,6 +24,7 @@ from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import arg_parsers_usage_text as usage_text
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import module_util
 
 import six
@@ -315,41 +316,7 @@ def _ParseFieldsIntoMessage(field_dict, message, field_specs):
   return message_instance
 
 
-class _ArgTypeProcessor(usage_text.ArgTypeUsage):
-  """Base class for processing arg_type output but maintaining usage help text.
-
-  Attributes:
-    arg_type: type function used to parse input string into correct type
-      ie ArgObject(value_type=int, repeating=true), int, bool, etc
-  """
-
-  def __init__(self, arg_type):
-    self.arg_type = arg_type
-
-  def GetUsageMetavar(self, *args, **kwargs):
-    """Forwards default usage metavar for arg_type."""
-    if isinstance(self.arg_type, usage_text.ArgTypeUsage):
-      return self.arg_type.GetUsageMetavar(*args, **kwargs)
-    return None
-
-  def GetUsageExample(self, *args, **kwargs):
-    """Forwards default usage example for arg_type."""
-    if isinstance(self.arg_type, usage_text.ArgTypeUsage):
-      return self.arg_type.GetUsageExample(*args, **kwargs)
-    return None
-
-  def GetUsageHelpText(self, *args, **kwargs):
-    """Forwards default help text for arg_type."""
-    if isinstance(self.arg_type, usage_text.ArgTypeUsage):
-      return self.arg_type.GetUsageHelpText(*args, **kwargs)
-    return None
-
-  def __call__(self, arg_value):
-    """Converts arg_value into type arg_type."""
-    return self.arg_type(arg_value)
-
-
-class _FieldType(_ArgTypeProcessor):
+class _FieldType(usage_text.DefaultArgTypeWrapper):
   """Type that converts string into apitools field instance.
 
   Attributes:
@@ -369,7 +336,7 @@ class _FieldType(_ArgTypeProcessor):
         choices=self.field_spec.ChoiceMap())
 
 
-class _MessageFieldType(_ArgTypeProcessor):
+class _MessageFieldType(usage_text.DefaultArgTypeWrapper):
   """Type that converts string input into apitools message.
 
   Attributes:
@@ -394,7 +361,7 @@ class _MessageFieldType(_ArgTypeProcessor):
         parsed_arg_value, self.message_cls, self.field_specs)
 
 
-class _MapFieldType(_ArgTypeProcessor):
+class _MapFieldType(usage_text.DefaultArgTypeWrapper):
   """Type converts string into list of apitools message instances for map field.
 
   Type function returns a list of apitools messages with key, value fields ie
@@ -432,7 +399,7 @@ class _MapFieldType(_ArgTypeProcessor):
     return messages
 
 
-class _AdditionalPropsType(_ArgTypeProcessor):
+class _AdditionalPropsType(usage_text.DefaultArgTypeWrapper):
   """Type converts string into apitools additional props field instance.
 
   Attributes:
@@ -465,7 +432,7 @@ def _GetSimpleFieldType(message, field_spec):
     InvalidSchemaError: if the field type is not listed in arg_utils.TYPES
   """
   f = arg_utils.GetFieldFromMessage(message, field_spec.api_field)
-  t = field_spec.type or arg_utils.TYPES.get(f.variant)
+  t = field_spec.field_type or arg_utils.TYPES.get(f.variant)
 
   if not t:
     raise InvalidSchemaError('Unknown type for field: ' + field_spec.api_field)
@@ -481,6 +448,10 @@ class ArgObject(arg_utils.ArgObjectType):
     """Creates ArgObject from yaml data."""
     # TODO(b/278780718) parse spec data that can be specifed by the user
     return cls()
+
+  def __init__(self, arg_type=None, help_text=None):
+    self.arg_type = arg_type
+    self.help_text = help_text
 
   def Action(self, field):
     """Returns the correct argument action.
@@ -506,8 +477,9 @@ class ArgObject(arg_utils.ArgObjectType):
       type function or apitools class for the message field
     """
     f = arg_utils.GetFieldFromMessage(message, field_spec.api_field)
-    t = ArgObject().GenerateType(f, is_root=False)
-    return t
+    arg_obj = ArgObject(
+        arg_type=field_spec.field_type, help_text=field_spec.help_text)
+    return arg_obj.GenerateType(f, is_root=False)
 
   def _GenerateMapType(self, field, is_root=True):
     """Returns function that parses apitools map fields from string.
@@ -535,16 +507,32 @@ class ArgObject(arg_utils.ArgObjectType):
           ))
 
     # TODO(b/278780718) allow spec data to specify the key, value fields
+
+    # Add some default validation and help text for labels fields
+    if field.name == 'labels':
+      key_type = labels_util.KEY_FORMAT_VALIDATOR
+      key_help = labels_util.KEY_FORMAT_HELP
+      value_type = labels_util.VALUE_FORMAT_VALIDATOR
+      value_help = labels_util.VALUE_FORMAT_HELP
+    else:
+      key_type, key_help = None, None
+      value_type, value_help = None, None
+
     key_spec = SpecField.FromField(
-        arg_utils.GetFieldFromMessage(additional_props_field.type, 'key'))
+        arg_utils.GetFieldFromMessage(additional_props_field.type, 'key'),
+        field_type=key_type, help_text=key_help)
     value_spec = SpecField.FromField(
-        arg_utils.GetFieldFromMessage(additional_props_field.type, 'value'))
+        arg_utils.GetFieldFromMessage(additional_props_field.type, 'value'),
+        field_type=value_type, help_text=value_help)
 
     key_type = self._GetFieldType(additional_props_field.type, key_spec)
     value_type = self._GetFieldType(additional_props_field.type, value_spec)
 
     arg_obj = arg_parsers.ArgObject(
-        key_type=key_type, value_type=value_type, enable_shorthand=is_root)
+        key_type=key_type,
+        value_type=value_type,
+        help_text=self.help_text,
+        enable_shorthand=is_root)
     map_type = _MapFieldType(
         arg_obj, additional_props_field.type, key_spec, value_spec)
 
@@ -574,7 +562,9 @@ class ArgObject(arg_utils.ArgObjectType):
 
     spec = {f.arg_name: self._GetFieldType(field.type, f) for f in field_specs}
     required = [f.arg_name for f in field_specs if f.required]
-    arg_obj = arg_parsers.ArgObject(spec=spec, required_keys=required,
+    arg_obj = arg_parsers.ArgObject(spec=spec,
+                                    help_text=self.help_text,
+                                    required_keys=required,
                                     repeated=field.repeated,
                                     enable_shorthand=is_root)
 
@@ -590,12 +580,15 @@ class ArgObject(arg_utils.ArgObjectType):
       type function that takes string like '1' or ['1'] and parses it
         into 1 or [1] depending on the apitools field type
     """
-    field_type = arg_utils.TYPES.get(field.variant)
     # TODO(b/278780718) allow spec data to specify the field type
-    field_spec = SpecField.FromField(field)
-    arg_obj = arg_parsers.ArgObject(value_type=field_type,
-                                    repeated=field_spec.repeated,
-                                    enable_shorthand=False)
+    field_spec = SpecField.FromField(
+        field, help_text=self.help_text, field_type=self.arg_type)
+    arg_obj = arg_parsers.ArgObject(
+        value_type=field_spec.field_type,
+        help_text=field_spec.help_text,
+        repeated=field_spec.repeated,
+        enable_shorthand=False
+    )
     return _FieldType(arg_obj, field, field_spec)
 
   def GenerateType(self, field, is_root=True):
@@ -718,41 +711,49 @@ class SpecField(object):
     api_field: The name of the field under the repeated message that the value
       should be put.
     arg_name: The name of the key in the dict.
-    type: The argparse type of the value of this field.
+    field_type: The argparse type of the value of this field.
     repeated: Whether the field is a repeated field
     required: True if the key is required.
     choices: A static map of choice to value the user types.
+    help_text: Help text associated with the field
   """
 
   @classmethod
   def FromData(cls, data):
     api_field = data['api_field']
-    arg_name = data.get('arg_name', api_field)
-    t = ParseType(data.get('type'))
-    repeated = data.get('repeated', False)
-    required = data.get('required', True)
-    choices = data.get('choices')
-    choices = [Choice(d) for d in choices] if choices else None
-    return cls(api_field, arg_name, t, repeated, required, choices)
+    data_choices = data.get('choices')
+    choices = [Choice(d) for d in data_choices] if data_choices else None
+    return cls(
+        api_field=api_field,
+        arg_name=data.get('arg_name', api_field),
+        field_type=ParseType(data.get('type')),
+        repeated=data.get('repeated', False),
+        required=data.get('required', True),
+        choices=choices,
+        help_text=None
+    )
 
   @classmethod
-  def FromField(cls, field):
+  def FromField(cls, field, field_type=None, help_text=None):
     return cls(
         api_field=field.name,
         arg_name=field.name,
-        t=None,
+        field_type=field_type or arg_utils.TYPES.get(field.variant),
         required=field.required,
         repeated=field.repeated,
         choices=None,
+        help_text=help_text,
     )
 
-  def __init__(self, api_field, arg_name, t, repeated, required, choices):
+  def __init__(self, api_field, arg_name, field_type, repeated, required,
+               choices, help_text):
     self.api_field = api_field
     self.arg_name = arg_name
-    self.type = t
+    self.field_type = field_type
     self.repeated = repeated
     self.required = required
     self.choices = choices
+    self.help_text = help_text
 
   def ChoiceMap(self):
     return Choice.ToChoiceMap(self.choices)

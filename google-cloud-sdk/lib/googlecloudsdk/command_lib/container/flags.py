@@ -1567,7 +1567,8 @@ See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
       '--local-nvme-ssd-block',
       help=help_text,
       hidden=hidden,
-      type=arg_parsers.ArgDict(spec={'count': int}, required_keys=['count']),
+      nargs='?',
+      type=arg_parsers.ArgDict(spec={'count': int}),
   )
 
 
@@ -1597,8 +1598,9 @@ See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
       '--ephemeral-storage',
       help=help_text,
       hidden=hidden,
+      nargs='?',
       type=arg_parsers.ArgDict(
-          spec={'local-ssd-count': int}, required_keys=['local-ssd-count']
+          spec={'local-ssd-count': int}
       ),
   )
 
@@ -1629,7 +1631,8 @@ See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
       '--ephemeral-storage-local-ssd',
       help=help_text,
       hidden=hidden,
-      type=arg_parsers.ArgDict(spec={'count': int}, required_keys=['count']),
+      nargs='?',
+      type=arg_parsers.ArgDict(spec={'count': int}),
   )
 
 
@@ -2053,8 +2056,8 @@ def AddResourceManagerTagsCreate(parser, for_node_pool=False):
   """Adds a --resource-manager-tags to the given parser on create."""
   if for_node_pool:
     help_text = """\
-Applies the given resource manager tags with GCE_FIREWALL purpose
-(comma separated) on all nodes in the new node-pool.
+Applies the specified comma-separated resource manager tags that has the
+GCE_FIREWALL purpose to all nodes in the new node pool.
 
 Examples:
 
@@ -2063,16 +2066,15 @@ Examples:
   $ {command} example-node-pool --resource-manager-tags=12345/key1=value1,23456/key2=value2
   $ {command} example-node-pool --resource-manager-tags=
 
-New nodes, including ones created by resize or recreate, will have these tags
-on the Compute Engine API instance object and can be used in network firewall
-policy rules.
-See https://cloud.google.com/firewall/docs/use-tags-for-firewalls
-for examples.
+All nodes, including nodes that are resized or re-created, will have the
+specified tags on the corresponding Instance object in the Compute Engine API.
+You can reference these tags in network firewall policy rules. For instructions,
+see https://cloud.google.com/firewall/docs/use-tags-for-firewalls.
 """
   else:
     help_text = """\
-Applies the given resource manager tags with GCE_FIREWALL purpose
-(comma separated) on all nodes in the new default nodepool(s) of a new cluster.
+Applies the specified comma-separated resource manager tags that has the
+GCE_FIREWALL purpose to all nodes in the new default node pool(s) of a new cluster.
 
 Examples:
 
@@ -2081,24 +2083,23 @@ Examples:
   $ {command} example-cluster --resource-manager-tags=12345/key1=value1,23456/key2=value2
   $ {command} example-cluster --resource-manager-tags=
 
-New nodes, including ones created by resize or recreate, will have these tags
-on the Compute Engine API instance object and can be used in network firewall
-policy rules.
-See https://cloud.google.com/firewall/docs/use-tags-for-firewalls
-for examples.
+All nodes, including nodes that are resized or re-created, will have the
+specified tags on the corresponding Instance object in the Compute Engine API.
+You can reference these tags in network firewall policy rules. For instructions,
+see https://cloud.google.com/firewall/docs/use-tags-for-firewalls.
 """
   AddResourceManagerTagsFlag(parser, help_text)
 
 
 def AddResourceManagerTagsNodePoolUpdate(parser):
-  """Adds a --resource-manager-tags to the given parser on nodepool update."""
-  # TODO(b/295603848): Clarify if this field can be specified for
-  # autoprovisioning node pools.
+  """Adds a --resource-manager-tags to the given parser on node pool update."""
   AddResourceManagerTagsFlag(
       parser,
       """\
 Replaces all the user specified resource manager tags on all nodes in an
-existing node pool with the given tags (comma separated).
+existing standard or auto-provisioned node pool in a Standard cluster with
+the given comma-separated resource manager tags that has the GCE_FIREWALL
+purpose.
 
 Examples:
 
@@ -2107,13 +2108,76 @@ Examples:
   $ {command} example-node-pool --resource-manager-tags=12345/key1=value1,23456/key2=value2
   $ {command} example-node-pool --resource-manager-tags=
 
-New nodes, including ones created by resize or recreate, will have these tags
-on the Compute Engine API instance object and can be used in network firewall
-policy rules.
-See https://cloud.google.com/firewall/docs/use-tags-for-firewalls
-for examples.
+All nodes, including nodes that are resized or re-created, will have the
+specified tags on the corresponding Instance object in the Compute Engine API.
+You can reference these tags in network firewall policy rules. For instructions,
+see https://cloud.google.com/firewall/docs/use-tags-for-firewalls.
 """,
   )
+
+
+def AddAutoprovisioningResourceManagerTagsFlag(parser, help_text):
+  """Adds a --autoprovisioning-resource-manager-tags to the given parser."""
+  parser.add_argument(
+      '--autoprovisioning-resource-manager-tags',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      help=help_text,
+      hidden=True,
+  )
+
+
+def AddAutoprovisioningResourceManagerTagsCreate(parser):
+  """Adds a --autoprovisioning-resource-manager-tags to the given parser on create."""
+  help_text = """\
+Applies the specified comma-separated resource manager tags that has the
+GCE_FIREWALL purpose to all nodes in the new Autopilot cluster or
+all auto-provisioned nodes in the new Standard cluster.
+
+Examples:
+
+  $ {command} example-cluster --autoprovisioning-resource-manager-tags=tagKeys/1234=tagValues/2345
+  $ {command} example-cluster --autoprovisioning-resource-manager-tags=my-project/key1=value1
+  $ {command} example-cluster --autoprovisioning-resource-manager-tags=12345/key1=value1,23456/key2=value2
+  $ {command} example-cluster --autoprovisioning-resource-manager-tags=
+
+All nodes in an Autopilot cluster or all auto-provisioned nodes in a Standard
+cluster, including nodes that are resized or re-created, will have the specified
+tags on the corresponding Instance object in the Compute Engine API. You can
+reference these tags in network firewall policy rules. For instructions, see
+https://cloud.google.com/firewall/docs/use-tags-for-firewalls.
+"""
+  AddAutoprovisioningResourceManagerTagsFlag(parser, help_text)
+
+
+def AddAutoprovisioningResourceManagerTagsUpdate(parser):
+  """Adds a --autoprovisioning-resource-manager-tags to the given parser on update."""
+  help_text = """\
+For an Autopilot cluster, the specified comma-separated resource manager tags
+that has the GCP_FIREWALL purpose replace the existing tags on all nodes in
+the cluster.
+
+For a Standard cluster, the specified comma-separated resource manager tags
+that has the GCE_FIREWALL purpose are applied to all nodes in the new
+newly created auto-provisioned node pools. Existing auto-provisioned node pools
+retain the tags that they had before the update. To update tags on an existing
+auto-provisioned node pool, use the node pool level flag
+'--resource-manager-tags'.
+
+Examples:
+
+  $ {command} example-cluster --autoprovisioning-resource-manager-tags=tagKeys/1234=tagValues/2345
+  $ {command} example-cluster --autoprovisioning-resource-manager-tags=my-project/key1=value1
+  $ {command} example-cluster --autoprovisioning-resource-manager-tags=12345/key1=value1,23456/key2=value2
+  $ {command} example-cluster --autoprovisioning-resource-manager-tags=
+
+All nodes in an Autopilot cluster or all newly created auto-provisioned nodes
+in a Standard cluster, including nodes that are resized or re-created, will have
+the specified tags on the corresponding Instance object in the Compute Engine API.
+You can reference these tags in network firewall policy rules. For instructions,
+see https://cloud.google.com/firewall/docs/use-tags-for-firewalls.
+"""
+  AddAutoprovisioningResourceManagerTagsFlag(parser, help_text)
 
 
 def AddMasterAuthorizedNetworksFlags(parser, enable_group_for_update=None):
@@ -6057,4 +6121,24 @@ def AddSecondaryBootDisksArgs(
 
       *mode*::: (Optional) The configuration mode for the secondary boot disks. The default value is "CONTAINER_IMAGE_CACHE."
       """,
+  )
+
+
+def AddEnableBackupRestoreFlag(parser):
+  """Adds --enable-backup-restore flag to the given parser.
+
+  Args:
+    parser: A given parser.
+  """
+
+  help_text = """\
+    Enable the Backup for GKE add-on. This add-on is disabled by default. To
+    learn more, see the Backup for GKE overview: https://cloud.google.com/kubernetes-engine/docs/add-on/backup-for-gke/concepts/backup-for-gke.
+    """
+  parser.add_argument(
+      '--enable-backup-restore',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=False,
   )

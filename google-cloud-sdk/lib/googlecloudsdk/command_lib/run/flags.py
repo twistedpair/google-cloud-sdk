@@ -99,6 +99,13 @@ _POST_CMEK_KEY_REVOCATION_ACTION_TYPE_CHOICES = {
     ),
 }
 
+_CONTAINER_NAME_TYPE = arg_parsers.RegexpValidator(
+    '[a-z0-9]([a-z0-9-.]{0,61}[a-z0-9])?',
+    'must conform to RFC 1123: only lowercase, digits, hyphens, and'
+    ' periods are allowed, must begin and end with letter or digit, and'
+    ' less than 64 characters.',
+)
+
 
 def _StripKeys(d):
   return {k.strip(): v for k, v in d.items()}
@@ -2150,6 +2157,11 @@ def _GetConfigurationChanges(args):
   if _HasCustomAudiencesChanges(args):
     changes.append(config_changes.CustomAudiencesChanges(args))
 
+  if FlagIsExplicitlySet(args, 'remove_containers'):
+    changes.append(
+        config_changes.RemoveContainersChange(containers=args.remove_containers)
+    )
+
   if FlagIsExplicitlySet(args, 'containers'):
     for container_name, container_args in args.containers.items():
       changes.extend(
@@ -3356,12 +3368,7 @@ def ContainerFlag(container_parser):
       '--container',
       metavar='CONTAINER',
       dest='containers',
-      type=arg_parsers.RegexpValidator(
-          '[a-z0-9]([a-z0-9-\\.]{0,61}[a-z0-9])?',
-          'must conform to RFC 1123: only lowercase, digits, hyphens, and'
-          ' periods are allowed, must begin and end with letter or digit, and'
-          ' less than 64 characters.',
-      ),
+      type=_CONTAINER_NAME_TYPE,
       action=ContainersAction,
       container_parser=container_parser,
       help=help_text,
@@ -3396,9 +3403,22 @@ def ContainerFlags(command, container_arg_group):
   containers_mutex_group = base.ArgumentGroup(
       mutex=True, help=help_text, disable_default_heading=True
   )
+  containers_group = base.ArgumentGroup()
+  containers_group.AddArgument(RemoveContainersFlag())
+  containers_group.AddArgument(ContainerFlag(_CreateContainerParser))
+  containers_mutex_group.AddArgument(containers_group)
   containers_mutex_group.AddArgument(container_arg_group)
-  containers_mutex_group.AddArgument(ContainerFlag(_CreateContainerParser))
   return containers_mutex_group
+
+
+def RemoveContainersFlag():
+  return base.Argument(
+      '--remove-containers',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgList(element_type=_CONTAINER_NAME_TYPE, max_length=9),
+      metavar='CONTAINERS',
+      help='List of containers to remove.',
+  )
 
 
 def PromptForDefaultSource(container_name=None):

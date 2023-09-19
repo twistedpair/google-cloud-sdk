@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://looker.googleapis.com/v1alpha1/'
-DOCS_URL = 'https://looker.com/'
+DOCS_URL = 'https://cloud.google.com/looker/docs/reference/rest/'
 
 
 class Collections(enum.Enum):

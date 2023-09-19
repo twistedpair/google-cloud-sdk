@@ -222,6 +222,16 @@ class BaremetalsolutionProjectsLocationsInstancesListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class BaremetalsolutionProjectsLocationsInstancesLoadAuthInfoRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesLoadAuthInfoRequest object.
+
+  Fields:
+    name: Required. Name of the server.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class BaremetalsolutionProjectsLocationsInstancesPatchRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesPatchRequest object.
 
@@ -1535,6 +1545,46 @@ class ListVolumesResponse(_messages.Message):
   volumes = _messages.MessageField('Volume', 3, repeated=True)
 
 
+class LoadInstanceAuthInfoResponse(_messages.Message):
+  r"""Response for LoadInstanceAuthInfo.
+
+  Messages:
+    UserAccountsValue: Map of username to the user account info.
+
+  Fields:
+    sshKeys: List of ssh keys.
+    userAccounts: Map of username to the user account info.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class UserAccountsValue(_messages.Message):
+    r"""Map of username to the user account info.
+
+    Messages:
+      AdditionalProperty: An additional property for a UserAccountsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type UserAccountsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a UserAccountsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A UserAccount attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('UserAccount', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  sshKeys = _messages.MessageField('SSHKey', 1, repeated=True)
+  userAccounts = _messages.MessageField('UserAccountsValue', 2)
+
+
 class Location(_messages.Message):
   r"""A resource that represents a Google Cloud location.
 
@@ -2768,6 +2818,18 @@ class SubmitProvisioningConfigResponse(_messages.Message):
   """
 
   provisioningConfig = _messages.MessageField('ProvisioningConfig', 1)
+
+
+class UserAccount(_messages.Message):
+  r"""User account provisioned for the customer.
+
+  Fields:
+    encryptedPassword: Encrypted initial password value.
+    kmsKeyVersion: KMS CryptoKey Version used to encrypt the password.
+  """
+
+  encryptedPassword = _messages.StringField(1)
+  kmsKeyVersion = _messages.StringField(2)
 
 
 class VRF(_messages.Message):

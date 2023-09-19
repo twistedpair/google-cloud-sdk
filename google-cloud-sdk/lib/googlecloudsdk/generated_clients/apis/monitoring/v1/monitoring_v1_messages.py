@@ -341,6 +341,26 @@ class Aggregation(_messages.Message):
   perSeriesAligner = _messages.EnumField('PerSeriesAlignerValueValuesEnum', 4)
 
 
+class AggregationFunction(_messages.Message):
+  r"""Preview: An identifier for an aggregation function. Aggregation
+  functions are SQL functions that group or transform data from multiple
+  points to a single point. This is a preview feature and may be subject to
+  change before final release.
+
+  Fields:
+    parameters: Optional. Parameters applied to the aggregation function. Only
+      used for functions that require them.
+    type: Required. The type of aggregation function, must be one of the
+      following: "none" - no function. "percentile" - APPROX_QUANTILES() - 1
+      parameter numeric value "average" - AVG() "count" - COUNT() "count-
+      distinct" - COUNT(DISTINCT) "count-distinct-approx" -
+      APPROX_COUNT_DISTINCT() "max" - MAX() "min" - MIN() "sum" - SUM()
+  """
+
+  parameters = _messages.MessageField('Parameter', 1, repeated=True)
+  type = _messages.StringField(2)
+
+
 class AlertChart(_messages.Message):
   r"""A chart that displays alert policy data.
 
@@ -380,6 +400,50 @@ class Axis(_messages.Message):
   scale = _messages.EnumField('ScaleValueValuesEnum', 2)
 
 
+class Breakdown(_messages.Message):
+  r"""Preview: A breakdown is an aggregation applied to the measures over a
+  specified column. A breakdown can result in multiple series across a
+  category for the provided measure. This is a preview feature and may be
+  subject to change before final release.
+
+  Enums:
+    SortOrderValueValuesEnum: Required. The sort order is applied to the
+      values of the breakdown column.
+
+  Fields:
+    aggregationFunction: Required. The Aggregation function is applied across
+      all data in each breakdown created.
+    column: Required. The name of the column in the dataset containing the
+      breakdown values.
+    limit: Required. A limit to the number of breakdowns. If set to zero then
+      all possible breakdowns are applied. The list of breakdowns is dependent
+      on the value of the sort_order field.
+    sortOrder: Required. The sort order is applied to the values of the
+      breakdown column.
+  """
+
+  class SortOrderValueValuesEnum(_messages.Enum):
+    r"""Required. The sort order is applied to the values of the breakdown
+    column.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: An unspecified sort order. This option is
+        invalid when sorting is required.
+      SORT_ORDER_NONE: No sorting is applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries are selected first.
+      SORT_ORDER_DESCENDING: The highest-valued entries are selected first.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
+
+  aggregationFunction = _messages.MessageField('AggregationFunction', 1)
+  column = _messages.StringField(2)
+  limit = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 4)
+
+
 class ChartOptions(_messages.Message):
   r"""Options to control visual rendering of a chart.
 
@@ -387,6 +451,10 @@ class ChartOptions(_messages.Message):
     ModeValueValuesEnum: The chart mode.
 
   Fields:
+    displayHorizontal: Preview: Configures whether the charted values are
+      shown on the horizontal or vertical axis. By default, values are
+      represented the vertical axis. This is a preview feature and may be
+      subject to change before final release.
     mode: The chart mode.
   """
 
@@ -407,7 +475,8 @@ class ChartOptions(_messages.Message):
     X_RAY = 2
     STATS = 3
 
-  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  displayHorizontal = _messages.BooleanField(1)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
 
 
 class CollapsibleGroup(_messages.Message):
@@ -572,9 +641,13 @@ class DataSet(_messages.Message):
       the metric.
 
   Fields:
+    breakdowns: Optional. The collection of breakdowns to be applied to the
+      dataset.
+    dimensions: Optional. A collection of dimension columns.
     legendTemplate: A template string for naming TimeSeries in the resulting
       data set. This should be a string with interpolations of the form
       ${label_name}, which will resolve to the label's value.
+    measures: Optional. A collection of measures.
     minAlignmentPeriod: Optional. The lower bound on data point frequency for
       this data set, implemented by specifying the minimum alignment period to
       use in a time series query For example, if the data is published once
@@ -628,11 +701,71 @@ class DataSet(_messages.Message):
     Y1 = 1
     Y2 = 2
 
-  legendTemplate = _messages.StringField(1)
-  minAlignmentPeriod = _messages.StringField(2)
-  plotType = _messages.EnumField('PlotTypeValueValuesEnum', 3)
-  targetAxis = _messages.EnumField('TargetAxisValueValuesEnum', 4)
-  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 5)
+  breakdowns = _messages.MessageField('Breakdown', 1, repeated=True)
+  dimensions = _messages.MessageField('Dimension', 2, repeated=True)
+  legendTemplate = _messages.StringField(3)
+  measures = _messages.MessageField('Measure', 4, repeated=True)
+  minAlignmentPeriod = _messages.StringField(5)
+  plotType = _messages.EnumField('PlotTypeValueValuesEnum', 6)
+  targetAxis = _messages.EnumField('TargetAxisValueValuesEnum', 7)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 8)
+
+
+class Dimension(_messages.Message):
+  r"""Preview: A chart dimension for an SQL query. This is applied over the
+  x-axis. This is a preview feature and may be subject to change before final
+  release.
+
+  Enums:
+    SortOrderValueValuesEnum: The sort order applied to the sort column.
+
+  Fields:
+    column: Required. The name of the column in the source SQL query that is
+      used to chart the dimension.
+    columnType: Optional. The type of the dimension column. This is relevant
+      only if one of the bin_size fields is set. If it is empty, the type
+      TIMESTAMP or INT64 will be assumed based on which bin_size field is set.
+      If populated, this should be set to one of the following types: DATE,
+      TIME, DATETIME, TIMESTAMP, BIGNUMERIC, INT64, NUMERIC, FLOAT64.
+    floatBinSize: Optional. float_bin_size is used when the column type used
+      for a dimension is a floating point numeric column.
+    maxBinCount: A limit to the number of bins generated. When 0 is specified,
+      the maximum count is not enforced.
+    numericBinSize: numeric_bin_size is used when the column type used for a
+      dimension is numeric or string.
+    sortColumn: The column name to sort on for binning. This column can be the
+      same column as this dimension or any other column used as a measure in
+      the results. If sort_order is set to NONE, then this value is not used.
+    sortOrder: The sort order applied to the sort column.
+    timeBinSize: time_bin_size is used when the data type specified by column
+      is a time type and the bin size is determined by a time duration. If
+      column_type is DATE, this must be a whole value multiple of 1 day. If
+      column_type is TIME, this must be less than or equal to 24 hours.
+  """
+
+  class SortOrderValueValuesEnum(_messages.Enum):
+    r"""The sort order applied to the sort column.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: An unspecified sort order. This option is
+        invalid when sorting is required.
+      SORT_ORDER_NONE: No sorting is applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries are selected first.
+      SORT_ORDER_DESCENDING: The highest-valued entries are selected first.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
+
+  column = _messages.StringField(1)
+  columnType = _messages.StringField(2)
+  floatBinSize = _messages.FloatField(3)
+  maxBinCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  numericBinSize = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  sortColumn = _messages.StringField(6)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 7)
+  timeBinSize = _messages.StringField(8)
 
 
 class DroppedLabels(_messages.Message):
@@ -939,6 +1072,24 @@ class LogsPanel(_messages.Message):
 
   filter = _messages.StringField(1)
   resourceNames = _messages.StringField(2, repeated=True)
+
+
+class Measure(_messages.Message):
+  r"""Preview: A chart measure for an SQL query. This is applied over the
+  y-axis. This is a preview feature and may be subject to change before final
+  release.
+
+  Fields:
+    aggregationFunction: Required. The aggregation function applied to the
+      input column. This must not be set to "none" unless binning is disabled
+      on the dimension. The aggregation function is used to group points on
+      the dimension bins.
+    column: Required. The column name within in the dataset used for the
+      measure.
+  """
+
+  aggregationFunction = _messages.MessageField('AggregationFunction', 1)
+  column = _messages.StringField(2)
 
 
 class MetricsScope(_messages.Message):
@@ -1479,6 +1630,19 @@ class OperationMetadata(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class OpsAnalyticsQuery(_messages.Message):
+  r"""Preview: A query that produces an aggregated response and supporting
+  data. This is a preview feature and may be subject to change before final
+  release.
+
+  Fields:
+    sql: A SQL query to fetch time series, category series, or numeric series
+      data.
+  """
+
+  sql = _messages.StringField(1)
+
+
 class Option(_messages.Message):
   r"""A protocol buffer option, which can be attached to a message, field,
   enumeration, etc.
@@ -1533,6 +1697,19 @@ class Option(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.MessageField('ValueValue', 2)
+
+
+class Parameter(_messages.Message):
+  r"""Preview: Parameter value applied to the aggregation function. This is a
+  preview feature and may be subject to change before final release.
+
+  Fields:
+    doubleValue: A floating-point parameter value.
+    intValue: An integer parameter value.
+  """
+
+  doubleValue = _messages.FloatField(1)
+  intValue = _messages.IntegerField(2)
 
 
 class PickTimeSeriesFilter(_messages.Message):
@@ -2376,6 +2553,9 @@ class TimeSeriesQuery(_messages.Message):
   series data from the Stackdriver metrics API.
 
   Fields:
+    opsAnalyticsQuery: Preview: A query used to fetch a time series, category
+      series, or numeric series with SQL. This is a preview feature and may be
+      subject to change before final release.
     outputFullDuration: Optional. If set, Cloud Monitoring will treat the full
       query duration as the alignment period so that there will be only 1
       output value.*Note: This could override the configured alignment period
@@ -2393,12 +2573,13 @@ class TimeSeriesQuery(_messages.Message):
       MetricDescriptor.
   """
 
-  outputFullDuration = _messages.BooleanField(1)
-  prometheusQuery = _messages.StringField(2)
-  timeSeriesFilter = _messages.MessageField('TimeSeriesFilter', 3)
-  timeSeriesFilterRatio = _messages.MessageField('TimeSeriesFilterRatio', 4)
-  timeSeriesQueryLanguage = _messages.StringField(5)
-  unitOverride = _messages.StringField(6)
+  opsAnalyticsQuery = _messages.MessageField('OpsAnalyticsQuery', 1)
+  outputFullDuration = _messages.BooleanField(2)
+  prometheusQuery = _messages.StringField(3)
+  timeSeriesFilter = _messages.MessageField('TimeSeriesFilter', 4)
+  timeSeriesFilterRatio = _messages.MessageField('TimeSeriesFilterRatio', 5)
+  timeSeriesQueryLanguage = _messages.StringField(6)
+  unitOverride = _messages.StringField(7)
 
 
 class TimeSeriesTable(_messages.Message):

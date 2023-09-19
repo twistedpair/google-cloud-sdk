@@ -19,6 +19,87 @@ from __future__ import division
 from __future__ import unicode_literals
 
 
+_MYSQL_EXCLUDED_OBJECTS_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the MySQL data sources to avoid backfilling.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+        "mysqlDatabases": [
+            {
+              "database":"sample_database",
+              "mysqlTables": [
+                {
+                  "table": "sample_table",
+                  "mysqlColumns": [
+                    {
+                      "column": "sample_column",
+                    }
+                   ]
+                }
+              ]
+            }
+          ]
+        }
+    }
+  ```
+"""
+
+_ORACLE_EXCLUDED_OBJECTS_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the Oracle data sources to avoid backfilling.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+        "oracleSchemas": [
+          {
+            "schema": "SAMPLE",
+            "oracleTables": [
+              {
+                "table": "SAMPLE_TABLE",
+                "oracleColumns": [
+                  {
+                    "column": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ```
+"""
+_POSTGRESQL_EXCLUDED_OBJECTS_HELP_TEXT = """\
+  Path to a YAML (or JSON) file containing the PostgreSQL data sources to avoid backfilling.
+
+  The JSON file is formatted as follows, with camelCase field naming:
+
+  ```
+    {
+        "postgresqlSchemas": [
+          {
+            "schema": "SAMPLE",
+            "postgresqlTables": [
+              {
+                "table": "SAMPLE_TABLE",
+                "postgresqlColumns": [
+                  {
+                    "column": "COL",
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    }
+  ```
+"""
+
+
 def AddDisplayNameFlag(parser, required=True):
   """Adds a --display-name flag to the given parser."""
   help_text = """Friendly name for the stream."""
@@ -70,11 +151,12 @@ def AddBackfillStrategyGroup(parser, required=True):
       action='store_true')
   backfill_all_excluded_objects = backfill_all_group.add_group(mutex=True)
   backfill_all_excluded_objects.add_argument(
-      '--oracle-excluded-objects',
-      help="""Oracle data source objects to avoid backfilling.""")
+      '--oracle-excluded-objects', help=_ORACLE_EXCLUDED_OBJECTS_HELP_TEXT
+  )
   backfill_all_excluded_objects.add_argument(
-      '--mysql-excluded-objects',
-      help="""MySQL data source objects to avoid backfilling.""")
+      '--mysql-excluded-objects', help=_MYSQL_EXCLUDED_OBJECTS_HELP_TEXT
+  )
   backfill_all_excluded_objects.add_argument(
       '--postgresql-excluded-objects',
-      help="""PostgreSQL data source objects to avoid backfilling.""")
+      help=_POSTGRESQL_EXCLUDED_OBJECTS_HELP_TEXT,
+  )

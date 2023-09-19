@@ -144,7 +144,7 @@ class BackupVaultsClient(object):
     if async_:
       return delete_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        delete_op.name, collection=netapp_util.OPERATIONS_COLLECTION
+        delete_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 
@@ -168,7 +168,7 @@ class BackupVaultsClient(object):
     if async_:
       return update_op
     operation_ref = resources.REGISTRY.ParseRelativeName(
-        update_op.name, collection=netapp_util.OPERATIONS_COLLECTION
+        update_op.name, collection=constants.OPERATIONS_COLLECTION
     )
     return self.WaitForOperation(operation_ref)
 

@@ -276,7 +276,7 @@ class BackupPolicy(_messages.Message):
     monthlyBackupLimit: Number of monthly backups to keep. Note that the sum
       of daily, weekly and monthly backups should be greater than 1.
     name: Output only. The resource name of the backup policy. Format: `projec
-      ts/{project_id}/locations/{location}/backupPolicies/{backupPolicy_id}`.
+      ts/{project_id}/locations/{location}/backupPolicies/{backup_policy_id}`.
     state: Output only. The backup policy state.
     weeklyBackupLimit: Number of weekly backups to keep. Note that the sum of
       daily, weekly and monthly backups should be greater than 1.
@@ -350,7 +350,7 @@ class BackupVault(_messages.Message):
     description: Description of the backup vault.
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup vault. Format: `project
-      s/{project_id}/locations/{location}/backupVaults/{backupVault_id}`.
+      s/{project_id}/locations/{location}/backupVaults/{backup_vault_id}`.
     state: Output only. The backup vault state.
   """
 
@@ -1013,7 +1013,7 @@ class NetappProjectsLocationsBackupPoliciesPatchRequest(_messages.Message):
   Fields:
     backupPolicy: A BackupPolicy resource to be passed as the request body.
     name: Output only. The resource name of the backup policy. Format: `projec
-      ts/{project_id}/locations/{location}/backupPolicies/{backupPolicy_id}`.
+      ts/{project_id}/locations/{location}/backupPolicies/{backup_policy_id}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Backup Policy resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
@@ -1154,9 +1154,8 @@ class NetappProjectsLocationsBackupVaultsGetRequest(_messages.Message):
   r"""A NetappProjectsLocationsBackupVaultsGetRequest object.
 
   Fields:
-    name: Required. The backupVault resource name, in the format
-      `projects/{project_id}/locations/{location}/backupVaults/{backupVault_id
-      }`
+    name: Required. The backupVault resource name, in the format `projects/{pr
+      oject_id}/locations/{location}/backupVaults/{backup_vault_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1189,7 +1188,7 @@ class NetappProjectsLocationsBackupVaultsPatchRequest(_messages.Message):
   Fields:
     backupVault: A BackupVault resource to be passed as the request body.
     name: Output only. The resource name of the backup vault. Format: `project
-      s/{project_id}/locations/{location}/backupVaults/{backupVault_id}`.
+      s/{project_id}/locations/{location}/backupVaults/{backup_vault_id}`.
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Backup resource to be updated. The fields specified
       in the update_mask are relative to the resource, not the full request. A

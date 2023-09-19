@@ -52,3 +52,26 @@ def AutoCapacityDrainHook(api_version='v1'):
       return messages.ServiceLbPolicyAutoCapacityDrain(enable=enable)
 
   return ConstructAutoCapacityDrain
+
+
+def FailoverHealthThresholdHook(api_version='v1'):
+  """Hook to transform FailoverHealthThreshold flag to actual message.
+
+  This function is called during ServiceLbPolicy create/update command to
+  create the FailoverConfig message. It returns a function which is called
+  with arguments passed in the gcloud command.
+
+  Args:
+    api_version: Version of the networkservices api
+
+  Returns:
+     Function to transform integer flag to FailoverConfig message.
+  """
+  messages = apis.GetMessagesModule('networkservices', api_version)
+
+  def ConstructFailoverConfig(threshold):
+    return messages.ServiceLbPolicyFailoverConfig(
+        failoverHealthThreshold=threshold
+    )
+
+  return ConstructFailoverConfig

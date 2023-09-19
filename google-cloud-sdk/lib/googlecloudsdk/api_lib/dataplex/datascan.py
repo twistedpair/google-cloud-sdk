@@ -62,7 +62,7 @@ def GenerateDataProfileSpec(args):
     dataprofilespec = dataplex_api.ReadObject(args.data_profile_spec_file)
     if dataprofilespec is not None:
       dataprofilespec = messages_util.DictToMessageWithErrorCheck(
-          dataprofilespec,
+          dataplex_api.SnakeToCamelDict(dataprofilespec),
           module.GoogleCloudDataplexV1DataProfileSpec,
       )
   else:

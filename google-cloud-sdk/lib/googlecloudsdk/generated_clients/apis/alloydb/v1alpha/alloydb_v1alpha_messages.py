@@ -2827,10 +2827,15 @@ class StorageDatabasecenterPartnerapiV1mainBackupConfiguration(_messages.Message
     automatedBackupEnabled: Whether customer visible automated backups are
       enabled on the instance.
     backupRetentionSettings: Backup retention settings.
+    pointInTimeRecoveryEnabled: Whether point-in-time recovery is enabled.
+      This is optional field, if the database service does not have this
+      feature or metadata is not available in control plane, this can be
+      omitted.
   """
 
   automatedBackupEnabled = _messages.BooleanField(1)
   backupRetentionSettings = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainRetentionSettings', 2)
+  pointInTimeRecoveryEnabled = _messages.BooleanField(3)
 
 
 class StorageDatabasecenterPartnerapiV1mainBackupRun(_messages.Message):
@@ -2865,6 +2870,20 @@ class StorageDatabasecenterPartnerapiV1mainBackupRun(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
+class StorageDatabasecenterPartnerapiV1mainCompliance(_messages.Message):
+  r"""Contains compliance information about a security standard indicating
+  unmet recommendations.
+
+  Fields:
+    standard: Industry-wide compliance standards or benchmarks, such as CIS,
+      PCI, and OWASP.
+    version: Version of the standard or benchmark, for example, 1.1
+  """
+
+  standard = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
   different database resource level events into Condor platform.
@@ -2875,8 +2894,10 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
   Fields:
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
+    resourceHealthSignalData: More feed data would be added in subsequent CLs
     resourceId: Required. Primary key associated with the Resource
-    resourceMetadata: More feed data would be added in subsequent CLs
+    resourceMetadata: A
+      StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata attribute.
   """
 
   class FeedTypeValueValuesEnum(_messages.Enum):
@@ -2886,17 +2907,162 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
       FEEDTYPE_UNSPECIFIED: <no description>
       RESOURCE_METADATA: Database resource metadata feed from control plane
       OBSERVABILITY_DATA: Database resource monitoring data
-      COMPLIANCE_DATA: Database resource compliance feed
+      SECURITY_FINDING_DATA: Database resource security health signal data
     """
     FEEDTYPE_UNSPECIFIED = 0
     RESOURCE_METADATA = 1
     OBSERVABILITY_DATA = 2
-    COMPLIANCE_DATA = 3
+    SECURITY_FINDING_DATA = 3
 
   feedTimestamp = _messages.StringField(1)
   feedType = _messages.EnumField('FeedTypeValueValuesEnum', 2)
-  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 3)
-  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 4)
+  resourceHealthSignalData = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData', 3)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 4)
+  resourceMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata', 5)
+
+
+class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_messages.Message):
+  r"""Common model for database resource health signal data.
+
+  Enums:
+    ProviderValueValuesEnum: Cloud provider name. Ex:
+      GCP/AWS/Azure/OnPrem/SelfManaged
+    SignalClassValueValuesEnum: The class of the signal, such as if it's a
+      THREAT or VULNERABILITY.
+    StateValueValuesEnum:
+
+  Messages:
+    AdditionalMetadataValue: Any other additional metadata
+
+  Fields:
+    additionalMetadata: Any other additional metadata
+    compliance: Industry standards associated with this signal; if this signal
+      is an issue, that could be a violation of the associated industry
+      standard(s). For example, AUTO_BACKUP_DISABLED signal is associated with
+      CIS GCP 1.1, CIS GCP 1.2, CIS GCP 1.3, NIST 800-53 and ISO-27001
+      compliance standards. If a database resource does not have automated
+      backup enable, it will violate these following industry standards.
+    description: Description associated with signal
+    eventTime: The last time at which the event described by this signal took
+      place
+    externalUri: The external-uri of the signal, using which more information
+      about this signal can be obtained. In GCP, this will take user to SCC
+      page to get more details about signals.
+    name: The name of the signal, ex: PUBLIC_SQL_INSTANCE,
+      SQL_LOG_ERROR_VERBOSITY etc.
+    provider: Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
+    resourceContainer: Closest parent container of this resource. In GCP,
+      'container' refers to a Cloud Resource Manager project. It must be
+      resource name of a Cloud Resource Manager project with the format of
+      "provider//", such as "gcp/projects/123".
+    resourceName: Database resource name associated with the signal. Resource
+      name to follow CAIS resource_name format as noted here go/condor-common-
+      datamodel
+    signalClass: The class of the signal, such as if it's a THREAT or
+      VULNERABILITY.
+    signalId: Unique identifier for the signal. This is an unique id which
+      would be mainatined by partner to identify a signal.
+    state: A StateValueValuesEnum attribute.
+  """
+
+  class ProviderValueValuesEnum(_messages.Enum):
+    r"""Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
+
+    Values:
+      PROVIDER_UNSPECIFIED: <no description>
+      GCP: Google cloud platform provider
+      AWS: Amazon web service
+      AZURE: Azure web service
+      ONPREM: On-prem database resources.
+      SELFMANAGED: Self-managed database provider. These are resources on a
+        cloud platform, e.g., database resource installed in a GCE VM, but not
+        a managed database service.
+      PROVIDER_OTHER: For the rest of the other categories. Other refers to
+        the rest of other database service providers, this could be smaller
+        cloud provider. This needs to be provided when the provider is known,
+        but it is not present in the existing set of enum values.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    GCP = 1
+    AWS = 2
+    AZURE = 3
+    ONPREM = 4
+    SELFMANAGED = 5
+    PROVIDER_OTHER = 6
+
+  class SignalClassValueValuesEnum(_messages.Enum):
+    r"""The class of the signal, such as if it's a THREAT or VULNERABILITY.
+
+    Values:
+      CLASS_UNSPECIFIED: Unspecified signal class.
+      THREAT: Describes unwanted or malicious activity.
+      VULNERABILITY: Describes a potential weakness in software that increases
+        risk to Confidentiality & Integrity & Availability.
+      MISCONFIGURATION: Describes a potential weakness in cloud resource/asset
+        configuration that increases risk.
+      OBSERVATION: Describes a security observation that is for informational
+        purposes.
+      ERROR: Describes an error that prevents some SCC functionality.
+    """
+    CLASS_UNSPECIFIED = 0
+    THREAT = 1
+    VULNERABILITY = 2
+    MISCONFIGURATION = 3
+    OBSERVATION = 4
+    ERROR = 5
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""StateValueValuesEnum enum type.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      ACTIVE: The signal requires attention and has not been addressed yet.
+      RESOLVED: The signal has been fixed, triaged as a non-issue or otherwise
+        addressed and is no longer active.
+      MUTED: The signal has been muted.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    RESOLVED = 2
+    MUTED = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalMetadataValue(_messages.Message):
+    r"""Any other additional metadata
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalMetadata = _messages.MessageField('AdditionalMetadataValue', 1)
+  compliance = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainCompliance', 2, repeated=True)
+  description = _messages.StringField(3)
+  eventTime = _messages.StringField(4)
+  externalUri = _messages.StringField(5)
+  name = _messages.StringField(6)
+  provider = _messages.EnumField('ProviderValueValuesEnum', 7)
+  resourceContainer = _messages.StringField(8)
+  resourceName = _messages.StringField(9)
+  signalClass = _messages.EnumField('SignalClassValueValuesEnum', 10)
+  signalId = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message):
@@ -2910,9 +3076,12 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
   Fields:
     provider: Required. Cloud provider name. Ex:
       GCP/AWS/Azure/OnPrem/SelfManaged
+    providerDescription: Optional. Needs to be used only when the provider is
+      PROVIDER_OTHER.
     resourceType: Required. The type of resource this ID is identifying. Ex
-      google.sqladmin.Instance, google.alloydb.cluster, google.sqladmin.Backup
-      REQUIRED
+      alloydb.googleapis.com/Cluster, alloydb.googleapis.com/Instance,
+      spanner.googleapis.com/Instance REQUIRED Please refer go/condor-common-
+      datamodel
     uniqueId: Required. A service-local token that distinguishes this resource
       from other resources within the same service.
   """
@@ -2925,9 +3094,14 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
       GCP: Google cloud platform provider
       AWS: Amazon web service
       AZURE: Azure web service
-      ONPREM: On-prem database provider
-      SELFMANAGED: Self-managed database provider
-      PROVIDER_OTHER: For rest of the other category
+      ONPREM: On-prem database resources.
+      SELFMANAGED: Self-managed database provider. These are resources on a
+        cloud platform, e.g., database resource installed in a GCE VM, but not
+        a managed database service.
+      PROVIDER_OTHER: For the rest of the other categories. Other refers to
+        the rest of other database service providers, this could be smaller
+        cloud provider. This needs to be provided when the provider is known,
+        but it is not present in the existing set of enum values.
     """
     PROVIDER_UNSPECIFIED = 0
     GCP = 1
@@ -2938,8 +3112,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message)
     PROVIDER_OTHER = 6
 
   provider = _messages.EnumField('ProviderValueValuesEnum', 1)
-  resourceType = _messages.StringField(2)
-  uniqueId = _messages.StringField(3)
+  providerDescription = _messages.StringField(2)
+  resourceType = _messages.StringField(3)
+  uniqueId = _messages.StringField(4)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Message):
@@ -2947,11 +3122,15 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
 
   Enums:
     CurrentStateValueValuesEnum: Current state of the instance.
-    ExpectedStateValueValuesEnum: The actual instance state.
+    ExpectedStateValueValuesEnum: The state that the instance is expected to
+      be in. For example, an instance state can transition to UNHEALTHY due to
+      wrong patch update, while the expected state will remain at the HEALTHY.
     InstanceTypeValueValuesEnum: The type of the instance. Specified at
       creation time.
 
   Messages:
+    CustomMetadataValue: Any custom metadata associated with the resource (a
+      JSON field)
     UserLabelsValue: User-provided labels, represented as a dictionary where
       each label is a single key value pair.
 
@@ -2962,21 +3141,27 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     creationTime: The creation time of the resource, i.e. the time when
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
-    expectedState: The actual instance state.
+    customMetadata: Any custom metadata associated with the resource (a JSON
+      field)
+    expectedState: The state that the instance is expected to be in. For
+      example, an instance state can transition to UNHEALTHY due to wrong
+      patch update, while the expected state will remain at the HEALTHY.
     id: Required. Unique identifier for a Database resource
     instanceType: The type of the instance. Specified at creation time.
     location: The resource location. REQUIRED
-    primaryResourceId: Unique identifier for this resource's immediate parent
-      resource. This parent resource id would be used to build resource
-      hierarchy in condor platform.
+    primaryResourceId: Identifier for this resource's immediate parent/primary
+      resource if the current resource is a replica or derived form of another
+      Database resource. Else it would be NULL. REQUIRED if the immediate
+      parent exists when first time resource is getting ingested
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
-      resource. It must either be resource name of a Cloud Resource Manager
-      project, for ex: "projects/123".
-    resourceName: Required. Different from unique_id, a resource name can be
-      reused over time. That is after a resource named "ABC" is deleted, the
-      name "ABC" can be used to to create a new resource within the same
-      source.
+      resource. It must be resource name of a Cloud Resource Manager project
+      with the format of "provider//", such as "gcp/projects/123".
+    resourceName: Required. Different from DatabaseResourceId.unique_id, a
+      resource name can be reused over time. That is, after a resource named
+      "ABC" is deleted, the name "ABC" can be used to to create a new resource
+      within the same source. Resource name to follow CAIS resource_name
+      format as noted here go/condor-common-datamodel
     updationTime: The time at which the resource was updated and recorded at
       partner service.
     userLabels: User-provided labels, represented as a dictionary where each
@@ -2990,26 +3175,36 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       STATE_UNSPECIFIED: <no description>
       HEALTHY: The instance is running.
       UNHEALTHY: Instance being created, updated, deleted or under maintenance
+      SUSPENDED: When instance is suspended
+      DELETED: Instance is deleted.
       STATE_OTHER: For rest of the other category
     """
     STATE_UNSPECIFIED = 0
     HEALTHY = 1
     UNHEALTHY = 2
-    STATE_OTHER = 3
+    SUSPENDED = 3
+    DELETED = 4
+    STATE_OTHER = 5
 
   class ExpectedStateValueValuesEnum(_messages.Enum):
-    r"""The actual instance state.
+    r"""The state that the instance is expected to be in. For example, an
+    instance state can transition to UNHEALTHY due to wrong patch update,
+    while the expected state will remain at the HEALTHY.
 
     Values:
       STATE_UNSPECIFIED: <no description>
       HEALTHY: The instance is running.
       UNHEALTHY: Instance being created, updated, deleted or under maintenance
+      SUSPENDED: When instance is suspended
+      DELETED: Instance is deleted.
       STATE_OTHER: For rest of the other category
     """
     STATE_UNSPECIFIED = 0
     HEALTHY = 1
     UNHEALTHY = 2
-    STATE_OTHER = 3
+    SUSPENDED = 3
+    DELETED = 4
+    STATE_OTHER = 5
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The type of the instance. Specified at creation time.
@@ -3024,6 +3219,31 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     PRIMARY = 1
     READ_REPLICA = 2
     OTHER = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class CustomMetadataValue(_messages.Message):
+    r"""Any custom metadata associated with the resource (a JSON field)
+
+    Messages:
+      AdditionalProperty: An additional property for a CustomMetadataValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a CustomMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
@@ -3055,16 +3275,17 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 3)
   creationTime = _messages.StringField(4)
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
-  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 6)
-  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 7)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 8)
-  location = _messages.StringField(9)
-  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 10)
-  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 11)
-  resourceContainer = _messages.StringField(12)
-  resourceName = _messages.StringField(13)
-  updationTime = _messages.StringField(14)
-  userLabels = _messages.MessageField('UserLabelsValue', 15)
+  customMetadata = _messages.MessageField('CustomMetadataValue', 6)
+  expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 7)
+  id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 8)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 9)
+  location = _messages.StringField(10)
+  primaryResourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 11)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 12)
+  resourceContainer = _messages.StringField(13)
+  resourceName = _messages.StringField(14)
+  updationTime = _messages.StringField(15)
+  userLabels = _messages.MessageField('UserLabelsValue', 16)
 
 
 class StorageDatabasecenterPartnerapiV1mainOperationError(_messages.Message):

@@ -349,6 +349,7 @@ def AddCommonBulkInsertArgs(
     support_performance_monitoring_unit=False,
     support_custom_hostnames=False,
     support_storage_pool=False,
+    support_specific_then_x_affinity=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -409,7 +410,8 @@ def AddCommonBulkInsertArgs(
   instances_flags.AddReservationAffinityGroup(
       parser,
       group_text='Specifies the reservation for the instance.',
-      affinity_text='The type of reservation for the instance.')
+      affinity_text='The type of reservation for the instance.',
+      support_specific_then_x_affinity=support_specific_then_x_affinity)
 
   maintenance_flags.AddResourcePoliciesArgs(parser, 'added to', 'instance')
 

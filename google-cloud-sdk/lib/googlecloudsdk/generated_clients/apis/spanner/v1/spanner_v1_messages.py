@@ -15,6 +15,61 @@ from apitools.base.py import extra_types
 package = 'spanner'
 
 
+class AutoscalingConfig(_messages.Message):
+  r"""Autoscaling config for an instance.
+
+  Fields:
+    autoscalingLimits: Required. Autoscaling limits for an instance.
+    autoscalingTargets: Required. The autoscaling targets for an instance.
+  """
+
+  autoscalingLimits = _messages.MessageField('AutoscalingLimits', 1)
+  autoscalingTargets = _messages.MessageField('AutoscalingTargets', 2)
+
+
+class AutoscalingLimits(_messages.Message):
+  r"""The autoscaling limits for the instance. Users can define the minimum
+  and maximum compute capacity allocated to the instance, and the autoscaler
+  will only scale within that range. Users can either use nodes or processing
+  units to specify the limits, but should use the same unit to set both the
+  min_limit and max_limit.
+
+  Fields:
+    maxNodes: Maximum number of nodes allocated to the instance. If set, this
+      number should be greater than or equal to min_nodes.
+    maxProcessingUnits: Maximum number of processing units allocated to the
+      instance. If set, this number should be multiples of 1000 and be greater
+      than or equal to min_processing_units.
+    minNodes: Minimum number of nodes allocated to the instance. If set, this
+      number should be greater than or equal to 1.
+    minProcessingUnits: Minimum number of processing units allocated to the
+      instance. If set, this number should be multiples of 1000.
+  """
+
+  maxNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  maxProcessingUnits = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  minNodes = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minProcessingUnits = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class AutoscalingTargets(_messages.Message):
+  r"""The autoscaling targets for an instance.
+
+  Fields:
+    highPriorityCpuUtilizationPercent: Required. The target high priority cpu
+      utilization percentage that the autoscaler should be trying to achieve
+      for the instance. This number is on a scale from 0 (no utilization) to
+      100 (full utilization). The valid range is [10, 90] inclusive.
+    storageUtilizationPercent: Required. The target storage utilization
+      percentage that the autoscaler should be trying to achieve for the
+      instance. This number is on a scale from 0 (no utilization) to 100 (full
+      utilization). The valid range is [10, 100] inclusive.
+  """
+
+  highPriorityCpuUtilizationPercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  storageUtilizationPercent = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class Backup(_messages.Message):
   r"""A backup of a Cloud Spanner database.
 
@@ -1491,6 +1546,10 @@ class Instance(_messages.Message):
       release.
 
   Fields:
+    autoscalingConfig: Optional. The autoscaling configuration. Autoscaling is
+      enabled if this field is set. When autoscaling is enabled, node_count
+      and processing_units are treated as OUTPUT_ONLY fields and reflect the
+      current compute capacity allocated to the instance.
     config: Required. The name of the instance's configuration. Values are of
       the form `projects//instanceConfigs/`. See also InstanceConfig and
       ListInstanceConfigs.
@@ -1634,19 +1693,20 @@ class Instance(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  config = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 3)
-  displayName = _messages.StringField(4)
-  endpointUris = _messages.StringField(5, repeated=True)
-  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 6)
-  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  nodeCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  processingUnits = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
+  autoscalingConfig = _messages.MessageField('AutoscalingConfig', 1)
+  config = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  defaultStorageType = _messages.EnumField('DefaultStorageTypeValueValuesEnum', 4)
+  displayName = _messages.StringField(5)
+  endpointUris = _messages.StringField(6, repeated=True)
+  freeInstanceMetadata = _messages.MessageField('FreeInstanceMetadata', 7)
+  instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  processingUnits = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
 
 
 class InstanceConfig(_messages.Message):

@@ -225,11 +225,12 @@ def AddAdvancedOptions(parser, required=False, support_user_ip=False):
   """Adds the cloud armor advanced options arguments to the argparse."""
   parser.add_argument(
       '--json-parsing',
-      choices=['DISABLED', 'STANDARD'],
+      choices=['DISABLED', 'STANDARD', 'STANDARD_WITH_GRAPHQL'],
       type=lambda x: x.upper(),
       required=required,
       help=('The JSON parsing behavior for this rule. '
-            'Must be one of the following values: [DISABLED, STANDARD].'))
+            'Must be one of the following values: '
+            '[DISABLED, STANDARD, STANDARD_WITH_GRAPHQL].'))
 
   parser.add_argument(
       '--json-custom-content-types',

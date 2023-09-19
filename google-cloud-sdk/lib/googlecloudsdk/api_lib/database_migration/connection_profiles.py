@@ -103,6 +103,9 @@ class ConnectionProfilesClient(object):
   def _SupportsPostgresql(self):
     return self._release_track == base.ReleaseTrack.GA
 
+  def _SupportsOracle(self):
+    return self._release_track == base.ReleaseTrack.GA
+
   def _ValidateArgs(self, args):
     self._ValidateHostArgs(args)
     self._ValidateSslConfigArgs(args)
@@ -134,6 +137,9 @@ class ConnectionProfilesClient(object):
           field,
           'The certificate does not appear to be in PEM format:\n{0}'
           .format(cert))
+
+  def _GetSslServerOnlyConfig(self, args):
+    return self.messages.SslConfig(caCertificate=args.ca_certificate)
 
   def _GetSslConfig(self, args):
     return self.messages.SslConfig(
@@ -260,6 +266,33 @@ class ConnectionProfilesClient(object):
       connection_profile.postgresql.alloydbClusterId = args.alloydb_cluster
       update_fields.append('postgresql.alloydb_cluster')
     self._UpdatePostgreSqlSslConfig(connection_profile, args, update_fields)
+
+  def _UpdateOracleSslConfig(self, connection_profile, args, update_fields):
+    """Fills connection_profile and update_fields with Oracle SSL data from args."""
+    if args.IsSpecified('ca_certificate'):
+      connection_profile.oracle.ssl.caCertificate = args.ca_certificate
+      update_fields.append('postgresql.ssl.caCertificate')
+
+  def _UpdateOracleConnectionProfile(
+      self, connection_profile, args, update_fields
+  ):
+    """Updates PostgreSQL connection profile."""
+    if args.IsSpecified('host'):
+      connection_profile.oracle.host = args.host
+      update_fields.append('oracle.host')
+    if args.IsSpecified('port'):
+      connection_profile.oracle.port = args.port
+      update_fields.append('oracle.port')
+    if args.IsSpecified('username'):
+      connection_profile.oracle.username = args.username
+      update_fields.append('oracle.username')
+    if args.IsSpecified('password'):
+      connection_profile.oracle.password = args.password
+      update_fields.append('oracle.password')
+    if args.IsSpecified('database-service'):
+      connection_profile.oracle.databaseService = args.databaseService
+      update_fields.append('oracle.databaseService')
+    self._UpdateOracleSslConfig(connection_profile, args, update_fields)
 
   def _GetProvider(self, cp_type, provider):
     if provider is None:
@@ -446,12 +479,15 @@ class ConnectionProfilesClient(object):
     Returns:
       OracleConnectionProfile, to use when creating the connection profile.
     """
+    ssl_config = self._GetSslServerOnlyConfig(args)
     connection_profile_obj = self.messages.OracleConnectionProfile(
         host=args.host,
         port=args.port,
         username=args.username,
         password=args.password,
-        databaseService=args.database_service)
+        ssl=ssl_config,
+        databaseService=args.database_service,
+    )
 
     private_connectivity_ref = args.CONCEPTS.private_connection.Parse()
     if private_connectivity_ref:
@@ -530,10 +566,15 @@ class ConnectionProfilesClient(object):
           connection_profile.postgresql is not None):
       self._UpdatePostgreSqlConnectionProfile(connection_profile, args,
                                               update_fields)
+    elif self._SupportsOracle() and connection_profile.oracle is not None:
+      self._UpdateOracleConnectionProfile(
+          connection_profile, args, update_fields
+      )
     else:
       raise UnsupportedConnectionProfileDBTypeError(
-          'The requested connection profile does not contain a MySQL or PostgreSQL object. '
-          'Currently only MySQL and PostgreSQL connection profiles are supported.'
+          'The requested connection profile does not contain a MySQL,'
+          ' PostgreSQL or Oracle object. Currently only MySQL, PostgreSQL and'
+          ' Oracle connection profiles are supported.'
       )
 
     self._UpdateLabels(connection_profile, args)
@@ -629,7 +670,7 @@ class ConnectionProfilesClient(object):
         batch_size_attribute='pageSize')
 
   def GetUri(self, name):
-    """Get the URL string for a connnection profile.
+    """Get the URL string for a connection profile.
 
     Args:
       name: connection profile's full name.

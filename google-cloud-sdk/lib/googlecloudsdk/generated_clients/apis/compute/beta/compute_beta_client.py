@@ -1230,6 +1230,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListUsable(self, request, global_params=None):
+      r"""Retrieves an aggregated list of all usable backend services in the specified project.
+
+      Args:
+        request: (ComputeBackendServicesListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceListUsable) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.backendServices.listUsable',
+        ordered_params=['project'],
+        path_params=['project'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/global/backendServices/listUsable',
+        request_field='',
+        request_type_name='ComputeBackendServicesListUsableRequest',
+        response_type_name='BackendServiceListUsable',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Patches the specified BackendService resource with the data included in the request. For more information, see Backend services overview. This method supports PATCH semantics and uses the JSON merge patch format and processing rules.
 
@@ -10746,6 +10772,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Perform maintenance on a subset of nodes in the node group.
+
+      Args:
+        request: (ComputeNodeGroupsPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.nodeGroups.performMaintenance',
+        ordered_params=['project', 'zone', 'nodeGroup'],
+        path_params=['nodeGroup', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/nodeGroups/{nodeGroup}/performMaintenance',
+        request_field='nodeGroupsPerformMaintenanceRequest',
+        request_type_name='ComputeNodeGroupsPerformMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetIamPolicy(self, request, global_params=None):
       r"""Sets the access control policy on the specified resource. Replaces any existing policy.
 
@@ -12783,6 +12835,32 @@ class ComputeBeta(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionBackendServicesListRequest',
         response_type_name='BackendServiceList',
+        supports_download=False,
+    )
+
+    def ListUsable(self, request, global_params=None):
+      r"""Retrieves an aggregated list of all usable backend services in the specified project in the given region.
+
+      Args:
+        request: (ComputeRegionBackendServicesListUsableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackendServiceListUsable) The response message.
+      """
+      config = self.GetMethodConfig('ListUsable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListUsable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionBackendServices.listUsable',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/backendServices/listUsable',
+        request_field='',
+        request_type_name='ComputeRegionBackendServicesListUsableRequest',
+        response_type_name='BackendServiceListUsable',
         supports_download=False,
     )
 

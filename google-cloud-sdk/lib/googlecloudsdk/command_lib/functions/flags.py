@@ -662,7 +662,7 @@ def AddTriggerFlagGroup(parser):
       The provided attribute/value pair will be used with the
       `match-path-pattern` operator to configure the trigger, see
       https://cloud.google.com/eventarc/docs/reference/rest/v1/projects.locations.triggers#eventfilter
-      and http://cloud/eventarc/docs/path-patterns for more details about on
+      and https://cloud.google.com/eventarc/docs/path-patterns for more details about on
       how to construct path patterns.
 
       For example, to filter on events for Compute Engine VMs in a given zone:
@@ -1075,4 +1075,21 @@ def _ValidateJsonOrRaiseError(data, arg_name):
   except ValueError as e:
     raise exceptions.InvalidArgumentException(
         arg_name, 'Is not a valid JSON: ' + six.text_type(e)
+    )
+
+
+def AddBuildServiceAccountFlag(parser, track):
+  if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+    parser.add_argument(
+        '--build-service-account',
+        help="""\
+            IAM service account whose credentials will be used for the build step.
+            Must be of the format projects/${PROJECT_ID}/serviceAccounts/${ACCOUNT_EMAIL_ADDRESS}.
+
+            If not provided, the function will use the project's default
+            service account for Cloud Build.
+
+            Only applicable when the `--gen2` flag is provided.
+        """,
+        hidden=True,
     )

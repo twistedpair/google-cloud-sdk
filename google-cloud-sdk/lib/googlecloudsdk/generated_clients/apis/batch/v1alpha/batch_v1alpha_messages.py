@@ -447,7 +447,14 @@ class Container(_messages.Message):
       the username from the Secret Manager.
     volumes: Volumes to mount (bind mount) from the host machine files or
       directories into the container, formatted to match docker run's --volume
-      option, e.g. /foo:/bar, or /foo:/bar:ro
+      option, e.g. /foo:/bar, or /foo:/bar:ro If the `TaskSpec.Volumes` field
+      is specified but this field is not, Batch will mount each volume from
+      the host machine to the container with the same mount path by default.
+      In this case, the default mount option for containers will be read-only
+      (ro) for existing persistent disks and read-write (rw) for other volume
+      types, regardless of the original mount options specified in
+      `TaskSpec.Volumes`. If you need different mount settings, you can
+      explicitly configure them in this field.
   """
 
   blockExternalNetwork = _messages.BooleanField(1)
@@ -483,7 +490,7 @@ class Disk(_messages.Message):
       supported for a boot disk: * `batch-debian`: use Batch Debian images. *
       `batch-centos`: use Batch CentOS images. * `batch-cos`: use Batch
       Container-Optimized images. * `batch-hpc-centos`: use Batch HPC CentOS
-      images.
+      images. * `batch-hpc-rocky`: use Batch HPC Rocky Linux images.
     sizeGb: Disk size in GB. **Non-Boot Disk**: If the `type` specifies a
       persistent disk, this field is ignored if `data_source` is set as
       `image` or `snapshot`. If the `type` specifies a local SSD, this field
@@ -628,7 +635,7 @@ class InstancePolicy(_messages.Message):
       https://cloud.google.com/compute/docs/instances/specify-min-cpu-
       platform.
     provisioningModel: The provisioning model.
-    reservation: If specified, VMs will consume only the specified
+    reservation: Optional. If specified, VMs will consume only the specified
       reservation. If not specified (default), VMs will consume any applicable
       reservation.
   """

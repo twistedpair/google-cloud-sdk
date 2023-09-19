@@ -378,6 +378,50 @@ class Automation(_messages.Message):
   updateTime = _messages.StringField(12)
 
 
+class AutomationEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/automation" Platform Log
+  event that describes the Automation related events.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    automation: The name of the `AutomationRun`.
+    message: Debug message for when there is an update on the AutomationRun.
+      Provides further details about the resource creation or state change.
+    pipelineUid: Unique identifier of the `DeliveryPipeline`.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_RENDER_STATUES_CHANGE = 6
+
+  automation = _messages.StringField(1)
+  message = _messages.StringField(2)
+  pipelineUid = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+
+
 class AutomationResourceSelector(_messages.Message):
   r"""AutomationResourceSelector contains the information to select the
   resources to which an Automation is going to be applied.
@@ -493,6 +537,57 @@ class AutomationRun(_messages.Message):
   targetId = _messages.StringField(14)
   updateTime = _messages.StringField(15)
   waitUntilTime = _messages.StringField(16)
+
+
+class AutomationRunEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/automation_run" Platform
+  Log event that describes the AutomationRun related events.
+
+  Enums:
+    TypeValueValuesEnum: Type of this notification, e.g. for a Pub/Sub
+      failure.
+
+  Fields:
+    automationId: Identifier of the `Automation`.
+    automationRun: The name of the `AutomationRun`.
+    destinationTargetId: ID of the `Target` to which the `AutomationRun` is
+      created.
+    message: Debug message for when there is an update on the AutomationRun.
+      Provides further details about the resource creation or state change.
+    pipelineUid: Unique identifier of the `DeliveryPipeline`.
+    ruleId: Identifier of the `Automation` rule.
+    type: Type of this notification, e.g. for a Pub/Sub failure.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a Pub/Sub failure.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_RENDER_STATUES_CHANGE = 6
+
+  automationId = _messages.StringField(1)
+  automationRun = _messages.StringField(2)
+  destinationTargetId = _messages.StringField(3)
+  message = _messages.StringField(4)
+  pipelineUid = _messages.StringField(5)
+  ruleId = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class Binding(_messages.Message):
@@ -4907,13 +5002,28 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class SkaffoldGCSSource(_messages.Message):
+  r"""Cloud Storage bucket containing Skaffold Config modules.
+
+  Fields:
+    path: Optional. Relative path from the source to the Skaffold file.
+    source: Required. Cloud Storage source paths to copy recursively. For
+      example, providing "gs://my-bucket/dir/configs/*" will result in
+      Skaffold copying all files within the "dir/configs" directory in the
+      bucket "my-bucket".
+  """
+
+  path = _messages.StringField(1)
+  source = _messages.StringField(2)
+
+
 class SkaffoldGitSource(_messages.Message):
   r"""Git repository containing Skaffold Config modules.
 
   Fields:
-    path: Required. Relative path from the repository root to the Skaffold
+    path: Optional. Relative path from the repository root to the Skaffold
       file.
-    ref: Required. Git ref the package should be cloned from.
+    ref: Optional. Git ref the package should be cloned from.
     repo: Required. Git repository the package should be cloned from.
   """
 
@@ -4926,13 +5036,16 @@ class SkaffoldModules(_messages.Message):
   r"""Skaffold Config modules and their remote source.
 
   Fields:
-    configs: Required. The Skaffold Config modules to use from the specified
+    configs: Optional. The Skaffold Config modules to use from the specified
       source.
     git: Remote git repository containing the Skaffold Config modules.
+    googleCloudStorage: Cloud Storage bucket containing the Skaffold Config
+      modules.
   """
 
   configs = _messages.StringField(1, repeated=True)
   git = _messages.MessageField('SkaffoldGitSource', 2)
+  googleCloudStorage = _messages.MessageField('SkaffoldGCSSource', 3)
 
 
 class SkaffoldSupportedCondition(_messages.Message):

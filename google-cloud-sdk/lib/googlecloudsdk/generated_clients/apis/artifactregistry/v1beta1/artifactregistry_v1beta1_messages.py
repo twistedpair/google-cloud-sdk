@@ -950,8 +950,8 @@ class Repository(_messages.Message):
   r"""A Repository for storing artifacts with a specific format.
 
   Enums:
-    FormatValueValuesEnum: The format of packages that are stored in the
-      repository.
+    FormatValueValuesEnum: Optional. The format of packages that are stored in
+      the repository.
 
   Messages:
     LabelsValue: Labels with user-defined metadata. This field may contain up
@@ -962,7 +962,8 @@ class Repository(_messages.Message):
   Fields:
     createTime: Output only. The time when the repository was created.
     description: The user-provided description of the repository.
-    format: The format of packages that are stored in the repository.
+    format: Optional. The format of packages that are stored in the
+      repository.
     kmsKeyName: The Cloud KMS resource name of the customer managed encryption
       key that's used to encrypt the contents of the Repository. Has the form:
       `projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-
@@ -983,7 +984,7 @@ class Repository(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    r"""The format of packages that are stored in the repository.
+    r"""Optional. The format of packages that are stored in the repository.
 
     Values:
       FORMAT_UNSPECIFIED: Unspecified package format.

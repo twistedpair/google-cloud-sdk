@@ -492,13 +492,16 @@ class GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsMetadataIndividualAutoLabe
   r"""The status of individual documents in the auto-labeling process.
 
   Fields:
+    documentId: The document id of the auto-labeled document. This will
+      replace the gcs_uri.
     gcsUri: The gcs_uri of the auto-labeling document, which uniquely
       identifies a dataset document.
     status: The status of the document auto-labeling.
   """
 
-  gcsUri = _messages.StringField(1)
-  status = _messages.MessageField('GoogleRpcStatus', 2)
+  documentId = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentId', 1)
+  gcsUri = _messages.StringField(2)
+  status = _messages.MessageField('GoogleRpcStatus', 3)
 
 
 class GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsResponse(_messages.Message):
@@ -2895,7 +2898,10 @@ class GoogleCloudDocumentaiV1OcrConfig(_messages.Message):
       current ML-based layout detection algorithm. Customers can choose the
       best suitable layout algorithm based on their situation.
     computeStyleInfo: Turn on font identification model and return font style
-      information.
+      information. Deprecated, use PremiumFeatures.compute_style_info instead.
+    disableCharacterBoxesDetection: Turn off character box detector in OCR
+      engine. Character box detection is enabled by default in OCR 2.0+
+      processors.
     enableImageQualityScores: Enables intelligent document quality scores
       after OCR. Can help with diagnosing why OCR responses are of poor
       quality for a given input. Adds additional latency comparable to regular
@@ -2905,14 +2911,17 @@ class GoogleCloudDocumentaiV1OcrConfig(_messages.Message):
       inputs.
     enableSymbol: Includes symbol level OCR information if set to true.
     hints: Hints for the OCR model.
+    premiumFeatures: Configurations for premium OCR features.
   """
 
   advancedOcrOptions = _messages.StringField(1, repeated=True)
   computeStyleInfo = _messages.BooleanField(2)
-  enableImageQualityScores = _messages.BooleanField(3)
-  enableNativePdfParsing = _messages.BooleanField(4)
-  enableSymbol = _messages.BooleanField(5)
-  hints = _messages.MessageField('GoogleCloudDocumentaiV1OcrConfigHints', 6)
+  disableCharacterBoxesDetection = _messages.BooleanField(3)
+  enableImageQualityScores = _messages.BooleanField(4)
+  enableNativePdfParsing = _messages.BooleanField(5)
+  enableSymbol = _messages.BooleanField(6)
+  hints = _messages.MessageField('GoogleCloudDocumentaiV1OcrConfigHints', 7)
+  premiumFeatures = _messages.MessageField('GoogleCloudDocumentaiV1OcrConfigPremiumFeatures', 8)
 
 
 class GoogleCloudDocumentaiV1OcrConfigHints(_messages.Message):
@@ -2930,15 +2939,48 @@ class GoogleCloudDocumentaiV1OcrConfigHints(_messages.Message):
   languageHints = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudDocumentaiV1OcrConfigPremiumFeatures(_messages.Message):
+  r"""Configurations for premium OCR features.
+
+  Fields:
+    computeStyleInfo: Turn on font identification model and return font style
+      information.
+    enableMathOcr: Turn on the model that can extract LaTeX math formulas.
+    enableSelectionMarkDetection: Turn on selection mark detector in OCR
+      engine. Only available in OCR 2.0+ processors.
+  """
+
+  computeStyleInfo = _messages.BooleanField(1)
+  enableMathOcr = _messages.BooleanField(2)
+  enableSelectionMarkDetection = _messages.BooleanField(3)
+
+
 class GoogleCloudDocumentaiV1ProcessOptions(_messages.Message):
   r"""Options for Process API
 
   Fields:
+    fromEnd: Only process certain pages from the end, same as above.
+    fromStart: Only process certain pages from the start, process all if the
+      document has less pages.
+    individualPageSelector: Which pages to process (1-indexed).
     ocrConfig: Only applicable to `OCR_PROCESSOR`. Returns error if set on
       other processor types.
   """
 
-  ocrConfig = _messages.MessageField('GoogleCloudDocumentaiV1OcrConfig', 1)
+  fromEnd = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  fromStart = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  individualPageSelector = _messages.MessageField('GoogleCloudDocumentaiV1ProcessOptionsIndividualPageSelector', 3)
+  ocrConfig = _messages.MessageField('GoogleCloudDocumentaiV1OcrConfig', 4)
+
+
+class GoogleCloudDocumentaiV1ProcessOptionsIndividualPageSelector(_messages.Message):
+  r"""A list of individual page numbers.
+
+  Fields:
+    pages: Optional. Indices of the pages (starting from 1).
+  """
+
+  pages = _messages.IntegerField(1, repeated=True, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):

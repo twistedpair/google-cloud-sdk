@@ -354,7 +354,6 @@ class Instance(_messages.Message):
     hostConfig: Output only. A list of hostnames for this instance.
     kmsKey: Optional. Immutable. Customer-managed encryption key name, in the
       format projects/*/locations/*/keyRings/*/cryptoKeys/*.
-    kmsKeyVersion: Output only. Version of the CMEK key
     labels: Optional. Labels as key value pairs.
     name: Optional. A unique identifier for an instance. The name should be of
       the format: `projects/{project_number}/locations/{location_id}/instances
@@ -429,12 +428,11 @@ class Instance(_messages.Message):
   createTime = _messages.StringField(1)
   hostConfig = _messages.MessageField('HostConfig', 2)
   kmsKey = _messages.StringField(3)
-  kmsKeyVersion = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  stateNote = _messages.EnumField('StateNoteValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  stateNote = _messages.EnumField('StateNoteValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class IssueRedirectTicketInternalRequest(_messages.Message):

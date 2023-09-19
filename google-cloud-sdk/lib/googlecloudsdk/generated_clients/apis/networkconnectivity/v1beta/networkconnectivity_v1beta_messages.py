@@ -61,19 +61,19 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
   r"""The RegionalEndpoint resource.
 
   Enums:
-    AccessTypeValueValuesEnum: The access type of this regional endpoint. This
-      field is reflected in the PSC Forwarding Rule configuration to enable
-      global access.
+    AccessTypeValueValuesEnum: Required. The access type of this regional
+      endpoint. This field is reflected in the PSC Forwarding Rule
+      configuration to enable global access.
 
   Messages:
     LabelsValue: User-defined labels.
 
   Fields:
-    accessType: The access type of this regional endpoint. This field is
-      reflected in the PSC Forwarding Rule configuration to enable global
-      access.
+    accessType: Required. The access type of this regional endpoint. This
+      field is reflected in the PSC Forwarding Rule configuration to enable
+      global access.
     createTime: Output only. Time when the RegionalEndpoint was created.
-    description: A description of this resource.
+    description: Optional. A description of this resource.
     ipAddress: Output only. The literal IP address of the PSC Forwarding Rule
       created on behalf of the customer.
     labels: User-defined labels.
@@ -88,15 +88,16 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
     subnetwork: The name of the subnetwork from which the IP address will be
       allocated. Format:
       `projects/{project}/regions/{region}/subnetworks/{subnetwork}`
-    targetEndpoint: The service endpoint this private regional endpoint
-      connects to. Format: `{apiname}.{region}.p.rep.googleapis.com` Example:
-      "cloudkms.us-central1.p.rep.googleapis.com".
+    targetEndpoint: Required. The service endpoint this private regional
+      endpoint connects to. Format: `{apiname}.{region}.p.rep.googleapis.com`
+      Example: "cloudkms.us-central1.p.rep.googleapis.com".
     updateTime: Output only. Time when the RegionalEndpoint was updated.
   """
 
   class AccessTypeValueValuesEnum(_messages.Enum):
-    r"""The access type of this regional endpoint. This field is reflected in
-    the PSC Forwarding Rule configuration to enable global access.
+    r"""Required. The access type of this regional endpoint. This field is
+    reflected in the PSC Forwarding Rule configuration to enable global
+    access.
 
     Values:
       ACCESS_TYPE_UNSPECIFIED: An invalid type as the default case.

@@ -283,6 +283,33 @@ class EdgecontainerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateOfflineCredential(self, request, global_params=None):
+      r"""Generates an offline credential for a Cluster.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsClustersGenerateOfflineCredentialRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateOfflineCredentialResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateOfflineCredential')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateOfflineCredential.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:generateOfflineCredential',
+        http_method='GET',
+        method_id='edgecontainer.projects.locations.clusters.generateOfflineCredential',
+        ordered_params=['cluster'],
+        path_params=['cluster'],
+        query_params=[],
+        relative_path='v1alpha/{+cluster}:generateOfflineCredential',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsClustersGenerateOfflineCredentialRequest',
+        response_type_name='GenerateOfflineCredentialResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Cluster.
 

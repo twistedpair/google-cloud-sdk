@@ -2055,3 +2055,30 @@ def AddReplicationLagMaxSecondsForRecreate(parser):
           'seconds, If the replica lag exceeds the specified value, the read'
           'replica(s) will be recreated. Min value=300 seconds,'
           'Max value=31536000 seconds.'))
+
+
+def AddSslMode(parser):
+  """Adds the '--ssl-mode' flag to the parser.
+
+  Args:
+    parser: The current argparse parser to add this to.
+  """
+  help_text = 'Set the SSL mode of the instance.'
+  parser.add_argument(
+      '--ssl-mode',
+      choices={
+          'ALLOW_UNENCRYPTED_AND_ENCRYPTED': (
+              'Allow non-SSL and SSL connections. For SSL connections, client'
+              ' certificate will not be verified.'
+          ),
+          'ENCRYPTED_ONLY': 'Only allow connections encrypted with SSL/TLS.',
+          'TRUSTED_CLIENT_CERTIFICATE_REQUIRED': (
+              'Only allow connections encrypted with SSL/TLS and with valid'
+              ' client certificates.'
+          ),
+      },
+      hidden=True,
+      required=False,
+      default=None,
+      help=help_text,
+  )

@@ -6,6 +6,111 @@ Subscribe to these release notes at [https://groups.google.com/forum/#!forum/goo
 
 Note: Support for Python 3.5-3.7 will be deprecated on September 26th, 2023.
 
+## 447.0.0 (2023-09-19)
+
+### Breaking Changes
+
+*   **(GKE Hub)** Removed `gcloud {alpha, beta} fleet namespaces`. Use
+    `gcloud fleet scopes namespaces` instead.
+*   **(GKE Hub)** Removed `gcloud {alpha, beta} fleet namespaces rbacrolebindings`. Use
+    `gcloud fleet scopes rbacrolebindings` instead.
+*   **(Network Connectivity)** Deprecated `gcloud network-connectivity spokes accept` and
+    `gcloud network-connectivity spokes reject` commands. Use
+    `gcloud network-connectivity hubs accept-spoke` and
+    `gcloud network-connectivity hubs reject-spoke` commands instead.
+
+
+### Google Cloud CLI
+
+* Improved post-processing times during `gcloud components update` and `gcloud
+  components install` on macOS and Linux.
+* Fixed write permission check for `gcloud auth enterprise-certificate-config create`.
+
+### Anthos On-Prem
+
+* Added `--vcenter-resource-pool`, `--vcenter-datastore`, `--vcenter-datacenter`, `--vcenter-cluster`, `--vcenter-folder`, `--vcenter-ca-cert-data`, `--vcenter-storage-policy-name` to `gcloud container vmware clusters create` to specify vCenter configurations that are different from its admin cluster.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.19 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.19>.
+
+### Binauthz
+
+*  Added flag `--pae-encode-payload` in command `gcloud container binauthz attestations sign-and-create` to generate DSSE format attestations.
+*  Added flag `--dsse-type` in command `gcloud container binauthz attestations sign-and-create` to allow specifying the DSSE type for the attestations.
+
+### Cloud Dataproc
+
+* Added `--secondary-worker-machine-types` flags to `gcloud dataproc clusters create`.
+
+### Cloud Datastream
+
+* Fixed a bug updating the backfill policy of a stream.
+
+### Cloud Firestore Emulator
+
+* Release Cloud Firestore emulator v1.18.2
+  * Remove nanosecond precision of event timestamp in the Firestore eventarc
+    integration(2nd gen).
+  * Fix a bug to make emulator consistent with production for queries.
+
+### Cloud Memorystore
+
+*   Updated `gcloud memcache instances create` command to include
+    MEMCACHE_1_6_15 as an allowed value for memcached-version flag.
+*   Promoted the command `gcloud memcache instances upgrade` to GA.
+
+### Cloud NetApp
+
+* Fixed a crash when creating NetApp snapshots, backup policies, backup vaults.
+
+### Cloud Storage
+
+* Added the `storage/parallel_composite_upload_prefix` config option, which
+allows adjusting the paths of temporary components created during composite uploads.
+
+### Cloud TPU
+
+* Promote `gcloud compute tpus tpu-vm update` command and its `--description`
+  flag to GA.
+
+### Compute Engine
+
+* Promoted `--purpose=global-managed-proxy` flag of `gcloud compute networks subnets create` to GA.
+
+* Added 'STANDARD_WITH_GRAPHQL' enum value to `gcloud compute security-policies
+update --json-parsing` and promoted it to beta.
+
+* Added `specific-then-any-reservation` and `specific-then-no-reservation` to the flag `--reservation-affinity` for alpha and beta in:
+  * `gcloud compute instances create`
+  * `gcloud compute instances bulk create`
+  * `gcloud compute instances-templates create`
+
+### Database Migration
+
+* Added `POSTGRES_15` database version option for `--database-version` flag to `database-migration connection-profiles create cloudsql`.
+* Added server side SSL support using `--ca-certificate` flag in `database-migration connection-profiles create oracle`.
+* Added oracle connection update support via `database-migration connection-profiles update oracle`.
+
+### Kpt
+
+* Updated kpt in Google Cloud CLI from 1.0.0-beta.43 to 1.0.0-beta.44.
+
+### Kubernetes Engine
+
+* Added `--enable-backup-restore` flag to `gcloud container clusters create-auto` to allow enabling Backup for GKE agent on Autopilot clusters at creation time.
+
+### Network Connectivity
+
+*   Added `gcloud network-connectivity hubs accept-spoke` and
+    `gcloud network-connectivity hubs reject-spoke` commands.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+Note: Support for Python 3.5-3.7 will be deprecated on September 26th, 2023.
+
 ## 446.0.1 (2023-09-14)
 
 ### Cloud Run

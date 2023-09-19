@@ -167,33 +167,6 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single EdgeSlm.
-
-      Args:
-        request: (TelcoautomationProjectsLocationsEdgeSlmsPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/edgeSlms/{edgeSlmsId}',
-        http_method='PATCH',
-        method_id='telcoautomation.projects.locations.edgeSlms.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='edgeSlm',
-        request_type_name='TelcoautomationProjectsLocationsEdgeSlmsPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -619,6 +592,33 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def SearchRevisions(self, request, global_params=None):
+      r"""Searches across blueprint revisions.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsSearchRevisionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchBlueprintRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchRevisions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchRevisions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints:searchRevisions',
+        http_method='GET',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.searchRevisions',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'query'],
+        relative_path='v1alpha1/{+parent}/blueprints:searchRevisions',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsSearchRevisionsRequest',
+        response_type_name='SearchBlueprintRevisionsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOrchestrationClustersDeploymentsHydratedDeploymentsService(base_api.BaseApiService):
     """Service class for the projects_locations_orchestrationClusters_deployments_hydratedDeployments resource."""
 
@@ -781,7 +781,7 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsComputeDeploymentStatusRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (DeploymentStatusResponse) The response message.
+        (ComputeDeploymentStatusResponse) The response message.
       """
       config = self.GetMethodConfig('ComputeDeploymentStatus')
       return self._RunMethod(
@@ -797,7 +797,7 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}:computeDeploymentStatus',
         request_field='',
         request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsComputeDeploymentStatusRequest',
-        response_type_name='DeploymentStatusResponse',
+        response_type_name='ComputeDeploymentStatusResponse',
         supports_download=False,
     )
 
@@ -1017,6 +1017,33 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Remove(self, request, global_params=None):
+      r"""Removes the deployment by marking it as DELETING. Post which deployment and it's revisions gets deleted.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRemoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Remove')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Remove.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments/{deploymentsId}:remove',
+        http_method='POST',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.remove',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:remove',
+        request_field='removeDeploymentRequest',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRemoveRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
     def Rollback(self, request, global_params=None):
       r"""Rollback the active deployment to the given past approved deployment revision.
 
@@ -1041,6 +1068,33 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         request_field='rollbackDeploymentRequest',
         request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsRollbackRequest',
         response_type_name='Deployment',
+        supports_download=False,
+    )
+
+    def SearchRevisions(self, request, global_params=None):
+      r"""Searches across deployment revisions.
+
+      Args:
+        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsSearchRevisionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchDeploymentRevisionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchRevisions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchRevisions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments:searchRevisions',
+        http_method='GET',
+        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.searchRevisions',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'query'],
+        relative_path='v1alpha1/{+parent}/deployments:searchRevisions',
+        request_field='',
+        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsSearchRevisionsRequest',
+        response_type_name='SearchDeploymentRevisionsResponse',
         supports_download=False,
     )
 
@@ -1159,33 +1213,6 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersListRequest',
         response_type_name='ListOrchestrationClustersResponse',
-        supports_download=False,
-    )
-
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single OrchestrationCluster.
-
-      Args:
-        request: (TelcoautomationProjectsLocationsOrchestrationClustersPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}',
-        http_method='PATCH',
-        method_id='telcoautomation.projects.locations.orchestrationClusters.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='orchestrationCluster',
-        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersPatchRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

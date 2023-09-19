@@ -1560,6 +1560,83 @@ class AliasIpRange(_messages.Message):
   subnetworkRangeName = _messages.StringField(2)
 
 
+class AllocationAggregateReservation(_messages.Message):
+  r"""This reservation type is specified by total resource amounts (e.g. total
+  count of CPUs) and can account for multiple instance SKUs. In other words,
+  one can create instances of varying shapes against this reservation.
+
+  Enums:
+    VmFamilyValueValuesEnum: The VM family that all instances scheduled
+      against this reservation must belong to.
+    WorkloadTypeValueValuesEnum: The workload type of the instances that will
+      target this reservation.
+
+  Fields:
+    inUseResources: [Output only] List of resources currently in use.
+    reservedResources: List of reserved resources (CPUs, memory,
+      accelerators).
+    vmFamily: The VM family that all instances scheduled against this
+      reservation must belong to.
+    workloadType: The workload type of the instances that will target this
+      reservation.
+  """
+
+  class VmFamilyValueValuesEnum(_messages.Enum):
+    r"""The VM family that all instances scheduled against this reservation
+    must belong to.
+
+    Values:
+      VM_FAMILY_CLOUD_TPU_LITE_DEVICE_CT5L: <no description>
+      VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT5LP: <no description>
+      VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P: <no description>
+    """
+    VM_FAMILY_CLOUD_TPU_LITE_DEVICE_CT5L = 0
+    VM_FAMILY_CLOUD_TPU_LITE_POD_SLICE_CT5LP = 1
+    VM_FAMILY_CLOUD_TPU_POD_SLICE_CT4P = 2
+
+  class WorkloadTypeValueValuesEnum(_messages.Enum):
+    r"""The workload type of the instances that will target this reservation.
+
+    Values:
+      BATCH: Reserved resources will be optimized for BATCH workloads, such as
+        ML training.
+      SERVING: Reserved resources will be optimized for SERVING workloads,
+        such as ML inference.
+      UNSPECIFIED: <no description>
+    """
+    BATCH = 0
+    SERVING = 1
+    UNSPECIFIED = 2
+
+  inUseResources = _messages.MessageField('AllocationAggregateReservationReservedResourceInfo', 1, repeated=True)
+  reservedResources = _messages.MessageField('AllocationAggregateReservationReservedResourceInfo', 2, repeated=True)
+  vmFamily = _messages.EnumField('VmFamilyValueValuesEnum', 3)
+  workloadType = _messages.EnumField('WorkloadTypeValueValuesEnum', 4)
+
+
+class AllocationAggregateReservationReservedResourceInfo(_messages.Message):
+  r"""A AllocationAggregateReservationReservedResourceInfo object.
+
+  Fields:
+    accelerator: Properties of accelerator resources in this reservation.
+  """
+
+  accelerator = _messages.MessageField('AllocationAggregateReservationReservedResourceInfoAccelerator', 1)
+
+
+class AllocationAggregateReservationReservedResourceInfoAccelerator(_messages.Message):
+  r"""A AllocationAggregateReservationReservedResourceInfoAccelerator object.
+
+  Fields:
+    acceleratorCount: Number of accelerators of specified type.
+    acceleratorType: Full or partial URL to accelerator type. e.g.
+      "projects/{PROJECT}/zones/{ZONE}/acceleratorTypes/ct4l"
+  """
+
+  acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  acceleratorType = _messages.StringField(2)
+
+
 class AllocationResourceStatus(_messages.Message):
   r"""[Output Only] Contains output only fields.
 
@@ -1645,14 +1722,26 @@ class AllocationSpecificSKUAllocationReservedInstanceProperties(_messages.Messag
     values are: `PERIODIC`.
 
     Values:
+      AS_NEEDED: VMs are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the VM than the
+        PERIODIC and RECURRENT options.
       PERIODIC: VMs receive infrastructure and hypervisor updates on a
         periodic basis, minimizing the number of maintenance operations (live
         migrations or terminations) on an individual VM. This may mean a VM
         will take longer to receive an update than if it was configured for
         AS_NEEDED. Security updates will still be applied as soon as they are
         available.
+      RECURRENT: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
     """
-    PERIODIC = 0
+    AS_NEEDED = 0
+    PERIODIC = 1
+    RECURRENT = 2
 
   guestAccelerators = _messages.MessageField('AcceleratorConfig', 1, repeated=True)
   localSsds = _messages.MessageField('AllocationSpecificSKUAllocationAllocatedInstancePropertiesReservedDisk', 2, repeated=True)
@@ -4234,6 +4323,7 @@ class BackendService(_messages.Message):
       references this backend service. Not supported when the backend service
       is referenced by a URL map that is bound to target gRPC proxy that has
       validateForProxyless field set to true. Instead, use maxStreamDuration.
+    usedBy: A BackendServiceUsedBy attribute.
   """
 
   class CompressionModeValueValuesEnum(_messages.Enum):
@@ -4479,6 +4569,7 @@ class BackendService(_messages.Message):
   sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 39)
   subsetting = _messages.MessageField('Subsetting', 40)
   timeoutSec = _messages.IntegerField(41, variant=_messages.Variant.INT32)
+  usedBy = _messages.MessageField('BackendServiceUsedBy', 42, repeated=True)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5268,6 +5359,169 @@ class BackendServiceList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class BackendServiceListUsable(_messages.Message):
+  r"""Contains a list of usable BackendService resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of BackendService resources.
+    kind: [Output Only] Type of resource. Always
+      compute#usableBackendServiceList for lists of usable backend services.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      LIST_OVERHEAD_QUOTA_EXCEED = 10
+      MISSING_TYPE_DEPENDENCY = 11
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
+      NEXT_HOP_CANNOT_IP_FORWARD = 13
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
+      NEXT_HOP_INSTANCE_NOT_FOUND = 15
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
+      NEXT_HOP_NOT_RUNNING = 17
+      NOT_CRITICAL_ERROR = 18
+      NO_RESULTS_ON_PAGE = 19
+      PARTIAL_SUCCESS = 20
+      REQUIRED_TOS_AGREEMENT = 21
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
+      RESOURCE_NOT_DELETED = 23
+      SCHEMA_VALIDATION_IGNORED = 24
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
+      UNDECLARED_PROPERTIES = 26
+      UNREACHABLE = 27
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('BackendService', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#usableBackendServiceList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class BackendServiceLocalityLoadBalancingPolicyConfig(_messages.Message):
   r"""Container for either a built-in LB policy supported by gRPC or Envoy or
   a custom one implemented by the end user.
@@ -5430,6 +5684,16 @@ class BackendServiceReference(_messages.Message):
   """
 
   backendService = _messages.StringField(1)
+
+
+class BackendServiceUsedBy(_messages.Message):
+  r"""A BackendServiceUsedBy object.
+
+  Fields:
+    reference: A string attribute.
+  """
+
+  reference = _messages.StringField(1)
 
 
 class BackendServicesScopedList(_messages.Message):
@@ -6213,7 +6477,7 @@ class Commitment(_messages.Message):
       rate. The currently supported plans are TWELVE_MONTH (1 year), and
       THIRTY_SIX_MONTH (3 years).
     region: [Output Only] URL of the region where this commitment may be used.
-    reservations: List of reservations in this commitment.
+    reservations: List of create-on-create reseravtions for this commitment.
     resources: A list of commitment amounts for particular resources. Note
       that VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -6859,36 +7123,36 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -6947,36 +7211,36 @@ class ComputeAcceleratorTypesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -7015,36 +7279,36 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -7153,36 +7417,36 @@ class ComputeAddressesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -7294,36 +7558,36 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -7432,36 +7696,36 @@ class ComputeAutoscalersListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -7697,36 +7961,36 @@ class ComputeBackendBucketsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -7898,36 +8162,36 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -8087,36 +8351,102 @@ class ComputeBackendServicesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeBackendServicesListUsableRequest(_messages.Message):
+  r"""A ComputeBackendServicesListUsableRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -8289,36 +8619,36 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -8377,36 +8707,36 @@ class ComputeDiskTypesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -8473,36 +8803,36 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -8685,36 +9015,36 @@ class ComputeDisksListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -9043,36 +9373,36 @@ class ComputeExternalVpnGatewaysListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -9321,36 +9651,36 @@ class ComputeFirewallPoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -9594,36 +9924,36 @@ class ComputeFirewallsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -9725,36 +10055,36 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -9864,36 +10194,36 @@ class ComputeForwardingRulesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -10034,36 +10364,36 @@ class ComputeFutureReservationsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -10201,36 +10531,36 @@ class ComputeFutureReservationsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -10361,36 +10691,36 @@ class ComputeGlobalAddressesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -10542,36 +10872,36 @@ class ComputeGlobalForwardingRulesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -10810,36 +11140,36 @@ class ComputeGlobalNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Me
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -10880,36 +11210,36 @@ class ComputeGlobalNetworkEndpointGroupsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -10946,36 +11276,36 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -11048,36 +11378,36 @@ class ComputeGlobalOperationsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -11154,36 +11484,36 @@ class ComputeGlobalOrganizationOperationsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -11281,36 +11611,36 @@ class ComputeGlobalPublicDelegatedPrefixesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -11374,36 +11704,36 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -11506,36 +11836,36 @@ class ComputeHealthChecksListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -11698,36 +12028,36 @@ class ComputeHttpHealthChecksListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -11890,36 +12220,36 @@ class ComputeHttpsHealthChecksListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -12150,36 +12480,36 @@ class ComputeImagesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -12367,36 +12697,36 @@ class ComputeInstanceGroupManagerResizeRequestsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroupManager: The name of the managed instance group. The name
       should conform to RFC1035.
     maxResults: The maximum number of results per page that should be
@@ -12468,36 +12798,36 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -12707,36 +13037,36 @@ class ComputeInstanceGroupManagersListErrorsRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroupManager: The name of the managed instance group. It must be a
       string that meets the requirements in RFC1035, or an unsigned long
       integer: must match regexp pattern:
@@ -12781,36 +13111,36 @@ class ComputeInstanceGroupManagersListManagedInstancesRequest(_messages.Message)
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroupManager: The name of the managed instance group.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
@@ -12851,36 +13181,36 @@ class ComputeInstanceGroupManagersListPerInstanceConfigsRequest(_messages.Messag
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroupManager: The name of the managed instance group. It should
       conform to RFC1035.
     maxResults: The maximum number of results per page that should be
@@ -12923,36 +13253,36 @@ class ComputeInstanceGroupManagersListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -13332,36 +13662,36 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -13470,36 +13800,36 @@ class ComputeInstanceGroupsListInstancesRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroup: The name of the instance group from which you want to
       generate a list of included instances.
     instanceGroupsListInstancesRequest: A InstanceGroupsListInstancesRequest
@@ -13544,36 +13874,36 @@ class ComputeInstanceGroupsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -13729,36 +14059,36 @@ class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -13876,36 +14206,36 @@ class ComputeInstanceTemplatesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -14030,36 +14360,36 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -14420,36 +14750,36 @@ class ComputeInstancesListReferrersRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instance: Name of the target instance scoping this request, or '-' if the
       request should span over all instances in the container.
     maxResults: The maximum number of results per page that should be
@@ -14491,36 +14821,36 @@ class ComputeInstancesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -15447,36 +15777,36 @@ class ComputeInstantSnapshotsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -15602,36 +15932,36 @@ class ComputeInstantSnapshotsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -15732,36 +16062,36 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -15873,36 +16203,36 @@ class ComputeInterconnectAttachmentsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -16026,36 +16356,36 @@ class ComputeInterconnectLocationsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -16105,36 +16435,36 @@ class ComputeInterconnectRemoteLocationsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -16253,36 +16583,36 @@ class ComputeInterconnectsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -16474,36 +16804,36 @@ class ComputeLicensesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -16645,36 +16975,36 @@ class ComputeMachineImagesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -16741,36 +17071,36 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -16829,36 +17159,36 @@ class ComputeMachineTypesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -16897,36 +17227,36 @@ class ComputeNetworkAttachmentsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -17054,36 +17384,36 @@ class ComputeNetworkAttachmentsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -17185,36 +17515,36 @@ class ComputeNetworkEdgeSecurityServicesAggregatedListRequest(_messages.Message)
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -17361,36 +17691,36 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -17567,36 +17897,36 @@ class ComputeNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message)
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -17644,36 +17974,36 @@ class ComputeNetworkEndpointGroupsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -17923,36 +18253,36 @@ class ComputeNetworkFirewallPoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -18223,36 +18553,36 @@ class ComputeNetworksListPeeringRoutesRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -18308,36 +18638,36 @@ class ComputeNetworksListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -18518,36 +18848,36 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -18702,36 +19032,36 @@ class ComputeNodeGroupsListNodesRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -18772,36 +19102,36 @@ class ComputeNodeGroupsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -18855,6 +19185,34 @@ class ComputeNodeGroupsPatchRequest(_messages.Message):
 
   nodeGroup = _messages.StringField(1, required=True)
   nodeGroupResource = _messages.MessageField('NodeGroup', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeNodeGroupsPerformMaintenanceRequest(_messages.Message):
+  r"""A ComputeNodeGroupsPerformMaintenanceRequest object.
+
+  Fields:
+    nodeGroup: Name of the node group scoping this request.
+    nodeGroupsPerformMaintenanceRequest: A NodeGroupsPerformMaintenanceRequest
+      resource to be passed as the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  nodeGroup = _messages.StringField(1, required=True)
+  nodeGroupsPerformMaintenanceRequest = _messages.MessageField('NodeGroupsPerformMaintenanceRequest', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
@@ -18959,36 +19317,36 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -19113,36 +19471,36 @@ class ComputeNodeTemplatesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -19215,36 +19573,36 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -19303,36 +19661,36 @@ class ComputeNodeTypesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -19541,36 +19899,36 @@ class ComputeOrganizationSecurityPoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -19726,36 +20084,36 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -19865,36 +20223,36 @@ class ComputePacketMirroringsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -20088,36 +20446,36 @@ class ComputeProjectsGetXpnResourcesRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -20154,36 +20512,36 @@ class ComputeProjectsListXpnHostsRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -20429,36 +20787,36 @@ class ComputePublicAdvertisedPrefixesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -20522,36 +20880,36 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -20663,36 +21021,36 @@ class ComputePublicDelegatedPrefixesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -20824,36 +21182,36 @@ class ComputeRegionAutoscalersListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -21064,36 +21422,36 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -21112,6 +21470,75 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
       of results.
     project: Project ID for this request.
     region: Name of the region scoping this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeRegionBackendServicesListUsableRequest(_messages.Message):
+  r"""A ComputeRegionBackendServicesListUsableRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request. It must be a string that
+      meets the requirements in RFC1035.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
   """
@@ -21251,36 +21678,36 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -21364,36 +21791,36 @@ class ComputeRegionCommitmentsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -21526,36 +21953,36 @@ class ComputeRegionDiskTypesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -21758,36 +22185,36 @@ class ComputeRegionDisksListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -22126,36 +22553,36 @@ class ComputeRegionHealthCheckServicesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -22304,36 +22731,36 @@ class ComputeRegionHealthChecksListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -22640,36 +23067,36 @@ class ComputeRegionInstanceGroupManagersListErrorsRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroupManager: The name of the managed instance group. It must be a
       string that meets the requirements in RFC1035, or an unsigned long
       integer: must match regexp pattern:
@@ -22714,36 +23141,36 @@ class ComputeRegionInstanceGroupManagersListManagedInstancesRequest(_messages.Me
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroupManager: The name of the managed instance group.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
@@ -22785,36 +23212,36 @@ class ComputeRegionInstanceGroupManagersListPerInstanceConfigsRequest(_messages.
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroupManager: The name of the managed instance group. It should
       conform to RFC1035.
     maxResults: The maximum number of results per page that should be
@@ -22857,36 +23284,36 @@ class ComputeRegionInstanceGroupManagersListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -23252,36 +23679,36 @@ class ComputeRegionInstanceGroupsListInstancesRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     instanceGroup: Name of the regional instance group for which we want to
       list the instances.
     maxResults: The maximum number of results per page that should be
@@ -23327,36 +23754,36 @@ class ComputeRegionInstanceGroupsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -23507,36 +23934,36 @@ class ComputeRegionInstanceTemplatesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -23682,36 +24109,36 @@ class ComputeRegionInstantSnapshotsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -23947,36 +24374,36 @@ class ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Me
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -24020,36 +24447,36 @@ class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -24314,36 +24741,36 @@ class ComputeRegionNetworkFirewallPoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -24593,36 +25020,36 @@ class ComputeRegionNotificationEndpointsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -24710,36 +25137,36 @@ class ComputeRegionOperationsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -24895,36 +25322,36 @@ class ComputeRegionSecurityPoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -25097,36 +25524,36 @@ class ComputeRegionSslCertificatesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -25248,36 +25675,36 @@ class ComputeRegionSslPoliciesListAvailableFeaturesRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -25316,36 +25743,36 @@ class ComputeRegionSslPoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -25494,36 +25921,36 @@ class ComputeRegionTargetHttpProxiesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -25672,36 +26099,36 @@ class ComputeRegionTargetHttpsProxiesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -25908,36 +26335,36 @@ class ComputeRegionTargetTcpProxiesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -26061,36 +26488,36 @@ class ComputeRegionUrlMapsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -26201,36 +26628,36 @@ class ComputeRegionZonesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -26281,36 +26708,36 @@ class ComputeRegionsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -26347,36 +26774,36 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -26501,36 +26928,36 @@ class ComputeReservationsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -26664,36 +27091,36 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -26819,36 +27246,36 @@ class ComputeResourcePoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -26952,36 +27379,36 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -27070,36 +27497,36 @@ class ComputeRoutersGetNatMappingInfoRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -27198,36 +27625,36 @@ class ComputeRoutersListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -27411,36 +27838,36 @@ class ComputeRoutesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -27509,36 +27936,36 @@ class ComputeSecurityPoliciesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -27659,36 +28086,36 @@ class ComputeSecurityPoliciesListPreconfiguredExpressionSetsRequest(_messages.Me
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -27725,36 +28152,36 @@ class ComputeSecurityPoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -27884,36 +28311,36 @@ class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -28039,36 +28466,36 @@ class ComputeServiceAttachmentsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -28280,36 +28707,36 @@ class ComputeSnapshotsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -28391,36 +28818,36 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -28524,36 +28951,36 @@ class ComputeSslCertificatesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -28605,36 +29032,36 @@ class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -28739,36 +29166,36 @@ class ComputeSslPoliciesListAvailableFeaturesRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -28805,36 +29232,36 @@ class ComputeSslPoliciesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -28912,36 +29339,36 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -29094,36 +29521,36 @@ class ComputeSubnetworksListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -29162,36 +29589,36 @@ class ComputeSubnetworksListUsableRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -29391,36 +29818,36 @@ class ComputeTargetGrpcProxiesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -29498,36 +29925,36 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -29631,36 +30058,36 @@ class ComputeTargetHttpProxiesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -29764,36 +30191,36 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -29897,36 +30324,36 @@ class ComputeTargetHttpsProxiesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -30144,36 +30571,36 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -30283,36 +30710,36 @@ class ComputeTargetInstancesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -30453,36 +30880,36 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -30609,36 +31036,36 @@ class ComputeTargetPoolsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -30868,36 +31295,36 @@ class ComputeTargetSslProxiesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -31089,36 +31516,36 @@ class ComputeTargetTcpProxiesAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -31222,36 +31649,36 @@ class ComputeTargetTcpProxiesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -31359,36 +31786,36 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -31498,36 +31925,36 @@ class ComputeTargetVpnGatewaysListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -31611,36 +32038,36 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -31769,36 +32196,36 @@ class ComputeUrlMapsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -31915,36 +32342,36 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -32067,36 +32494,36 @@ class ComputeVpnGatewaysListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -32180,36 +32607,36 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     includeAllScopes: Indicates whether every visible scope for each scope
       type (zone, region, global) should be included in the response. For new
       resource types added after this field, the flag has no effect as new
@@ -32318,36 +32745,36 @@ class ComputeVpnTunnelsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -32463,36 +32890,36 @@ class ComputeZoneOperationsListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -32557,36 +32984,36 @@ class ComputeZonesListRequest(_messages.Message):
     filter: A filter expression that filters resources listed in the response.
       Most Compute resources support two types of filter expressions:
       expressions that support regular expressions and expressions that follow
-      API improvement proposal AIP-160. If you want to use AIP-160, your
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
       expression must specify the field name, an operator, and the value that
       you want to use for filtering. The value must be a string, a number, or
       a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
       or `:`. For example, if you are filtering Compute Engine instances, you
       can exclude instances named `example-instance` by specifying `name !=
-      example-instance`. The `:` operator can be used with string fields to
-      match substrings. For non-string fields it is equivalent to the `=`
-      operator. The `:*` comparison can be used to test whether a key has been
-      defined. For example, to find all objects with `owner` label use: ```
-      labels.owner:* ``` You can also filter nested fields. For example, you
-      could specify `scheduling.automaticRestart = false` to include instances
-      only if they are not scheduled for automatic restarts. You can use
-      filtering on nested fields to filter based on resource labels. To filter
-      on multiple expressions, provide each separate expression within
-      parentheses. For example: ``` (scheduling.automaticRestart = true)
-      (cpuPlatform = "Intel Skylake") ``` By default, each expression is an
-      `AND` expression. However, you can include `AND` and `OR` expressions
-      explicitly. For example: ``` (cpuPlatform = "Intel Skylake") OR
-      (cpuPlatform = "Intel Broadwell") AND (scheduling.automaticRestart =
-      true) ``` If you want to use a regular expression, use the `eq` (equal)
-      or `ne` (not equal) operator against a single un-parenthesized
-      expression with or without quotes or against multiple parenthesized
-      expressions. Examples: `fieldname eq unquoted literal` `fieldname eq
-      'single quoted literal'` `fieldname eq "double quoted literal"`
-      `(fieldname1 eq literal) (fieldname2 ne "literal")` The literal value is
-      interpreted as a regular expression using Google RE2 library syntax. The
-      literal value must match the entire field. For example, to filter for
-      instances that do not end with name "instance", you would use `name ne
-      .*instance`.
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
     maxResults: The maximum number of results per page that should be
       returned. If the number of available results is larger than
       `maxResults`, Compute Engine returns a `nextPageToken` that can be used
@@ -42960,18 +43387,18 @@ class InstanceGroupManagerInstanceFlexibilityPolicy(_messages.Message):
   r"""A InstanceGroupManagerInstanceFlexibilityPolicy object.
 
   Messages:
-    InstanceSelectionListsValue: List of instance selection options that the
-      group will use when creating new VMs.
+    InstanceSelectionListsValue: Named instance selections configuring
+      properties that the group will use when creating new VMs.
 
   Fields:
-    instanceSelectionLists: List of instance selection options that the group
-      will use when creating new VMs.
+    instanceSelectionLists: Named instance selections configuring properties
+      that the group will use when creating new VMs.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InstanceSelectionListsValue(_messages.Message):
-    r"""List of instance selection options that the group will use when
-    creating new VMs.
+    r"""Named instance selections configuring properties that the group will
+    use when creating new VMs.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -54925,6 +55352,9 @@ class NodeGroup(_messages.Message):
   nodes.
 
   Enums:
+    MaintenanceIntervalValueValuesEnum: Specifies the frequency of planned
+      maintenance events. The accepted values are: `AS_NEEDED` and
+      `RECURRENT`.
     MaintenancePolicyValueValuesEnum: Specifies how to handle instances when a
       node in the group undergoes maintenance. Set to one of: DEFAULT,
       RESTART_IN_PLACE, or MIGRATE_WITHIN_NODE_GROUP. The default value is
@@ -54946,6 +55376,8 @@ class NodeGroup(_messages.Message):
       other resources. This field is for use by internal tools that use the
       public API. The location hint here on the NodeGroup overrides any
       location_hint present in the NodeTemplate.
+    maintenanceInterval: Specifies the frequency of planned maintenance
+      events. The accepted values are: `AS_NEEDED` and `RECURRENT`.
     maintenancePolicy: Specifies how to handle instances when a node in the
       group undergoes maintenance. Set to one of: DEFAULT, RESTART_IN_PLACE,
       or MIGRATE_WITHIN_NODE_GROUP. The default value is DEFAULT. For more
@@ -54966,6 +55398,32 @@ class NodeGroup(_messages.Message):
     zone: [Output Only] The name of the zone where the node group resides,
       such as us-central1-a.
   """
+
+  class MaintenanceIntervalValueValuesEnum(_messages.Enum):
+    r"""Specifies the frequency of planned maintenance events. The accepted
+    values are: `AS_NEEDED` and `RECURRENT`.
+
+    Values:
+      AS_NEEDED: VMs are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the VM than the
+        PERIODIC and RECURRENT options.
+      PERIODIC: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available.
+      RECURRENT: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
+    """
+    AS_NEEDED = 0
+    PERIODIC = 1
+    RECURRENT = 2
 
   class MaintenancePolicyValueValuesEnum(_messages.Enum):
     r"""Specifies how to handle instances when a node in the group undergoes
@@ -55013,15 +55471,16 @@ class NodeGroup(_messages.Message):
   id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(6, default='compute#nodeGroup')
   locationHint = _messages.StringField(7)
-  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 8)
-  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 9)
-  name = _messages.StringField(10)
-  nodeTemplate = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  shareSettings = _messages.MessageField('ShareSettings', 13)
-  size = _messages.IntegerField(14, variant=_messages.Variant.INT32)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  zone = _messages.StringField(16)
+  maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 8)
+  maintenancePolicy = _messages.EnumField('MaintenancePolicyValueValuesEnum', 9)
+  maintenanceWindow = _messages.MessageField('NodeGroupMaintenanceWindow', 10)
+  name = _messages.StringField(11)
+  nodeTemplate = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  shareSettings = _messages.MessageField('ShareSettings', 14)
+  size = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  zone = _messages.StringField(17)
 
 
 class NodeGroupAggregatedList(_messages.Message):
@@ -55453,6 +55912,8 @@ class NodeGroupNode(_messages.Message):
     serverId: Server ID associated with this node.
     status: A StatusValueValuesEnum attribute.
     totalResources: Total amount of available resources on the node.
+    upcomingMaintenance: [Output Only] The information about an upcoming
+      maintenance event.
   """
 
   class CpuOvercommitTypeValueValuesEnum(_messages.Enum):
@@ -55496,6 +55957,7 @@ class NodeGroupNode(_messages.Message):
   serverId = _messages.StringField(11)
   status = _messages.EnumField('StatusValueValuesEnum', 12)
   totalResources = _messages.MessageField('InstanceConsumptionInfo', 13)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 14)
 
 
 class NodeGroupsAddNodesRequest(_messages.Message):
@@ -55681,6 +56143,19 @@ class NodeGroupsListNodes(_messages.Message):
   nextPageToken = _messages.StringField(4)
   selfLink = _messages.StringField(5)
   warning = _messages.MessageField('WarningValue', 6)
+
+
+class NodeGroupsPerformMaintenanceRequest(_messages.Message):
+  r"""A NodeGroupsPerformMaintenanceRequest object.
+
+  Fields:
+    nodes: [Required] List of nodes affected by the call.
+    startTime: The start time of the schedule. The timestamp is an RFC3339
+      string.
+  """
+
+  nodes = _messages.StringField(1, repeated=True)
+  startTime = _messages.StringField(2)
 
 
 class NodeGroupsScopedList(_messages.Message):
@@ -62835,6 +63310,8 @@ class Reservation(_messages.Message):
       is to define placement policy with reservation.
 
   Fields:
+    aggregateReservation: Reservation for aggregated resources, providing
+      shape flexibility.
     commitment: [Output Only] Full or partial URL to a parent commitment. This
       field displays for reservations that are tied to a commitment.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -62922,23 +63399,24 @@ class Reservation(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  commitment = _messages.StringField(1)
-  creationTimestamp = _messages.StringField(2)
-  deleteAfterDuration = _messages.MessageField('Duration', 3)
-  deleteAtTime = _messages.StringField(4)
-  description = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#reservation')
-  name = _messages.StringField(8)
-  resourcePolicies = _messages.MessageField('ResourcePoliciesValue', 9)
-  resourceStatus = _messages.MessageField('AllocationResourceStatus', 10)
-  satisfiesPzs = _messages.BooleanField(11)
-  selfLink = _messages.StringField(12)
-  shareSettings = _messages.MessageField('ShareSettings', 13)
-  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 14)
-  specificReservationRequired = _messages.BooleanField(15)
-  status = _messages.EnumField('StatusValueValuesEnum', 16)
-  zone = _messages.StringField(17)
+  aggregateReservation = _messages.MessageField('AllocationAggregateReservation', 1)
+  commitment = _messages.StringField(2)
+  creationTimestamp = _messages.StringField(3)
+  deleteAfterDuration = _messages.MessageField('Duration', 4)
+  deleteAtTime = _messages.StringField(5)
+  description = _messages.StringField(6)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default='compute#reservation')
+  name = _messages.StringField(9)
+  resourcePolicies = _messages.MessageField('ResourcePoliciesValue', 10)
+  resourceStatus = _messages.MessageField('AllocationResourceStatus', 11)
+  satisfiesPzs = _messages.BooleanField(12)
+  selfLink = _messages.StringField(13)
+  shareSettings = _messages.MessageField('ShareSettings', 14)
+  specificReservation = _messages.MessageField('AllocationSpecificSKUReservation', 15)
+  specificReservationRequired = _messages.BooleanField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  zone = _messages.StringField(18)
 
 
 class ReservationAffinity(_messages.Message):
@@ -66972,14 +67450,26 @@ class Scheduling(_messages.Message):
     values are: `PERIODIC`.
 
     Values:
+      AS_NEEDED: VMs are eligible to receive infrastructure and hypervisor
+        updates as they become available. This may result in more maintenance
+        operations (live migrations or terminations) for the VM than the
+        PERIODIC and RECURRENT options.
       PERIODIC: VMs receive infrastructure and hypervisor updates on a
         periodic basis, minimizing the number of maintenance operations (live
         migrations or terminations) on an individual VM. This may mean a VM
         will take longer to receive an update than if it was configured for
         AS_NEEDED. Security updates will still be applied as soon as they are
         available.
+      RECURRENT: VMs receive infrastructure and hypervisor updates on a
+        periodic basis, minimizing the number of maintenance operations (live
+        migrations or terminations) on an individual VM. This may mean a VM
+        will take longer to receive an update than if it was configured for
+        AS_NEEDED. Security updates will still be applied as soon as they are
+        available. RECURRENT is used for GEN3 and Slice of Hardware VMs.
     """
-    PERIODIC = 0
+    AS_NEEDED = 0
+    PERIODIC = 1
+    RECURRENT = 2
 
   class OnHostMaintenanceValueValuesEnum(_messages.Enum):
     r"""Defines the maintenance behavior for this instance. For standard
@@ -68895,7 +69385,7 @@ class ServiceAttachment(_messages.Message):
       PENDING and ACCEPTED/REJECTED PSC endpoints. For example, an ACCEPTED
       PSC endpoint will be moved to REJECTED if its project is added to the
       reject list. For newly created service attachment, this boolean defaults
-      to true.
+      to false.
     region: [Output Only] URL of the region where the service attachment
       resides. This field applies only to the region resource. You must
       specify this field as part of the HTTP request URL. It is not settable
@@ -77844,6 +78334,59 @@ class Uint128(_messages.Message):
 
   high = _messages.IntegerField(1, variant=_messages.Variant.UINT64)
   low = _messages.IntegerField(2, variant=_messages.Variant.UINT64)
+
+
+class UpcomingMaintenance(_messages.Message):
+  r"""Upcoming Maintenance notification information.
+
+  Enums:
+    MaintenanceStatusValueValuesEnum:
+    TypeValueValuesEnum: Defines the type of maintenance.
+
+  Fields:
+    canReschedule: Indicates if the maintenance can be customer triggered.
+    latestWindowStartTime: The latest time for the planned maintenance window
+      to start. This timestamp value is in RFC3339 text format.
+    maintenanceStatus: A MaintenanceStatusValueValuesEnum attribute.
+    type: Defines the type of maintenance.
+    windowEndTime: The time by which the maintenance disruption will be
+      completed. This timestamp value is in RFC3339 text format.
+    windowStartTime: The current start time of the maintenance window. This
+      timestamp value is in RFC3339 text format.
+  """
+
+  class MaintenanceStatusValueValuesEnum(_messages.Enum):
+    r"""MaintenanceStatusValueValuesEnum enum type.
+
+    Values:
+      ONGOING: There is ongoing maintenance on this VM.
+      PENDING: There is pending maintenance.
+      UNKNOWN: Unknown maintenance status. Do not use this value.
+    """
+    ONGOING = 0
+    PENDING = 1
+    UNKNOWN = 2
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Defines the type of maintenance.
+
+    Values:
+      SCHEDULED: Scheduled maintenance (e.g. maintenance after uptime
+        guarantee is complete).
+      UNKNOWN_TYPE: No type specified. Do not use this value.
+      UNSCHEDULED: Unscheduled maintenance (e.g. emergency maintenance during
+        uptime guarantee).
+    """
+    SCHEDULED = 0
+    UNKNOWN_TYPE = 1
+    UNSCHEDULED = 2
+
+  canReschedule = _messages.BooleanField(1)
+  latestWindowStartTime = _messages.StringField(2)
+  maintenanceStatus = _messages.EnumField('MaintenanceStatusValueValuesEnum', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
+  windowEndTime = _messages.StringField(5)
+  windowStartTime = _messages.StringField(6)
 
 
 class UrlMap(_messages.Message):

@@ -854,9 +854,9 @@ class CleanTextField(_messages.Message):
 
 class CleanTextTag(_messages.Message):
   r"""Inspect text and transform sensitive text. Configurable using
-  `TextConfig`. Supported [Value Representations] (http://dicom.nema.org/medic
-  al/dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-1): AE, LO, LT,
-  PN, SH, ST, UC, UT, DA, DT, AS
+  TextConfig. Supported [Value Representations] (http://dicom.nema.org/medical
+  /dicom/2018e/output/chtml/part05/sect_6.2.html#table_6.2-1): AE, LO, LT, PN,
+  SH, ST, UC, UT, DA, DT, AS
   """
 
 
@@ -1422,9 +1422,9 @@ class DeidentifyConfig(_messages.Message):
       origin during de-identification. Using this option results in a
       significant reduction of throughput, and is not compatible with
       `LOCATION` or `ORGANIZATION_NAME` infoTypes. If the deprecated
-      `DicomConfig` or `FhirConfig` are used, then `LOCATION` must be excluded
-      within `TextConfig`, and must also be excluded within `ImageConfig` if
-      image redaction is required.
+      DicomConfig or FhirConfig are used, then `LOCATION` must be excluded
+      within TextConfig, and must also be excluded within ImageConfig if image
+      redaction is required.
   """
 
   annotation = _messages.MessageField('AnnotationConfig', 1)
@@ -2423,7 +2423,7 @@ class FhirOutput(_messages.Message):
       [service account](https://cloud.google.com/healthcare/docs/how-
       tos/permissions-healthcare-api-gcp-
       products#the_cloud_healthcare_service_agent). The destination store must
-      set `enable_update_create` to true. The destination store must use FHIR
+      set enableUpdateCreate to true. The destination store must use FHIR
       version R4. Writing these resources will consume FHIR operations quota
       from the project containing the source data. De-identify operation
       metadata is only generated for DICOM de-identification operations.
@@ -6837,6 +6837,7 @@ class LinkedEntity(_messages.Message):
   message lets us add other fields, e.g. confidence.
 
   Fields:
+    confidence: The linker model's confidence. A number between 0 and 1.
     entityId: entity_id is a concept unique identifier. These are prefixed by
       a string that identifies the entity coding system, followed by the
       unique identifier within that system. For example, "UMLS/C0000970". This
@@ -6844,7 +6845,8 @@ class LinkedEntity(_messages.Message):
       mention content.
   """
 
-  entityId = _messages.StringField(1)
+  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  entityId = _messages.StringField(2)
 
 
 class ListAnnotationStoresResponse(_messages.Message):

@@ -125,7 +125,10 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
         # https://www.googleapis.com/compute/v1/projects/project/regions/region
         region_match = re.match(r'.*/regions/(.*)$', config.region)
         load_balancer_target.region = region_match.group(1)
-    except resources.RequiredFieldOmittedException:
+    except (
+        resources.WrongResourceCollectionException,
+        resources.RequiredFieldOmittedException,
+    ):
       # This means the forwarding rule was specified as just a name.
       regions = [
           item.name for item in compute_client.regions.List(
@@ -222,6 +225,7 @@ def GetLoadBalancerConfigFromUrl(
   """Attempts to fetch the configuration for the given forwarding rule.
 
   If forwarding_rule is not the self_link for a forwarding rule,
+  one of resources.RequiredFieldOmittedException or
   resources.RequiredFieldOmittedException will be thrown, which must be handled
   by the caller.
 
@@ -245,7 +249,10 @@ def GetLoadBalancerConfigFromUrl(
             forwardingRule=resource['forwardingRule'],
         )
     )
-  except resources.WrongResourceCollectionException:
+  except (
+      resources.WrongResourceCollectionException,
+      resources.RequiredFieldOmittedException,
+  ):
     resource = resources.REGISTRY.Parse(
         forwarding_rule, collection='compute.globalForwardingRules'
     ).AsDict()

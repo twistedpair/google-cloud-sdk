@@ -200,12 +200,11 @@ def ArgsForClusterRef(
   parser.add_argument(
       '--secondary-worker-machine-types',
       help=(
-          'Types of machines with optional rank for secondary workers to use '
-          'for secondary workers. Defaults to server-specified.'
+          'Types of machines with optional rank for secondary workers to use. '
+          'Defaults to server-specified.'
           'eg. --secondary-worker-machine-types="type=e2-standard-8,type=t2d-standard-8,rank=0"'
       ),
       metavar='type=MACHINE_TYPE[,type=MACHINE_TYPE...][,rank=RANK]',
-      hidden=True,
       type=ArgMultiValueDict(),
       action=arg_parsers.FlattenAction(),
   )

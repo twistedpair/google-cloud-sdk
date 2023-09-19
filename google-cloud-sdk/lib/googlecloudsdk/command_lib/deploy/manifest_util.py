@@ -88,16 +88,19 @@ def ParseDeployConfig(messages, manifests, region):
   for manifest in manifests:
     if manifest.get('apiVersion') is None:
       raise exceptions.CloudDeployConfigError(
-          'missing required field .apiVersion')
+          'missing required field .apiVersion'
+      )
     if manifest.get('kind') is None:
       raise exceptions.CloudDeployConfigError('missing required field .kind')
     api_version = manifest['apiVersion']
     if api_version in {API_VERSION_V1BETA1, API_VERSION_V1}:
-      _ParseV1Config(messages, manifest['kind'], manifest, project, region,
-                     resource_dict)
+      _ParseV1Config(
+          messages, manifest['kind'], manifest, project, region, resource_dict
+      )
     else:
       raise exceptions.CloudDeployConfigError(
-          'api version {} not supported'.format(api_version))
+          'api version {} not supported'.format(api_version)
+      )
 
   return resource_dict
 
@@ -124,7 +127,8 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
   metadata = manifest.get('metadata')
   if not metadata or not metadata.get(NAME_FIELD):
     raise exceptions.CloudDeployConfigError(
-        'missing required field .metadata.name in {}'.format(kind))
+        'missing required field .metadata.name in {}'.format(kind)
+    )
   if kind == DELIVERY_PIPELINE_KIND_V1BETA1:
     resource_type = deploy_util.ResourceType.DELIVERY_PIPELINE
     resource, resource_ref = _CreateDeliveryPipelineResource(
@@ -147,11 +151,13 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
     )
   else:
     raise exceptions.CloudDeployConfigError(
-        'kind {} not supported'.format(kind))
+        'kind {} not supported'.format(kind)
+    )
 
   if '/' in resource_ref.Name():
     raise exceptions.CloudDeployConfigError(
-        'resource ID "{}" contains /.'.format(resource_ref.Name()))
+        'resource ID "{}" contains /.'.format(resource_ref.Name())
+    )
 
   for field in manifest:
     if field not in ['apiVersion', 'kind', 'metadata', 'deliveryPipeline']:
@@ -161,6 +167,9 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
         continue
       if field == 'deployParameters' and kind == TARGET_KIND_V1BETA1:
         SetDeployParametersForTarget(messages, resource, resource_ref, value)
+        continue
+      if field == 'customTarget' and kind == TARGET_KIND_V1BETA1:
+        SetCustomTarget(resource, value, project, region)
         continue
       if field == 'serialPipeline' and kind == DELIVERY_PIPELINE_KIND_V1BETA1:
         serial_pipeline = manifest.get('serialPipeline')
@@ -211,8 +220,9 @@ def _CreateTargetResource(messages, target_name_or_id, project, region):
   return resource, resource_ref
 
 
-def _CreateDeliveryPipelineResource(messages, delivery_pipeline_name, project,
-                                    region):
+def _CreateDeliveryPipelineResource(
+    messages, delivery_pipeline_name, project, region
+):
   """Creates delivery pipeline resource with full delivery pipeline name and the resource reference."""
   resource = messages.DeliveryPipeline()
   resource_ref = resources.REGISTRY.Parse(
@@ -222,7 +232,8 @@ def _CreateDeliveryPipelineResource(messages, delivery_pipeline_name, project,
           'projectsId': project,
           'locationsId': region,
           'deliveryPipelinesId': delivery_pipeline_name,
-      })
+      },
+  )
   resource.name = resource_ref.RelativeName()
 
   return resource, resource_ref
@@ -246,7 +257,8 @@ def _CreateCustomTargetTypeResource(messages, name, project, region):
           'projectsId': project,
           'locationsId': region,
           'customTargetTypesId': name,
-      })
+      },
+  )
   resource.name = resource_ref.RelativeName()
 
   return resource, resource_ref
@@ -266,7 +278,8 @@ def ProtoToManifest(resource, resource_ref, kind):
     A dictionary that represents the cloud deploy resource.
   """
   manifest = collections.OrderedDict(
-      apiVersion=API_VERSION_V1, kind=kind, metadata={})
+      apiVersion=API_VERSION_V1, kind=kind, metadata={}
+  )
 
   for k in METADATA_FIELDS:
     v = getattr(resource, k)
@@ -331,7 +344,9 @@ def SetExecutionConfig(messages, target, target_ref, execution_configs):
           arg_utils.ChoiceToEnum(
               usage,
               messages.ExecutionConfig.UsagesValueListEntryValuesEnum,
-              valid_choices=USAGE_CHOICES))
+              valid_choices=USAGE_CHOICES,
+          )
+      )
 
     target.executionConfigs.append(execution_config_message)
 
@@ -383,9 +398,8 @@ def SetDeployParametersForPipelineStage(messages, pipeline_ref, stage):
 
       for key, value in match_target_labels.items():
         mtls_dict.additionalProperties.append(
-            mtls_message.AdditionalProperty(
-                key=key,
-                value=value))
+            mtls_message.AdditionalProperty(key=key, value=value)
+        )
       dps_value.matchTargetLabels = mtls_dict
 
     dps_values.append(dps_value)
@@ -424,6 +438,40 @@ def SetDeployParametersForTarget(
   target.deployParameters = dps_value
 
 
+def SetCustomTarget(target, custom_target, project, region):
+  """Sets the customTarget field of cloud deploy target message.
+
+  This is handled specially because we allow providing either the ID or name for
+  the custom target type referenced. When the ID is provided we need to
+  construct the name.
+
+  Args:
+    target: googlecloudsdk.generated_clients.apis.clouddeploy.Target message.
+    custom_target:
+      googlecloudsdk.generated_clients.apis.clouddeploy.CustomTarget message.
+    project: str, gcp project.
+    region: str, ID of the location.
+  """
+  custom_target_type = custom_target.get('customTargetType')
+  # If field contains '/' then we assume it's the name instead of the ID.
+  if '/' in custom_target_type:
+    return
+
+  custom_target_type_resource_ref = resources.REGISTRY.Parse(
+      None,
+      collection='clouddeploy.projects.locations.customTargetTypes',
+      params={
+          'projectsId': project,
+          'locationsId': region,
+          'customTargetTypesId': custom_target_type,
+      },
+  )
+  custom_target['customTargetType'] = (
+      custom_target_type_resource_ref.RelativeName()
+  )
+  target.customTarget = custom_target
+
+
 def SetAutomationSelector(messages, automation, automation_ref, selectors):
   """Sets the selectors field of cloud deploy automation resource message.
 
@@ -440,8 +488,9 @@ def SetAutomationSelector(messages, automation, automation_ref, selectors):
   _EnsureIsType(
       selectors,
       list,
-      'failed to parse automation {}, selectors are defined incorrectly'
-      .format(automation_ref.Name()),
+      'failed to parse automation {}, selectors are defined incorrectly'.format(
+          automation_ref.Name()
+      ),
   )
 
   automation.selector = messages.AutomationResourceSelector()
@@ -477,8 +526,9 @@ def SetAutomationRules(messages, automation, automation_ref, rules):
   _EnsureIsType(
       rules,
       list,
-      'failed to parse automation {}, rules are defined incorrectly'
-      .format(automation_ref.Name()),
+      'failed to parse automation {}, rules are defined incorrectly'.format(
+          automation_ref.Name()
+      ),
   )
 
   for rule in rules:

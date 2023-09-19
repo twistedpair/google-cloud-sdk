@@ -1928,6 +1928,16 @@ initial=0.25,maximum=32.0,multiplier=1.3,                predicate=retries.if_ex
         The results of individual batches are streamed into the
         response as the batches are applied.
 
+        BatchWrite requests are not replay protected, meaning
+        that each mutation group may be applied more than once.
+        Replays of non-idempotent mutations may have undesirable
+        effects. For example, replays of an insert mutation may
+        produce an already exists error or if you use generated
+        or commit timestamp-based keys, it may result in
+        additional rows being added to the mutation's table. We
+        recommend structuring your mutation groups to be
+        idempotent to avoid this issue.
+
         .. code-block:: python
 
             # This snippet has been automatically generated and should be regarded as a
@@ -2010,7 +2020,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                predicate=retries.if_ex
         # and friendly error handling.
         rpc = gapic_v1.method_async.wrap_method(
             self._client._transport.batch_write,
-            default_timeout=None,
+            default_timeout=3600.0,
             client_info=DEFAULT_CLIENT_INFO,
         )
 

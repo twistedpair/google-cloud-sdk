@@ -128,6 +128,7 @@ class AddonsConfig(_messages.Message):
     networkPolicyConfig: Configuration for NetworkPolicy. This only tracks
       whether the addon is enabled or not on the Master, it does not track
       whether network policy is enabled for the nodes.
+    statefulHaConfig: Optional. Configuration for the StatefulHA add-on.
   """
 
   cloudBuildConfig = _messages.MessageField('CloudBuildConfig', 1)
@@ -144,6 +145,7 @@ class AddonsConfig(_messages.Message):
   kalmConfig = _messages.MessageField('KalmConfig', 12)
   kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 13)
   networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 14)
+  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 15)
 
 
 class AdvancedDatapathObservabilityConfig(_messages.Message):
@@ -496,6 +498,8 @@ class BlueGreenInfo(_messages.Message):
       UPDATE_STARTED: blue-green upgrade has been initiated.
       CREATING_GREEN_POOL: Start creating green pool nodes.
       CORDONING_BLUE_POOL: Start cordoning blue pool nodes.
+      WAITING_TO_DRAIN_BLUE_POOL: Start waiting after cordoning the blue pool
+        and before draining it.
       DRAINING_BLUE_POOL: Start draining blue pool nodes.
       NODE_POOL_SOAKING: Start soaking time after draining entire blue pool.
       DELETING_BLUE_POOL: Start deleting blue nodes.
@@ -505,10 +509,11 @@ class BlueGreenInfo(_messages.Message):
     UPDATE_STARTED = 1
     CREATING_GREEN_POOL = 2
     CORDONING_BLUE_POOL = 3
-    DRAINING_BLUE_POOL = 4
-    NODE_POOL_SOAKING = 5
-    DELETING_BLUE_POOL = 6
-    ROLLBACK_STARTED = 7
+    WAITING_TO_DRAIN_BLUE_POOL = 4
+    DRAINING_BLUE_POOL = 5
+    NODE_POOL_SOAKING = 6
+    DELETING_BLUE_POOL = 7
+    ROLLBACK_STARTED = 8
 
   blueInstanceGroupUrls = _messages.StringField(1, repeated=True)
   bluePoolDeletionStartTime = _messages.StringField(2)
@@ -862,6 +867,9 @@ class Cluster(_messages.Message):
       not be set if "node_config" or "initial_node_count" are specified.
     nodeSchedulingStrategy: Defines behaviour of k8s scheduler.
     notificationConfig: Notification configuration of the cluster.
+    parentProductConfig: The configuration of the parent product of the
+      cluster. This field is used by Google internal products that are built
+      on top of the GKE cluster and take the ownership of the cluster.
     podAutoscaling: The config for pod autoscaling.
     podSecurityPolicyConfig: Configuration for the PodSecurityPolicy feature.
     privateCluster: If this is a private cluster setup. Private clusters are
@@ -870,7 +878,8 @@ class Cluster(_messages.Message):
       field is deprecated, use private_cluster_config.enable_private_nodes
       instead.
     privateClusterConfig: Configuration for private cluster.
-    protectConfig: Enable/Disable Protect API features for the cluster.
+    protectConfig: Deprecated: Use SecurityPostureConfig instead.
+      Enable/Disable Protect API features for the cluster.
     releaseChannel: Release channel configuration. If left unspecified on
       cluster creation and a version is specified, the cluster is enrolled in
       the most mature release channel where the version is available (first
@@ -1055,33 +1064,34 @@ class Cluster(_messages.Message):
   nodePools = _messages.MessageField('NodePool', 62, repeated=True)
   nodeSchedulingStrategy = _messages.EnumField('NodeSchedulingStrategyValueValuesEnum', 63)
   notificationConfig = _messages.MessageField('NotificationConfig', 64)
-  podAutoscaling = _messages.MessageField('PodAutoscaling', 65)
-  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 66)
-  privateCluster = _messages.BooleanField(67)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 68)
-  protectConfig = _messages.MessageField('ProtectConfig', 69)
-  releaseChannel = _messages.MessageField('ReleaseChannel', 70)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 71)
-  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 72)
-  resourceVersion = _messages.StringField(73)
-  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 74)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 75)
-  securityProfile = _messages.MessageField('SecurityProfile', 76)
-  selfLink = _messages.StringField(77)
-  servicesIpv4Cidr = _messages.StringField(78)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 79)
-  status = _messages.EnumField('StatusValueValuesEnum', 80)
-  statusMessage = _messages.StringField(81)
-  subnetwork = _messages.StringField(82)
-  tpuConfig = _messages.MessageField('TpuConfig', 83)
-  tpuIpv4CidrBlock = _messages.StringField(84)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 85)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 86)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 87)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 88)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 89)
-  workloadMonitoringEnabledEap = _messages.BooleanField(90)
-  zone = _messages.StringField(91)
+  parentProductConfig = _messages.MessageField('ParentProductConfig', 65)
+  podAutoscaling = _messages.MessageField('PodAutoscaling', 66)
+  podSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 67)
+  privateCluster = _messages.BooleanField(68)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 69)
+  protectConfig = _messages.MessageField('ProtectConfig', 70)
+  releaseChannel = _messages.MessageField('ReleaseChannel', 71)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 72)
+  resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 73)
+  resourceVersion = _messages.StringField(74)
+  runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 75)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 76)
+  securityProfile = _messages.MessageField('SecurityProfile', 77)
+  selfLink = _messages.StringField(78)
+  servicesIpv4Cidr = _messages.StringField(79)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 80)
+  status = _messages.EnumField('StatusValueValuesEnum', 81)
+  statusMessage = _messages.StringField(82)
+  subnetwork = _messages.StringField(83)
+  tpuConfig = _messages.MessageField('TpuConfig', 84)
+  tpuIpv4CidrBlock = _messages.StringField(85)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 86)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 87)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 88)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 89)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 90)
+  workloadMonitoringEnabledEap = _messages.BooleanField(91)
+  zone = _messages.StringField(92)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -1329,6 +1339,8 @@ class ClusterUpdate(_messages.Message):
       version - "1.X.Y-gke.N": picks an explicit Kubernetes version - "-":
       picks the Kubernetes master version
     desiredNotificationConfig: The desired notification configuration.
+    desiredParentProductConfig: The desired parent product config for the
+      cluster.
     desiredPodAutoscaling: The desired config for pod autoscaling.
     desiredPodSecurityPolicyConfig: The desired configuration options for the
       PodSecurityPolicy feature.
@@ -1338,7 +1350,8 @@ class ClusterUpdate(_messages.Message):
       instead.
     desiredPrivateIpv6GoogleAccess: The desired state of IPv6 connectivity to
       Google Services.
-    desiredProtectConfig: Enable/Disable Protect API features for the cluster.
+    desiredProtectConfig: Deprecated: Use DesiredSecurityPostureConfig
+      instead. Enable/Disable Protect API features for the cluster.
     desiredReleaseChannel: The desired release channel configuration.
     desiredResourceUsageExportConfig: The desired configuration for exporting
       resource usage.
@@ -1499,32 +1512,33 @@ class ClusterUpdate(_messages.Message):
   desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 54)
   desiredNodeVersion = _messages.StringField(55)
   desiredNotificationConfig = _messages.MessageField('NotificationConfig', 56)
-  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 57)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 58)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 59)
-  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 60)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 61)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 62)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 63)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 64)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 65)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 66)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 67)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 68)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 69)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 70)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 71)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 72)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 73)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 74)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 75)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 76)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 77)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 78)
-  etag = _messages.StringField(79)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 80)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 81)
-  securityProfile = _messages.MessageField('SecurityProfile', 82)
+  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 57)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 58)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 59)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 60)
+  desiredPrivateIpv6Access = _messages.MessageField('PrivateIPv6Status', 61)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 62)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 63)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 64)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 65)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 66)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 67)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 68)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 69)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 70)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 71)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 72)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 73)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 74)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 75)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 76)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 77)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 78)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 79)
+  etag = _messages.StringField(80)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 81)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 82)
+  securityProfile = _messages.MessageField('SecurityProfile', 83)
 
 
 class CompleteIPRotationRequest(_messages.Message):
@@ -2366,14 +2380,46 @@ class DatabaseEncryption(_messages.Message):
   r"""Configuration of etcd encryption.
 
   Enums:
+    CurrentStateValueValuesEnum: Output only. The current state of etcd
+      encryption.
     StateValueValuesEnum: The desired state of etcd encryption.
 
   Fields:
+    currentState: Output only. The current state of etcd encryption.
+    decryptionKeys: Output only. Keys in use by the cluster for decrypting
+      existing objects, in addition to the key in `key_name`. Each item is a
+      CloudKMS key resource.
     keyName: Name of CloudKMS key to use for the encryption of secrets in
       etcd. Ex. projects/my-project/locations/global/keyRings/my-
       ring/cryptoKeys/my-key
     state: The desired state of etcd encryption.
   """
+
+  class CurrentStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of etcd encryption.
+
+    Values:
+      CURRENT_STATE_UNSPECIFIED: Should never be set
+      CURRENT_STATE_ENCRYPTED: Secrets in etcd are encrypted.
+      CURRENT_STATE_DECRYPTED: Secrets in etcd are stored in plain text (at
+        etcd level) - this is unrelated to Compute Engine level full disk
+        encryption.
+      CURRENT_STATE_ENCRYPTION_PENDING: Encryption (or re-encryption with a
+        different CloudKMS key) of Secrets is in progress.
+      CURRENT_STATE_ENCRYPTION_ERROR: Encryption (or re-encryption with a
+        different CloudKMS key) of Secrets in etcd encountered an error.
+      CURRENT_STATE_DECRYPTION_PENDING: De-crypting Secrets to plain text in
+        etcd is in progress.
+      CURRENT_STATE_DECRYPTION_ERROR: De-crypting Secrets to plain text in
+        etcd encountered an error.
+    """
+    CURRENT_STATE_UNSPECIFIED = 0
+    CURRENT_STATE_ENCRYPTED = 1
+    CURRENT_STATE_DECRYPTED = 2
+    CURRENT_STATE_ENCRYPTION_PENDING = 3
+    CURRENT_STATE_ENCRYPTION_ERROR = 4
+    CURRENT_STATE_DECRYPTION_PENDING = 5
+    CURRENT_STATE_DECRYPTION_ERROR = 6
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The desired state of etcd encryption.
@@ -2388,8 +2434,10 @@ class DatabaseEncryption(_messages.Message):
     ENCRYPTED = 1
     DECRYPTED = 2
 
-  keyName = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  currentState = _messages.EnumField('CurrentStateValueValuesEnum', 1)
+  decryptionKeys = _messages.StringField(2, repeated=True)
+  keyName = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class Date(_messages.Message):
@@ -2483,8 +2531,19 @@ class EphemeralStorageConfig(_messages.Message):
 
   Fields:
     localSsdCount: Number of local SSDs to use to back ephemeral storage. Uses
-      NVMe interfaces. Each local SSD is 375 GB in size. If zero, it means to
-      disable using local SSDs as ephemeral storage.
+      NVMe interfaces. The limit for this value is dependent upon the maximum
+      number of disk available on a machine per zone. See:
+      https://cloud.google.com/compute/docs/disks/local-ssd for more
+      information. A zero (or unset) value has different meanings depending on
+      machine type being used: 1. For pre-Gen3 machines, which support
+      flexible numbers of local ssds, zero (or unset) means to disable using
+      local SSDs as ephemeral storage. 2. For Gen3 machines which dictate a
+      specific number of local ssds, zero (or unset) means to use the default
+      number of local ssds that goes with that machine type. For example, for
+      a c3-standard-8-lssd machine, 2 local ssds would be provisioned. For
+      c3-standard-8 (which doesn't support local ssds), 0 will be provisioned.
+      See https://cloud.google.com/compute/docs/disks/local-
+      ssd#choose_number_local_ssds for more info.
   """
 
   localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2492,15 +2551,23 @@ class EphemeralStorageConfig(_messages.Message):
 
 class EphemeralStorageLocalSsdConfig(_messages.Message):
   r"""EphemeralStorageLocalSsdConfig contains configuration for the node
-  ephemeral storage using Local SSD.
+  ephemeral storage using Local SSDs.
 
   Fields:
     localSsdCount: Number of local SSDs to use to back ephemeral storage. Uses
-      NVMe interfaces. Each local SSD is 375 GB in size. If zero, it means to
-      disable using local SSDs as ephemeral storage. The limit for this value
-      is dependent upon the maximum number of disks available on a machine per
+      NVMe interfaces. A zero (or unset) value has different meanings
+      depending on machine type being used: 1. For pre-Gen3 machines, which
+      support flexible numbers of local ssds, zero (or unset) means to disable
+      using local SSDs as ephemeral storage. The limit for this value is
+      dependent upon the maximum number of disk available on a machine per
       zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for
-      more information.
+      more information. 2. For Gen3 machines which dictate a specific number
+      of local ssds, zero (or unset) means to use the default number of local
+      ssds that goes with that machine type. For example, for a
+      c3-standard-8-lssd machine, 2 local ssds would be provisioned. For
+      c3-standard-8 (which doesn't support local ssds), 0 will be provisioned.
+      See https://cloud.google.com/compute/docs/disks/local-
+      ssd#choose_number_local_ssds for more info.
   """
 
   localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2657,15 +2724,12 @@ class GatewayAPIConfig(_messages.Message):
     Values:
       CHANNEL_UNSPECIFIED: Default value.
       CHANNEL_DISABLED: Gateway API support is disabled
-      CHANNEL_EXPERIMENTAL: Gateway API support is enabled, experimental CRDs
-        are installed
       CHANNEL_STANDARD: Gateway API support is enabled, standard CRDs are
         installed
     """
     CHANNEL_UNSPECIFIED = 0
     CHANNEL_DISABLED = 1
-    CHANNEL_EXPERIMENTAL = 2
-    CHANNEL_STANDARD = 3
+    CHANNEL_STANDARD = 2
 
   channel = _messages.EnumField('ChannelValueValuesEnum', 1)
 
@@ -2800,6 +2864,8 @@ class HostMaintenancePolicy(_messages.Message):
   Fields:
     maintenanceInterval: Specifies the frequency of planned maintenance
       events.
+    opportunisticMaintenanceStrategy: Strategy that will trigger maintenance
+      on behalf of the customer.
   """
 
   class MaintenanceIntervalValueValuesEnum(_messages.Enum):
@@ -2824,6 +2890,7 @@ class HostMaintenancePolicy(_messages.Message):
     PERIODIC = 2
 
   maintenanceInterval = _messages.EnumField('MaintenanceIntervalValueValuesEnum', 1)
+  opportunisticMaintenanceStrategy = _messages.MessageField('OpportunisticMaintenanceStrategy', 2)
 
 
 class HttpCacheControlResponseHeader(_messages.Message):
@@ -3352,16 +3419,23 @@ class ListUsableSubnetworksResponse(_messages.Message):
 
 class LocalNvmeSsdBlockConfig(_messages.Message):
   r"""LocalNvmeSsdBlockConfig contains configuration for using raw-block local
-  NVMe SSD.
+  NVMe SSDs
 
   Fields:
-    localSsdCount: The number of raw-block local NVMe SSD disks to be attached
-      to the node. Each local SSD is 375 GB in size. If zero, it means no raw-
-      block local NVMe SSD disks to be attached to the node. The limit for
-      this value is dependent upon the maximum number of disks available on a
-      machine per zone. See:
-      https://cloud.google.com/compute/docs/disks/local-ssd for more
-      information.
+    localSsdCount: Number of local NVMe SSDs to use. The limit for this value
+      is dependent upon the maximum number of disk available on a machine per
+      zone. See: https://cloud.google.com/compute/docs/disks/local-ssd for
+      more information. A zero (or unset) value has different meanings
+      depending on machine type being used: 1. For pre-Gen3 machines, which
+      support flexible numbers of local ssds, zero (or unset) means to disable
+      using local SSDs as ephemeral storage. 2. For Gen3 machines which
+      dictate a specific number of local ssds, zero (or unset) means to use
+      the default number of local ssds that goes with that machine type. For
+      example, for a c3-standard-8-lssd machine, 2 local ssds would be
+      provisioned. For c3-standard-8 (which doesn't support local ssds), 0
+      will be provisioned. See
+      https://cloud.google.com/compute/docs/disks/local-
+      ssd#choose_number_local_ssds for more info.
   """
 
   localSsdCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -5114,6 +5188,69 @@ class OperationProgress(_messages.Message):
   status = _messages.EnumField('StatusValueValuesEnum', 4)
 
 
+class OpportunisticMaintenanceStrategy(_messages.Message):
+  r"""Strategy that will trigger maintenance on behalf of the customer.
+
+  Fields:
+    maintenanceAvailabilityWindow: The window of time that opportunistic
+      maintenance can run. Example: A setting of 14 days implies that
+      opportunistic maintenance can only be ran in the 2 weeks leading up to
+      the scheduled maintenance date. Setting 28 days allows opportunistic
+      maintenance to run at any time in the scheduled maintenance window (all
+      `PERIODIC` maintenance is set 28 days in advance).
+    minNodesPerPool: The minimum nodes required to be available in a pool.
+      Blocks maintenance if it would cause the number of running nodes to dip
+      below this value.
+    nodeIdleTimeWindow: The amount of time that a node can remain idle (no
+      customer owned workloads running), before triggering maintenance.
+  """
+
+  maintenanceAvailabilityWindow = _messages.StringField(1)
+  minNodesPerPool = _messages.IntegerField(2)
+  nodeIdleTimeWindow = _messages.StringField(3)
+
+
+class ParentProductConfig(_messages.Message):
+  r"""ParentProductConfig is the configuration of the parent product of the
+  cluster. This field is used by Google internal products that are built on
+  top of a GKE cluster and take the ownership of the cluster.
+
+  Messages:
+    LabelsValue: Labels contain the configuration of the parent product.
+
+  Fields:
+    labels: Labels contain the configuration of the parent product.
+    productName: Name of the parent product associated with the cluster.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Labels contain the configuration of the parent product.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  productName = _messages.StringField(2)
+
+
 class PlacementPolicy(_messages.Message):
   r"""PlacementPolicy defines the placement policy used by the node pool.
 
@@ -6461,6 +6598,16 @@ class StartIPRotationRequest(_messages.Message):
   projectId = _messages.StringField(3)
   rotateCredentials = _messages.BooleanField(4)
   zone = _messages.StringField(5)
+
+
+class StatefulHAConfig(_messages.Message):
+  r"""Configuration for the Stateful HA add-on.
+
+  Fields:
+    enabled: Whether the Stateful HA add-on is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class Status(_messages.Message):

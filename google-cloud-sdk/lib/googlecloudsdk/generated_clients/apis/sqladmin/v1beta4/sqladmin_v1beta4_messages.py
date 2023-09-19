@@ -1911,6 +1911,17 @@ class InstancesTruncateLogRequest(_messages.Message):
 class IpConfiguration(_messages.Message):
   r"""IP Management configuration.
 
+  Enums:
+    SslModeValueValuesEnum: Specify how SSL should be enforced in DB
+      connections. This flag is only supported for PostgreSQL. When used with
+      `require_ssl`, the valid value pairs are:
+      ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED, require_ssl=false;
+      ssl_mode=ENCRYPTED_ONLY, require_ssl=false;
+      ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED, require_ssl=true; And the
+      `ssl_mode` always takes effect in this case. LINT.ThenChange(//depot/goo
+      gle3/java/com/google/storage/speckle/boss/admin/actions/InstanceUpdateAc
+      tion.java:update_api_temp_fix)
+
   Fields:
     allocatedIpRange: The name of the allocated ip range for the private ip
       Cloud SQL instance. For example: "google-managed-services-default". If
@@ -1932,7 +1943,42 @@ class IpConfiguration(_messages.Message):
     requireSsl: Whether SSL connections over IP are enforced or not.
     reservedIpRange: This field is deprecated and will be removed from a
       future version of the API.
+    sslMode: Specify how SSL should be enforced in DB connections. This flag
+      is only supported for PostgreSQL. When used with `require_ssl`, the
+      valid value pairs are: ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED,
+      require_ssl=false; ssl_mode=ENCRYPTED_ONLY, require_ssl=false;
+      ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED, require_ssl=true; And the
+      `ssl_mode` always takes effect in this case. LINT.ThenChange(//depot/goo
+      gle3/java/com/google/storage/speckle/boss/admin/actions/InstanceUpdateAc
+      tion.java:update_api_temp_fix)
   """
+
+  class SslModeValueValuesEnum(_messages.Enum):
+    r"""Specify how SSL should be enforced in DB connections. This flag is
+    only supported for PostgreSQL. When used with `require_ssl`, the valid
+    value pairs are: ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED,
+    require_ssl=false; ssl_mode=ENCRYPTED_ONLY, require_ssl=false;
+    ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED, require_ssl=true; And the
+    `ssl_mode` always takes effect in this case. LINT.ThenChange(//depot/googl
+    e3/java/com/google/storage/speckle/boss/admin/actions/InstanceUpdateAction
+    .java:update_api_temp_fix)
+
+    Values:
+      SSL_MODE_UNSPECIFIED: SSL mode is unknown.
+      ALLOW_UNENCRYPTED_AND_ENCRYPTED: Allow non-SSL and SSL connections. For
+        SSL connections, client certificate will not be verified. When this
+        value is used, `require_ssl` must be false or unset.
+      ENCRYPTED_ONLY: Only allow connections encrypted with SSL/TLS. When this
+        value is used, `require_ssl` must be false or unset.
+      TRUSTED_CLIENT_CERTIFICATE_REQUIRED: Only allow connections encrypted
+        with SSL/TLS and with valid client certificates. When this value is
+        used, `require_ssl` must be true or unset. This option doesn't work
+        with SQL Server.
+    """
+    SSL_MODE_UNSPECIFIED = 0
+    ALLOW_UNENCRYPTED_AND_ENCRYPTED = 1
+    ENCRYPTED_ONLY = 2
+    TRUSTED_CLIENT_CERTIFICATE_REQUIRED = 3
 
   allocatedIpRange = _messages.StringField(1)
   authorizedNetworks = _messages.MessageField('AclEntry', 2, repeated=True)
@@ -1942,6 +1988,7 @@ class IpConfiguration(_messages.Message):
   pscConfig = _messages.MessageField('PscConfig', 6)
   requireSsl = _messages.BooleanField(7)
   reservedIpRange = _messages.StringField(8)
+  sslMode = _messages.EnumField('SslModeValueValuesEnum', 9)
 
 
 class IpMapping(_messages.Message):
@@ -2009,7 +2056,8 @@ class LocationPreference(_messages.Message):
       restart the instance.
     kind: This is always `sql#locationPreference`.
     secondaryZone: The preferred Compute Engine zone for the
-      secondary/failover (for example: us-central1-a, us-central1-b, etc.).
+      secondary/failover (for example: us-central1-a, us-central1-b, etc.). To
+      disable this field, set it to 'no_secondary_zone'.
     zone: The preferred Compute Engine zone (for example: us-central1-a, us-
       central1-b, etc.). WARNING: Changing this might restart the instance.
   """
@@ -2053,10 +2101,15 @@ class MaintenanceWindow(_messages.Message):
       stable: For instance update that requires a restart, this update track
         indicates your instance prefer to let Cloud SQL choose the timing of
         restart (within its Maintenance window, if applicable).
+      week5: For instance update that requires a restart, this update track
+        indicates your instance prefer to let Cloud SQL choose the timing of
+        restart (within its Maintenance window, if applicable) to be at least
+        5 weeks after the notification.
     """
     SQL_UPDATE_TRACK_UNSPECIFIED = 0
     canary = 1
     stable = 2
+    week5 = 3
 
   day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   hour = _messages.IntegerField(2, variant=_messages.Variant.INT32)
@@ -2447,11 +2500,11 @@ class PscConfig(_messages.Message):
   r"""PSC settings for a Cloud SQL instance.
 
   Fields:
-    allowedConsumerProjects: List of consumer projects that are allow-listed
-      for PSC connections to this instance. This instance can be connected to
-      with PSC from any network in these projects. Each consumer project in
-      this list may be represented by a project number (numeric) or by a
-      project id (alphanumeric).
+    allowedConsumerProjects: The list of consumer projects that are allow-
+      listed for PSC connections to this instance. This instance can be
+      connected to with PSC from any network in these projects. Each consumer
+      project in this list may be represented by a project number (numeric) or
+      by a project id (alphanumeric).
     pscEnabled: Whether PSC connectivity is enabled for this instance.
   """
 
@@ -3242,7 +3295,7 @@ class SqlInstancesExportRequest(_messages.Message):
   r"""A SqlInstancesExportRequest object.
 
   Fields:
-    instance: Cloud SQL instance ID. This does not include the project ID.
+    instance: The Cloud SQL instance ID. This doesn't include the project ID.
     instancesExportRequest: A InstancesExportRequest resource to be passed as
       the request body.
     project: Project ID of the project that contains the instance to be

@@ -293,6 +293,33 @@ class BaremetalsolutionV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def LoadAuthInfo(self, request, global_params=None):
+      r"""Load auth info for a server.
+
+      Args:
+        request: (BaremetalsolutionProjectsLocationsInstancesLoadAuthInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LoadInstanceAuthInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('LoadAuthInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LoadAuthInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:loadAuthInfo',
+        http_method='GET',
+        method_id='baremetalsolution.projects.locations.instances.loadAuthInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}:loadAuthInfo',
+        request_field='',
+        request_type_name='BaremetalsolutionProjectsLocationsInstancesLoadAuthInfoRequest',
+        response_type_name='LoadInstanceAuthInfoResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Update details of a single server.
 

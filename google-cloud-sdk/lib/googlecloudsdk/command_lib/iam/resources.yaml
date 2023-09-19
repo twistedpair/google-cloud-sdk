@@ -174,10 +174,9 @@ workload_identity_pool_namespace:
     parameter_name: namespacesId
     attribute_name: namespace
     help: |
-      The ID to use for the namespace. Must conform to the SPIFFE spec which limits characters to
-      letters, numbers, dots, dashes, and underscores [a-zA-Z0-9.-_] (it cannot include only
-      periods) and sets a maximum length of the full canonical identifier at 2048 bytes. The prefix
-      "gcp-" will be reserved for future uses.
+      The ID to use for the namespace. This value must be 2-63 characters, and may contain the
+      characters [a-z0-9-]. The prefix `gcp-` is reserved for use by Google, and may not be
+      specified.
   disable_auto_completers: false
 
 workload_identity_pool_namespace_operation:
@@ -196,7 +195,7 @@ workload_identity_pool_namespace_operation:
   disable_auto_completers: false
 
 workload_identity_pool_namespace_workload_source:
-  name: workload identity pool namespace workload source
+  name: workload source
   collection: iam.projects.locations.workloadIdentityPools.namespaces.workloadSources
   request_id_field: workloadSourceId
   attributes:
@@ -208,13 +207,15 @@ workload_identity_pool_namespace_workload_source:
     parameter_name: workloadSourcesId
     attribute_name: workload_source
     help: |
-      The ID to use for the workload source, which becomes the
-      final component of the resource name. This should be in the format of
-      `project-<project-number>`.
+      The ID of the workload source, which becomes the final component of the resource name.
+      This value corresponds to a boundary from within which workloads can be matched. This
+      value is formatted as follows:
+
+      * `project-[project_number]` - A Google Cloud project.
   disable_auto_completers: false
 
 workload_identity_pool_namespace_workload_source_operation:
-  name: workload identity pool namespace workload source operation
+  name: workload source operation
   collection: iam.projects.locations.workloadIdentityPools.namespaces.workloadSources.operations
   attributes:
   - *project
@@ -242,10 +243,9 @@ workload_identity_pool_managed_identity:
     parameter_name: managedIdentitiesId
     attribute_name: managed_identity
     help: |
-      The ID to use for the managed identity. Must conform to the SPIFFE spec which limits
-      characters to letters, numbers, dots, dashes, and underscores [a-zA-Z0-9.-_] (it cannot
-      include only periods) and sets a maximum length of the full canonical identifier at 2048
-      bytes. The prefix "gcp-" will be reserved for future uses.
+      The ID to use for the managed identity. This value must be 2-63 characters and may
+      contain the characters [a-z0-9-]. The prefix `gcp-` is reserved for use by Google, and
+      may not be specified.
   disable_auto_completers: false
 
 workload_identity_pool_managed_identity_operation:
@@ -265,7 +265,7 @@ workload_identity_pool_managed_identity_operation:
   disable_auto_completers: false
 
 workload_identity_pool_managed_identity_workload_source:
-  name: workload identity pool managed identity workload source
+  name: workload source
   collection: iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.workloadSources
   request_id_field: workloadSourceId
   attributes:
@@ -278,13 +278,15 @@ workload_identity_pool_managed_identity_workload_source:
     parameter_name: workloadSourcesId
     attribute_name: workload_source
     help: |
-      The ID to use for the workload source, which becomes the
-      final component of the resource name. This should be in the format of
-      `projects/<project-number>`.
+      The ID of the workload source, which becomes the final component of the resource name.
+      This value corresponds to a boundary from within which workloads can be matched. This
+      value is formatted as follows:
+
+      * `project-[project_number]` - A Google Cloud project.
   disable_auto_completers: false
 
 workload_identity_pool_managed_identity_workload_source_operation:
-  name: workload identity pool managed identity workload source operation
+  name: workload source operation
   collection: iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.workloadSources.operations
   attributes:
   - *project

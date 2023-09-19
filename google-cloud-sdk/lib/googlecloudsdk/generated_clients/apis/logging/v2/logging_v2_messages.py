@@ -7012,7 +7012,7 @@ class QueryRestrictionConflict(_messages.Message):
 
 
 class QueryResults(_messages.Message):
-  r"""Results of a SQL query over logs.
+  r"""Results of a SQL query over logs. Next ID: 11
 
   Messages:
     RowsValueListEntry: A RowsValueListEntry object.
@@ -7044,6 +7044,8 @@ class QueryResults(_messages.Message):
     totalRows: The total number of rows in the complete query result set,
       which can be more than the number of rows in this single page of
       results.
+    totalSlotMs: The total slot-milliseconds consumed by this query. Populated
+      only on a call to ReadQueryResults.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -7080,6 +7082,7 @@ class QueryResults(_messages.Message):
   schema = _messages.MessageField('TableSchema', 7)
   totalBytesProcessed = _messages.IntegerField(8)
   totalRows = _messages.IntegerField(9)
+  totalSlotMs = _messages.IntegerField(10)
 
 
 class QueryStep(_messages.Message):

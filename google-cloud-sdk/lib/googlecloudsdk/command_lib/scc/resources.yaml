@@ -101,3 +101,36 @@ notification:
       provide the notification id which is the suffix of the notification config.
       Example: organizations/123/notificationConfigs/456, the id is 456.
   disable_auto_completers: false
+
+security_posture_org:
+  name: organization
+  collection: securityposture.organizations
+  attribute:
+  - &security_posture_org
+    parameter_name: organizationsId
+    attribute_name: organization
+    help: |
+      The organization Id.
+
+security_posture_location:
+  name: location
+  collection: securityposture.organizations.locations
+  attributes:
+  - *security_posture_org
+  - &security_posture_location
+    parameter_name: locationsId
+    attribute_name: location
+    help: |
+      The location Id.
+
+posture:
+  name: posture
+  collection: securityposture.organizations.locations.postures
+  request_id_field: posture
+  attributes:
+  - *security_posture_org
+  - *security_posture_location
+  - &posture
+    parameter_name: posturesId
+    attribute_name: posture
+    help: Security Posture resource

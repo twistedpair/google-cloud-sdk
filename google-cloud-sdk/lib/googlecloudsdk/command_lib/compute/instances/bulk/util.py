@@ -61,6 +61,7 @@ class SupportedFeatures:
       support_performance_monitoring_unit,
       support_custom_hostnames,
       support_storage_pool,
+      support_specific_then_x_affinity,
   ):
     self.support_rsa_encrypted = support_rsa_encrypted
     self.support_secure_tags = support_secure_tags
@@ -95,6 +96,7 @@ class SupportedFeatures:
     )
     self.support_custom_hostnames = support_custom_hostnames
     self.support_storage_pool = support_storage_pool
+    self.support_specific_then_x_affinity = support_specific_then_x_affinity
 
 
 def _GetSourceInstanceTemplate(args, resources, instance_template_resource):
@@ -426,7 +428,8 @@ def CreateBulkInsertInstanceResource(args, holder, compute_client,
         enableDisplay=args.enable_display_device)
 
   reservation_affinity = instance_utils.GetReservationAffinity(
-      args, compute_client)
+      args, compute_client, supported_features.support_specific_then_x_affinity
+  )
 
   instance_properties = compute_client.messages.InstanceProperties(
       canIpForward=can_ip_forward,

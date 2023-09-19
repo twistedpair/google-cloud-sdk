@@ -33,6 +33,20 @@ lbTrafficExtension:
     help: |
       Id of the LB Traffic Extension.
 
+lbRouteExtension:
+  name: LB Route Extension
+  collection: networkservices.projects.locations.lbRouteExtensions
+  request_id_field: lbRouteExtensionId
+  attributes:
+  - *project
+  - *location
+  - &lbRouteExtension:
+    parameter_name: lbRouteExtensionsId
+    attribute_name: lb_route_extension
+    help: |
+      Id of the LB Route Extension.
+
+
 lbServiceSteeringExtension:
   name: LB Service Steering Extension
   collection: networkservices.projects.locations.lbServiceSteeringExtensions

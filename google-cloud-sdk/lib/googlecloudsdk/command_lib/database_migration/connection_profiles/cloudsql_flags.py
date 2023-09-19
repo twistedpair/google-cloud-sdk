@@ -36,7 +36,7 @@ def AddDatabaseVersionFlag(parser):
     """
   choices = [
       'MYSQL_5_7', 'MYSQL_5_6', 'MYSQL_8_0', 'POSTGRES_9_6', 'POSTGRES_10',
-      'POSTGRES_11', 'POSTGRES_12', 'POSTGRES_13', 'POSTGRES_14'
+      'POSTGRES_11', 'POSTGRES_12', 'POSTGRES_13', 'POSTGRES_14', 'POSTGRES_15'
   ]
 
   parser.add_argument(

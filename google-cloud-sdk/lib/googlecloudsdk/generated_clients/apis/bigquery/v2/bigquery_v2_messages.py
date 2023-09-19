@@ -61,6 +61,11 @@ class Argument(_messages.Message):
   Fields:
     argumentKind: Optional. Defaults to FIXED_TYPE.
     dataType: Required unless argument_kind = ANY_TYPE.
+    isAggregate: Optional. Whether the argument is an aggregate function
+      parameter. Must be Unset for routine types other than
+      AGGREGATE_FUNCTION. For AGGREGATE_FUNCTION, if set to false, it is
+      equivalent to adding "NOT AGGREGATE" clause in DDL; Otherwise, it is
+      equivalent to omitting "NOT AGGREGATE" clause in DDL.
     mode: Optional. Specifies whether the argument is input or output. Can be
       set for procedures only.
     name: Optional. The name of this argument. Can be absent for function
@@ -71,7 +76,7 @@ class Argument(_messages.Message):
     r"""Optional. Defaults to FIXED_TYPE.
 
     Values:
-      ARGUMENT_KIND_UNSPECIFIED: <no description>
+      ARGUMENT_KIND_UNSPECIFIED: Default value.
       FIXED_TYPE: The argument is a variable with fully specified type, which
         can be a struct or an array, but not a table.
       ANY_TYPE: The argument is any type, including struct or array, but not a
@@ -86,7 +91,7 @@ class Argument(_messages.Message):
     set for procedures only.
 
     Values:
-      MODE_UNSPECIFIED: <no description>
+      MODE_UNSPECIFIED: Default value.
       IN: The argument is input-only.
       OUT: The argument is output-only.
       INOUT: The argument is both an input and an output.
@@ -98,8 +103,9 @@ class Argument(_messages.Message):
 
   argumentKind = _messages.EnumField('ArgumentKindValueValuesEnum', 1)
   dataType = _messages.MessageField('StandardSqlDataType', 2)
-  mode = _messages.EnumField('ModeValueValuesEnum', 3)
-  name = _messages.StringField(4)
+  isAggregate = _messages.BooleanField(3)
+  mode = _messages.EnumField('ModeValueValuesEnum', 4)
+  name = _messages.StringField(5)
 
 
 class ArimaCoefficients(_messages.Message):
@@ -2799,7 +2805,7 @@ class HparamTuningTrial(_messages.Message):
     r"""The status of the trial.
 
     Values:
-      TRIAL_STATUS_UNSPECIFIED: <no description>
+      TRIAL_STATUS_UNSPECIFIED: Default value.
       NOT_STARTED: Scheduled but not started.
       RUNNING: Running state.
       SUCCEEDED: The trial succeeded.
@@ -3882,7 +3888,7 @@ JsonValue = extra_types.JsonValue
 
 
 class ListModelsResponse(_messages.Message):
-  r"""A ListModelsResponse object.
+  r"""Response format for a single page when listing BigQuery ML models.
 
   Fields:
     models: Models in the requested dataset. Only the following fields are
@@ -3896,7 +3902,7 @@ class ListModelsResponse(_messages.Message):
 
 
 class ListRoutinesResponse(_messages.Message):
-  r"""A ListRoutinesResponse object.
+  r"""Describes the format of a single result page when listing routines.
 
   Fields:
     nextPageToken: A token to request the next page of results.
@@ -4056,7 +4062,7 @@ class Model(_messages.Message):
     r"""Output only. Type of the model resource.
 
     Values:
-      MODEL_TYPE_UNSPECIFIED: <no description>
+      MODEL_TYPE_UNSPECIFIED: Default value.
       LINEAR_REGRESSION: Linear regression model.
       LOGISTIC_REGRESSION: Logistic regression based classification model.
       KMEANS: K-means clustering model.
@@ -4997,7 +5003,7 @@ class Routine(_messages.Message):
     absent, not set otherwise.
 
     Values:
-      LANGUAGE_UNSPECIFIED: <no description>
+      LANGUAGE_UNSPECIFIED: Default value.
       SQL: SQL language.
       JAVASCRIPT: JavaScript language.
       PYTHON: Python language.
@@ -5015,7 +5021,7 @@ class Routine(_messages.Message):
     r"""Required. The type of routine.
 
     Values:
-      ROUTINE_TYPE_UNSPECIFIED: <no description>
+      ROUTINE_TYPE_UNSPECIFIED: Default value.
       SCALAR_FUNCTION: Non-built-in persistent scalar function.
       PROCEDURE: Stored procedure.
       TABLE_VALUED_FUNCTION: Non-built-in persistent TVF.
@@ -5497,10 +5503,10 @@ class StandardSqlField(_messages.Message):
 
 
 class StandardSqlStructType(_messages.Message):
-  r"""A StandardSqlStructType object.
+  r"""The representation of a SQL STRUCT type.
 
   Fields:
-    fields: A StandardSqlField attribute.
+    fields: Fields within the struct.
   """
 
   fields = _messages.MessageField('StandardSqlField', 1, repeated=True)
@@ -5554,6 +5560,13 @@ class Table(_messages.Message):
       characters, underscores and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter
       and each label in the list must have a different key.
+    ResourceTagsValue: [Optional] The tags associated with this table. Tag
+      keys are globally unique. See additional information on
+      [tags](https://cloud.google.com/iam/docs/tags-access-
+      control#definitions). An object containing a list of "key": value pairs.
+      The key is the namespaced friendly name of the tag key, e.g.
+      "12345/environment" where 12345 is parent id. The value is the friendly
+      short name of the tag value, e.g. "production".
 
   Fields:
     biglakeConfiguration: [Optional] Specifies the configuration of a BigLake
@@ -5640,6 +5653,13 @@ class Table(_messages.Message):
     requirePartitionFilter: [Optional] If set to true, queries over this table
       require a partition filter that can be used for partition elimination to
       be specified.
+    resourceTags: [Optional] The tags associated with this table. Tag keys are
+      globally unique. See additional information on
+      [tags](https://cloud.google.com/iam/docs/tags-access-
+      control#definitions). An object containing a list of "key": value pairs.
+      The key is the namespaced friendly name of the tag key, e.g.
+      "12345/environment" where 12345 is parent id. The value is the friendly
+      short name of the tag value, e.g. "production".
     schema: [Optional] Describes the schema of this table.
     selfLink: [Output-only] A URL that can be used to access this resource
       again.
@@ -5691,6 +5711,37 @@ class Table(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResourceTagsValue(_messages.Message):
+    r"""[Optional] The tags associated with this table. Tag keys are globally
+    unique. See additional information on
+    [tags](https://cloud.google.com/iam/docs/tags-access-control#definitions).
+    An object containing a list of "key": value pairs. The key is the
+    namespaced friendly name of the tag key, e.g. "12345/environment" where
+    12345 is parent id. The value is the friendly short name of the tag value,
+    e.g. "production".
+
+    Messages:
+      AdditionalProperty: An additional property for a ResourceTagsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ResourceTagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResourceTagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   biglakeConfiguration = _messages.MessageField('BigLakeConfiguration', 1)
   cloneDefinition = _messages.MessageField('CloneDefinition', 2)
   clustering = _messages.MessageField('Clustering', 3)
@@ -5725,15 +5776,16 @@ class Table(_messages.Message):
   numTotalPhysicalBytes = _messages.IntegerField(32)
   rangePartitioning = _messages.MessageField('RangePartitioning', 33)
   requirePartitionFilter = _messages.BooleanField(34, default=False)
-  schema = _messages.MessageField('TableSchema', 35)
-  selfLink = _messages.StringField(36)
-  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 37)
-  streamingBuffer = _messages.MessageField('Streamingbuffer', 38)
-  tableConstraints = _messages.MessageField('TableConstraints', 39)
-  tableReference = _messages.MessageField('TableReference', 40)
-  timePartitioning = _messages.MessageField('TimePartitioning', 41)
-  type = _messages.StringField(42)
-  view = _messages.MessageField('ViewDefinition', 43)
+  resourceTags = _messages.MessageField('ResourceTagsValue', 35)
+  schema = _messages.MessageField('TableSchema', 36)
+  selfLink = _messages.StringField(37)
+  snapshotDefinition = _messages.MessageField('SnapshotDefinition', 38)
+  streamingBuffer = _messages.MessageField('Streamingbuffer', 39)
+  tableConstraints = _messages.MessageField('TableConstraints', 40)
+  tableReference = _messages.MessageField('TableReference', 41)
+  timePartitioning = _messages.MessageField('TimePartitioning', 42)
+  type = _messages.StringField(43)
+  view = _messages.MessageField('ViewDefinition', 44)
 
 
 class TableCell(_messages.Message):
@@ -6489,7 +6541,7 @@ class TrainingOptions(_messages.Message):
     r"""The data frequency of a time series.
 
     Values:
-      DATA_FREQUENCY_UNSPECIFIED: <no description>
+      DATA_FREQUENCY_UNSPECIFIED: Default value.
       AUTO_FREQUENCY: Automatically inferred from timestamps.
       YEARLY: Yearly data.
       QUARTERLY: Quarterly data.
@@ -6513,7 +6565,7 @@ class TrainingOptions(_messages.Message):
     r"""The data split type for training and evaluation, e.g. RANDOM.
 
     Values:
-      DATA_SPLIT_METHOD_UNSPECIFIED: <no description>
+      DATA_SPLIT_METHOD_UNSPECIFIED: Default value.
       RANDOM: Splits data randomly.
       CUSTOM: Splits data with the user provided tags.
       SEQUENTIAL: Splits data sequentially.
@@ -6532,7 +6584,7 @@ class TrainingOptions(_messages.Message):
     r"""Distance type for clustering models.
 
     Values:
-      DISTANCE_TYPE_UNSPECIFIED: <no description>
+      DISTANCE_TYPE_UNSPECIFIED: Default value.
       EUCLIDEAN: Eculidean distance.
       COSINE: Cosine distance.
     """
@@ -6545,7 +6597,7 @@ class TrainingOptions(_messages.Message):
     factorization.
 
     Values:
-      FEEDBACK_TYPE_UNSPECIFIED: <no description>
+      FEEDBACK_TYPE_UNSPECIFIED: Default value.
       IMPLICIT: Use weighted-als for implicit feedback problems.
       EXPLICIT: Use nonweighted-als for explicit feedback problems.
     """
@@ -6919,7 +6971,7 @@ class TrainingOptions(_messages.Message):
     r"""The strategy to determine learn rate for the current iteration.
 
     Values:
-      LEARN_RATE_STRATEGY_UNSPECIFIED: <no description>
+      LEARN_RATE_STRATEGY_UNSPECIFIED: Default value.
       LINE_SEARCH: Use line search to determine learning rate.
       CONSTANT: Use a constant learning rate.
     """
@@ -6931,7 +6983,7 @@ class TrainingOptions(_messages.Message):
     r"""Type of loss function used during training run.
 
     Values:
-      LOSS_TYPE_UNSPECIFIED: <no description>
+      LOSS_TYPE_UNSPECIFIED: Default value.
       MEAN_SQUARED_LOSS: Mean squared loss, used for linear regression.
       MEAN_LOG_LOSS: Mean log loss, used for logistic regression.
     """
@@ -6943,7 +6995,7 @@ class TrainingOptions(_messages.Message):
     r"""The model registry.
 
     Values:
-      MODEL_REGISTRY_UNSPECIFIED: <no description>
+      MODEL_REGISTRY_UNSPECIFIED: Default value.
       VERTEX_AI: Vertex AI.
     """
     MODEL_REGISTRY_UNSPECIFIED = 0
@@ -6953,7 +7005,7 @@ class TrainingOptions(_messages.Message):
     r"""Optimization strategy for training linear regression models.
 
     Values:
-      OPTIMIZATION_STRATEGY_UNSPECIFIED: <no description>
+      OPTIMIZATION_STRATEGY_UNSPECIFIED: Default value.
       BATCH_GRADIENT_DESCENT: Uses an iterative batch gradient descent
         algorithm.
       NORMAL_EQUATION: Uses a normal equation to solve linear regression
@@ -6967,7 +7019,7 @@ class TrainingOptions(_messages.Message):
     r"""The solver for PCA.
 
     Values:
-      UNSPECIFIED: <no description>
+      UNSPECIFIED: Default value.
       FULL: Full eigen-decoposition.
       RANDOMIZED: Randomized SVD.
       AUTO: Auto.

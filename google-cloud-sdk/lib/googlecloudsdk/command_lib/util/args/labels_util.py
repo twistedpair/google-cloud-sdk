@@ -104,14 +104,14 @@ _KEY_FORMAT_ERROR = (
     'Only hyphens (-), underscores (_), lowercase characters, and numbers are '
     'allowed. Keys must start with a lowercase character. International '
     'characters are allowed. Key length must not exceed 63 characters.')
-_KEY_FORMAT_HELP = (
+KEY_FORMAT_HELP = (
     'Keys must start with a lowercase character and contain only hyphens '
     '(`-`), underscores (```_```), lowercase characters, and numbers.')
 
 _VALUE_FORMAT_ERROR = (
     'Only hyphens (-), underscores (_), lowercase characters, and numbers are '
     'allowed. International characters are allowed.')
-_VALUE_FORMAT_HELP = (
+VALUE_FORMAT_HELP = (
     'Values must contain only hyphens (`-`), underscores (```_```), lowercase '
     'characters, and numbers.')
 
@@ -129,9 +129,9 @@ def GetCreateLabelsFlag(extra_message='', labels_name='labels',
   value_type = VALUE_FORMAT_VALIDATOR if validate_values else None
   format_help = []
   if validate_keys:
-    format_help.append(_KEY_FORMAT_HELP)
+    format_help.append(KEY_FORMAT_HELP)
   if validate_values:
-    format_help.append(_VALUE_FORMAT_HELP)
+    format_help.append(VALUE_FORMAT_HELP)
   help_parts = ['List of label KEY=VALUE pairs to add.']
   if format_help:
     help_parts.append(' '.join(format_help))
@@ -173,9 +173,9 @@ def GetUpdateLabelsFlag(extra_message, labels_name='labels',
   value_type = VALUE_FORMAT_VALIDATOR if validate_values else None
   format_help = []
   if validate_keys:
-    format_help.append(_KEY_FORMAT_HELP)
+    format_help.append(KEY_FORMAT_HELP)
   if validate_values:
-    format_help.append(_VALUE_FORMAT_HELP)
+    format_help.append(VALUE_FORMAT_HELP)
   help_parts = [
       ('List of label KEY=VALUE pairs to update. If a label exists, its value '
        'is modified. Otherwise, a new label is created.')]

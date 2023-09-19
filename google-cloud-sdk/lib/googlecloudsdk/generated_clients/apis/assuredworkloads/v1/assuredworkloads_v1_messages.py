@@ -39,6 +39,41 @@ class AssuredworkloadsOrganizationsLocationsOperationsListRequest(_messages.Mess
   pageToken = _messages.StringField(4)
 
 
+class AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(_messages.Message):
+  r"""A
+  AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest
+  object.
+
+  Fields:
+    assetTypes: Optional. List of asset types to be analyzed, including and
+      under the source resource. If empty, all assets are analyzed. The
+      complete list of asset types is available
+      [here](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types#searchable_asset_types).
+    pageSize: Optional. Page size. If a value is not specified, the default
+      value of 10 is used.
+    pageToken: Optional. The page token from the previous response. It needs
+      to be passed in the second and following requests.
+    project: The source type is a project. Specify the project's relative
+      resource name, formatted as either a project number or a project ID:
+      "projects/{PROJECT_NUMBER}" or "projects/{PROJECT_ID}" For example:
+      "projects/951040570662" when specifying a project number, or
+      "projects/my-project-123" when specifying a project ID.
+    target: Required. The resource ID of the folder-based destination
+      workload. This workload is where the source resource will hypothetically
+      be moved to. Specify the workload's relative resource name, formatted
+      as: "organizations/{ORGANIZATION_ID}/locations/{LOCATION_ID}/workloads/{
+      WORKLOAD_ID}" For example: "organizations/123/locations/us-
+      east1/workloads/assured-workload-2"
+  """
+
+  assetTypes = _messages.StringField(1, repeated=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  project = _messages.StringField(4)
+  target = _messages.StringField(5, required=True)
+
+
 class AssuredworkloadsOrganizationsLocationsWorkloadsCreateRequest(_messages.Message):
   r"""A AssuredworkloadsOrganizationsLocationsWorkloadsCreateRequest object.
 
@@ -235,6 +270,37 @@ class GoogleCloudAssuredworkloadsV1AcknowledgeViolationResponse(_messages.Messag
   r"""Response for violation acknowledgement"""
 
 
+class GoogleCloudAssuredworkloadsV1AnalyzeWorkloadMoveResponse(_messages.Message):
+  r"""Response containing the analysis results for the hypothetical resource
+  move.
+
+  Fields:
+    assetMoveAnalyses: List of analysis results for each asset in scope.
+    nextPageToken: The next page token. Is empty if the last page is reached.
+  """
+
+  assetMoveAnalyses = _messages.MessageField('GoogleCloudAssuredworkloadsV1AssetMoveAnalysis', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAssuredworkloadsV1AssetMoveAnalysis(_messages.Message):
+  r"""Represents move analysis results for an asset.
+
+  Fields:
+    analysisGroups: List of eligible analyses performed for the asset.
+    asset: The full resource name of the asset being analyzed. Example: //comp
+      ute.googleapis.com/projects/my_project_123/zones/zone1/instances/instanc
+      e1
+    assetType: Type of the asset being analyzed. Possible values will be among
+      the ones listed [here](https://cloud.google.com/asset-
+      inventory/docs/supported-asset-types#searchable_asset_types).
+  """
+
+  analysisGroups = _messages.MessageField('GoogleCloudAssuredworkloadsV1MoveAnalysisGroup', 1, repeated=True)
+  asset = _messages.StringField(2)
+  assetType = _messages.StringField(3)
+
+
 class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Message):
   r"""Operation metadata to give request details of CreateWorkload.
 
@@ -327,6 +393,46 @@ class GoogleCloudAssuredworkloadsV1ListWorkloadsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   workloads = _messages.MessageField('GoogleCloudAssuredworkloadsV1Workload', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1MoveAnalysisGroup(_messages.Message):
+  r"""Represents a logical group of checks performed for an asset. If
+  successful, the group contains the analysis result, otherwise it contains an
+  error with the failure reason.
+
+  Fields:
+    analysisResult: Result of a successful analysis.
+    displayName: Name of the analysis group.
+    error: Error details for a failed analysis.
+  """
+
+  analysisResult = _messages.MessageField('GoogleCloudAssuredworkloadsV1MoveAnalysisResult', 1)
+  displayName = _messages.StringField(2)
+  error = _messages.MessageField('GoogleRpcStatus', 3)
+
+
+class GoogleCloudAssuredworkloadsV1MoveAnalysisResult(_messages.Message):
+  r"""Represents the successful move analysis results for a group.
+
+  Fields:
+    blockers: List of blockers. If not resolved, these will result in
+      compliance violations in the target.
+    warnings: List of warnings. These are risks that may or may not result in
+      compliance violations.
+  """
+
+  blockers = _messages.MessageField('GoogleCloudAssuredworkloadsV1MoveImpact', 1, repeated=True)
+  warnings = _messages.MessageField('GoogleCloudAssuredworkloadsV1MoveImpact', 2, repeated=True)
+
+
+class GoogleCloudAssuredworkloadsV1MoveImpact(_messages.Message):
+  r"""Represents the impact of moving the asset to the target.
+
+  Fields:
+    detail: Explanation of the impact.
+  """
+
+  detail = _messages.StringField(1)
 
 
 class GoogleCloudAssuredworkloadsV1MutatePartnerPermissionsRequest(_messages.Message):

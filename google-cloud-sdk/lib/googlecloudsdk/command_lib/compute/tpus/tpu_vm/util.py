@@ -101,11 +101,11 @@ def GetTagsUpdateFromArgs(args, tags):
     The change to the tags after all of the arguments are applied.
   """
   tags_update = tags
-  if args.IsSpecified('clear_tags'):
+  if args.IsKnownAndSpecified('clear_tags'):
     tags_update = []
-  if args.IsSpecified('add_tags'):
+  if args.IsKnownAndSpecified('add_tags'):
     tags_update = sorted(set(tags_update + args.add_tags))
-  if args.IsSpecified('remove_tags'):
+  if args.IsKnownAndSpecified('remove_tags'):
     tags_update = sorted(set(tags_update) - set(args.remove_tags))
   return tags_update
 
@@ -133,14 +133,18 @@ def GenerateUpdateMask(api_version='v2'):
     update_mask = set()
     tpu_messages = GetMessagesModule(version=api_version)
 
-    if args.IsSpecified('description'):
+    # Since it's possible that different API versions support different flags,
+    # we must check that the flag is both known in this version and if it is
+    # specified.
+    if args.IsKnownAndSpecified('description'):
       update_mask.add('description')
 
-    if args.IsSpecified('internal_ips'):
+    if args.IsKnownAndSpecified('internal_ips'):
       update_mask.add('network_config.enable_external_ips')
 
-    if (args.IsSpecified('update_labels') or
-        args.IsSpecified('remove_labels') or args.IsSpecified('clear_labels')):
+    if (args.IsKnownAndSpecified('update_labels') or
+        args.IsKnownAndSpecified('remove_labels') or
+        args.IsKnownAndSpecified('clear_labels')):
       labels_diff = labels_util.Diff.FromUpdateArgs(args)
       if labels_diff.MayHaveUpdates():
         labels_update = labels_diff.Apply(
@@ -150,14 +154,15 @@ def GenerateUpdateMask(api_version='v2'):
           request.node.labels = labels_update.labels
           update_mask.add('labels')
 
-    if (args.IsSpecified('add_tags') or
-        args.IsSpecified('remove_tags') or args.IsSpecified('clear_tags')):
+    if (args.IsKnownAndSpecified('add_tags') or
+        args.IsKnownAndSpecified('remove_tags') or
+        args.IsKnownAndSpecified('clear_tags')):
       tags_update = GetTagsUpdateFromArgs(args, request.node.tags)
       if set(tags_update) != set(request.node.tags):
         request.node.tags = tags_update
         update_mask.add('tags')
 
-    if args.IsSpecified('metadata_from_file'):
+    if args.IsKnownAndSpecified('metadata_from_file'):
       metadata_dict = metadata_utils.ConstructMetadataDict(
           None, args.metadata_from_file)
       request.node.metadata = tpu_messages.Node.MetadataValue()
@@ -166,9 +171,9 @@ def GenerateUpdateMask(api_version='v2'):
             tpu_messages.Node.MetadataValue.AdditionalProperty(
                 key=key, value=value))
       update_mask.add('metadata')
-    elif (args.IsSpecified('update_metadata') or
-          args.IsSpecified('remove_metadata') or
-          args.IsSpecified('clear_metadata')):
+    elif (args.IsKnownAndSpecified('update_metadata') or
+          args.IsKnownAndSpecified('remove_metadata') or
+          args.IsKnownAndSpecified('clear_metadata')):
       metadata_dict = {}
       if request.node.metadata is not None:
         for item in request.node.metadata.additionalProperties:
@@ -190,7 +195,7 @@ def GenerateUpdateMask(api_version='v2'):
                 key=key, value=value))
       update_mask.add('metadata')
 
-    if args.IsSpecified('attach_disk'):
+    if args.IsKnownAndSpecified('attach_disk'):
       mode, source = '', ''
       for key in args.attach_disk.keys():
         if key == 'mode':
@@ -218,7 +223,7 @@ def GenerateUpdateMask(api_version='v2'):
       request.node.dataDisks.append(disk_to_attach)
       update_mask.add('data_disks')
 
-    elif args.IsSpecified('detach_disk'):
+    elif args.IsKnownAndSpecified('detach_disk'):
       if not request.node.dataDisks:
         raise DetachDiskError(
             'argument --detach-disk: No data disks to detach from current TPU '
@@ -392,7 +397,7 @@ def ParseBootDiskConfigurations(api_version='v2'):
         but kms-key is not provided.
       BootDiskConfigurationError: if invalid argument name is provided.
     """
-    if not args or not args.IsSpecified('boot_disk'):
+    if not args or not args.IsKnownAndSpecified('boot_disk'):
       return request
 
     kms_key_arg_name = 'kms-key'

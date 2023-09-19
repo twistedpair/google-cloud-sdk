@@ -137,11 +137,11 @@ workload_identity_pool:
         Organization administrators can further reduce the maximum
         session_duration value using the iam-workloadIdentitySessionDuration
         Resource Setting.
-  identity_mode:
-    api_field: workloadIdentityPool.identityMode
-    arg_name: identity-mode
+  mode:
+    api_field: workloadIdentityPool.mode
+    arg_name: mode
     help_text: |-
-      The identity mode of the pool.
+      The mode of the pool.
 
 workload_identity_pool_provider:
   display_name:
@@ -390,29 +390,27 @@ workload_identity_pool_namespace:
     api_field: workloadIdentityPoolNamespace.description
     arg_name: description
     help_text: |-
-      A description of the namespace. Cannot exceed 256 characters.
+      A description of the namespace.
   disabled:
     api_field: workloadIdentityPoolNamespace.disabled
     arg_name: disabled
     help_text: |-
-      Whether the namespace is disabled. If disabled, credentials may no longer be issued for this
-      identity and this identity will no longer be able to access Google Cloud APIs. Existing
-      credentials may continue to be accepted by third party APIs and workloads until they expire.
+      Whether the namespace is disabled. If disabled, credentials may no longer be issued for
+      identities in this namespace. Existing credentials may continue to be accepted until they
+      expire.
 
 workload_identity_pool_managed_identity:
   description:
     api_field: workloadIdentityPoolManagedIdentity.description
     arg_name: description
     help_text: |-
-      A description of the managed identity. Cannot exceed 256 characters.
+      A description of the managed identity.
   disabled:
     api_field: workloadIdentityPoolManagedIdentity.disabled
     arg_name: disabled
     help_text: |-
-      Whether the managed identity is disabled. If disabled, credentials may no longer be issued
-      for this identity and this identity will no longer be able to access Google Cloud APIs.
-      Existing credentials may continue to be accepted by third party APIs and workloads until they
-      expire.
+      Whether the managed identity is disabled. If disabled, credentials may no longer be issued for
+      this identity. Existing credentials may continue to be accepted until they expire.
 
 workforce_pool:
   parent:
@@ -443,30 +441,6 @@ workforce_pool:
       Disables the workforce pool. You cannot use a disabled workforce pool to
       perform new token exchanges or sign-ins using any provider in the workforce pool. Specify
       `--no-disabled` to enable a disabled pool.
-  clearable_allowed_services:
-    group:
-      mutex: true
-      hidden: true
-      params:
-      - arg_name: clear-allowed-services
-        api_field: workforcePool.accessRestrictions.allowedServices
-        type: bool
-        default: false
-        processor: googlecloudsdk.command_lib.iam.hooks:ClearAccessRestrictionAllowedServices
-        hidden: true
-        help_text: |-
-          Clear the allowed services configuration.
-      - arg_name: allowed-services
-        api_field: workforcePool.accessRestrictions.allowedServices
-        hidden: true
-        type:
-          arg_dict:
-            flatten: false
-            spec:
-            - api_field: domain
-              arg_name: domain
-        help_text: |-
-          Services allowed for web sign-in with the workforce pool.
   disable_programmatic_signin:
     api_field: workforcePool.accessRestrictions.disableProgrammaticSignin
     arg_name: disable-programmatic-signin
@@ -674,10 +648,9 @@ workforce_pool_provider:
     api_field: workforcePoolProvider.oidc.jwksJson
     type: "googlecloudsdk.calliope.arg_parsers:FileContents:"
     arg_name: jwk-json-path
-    hidden: true
     help_text: |-
-      Optional file containing jwk public keys. The file format must follow
-      [jwk specifications](https://www.rfc-editor.org/rfc/rfc7517#section-4). Example file format:
+      Optional file containing JSON Web Key (JWK) public keys. The file format must follow
+      [JWK specifications](https://www.rfc-editor.org/rfc/rfc7517#section-4). Example file format:
       ```
       {
         "keys": [
@@ -687,9 +660,9 @@ workforce_pool_provider:
                 "use": "sig",
                 "kid": "<key-id>",
                 "n": "",
-                "e": ""
-                "x": ""
-                "y": ""
+                "e": "",
+                "x": "",
+                "y": "",
                 "crv": ""
            }
         ]

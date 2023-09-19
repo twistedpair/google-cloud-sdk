@@ -972,7 +972,11 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlay(_messages.Message):
     customConstraints: The OrgPolicy CustomConstraint changes to preview
       violations for. Any existing CustomConstraints with the same name will
       be overridden in the simulation. That is, violations will be determined
-      as if all custom constraints in the overlay were instantiated.
+      as if all custom constraints in the overlay were instantiated. Only a
+      single custom_constraint is supported in the overlay at a time. For
+      evaluating multiple constraints, multiple
+      `GenerateOrgPolicyViolationsPreview` requests are made, where each
+      request evaluates a single constraint.
     policies: The OrgPolicy changes to preview violations for. Any existing
       OrgPolicies with the same name will be overridden in the simulation.
       That is, violations will be determined as if all policies in the overlay
@@ -1022,6 +1026,16 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview(_messages.Mess
       `OrgPolicyViolationsPreview`.
 
   Fields:
+    createTime: Output only. Time when this `OrgPolicyViolationsPreview` was
+      created.
+    customConstraints: Output only. The names of the constraints against which
+      all `OrgPolicyViolations` were evaluated. If `OrgPolicyOverlay` only
+      contains `PolicyOverlay` then it contains the name of the configured
+      custom constraint, applicable to the specified policies. Otherwise it
+      contains the name of the constraint specified in
+      `CustomConstraintOverlay`. Format: `organizations/{organization_id}/cust
+      omConstraints/{custom_constraint_id}` Example:
+      `organizations/123/customConstraints/custom.createOnlyE2TypeVms`
     name: Output only. The resource name of the `OrgPolicyViolationsPreview`.
       It has the following format: `organizations/{organization}/locations/{lo
       cation}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreview}`
@@ -1059,11 +1073,13 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview(_messages.Mess
     PREVIEW_SUCCEEDED = 3
     PREVIEW_FAILED = 4
 
-  name = _messages.StringField(1)
-  overlay = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlay', 2)
-  resourceCounts = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreviewResourceCounts', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  violationsCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(1)
+  customConstraints = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  overlay = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlay', 4)
+  resourceCounts = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreviewResourceCounts', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  violationsCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreviewResourceCounts(_messages.Message):
@@ -1140,7 +1156,11 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay(_messages.Message):
     customConstraints: The OrgPolicy CustomConstraint changes to preview
       violations for. Any existing CustomConstraints with the same name will
       be overridden in the simulation. That is, violations will be determined
-      as if all custom constraints in the overlay were instantiated.
+      as if all custom constraints in the overlay were instantiated. Only a
+      single custom_constraint is supported in the overlay at a time. For
+      evaluating multiple constraints, multiple
+      `GenerateOrgPolicyViolationsPreview` requests are made, where each
+      request evaluates a single constraint.
     policies: The OrgPolicy changes to preview violations for. Any existing
       OrgPolicies with the same name will be overridden in the simulation.
       That is, violations will be determined as if all policies in the overlay
@@ -1190,6 +1210,16 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview(_messages.Messa
       `OrgPolicyViolationsPreview`.
 
   Fields:
+    createTime: Output only. Time when this `OrgPolicyViolationsPreview` was
+      created.
+    customConstraints: Output only. The names of the constraints against which
+      all `OrgPolicyViolations` were evaluated. If `OrgPolicyOverlay` only
+      contains `PolicyOverlay` then it contains the name of the configured
+      custom constraint, applicable to the specified policies. Otherwise it
+      contains the name of the constraint specified in
+      `CustomConstraintOverlay`. Format: `organizations/{organization_id}/cust
+      omConstraints/{custom_constraint_id}` Example:
+      `organizations/123/customConstraints/custom.createOnlyE2TypeVms`
     name: Output only. The resource name of the `OrgPolicyViolationsPreview`.
       It has the following format: `organizations/{organization}/locations/{lo
       cation}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreview}`
@@ -1227,11 +1257,13 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreview(_messages.Messa
     PREVIEW_SUCCEEDED = 3
     PREVIEW_FAILED = 4
 
-  name = _messages.StringField(1)
-  overlay = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay', 2)
-  resourceCounts = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts', 3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  violationsCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  createTime = _messages.StringField(1)
+  customConstraints = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+  overlay = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay', 4)
+  resourceCounts = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts', 5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  violationsCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts(_messages.Message):

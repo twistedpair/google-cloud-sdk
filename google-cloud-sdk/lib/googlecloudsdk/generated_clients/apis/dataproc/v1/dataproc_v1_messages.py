@@ -6288,6 +6288,8 @@ class SessionTemplate(_messages.Message):
     spark: Optional. Spark engine config.
     sparkConnectSession: Optional. Spark connect session config.
     updateTime: Output only. The time the template was last updated.
+    uuid: Output only. A session template UUID (Unique Universal Identifier).
+      The service generates this value when it creates the session template.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -6330,6 +6332,7 @@ class SessionTemplate(_messages.Message):
   spark = _messages.MessageField('SparkConfig', 9)
   sparkConnectSession = _messages.MessageField('SparkConnectConfig', 10)
   updateTime = _messages.StringField(11)
+  uuid = _messages.StringField(12)
 
 
 class SetIamPolicyRequest(_messages.Message):

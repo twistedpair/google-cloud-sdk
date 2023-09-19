@@ -1363,8 +1363,8 @@ class NamespaceStatus(_messages.Message):
 
 
 class ObjectMeta(_messages.Message):
-  r"""k8s.io.apimachinery.pkg.apis.meta.v1.ObjectMeta is metadata that all
-  persisted resources must have, which includes all objects users must create.
+  r"""google.cloud.run.meta.v1.ObjectMeta is metadata that all persisted
+  resources must have, which includes all objects users must create.
 
   Messages:
     AnnotationsValue: Unstructured key value map stored with a resource that

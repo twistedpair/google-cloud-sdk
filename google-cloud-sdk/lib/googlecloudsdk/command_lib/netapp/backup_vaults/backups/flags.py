@@ -104,12 +104,13 @@ def AddBackupDeleteArgs(parser):
   flags.AddResourceAsyncFlag(parser)
 
 
-def AddBackupVaultUpdateArgs(parser):
-  """Add args for updating a Backup Vault."""
+def AddBackupUpdateArgs(parser):
+  """Add args for updating a Backup."""
   concept_parsers.ConceptParser(
-      [flags.GetBackupVaultPresentationSpec('The Backup Vault to update')]
+      [flags.GetBackupPresentationSpec('The Backup to update')]
   ).AddToParser(parser)
-  flags.AddResourceDescriptionArg(parser, 'Backup Vault')
+  AddBackupBackupVaultResourceArg(parser, required=True)
+  flags.AddResourceDescriptionArg(parser, 'Backup')
   flags.AddResourceAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)
 

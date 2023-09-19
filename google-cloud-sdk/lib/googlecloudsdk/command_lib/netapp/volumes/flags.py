@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.netapp import util as netapp_api_util
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.netapp import flags
 from googlecloudsdk.command_lib.netapp import util as netapp_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -439,6 +440,39 @@ https://cloud.google.com/netapp/volumes/docs/reference/rest/v1/projects.location
   )
 
 
+def AddVolumeBackupConfigArg(parser):
+  """Adds the --backup-config arg to the arg parser."""
+  backup_config_arg_spec = {
+      'backup-policies':
+          arg_parsers.ArgList(min_length=1,
+                              element_type=str,
+                              custom_delim_char='#'),
+      'backup-vault':
+          str,
+      'enable-scheduled-backups':
+          arg_parsers.ArgBoolean(
+              truthy_strings=netapp_util.truthy,
+              falsey_strings=netapp_util.falsey
+          ),
+  }
+  backup_config_help = """\
+Backup Config contains backup related config on a volume.
+
+    Backup Config will have the following format
+    `--backup-config=backup-policies=BACKUP_POLICIES,
+    backup-vault=BACKUP_VAULT_NAME,
+    enable-scheduled-backups=ENABLE_SCHEDULED_BACKUPS
+
+backup-policies is a pound-separated (#) list of backup policy names, backup-vault can include
+a single backup-vault resource name, and enable-scheduled-backups is a Boolean value indicating
+whether or not scheduled backups are enabled on the volume.
+  """
+  parser.add_argument(
+      '--backup-config',
+      type=arg_parsers.ArgDict(spec=backup_config_arg_spec),
+      help=backup_config_help,
+      hidden=True)
+
 ## Helper functions to combine Volumes args / flags for gcloud commands #
 
 
@@ -467,6 +501,8 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeRestrictedActionsArg(parser)
+  if release_track == calliope_base.ReleaseTrack.BETA:
+    AddVolumeBackupConfigArg(parser)
   labels_util.AddCreateLabelsFlags(parser)
 
 
@@ -504,4 +540,6 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeSecurityStyleArg(parser, messages)
   AddVolumeEnableKerberosArg(parser)
   AddVolumeRestrictedActionsArg(parser)
+  if release_track == calliope_base.ReleaseTrack.BETA:
+    AddVolumeBackupConfigArg(parser)
   labels_util.AddUpdateLabelsFlags(parser)

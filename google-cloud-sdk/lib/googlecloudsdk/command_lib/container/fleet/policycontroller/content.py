@@ -144,3 +144,26 @@ class FlagParser(flags.PocoFlagParser):
     ):
       return self.messages.PolicyControllerPolicyContentSpec()
     return poco_cfg.policycontroller.policyControllerHubConfig.policyContent
+
+  def _update_template_cfg(
+      self, poco_cfg: messages.Message, state: str
+  ) -> messages.Message:
+    policy_content = self._extract_policy_content(poco_cfg)
+    new_cfg = self.messages.PolicyControllerTemplateLibraryConfig(
+        installation=self._get_template_install_enum(state)
+    )
+    policy_content.templateLibrary = new_cfg
+    poco_cfg.policycontroller.policyControllerHubConfig.policyContent = (
+        policy_content
+    )
+    return poco_cfg
+
+  def install_template_library(
+      self, poco_cfg: messages.Message
+  ) -> messages.Message:
+    return self._update_template_cfg(poco_cfg, 'ALL')
+
+  def uninstall_template_library(
+      self, poco_cfg: messages.Message
+  ) -> messages.Message:
+    return self._update_template_cfg(poco_cfg, 'NOT_INSTALLED')

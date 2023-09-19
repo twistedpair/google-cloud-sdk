@@ -2632,6 +2632,9 @@ class Service(_messages.Message):
   service.
 
   Messages:
+    GeneratedCustomerMetadataValue: Additional Google Generated Customer
+      Metadata, this field won't be provided by default and can be requested
+      by setting the IncludeExtraData field in GetServiceRequest
     LabelsValue: A set of labels to apply to this service. Labels are
       key/value pairs that describe the service and all resources that belong
       to it (e.g., versions). The labels can be used to search and group
@@ -2645,6 +2648,9 @@ class Service(_messages.Message):
       most 32 labels.
 
   Fields:
+    generatedCustomerMetadata: Additional Google Generated Customer Metadata,
+      this field won't be provided by default and can be requested by setting
+      the IncludeExtraData field in GetServiceRequest
     id: Relative name of the service within the application. Example:
       default.@OutputOnly
     labels: A set of labels to apply to this service. Labels are key/value
@@ -2664,6 +2670,34 @@ class Service(_messages.Message):
     split: Mapping that defines fractional HTTP traffic diversion to different
       versions within the service.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GeneratedCustomerMetadataValue(_messages.Message):
+    r"""Additional Google Generated Customer Metadata, this field won't be
+    provided by default and can be requested by setting the IncludeExtraData
+    field in GetServiceRequest
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        GeneratedCustomerMetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a GeneratedCustomerMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2698,11 +2732,12 @@ class Service(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  id = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  networkSettings = _messages.MessageField('NetworkSettings', 4)
-  split = _messages.MessageField('TrafficSplit', 5)
+  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 1)
+  id = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  networkSettings = _messages.MessageField('NetworkSettings', 5)
+  split = _messages.MessageField('TrafficSplit', 6)
 
 
 class SslSettings(_messages.Message):

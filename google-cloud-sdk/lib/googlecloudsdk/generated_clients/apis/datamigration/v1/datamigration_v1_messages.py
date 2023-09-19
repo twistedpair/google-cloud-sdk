@@ -411,7 +411,11 @@ class CloudSqlSettings(_messages.Message):
       from more than one zone in a region (it is highly available).
     cmekKeyName: The KMS key name used for the csql instance.
     collation: The Cloud SQL default instance level collation.
-    dataCacheConfig: Optional. Configuration for data cache.
+    dataCacheConfig: Optional. Data cache is an optional feature available for
+      Cloud SQL for MySQL Enterprise Plus edition only. For more information
+      on data cache, see [Data cache
+      overview](https://cloud.google.com/sql/help/mysql-data-cache) in Cloud
+      SQL documentation.
     dataDiskSizeGb: The storage capacity available to the database, in GB. The
       minimum (and default) size is 10GB.
     dataDiskType: The type of storage: `PD_SSD` (default) or `PD_HDD`.
@@ -1060,7 +1064,10 @@ class ConvertRowIdToColumn(_messages.Message):
 
 
 class DataCacheConfig(_messages.Message):
-  r"""Data cache configurations.
+  r"""Data cache is an optional feature available for Cloud SQL for MySQL
+  Enterprise Plus edition only. For more information on data cache, see [Data
+  cache overview](https://cloud.google.com/sql/help/mysql-data-cache) in Cloud
+  SQL documentation.
 
   Fields:
     dataCacheEnabled: Optional. Whether data cache is enabled for the

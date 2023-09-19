@@ -210,6 +210,33 @@ class AssuredworkloadsV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AnalyzeWorkloadMove(self, request, global_params=None):
+      r"""Analyzes a hypothetical move of a source resource to a target workload to surface compliance risks. The analysis is best effort and is not guaranteed to be exhaustive.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1AnalyzeWorkloadMoveResponse) The response message.
+      """
+      config = self.GetMethodConfig('AnalyzeWorkloadMove')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AnalyzeWorkloadMove.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:analyzeWorkloadMove',
+        http_method='GET',
+        method_id='assuredworkloads.organizations.locations.workloads.analyzeWorkloadMove',
+        ordered_params=['target'],
+        path_params=['target'],
+        query_params=['assetTypes', 'pageSize', 'pageToken', 'project'],
+        relative_path='v1/{+target}:analyzeWorkloadMove',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1AnalyzeWorkloadMoveResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates Assured Workload.
 

@@ -46,6 +46,7 @@ class StorageV1(base_api.BaseApiClient):
     self.notifications = self.NotificationsService(self)
     self.objectAccessControls = self.ObjectAccessControlsService(self)
     self.objects = self.ObjectsService(self)
+    self.operations = self.OperationsService(self)
     self.projects_hmacKeys = self.ProjectsHmacKeysService(self)
     self.projects_serviceAccount = self.ProjectsServiceAccountService(self)
     self.projects = self.ProjectsService(self)
@@ -986,6 +987,32 @@ class StorageV1(base_api.BaseApiClient):
           ),
           }
 
+    def BulkRestore(self, request, global_params=None):
+      r"""Initiates a long-running bulk restore operation on the specified bucket.
+
+      Args:
+        request: (StorageObjectsBulkRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BulkRestore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BulkRestore.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.objects.bulkRestore',
+        ordered_params=['bucket'],
+        path_params=['bucket'],
+        query_params=[],
+        relative_path='b/{bucket}/o/bulkRestore',
+        request_field='bulkRestoreObjectsRequest',
+        request_type_name='StorageObjectsBulkRestoreRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Compose(self, request, global_params=None):
       r"""Concatenates a list of existing objects into a new object in the same bucket.
 
@@ -1085,7 +1112,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.objects.get',
         ordered_params=['bucket', 'object'],
         path_params=['bucket', 'object'],
-        query_params=['generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'userProject'],
+        query_params=['generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'softDeleted', 'userProject'],
         relative_path='b/{bucket}/o/{object}',
         request_field='',
         request_type_name='StorageObjectsGetRequest',
@@ -1167,7 +1194,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.objects.list',
         ordered_params=['bucket'],
         path_params=['bucket'],
-        query_params=['delimiter', 'endOffset', 'includeTrailingDelimiter', 'matchGlob', 'maxResults', 'pageToken', 'prefix', 'projection', 'startOffset', 'userProject', 'versions'],
+        query_params=['delimiter', 'endOffset', 'includeTrailingDelimiter', 'matchGlob', 'maxResults', 'pageToken', 'prefix', 'projection', 'softDeleted', 'startOffset', 'userProject', 'versions'],
         relative_path='b/{bucket}/o',
         request_field='',
         request_type_name='StorageObjectsListRequest',
@@ -1197,6 +1224,32 @@ class StorageV1(base_api.BaseApiClient):
         relative_path='b/{bucket}/o/{object}',
         request_field='objectResource',
         request_type_name='StorageObjectsPatchRequest',
+        response_type_name='Object',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restores a soft-deleted object.
+
+      Args:
+        request: (StorageObjectsRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Object) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.objects.restore',
+        ordered_params=['bucket', 'object'],
+        path_params=['bucket', 'object'],
+        query_params=['generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'userProject'],
+        relative_path='b/{bucket}/o/{object}/restore',
+        request_field='objectResource',
+        request_type_name='StorageObjectsRestoreRequest',
         response_type_name='Object',
         supports_download=False,
     )
@@ -1328,6 +1381,94 @@ class StorageV1(base_api.BaseApiClient):
         request_field='channel',
         request_type_name='StorageObjectsWatchAllRequest',
         response_type_name='Channel',
+        supports_download=False,
+    )
+
+  class OperationsService(base_api.BaseApiService):
+    """Service class for the operations resource."""
+
+    _NAME = 'operations'
+
+    def __init__(self, client):
+      super(StorageV1.OperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed.
+
+      Args:
+        request: (StorageBucketsOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StorageBucketsOperationsCancelResponse) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.buckets.operations.cancel',
+        ordered_params=['bucket', 'operationId'],
+        path_params=['bucket', 'operationId'],
+        query_params=[],
+        relative_path='b/{bucket}/operations/{operationId}/cancel',
+        request_field='',
+        request_type_name='StorageBucketsOperationsCancelRequest',
+        response_type_name='StorageBucketsOperationsCancelResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation.
+
+      Args:
+        request: (StorageBucketsOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='storage.buckets.operations.get',
+        ordered_params=['bucket', 'operationId'],
+        path_params=['bucket', 'operationId'],
+        query_params=[],
+        relative_path='b/{bucket}/operations/{operationId}',
+        request_field='',
+        request_type_name='StorageBucketsOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request.
+
+      Args:
+        request: (StorageBucketsOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='storage.buckets.operations.list',
+        ordered_params=['bucket'],
+        path_params=['bucket'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='b/{bucket}/operations',
+        request_field='',
+        request_type_name='StorageBucketsOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
         supports_download=False,
     )
 

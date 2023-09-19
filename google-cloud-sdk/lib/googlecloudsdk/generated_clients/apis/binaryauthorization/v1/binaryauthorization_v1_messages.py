@@ -614,9 +614,6 @@ class Check(_messages.Message):
       readability of messages in evaluation results.
     imageAllowlist: Optional. Images exempted from this check. If any of the
       patterns match the image url, the check will not be evaluated.
-    imageApprovalAttestationCheck: Optional. TO BE DEPRECATED!!! Use
-      SimpleSigningAttestationCheck instead! Require an ImageApproval-type
-      attestation for every image in the deployment.
     imageFreshnessCheck: Optional. Require that an image is no older than a
       configured expiration time. Image age is determined by its upload time.
     simpleSigningAttestationCheck: Optional. Require a SimpleSigning-type
@@ -635,12 +632,11 @@ class Check(_messages.Message):
   alwaysDeny = _messages.BooleanField(1)
   displayName = _messages.StringField(2)
   imageAllowlist = _messages.MessageField('ImageAllowlist', 3)
-  imageApprovalAttestationCheck = _messages.MessageField('ImageApprovalAttestationCheck', 4)
-  imageFreshnessCheck = _messages.MessageField('ImageFreshnessCheck', 5)
-  simpleSigningAttestationCheck = _messages.MessageField('SimpleSigningAttestationCheck', 6)
-  slsaCheck = _messages.MessageField('SlsaCheck', 7)
-  trustedDirectoryCheck = _messages.MessageField('TrustedDirectoryCheck', 8)
-  vulnerabilityCheck = _messages.MessageField('VulnerabilityCheck', 9)
+  imageFreshnessCheck = _messages.MessageField('ImageFreshnessCheck', 4)
+  simpleSigningAttestationCheck = _messages.MessageField('SimpleSigningAttestationCheck', 5)
+  slsaCheck = _messages.MessageField('SlsaCheck', 6)
+  trustedDirectoryCheck = _messages.MessageField('TrustedDirectoryCheck', 7)
+  vulnerabilityCheck = _messages.MessageField('VulnerabilityCheck', 8)
 
 
 class CheckResult(_messages.Message):
@@ -1043,38 +1039,6 @@ class ImageAllowlist(_messages.Message):
   """
 
   allowPattern = _messages.StringField(1, repeated=True)
-
-
-class ImageApprovalAttestationCheck(_messages.Message):
-  r"""TO BE DEPRECATED!!! Use SimpleSigningAttestationCheck instead! Require a
-  signed [DSSE](https://github.com/secure-systems-lab/dsse) attestation with
-  type ImageApproval. For backwards compatibility with older Binauthz
-  policies, "raw" signatures (i.e. signatures without the DSSE PAE
-  transformation) are also accepted by this check when the source of the
-  signature is a Container Analysis AttestationOccurrence. This backwards-
-  compatibility shim is only true for legacy attestations from
-  AttestationOccurrence instances, and may be phased out in the future.
-
-  Fields:
-    attestationAuthenticators: Required. The authenticators required by this
-      check to verify an attestation. Typically this is one or more PKIX
-      public keys for signature verification. Only one authenticator needs to
-      consider an attestation verified in order for an attestation to be
-      considered fully authenticated. In otherwords, this list of
-      authenticators is an "OR" of the authenticator results. At least one
-      authenticator is required.
-    containerAnalysisAttestationProjects: Optional. The projects where
-      attestations are stored as Container Analysis Occurrences. Only one
-      attestation needs to successfully verify an image for this check to
-      pass, so a single verified attestation found in any of
-      `container_analysis_attestation_projects` is sufficient for the check to
-      pass. When fetching Occurrences from Container Analysis, only
-      'AttestationOccurrence' kinds are considered. In the future, additional
-      Occurrence kinds may be added to the query.
-  """
-
-  attestationAuthenticators = _messages.MessageField('AttestationAuthenticator', 1, repeated=True)
-  containerAnalysisAttestationProjects = _messages.StringField(2, repeated=True)
 
 
 class ImageFreshnessCheck(_messages.Message):

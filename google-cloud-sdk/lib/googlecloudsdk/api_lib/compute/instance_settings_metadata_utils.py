@@ -32,8 +32,8 @@ def ConstructInstanceSettingsMetadataMessage(message_classes, metadata):
   return message_classes.InstanceSettingsMetadata(items=is_metadata)
 
 
-def ConstructUpdateMask(metadata):
-  mask_fields = [UPDATE_MASK_METADATA_PREFIX + key for key in metadata.keys()]
+def ConstructUpdateMask(metadata_keys):
+  mask_fields = [UPDATE_MASK_METADATA_PREFIX + key for key in metadata_keys]
   return ','.join(mask_fields)
 
 

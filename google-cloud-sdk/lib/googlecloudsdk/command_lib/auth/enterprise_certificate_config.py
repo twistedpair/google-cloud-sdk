@@ -165,7 +165,6 @@ def create_ecp_config(args, config_type):
 
 def create_config(args, config_type):
   """Creates the ECP config based on the passed in CLI arguments."""
-  config.EnsureSDKWriteAccess()
   output = create_ecp_config(args, config_type)
 
   config_path = (

@@ -26,9 +26,19 @@ class Collections(enum.Enum):
 
   PROJECTS = (
       'projects',
-      'projects/{projectId}',
+      'projects/{projectsId}',
       {},
-      ['projectId'],
+      ['projectsId'],
+      True
+  )
+  PROJECTS_DEVICESESSIONS = (
+      'projects.deviceSessions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/deviceSessions/{deviceSessionsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_TESTMATRICES = (

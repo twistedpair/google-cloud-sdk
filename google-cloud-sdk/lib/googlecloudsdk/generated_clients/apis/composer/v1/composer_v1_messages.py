@@ -521,6 +521,7 @@ class Environment(_messages.Message):
       }" EnvironmentId must start with a lowercase letter followed by up to 63
       lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
     state: The current state of the environment.
+    storageConfig: Optional. Storage configuration for this environment.
     updateTime: Output only. The time at which this environment was last
       modified.
     uuid: Output only. The UUID (Universally Unique IDentifier) associated
@@ -582,8 +583,9 @@ class Environment(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
-  updateTime = _messages.StringField(6)
-  uuid = _messages.StringField(7)
+  storageConfig = _messages.MessageField('StorageConfig', 6)
+  updateTime = _messages.StringField(7)
+  uuid = _messages.StringField(8)
 
 
 class EnvironmentConfig(_messages.Message):
@@ -1798,6 +1800,10 @@ class StopAirflowCommandResponse(_messages.Message):
 
   isDone = _messages.BooleanField(1)
   output = _messages.StringField(2, repeated=True)
+
+
+class StorageConfig(_messages.Message):
+  r"""The configuration for data storage in the environment."""
 
 
 class WebServerConfig(_messages.Message):

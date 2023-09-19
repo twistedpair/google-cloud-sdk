@@ -696,6 +696,10 @@ class PostureDeployment(_messages.Message):
     reconciling: Output only. Whether or not this Posture is in the process of
       being updated.
     state: Output only. State of PostureDeployment resource.
+    targetResource: Required. Target resource where the Posture will be
+      deployed. Currently supported resources are of types:
+      projects/projectNumber, folders/folderNumber,
+      organizations/organizationNumber.
     updateTime: Output only. The timestamp that the PostureDeployment was
       updated.
   """
@@ -759,7 +763,8 @@ class PostureDeployment(_messages.Message):
   postureRevisionId = _messages.StringField(9)
   reconciling = _messages.BooleanField(10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  targetResource = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class PostureTemplate(_messages.Message):

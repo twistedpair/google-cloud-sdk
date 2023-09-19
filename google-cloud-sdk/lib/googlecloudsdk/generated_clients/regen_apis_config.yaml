@@ -229,8 +229,6 @@ apis:
       discovery_doc: billingbudgets_v1.json
       default: true
   blockchainnodeengine:
-    v1alpha1:
-      discovery_doc: blockchainnodeengine_v1alpha1.json
     v1:
       discovery_doc: blockchainnodeengine_v1.json
       default: true
@@ -1340,6 +1338,9 @@ apis:
       # request message is still needed.
       unelidable_request_methods:
       - testing.projects.testMatrices.create
+      resources:
+        projects:
+          path: projects/{projectsId}
   toolresults:
     v1beta3:
       discovery_doc: toolresults_v1beta3.json

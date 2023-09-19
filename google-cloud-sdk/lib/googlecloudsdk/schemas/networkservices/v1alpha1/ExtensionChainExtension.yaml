@@ -61,15 +61,15 @@ properties:
     type: string
   service:
     description: |-
-      The reference to the service that will run the extension.
-      Must be a reference to a Backend Service
-      (https://cloud.google.com/compute/docs/reference/rest/v1/backendServices).
+      The reference to the service that will run the extension. Must be a
+      reference to a Backend Service (https://cloud.googl
+      e.com/compute/docs/reference/rest/v1/backendServices).
     type: string
   supportedEvents:
     description: |-
       A set of events during request or response processing for which this
-      extension should be called. Note that usage of this field is only allowed
-      and is required for LbTrafficExtension resource.
+      extension should be called. Note that usage of this field is only
+      allowed and is required for LbTrafficExtension resource.
     type: array
     items:
       type: string

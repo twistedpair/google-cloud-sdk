@@ -341,6 +341,10 @@ class GceInstance(_messages.Message):
       where no one has that permission. If not set, VMs run with a service
       account provided by the Cloud Workstations service, and the image must
       be publicly accessible.
+    serviceAccountScopes: Optional. Scopes to grant to the service_account.
+      Various scopes are automatically added based on feature usage. When
+      specified, users of workstations under this configuration must have
+      `iam.serviceAccounts.actAs` on the service account.
     shieldedInstanceConfig: Optional. A set of Compute Engine Shielded
       instance options.
     tags: Optional. Network tags to add to the Compute Engine VMs backing the
@@ -360,8 +364,9 @@ class GceInstance(_messages.Message):
   poolSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   pooledInstances = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   serviceAccount = _messages.StringField(8)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 9)
-  tags = _messages.StringField(10, repeated=True)
+  serviceAccountScopes = _messages.StringField(9, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 10)
+  tags = _messages.StringField(11, repeated=True)
 
 
 class GceRegionalPersistentDisk(_messages.Message):
@@ -1147,6 +1152,8 @@ class Workstation(_messages.Message):
     name: Full name of this workstation.
     reconciling: Output only. Indicates whether this workstation is currently
       being updated to match its intended state.
+    startTime: Output only. Time when this workstation was most recently
+      successfully started, regardless of the workstation's initial state.
     state: Output only. Current state of the workstation.
     uid: Output only. A system-assigned unique identifier for this
       workstation.
@@ -1232,9 +1239,10 @@ class Workstation(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 7)
   name = _messages.StringField(8)
   reconciling = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class WorkstationCluster(_messages.Message):
@@ -1426,6 +1434,12 @@ class WorkstationConfig(_messages.Message):
       codes.
     reconciling: Output only. Indicates whether this workstation configuration
       is currently being updated to match its intended state.
+    replicaZones: Optional. Immutable. Specifies the zones used to replicate
+      the VM and disk resources within the region. If set, exactly two zones
+      within the workstation cluster's region must be specified-for example,
+      `['us-central1-a', 'us-central1-f']`. If this field is empty, two
+      default zones within the region are used. Immutable after the
+      workstation configuration is created.
     runningTimeout: Optional. Number of seconds that a workstation can run
       until it is automatically shut down. We recommend that workstations be
       shut down daily to reduce costs and so that security updates can be
@@ -1513,9 +1527,10 @@ class WorkstationConfig(_messages.Message):
   persistentDirectories = _messages.MessageField('PersistentDirectory', 14, repeated=True)
   readinessChecks = _messages.MessageField('ReadinessCheck', 15, repeated=True)
   reconciling = _messages.BooleanField(16)
-  runningTimeout = _messages.StringField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
+  replicaZones = _messages.StringField(17, repeated=True)
+  runningTimeout = _messages.StringField(18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
 
 
 class WorkstationsProjectsLocationsGetRequest(_messages.Message):

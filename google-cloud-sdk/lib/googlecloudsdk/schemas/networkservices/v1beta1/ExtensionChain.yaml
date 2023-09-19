@@ -1,0 +1,49 @@
+$schema: "http://json-schema.org/draft-06/schema#"
+
+title: networkservices v1beta1 ExtensionChain export schema
+description: A gcloud export/import command YAML validation schema.
+type: object
+required:
+- extensions
+- matchCondition
+- name
+additionalProperties: false
+properties:
+  COMMENT:
+    type: object
+    description: User specified info ignored by gcloud import.
+    additionalProperties: false
+    properties:
+      template-id:
+        type: string
+      region:
+        type: string
+      description:
+        type: string
+      date:
+        type: string
+      version:
+        type: string
+  UNKNOWN:
+    type: array
+    description: Unknown API fields that cannot be imported.
+    items:
+      type: string
+  extensions:
+    description: |-
+      A set of extensions that will execute for the matching request. Up to 3
+      extensions can be defined for each ExtensionChain for LbTrafficExtension
+      resource. LbServiceSteeringExtension chains are limited to 1 extension per
+      ExtensionChain
+    type: array
+    items:
+      $ref: ExtensionChainExtension.yaml
+  matchCondition:
+    description: |-
+      Conditions under which this chain should be invoked for a request.
+    $ref: ExtensionChainMatchCondition.yaml
+  name:
+    description: |-
+      The name for this extension chain. The name will be logged as part of
+      HTTP request logs.
+    type: string

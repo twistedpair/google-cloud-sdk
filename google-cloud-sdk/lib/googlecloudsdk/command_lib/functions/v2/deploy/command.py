@@ -817,6 +817,11 @@ def _GetBuildConfig(
   if args.build_worker_pool is not None or args.clear_build_worker_pool:
     updated_fields.add('build_config.worker_pool')
 
+  service_account = None
+  if args.IsKnownAndSpecified('build_service_account'):
+    updated_fields.add('build_config.service_account')
+    service_account = args.build_service_account
+
   build_updated_fields = frozenset.union(source_updated_fields, updated_fields)
   messages = client.MESSAGES_MODULE
   return (
@@ -833,6 +838,7 @@ def _GetBuildConfig(
                   for key, value in sorted(build_env_vars.items())
               ]
           ),
+          serviceAccount=service_account,
       ),
       build_updated_fields,
   )

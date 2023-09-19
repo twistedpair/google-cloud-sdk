@@ -71,6 +71,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ENVIRONMENTS_DAGS_DAGRUNS_TASKINSTANCES = (
+      'projects.locations.environments.dags.dagRuns.taskInstances',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/environments/'
+              '{environmentsId}/dags/{dagsId}/dagRuns/{dagRunsId}/'
+              'taskInstances/{taskInstancesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

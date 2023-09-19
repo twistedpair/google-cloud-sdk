@@ -6376,7 +6376,7 @@ class VmwareCluster(_messages.Message):
     validationCheck: Output only. ValidationCheck represents the result of the
       preflight check job.
     vcenter: VmwareVCenterConfig specifies vCenter config for the user
-      cluster. Inherited from the admin cluster.
+      cluster. If unspecified, it is inherited from the admin cluster.
     vmTrackingEnabled: Enable VM tracking.
   """
 
@@ -7038,6 +7038,7 @@ class VmwareVersionInfo(_messages.Message):
   r"""Contains information about a specific Anthos on VMware version.
 
   Fields:
+    dependencies: The list of upgrade dependencies for this version.
     hasDependencies: If set, the cluster dependencies (e.g. the admin cluster,
       other user clusters managed by the same admin cluster) must be upgraded
       before this version can be installed or upgraded to.
@@ -7047,9 +7048,10 @@ class VmwareVersionInfo(_messages.Message):
     version: Version number e.g. 1.13.1-gke.1000.
   """
 
-  hasDependencies = _messages.BooleanField(1)
-  isInstalled = _messages.BooleanField(2)
-  version = _messages.StringField(3)
+  dependencies = _messages.MessageField('UpgradeDependency', 1, repeated=True)
+  hasDependencies = _messages.BooleanField(2)
+  isInstalled = _messages.BooleanField(3)
+  version = _messages.StringField(4)
 
 
 class VmwareVipConfig(_messages.Message):

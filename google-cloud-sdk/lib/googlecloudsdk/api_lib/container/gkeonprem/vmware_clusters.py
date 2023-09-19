@@ -238,6 +238,7 @@ class ClustersClient(client.ClientBase):
         'storage': self._vmware_storage_config(args),
         'networkConfig': self._vmware_network_config(args),
         'loadBalancer': self._vmware_load_balancer_config(args),
+        'vcenter': self._vmware_vcenter_config(args),
         'dataplaneV2': self._vmware_dataplane_v2_config(args),
         'vmTrackingEnabled': self._vm_tracking_enabled(args),
         'autoRepairConfig': self._vmware_auto_repair_config(args),
@@ -247,6 +248,21 @@ class ClustersClient(client.ClientBase):
     }
     if any(kwargs.values()):
       return messages.VmwareCluster(**kwargs)
+    return None
+
+  def _vmware_vcenter_config(self, args: parser_extensions.Namespace):
+    """Constructs proto message VmwareVCenterConfig."""
+    kwargs = {
+        'caCertData': flags.Get(args, 'vcenter_ca_cert_data'),
+        'cluster': flags.Get(args, 'vcenter_cluster'),
+        'datacenter': flags.Get(args, 'vcenter_datacenter'),
+        'datastore': flags.Get(args, 'vcenter_datastore'),
+        'folder': flags.Get(args, 'vcenter_folder'),
+        'resourcePool': flags.Get(args, 'vcenter_resource_pool'),
+        'storagePolicyName': flags.Get(args, 'vcenter_storage_policy_name'),
+    }
+    if flags.IsSet(kwargs):
+      return messages.VmwareVCenterConfig(**kwargs)
     return None
 
   def _upgrade_policy(self, args: parser_extensions.Namespace):

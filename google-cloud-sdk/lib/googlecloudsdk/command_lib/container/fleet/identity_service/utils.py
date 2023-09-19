@@ -319,6 +319,8 @@ def provision_azuread_config(auth_method, msg):
     ]
   if 'userClaim' in azuread_config:
     auth_method_proto.azureadConfig.userClaim = azuread_config['userClaim']
+  if 'groupFormat' in azuread_config:
+    auth_method_proto.azureadConfig.groupFormat = azuread_config['groupFormat']
   return auth_method_proto
 
 

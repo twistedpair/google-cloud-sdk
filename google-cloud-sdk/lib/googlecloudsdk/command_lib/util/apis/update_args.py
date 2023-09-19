@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 import abc
 
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import arg_parsers_usage_text as usage_text
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import util as format_util
 from googlecloudsdk.command_lib.util.apis import arg_utils
@@ -33,6 +34,32 @@ import six
 
 # TODO(b/283949482): Place this file in util/args and replace the duplicate
 # logic in the util files.
+
+
+class _ConvertValueType(usage_text.DefaultArgTypeWrapper):
+  """Wraps flag types in arg_utils.ConvertValue while maintaining help text.
+
+  Attributes:
+    arg_gen: UpdateBasicArgumentGenerator, update argument generator
+  """
+
+  def __init__(self, arg_gen):
+    super(_ConvertValueType, self).__init__(arg_gen.flag_type)
+    self.field = arg_gen.field
+    self.repeated = arg_gen.repeated
+    self.processor = arg_gen.processor
+    self.choices = arg_gen.choices
+
+  def __call__(self, arg_value):
+    """Converts arg_value into type arg_type."""
+    value = super(_ConvertValueType, self).__call__(arg_value)
+    return arg_utils.ConvertValue(
+        self.field,
+        value,
+        repeated=self.repeated,
+        processor=self.processor,
+        choices=util.Choice.ToChoiceMap(self.choices),
+    )
 
 
 class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
@@ -334,17 +361,6 @@ class UpdateBasicArgumentGenerator(UpdateArgumentGenerator):
   def _CreateBasicFlag(self, **kwargs):
     return self._CreateFlag(arg_name=self.arg_name, **kwargs)
 
-  def _ConvertValueType(self, value):
-    if self.flag_type is not None:
-      value = self.flag_type(value)
-    return arg_utils.ConvertValue(
-        self.field,
-        value,
-        repeated=self.repeated,
-        processor=self.processor,
-        choices=util.Choice.ToChoiceMap(self.choices),
-    )
-
 
 class UpdateDefaultArgumentGenerator(UpdateBasicArgumentGenerator):
   """Update flag generator for simple values."""
@@ -356,7 +372,7 @@ class UpdateDefaultArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def set_arg(self):
     return self._CreateBasicFlag(
-        flag_type=self._ConvertValueType,
+        flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Set {} to new value.'.format(self.arg_name),
     )
@@ -391,7 +407,7 @@ class UpdateListArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def set_arg(self):
     return self._CreateBasicFlag(
-        flag_type=self._ConvertValueType,
+        flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Set {} to new value.'.format(self.arg_name),
     )
@@ -409,7 +425,7 @@ class UpdateListArgumentGenerator(UpdateBasicArgumentGenerator):
   def update_arg(self):
     return self._CreateBasicFlag(
         flag_prefix='add',
-        flag_type=self._ConvertValueType,
+        flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Add new value to {} list.'.format(self.arg_name),
     )
@@ -418,7 +434,7 @@ class UpdateListArgumentGenerator(UpdateBasicArgumentGenerator):
   def remove_arg(self):
     return self._CreateBasicFlag(
         flag_prefix='remove',
-        flag_type=self._ConvertValueType,
+        flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Remove existing value from {} list.'.format(self.arg_name),
     )
@@ -489,7 +505,7 @@ class UpdateMapArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def set_arg(self):
     return self._CreateBasicFlag(
-        flag_type=self._ConvertValueType,
+        flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Set {} to new value.'.format(self.arg_name),
     )
@@ -507,7 +523,7 @@ class UpdateMapArgumentGenerator(UpdateBasicArgumentGenerator):
   def update_arg(self):
     return self._CreateBasicFlag(
         flag_prefix='update',
-        flag_type=self._ConvertValueType,
+        flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Update {} value or add key value pair.'.format(
             self.arg_name

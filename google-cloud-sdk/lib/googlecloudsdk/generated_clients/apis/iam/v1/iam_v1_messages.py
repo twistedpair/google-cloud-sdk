@@ -20,8 +20,9 @@ class AccessRestrictions(_messages.Message):
   r"""Access related restrictions on the workforce pool.
 
   Fields:
-    allowedServices: Optional. Services allowed for web sign-in with the
-      workforce pool. If not set by default there are no restrictions.
+    allowedServices: Optional. Immutable. Services allowed for web sign-in
+      with the workforce pool. If not set by default there are no
+      restrictions.
     disableProgrammaticSignin: Optional. Disable programmatic sign-in by
       disabling token issue via the Security Token API endpoint. See [Security
       Token Service API]
@@ -5065,7 +5066,7 @@ class WorkloadIdentityPool(_messages.Message):
   policies to grant these identities access to Google Cloud resources.
 
   Enums:
-    IdentityModeValueValuesEnum: Immutable. The mode the pool is operating in.
+    ModeValueValuesEnum: Immutable. The mode the pool is operating in.
     StateValueValuesEnum: Output only. The state of the pool.
 
   Fields:
@@ -5076,7 +5077,7 @@ class WorkloadIdentityPool(_messages.Message):
     displayName: A display name for the pool. Cannot exceed 32 characters.
     expireTime: Output only. Time after which the workload identity pool will
       be permanently purged and cannot be recovered.
-    identityMode: Immutable. The mode the pool is operating in.
+    mode: Immutable. The mode the pool is operating in.
     name: Output only. The resource name of the pool.
     sessionDuration: Overrides the lifespan of access tokens issued when
       federating using this pool. If not set, the lifespan of issued access
@@ -5091,13 +5092,13 @@ class WorkloadIdentityPool(_messages.Message):
     state: Output only. The state of the pool.
   """
 
-  class IdentityModeValueValuesEnum(_messages.Enum):
+  class ModeValueValuesEnum(_messages.Enum):
     r"""Immutable. The mode the pool is operating in.
 
     Values:
-      IDENTITY_MODE_UNSPECIFIED: State unspecified. New pools should not use
-        this mode. Pools with an unspecified mode will operate as if they are
-        in FEDERATION_ONLY mode.
+      MODE_UNSPECIFIED: State unspecified. New pools should not use this mode.
+        Pools with an unspecified mode will operate as if they are in
+        FEDERATION_ONLY mode.
       FEDERATION_ONLY: FEDERATION_ONLY mode pools can only be used for
         federating external workload identities into Google Cloud. Unless
         otherwise noted, no structure or format constraints are applied to
@@ -5111,7 +5112,7 @@ class WorkloadIdentityPool(_messages.Message):
         WorkloadIdentityPoolProviders cannot be created within TRUST_DOMAIN
         mode pools.
     """
-    IDENTITY_MODE_UNSPECIFIED = 0
+    MODE_UNSPECIFIED = 0
     FEDERATION_ONLY = 1
     TRUST_DOMAIN = 2
 
@@ -5137,7 +5138,7 @@ class WorkloadIdentityPool(_messages.Message):
   disabled = _messages.BooleanField(2)
   displayName = _messages.StringField(3)
   expireTime = _messages.StringField(4)
-  identityMode = _messages.EnumField('IdentityModeValueValuesEnum', 5)
+  mode = _messages.EnumField('ModeValueValuesEnum', 5)
   name = _messages.StringField(6)
   sessionDuration = _messages.StringField(7)
   state = _messages.EnumField('StateValueValuesEnum', 8)

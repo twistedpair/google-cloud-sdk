@@ -4851,6 +4851,27 @@ class GoogleCloudDialogflowCxV3ExportFlowResponse(_messages.Message):
   flowUri = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowCxV3ExportIntentsMetadata(_messages.Message):
+  r"""Metadata returned for the Intents.ExportIntents long running operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3ExportIntentsResponse(_messages.Message):
+  r"""The response message for Intents.ExportIntents.
+
+  Fields:
+    intentsContent: Uncompressed byte content for intents. This field is
+      populated only if `intents_content_inline` is set to true in
+      ExportIntentsRequest.
+    intentsUri: The URI to a file containing the exported intents. This field
+      is populated only if `intents_uri` is specified in ExportIntentsRequest.
+  """
+
+  intentsContent = _messages.MessageField('GoogleCloudDialogflowCxV3InlineDestination', 1)
+  intentsUri = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3ExportTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.ExportTestCases long running
   operation. This message currently has no fields.
@@ -5127,6 +5148,40 @@ class GoogleCloudDialogflowCxV3ImportFlowResponse(_messages.Message):
   flow = _messages.StringField(1)
 
 
+class GoogleCloudDialogflowCxV3ImportIntentsMetadata(_messages.Message):
+  r"""Metadata returned for the Intents.ImportIntents long running operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3ImportIntentsResponse(_messages.Message):
+  r"""The response message for Intents.ImportIntents.
+
+  Fields:
+    conflictingResources: Info which resources have conflicts when
+      REPORT_CONFLICT merge_option is set in ImportIntentsRequest.
+    intents: The unique identifier of the imported intents. Format:
+      `projects//locations//agents//intents/`.
+  """
+
+  conflictingResources = _messages.MessageField('GoogleCloudDialogflowCxV3ImportIntentsResponseConflictingResources', 1)
+  intents = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3ImportIntentsResponseConflictingResources(_messages.Message):
+  r"""Conflicting resources detected during the import process. Only filled
+  when REPORT_CONFLICT is set in the request and there are conflicts in the
+  display names.
+
+  Fields:
+    entityDisplayNames: Display names of conflicting entities.
+    intentDisplayNames: Display names of conflicting intents.
+  """
+
+  entityDisplayNames = _messages.StringField(1, repeated=True)
+  intentDisplayNames = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudDialogflowCxV3ImportTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.ImportTestCases long running
   operation.
@@ -5147,6 +5202,18 @@ class GoogleCloudDialogflowCxV3ImportTestCasesResponse(_messages.Message):
   """
 
   names = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3InlineDestination(_messages.Message):
+  r"""Inline destination for a Dialogflow operation that writes or exports
+  objects (e.g. intents) outside of Dialogflow.
+
+  Fields:
+    content: Output only. The uncompressed byte content for the objects. Only
+      populated in responses.
+  """
+
+  content = _messages.BytesField(1)
 
 
 class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
@@ -7327,6 +7394,27 @@ class GoogleCloudDialogflowCxV3beta1ExportFlowResponse(_messages.Message):
   flowUri = _messages.StringField(2)
 
 
+class GoogleCloudDialogflowCxV3beta1ExportIntentsMetadata(_messages.Message):
+  r"""Metadata returned for the Intents.ExportIntents long running operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3beta1ExportIntentsResponse(_messages.Message):
+  r"""The response message for Intents.ExportIntents.
+
+  Fields:
+    intentsContent: Uncompressed byte content for intents. This field is
+      populated only if `intents_content_inline` is set to true in
+      ExportIntentsRequest.
+    intentsUri: The URI to a file containing the exported intents. This field
+      is populated only if `intents_uri` is specified in ExportIntentsRequest.
+  """
+
+  intentsContent = _messages.MessageField('GoogleCloudDialogflowCxV3beta1InlineDestination', 1)
+  intentsUri = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3beta1ExportTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.ExportTestCases long running
   operation. This message currently has no fields.
@@ -7603,6 +7691,40 @@ class GoogleCloudDialogflowCxV3beta1ImportFlowResponse(_messages.Message):
   flow = _messages.StringField(1)
 
 
+class GoogleCloudDialogflowCxV3beta1ImportIntentsMetadata(_messages.Message):
+  r"""Metadata returned for the Intents.ImportIntents long running operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3beta1ImportIntentsResponse(_messages.Message):
+  r"""The response message for Intents.ImportIntents.
+
+  Fields:
+    conflictingResources: Info which resources have conflicts when
+      REPORT_CONFLICT merge_option is set in ImportIntentsRequest.
+    intents: The unique identifier of the imported intents. Format:
+      `projects//locations//agents//intents/`.
+  """
+
+  conflictingResources = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ImportIntentsResponseConflictingResources', 1)
+  intents = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1ImportIntentsResponseConflictingResources(_messages.Message):
+  r"""Conflicting resources detected during the import process. Only filled
+  when REPORT_CONFLICT is set in the request and there are conflicts in the
+  display names.
+
+  Fields:
+    entityDisplayNames: Display names of conflicting entities.
+    intentDisplayNames: Display names of conflicting intents.
+  """
+
+  entityDisplayNames = _messages.StringField(1, repeated=True)
+  intentDisplayNames = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudDialogflowCxV3beta1ImportTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.ImportTestCases long running
   operation.
@@ -7623,6 +7745,18 @@ class GoogleCloudDialogflowCxV3beta1ImportTestCasesResponse(_messages.Message):
   """
 
   names = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1InlineDestination(_messages.Message):
+  r"""Inline destination for a Dialogflow operation that writes or exports
+  objects (e.g. intents) outside of Dialogflow.
+
+  Fields:
+    content: Output only. The uncompressed byte content for the objects. Only
+      populated in responses.
+  """
+
+  content = _messages.BytesField(1)
 
 
 class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):

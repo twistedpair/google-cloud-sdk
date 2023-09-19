@@ -494,13 +494,14 @@ class LoggingServiceV2Client(metaclass=LoggingServiceV2ClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging.WriteLogEntriesResponse:
-        r"""Writes log entries to Logging. This API method is the
-        only way to send log entries to Logging. This method is
-        used, directly or indirectly, by the Logging agent
-        (fluentd) and all logging libraries configured to use
-        Logging. A single request may contain log entries for a
-        maximum of 1000 different resources (projects,
-        organizations, billing accounts or folders)
+        r"""Writes log entries to Logging. This API method is the only way
+        to send log entries to Logging. This method is used, directly or
+        indirectly, by the Logging agent (fluentd) and all logging
+        libraries configured to use Logging. A single request may
+        contain log entries for a maximum of 1000 different resource
+        names (projects, organizations, billing accounts or folders),
+        where the resource name for a log entry is determined from its
+        ``logName`` field.
 
         .. code-block:: python
 

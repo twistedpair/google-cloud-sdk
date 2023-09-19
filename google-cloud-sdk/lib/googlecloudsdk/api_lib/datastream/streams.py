@@ -416,10 +416,24 @@ class StreamsClient:
 
     if args.IsSpecified('backfill_none'):
       stream.backfillNone = self._messages.BackfillNoneStrategy()
+      # NOMUTANTS--This path has been verified by manual tests.
+      try:
+        stream.reset('backfillAll')
+      except AttributeError:
+        # Attempt to remove a backfill all
+        # previous definition, but doesn't exist.
+        pass
 
     elif args.IsSpecified('backfill_all'):
       backfill_all_strategy = self._GetBackfillAllStrategy(release_track, args)
       stream.backfillAll = backfill_all_strategy
+      # NOMUTANTS--This path has been verified by manual tests.
+      try:
+        stream.reset('backfillNone')
+      except AttributeError:
+        # Attempt to remove a backfill none previous definition,
+        # but it doesn't exist.
+        pass
 
     if args.IsSpecified('state'):
       stream.state = self._messages.Stream.StateValueValuesEnum(

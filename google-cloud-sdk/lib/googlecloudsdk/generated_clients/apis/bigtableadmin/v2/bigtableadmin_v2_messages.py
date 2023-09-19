@@ -1060,9 +1060,14 @@ class BigtableadminProjectsInstancesTablesViewsCreateRequest(_messages.Message):
   r"""A BigtableadminProjectsInstancesTablesViewsCreateRequest object.
 
   Fields:
-    parent: A string attribute.
+    parent: Required. This is the name of the table the view belongs to.
+      Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
     view: A View resource to be passed as the request body.
-    viewId: A string attribute.
+    viewId: Required. The id of the view to create. This view must not already
+      exist. The `view_id` appended to `parent` forms the full view name of
+      the form
+      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1763,6 +1768,41 @@ class CreateTableRequest(_messages.Message):
   initialSplits = _messages.MessageField('Split', 1, repeated=True)
   table = _messages.MessageField('Table', 2)
   tableId = _messages.StringField(3)
+
+
+class CreateViewMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by CreateView.
+
+  Fields:
+    finishTime: The time at which the operation failed or was completed
+      successfully.
+    originalRequest: The request that prompted the initiation of this
+      CreateInstance operation.
+    requestTime: The time at which the original request was received.
+  """
+
+  finishTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('CreateViewRequest', 2)
+  requestTime = _messages.StringField(3)
+
+
+class CreateViewRequest(_messages.Message):
+  r"""The request for CreateView
+
+  Fields:
+    parent: Required. This is the name of the table the view belongs to.
+      Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+    view: Required. The view to create.
+    viewId: Required. The id of the view to create. This view must not already
+      exist. The `view_id` appended to `parent` forms the full view name of
+      the form
+      `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
+  """
+
+  parent = _messages.StringField(1)
+  view = _messages.MessageField('View', 2)
+  viewId = _messages.StringField(3)
 
 
 class DropRowRangeRequest(_messages.Message):

@@ -124,12 +124,20 @@ class Bucket(_messages.Message):
 
     Fields:
       enabled: Whether or not Autoclass is enabled on this bucket
+      terminalStorageClass: The storage class that objects in the bucket
+        eventually transition to if they are not read for a certain length of
+        time. Valid values are NEARLINE and ARCHIVE.
+      terminalStorageClassUpdateTime: A date and time in RFC 3339 format
+        representing the time of the most recent update to
+        "terminalStorageClass".
       toggleTime: A date and time in RFC 3339 format representing the instant
         at which "enabled" was last toggled.
     """
 
     enabled = _messages.BooleanField(1)
-    toggleTime = _message_types.DateTimeField(2)
+    terminalStorageClass = _messages.StringField(2)
+    terminalStorageClassUpdateTime = _message_types.DateTimeField(3)
+    toggleTime = _message_types.DateTimeField(4)
 
   class BillingValue(_messages.Message):
     r"""The bucket's billing configuration.
@@ -570,6 +578,35 @@ class Buckets(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
+class BulkRestoreObjectsRequest(_messages.Message):
+  r"""A bulk restore objects request.
+
+  Fields:
+    allowOverwrite: If false (default), the restore will not overwrite live
+      objects with the same name at the destination. This means some deleted
+      objects may be skipped. If true, live objects will be overwritten
+      resulting in a noncurrent object (if versioning is enabled). If
+      versioning is not enabled, overwriting the object will result in a soft-
+      deleted object. In either case, if a noncurrent object already exists
+      with the same name, a live version can be written without issue.
+    copySourceAcl: If true, copies the source object's ACL; otherwise, uses
+      the bucket's default object ACL. The default is false.
+    matchGlobs: Restores only the objects matching any of the specified
+      glob(s). If this parameter is not specified, all objects will be
+      restored within the specified time range.
+    softDeletedAfterTime: Restores only the objects that were soft-deleted
+      after this time.
+    softDeletedBeforeTime: Restores only the objects that were soft-deleted
+      before this time.
+  """
+
+  allowOverwrite = _messages.BooleanField(1)
+  copySourceAcl = _messages.BooleanField(2)
+  matchGlobs = _messages.StringField(3, repeated=True)
+  softDeletedAfterTime = _message_types.DateTimeField(4)
+  softDeletedBeforeTime = _message_types.DateTimeField(5)
+
+
 class Channel(_messages.Message):
   r"""An notification channel used to watch for resource changes.
 
@@ -702,6 +739,178 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class GoogleLongrunningListOperationsResponse(_messages.Message):
+  r"""The response message for storage.buckets.operations.list.
+
+  Fields:
+    nextPageToken: The continuation token, used to page through large result
+      sets. Provide this value in a subsequent request to return the next page
+      of results.
+    operations: A list of operations that matches the specified filter in the
+      request.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('GoogleLongrunningOperation', 2, repeated=True)
+
+
+class GoogleLongrunningOperation(_messages.Message):
+  r"""This resource represents a long-running operation that is the result of
+  a network API call.
+
+  Messages:
+    MetadataValue: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    ResponseValue: The normal response of the operation in case of success. If
+      the original method returns no data on success, such as "Delete", the
+      response is google.protobuf.Empty. If the original method is standard
+      Get/Create/Update, the response should be the resource. For other
+      methods, the response should have the type "XxxResponse", where "Xxx" is
+      the original method name. For example, if the original method name is
+      "TakeSnapshot()", the inferred response type is "TakeSnapshotResponse".
+
+  Fields:
+    done: If the value is "false", it means the operation is still in
+      progress. If "true", the operation is completed, and either "error" or
+      "response" is available.
+    error: The error result of the operation in case of failure or
+      cancellation.
+    metadata: Service-specific metadata associated with the operation. It
+      typically contains progress information and common metadata such as
+      create time. Some services might not provide such metadata. Any method
+      that returns a long-running operation should document the metadata type,
+      if any.
+    name: The server-assigned name, which is only unique within the same
+      service that originally returns it. If you use the default HTTP mapping,
+      the "name" should be a resource name ending with
+      "operations/{operationId}".
+    response: The normal response of the operation in case of success. If the
+      original method returns no data on success, such as "Delete", the
+      response is google.protobuf.Empty. If the original method is standard
+      Get/Create/Update, the response should be the resource. For other
+      methods, the response should have the type "XxxResponse", where "Xxx" is
+      the original method name. For example, if the original method name is
+      "TakeSnapshot()", the inferred response type is "TakeSnapshotResponse".
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Service-specific metadata associated with the operation. It typically
+    contains progress information and common metadata such as create time.
+    Some services might not provide such metadata. Any method that returns a
+    long-running operation should document the metadata type, if any.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ResponseValue(_messages.Message):
+    r"""The normal response of the operation in case of success. If the
+    original method returns no data on success, such as "Delete", the response
+    is google.protobuf.Empty. If the original method is standard
+    Get/Create/Update, the response should be the resource. For other methods,
+    the response should have the type "XxxResponse", where "Xxx" is the
+    original method name. For example, if the original method name is
+    "TakeSnapshot()", the inferred response type is "TakeSnapshotResponse".
+
+    Messages:
+      AdditionalProperty: An additional property for a ResponseValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ResponseValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  done = _messages.BooleanField(1)
+  error = _messages.MessageField('GoogleRpcStatus', 2)
+  metadata = _messages.MessageField('MetadataValue', 3)
+  name = _messages.StringField(4)
+  response = _messages.MessageField('ResponseValue', 5)
+
+
+class GoogleRpcStatus(_messages.Message):
+  r"""The "Status" type defines a logical error model that is suitable for
+  different programming environments, including REST APIs and RPC APIs. It is
+  used by [gRPC](https://github.com/grpc). Each "Status" message contains
+  three pieces of data: error code, error message, and error details. You can
+  find out more about this error model and how to work with it in the [API
+  Design Guide](https://cloud.google.com/apis/design/errors).
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    code: The status code, which should be an enum value of google.rpc.Code.
+    details: A list of messages that carry the error details. There is a
+      common set of message types for APIs to use.
+    message: A developer-facing error message, which should be in English.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  message = _messages.StringField(3)
 
 
 class HmacKey(_messages.Message):
@@ -1596,6 +1805,55 @@ class StorageBucketsLockRetentionPolicyRequest(_messages.Message):
   userProject = _messages.StringField(3)
 
 
+class StorageBucketsOperationsCancelRequest(_messages.Message):
+  r"""A StorageBucketsOperationsCancelRequest object.
+
+  Fields:
+    bucket: The parent bucket of the operation resource.
+    operationId: The ID of the operation resource.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  operationId = _messages.StringField(2, required=True)
+
+
+class StorageBucketsOperationsCancelResponse(_messages.Message):
+  r"""An empty StorageBucketsOperationsCancel response."""
+
+
+class StorageBucketsOperationsGetRequest(_messages.Message):
+  r"""A StorageBucketsOperationsGetRequest object.
+
+  Fields:
+    bucket: The parent bucket of the operation resource.
+    operationId: The ID of the operation resource.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  operationId = _messages.StringField(2, required=True)
+
+
+class StorageBucketsOperationsListRequest(_messages.Message):
+  r"""A StorageBucketsOperationsListRequest object.
+
+  Fields:
+    bucket: Name of the bucket in which to look for operations.
+    filter: A filter to narrow down results to a preferred subset. The
+      filtering language is documented in more detail in
+      [AIP-160](https://google.aip.dev/160).
+    pageSize: Maximum number of items to return in a single page of responses.
+      Fewer total results may be returned than requested. The service uses
+      this parameter or 100 items, whichever is smaller.
+    pageToken: A previously-returned page token representing part of the
+      larger set of results to view.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  filter = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+
+
 class StorageBucketsPatchRequest(_messages.Message):
   r"""A StorageBucketsPatchRequest object.
 
@@ -2140,6 +2398,19 @@ class StorageObjectAccessControlsUpdateRequest(_messages.Message):
   userProject = _messages.StringField(6)
 
 
+class StorageObjectsBulkRestoreRequest(_messages.Message):
+  r"""A StorageObjectsBulkRestoreRequest object.
+
+  Fields:
+    bucket: Name of the bucket in which the object resides.
+    bulkRestoreObjectsRequest: A BulkRestoreObjectsRequest resource to be
+      passed as the request body.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  bulkRestoreObjectsRequest = _messages.MessageField('BulkRestoreObjectsRequest', 2)
+
+
 class StorageObjectsComposeRequest(_messages.Message):
   r"""A StorageObjectsComposeRequest object.
 
@@ -2406,6 +2677,8 @@ class StorageObjectsGetRequest(_messages.Message):
       Parts](https://cloud.google.com/storage/docs/request-
       endpoints#encoding).
     projection: Set of properties to return. Defaults to noAcl.
+    softDeleted: If true, only soft-deleted object versions will be listed.
+      The default is false. For more information, see Soft Delete.
     userProject: The project to be billed for this request. Required for
       Requester Pays buckets.
   """
@@ -2428,7 +2701,8 @@ class StorageObjectsGetRequest(_messages.Message):
   ifMetagenerationNotMatch = _messages.IntegerField(6)
   object = _messages.StringField(7, required=True)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 8)
-  userProject = _messages.StringField(9)
+  softDeleted = _messages.BooleanField(9)
+  userProject = _messages.StringField(10)
 
 
 class StorageObjectsInsertRequest(_messages.Message):
@@ -2555,6 +2829,8 @@ class StorageObjectsListRequest(_messages.Message):
       larger set of results to view.
     prefix: Filter results to objects whose names begin with this prefix.
     projection: Set of properties to return. Defaults to noAcl.
+    softDeleted: If true, only soft-deleted object versions will be listed.
+      The default is false. For more information, see Soft Delete.
     startOffset: Filter results to objects whose names are lexicographically
       equal to or after startOffset. If endOffset is also set, the objects
       listed will have names between startOffset (inclusive) and endOffset
@@ -2584,9 +2860,10 @@ class StorageObjectsListRequest(_messages.Message):
   pageToken = _messages.StringField(7)
   prefix = _messages.StringField(8)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 9)
-  startOffset = _messages.StringField(10)
-  userProject = _messages.StringField(11)
-  versions = _messages.BooleanField(12)
+  softDeleted = _messages.BooleanField(10)
+  startOffset = _messages.StringField(11)
+  userProject = _messages.StringField(12)
+  versions = _messages.BooleanField(13)
 
 
 class StorageObjectsPatchRequest(_messages.Message):
@@ -2667,6 +2944,56 @@ class StorageObjectsPatchRequest(_messages.Message):
   predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 9)
   projection = _messages.EnumField('ProjectionValueValuesEnum', 10)
   userProject = _messages.StringField(11)
+
+
+class StorageObjectsRestoreRequest(_messages.Message):
+  r"""A StorageObjectsRestoreRequest object.
+
+  Enums:
+    ProjectionValueValuesEnum: Set of properties to return. Defaults to full.
+
+  Fields:
+    bucket: Name of the bucket in which the object resides.
+    generation: Selects a specific revision of this object.
+    ifGenerationMatch: Makes the operation conditional on whether the object's
+      one live generation matches the given value. Setting to 0 makes the
+      operation succeed only if there are no live versions of the object.
+    ifGenerationNotMatch: Makes the operation conditional on whether none of
+      the object's live generations match the given value. If no live object
+      exists, the precondition fails. Setting to 0 makes the operation succeed
+      only if there is a live version of the object.
+    ifMetagenerationMatch: Makes the operation conditional on whether the
+      object's one live metageneration matches the given value.
+    ifMetagenerationNotMatch: Makes the operation conditional on whether none
+      of the object's live metagenerations match the given value.
+    object: Name of the object. For information about how to URL encode object
+      names to be path safe, see Encoding URI Path Parts.
+    objectResource: A Object resource to be passed as the request body.
+    projection: Set of properties to return. Defaults to full.
+    userProject: The project to be billed for this request. Required for
+      Requester Pays buckets.
+  """
+
+  class ProjectionValueValuesEnum(_messages.Enum):
+    r"""Set of properties to return. Defaults to full.
+
+    Values:
+      full: Include all properties.
+      noAcl: Omit the owner, acl property.
+    """
+    full = 0
+    noAcl = 1
+
+  bucket = _messages.StringField(1, required=True)
+  generation = _messages.IntegerField(2, required=True)
+  ifGenerationMatch = _messages.IntegerField(3)
+  ifGenerationNotMatch = _messages.IntegerField(4)
+  ifMetagenerationMatch = _messages.IntegerField(5)
+  ifMetagenerationNotMatch = _messages.IntegerField(6)
+  object = _messages.StringField(7, required=True)
+  objectResource = _messages.MessageField('Object', 8)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 9)
+  userProject = _messages.StringField(10)
 
 
 class StorageObjectsRewriteRequest(_messages.Message):
