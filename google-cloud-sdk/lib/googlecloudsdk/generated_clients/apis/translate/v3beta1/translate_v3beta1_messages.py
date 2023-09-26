@@ -83,7 +83,13 @@ class BatchTranslateDocumentRequest(_messages.Message):
   r"""The BatchTranslateDocument request.
 
   Messages:
-    FormatConversionsValue: Optional.
+    FormatConversionsValue: Optional. File format conversion map to be applied
+      to all input files. Map's key is the original mime_type. Map's value is
+      the target mime_type of translated documents. Supported file format
+      conversion includes: - `application/pdf` to
+      `application/vnd.openxmlformats-
+      officedocument.wordprocessingml.document` If nothing specified, output
+      files will be in the same format as the original file.
     GlossariesValue: Optional. Glossaries to be applied. It's keyed by target
       language code.
     ModelsValue: Optional. The models to use for translation. Map's key is
@@ -106,7 +112,13 @@ class BatchTranslateDocumentRequest(_messages.Message):
       server to remove the shadow text on background image for native pdf
       translation. Shadow removal feature can only be enabled when
       is_translate_native_pdf_only: false && pdf_native_only: false
-    formatConversions: Optional.
+    formatConversions: Optional. File format conversion map to be applied to
+      all input files. Map's key is the original mime_type. Map's value is the
+      target mime_type of translated documents. Supported file format
+      conversion includes: - `application/pdf` to
+      `application/vnd.openxmlformats-
+      officedocument.wordprocessingml.document` If nothing specified, output
+      files will be in the same format as the original file.
     glossaries: Optional. Glossaries to be applied. It's keyed by target
       language code.
     inputConfigs: Required. Input configurations. The total number of files
@@ -133,7 +145,12 @@ class BatchTranslateDocumentRequest(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FormatConversionsValue(_messages.Message):
-    r"""Optional.
+    r"""Optional. File format conversion map to be applied to all input files.
+    Map's key is the original mime_type. Map's value is the target mime_type
+    of translated documents. Supported file format conversion includes: -
+    `application/pdf` to `application/vnd.openxmlformats-
+    officedocument.wordprocessingml.document` If nothing specified, output
+    files will be in the same format as the original file.
 
     Messages:
       AdditionalProperty: An additional property for a FormatConversionsValue

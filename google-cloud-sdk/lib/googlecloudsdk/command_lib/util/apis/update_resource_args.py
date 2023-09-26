@@ -143,7 +143,8 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
     self.attribute_flags = attribute_flags
 
   def _CreateResourceFlag(self, flag_prefix=None, group_help=None):
-    flag_name = arg_utils.GetFlagName(self.arg_name, flag_prefix=flag_prefix)
+    flag_name = arg_utils.GetFlagName(
+        self.arg_name, flag_prefix=flag_prefix and flag_prefix.value)
     return self.arg_gen(flag_name, group_help=group_help)
 
   def _RelativeName(self, value):
@@ -210,7 +211,7 @@ class UpdateDefaultResourceArgumentGenerator(UpdateResourceArgumentGenerator):
   def clear_arg(self):
     return self._CreateFlag(
         self.arg_name,
-        flag_prefix='clear',
+        flag_prefix=update_args.Prefix.CLEAR,
         action='store_true',
         help_text='Clear {} value and set to {}.'.format(
             self.arg_name, self._GetTextFormatOfEmptyValue(self._empty_value)),
@@ -243,7 +244,7 @@ class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
   def clear_arg(self):
     return self._CreateFlag(
         self.arg_name,
-        flag_prefix='clear',
+        flag_prefix=update_args.Prefix.CLEAR,
         action='store_true',
         help_text='Clear {} value and set to {}.'.format(
             self.arg_name, self._GetTextFormatOfEmptyValue(self._empty_value)),
@@ -252,13 +253,13 @@ class UpdateListResourceArgumentGenerator(UpdateResourceArgumentGenerator):
   @property
   def update_arg(self):
     return self._CreateResourceFlag(
-        flag_prefix='add',
+        flag_prefix=update_args.Prefix.ADD,
         group_help='Add new value to {} list.'.format(self.arg_name))
 
   @property
   def remove_arg(self):
     return self._CreateResourceFlag(
-        flag_prefix='remove',
+        flag_prefix=update_args.Prefix.REMOVE,
         group_help='Remove value from {} list.'.format(self.arg_name))
 
   def ApplySetFlag(self, output, set_val):

@@ -173,6 +173,9 @@ class Configs:
       encryption_key.kmsKeyServiceAccount = args.kms_key_service_account
     config.encryptionKey = encryption_key
 
+    if args.replica_zones:
+      config.replicaZones = args.replica_zones
+
     create_req = self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsCreateRequest(
         parent=parent, workstationConfigId=config_id, workstationConfig=config
     )

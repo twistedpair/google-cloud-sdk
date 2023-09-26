@@ -207,8 +207,9 @@ class ApphubProjectsLocationsDirectoriesServicesPatchRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDirectoriesServicesPatchRequest object.
 
   Fields:
-    name: Full resource identifier of a Service in the format of
-      projects//locations/global/directories //services/
+    name: Full resource identifier of a Service. 1. Registered service format:
+      projects//locations//applications//services/ 2. Discovered service
+      format: projects//locations//services/
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -317,8 +318,9 @@ class ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest(_messages.Message)
   r"""A ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest object.
 
   Fields:
-    name: Full resource identifier of a Workload in the format of
-      projects//locations/global/directories //workloads/
+    name: Full resource identifier of a Workload 1. Registered workload
+      format: projects//locations//applications//workloads/ 2. Discovered
+      workload format: projects//locations//workloads/
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -343,17 +345,6 @@ class ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest(_messages.Message)
   requestId = _messages.StringField(2)
   updateMask = _messages.StringField(3)
   workload = _messages.MessageField('Workload', 4)
-
-
-class ApphubProjectsLocationsGetHostProjectRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGetHostProjectRequest object.
-
-  Fields:
-    name: Required. Host Project resource name with format:
-      "projects/{project_id}/locations/global/hostProject".
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class ApphubProjectsLocationsGetRequest(_messages.Message):
@@ -386,6 +377,100 @@ class ApphubProjectsLocationsGetTopologyRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsGlobalGetHostProjectRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGlobalGetHostProjectRequest object.
+
+  Fields:
+    name: Required. Host Project resource name with format:
+      "projects/{project_id}/locations/global/hostProject".
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsGlobalServiceProjectAttachmentsCreateRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGlobalServiceProjectAttachmentsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    serviceProjectAttachment: A ServiceProjectAttachment resource to be passed
+      as the request body.
+    serviceProjectAttachmentId: Required. The service project attachment id.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  serviceProjectAttachment = _messages.MessageField('ServiceProjectAttachment', 3)
+  serviceProjectAttachmentId = _messages.StringField(4)
+
+
+class ApphubProjectsLocationsGlobalServiceProjectAttachmentsDeleteRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGlobalServiceProjectAttachmentsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class ApphubProjectsLocationsGlobalServiceProjectAttachmentsGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGlobalServiceProjectAttachmentsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsGlobalServiceProjectAttachmentsListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGlobalServiceProjectAttachmentsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListServiceProjectAttachmentsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class ApphubProjectsLocationsListRequest(_messages.Message):
@@ -457,85 +542,6 @@ class ApphubProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
-class ApphubProjectsLocationsServiceProjectsCreateRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsServiceProjectsCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    serviceProject: A ServiceProject resource to be passed as the request
-      body.
-    serviceProjectId: Required. The service project number.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-  serviceProject = _messages.MessageField('ServiceProject', 3)
-  serviceProjectId = _messages.StringField(4)
-
-
-class ApphubProjectsLocationsServiceProjectsDeleteRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsServiceProjectsDeleteRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class ApphubProjectsLocationsServiceProjectsGetRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsServiceProjectsGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ApphubProjectsLocationsServiceProjectsListRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsServiceProjectsListRequest object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListServiceProjectsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
 class ApphubProjectsLocationsUpdateTelemetryRequest(_messages.Message):
   r"""A ApphubProjectsLocationsUpdateTelemetryRequest object.
 
@@ -568,19 +574,65 @@ class ApphubProjectsLocationsUpdateTopologyRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class Attributes(_messages.Message):
+  r"""Consumer provided attributes.
+
+  Fields:
+    businessOwners: Optional. Business owner such as managers, directors etc.
+    criticality: Optional. Criticality.
+    developerOwners: Optional. List of owner contacts. Development owner such
+      as software Development Engineers
+    environment: Optional. User-provided environment information.
+    operatorOwners: Optional. Operation owner such as Site Reliability
+      Engineers
+  """
+
+  businessOwners = _messages.MessageField('ContactInfo', 1, repeated=True)
+  criticality = _messages.MessageField('Criticality', 2)
+  developerOwners = _messages.MessageField('ContactInfo', 3, repeated=True)
+  environment = _messages.MessageField('Environment', 4)
+  operatorOwners = _messages.MessageField('ContactInfo', 5, repeated=True)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class ComponentReference(_messages.Message):
-  r"""Message represents a reference to the discovered component
+class Channel(_messages.Message):
+  r"""Separate message to accommodate custom formats across IRC, Slack etc.
 
   Fields:
-    uuid: Immutable. Unique identifier of the discovered component in App Hub
-      Directory.
+    uri: Optional. IRC, Slack
   """
 
-  uuid = _messages.IntegerField(1)
+  uri = _messages.StringField(1)
+
+
+class ContactInfo(_messages.Message):
+  r"""Contact information of stakeholders
+
+  Fields:
+    channel: Optional. Communication channel of the contacts.
+    displayName: Optional. Contact's name.
+    email: Optional. Email address of the contacts.
+  """
+
+  channel = _messages.MessageField('Channel', 1)
+  displayName = _messages.StringField(2)
+  email = _messages.StringField(3)
+
+
+class Criticality(_messages.Message):
+  r"""Criticality of the application, serivice, or workload
+
+  Fields:
+    level: Required. Criticality level name.
+    missionCritical: Required. Indicates mission-critical services and
+      workloads.
+  """
+
+  level = _messages.StringField(1)
+  missionCritical = _messages.BooleanField(2)
 
 
 class Directory(_messages.Message):
@@ -611,12 +663,22 @@ class Empty(_messages.Message):
 
 
 
+class Environment(_messages.Message):
+  r"""User-defined environment information.
+
+  Fields:
+    environment: Optional. Environment name.
+  """
+
+  environment = _messages.StringField(1)
+
+
 class HostProject(_messages.Message):
-  r"""Message represents a host project.
+  r"""Message represents a host project. HostProject is a global resource.
 
   Fields:
     hostProject: Output only. Host project number with format:
-      projects/{project}
+      projects/{project_number}
     name: Required. Host Project resource name with format:
       "projects/{service-project-id}/locations/global/hostProject".
   """
@@ -666,18 +728,18 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
-class ListServiceProjectsResponse(_messages.Message):
-  r"""Message for response to listing service projects.
+class ListServiceProjectAttachmentsResponse(_messages.Message):
+  r"""Message for response to listing service project attachments.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    serviceProjects: The list of service projects
+    serviceProjectAttachments: The list of service project attachments
     unreachable: Locations that could not be reached.
   """
 
   nextPageToken = _messages.StringField(1)
-  serviceProjects = _messages.MessageField('ServiceProject', 2, repeated=True)
+  serviceProjectAttachments = _messages.MessageField('ServiceProjectAttachment', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -927,39 +989,86 @@ class OperationMetadata(_messages.Message):
 
 
 class Service(_messages.Message):
-  r"""Message represents a registered service under directory
+  r"""Message represents a service.
 
   Fields:
-    components: Required. List of discovered component identifiers that this
-      service registers together. This can only include discovered components
-      of type Service.
-    createTime: Output only. Service registration time.
+    attributes: Optional. Customer Attributes.
+    createTime: Output only. Service create time.
     description: Optional. User-provided description of a service.
+    discoveredService: Output only. Resource name of the service before
+      registration. Registered resource name of a Service is different from
+      its discovered name. This field always contains discovered resource
+      name, enabling IaC tools like Terraform to unambiguously map the two
+      representations. projects//locations//services/
     displayName: Optional. Human-friendly display name
-    name: Full resource identifier of a Service in the format of
-      projects//locations/global/directories //services/
-    updateTime: Output only. Service registration update time.
+    name: Full resource identifier of a Service. 1. Registered service format:
+      projects//locations//applications//services/ 2. Discovered service
+      format: projects//locations//services/
+    serviceProperties: Output only. Properties of an underlying compute
+      resource that can comprise a service. These are immutable.
+    serviceReference: Output only. Reference to an underlying networking
+      resource that can comprise a service. These are immutable.
+    updateTime: Output only. Service update time.
   """
 
-  components = _messages.MessageField('ComponentReference', 1, repeated=True)
+  attributes = _messages.MessageField('Attributes', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  discoveredService = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  serviceProperties = _messages.MessageField('ServiceProperties', 7)
+  serviceReference = _messages.MessageField('ServiceReference', 8)
+  updateTime = _messages.StringField(9)
 
 
-class ServiceProject(_messages.Message):
-  r"""Message represents a service project.
+class ServiceProjectAttachment(_messages.Message):
+  r"""Message represents a service project attachment.
 
   Fields:
-    createTime: Output only. Service project registration time.
-    name: Full resource identifier of a service project in the format of
-      projects//locations/global/serviceProjects/
+    createTime: Output only. Service project attachment registration time.
+    name: Full resource identifier of a service project attachment in the
+      format of projects//locations/global/serviceProjectAttachments/
+    serviceProject: Required. Immutable. Service project name with format:
+      projects/abc or projects/123
   """
 
   createTime = _messages.StringField(1)
   name = _messages.StringField(2)
+  serviceProject = _messages.StringField(3)
+
+
+class ServiceProperties(_messages.Message):
+  r"""Properties of an underlying GCP resource that can comprise a service.
+
+  Fields:
+    gcpProject: Optional. The service project identifier of the underlying GCP
+      resource resides in.
+    location: Optional. The location of the underlying resource resides in,
+      i.e. us-west1.
+    zone: Optional. The location of the underlying resource if it is zonal,
+      i.e. us-west1-a.
+  """
+
+  gcpProject = _messages.StringField(1)
+  location = _messages.StringField(2)
+  zone = _messages.StringField(3)
+
+
+class ServiceReference(_messages.Message):
+  r"""Reference to an underlying networking resource that can comprise a
+  service.
+
+  Fields:
+    path: Optional. Additional path under the resource uri (i.e.
+      demultiplexing one resource uri into multiple entries). Smallest unit a
+      policy can be attached to. Examples: URL Map path entry.
+    uri: Output only. The underlying resource uri e.g. URI of Forwarding Rule,
+      URL Map, Backend Service
+  """
+
+  path = _messages.StringField(1)
+  uri = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1110,26 +1219,66 @@ class Topology(_messages.Message):
 
 
 class Workload(_messages.Message):
-  r"""Message represents a registered workload under directory.
+  r"""Message represents a workload.
 
   Fields:
-    components: Required. List of discovered component identifiers that this
-      workload registers together. This can only include discovered components
-      of type Workload.
-    createTime: Output only. Workload registration time.
+    attributes: Optional. Consumer Attributes.
+    createTime: Output only. Workload create time.
     description: Optional. User-provided description of a workload.
+    discoveredWorkload: Required. Resource name of the workload before
+      registration. Registered resource name of a Workload is different from
+      its discovered name. This field always contains discovered resource
+      name, enabling IaC tools like Terraform to unambiguously map the two
+      representations. projects//locations//workloads/
     displayName: Optional. Human-friendly display name
-    name: Full resource identifier of a Workload in the format of
-      projects//locations/global/directories //workloads/
-    updateTime: Output only. Workload registration update time.
+    name: Full resource identifier of a Workload 1. Registered workload
+      format: projects//locations//applications//workloads/ 2. Discovered
+      workload format: projects//locations//workloads/
+    updateTime: Output only. Workload update time.
+    workloadProperties: Output only. Properties of an underlying compute
+      resource represented by the workload. These are immutable.
+    workloadReference: Output only. References an underlying compute resource
+      represented by the workload. These are immutable.
   """
 
-  components = _messages.MessageField('ComponentReference', 1, repeated=True)
+  attributes = _messages.MessageField('Attributes', 1)
   createTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  name = _messages.StringField(5)
-  updateTime = _messages.StringField(6)
+  discoveredWorkload = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  name = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+  workloadProperties = _messages.MessageField('WorkloadProperties', 8)
+  workloadReference = _messages.MessageField('WorkloadReference', 9)
+
+
+class WorkloadProperties(_messages.Message):
+  r"""Properties of an underlying compute resource that can comprise a
+  workload.
+
+  Fields:
+    gcpProject: Optional. The service project identifier of the underlying GCP
+      resource resides in. Empty for non-GCP resources.
+    location: Optional. The location of the underlying compute resource
+      resides in.
+    zone: Optional. The location of the underlying compute resource if it is
+      zonal.
+  """
+
+  gcpProject = _messages.StringField(1)
+  location = _messages.StringField(2)
+  zone = _messages.StringField(3)
+
+
+class WorkloadReference(_messages.Message):
+  r"""Reference of an underlying compute resource that can comprise a
+  workload.
+
+  Fields:
+    uri: Optional. The underlying compute resource uri.
+  """
+
+  uri = _messages.StringField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

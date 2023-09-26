@@ -280,6 +280,8 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
       firewall_policy_evaluation.
     fraudPreventionAssessment: Assessment returned by Fraud Prevention when
       TransactionData is provided.
+    fraudSignals: Output only. Fraud Signals specific to the users involved in
+      a payment transaction.
     name: Output only. The resource name for the Assessment in the format
       "projects/{project}/assessments/{assessment}".
     privatePasswordLeakVerification: The private password leak verification
@@ -295,10 +297,11 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
   event = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1Event', 3)
   firewallPolicyAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicyAssessment', 4)
   fraudPreventionAssessment = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessment', 5)
-  name = _messages.StringField(6)
-  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 7)
-  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 8)
-  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 9)
+  fraudSignals = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudSignals', 6)
+  name = _messages.StringField(7)
+  privatePasswordLeakVerification = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1PrivatePasswordLeakVerification', 8)
+  riskAnalysis = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1RiskAnalysis', 9)
+  tokenProperties = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1TokenProperties', 10)
 
 
 class GoogleCloudRecaptchaenterpriseV1ChallengeMetrics(_messages.Message):
@@ -570,6 +573,67 @@ class GoogleCloudRecaptchaenterpriseV1FraudPreventionAssessmentStolenInstrumentV
   """
 
   risk = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudRecaptchaenterpriseV1FraudSignals(_messages.Message):
+  r"""Fraud signals describing users and cards involved in the transaction.
+
+  Fields:
+    cardSignals: Output only. Signals describing the payment card or cards
+      used in this transaction.
+    userSignals: Output only. Signals describing the end user in this
+      transaction.
+  """
+
+  cardSignals = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudSignalsCardSignals', 1)
+  userSignals = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FraudSignalsUserSignals', 2)
+
+
+class GoogleCloudRecaptchaenterpriseV1FraudSignalsCardSignals(_messages.Message):
+  r"""Signals describing the payment card used in this transaction.
+
+  Enums:
+    CardLabelsValueListEntryValuesEnum:
+
+  Fields:
+    cardLabels: Output only. The labels for the payment card in this
+      transaction.
+  """
+
+  class CardLabelsValueListEntryValuesEnum(_messages.Enum):
+    r"""CardLabelsValueListEntryValuesEnum enum type.
+
+    Values:
+      CARD_LABEL_UNSPECIFIED: No label specified.
+      PREPAID: This card has been detected as prepaid.
+      VIRTUAL: This card has been detected as virtual, such as a card number
+        generated for a single transaction or merchant.
+      UNEXPECTED_LOCATION: This card has been detected as being used in an
+        unexpected geographic location.
+    """
+    CARD_LABEL_UNSPECIFIED = 0
+    PREPAID = 1
+    VIRTUAL = 2
+    UNEXPECTED_LOCATION = 3
+
+  cardLabels = _messages.EnumField('CardLabelsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class GoogleCloudRecaptchaenterpriseV1FraudSignalsUserSignals(_messages.Message):
+  r"""Signals describing the user involved in this transaction.
+
+  Fields:
+    activeDaysLowerBound: Output only. This user (based on email, phone, and
+      other identifiers) has been seen on the internet for at least this
+      number of days.
+    syntheticRisk: Output only. Likelihood (from 0.0 to 1.0) this user
+      includes synthetic components in their identity, such as a randomly
+      generated email address, temporary phone number, or fake shipping
+      address.
+  """
+
+  activeDaysLowerBound = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  syntheticRisk = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudRecaptchaenterpriseV1IOSKeySettings(_messages.Message):

@@ -169,14 +169,17 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
       display_detail=DisplayDetail.SHORT,
       exclude_patterns=None,
       fetch_encrypted_object_hashes=False,
+      halt_on_empty_response=True,
       include_etag=False,
+      next_page_token=None,
       readable_sizes=False,
       recursion_flag=False,
+      soft_deleted_only=False,
       total=False,
       use_gsutil_style=False,
       zero_terminator=False,
   ):
-    """Initializes task.
+    """Initializes executor.
 
     Args:
       cloud_urls ([storage_url.CloudUrl]): List of non-local filesystem URLs.
@@ -189,27 +192,34 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         local file paths matched these regex patterns.
       fetch_encrypted_object_hashes (bool): Fall back to GET requests for
         encrypted objects in order to fetch their hash values.
+      halt_on_empty_response (bool): Stops querying after empty list response.
+        See CloudApi for details.
       include_etag (bool): Print etag string of resource, depending on other
         settings.
+      next_page_token (str|None): Used to resume LIST calls.
       readable_sizes (bool): Convert bytes to a more human readable format for
         long lising. For example, print 1024B as 1KiB.
       recursion_flag (bool): Recurse through all containers and format all
         container headers.
+      soft_deleted_only (bool): Returns soft-deleted objects and not live,
+        past-version, or other lifecycle-status objects.
       total (bool): Add up the total size of all input sources.
       use_gsutil_style (bool): Outputs closer to the style of the gsutil CLI.
       zero_terminator (bool): Use null byte instead of newline as line
         terminator.
     """
-
     self._cloud_urls = cloud_urls
     self._all_versions = all_versions
     self._buckets_flag = buckets_flag
     self._display_detail = display_detail
     self._exclude_patterns = exclude_patterns
     self._fetch_encrypted_object_hashes = fetch_encrypted_object_hashes
+    self._halt_on_empty_response = halt_on_empty_response
     self._include_etag = include_etag
+    self._next_page_token = next_page_token
     self._readable_sizes = readable_sizes
     self._recursion_flag = recursion_flag
+    self._soft_deleted_only = soft_deleted_only
     self._total = total
     self._use_gsutil_style = use_gsutil_style
     self._zero_terminator = zero_terminator
@@ -243,6 +253,9 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         exclude_patterns=self._exclude_patterns,
         fetch_encrypted_object_hashes=self._fetch_encrypted_object_hashes,
         fields_scope=fields_scope,
+        halt_on_empty_response=self._halt_on_empty_response,
+        next_page_token=self._next_page_token,
+        soft_deleted_only=self._soft_deleted_only,
     )
     return self._recursion_helper(iterator, recursion_level)
 
@@ -375,6 +388,9 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
             fetch_encrypted_object_hashes=self._fetch_encrypted_object_hashes,
             fields_scope=fields_scope,
             get_bucket_metadata=self._buckets_flag,
+            halt_on_empty_response=self._halt_on_empty_response,
+            next_page_token=self._next_page_token,
+            soft_deleted_only=self._soft_deleted_only,
         )
     )
 

@@ -107,6 +107,7 @@ class JobsClient(object):
       job.labels = labels or job.labels
       job.mode = mode or job.mode
       job.optimization = optimization or job.optimization
+      job.batchModePriority = batch_mode_priority or job.batchModePriority
     req = self.message.TranscoderProjectsLocationsJobsCreateRequest(
         parent=parent_ref.RelativeName(), job=job
     )

@@ -131,11 +131,28 @@ def AddArguments(parser):
   Args:
     parser: A argument parser.
   """
-  parser.add_argument(
+  personal_auth_group = parser.add_group(
+      required=False,
+      help='Enable personal authentication for the session.',
+      hidden=True
+  )
+
+  # If enable-credentials-injection flag is used, we set authentication_type as
+  # CREDENTIALS_INJECTION, else, the default is SERVICE_ACCOUNT.
+  personal_auth_group.add_argument(
+      '--enable-credentials-injection',
+      action='store_true',
+      help="""\
+        Enable injection of user credentials for authentication.
+        """,
+      required=True
+  )
+  personal_auth_group.add_argument(
       '--user',
       help="""The email address of the user who owns the session. The session
           will be authenticated as this user if credentials injection is
           enabled.""",
+      required=True
   )
   parser.add_argument(
       '--session_template',

@@ -46,7 +46,7 @@ def _get_random_prefix():
   return str(random.randint(1, 10**10))
 
 
-class FileUploadTask(copy_util.CopyTaskWithExitHandler):
+class FileUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
   """Represents a command operation triggering a file upload."""
 
   def __init__(
@@ -74,27 +74,23 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         object afterwards.
       is_composite_upload_eligible (bool): If True, parallel composite upload
         may be performed.
-      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
-        metadata on target. If provided and preserving POSIX, skip re-parsing
-        from file system.
-      print_created_message (bool): Print a message containing the versioned URL
-        of the copy result.
-      print_source_version (bool): Print source object version in status message
-        enabled by the `verbose` kwarg.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      verbose (bool): Print a "copying" status message on initialization.
+      posix_to_set (PosixAttributes|None): See parent class.
+      print_created_message (bool): See parent class.
+      print_source_version (bool): See parent class.
+      user_request_args (UserRequestArgs|None): See parent class.
+      verbose (bool): See parent class.
     """
     super(FileUploadTask, self).__init__(
         source_resource,
         destination_resource,
         posix_to_set=posix_to_set,
+        print_created_message=print_created_message,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
     )
     self._delete_source = delete_source
     self._is_composite_upload_eligible = is_composite_upload_eligible
-    self._print_created_message = print_created_message
 
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string
@@ -120,8 +116,7 @@ class FileUploadTask(copy_util.CopyTaskWithExitHandler):
         task_output.messages, task.Topic.CREATED_RESOURCE
     )
     if result_resource:
-      if self._print_created_message:
-        log.status.Print('Created: {}'.format(result_resource.storage_url))
+      self._print_created_message_if_requested(result_resource)
       if self._send_manifest_messages:
         manifest_util.send_success_message(
             task_status_queue,

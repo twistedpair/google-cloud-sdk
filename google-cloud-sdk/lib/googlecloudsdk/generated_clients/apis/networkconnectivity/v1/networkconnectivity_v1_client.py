@@ -727,7 +727,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new PolicyBasedRoute in a given project and location.
+      r"""Creates a new policy-based route in a given project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest) input message
@@ -754,7 +754,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a single PolicyBasedRoute.
+      r"""Deletes a single policy-based route.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest) input message
@@ -781,7 +781,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets details of a single PolicyBasedRoute.
+      r"""Gets details of a single policy-based route.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesGetRequest) input message
@@ -835,7 +835,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists PolicyBasedRoutes in a given project and location.
+      r"""Lists policy-based routes in a given project and location.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesListRequest) input message

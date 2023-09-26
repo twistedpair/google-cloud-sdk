@@ -468,10 +468,27 @@ def add_read_paths_from_stdin_flag(
   )
 
 
-def add_soft_deleted_flag(parser):
+def add_soft_delete_flags(parser):
+  """Adds flags related to soft delete feature."""
+  parser.add_argument(
+      '--exhaustive',
+      action='store_true',
+      hidden=True,
+      help=(
+          'For features like soft delete, the API may return an empty list.'
+          ' If present, continue querying. This may incur costs from repeated'
+          ' LIST calls and may not return any additional objects.'
+      ),
+  )
+  parser.add_argument(
+      '--next-page-token',
+      hidden=True,
+      help='Page token for resuming LIST calls.',
+  )
   parser.add_argument(
       '--soft-deleted',
       action='store_true',
+      hidden=True,
       help=(
           'Displays soft-deleted objects only. Excludes displaying live,'
           ' versioned, and other objects.'

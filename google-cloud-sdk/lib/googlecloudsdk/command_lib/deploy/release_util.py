@@ -18,7 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
+import copy
 import datetime
+import io
 import os.path
 import shutil
 import tarfile
@@ -29,19 +32,25 @@ from googlecloudsdk.api_lib.cloudbuild import snapshot
 from googlecloudsdk.api_lib.clouddeploy import client_util
 from googlecloudsdk.api_lib.clouddeploy import delivery_pipeline
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions as c_exceptions
+from googlecloudsdk.command_lib.code.cloud import cloudrun
 from googlecloudsdk.command_lib.deploy import deploy_util
 from googlecloudsdk.command_lib.deploy import exceptions
 from googlecloudsdk.command_lib.deploy import rollout_util
 from googlecloudsdk.command_lib.deploy import staging_bucket_util
 from googlecloudsdk.command_lib.deploy import target_util
+from googlecloudsdk.core import exceptions as core_exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.resource import resource_projector
 from googlecloudsdk.core.resource import resource_transform
+from googlecloudsdk.core.resource import yaml_printer
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 import six
+
 
 _RELEASE_COLLECTION = 'clouddeploy.projects.locations.deliveryPipelines.releases'
 _ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
@@ -79,6 +88,75 @@ deploy:
   cloudrun: {{}}
   """
 GENERATED_SKAFFOLD = 'skaffold.yaml'
+
+CLOUD_RUN_GENERATED_MANIFEST_TEMPLATE = """\
+apiVersion: serving.knative.dev/v1
+kind: Service
+metadata:
+  name: {service}
+spec:
+  template:
+    spec:
+      containers:
+       - image: {container}
+"""
+
+
+class _TargetProperties:
+  """Stores the properies of a Target."""
+
+  def __init__(self, target_id, location):
+    # The target_id of the Target
+    self.target_id = target_id
+    # The location of the Target
+    self.location = location
+    # Every target should have a single profile.
+    # The profile associated with this target.
+    self.profile = None
+    # The manifest generated for this target.
+    self.manifest = None
+
+
+class ServicePrinter(yaml_printer.YamlPrinter):
+  """Printer for CloudRun Service objects to export.
+
+  Omits status information, and metadata that isn't consistent across
+  deployments, like project or region.
+  """
+
+  def _AddRecord(self, record, delimit=True):
+    record = self._FilterForExport(record)
+    super(ServicePrinter, self)._AddRecord(record, delimit)
+
+  def _FilterForExport(self, record):
+    new_manifest = copy.deepcopy(record)
+    if 'metadata' in new_manifest:
+      new_manifest['metadata'].pop('annotations', None)
+      new_manifest['metadata'].pop('creationTimestamp', None)
+      new_manifest['metadata'].pop('generation', None)
+      new_manifest['metadata'].pop('labels', None)
+      new_manifest['metadata'].pop('namespace', None)
+      new_manifest['metadata'].pop('resourceVersion', None)
+      new_manifest['metadata'].pop('selfLink', None)
+      new_manifest['metadata'].pop('uid', None)
+    new_manifest.get('spec', {}).get('template', {}).get('metadata', {}).pop(
+        'name', None)
+    new_manifest.get('spec', {}).pop('traffic', None)
+    new_manifest.pop('status', None)
+    return new_manifest
+
+
+def _AddContainerToManifest(manifest, service_name, from_run_container):
+  if len(manifest.get('spec', {})
+         .get('template', {})
+         .get('spec', {})
+         .get('containers', [])) != 1:
+    raise core_exceptions.Error(
+        'Number of containers in service {} is not 1.'.format(service_name)
+    )
+  container_change = manifest['spec']['template']['spec']['containers'][0]
+  container_change['image'] = from_run_container
+  return manifest
 
 
 def RenderPattern(release_id):
@@ -155,26 +233,35 @@ def LoadBuildArtifactFile(path):
     return images
 
 
-def CreateReleaseConfig(source,
-                        gcs_source_staging_dir,
-                        ignore_file,
-                        images,
-                        build_artifacts,
-                        description,
-                        skaffold_version,
-                        skaffold_file,
-                        location,
-                        pipeline_uuid,
-                        from_k8s_manifest,
-                        from_run_manifest,
-                        deploy_parameters=None,
-                        hide_logs=False):
+def CreateReleaseConfig(
+    source,
+    gcs_source_staging_dir,
+    ignore_file,
+    images,
+    build_artifacts,
+    description,
+    skaffold_version,
+    skaffold_file,
+    location,
+    pipeline_uuid,
+    from_k8s_manifest,
+    from_run_manifest,
+    from_run_container,
+    services,
+    pipeline_obj,
+    deploy_parameters=None,
+    hide_logs=False,
+):
   """Returns a build config."""
 
   # If either a kubernetes manifest or Cloud Run manifest was given, this means
   # a Skaffold file should be generated, so we should not check at this stage
   # if the Skaffold file exists.
-  if not (from_k8s_manifest or from_run_manifest):
+  if not (
+      from_k8s_manifest
+      or from_run_manifest
+      or from_run_container
+  ):
     _VerifySkaffoldFileExists(source, skaffold_file)
   messages = client_util.GetMessagesModule(client_util.GetClientInstance())
   release_config = messages.Release()
@@ -189,7 +276,10 @@ def CreateReleaseConfig(source,
       pipeline_uuid,
       from_k8s_manifest,
       from_run_manifest,
+      from_run_container,
+      services,
       skaffold_file,
+      pipeline_obj,
       hide_logs,
   )
   release_config = _SetImages(messages, release_config, images, build_artifacts)
@@ -253,7 +343,10 @@ def _SetSource(release_config,
                pipeline_uuid,
                kubernetes_manifest,
                cloud_run_manifest,
+               from_run_container,
+               services,
                skaffold_file,
+               pipeline_obj,
                hide_logs=False):
   """Set the source for the release config.
 
@@ -274,8 +367,15 @@ def _SetSource(release_config,
     cloud_run_manifest: path to Cloud Run manifest (e.g.
       /home/user/service.yaml).If provided, a Skaffold file will be generated
       and uploaded to GCS on behalf of the customer.
+    from_run_container: the container image (e.g.
+      gcr.io/google-containers/nginx@sha256:f49a843c29). If provided, a CloudRun
+      manifest file and a Skaffold file will be generated and uploaded to GCS on
+      behalf of the customer.
+    services: the map from target_id to service_name. This is present only if
+      from_run_container is not None.
     skaffold_file: path of the skaffold file relative to the source directory
       that contains the Skaffold file.
+    pipeline_obj: the pipeline_obj used for this release.
     hide_logs: whether to show logs, defaults to False
 
   Returns:
@@ -340,13 +440,15 @@ def _SetSource(release_config,
         bucket=staged_source_obj.bucket, object=staged_source_obj.name)
   else:
     # If a Skaffold file should be generated
-    if kubernetes_manifest or cloud_run_manifest:
+    if (kubernetes_manifest or cloud_run_manifest or from_run_container):
       skaffold_is_generated = True
       _UploadTarballGeneratedSkaffoldAndManifest(kubernetes_manifest,
-                                                 cloud_run_manifest, gcs_client,
+                                                 cloud_run_manifest,
+                                                 from_run_container,
+                                                 services, gcs_client,
                                                  gcs_source_staging,
                                                  ignore_file, hide_logs,
-                                                 release_config)
+                                                 release_config, pipeline_obj)
     elif os.path.isdir(source):
       _CreateAndUploadTarball(gcs_client, gcs_source_staging, source,
                               ignore_file, hide_logs, release_config)
@@ -372,10 +474,169 @@ def _SetSource(release_config,
   return release_config
 
 
-def _UploadTarballGeneratedSkaffoldAndManifest(kubernetes_manifest,
-                                               cloud_run_manifest, gcs_client,
-                                               gcs_source_staging, ignore_file,
-                                               hide_logs, release_config):
+def _GetTargetAndUniqueProfiles(pipeline_obj):
+  """Get one unique profile for every target if it exists, else throw error."""
+  target_count = 0
+  profile_to_targets = {}
+  for stage in pipeline_obj.serialPipeline.stages:
+    target_count += 1
+    for profile in stage.profiles:
+      if profile not in profile_to_targets:
+        profile_to_targets[profile] = []
+      profile_to_targets[profile].append(stage.targetId)
+  target_to_unique_profile = {}
+  for profile, targets in profile_to_targets.items():
+    if len(targets) == 1:
+      target_to_unique_profile[targets[0]] = profile
+  # Every target should have one unique profile.
+  if len(target_to_unique_profile) != target_count:
+    raise core_exceptions.Error(
+        'Target should use one profile not shared with another target.')
+  return target_to_unique_profile
+
+
+def _GetRunTargetProperties(targets, project, location):
+  """Gets target properties for targets."""
+  target_to_target_properties = {}
+  for target_id in targets:
+    target_ref = target_util.TargetReference(target_id, project, location)
+    target = target_util.GetTarget(target_ref)
+    target_location = getattr(target, 'run', None)
+    if not target_location:
+      raise core_exceptions.Error(
+          'Target is not of type {}'.format('run'))
+    location_attr = getattr(target_location, 'location', None)
+    if not location_attr:
+      raise core_exceptions.Error(
+          'Target location {} does not have a location attribute.'.format(
+              target_location)
+      )
+    target_to_target_properties[target_id] = _TargetProperties(
+        target_id, location_attr)
+  return target_to_target_properties
+
+
+def _GetRunTargetsAndProfiles(pipeline_obj):
+  """Gets targets and profiles from pipeline_obj."""
+  project = pipeline_obj.name.split('/')[1]
+  location = pipeline_obj.name.split('/')[3]
+  target_to_unique_profile = _GetTargetAndUniqueProfiles(pipeline_obj)
+  target_to_target_properties = _GetRunTargetProperties(
+      target_to_unique_profile.keys(), project, location)
+  for target, profile in target_to_unique_profile.items():
+    target_to_target_properties[target].profile = profile
+  return target_to_target_properties
+
+
+def _CreateSkaffoldFileForRunContainer(target_to_target_properties):
+  """Creates skaffold file for target_ids in _TargetProperties object.
+
+  Args:
+    target_to_target_properties: A dict of target_id to _TargetProperties.
+
+  Returns:
+    skaffold yaml.
+
+  """
+  skaffold = collections.OrderedDict()
+  skaffold['apiVersion'] = 'skaffold/v3alpha1'
+  skaffold['kind'] = 'Config'
+  if len(target_to_target_properties) == 1:
+    skaffold['manifests'] = {
+        'rawYaml': ['{}_manifest.yaml'.format(
+            target_to_target_properties.keys()[0])]
+    }
+  else:
+    skaffold['profiles'] = []
+    for target_id in target_to_target_properties:
+      skaffold['profiles'].append(collections.OrderedDict([
+          ('name', target_to_target_properties[target_id].profile),
+          ('manifests', {'rawYaml': ['{}_manifest.yaml'.format(target_id)]})]))
+  skaffold['deploy'] = {
+      'cloudrun': {}
+  }
+  return skaffold
+
+
+def _CreateManifestsForRunContainer(target_to_target_properties,
+                                    services,
+                                    from_run_container):
+  """Creates manifests for target_id to _TargetProperties object.
+
+  Args:
+    target_to_target_properties: map from target_id to _TargetProperties
+    services: map of target_id to service_name
+    from_run_container: the container to be deployed
+
+  Returns:
+    Dictionary of target_id to _TargetProperties where manifest field in
+    _TargetProperties is filled in.
+  """
+  for target_id in target_to_target_properties:
+    target_location = target_to_target_properties[target_id].location
+    region = target_location.split('/')[-1]
+    project = target_location.split('/')[1]
+    if target_id not in services:
+      raise core_exceptions.Error(
+          'Target {} has not been specified in services.'.format(target_id))
+    service_name = services[target_id]
+    service = cloudrun.ServiceExists(
+        None,
+        project=project,
+        service_name=service_name,
+        region=region,
+        release_track=base.ReleaseTrack.GA,
+    )
+    if service:
+      manifest = resource_projector.MakeSerializable(service)
+      manifest = _AddContainerToManifest(
+          manifest, service_name, from_run_container)
+      stream_manifest = io.StringIO()
+      service_printer = ServicePrinter(stream_manifest)
+      service_printer.AddRecord(manifest)
+      new_manifest = stream_manifest.getvalue()
+      stream_manifest.close()
+      target_to_target_properties[target_id].manifest = new_manifest
+    else:
+      manifest_string = CLOUD_RUN_GENERATED_MANIFEST_TEMPLATE.format(
+          service=service_name, container=from_run_container
+      )
+      target_to_target_properties[target_id].manifest = manifest_string
+  return target_to_target_properties
+
+
+def _GetCloudRunManifestSkaffold(from_run_container, services, pipeline_obj):
+  """Generates a Skaffold file and a map of target_id to its manifest.
+
+  Args:
+    from_run_container: the container to be used in the new Service.
+    services: a map of target_id to service_name.
+    pipeline_obj: the pipeline object used in this release.
+
+  Returns:
+    skaffold_file: the yaml of the generated skaffold file.
+    target_to_target_properties: a map of target_id to its properties which
+      include profile, the manifest which will be used.
+  """
+  target_to_target_properties = _GetRunTargetsAndProfiles(pipeline_obj)
+  skaffold = _CreateSkaffoldFileForRunContainer(target_to_target_properties)
+  target_to_target_properties = _CreateManifestsForRunContainer(
+      target_to_target_properties, services, from_run_container)
+  return skaffold, target_to_target_properties
+
+
+def _UploadTarballGeneratedSkaffoldAndManifest(
+    kubernetes_manifest,
+    cloud_run_manifest,
+    from_run_container,
+    services,
+    gcs_client,
+    gcs_source_staging,
+    ignore_file,
+    hide_logs,
+    release_config,
+    pipeline_obj,
+):
   """Generates a Skaffold file and uploads the file and k8 manifest to GCS.
 
   Args:
@@ -385,40 +646,59 @@ def _UploadTarballGeneratedSkaffoldAndManifest(kubernetes_manifest,
     cloud_run_manifest: path to Cloud Run manifest (e.g.
       /home/user/service.yaml). If provided, a Skaffold file will be generated
       and uploaded to GCS on behalf of the customer.
+    from_run_container: the container image to be used. The Cloud Run manifest
+      and Skaffold file will be generated and uploaded to GCS
+      on behalf of the customer.
+    services: the map from target_id to service_name in case from_run_container
+      is used.
     gcs_client: client for Google Cloud Storage API.
     gcs_source_staging: directory in google cloud storage to use for staging
     ignore_file: the ignore file to use
     hide_logs: whether to show logs, defaults to False
     release_config: a Release message
+    pipeline_obj: the pipeline_obj used for this release.
   """
-  manifest = ''
-  template = ''
-  if kubernetes_manifest:
-    manifest = kubernetes_manifest
-    template = GKE_GENERATED_SKAFFOLD_TEMPLATE
-  elif cloud_run_manifest:
-    manifest = cloud_run_manifest
-    template = CLOUD_RUN_GENERATED_SKAFFOLD_TEMPLATE
-  # Check that the manifest file exists.
-  if not os.path.exists(manifest):
-    raise c_exceptions.BadFileException(
-        'could not find manifest file [{src}]'.format(src=manifest))
-  # Create the YAML data. Copying to a temp directory to avoid editing
-  # the local directory.
-  manifest_file_name = os.path.basename(manifest)
-  skaffold_yaml = yaml.load(
-      template.format(manifest_file_name), round_trip=True)
   with files.TemporaryDirectory() as temp_dir:
-    skaffold_path = os.path.join(temp_dir, GENERATED_SKAFFOLD)
-    # Copy the manifest file to the temp directory
-    shutil.copy(manifest, temp_dir)
-    with files.FileWriter(skaffold_path) as f:
-      # Prepend the auto-generated line to the YAML file
-      f.write('# Auto-generated by Google Cloud Deploy\n')
-      # Dump the yaml data to the Skaffold file.
-      yaml.dump(skaffold_yaml, f, round_trip=True)
-      _CreateAndUploadTarball(gcs_client, gcs_source_staging, temp_dir,
-                              ignore_file, hide_logs, release_config, True)
+    skaffold_template = ''
+    if from_run_container:
+      skaffold, target_to_target_properties = _GetCloudRunManifestSkaffold(
+          from_run_container, services, pipeline_obj
+      )
+      for target_id in target_to_target_properties:
+        manifest_path = os.path.join(temp_dir,
+                                     '{}_manifest.yaml'.format(target_id))
+        with files.FileWriter(manifest_path) as f:
+          f.write('# Auto-generated by Google Cloud Deploy\n')
+          f.write(target_to_target_properties[target_id].manifest)
+      skaffold_path = os.path.join(temp_dir, GENERATED_SKAFFOLD)
+      with files.FileWriter(skaffold_path) as f:
+        yaml.dump(skaffold, f, round_trip=True)
+    else:
+      manifest = ''
+      if kubernetes_manifest:
+        manifest = kubernetes_manifest
+        skaffold_template = GKE_GENERATED_SKAFFOLD_TEMPLATE
+      elif cloud_run_manifest:
+        manifest = cloud_run_manifest
+        skaffold_template = CLOUD_RUN_GENERATED_SKAFFOLD_TEMPLATE
+      # Check that the manifest file exists.
+      if not os.path.exists(manifest):
+        raise c_exceptions.BadFileException(
+            'could not find manifest file [{src}]'.format(src=manifest))
+      # Create the YAML data. Copying to a temp directory to avoid editing
+      # the local directory.
+      manifest_file_name = os.path.basename(manifest)
+      shutil.copy(manifest, temp_dir)
+      skaffold_yaml = yaml.load(
+          skaffold_template.format(manifest_file_name), round_trip=True)
+      skaffold_path = os.path.join(temp_dir, GENERATED_SKAFFOLD)
+      with files.FileWriter(skaffold_path) as f:
+        # Prepend the auto-generated line to the YAML file
+        f.write('# Auto-generated by Google Cloud Deploy\n')
+        # Dump the yaml data to the Skaffold file.
+        yaml.dump(skaffold_yaml, f, round_trip=True)
+    _CreateAndUploadTarball(gcs_client, gcs_source_staging, temp_dir,
+                            ignore_file, hide_logs, release_config, True)
 
 
 def _VerifySkaffoldFileExists(source, skaffold_file):
@@ -427,7 +707,8 @@ def _VerifySkaffoldFileExists(source, skaffold_file):
     skaffold_file = 'skaffold.yaml'
   if source.startswith('gs://'):
     log.status.Print(
-        'Skipping skaffold file check. Reason: source is not a local archive or directory'
+        'Skipping skaffold file check. '
+        'Reason: source is not a local archive or directory'
     )
   elif not os.path.exists(source):
     raise c_exceptions.BadFileException(
@@ -452,7 +733,8 @@ def _VerifySkaffoldIsInArchive(source, skaffold_file):
       archive.getmember(skaffold_file)
     except KeyError:
       raise c_exceptions.BadFileException(
-          'Could not find skaffold file. File [{skaffold}] does not exist in source archive'
+          'Could not find skaffold file. '
+          'File [{skaffold}] does not exist in source archive'
           .format(skaffold=skaffold_file))
 
 

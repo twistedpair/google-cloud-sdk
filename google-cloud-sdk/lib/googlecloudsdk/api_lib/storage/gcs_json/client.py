@@ -857,14 +857,16 @@ class JsonClient(cloud_api.CloudApi):
         global_params=global_params)
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def get_object_metadata(self,
-                          bucket_name,
-                          object_name,
-                          request_config=None,
-                          generation=None,
-                          fields_scope=cloud_api.FieldsScope.NO_ACL):
+  def get_object_metadata(
+      self,
+      bucket_name,
+      object_name,
+      request_config=None,
+      generation=None,
+      fields_scope=cloud_api.FieldsScope.NO_ACL,
+      soft_deleted=False,
+  ):
     """See super class."""
-
     # S3 requires a string, but GCS uses an int for generation.
     if generation:
       generation = int(generation)
@@ -886,6 +888,8 @@ class JsonClient(cloud_api.CloudApi):
               object=object_name,
               generation=generation,
               projection=projection,
+              # Avoid needlessly appending "&softDeleted=False" to URL.
+              softDeleted=True if soft_deleted else None,
           ),
           global_params=global_params,
       )
@@ -899,9 +903,12 @@ class JsonClient(cloud_api.CloudApi):
       all_versions=None,
       fields_scope=cloud_api.FieldsScope.NO_ACL,
       halt_on_empty_response=True,
+      include_folders_as_prefixes=False,
       next_page_token=None,
+      soft_deleted_only=False,
   ):
     """See super class."""
+    del include_folders_as_prefixes  # Unused until API support is available.
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsListRequest)
     global_params = None
@@ -926,6 +933,7 @@ class JsonClient(cloud_api.CloudApi):
       )
 
     list_result = None
+    soft_deleted = True if soft_deleted_only else None
     while True:
       apitools_request = self.messages.StorageObjectsListRequest(
           bucket=bucket_name,
@@ -935,6 +943,8 @@ class JsonClient(cloud_api.CloudApi):
           projection=projection,
           pageToken=next_page_token,
           maxResults=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
+          # Avoid needlessly appending "&softDeleted=False" to URL.
+          softDeleted=soft_deleted,
       )
 
       try:
@@ -1221,3 +1231,87 @@ class JsonClient(cloud_api.CloudApi):
             userProject=properties.VALUES.core.project.GetOrFail()))
     for notification_configuration in response.items:
       yield notification_configuration
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def cancel_operation(self, bucket_name, operation_id):
+    """See CloudApi class."""
+    self.client.operations.Cancel(
+        self.messages.StorageBucketsOperationsCancelRequest(
+            bucket=bucket_name,
+            operationId=operation_id,
+        )
+    )
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def get_operation(self, bucket_name, operation_id):
+    """See CloudApi class."""
+    return self.client.operations.Get(
+        self.messages.StorageBucketsOperationsGetRequest(
+            bucket=bucket_name,
+            operationId=operation_id,
+        )
+    )
+
+  def list_operations(self, bucket_name):
+    """See CloudApi class."""
+    request = self.messages.StorageBucketsOperationsListRequest(
+        bucket=bucket_name
+    )
+    operation_iterator = list_pager.YieldFromList(
+        self.client.operations,
+        request,
+        batch_size_attribute='pageSize',
+        field='operations',
+    )
+    try:
+      for operation in operation_iterator:
+        yield operation
+    except apitools_exceptions.HttpError as e:
+      core_exceptions.reraise(
+          cloud_errors.translate_error(e, error_util.ERROR_TRANSLATION)
+      )
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def restore_object(self, url, request_config):
+    """See CloudApi class."""
+    object_metadata = self.client.objects.Restore(
+        self.messages.StorageObjectsRestoreRequest(
+            bucket=url.bucket_name,
+            generation=int(url.generation),
+            ifGenerationMatch=int(request_config.precondition_generation_match),
+            ifMetagenerationMatch=int(
+                request_config.precondition_metageneration_match
+            ),
+            object=url.object_name,
+        )
+    )
+    return metadata_util.get_object_resource_from_metadata(object_metadata)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def bulk_restore_objects(
+      self,
+      url,
+      request_config,
+      allow_overwrite=False,
+      deleted_after_time=None,
+      deleted_before_time=None,
+  ):
+    """See CloudApi class."""
+    if request_config.resource_args:
+      preserve_acl = request_config.resource_args.preserve_acl
+    else:
+      preserve_acl = None
+
+    operation = self.client.objects.BulkRestore(
+        self.messages.StorageObjectsBulkRestoreRequest(
+            bucket=url.bucket_name,
+            bulkRestoreObjectsRequest=self.messages.BulkRestoreObjectsRequest(
+                allowOverwrite=allow_overwrite,
+                copySourceAcl=preserve_acl,
+                matchGlobs=[url.object_name],
+                softDeletedAfterTime=deleted_after_time,
+                softDeletedBeforeTime=deleted_before_time,
+            ),
+        )
+    )
+    return operation

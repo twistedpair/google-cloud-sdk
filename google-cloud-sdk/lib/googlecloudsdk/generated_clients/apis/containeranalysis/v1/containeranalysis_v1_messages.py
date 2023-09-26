@@ -2347,6 +2347,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Mess
       those files. If the build source came in a single package such as a
       gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path
       to that file.
+    resolvedConnectedRepository: Output only. A copy of the build's
+      `source.connected_repository`, if exists, with any revisions resolved.
+    resolvedGitSource: Output only. A copy of the build's `source.git_source`,
+      if exists, with any revisions resolved.
     resolvedRepoSource: A copy of the build's `source.repo_source`, if exists,
       with any revisions resolved.
     resolvedStorageSource: A copy of the build's `source.storage_source`, if
@@ -2388,9 +2392,11 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Mess
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   fileHashes = _messages.MessageField('FileHashesValue', 1)
-  resolvedRepoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 2)
-  resolvedStorageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 3)
-  resolvedStorageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 4)
+  resolvedConnectedRepository = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1ConnectedRepository', 2)
+  resolvedGitSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1GitSource', 3)
+  resolvedRepoSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1RepoSource', 4)
+  resolvedStorageSource = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource', 5)
+  resolvedStorageSourceManifest = _messages.MessageField('ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest', 6)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource(_messages.Message):
@@ -5662,6 +5668,7 @@ class VulnerabilityNote(_messages.Message):
     cvssVersion: CVSS version used to populate cvss_score and severity.
     details: Details of all known distros and packages affected by this
       vulnerability.
+    extraDetails: Occurrence-specific extra details about the vulnerability.
     severity: The note provider assigned severity of this vulnerability.
     sourceUpdateTime: The time this information was last changed at the
       source. This is an upstream timestamp from the underlying information
@@ -5708,9 +5715,10 @@ class VulnerabilityNote(_messages.Message):
   cvssV3 = _messages.MessageField('CVSSv3', 3)
   cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 4)
   details = _messages.MessageField('Detail', 5, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
-  sourceUpdateTime = _messages.StringField(7)
-  windowsDetails = _messages.MessageField('WindowsDetail', 8, repeated=True)
+  extraDetails = _messages.StringField(6)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
+  sourceUpdateTime = _messages.StringField(8)
+  windowsDetails = _messages.MessageField('WindowsDetail', 9, repeated=True)
 
 
 class VulnerabilityOccurrence(_messages.Message):

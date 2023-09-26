@@ -1305,9 +1305,10 @@ def CreateStandbyPolicy(
   if initial_delay_sec:
     standby_policy.initialDelaySec = initial_delay_sec
   if standby_policy_mode:
+    standby_policy_mode_enum = standby_policy_mode.upper().replace('-', '_')
     standby_policy.mode = (
         messages.InstanceGroupManagerStandbyPolicy.ModeValueValuesEnum(
-            standby_policy_mode
+            standby_policy_mode_enum
         )
     )
   return standby_policy

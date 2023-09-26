@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import contextlib
 import datetime
 import json
+from typing import List
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
@@ -30,18 +31,21 @@ from googlecloudsdk.api_lib.run.integrations import api_utils
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.run import connection_context
-from googlecloudsdk.command_lib.run import exceptions
+from googlecloudsdk.command_lib.run import flags as run_flags
 from googlecloudsdk.command_lib.run import serverless_operations
 from googlecloudsdk.command_lib.run.integrations import flags
 from googlecloudsdk.command_lib.run.integrations import integration_list_printer
 from googlecloudsdk.command_lib.run.integrations import messages_util
 from googlecloudsdk.command_lib.run.integrations import stages
 from googlecloudsdk.command_lib.run.integrations import typekits_util
+from googlecloudsdk.command_lib.runapps import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import progress_tracker
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
 import six
+
 
 _SERVICE_TYPE = 'service'
 
@@ -49,25 +53,31 @@ _DEFAULT_APP_NAME = 'default'
 
 ALL_REGIONS = '-'
 
+_RUN_APPS_API_NAME = 'runapps'
+_RUN_APPS_API_VERSION = 'v1alpha1'
+
 
 @contextlib.contextmanager
-def Connect(conn_context, release_track):
+def Connect(args, release_track):
   """Provide a RunAppsOperations instance to use.
 
   Arguments:
-    conn_context: a context manager that yields a ConnectionInfo and manages a
-      dynamic context.
+    args: Namespace, the args namespace.
     release_track: the release track of the command.
 
   Yields:
     A RunAppsOperations instance.
   """
   # pylint: disable=protected-access
-  client = apis.GetClientInstance(conn_context.api_name,
-                                  conn_context.api_version)
+  client = apis.GetClientInstance(_RUN_APPS_API_NAME, _RUN_APPS_API_VERSION)
 
-  yield RunAppsOperations(client, conn_context.api_version, conn_context.region,
-                          release_track)
+  region = run_flags.GetRegion(args, prompt=True)
+  if not region:
+    raise exceptions.ArgumentError(
+        'You must specify a region. Either use the `--region` flag '
+        'or set the run/region property.'
+    )
+  yield RunAppsOperations(client, _RUN_APPS_API_VERSION, region, release_track)
 
 
 def _HandleQueueingException(err):
@@ -84,8 +94,9 @@ def _HandleQueueingException(err):
   code = content['error']['code']
   if msg == 'unable to queue the operation' and code == 409:
     raise exceptions.IntegrationsOperationError(
-        'An integration is currently being configured.  Please wait ' +
-        'until the current process is complete and try again')
+        'An integration is currently being configured.  Please wait '
+        + 'until the current process is complete and try again'
+    )
   raise err
 
 
@@ -114,6 +125,10 @@ class RunAppsOperations(object):
   @property
   def messages(self):
     return self._client.MESSAGES_MODULE
+
+  @property
+  def region(self):
+    return self._region
 
   def ApplyYaml(self, tracker, yaml_content):
     """Applies the application config from yaml file.
@@ -145,16 +160,18 @@ class RunAppsOperations(object):
         tracker, name, appconfig, match_type_names=match_type_names
     )
 
-  def ApplyAppConfig(self,
-                     tracker,
-                     appname,
-                     appconfig,
-                     integration_name=None,
-                     deploy_message=None,
-                     match_type_names=None,
-                     intermediate_step=False,
-                     etag=None,
-                     tracker_update_func=None):
+  def ApplyAppConfig(
+      self,
+      tracker,
+      appname,
+      appconfig,
+      integration_name=None,
+      deploy_message=None,
+      match_type_names=None,
+      intermediate_step=False,
+      etag=None,
+      tracker_update_func=None,
+  ):
     """Applies the application config.
 
     Args:
@@ -172,8 +189,10 @@ class RunAppsOperations(object):
     if integration_name:
       tracker.UpdateStage(
           stages.UPDATE_APPLICATION,
-          messages_util.CheckStatusMessage(self._release_track,
-                                           integration_name))
+          messages_util.CheckStatusMessage(
+              self._release_track, integration_name
+          ),
+      )
     try:
       self._UpdateApplication(appname, appconfig, etag)
     except api_exceptions.HttpConflictError as err:
@@ -190,7 +209,8 @@ class RunAppsOperations(object):
     if not intermediate_step:
       tracker.UpdateHeaderMessage(
           'Deployment started. This process will continue even if '
-          'your terminal session is interrupted.')
+          'your terminal session is interrupted.'
+      )
     tracker.StartStage(stages.CREATE_DEPLOYMENT)
     if deploy_message:
       tracker.UpdateStage(stages.CREATE_DEPLOYMENT, deploy_message)
@@ -199,7 +219,8 @@ class RunAppsOperations(object):
           appname,
           tracker,
           tracker_update_func=tracker_update_func,
-          create_selector=create_selector)
+          create_selector=create_selector,
+      )
     except api_exceptions.HttpConflictError as err:
       _HandleQueueingException(err)
     except exceptions.IntegrationsOperationError as err:
@@ -220,21 +241,25 @@ class RunAppsOperations(object):
     """
     app_ref = self.GetAppRef(appname)
     application = self.messages.Application(
-        name=appname, config=appconfig, etag=etag)
+        name=appname, config=appconfig, etag=etag
+    )
     is_patch = etag or api_utils.GetApplication(self._client, app_ref)
     if is_patch:
       operation = api_utils.PatchApplication(self._client, app_ref, application)
     else:
-      operation = api_utils.CreateApplication(self._client, app_ref,
-                                              application)
+      operation = api_utils.CreateApplication(
+          self._client, app_ref, application
+      )
     api_utils.WaitForApplicationOperation(self._client, operation)
 
-  def _CreateDeployment(self,
-                        appname,
-                        tracker,
-                        tracker_update_func=None,
-                        create_selector=None,
-                        delete_selector=None):
+  def _CreateDeployment(
+      self,
+      appname,
+      tracker,
+      tracker_update_func=None,
+      create_selector=None,
+      delete_selector=None,
+  ):
     """Create a deployment, waits for operation to finish.
 
     Args:
@@ -248,25 +273,31 @@ class RunAppsOperations(object):
     deployment_name = self._GetDeploymentName(app_ref.Name())
     # TODO(b/217573594): remove this when oneof constraint is removed.
     if create_selector and delete_selector:
-      raise exceptions.ArgumentError('create_selector and delete_selector '
-                                     'cannot be specified at the same time.')
+      raise exceptions.ArgumentError(
+          'create_selector and delete_selector '
+          'cannot be specified at the same time.'
+      )
     deployment = self.messages.Deployment(
         name=deployment_name,
         createSelector=create_selector,
-        deleteSelector=delete_selector)
-    deployment_ops = api_utils.CreateDeployment(self._client, app_ref,
-                                                deployment)
+        deleteSelector=delete_selector,
+    )
+    deployment_ops = api_utils.CreateDeployment(
+        self._client, app_ref, deployment
+    )
 
     dep_response = api_utils.WaitForDeploymentOperation(
         self._client,
         deployment_ops,
         tracker,
-        tracker_update_func=tracker_update_func)
+        tracker_update_func=tracker_update_func,
+    )
     self.CheckDeploymentState(dep_response)
 
   def _GetDeploymentName(self, appname):
-    return '{}-{}'.format(appname,
-                          datetime.datetime.now().strftime('%Y%m%d%H%M%S'))
+    return '{}-{}'.format(
+        appname, datetime.datetime.now().strftime('%Y%m%d%H%M%S')
+    )
 
   @staticmethod
   def _UpdateDeploymentTracker(tracker, operation, tracker_stages):
@@ -316,10 +347,12 @@ class RunAppsOperations(object):
     """
     try:
       return self._GetDefaultAppDict()[api_utils.APP_DICT_CONFIG_KEY][
-          api_utils.APP_CONFIG_DICT_RESOURCES_KEY][name]
+          api_utils.APP_CONFIG_DICT_RESOURCES_KEY
+      ][name]
     except KeyError:
       raise exceptions.IntegrationNotFoundError(
-          'Integration [{}] cannot be found'.format(name))
+          'Integration [{}] cannot be found'.format(name)
+      )
 
   def GetIntegrationStatus(self, name):
     """Get status of an integration.
@@ -332,7 +365,8 @@ class RunAppsOperations(object):
     """
     try:
       application_status = api_utils.GetApplicationStatus(
-          self._client, self.GetAppRef(_DEFAULT_APP_NAME), name)
+          self._client, self.GetAppRef(_DEFAULT_APP_NAME), name
+      )
       app_status_dict = encoding.MessageToDict(application_status)
       integration_status = app_status_dict.get('resources', {}).get(name)
       if integration_status:
@@ -356,7 +390,8 @@ class RunAppsOperations(object):
         be returned.
     """
     latest_deployment_name = resource_config.get(
-        types_utils.LATEST_DEPLOYMENT_FIELD)
+        types_utils.LATEST_DEPLOYMENT_FIELD
+    )
 
     if not latest_deployment_name:
       return None
@@ -380,12 +415,15 @@ class RunAppsOperations(object):
     """
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
-        api_utils.APP_CONFIG_DICT_RESOURCES_KEY]
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY
+    ]
     typekit = typekits_util.GetTypeKit(integration_type)
     if name and typekit.is_singleton:
       raise exceptions.ArgumentError(
           '--name is not allowed for integration type [{}].'.format(
-              integration_type))
+              integration_type
+          )
+      )
     if not name:
       name = typekit.NewIntegrationName(service, parameters, resources_map)
 
@@ -393,7 +431,8 @@ class RunAppsOperations(object):
 
     if name in resources_map:
       raise exceptions.ArgumentError(
-          messages_util.IntegrationAlreadyExists(name))
+          messages_util.IntegrationAlreadyExists(name)
+      )
 
     resource_config = {}
     typekit.UpdateResourceConfig(parameters, resource_config)
@@ -413,9 +452,12 @@ class RunAppsOperations(object):
 
     if service:
       typekit.BindServiceToIntegration(
-          name, resource_config, service,
+          name,
+          resource_config,
+          service,
           resources_map.setdefault(service, {}).setdefault(_SERVICE_TYPE, {}),
-          parameters)
+          parameters,
+      )
       services = [service]
     else:
       services = typekit.GetRefServices(name, resource_config, resources_map)
@@ -424,13 +466,14 @@ class RunAppsOperations(object):
     self.CheckCloudRunServicesExistence(services)
 
     resource_stages = typekit.GetCreateComponentTypes(
-        selectors=match_type_names,
-        app_dict=app_dict)
+        selectors=match_type_names, app_dict=app_dict
+    )
 
     deploy_message = typekit.GetDeployMessage(create=True)
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     stages_map = stages.IntegrationStages(
-        create=True, resource_types=resource_stages)
+        create=True, resource_types=resource_stages
+    )
 
     def StatusUpdate(tracker, operation, unused_status):
       self._UpdateDeploymentTracker(tracker, operation, stages_map)
@@ -439,7 +482,8 @@ class RunAppsOperations(object):
     with progress_tracker.StagedProgressTracker(
         'Creating new Integration...',
         stages_map.values(),
-        failure_message='Failed to create new integration.') as tracker:
+        failure_message='Failed to create new integration.',
+    ) as tracker:
       try:
         self.ApplyAppConfig(
             tracker=tracker,
@@ -449,19 +493,19 @@ class RunAppsOperations(object):
             integration_name=name,
             deploy_message=deploy_message,
             match_type_names=match_type_names,
-            etag=application.etag)
+            etag=application.etag,
+        )
       except exceptions.IntegrationsOperationError as err:
         tracker.AddWarning(
-            messages_util.RetryDeploymentMessage(self._release_track, name))
+            messages_util.RetryDeploymentMessage(self._release_track, name)
+        )
         raise err
 
     return name
 
-  def UpdateIntegration(self,
-                        name,
-                        parameters,
-                        add_service=None,
-                        remove_service=None):
+  def UpdateIntegration(
+      self, name, parameters, add_service=None, remove_service=None
+  ):
     """Update an integration.
 
     Args:
@@ -478,11 +522,13 @@ class RunAppsOperations(object):
     """
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
-        api_utils.APP_CONFIG_DICT_RESOURCES_KEY]
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY
+    ]
     existing_resource = resources_map.get(name)
     if existing_resource is None:
       raise exceptions.IntegrationNotFoundError(
-          messages_util.IntegrationNotFound(name))
+          messages_util.IntegrationNotFound(name)
+      )
 
     typekit = typekits_util.GetTypeKitByResource(existing_resource)
 
@@ -491,8 +537,9 @@ class RunAppsOperations(object):
     resource_config = existing_resource[typekit.resource_type]
 
     specified_services = []
-    services_in_params = typekit.UpdateResourceConfig(parameters,
-                                                      resource_config)
+    services_in_params = typekit.UpdateResourceConfig(
+        parameters, resource_config
+    )
     if services_in_params:
       specified_services.extend(services_in_params)
 
@@ -500,27 +547,37 @@ class RunAppsOperations(object):
 
     if add_service:
       typekit.BindServiceToIntegration(
-          name, resource_config, add_service,
-          resources_map.setdefault(add_service,
-                                   {}).setdefault(_SERVICE_TYPE, {}),
-          parameters)
+          name,
+          resource_config,
+          add_service,
+          resources_map.setdefault(add_service, {}).setdefault(
+              _SERVICE_TYPE, {}
+          ),
+          parameters,
+      )
       specified_services.append(add_service)
 
     if remove_service:
       if remove_service in resources_map:
         typekit.UnbindServiceFromIntegration(
-            name, resource_config, remove_service,
-            resources_map[remove_service].setdefault(_SERVICE_TYPE,
-                                                     {}), parameters)
+            name,
+            resource_config,
+            remove_service,
+            resources_map[remove_service].setdefault(_SERVICE_TYPE, {}),
+            parameters,
+        )
         if self.GetCloudRunService(remove_service):
           # remove_service missing will not lead to failure.
           # only add it to selector if it exists.
-          self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE,
-                                  remove_service)
+          self._AppendTypeMatcher(
+              match_type_names, _SERVICE_TYPE, remove_service
+          )
       else:
         raise exceptions.ServiceNotFoundError(
             'Service [{}] is not found among integrations'.format(
-                remove_service))
+                remove_service
+            )
+        )
 
     if specified_services:
       for service in specified_services:
@@ -529,13 +586,16 @@ class RunAppsOperations(object):
       self.EnsureCloudRunResources(specified_services, resources_map)
       self.CheckCloudRunServicesExistence(specified_services)
 
-    if typekit.is_ingress_service or (typekit.is_backing_service and
-                                      add_service is None and
-                                      remove_service is None):
+    if typekit.is_ingress_service or (
+        typekit.is_backing_service
+        and add_service is None
+        and remove_service is None
+    ):
       ref_svcs = typekit.GetRefServices(name, resource_config, resources_map)
       for service in ref_svcs:
         if service not in specified_services and self.GetCloudRunService(
-            service):
+            service
+        ):
           # Non-specified services are only added to selector if it exists.
           self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
 
@@ -543,10 +603,11 @@ class RunAppsOperations(object):
     application = encoding.DictToMessage(app_dict, self.messages.Application)
 
     resource_stages = typekit.GetCreateComponentTypes(
-        selectors=match_type_names,
-        app_dict=app_dict)
+        selectors=match_type_names, app_dict=app_dict
+    )
     stages_map = stages.IntegrationStages(
-        create=False, resource_types=resource_stages)
+        create=False, resource_types=resource_stages
+    )
 
     def StatusUpdate(tracker, operation, unused_status):
       self._UpdateDeploymentTracker(tracker, operation, stages_map)
@@ -555,7 +616,8 @@ class RunAppsOperations(object):
     with progress_tracker.StagedProgressTracker(
         'Updating Integration...',
         stages_map.values(),
-        failure_message='Failed to update integration.') as tracker:
+        failure_message='Failed to update integration.',
+    ) as tracker:
       return self.ApplyAppConfig(
           tracker=tracker,
           tracker_update_func=StatusUpdate,
@@ -564,7 +626,8 @@ class RunAppsOperations(object):
           integration_name=name,
           deploy_message=deploy_message,
           match_type_names=match_type_names,
-          etag=application.etag)
+          etag=application.etag,
+      )
 
   def DeleteIntegration(self, name):
     """Delete an integration.
@@ -580,11 +643,13 @@ class RunAppsOperations(object):
     """
     app_dict = self._GetDefaultAppDict()
     resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
-        api_utils.APP_CONFIG_DICT_RESOURCES_KEY]
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY
+    ]
     resource = resources_map.get(name)
     if resource is None:
       raise exceptions.IntegrationNotFoundError(
-          'Integration [{}] cannot be found'.format(name))
+          'Integration [{}] cannot be found'.format(name)
+      )
     typekit = typekits_util.GetTypeKitByResource(resource)
     resource_type = typekit.resource_type
 
@@ -592,38 +657,47 @@ class RunAppsOperations(object):
     services = []
     if typekit.is_backing_service:
       # Unbind services
-      services = typekit.GetRefServices(name, resource.get(resource_type),
-                                        resources_map)
+      services = typekit.GetRefServices(
+          name, resource.get(resource_type), resources_map
+      )
     service_match_type_names = []
     if services:
       for service in services:
         if self.GetCloudRunService(service):
           # Only configure service to unbind if it exists
-          service_match_type_names.append({
-              'type': _SERVICE_TYPE,
-              'name': service
-          })
+          service_match_type_names.append(
+              {'type': _SERVICE_TYPE, 'name': service}
+          )
     delete_match_type_names = typekit.GetDeleteSelectors(name)
     resource_stages = typekit.GetDeleteComponentTypes(
-        selectors=delete_match_type_names, app_dict=app_dict)
+        selectors=delete_match_type_names, app_dict=app_dict
+    )
     stages_map = stages.IntegrationDeleteStages(
         destroy_resource_types=resource_stages,
-        should_configure_service=bool(service_match_type_names))
+        should_configure_service=bool(service_match_type_names),
+    )
 
     def StatusUpdate(tracker, operation, unused_status):
       self._UpdateDeploymentTracker(tracker, operation, stages_map)
       return
+
     with progress_tracker.StagedProgressTracker(
         'Deleting Integration...',
         stages_map.values(),
-        failure_message='Failed to delete integration.') as tracker:
+        failure_message='Failed to delete integration.',
+    ) as tracker:
       if services:
         for service in services:
           typekit.UnbindServiceFromIntegration(
-              name, resource[resource_type], service,
-              resources_map[service][_SERVICE_TYPE], {})
-        application = encoding.DictToMessage(app_dict,
-                                             self.messages.Application)
+              name,
+              resource[resource_type],
+              service,
+              resources_map[service][_SERVICE_TYPE],
+              {},
+          )
+        application = encoding.DictToMessage(
+            app_dict, self.messages.Application
+        )
         # TODO(b/222748706): refine message on failure.
         if service_match_type_names:
           self.ApplyAppConfig(
@@ -633,12 +707,14 @@ class RunAppsOperations(object):
               appconfig=application.config,
               match_type_names=service_match_type_names,
               intermediate_step=True,
-              etag=application.etag)
+              etag=application.etag,
+          )
         else:
           self._UpdateApplication(
               appname=_DEFAULT_APP_NAME,
               appconfig=application.config,
-              etag=application.etag)
+              etag=application.etag,
+          )
       # Undeploy integration resource
       delete_selector = {'matchTypeNames': delete_match_type_names}
       self._UndeployResource(name, delete_selector, tracker, StatusUpdate)
@@ -647,11 +723,9 @@ class RunAppsOperations(object):
     integration_type = type_def.integration_type
     return integration_type
 
-  def _UndeployResource(self,
-                        name,
-                        delete_selector,
-                        tracker,
-                        tracker_update_func=None):
+  def _UndeployResource(
+      self, name, delete_selector, tracker, tracker_update_func=None
+  ):
     """Undeploy a resource.
 
     Args:
@@ -672,13 +746,15 @@ class RunAppsOperations(object):
     # Get application again to refresh etag before update
     app_dict = self._GetDefaultAppDict()
     del app_dict[api_utils.APP_DICT_CONFIG_KEY][
-        api_utils.APP_CONFIG_DICT_RESOURCES_KEY][name]
+        api_utils.APP_CONFIG_DICT_RESOURCES_KEY
+    ][name]
     application = encoding.DictToMessage(app_dict, self.messages.Application)
     tracker.StartStage(stages.CLEANUP_CONFIGURATION)
     self._UpdateApplication(
         appname=_DEFAULT_APP_NAME,
         appconfig=application.config,
-        etag=application.etag)
+        etag=application.etag,
+    )
     tracker.CompleteStage(stages.CLEANUP_CONFIGURATION)
 
   def ListIntegrationTypes(self):
@@ -701,8 +777,11 @@ class RunAppsOperations(object):
     return types_utils.GetTypeMetadata(type_name)
 
   def ListIntegrations(
-      self, integration_type_filter: str, service_name_filter: str,
-      region: str = None):
+      self,
+      integration_type_filter: str,
+      service_name_filter: str,
+      region: str = None,
+  ):
     """Returns the list of integrations from the default applications.
 
     If a '-' is provided for the region, then list applications will be called.
@@ -715,9 +794,9 @@ class RunAppsOperations(object):
     Args:
       integration_type_filter: if populated integration type to filter by.
       service_name_filter: if populated service name to filter by.
-      region: GCP region. If not provided, then the region will be pulled
-        from the flag or from the config.  Only '-', which is the global region
-        has any effect here.
+      region: GCP region. If not provided, then the region will be pulled from
+        the flag or from the config.  Only '-', which is the global region has
+        any effect here.
 
     Returns:
       List of Dicts containing name, type, and services.
@@ -727,35 +806,38 @@ class RunAppsOperations(object):
     # config.
     endpoint = properties.VALUES.api_endpoint_overrides.runapps.Get()
     if region == ALL_REGIONS and not _IsLocalHost(endpoint):
-      apps = api_utils.ListApplications(self._client, self.ListAppsRequest())
+      list_apps = api_utils.ListApplications(
+          self._client, self.ListAppsRequest()
+      )
+      apps = list_apps.applications if list_apps else []
+      apps = _FilterForDefaultApps(apps)
     else:
-      apps = api_utils.GetApplication(self._client,
-                                      self.GetAppRef(_DEFAULT_APP_NAME))
+      app = api_utils.GetApplication(
+          self._client, self.GetAppRef(_DEFAULT_APP_NAME)
+      )
+      apps = [app] if app else []
     if not apps:
       return []
 
-    apps_dict = encoding.MessageToDict(apps)
-    if 'applications' not in apps_dict:
-      # Single default application, structure it similar to the response of
-      # the ListApplications calls for code reuse below.
-      apps_dict = {'applications': [apps_dict]}
-    else:
-      # Note we cannot filter via the ListApplications API since filtering
-      # is limited with wildcards. Since the name of the application has the
-      # form projects/<proj-name>/locations/<location>/applications/default'
-      # we can't simply use the following filter: 'filter=name="default"'
-      apps_dict = _FilterForDefaultApps(apps_dict)
-
     output = []
-    for app in apps_dict['applications']:
-      output.extend(self._ParseResources(app, integration_type_filter,
-                                         service_name_filter))
+    for app in apps:
+      output.extend(
+          self._ParseResourcesForList(
+              app, integration_type_filter, service_name_filter
+          )
+      )
     return output
 
-  def _ParseResources(self, app, integration_type_filter: str,
-                      service_name_filter: str):
+  def _ParseResourcesForList(
+      self,
+      app: runapps_v1alpha1_messages.Application,
+      integration_type_filter: str,
+      service_name_filter: str,
+  ):
     """Helper function for ListIntegrations to parse relevant fields."""
-    app_resources = app.get('config', {}).get('resources')
+    if app.config is None:
+      return []
+    app_resources = app.config.resourceList
     if not app_resources:
       return []
 
@@ -763,50 +845,48 @@ class RunAppsOperations(object):
     output = []
     # the dict is sorted by the resource name to guarantee the output
     # is the same every time.  This is useful for scenario tests.
-    for name, resource in sorted(app_resources.items()):
+    for resource in sorted(app_resources, key=lambda x: x.id.name):
       try:
-        typekit = typekits_util.GetTypeKitByResource(resource)
+        typekit = typekits_util.GetTypeKitByResourceGeneric(resource)
       except exceptions.ArgumentError:
         # If no matching typekit, like service, skip over.
         continue
 
-      resource_type = typekit.resource_type
-      integration_type = typekit.integration_type
-
       # TODO(b/217744072): Support Cloud SDK topic filtering.
       # Optionally filter by type.
-      if (integration_type_filter and
-          integration_type != integration_type_filter):
+      if (
+          integration_type_filter
+          and typekit.integration_type != integration_type_filter
+      ):
         continue
 
       # Optionally filter by service.
-      services = typekit.GetRefServices(name, resource.get(resource_type),
-                                        app_resources)
+      services = typekit.GetBindedWorkloads(resource, app_resources)
       if service_name_filter and service_name_filter not in services:
         continue
 
       status = (
           self.messages.DeploymentStatus.StateValueValuesEnum.STATE_UNSPECIFIED
-          )
-      latest_deployment = resource.get(types_utils.LATEST_DEPLOYMENT_FIELD)
-      if latest_deployment:
-        dep = api_utils.GetDeployment(self._client, latest_deployment)
+      )
+      if resource.latestDeployment:
+        dep = api_utils.GetDeployment(self._client, resource.latestDeployment)
         if dep:
           status = dep.status.state
 
       # region is parsed from the name, which has the following form:
       # projects/<proj-name>/locations/<location>/applications/default'
-      region = app['name'].split('/')[3]
+      region = app.name.split('/')[3]
 
       output.append(
           integration_list_printer.Row(
-              integration_name=name,
+              integration_name=resource.id.name,
               region=region,
-              integration_type=integration_type,
+              integration_type=typekit.integration_type,
               # sorting is done here to guarantee output for scenario tests
               services=','.join(sorted(services)),
               latest_deployment_status=six.text_type(status),
-          ))
+          )
+      )
 
     return output
 
@@ -816,12 +896,14 @@ class RunAppsOperations(object):
     Returns:
       dict representing the application.
     """
-    application = api_utils.GetApplication(self._client,
-                                           self.GetAppRef(_DEFAULT_APP_NAME))
+    application = api_utils.GetApplication(
+        self._client, self.GetAppRef(_DEFAULT_APP_NAME)
+    )
     if not application:
       application = self.messages.Application(
           name=_DEFAULT_APP_NAME,
-          config={api_utils.APP_CONFIG_DICT_RESOURCES_KEY: {}})
+          config={api_utils.APP_CONFIG_DICT_RESOURCES_KEY: {}},
+      )
     return api_utils.ApplicationToDict(application)
 
   def GetAppRef(self, name):
@@ -837,11 +919,9 @@ class RunAppsOperations(object):
     location = self._region
     app_ref = resources.REGISTRY.Parse(
         name,
-        params={
-            'projectsId': project,
-            'locationsId': location
-        },
-        collection='runapps.projects.locations.applications')
+        params={'projectsId': project, 'locationsId': location},
+        collection='runapps.projects.locations.applications',
+    )
     return app_ref
 
   def ListAppsRequest(self) -> resources:
@@ -852,7 +932,8 @@ class RunAppsOperations(object):
         params={
             'projectsId': project,
         },
-        collection='runapps.projects.locations')
+        collection='runapps.projects.locations',
+    )
     return app_ref
 
   def GetServiceRef(self, name):
@@ -871,7 +952,8 @@ class RunAppsOperations(object):
             'namespacesId': project,
             'servicesId': name,
         },
-        collection='run.namespaces.services')
+        collection='run.namespaces.services',
+    )
     return service_ref
 
   def EnsureCloudRunResources(self, service_names, resources_map):
@@ -894,8 +976,10 @@ class RunAppsOperations(object):
       the Cloud Run service object
     """
     conn_context = connection_context.RegionalConnectionContext(
-        self._region, global_methods.SERVERLESS_API_NAME,
-        global_methods.SERVERLESS_API_VERSION)
+        self._region,
+        global_methods.SERVERLESS_API_NAME,
+        global_methods.SERVERLESS_API_VERSION,
+    )
     with serverless_operations.Connect(conn_context) as client:
       service_ref = self.GetServiceRef(service_name)
       return client.GetService(service_ref)
@@ -913,7 +997,8 @@ class RunAppsOperations(object):
       service = self.GetCloudRunService(name)
       if not service:
         raise exceptions.ServiceNotFoundError(
-            'Service [{}] could not be found.'.format(name))
+            'Service [{}] could not be found.'.format(name)
+        )
 
   def CheckDeploymentState(self, response):
     """Throws any unexpected states contained within deployment reponse.
@@ -941,7 +1026,8 @@ class RunAppsOperations(object):
           break
 
       error_msg = 'Configuration failed with error:\n  {}'.format(
-          '\n  '.join(response.status.errorMessage.split('; ')))
+          '\n  '.join(response.status.errorMessage.split('; '))
+      )
       if url:
         error_msg += '\nLogs are available at {}'.format(url)
 
@@ -977,12 +1063,19 @@ class RunAppsOperations(object):
       )
 
 
-def _FilterForDefaultApps(apps_dict):
-  """Returns a dict with only default applications."""
-  apps = apps_dict['applications']
-  default_apps = [app for app in apps if app['name'].endswith('default')]
-  apps_dict['applications'] = default_apps
-  return apps_dict
+def _FilterForDefaultApps(
+    apps: List[runapps_v1alpha1_messages.Application],
+) -> List[runapps_v1alpha1_messages.Application]:
+  """Returns a dict with only default applications.
+
+  Args:
+    apps: the list of applications to filter.
+
+  Returns:
+    A list of default applications.
+  """
+  # app.name is the fully qualified name.
+  return [app for app in apps if app.name.endswith('/' + _DEFAULT_APP_NAME)]
 
 
 def _IsLocalHost(endpoint: str) -> bool:

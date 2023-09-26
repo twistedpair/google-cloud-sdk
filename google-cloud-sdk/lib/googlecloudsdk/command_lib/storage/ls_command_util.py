@@ -170,9 +170,12 @@ class LsExecutor(BaseListExecutor):
       buckets_flag=False,
       display_detail=DisplayDetail.SHORT,
       fetch_encrypted_object_hashes=False,
+      halt_on_empty_response=True,
       include_etag=False,
+      next_page_token=None,
       readable_sizes=False,
       recursion_flag=False,
+      soft_deleted_only=False,
       use_gsutil_style=False,
   ):
     """See BaseListExecutor class for function doc strings."""
@@ -182,9 +185,12 @@ class LsExecutor(BaseListExecutor):
         buckets_flag=buckets_flag,
         display_detail=display_detail,
         fetch_encrypted_object_hashes=fetch_encrypted_object_hashes,
+        halt_on_empty_response=halt_on_empty_response,
         include_etag=include_etag,
+        next_page_token=next_page_token,
         readable_sizes=readable_sizes,
         recursion_flag=recursion_flag,
+        soft_deleted_only=soft_deleted_only,
         use_gsutil_style=use_gsutil_style,
     )
 

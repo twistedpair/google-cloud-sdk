@@ -25,10 +25,9 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
-from googlecloudsdk.core import log
 
 
-class StreamingUploadTask(copy_util.CopyTask):
+class StreamingUploadTask(copy_util.ObjectCopyTask):
   """Represents a command operation triggering a streaming upload."""
 
   def __init__(
@@ -48,26 +47,23 @@ class StreamingUploadTask(copy_util.CopyTask):
         to read from.
       destination_resource (UnknownResource|ObjectResource): The full path of
         object to upload to.
-      posix_to_set (PosixAttributes|None): Triggers setting POSIX on result of
-        copy and avoids re-parsing POSIX info.
-      print_created_message (bool): Print the versioned URL of each successfully
-        copied object.
-      print_source_version (bool): Print source object version in status message
-        enabled by the `verbose` kwarg.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      verbose (bool): Print a "copying" status message on initialization.
+      posix_to_set (PosixAttributes|None): See parent class.
+      print_created_message (bool): See parent class.
+      print_source_version (bool): See parent class.
+      user_request_args (UserRequestArgs|None): See parent class.
+      verbose (bool): See parent class.
     """
     super(StreamingUploadTask, self).__init__(
         source_resource,
         destination_resource,
         posix_to_set=posix_to_set,
+        print_created_message=print_created_message,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
     )
     self._source_resource = source_resource
     self._destination_resource = destination_resource
-    self._print_created_message = print_created_message
 
   def execute(self, task_status_queue=None):
     """Runs upload from stream."""
@@ -111,7 +107,4 @@ class StreamingUploadTask(copy_util.CopyTask):
         digesters,
         uploaded_object_resource,
         task_status_queue)
-
-    if self._print_created_message:
-      log.status.Print('Created: {}'.format(
-          uploaded_object_resource.storage_url))
+    self._print_created_message_if_requested(uploaded_object_resource)

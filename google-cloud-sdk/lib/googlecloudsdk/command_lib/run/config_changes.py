@@ -36,6 +36,7 @@ from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import secrets_mapping
+from googlecloudsdk.command_lib.run import volumes
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import repeated
 import six
@@ -408,7 +409,7 @@ def _PruneMapping(mapping, keys_to_remove, clear_others):
 
 
 def _PruneManagedVolumeMapping(
-    resource, volumes, volume_mounts, removes, clear_others, external_mounts
+    resource, res_volumes, volume_mounts, removes, clear_others, external_mounts
 ):
   """Remove the specified volume mappings from the config."""
   if clear_others:
@@ -423,23 +424,28 @@ def _PruneManagedVolumeMapping(
               resource,
               volume_name,
               mount,
-              copy.deepcopy(volumes[volume_name]),
-              volumes,
+              copy.deepcopy(res_volumes[volume_name]),
+              res_volumes,
               volume_mounts,
           )
         new_paths = []
-        for key_to_path in volumes[volume_name].items:
+        for key_to_path in res_volumes[volume_name].items:
           if path != key_to_path.path:
             new_paths.append(key_to_path)
         if not new_paths:
           # there are no more versions in the volume
           del volume_mounts[mount]
         else:
-          volumes[volume_name].items = new_paths
+          res_volumes[volume_name].items = new_paths
 
 
 def _CopyToNewVolume(
-    resource, volume_name, mount_point, volume_source, volumes, volume_mounts
+    resource,
+    volume_name,
+    mount_point,
+    volume_source,
+    res_volumes,
+    volume_mounts,
 ):
   """Copies existing volume to volume with a new name."""
   new_volume_name = _UniqueVolumeName(
@@ -454,11 +460,11 @@ def _CopyToNewVolume(
     )
     # the volume does not exist so we need a new one
   new_paths = {item.path for item in volume_source.items}
-  old_volume = volumes[volume_name]
+  old_volume = res_volumes[volume_name]
   for item in old_volume.items:
     if item.path not in new_paths:
       volume_source.items.append(item)
-  volumes[new_volume_name] = volume_source
+  res_volumes[new_volume_name] = volume_source
   return new_volume_name
 
 
@@ -821,16 +827,16 @@ def _UniqueVolumeName(source_name, existing_volumes):
   return volume_name
 
 
-def _PruneVolumes(mounted_volumes, volumes):
+def _PruneVolumes(mounted_volumes, res_volumes):
   """Delete all volumes no longer being mounted.
 
   Args:
     mounted_volumes: set of volumes mounted in any container
-    volumes: resource.template.volumes
+    res_volumes: resource.template.volumes
   """
-  for volume in list(volumes):
+  for volume in list(res_volumes):
     if volume not in mounted_volumes:
-      del volumes[volume]
+      del res_volumes[volume]
 
 
 class SecretVolumeChanges(ConfigChanger):
@@ -853,7 +859,7 @@ class SecretVolumeChanges(ConfigChanger):
     self._container_name = container_name
 
   def _UpdateManagedVolumes(
-      self, resource, volume_mounts, volumes, external_mounts
+      self, resource, volume_mounts, res_volumes, external_mounts
   ):
     """Update volumes for Cloud Run. Ensure only one secret per directory."""
     new_volumes = {}
@@ -894,13 +900,13 @@ class SecretVolumeChanges(ConfigChanger):
               volume_name,
               mount_point,
               volume_source,
-              volumes,
+              res_volumes,
               volume_mounts,
           )
           volumes_to_mounts[new_name].append(mount_point)
           continue
         else:
-          volume = volumes[volume_name]
+          volume = res_volumes[volume_name]
           if volume.secretName != volume_source.secretName:
             # only allow replacing the secret if all versions are replaced
             existing_paths = {item.path for item in volume.items}
@@ -929,7 +935,7 @@ class SecretVolumeChanges(ConfigChanger):
               'is of a different source type.'.format(mount_point)
           )
           # the volume does not exist so we need a new one
-      volumes[volume_name] = volume_source
+      res_volumes[volume_name] = volume_source
 
   def Adjust(self, resource):
     """Mutates the given config's volumes to match the desired changes.
@@ -951,7 +957,7 @@ class SecretVolumeChanges(ConfigChanger):
     else:
       container = resource.template.container
     volume_mounts = container.volume_mounts.secrets
-    volumes = resource.template.volumes.secrets
+    res_volumes = resource.template.volumes.secrets
     external_mounts = frozenset(
         itertools.chain.from_iterable(
             external_container.volume_mounts.secrets.values()
@@ -963,7 +969,7 @@ class SecretVolumeChanges(ConfigChanger):
     if platforms.IsManaged():
       _PruneManagedVolumeMapping(
           resource,
-          volumes,
+          res_volumes,
           volume_mounts,
           self._removes,
           self._clear_others,
@@ -974,7 +980,7 @@ class SecretVolumeChanges(ConfigChanger):
       _PruneMapping(volume_mounts, removes, self._clear_others)
     if platforms.IsManaged():
       self._UpdateManagedVolumes(
-          resource, volume_mounts, volumes, external_mounts
+          resource, volume_mounts, res_volumes, external_mounts
       )
     else:
       for file_path, reachable_secret in self._updates.items():
@@ -992,9 +998,11 @@ class SecretVolumeChanges(ConfigChanger):
               'Cannot update mount [{}] because its mounted volume '
               'is of a different source type.'.format(file_path)
           )
-        volumes[volume_name] = reachable_secret.AsSecretVolumeSource(resource)
+        res_volumes[volume_name] = reachable_secret.AsSecretVolumeSource(
+            resource
+        )
 
-    _PruneVolumes(external_mounts.union(volume_mounts.values()), volumes)
+    _PruneVolumes(external_mounts.union(volume_mounts.values()), res_volumes)
 
     secrets_mapping.PruneAnnotation(resource)
     return resource
@@ -1041,7 +1049,7 @@ class ConfigMapVolumeChanges(ConfigChanger):
         can't be replaced with a volume that has a config map source).
     """
     volume_mounts = resource.template.container.volume_mounts.config_maps
-    volumes = resource.template.volumes.config_maps
+    res_volumes = resource.template.volumes.config_maps
 
     _PruneMapping(volume_mounts, self._removes, self._clear_others)
 
@@ -1057,7 +1065,7 @@ class ConfigMapVolumeChanges(ConfigChanger):
             'Cannot update mount [{}] because its mounted volume '
             'is of a different source type.'.format(path)
         )
-      volumes[volume_name] = self._MakeVolumeSource(
+      res_volumes[volume_name] = self._MakeVolumeSource(
           resource.MessagesModule(), source_name, source_key
       )
 
@@ -1067,7 +1075,7 @@ class ConfigMapVolumeChanges(ConfigChanger):
             for container in resource.template.containers.values()
         )
     )
-    _PruneVolumes(mounted_volumes, volumes)
+    _PruneVolumes(mounted_volumes, res_volumes)
 
     return resource
 
@@ -1464,4 +1472,107 @@ class RemoveContainersChange(ConfigChanger):
         del resource.template.containers[container]
       except KeyError:
         continue
+    return resource
+
+
+class ContainerDependenciesChange(ConfigChanger):
+  """Sets container dependencies.
+
+  Updates the dependencies of containers present in new_dependencies. The
+  dependencies of other containers will be left unchanged.
+  """
+
+  def __init__(
+      self, new_dependencies
+  ):
+    """ContainerDependenciesChange constructor.
+
+    Args:
+      new_dependencies: A map of containers to their updated dependencies.
+    """
+    super(ContainerDependenciesChange, self).__init__(adjusts_template=True)
+    self._new_dependencies = new_dependencies
+
+  def Adjust(
+      self, resource: k8s_object.KubernetesObject
+  ) -> k8s_object.KubernetesObject:
+    containers = frozenset(resource.template.containers.keys())
+    dependencies = {}
+    if (
+        k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
+        in resource.template.annotations
+    ):
+      dependencies = json.loads(
+          resource.template.annotations[
+              k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
+          ]
+      )
+    # Filter removed containers from existing container dependencies.
+    dependencies = {
+        container_name: [c for c in depends_on if c in containers]
+        for container_name, depends_on in dependencies.items()
+        if container_name in containers
+    }
+
+    for container, depends_on in self._new_dependencies.items():
+      if not container:
+        container = resource.template.container.name
+      depends_on = frozenset(depends_on)
+      missing = depends_on - containers
+      if missing:
+        raise exceptions.ConfigurationError(
+            '--depends_on for container {} references nonexistent'
+            ' containers: {}.'.format(container, ','.join(missing))
+        )
+
+      if depends_on:
+        dependencies[container] = sorted(depends_on)
+      else:
+        del dependencies[container]
+
+    if dependencies:
+      resource.template.annotations[
+          k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
+      ] = json.dumps(dependencies)
+    elif (
+        k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
+        in resource.template.annotations
+    ):
+      del resource.template.annotations[
+          k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
+      ]
+
+    return resource
+
+
+class RemoveVolumeChange(ConfigChanger):
+  """Removes volumes from the service or job template."""
+
+  def __init__(self, removed_volumes):
+    super(RemoveVolumeChange, self).__init__(adjusts_template=True)
+    self._removed_volumes = removed_volumes
+
+  def Adjust(self, resource):
+    for to_remove in self._removed_volumes:
+      if to_remove in resource.template.volumes:
+        del resource.template.volumes[to_remove]
+    return resource
+
+
+class AddVolumeChange(ConfigChanger):
+  """Updates Volumes set on the service or job template."""
+
+  def __init__(self, new_volumes, release_track):
+    super(AddVolumeChange, self).__init__(adjusts_template=True)
+    self._new_volumes = new_volumes
+    self._release_track = release_track
+
+  def Adjust(self, resource):
+    for to_add in self._new_volumes:
+      volumes.add_volume(
+          to_add,
+          resource.template.volumes,
+          resource.MessagesModule(),
+          self._release_track,
+      )
     return resource

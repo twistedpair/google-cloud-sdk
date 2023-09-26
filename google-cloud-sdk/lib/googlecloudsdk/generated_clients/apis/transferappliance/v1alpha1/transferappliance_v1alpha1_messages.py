@@ -320,10 +320,6 @@ class ContactInfo(_messages.Message):
     business: The name of the business, if applicable.
     contactName: The name of the primary contact.
     email: The email of the primary contact.
-    familyName: The family name of the primary contact. Deprecated: Use
-      contact_name instead.
-    givenName: The given name of the primary contact. Deprecated: Use
-      contact_name instead.
     phone: The phone number of the primary contact. Should be given in E.164
       format consisting of the country calling code (1 to 3 digits) and the
       subscriber number, with no additional spaces or formatting, e.g.
@@ -334,9 +330,7 @@ class ContactInfo(_messages.Message):
   business = _messages.StringField(2)
   contactName = _messages.StringField(3)
   email = _messages.StringField(4)
-  familyName = _messages.StringField(5)
-  givenName = _messages.StringField(6)
-  phone = _messages.StringField(7)
+  phone = _messages.StringField(5)
 
 
 class Credential(_messages.Message):
@@ -1144,6 +1138,10 @@ class Order(_messages.Message):
         and shipped to the customer.
       FULFILLED: All appliances in the order have been delivered to the
         customer.
+      ACTIVE: Order has been accepted by Google and one or more appliances
+        from the order are in active use.
+      COMPLETED: All appliances in the order are processed and wiped and
+        therefore the order can be declared complete.
       CANCELLED: The order has been cancelled.
     """
     STATE_UNSPECIFIED = 0
@@ -1151,7 +1149,9 @@ class Order(_messages.Message):
     SUBMITTED = 2
     FULFILLING = 3
     FULFILLED = 4
-    CANCELLED = 5
+    ACTIVE = 5
+    COMPLETED = 6
+    CANCELLED = 7
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):

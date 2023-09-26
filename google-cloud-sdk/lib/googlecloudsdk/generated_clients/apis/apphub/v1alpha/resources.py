@@ -74,6 +74,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_GLOBAL_SERVICEPROJECTATTACHMENTS = (
+      'projects.locations.global.serviceProjectAttachments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/global/'
+              'serviceProjectAttachments/{serviceProjectAttachmentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -81,17 +92,6 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/operations/'
               '{operationsId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS_LOCATIONS_SERVICEPROJECTS = (
-      'projects.locations.serviceProjects',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/serviceProjects/'
-              '{serviceProjectsId}',
       },
       ['name'],
       True

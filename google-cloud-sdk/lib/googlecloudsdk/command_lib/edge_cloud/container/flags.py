@@ -150,7 +150,6 @@ def AddServicesIPV6CIDR(parser):
 def AddControlPlaneKMSKey(parser):
   parser.add_argument(
       '--control-plane-kms-key',
-      hidden=True,
       help="""
       Google Cloud KMS key that will be used to secure persistent disks of the
       control plane VMs of a remote control plane cluster. The Edge Container

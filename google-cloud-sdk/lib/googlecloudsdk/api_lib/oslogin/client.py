@@ -196,18 +196,42 @@ class OsloginClient(object):
       user: str, The email address of the OS Login user.
       fingerprint: str, The fingerprint of the SSH key to update.
       public_key: str, An SSH public key.
-      update_mask: str, A mask to contraol which fields get updated.
+      update_mask: str, A mask to control which fields get updated.
       expiration_time: int, microseconds since epoch.
+
     Returns:
       The login profile for the user.
     """
     public_key_message = self.messages.SshPublicKey(
-        key=public_key,
-        expirationTimeUsec=expiration_time)
+        key=public_key, expirationTimeUsec=expiration_time
+    )
     message = self.messages.OsloginUsersSshPublicKeysPatchRequest(
         name='users/{0}/sshPublicKeys/{1}'.format(user, fingerprint),
         sshPublicKey=public_key_message,
-        updateMask=update_mask)
+        updateMask=update_mask,
+    )
     res = self.client.users_sshPublicKeys.Patch(message)
     return res
 
+  def SignSshPublicKey(self, user, public_key, project_id, zone):
+    """Sign an SSH public key for a given user.
+
+    Args:
+      user: str, The email address of the OS Login user.
+      public_key: str, An SSH public key.
+      project_id: str, The project ID associated with the VM.
+      zone: str, The zone where the signed SSH public key may be used.
+
+    Returns:
+      A signed SSH public key.
+    """
+    public_key_message = self.messages.SignSshPublicKeyRequest(
+        sshPublicKey=public_key
+    )
+    message = self.messages.OsloginUsersProjectsZonesSignSshPublicKeyRequest(
+        parent='users/{0}/projects/{1}/zones/{2}'.format(
+            user, project_id, zone
+        ),
+        signSshPublicKeyRequest=public_key_message,
+    )
+    return self.client.users_projects_zones.SignSshPublicKey(message)

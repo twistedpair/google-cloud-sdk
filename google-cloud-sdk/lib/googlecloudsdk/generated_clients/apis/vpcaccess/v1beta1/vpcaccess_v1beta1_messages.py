@@ -29,13 +29,13 @@ class Connector(_messages.Message):
     maxInstances: Maximum value of instances in autoscaling group underlying
       the connector.
     maxThroughput: Maximum throughput of the connector in Mbps. Default is
-      300, max is 1000. If both maxThroughput and maxInstances are set, the
-      value for maxInstances is utilzed.
+      300, max is 1000. If both max-throughput and max-instances are provided,
+      max-instances takes precedence over max-throughput.
     minInstances: Minimum value of instances in autoscaling group underlying
       the connector.
     minThroughput: Minimum throughput of the connector in Mbps. Default and
-      min is 200. If both max-throughput and max-instances are provided, max-
-      instances takes precedence over max-throughput.
+      min is 200. If both min-throughput and min-instances are provided, min-
+      instances takes precedence over min-throughput.
     name: The resource name in the format
       `projects/*/locations/*/connectors/*`.
     network: Name of a VPC network.
@@ -491,7 +491,7 @@ class VpcaccessProjectsLocationsConnectorsCreateRequest(_messages.Message):
   Fields:
     connector: A Connector resource to be passed as the request body.
     connectorId: Required. The ID to use for this connector.
-    parent: Required. The project id and location in which the configuration
+    parent: Required. The project ID and location in which the configuration
       should be created, specified in the format `projects/*/locations/*`.
   """
 

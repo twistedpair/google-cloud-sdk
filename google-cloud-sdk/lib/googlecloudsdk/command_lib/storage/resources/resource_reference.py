@@ -419,6 +419,43 @@ class PrefixResource(Resource):
     return True
 
 
+class ManagedFolderResource(PrefixResource):
+  """Class representing a managed folder."""
+
+  TYPE_STRING = 'managed_folder'
+
+  def __init__(
+      self,
+      storage_url_object,
+      creation_time=None,
+      metageneration=None,
+      update_time=None,
+  ):
+    super(ManagedFolderResource, self).__init__(
+        storage_url_object, storage_url_object.object_name
+    )
+    self.creation_time = creation_time
+    self.metageneration = metageneration
+    self.update_time = update_time
+
+  @property
+  def bucket(self):
+    return self.storage_url.bucket_name
+
+  @property
+  def name(self):
+    return self.storage_url.object_name
+
+  def __eq__(self, other):
+    return (
+        super(ManagedFolderResource, self).__eq__(other)
+        and self.storage_url == other.storage_url
+        and self.creation_time == other.creation_time
+        and self.metageneration == other.metageneration
+        and self.update_time == other.update_time
+    )
+
+
 class FileObjectResource(Resource):
   """Wrapper for a filesystem file.
 

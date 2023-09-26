@@ -424,23 +424,23 @@ class Filter(_messages.Message):
 
   Enums:
     ProtocolVersionValueValuesEnum: Required. Internet protocol versions this
-      policy based route applies to. For this version, only IPV4 is supported.
+      policy-based route applies to. For this version, only IPV4 is supported.
 
   Fields:
     destRange: Optional. The destination IP range of outgoing packets that
-      this policy based route applies to. Default is "0.0.0.0/0" if protocol
+      this policy-based route applies to. Default is "0.0.0.0/0" if protocol
       version is IPv4.
-    ipProtocol: Optional. The IP protocol that this policy based route applies
+    ipProtocol: Optional. The IP protocol that this policy-based route applies
       to. Valid values are 'TCP', 'UDP', and 'ALL'. Default is 'ALL'.
-    protocolVersion: Required. Internet protocol versions this policy based
+    protocolVersion: Required. Internet protocol versions this policy-based
       route applies to. For this version, only IPV4 is supported.
     srcRange: Optional. The source IP range of outgoing packets that this
-      policy based route applies to. Default is "0.0.0.0/0" if protocol
+      policy-based route applies to. Default is "0.0.0.0/0" if protocol
       version is IPv4.
   """
 
   class ProtocolVersionValueValuesEnum(_messages.Enum):
-    r"""Required. Internet protocol versions this policy based route applies
+    r"""Required. Internet protocol versions this policy-based route applies
     to. For this version, only IPV4 is supported.
 
     Values:
@@ -981,10 +981,10 @@ class Hub(_messages.Message):
 
 
 class InterconnectAttachment(_messages.Message):
-  r"""InterconnectAttachment to which this route applies to.
+  r"""InterconnectAttachment that this route applies to.
 
   Fields:
-    region: Optional. Cloud region to install this policy based route on
+    region: Optional. Cloud region to install this policy-based route on
       interconnect attachment. Use `all` to install it on all interconnect
       attachments.
   """
@@ -1310,7 +1310,7 @@ class ListPolicyBasedRoutesResponse(_messages.Message):
     nextPageToken: The next pagination token in the List response. It should
       be used as page_token for the following request. An empty value means no
       more result.
-    policyBasedRoutes: Policy based routes to be returned.
+    policyBasedRoutes: Policy-based routes to be returned.
     unreachable: Locations that could not be reached.
   """
 
@@ -2049,7 +2049,7 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesCreateRequest(_
     parent: Required. The parent resource's name of the PolicyBasedRoute.
     policyBasedRoute: A PolicyBasedRoute resource to be passed as the request
       body.
-    policyBasedRouteId: Required. Unique id for the Policy Based Route to
+    policyBasedRouteId: Required. Unique id for the policy-based route to
       create.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -2076,7 +2076,7 @@ class NetworkconnectivityProjectsLocationsGlobalPolicyBasedRoutesDeleteRequest(_
   object.
 
   Fields:
-    name: Required. Name of the PolicyBasedRoute resource to delete.
+    name: Required. Name of the policy-based route resource to delete.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -3361,10 +3361,10 @@ class Policy(_messages.Message):
 
 
 class PolicyBasedRoute(_messages.Message):
-  r"""Policy Based Routes (PBR) are more powerful routes that allows GCP
-  customers to route their L4 network traffic based on not just destination
-  IP, but also source IP, protocol and more. A PBR always take precedence when
-  it conflicts with other types of routes. Next id: 22
+  r"""Policy-based routes route L4 network traffic based on not just
+  destination IP address, but also source IP address, protocol, and more. If a
+  policy-based route conflicts with other types of routes, the policy-based
+  route always take precedence.
 
   Enums:
     NextHopOtherRoutesValueValuesEnum: Optional. Other routes that will be
@@ -3374,35 +3374,35 @@ class PolicyBasedRoute(_messages.Message):
     LabelsValue: User-defined labels.
 
   Fields:
-    createTime: Output only. Time when the PolicyBasedRoute was created.
+    createTime: Output only. Time when the policy-based route was created.
     description: Optional. An optional description of this resource. Provide
       this field when you create the resource.
     filter: Required. The filter to match L4 traffic.
-    interconnectAttachment: Optional. The interconnect attachments to which
-      this route applies to.
+    interconnectAttachment: Optional. The interconnect attachments that this
+      policy-based route applies to.
     kind: Output only. Type of this resource. Always
-      networkconnectivity#policyBasedRoute for Policy Based Route resources.
+      networkconnectivity#policyBasedRoute for policy-based Route resources.
     labels: User-defined labels.
     name: Immutable. A unique name of the resource in the form of `projects/{p
       roject_number}/locations/global/PolicyBasedRoutes/{policy_based_route_id
       }`
     network: Required. Fully-qualified URL of the network that this route
-      applies to. e.g. projects/my-project/global/networks/my-network.
-    nextHopIlbIp: Optional. The IP of a global access enabled L4 ILB that
-      should be the next hop to handle matching packets. For this version,
-      only next_hop_ilb_ip is supported.
+      applies to, for example: projects/my-project/global/networks/my-network.
+    nextHopIlbIp: Optional. The IP address of a global-access-enabled L4 ILB
+      that is the next hop for matching packets. For this version, only
+      nextHopIlbIp is supported.
     nextHopOtherRoutes: Optional. Other routes that will be referenced to
       determine the next hop of the packet.
-    priority: Optional. The priority of this policy based route. Priority is
+    priority: Optional. The priority of this policy-based route. Priority is
       used to break ties in cases where there are more than one matching
-      policy based routes found. In cases where multiple policy based routes
+      policy-based routes found. In cases where multiple policy-based routes
       are matched, the one with the lowest-numbered priority value wins. The
       default value is 1000. The priority value must be from 1 to 65535,
       inclusive.
     selfLink: Output only. Server-defined fully-qualified URL for this
       resource.
-    updateTime: Output only. Time when the PolicyBasedRoute was updated.
-    virtualMachine: Optional. VM instances to which this policy based route
+    updateTime: Output only. Time when the policy-based route was updated.
+    virtualMachine: Optional. VM instances to which this policy-based route
       applies to.
     warnings: Output only. If potential misconfigurations are detected for
       this route, this field will be populated with warning messages.
@@ -4572,11 +4572,11 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class VirtualMachine(_messages.Message):
-  r"""VM instances to which this policy based route applies to.
+  r"""VM instances to which this policy-based route applies to.
 
   Fields:
-    tags: Optional. A list of VM instance tags to which this policy based
-      route applies to. VM instances that have ANY of tags specified here will
+    tags: Optional. A list of VM instance tags the this policy-based route
+      applies to. VM instances that have ANY of tags specified here will
       install this PBR.
   """
 
@@ -4614,10 +4614,10 @@ class Warnings(_messages.Message):
 
     Values:
       WARNING_UNSPECIFIED: Default value.
-      RESOURCE_NOT_ACTIVE: The policy based route is not active and
+      RESOURCE_NOT_ACTIVE: The policy-based route is not active and
         functioning. Common causes are the dependent network was deleted or
         the resource project was turned off.
-      RESOURCE_BEING_MODIFIED: The policy based route is being modified (e.g.
+      RESOURCE_BEING_MODIFIED: The policy-based route is being modified (e.g.
         created/deleted) at this time.
     """
     WARNING_UNSPECIFIED = 0

@@ -20,9 +20,9 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-
 from typing import List, Mapping, Optional
-from googlecloudsdk.command_lib.run import exceptions
+
+from googlecloudsdk.command_lib.runapps import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import yaml
 from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_client
@@ -241,8 +241,28 @@ def GetResourceTypeFromConfig(
     # We should never gets here, because having more than one key in a
     # oneof field in not allowed in proto.
     raise exceptions.ConfigurationError(
-        'resource config is invalid: {}.'.format(resource_config))
+        'resource config is invalid: {}.'.format(resource_config)
+    )
   return keys[0]
+
+
+def GetTypeMetadataFromResource(
+    resource: runapps_v1alpha1_messages.Resource,
+) -> Optional[TypeMetadata]:
+  """Returns the type metadata associated to the given resource.
+
+  Args:
+    resource: The resource object.
+
+  Returns:
+    The type metadata.
+  """
+  for integration_type in _GetTypeMetadata():
+    if not _IntegrationVisible(integration_type):
+      continue
+    if integration_type.resource_type == resource.id.type:
+      return integration_type
+  return None
 
 
 def GetIntegrationFromResource(

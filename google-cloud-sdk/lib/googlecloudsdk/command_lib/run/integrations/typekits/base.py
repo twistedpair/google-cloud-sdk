@@ -21,8 +21,10 @@ from __future__ import unicode_literals
 
 import abc
 import re
+from typing import List, Optional
 
 from googlecloudsdk.api_lib.run.integrations import types_utils
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
 
 
 class TypeKit(object):
@@ -85,8 +87,14 @@ class TypeKit(object):
       resource_config: dict, the resource config object of the integration
     """
 
-  def BindServiceToIntegration(self, integration_name, resource_config,
-                               service_name, service_config, parameters):
+  def BindServiceToIntegration(
+      self,
+      integration_name,
+      resource_config,
+      service_name,
+      service_config,
+      parameters,
+  ):
     """Binds a service to the integration.
 
     Args:
@@ -101,11 +109,16 @@ class TypeKit(object):
     # Check if ref already exists.
     refs = set(ref['ref'] for ref in service_config.get('resources', []))
     if ref_to_add not in refs:
-      service_config.setdefault('resources', []).append(
-          {'ref': ref_to_add})
+      service_config.setdefault('resources', []).append({'ref': ref_to_add})
 
-  def UnbindServiceFromIntegration(self, integration_name, resource_config,
-                                   service_name, service_config, parameters):
+  def UnbindServiceFromIntegration(
+      self,
+      integration_name,
+      resource_config,
+      service_name,
+      service_config,
+      parameters,
+  ):
     """Unbinds a service from the integration.
 
     Args:
@@ -118,7 +131,8 @@ class TypeKit(object):
     del resource_config, service_name, parameters  # Not used here.
     ref_to_remove = '{}/{}'.format(self.resource_type, integration_name)
     service_config['resources'] = [
-        x for x in service_config.get('resources', [])
+        x
+        for x in service_config.get('resources', [])
         if x['ref'] != ref_to_remove
     ]
 
@@ -170,6 +184,7 @@ class TypeKit(object):
     """
     return [{'type': self.resource_type, 'name': integration_name}]
 
+  # TODO(b/298063267): clean up after replacing all with GetBindedWorkload
   def GetRefServices(self, name, resource_config, all_resources):
     """Returns list of cloud run service that is binded to this resource.
 
@@ -187,12 +202,100 @@ class TypeKit(object):
       for resource_name, resource in all_resources.items():
         ref_name = '{}/{}'.format(self.resource_type, name)
         if resource.get('service', {}).get('resources'):
-          if any([
-              ref['ref'] == ref_name
-              for ref in resource['service']['resources']
-          ]):
+          if any(
+              [
+                  ref['ref'] == ref_name
+                  for ref in resource['service']['resources']
+              ]
+          ):
             services.append(resource_name)
     return services
+
+  def GetBindedWorkloads(
+      self,
+      resource: runapps_v1alpha1_messages.Resource,
+      all_resources: List[runapps_v1alpha1_messages.Resource],
+      workload_type: str = 'service',
+  ) -> List[runapps_v1alpha1_messages.ResourceID]:
+    """Returns list of workloads that are associated to this resource.
+
+    If the resource is a backing service, then it returns a list of workloads
+    binding to the resource. If the resource is an ingress service, then all
+    of the workloads it is binding to.
+
+    Args:
+      resource: the resource object of the integration.
+      all_resources: all the resources in the application.
+      workload_type: type of the workload to search for.
+
+    Returns:
+      list ResourceID of the binded workloads.
+    """
+    if self.is_backing_service:
+      filtered_workloads = [
+          res for res in all_resources if res.id.type == workload_type
+      ]
+      return [
+          workload.id.name
+          for workload in filtered_workloads
+          if self._FindBinding(workload, resource.id.type, resource.id.name)
+      ]
+    return [
+        res_id.name
+        for res_id in self._FindBindingRecursive(resource, workload_type)
+    ]
+
+  def _FindBindingRecursive(
+      self,
+      resource: runapps_v1alpha1_messages.Resource,
+      target_type: Optional[str] = None,
+      target_name: Optional[str] = None,
+  ) -> List[runapps_v1alpha1_messages.ResourceID]:
+    """Find bindings from the given resource and its subresource.
+
+    Args:
+      resource: the resource to look for bindings from.
+      target_type: the type of bindings to match. If empty, will match all
+        types.
+      target_name: the name of the bindings to match. If empty, will match all
+        names.
+
+    Returns:
+      list of ResourceID of the bindings.
+    """
+    svcs = self._FindBinding(resource, target_type, target_name)
+    if resource.subresources:
+      for subresource in resource.subresources:
+        svcs.extend(
+            self._FindBindingRecursive(subresource, target_type, target_name)
+        )
+    return svcs
+
+  def _FindBinding(
+      self,
+      resource: runapps_v1alpha1_messages.Resource,
+      target_type: Optional[str],
+      target_name: Optional[str],
+  ) -> List[runapps_v1alpha1_messages.ResourceID]:
+    """Returns list of bindings that match the target_type and target_name.
+
+    Args:
+      resource: the resource to look for bindings from.
+      target_type: the type of bindings to match. If empty, will match all
+        types.
+      target_name: the name of the bindings to match. If empty, will match all
+        names.
+
+    Returns:
+      list of ResourceID of the bindings.
+    """
+    result = []
+    for binding in resource.bindings:
+      if (not target_name or binding.targetRef.id.name == target_name) and (
+          not target_type or binding.targetRef.id.type == target_type
+      ):
+        result.append(binding.targetRef.id)
+    return result
 
   def GetCreateComponentTypes(self, selectors, app_dict):
     """Returns a list of component types included in a create/update deployment.

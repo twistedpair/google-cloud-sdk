@@ -86,5 +86,9 @@ def AddOrganizationArg(parser, help_text="Organization of the endpoint"):
   parser.add_argument("--organization", required=True, help=help_text)
 
 
+def AddDescriptionArg(parser, help_text="Description of the endpoint"):
+  parser.add_argument("--description", required=False, help=help_text)
+
+
 def AddZoneArg(parser, required=True, help_text="Zone of the endpoint"):
   parser.add_argument("--zone", required=required, help=help_text)

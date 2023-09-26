@@ -554,8 +554,8 @@ def AddMigDefaultActionOnVmFailure(parser):
 def AddStandbyPolicyFlags(parser):
   """Add flags required for setting standby policy."""
   standby_policy_mode_choices = {
-      'MANUAL': 'MIG does not automatically stop/start or suspend/resume VMs.',
-      'SCALE_OUT_POOL': (
+      'manual': 'MIG does not automatically stop/start or suspend/resume VMs.',
+      'scale-out-pool': (
           'MIG automatically resumes and starts VMs when it scales out, and'
           ' replenishes the standby pool afterwards.'
       ),

@@ -31,6 +31,7 @@ _OMITTED_ANNOTATIONS = [
     k8s_object.RUN_GROUP + '/client-version',
     k8s_object.RUN_GROUP + '/creatorEmail',
     k8s_object.RUN_GROUP + '/lastModifierEmail',
+    k8s_object.RUN_GROUP + '/operation-id'
 ]
 
 

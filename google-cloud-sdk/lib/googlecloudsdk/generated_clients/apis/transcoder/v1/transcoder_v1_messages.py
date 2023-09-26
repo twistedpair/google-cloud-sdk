@@ -428,6 +428,18 @@ class Fairplay(_messages.Message):
   r"""Fairplay configuration."""
 
 
+class Fmp4Config(_messages.Message):
+  r"""`fmp4` container configuration.
+
+  Fields:
+    codecTag: Optional. Specify the codec tag string that will be used in the
+      media bitstream. When not specified, the codec appropriate value is
+      used. Supported H265 codec tags: - `hvc1` (default) - `hev1`
+  """
+
+  codecTag = _messages.StringField(1)
+
+
 class H264CodecSettings(_messages.Message):
   r"""H264 codec settings.
 
@@ -1002,6 +1014,7 @@ class MuxStream(_messages.Message):
       with the extension suffix corresponding to the MuxStream.container.
       Individual segments also have an incremental 10-digit zero-padded suffix
       starting from 0 before the extension, such as `mux_stream0000000123.ts`.
+    fmp4: Optional. `fmp4` container configuration.
     key: A unique key for this multiplexed stream.
     segmentSettings: Segment settings for `ts`, `fmp4` and `vtt`.
   """
@@ -1010,8 +1023,9 @@ class MuxStream(_messages.Message):
   elementaryStreams = _messages.StringField(2, repeated=True)
   encryptionId = _messages.StringField(3)
   fileName = _messages.StringField(4)
-  key = _messages.StringField(5)
-  segmentSettings = _messages.MessageField('SegmentSettings', 6)
+  fmp4 = _messages.MessageField('Fmp4Config', 5)
+  key = _messages.StringField(6)
+  segmentSettings = _messages.MessageField('SegmentSettings', 7)
 
 
 class NormalizedCoordinate(_messages.Message):

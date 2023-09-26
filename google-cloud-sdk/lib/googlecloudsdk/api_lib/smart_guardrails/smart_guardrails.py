@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.recommender import insight
 from googlecloudsdk.command_lib.projects import util as project_util
 
@@ -33,14 +35,34 @@ https://cloud.google.com/resource-manager/docs/creating-managing-projects#shutti
 """
 
 _PROJECT_RISK_MESSAGE = (
-    "WARNING: If you shut down this project you risk losing data or"
-    " interrupting your services"
+    "*** HIGH-RISK CHANGE WARNING ***: If you shut down this project you risk "
+    "losing data or interrupting your services"
 )
 
 _PROJECT_REASONS_PREFIX = ". In the last 30 days we observed this project had"
 
 _PROJECT_ADVICE = (
     "We recommend verifying this is the correct project to shut down.\n"
+)
+
+_SA_DELETE_APP_ENGINE_WARNING_MESSAGE = (
+    "This service account lets App Engine and Cloud Functions access essential"
+    " Cloud Platform services such as Datastore. Deleting this account will "
+    "break any current or future App Engine applications and Cloud Functions "
+    "in this project.\n\n"
+    "WARNING: You CANNOT  undo this action. "
+    "Do not delete this service account unless you are sure you"
+    " will never use App Engine in this project."
+)
+
+_SA_DELETE_COMPUTE_ENGINE_WARNING_MESSAGE = (
+    "This service account lets Compute Engine access essential Cloud Platform "
+    "services such as logging and Cloud Storage. Deleting this account will "
+    "prevent instances that are running as this account from accessing "
+    "Cloud Platform services.\n\n"
+    "WARNING: You CANNOT undo this action. "
+    "If you delete this account, instances in this project will only be able "
+    "to access Cloud Platform services via custom service accounts."
 )
 
 _SA_WARNING_MESSAGE = (
@@ -53,8 +75,9 @@ _SA_WARNING_MESSAGE = (
 )
 
 _SA_RISK_MESSAGE = (
-    "WARNING: If you delete this SA you risk interrupting your service, as we"
-    " observed it was substantially used in the last 90 days"
+    "*** HIGH-RISK CHANGE WARNING ***: If you delete this SA you risk "
+    "interrupting your service, as we observed it was substantially used in "
+    "the last 90 days"
 )
 
 _SA_ADVICE = "We recommend verifying this is the correct account to delete.\n"
@@ -64,8 +87,9 @@ _POLICY_BINDING_DELETE_WARNING_MESSAGE = (
 )
 
 _POLICY_BINDING_DELETE_RISK_MESSAGE = (
-    "WARNING: If you remove the role [{}], there is a high risk that you might"
-    " cause interruptions because it was used in the last 90 days"
+    "*** HIGH-RISK CHANGE WARNING ***: If you remove the role [{}], there is "
+    "a high risk that you might cause interruptions because it was used "
+    "in the last 90 days"
 )
 
 _POLICY_BINDING_DELETE_ADVICE = (
@@ -220,6 +244,41 @@ def _GetRiskInsight(
   return None
 
 
+def _IsDefaultAppEngineServiceAccount(email):
+  """Returns true if email is used as a default App Engine Service Account.
+
+  Args:
+    email: Service Account email.
+
+  Returns:
+    Returns true if the given email is default App Engine Service Account.
+    Returns false otherwise.
+  """
+  return re.search(
+      r"^([\w:.-]+)@appspot(\.[^.]+\.iam)?\.gserviceaccount\.com", email
+  )
+
+
+def _IsDefaultComputeEngineServiceAccount(email, project_number):
+  """Returns true if email is used as a default Compute Engine Service Account.
+
+  Args:
+    email: Service Account email.
+    project_number: Project number.
+
+  Returns:
+    Returns true if the given email is a default Compue Engine Service Account.
+    Returns false otherwise.
+  """
+  if email == "{0}@developer.gserviceaccount.com".format(project_number):
+    return True
+  if email == "{0}@project.gserviceaccount.com".format(project_number):
+    return True
+  return re.search(
+      r"^[0-9]+-compute@developer(\.[^.]+\.iam)?\.gserviceaccount\.com", email
+  )
+
+
 def GetProjectDeletionRisk(release_track, project_id):
   """Returns a risk assesment message for project deletion.
 
@@ -262,9 +321,14 @@ def GetServiceAccountDeletionRisk(release_track, project_id, service_account):
   Returns:
     String Active Assist risk warning message to be displayed in
     service account deletion prompt.
-    If no risk exists, then returns 'None'.
   """
   project_number = project_util.GetProjectNumber(project_id)
+  # If special default App Engine SA, return a special warning.
+  if _IsDefaultAppEngineServiceAccount(service_account):
+    return _SA_DELETE_APP_ENGINE_WARNING_MESSAGE
+  # If special default Compute Engine SA, return a special warning.
+  if _IsDefaultComputeEngineServiceAccount(service_account, project_number):
+    return _SA_DELETE_COMPUTE_ENGINE_WARNING_MESSAGE
   target_filter = (
       "targetResources: //iam.googleapis.com/projects/{0}/serviceAccounts/{1}"
   ).format(project_number, service_account)

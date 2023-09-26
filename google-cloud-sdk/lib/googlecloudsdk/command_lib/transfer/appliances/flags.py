@@ -85,6 +85,7 @@ def add_appliance_settings(parser, for_create_command=True):
   appliance_settings.add_argument(
       '--model',
       choices=_APPLIANCE_MODELS,
+      required=for_create_command,
       type=str.upper,
       help='Model of the appliance to order.',
   )
@@ -143,8 +144,10 @@ def add_delivery_information(parser, for_create_command=True):
         required=True,
         help=(
             'Country where the appliance will be shipped. Note that this cannot'
-            ' be changed. To ship the appliance to a different country, instead'
-            ' clone the order and set a different country and delivery address.'
+            ' be changed. To ship the appliance to a different country, clone'
+            ' the order instead and set a different country and delivery '
+            ' address. To view a complete list of country codes and names see'
+            ' https://support.google.com/business/answer/6270107.'
         ),
     )
 

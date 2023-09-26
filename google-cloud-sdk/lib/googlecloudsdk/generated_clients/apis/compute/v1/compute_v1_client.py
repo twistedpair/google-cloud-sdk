@@ -160,7 +160,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.acceleratorTypes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/acceleratorTypes',
         request_field='',
         request_type_name='ComputeAcceleratorTypesAggregatedListRequest',
@@ -248,7 +248,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.addresses.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/addresses',
         request_field='',
         request_type_name='ComputeAddressesAggregatedListRequest',
@@ -440,7 +440,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.autoscalers.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/autoscalers',
         request_field='',
         request_type_name='ComputeAutoscalersAggregatedListRequest',
@@ -902,7 +902,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.backendServices.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/backendServices',
         request_field='',
         request_type_name='ComputeBackendServicesAggregatedListRequest',
@@ -1250,7 +1250,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.diskTypes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/diskTypes',
         request_field='',
         request_type_name='ComputeDiskTypesAggregatedListRequest',
@@ -1364,7 +1364,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.disks.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/disks',
         request_field='',
         request_type_name='ComputeDisksAggregatedListRequest',
@@ -2626,7 +2626,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.forwardingRules.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/forwardingRules',
         request_field='',
         request_type_name='ComputeForwardingRulesAggregatedListRequest',
@@ -3394,7 +3394,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.globalOperations.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/operations',
         request_field='',
         request_type_name='ComputeGlobalOperationsAggregatedListRequest',
@@ -3762,7 +3762,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.healthChecks.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/healthChecks',
         request_field='',
         request_type_name='ComputeHealthChecksAggregatedListRequest',
@@ -4644,7 +4644,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.instanceGroupManagers.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instanceGroupManagers',
         request_field='',
         request_type_name='ComputeInstanceGroupManagersAggregatedListRequest',
@@ -5174,7 +5174,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.instanceGroups.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instanceGroups',
         request_field='',
         request_type_name='ComputeInstanceGroupsAggregatedListRequest',
@@ -5392,7 +5392,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.instanceTemplates.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instanceTemplates',
         request_field='',
         request_type_name='ComputeInstanceTemplatesAggregatedListRequest',
@@ -5662,7 +5662,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.instances.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instances',
         request_field='',
         request_type_name='ComputeInstancesAggregatedListRequest',
@@ -6842,7 +6842,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.interconnectAttachments.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/interconnectAttachments',
         request_field='',
         request_type_name='ComputeInterconnectAttachmentsAggregatedListRequest',
@@ -7796,7 +7796,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.machineTypes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/machineTypes',
         request_field='',
         request_type_name='ComputeMachineTypesAggregatedListRequest',
@@ -7884,7 +7884,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.networkAttachments.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/networkAttachments',
         request_field='',
         request_type_name='ComputeNetworkAttachmentsAggregatedListRequest',
@@ -8102,7 +8102,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.networkEdgeSecurityServices.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/networkEdgeSecurityServices',
         request_field='',
         request_type_name='ComputeNetworkEdgeSecurityServicesAggregatedListRequest',
@@ -8242,7 +8242,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.networkEndpointGroups.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/networkEndpointGroups',
         request_field='',
         request_type_name='ComputeNetworkEndpointGroupsAggregatedListRequest',
@@ -9234,7 +9234,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.nodeGroups.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/nodeGroups',
         request_field='',
         request_type_name='ComputeNodeGroupsAggregatedListRequest',
@@ -9582,7 +9582,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.nodeTemplates.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/nodeTemplates',
         request_field='',
         request_type_name='ComputeNodeTemplatesAggregatedListRequest',
@@ -9800,7 +9800,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.nodeTypes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/nodeTypes',
         request_field='',
         request_type_name='ComputeNodeTypesAggregatedListRequest',
@@ -9888,7 +9888,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.packetMirrorings.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/packetMirrorings',
         request_field='',
         request_type_name='ComputePacketMirroringsAggregatedListRequest',
@@ -10568,7 +10568,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.publicDelegatedPrefixes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/publicDelegatedPrefixes',
         request_field='',
         request_type_name='ComputePublicDelegatedPrefixesAggregatedListRequest',
@@ -11170,7 +11170,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.regionCommitments.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/commitments',
         request_field='',
         request_type_name='ComputeRegionCommitmentsAggregatedListRequest',
@@ -12880,6 +12880,32 @@ class ComputeV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AttachNetworkEndpoints(self, request, global_params=None):
+      r"""Attach a list of network endpoints to the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AttachNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AttachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.attachNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/attachNetworkEndpoints',
+        request_field='regionNetworkEndpointGroupsAttachEndpointsRequest',
+        request_type_name='ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified network endpoint group. Note that the NEG cannot be deleted if it is configured as a backend of a backend service.
 
@@ -12902,6 +12928,32 @@ class ComputeV1(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}',
         request_field='',
         request_type_name='ComputeRegionNetworkEndpointGroupsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DetachNetworkEndpoints(self, request, global_params=None):
+      r"""Detach the network endpoint from the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DetachNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.detachNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/detachNetworkEndpoints',
+        request_field='regionNetworkEndpointGroupsDetachEndpointsRequest',
+        request_type_name='ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -12981,6 +13033,32 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ComputeRegionNetworkEndpointGroupsListRequest',
         response_type_name='NetworkEndpointGroupList',
+        supports_download=False,
+    )
+
+    def ListNetworkEndpoints(self, request, global_params=None):
+      r"""Lists the network endpoints in the specified network endpoint group.
+
+      Args:
+        request: (ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (NetworkEndpointGroupsListNetworkEndpoints) The response message.
+      """
+      config = self.GetMethodConfig('ListNetworkEndpoints')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListNetworkEndpoints.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionNetworkEndpointGroups.listNetworkEndpoints',
+        ordered_params=['project', 'region', 'networkEndpointGroup'],
+        path_params=['networkEndpointGroup', 'project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/networkEndpointGroups/{networkEndpointGroup}/listNetworkEndpoints',
+        request_field='',
+        request_type_name='ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest',
+        response_type_name='NetworkEndpointGroupsListNetworkEndpoints',
         supports_download=False,
     )
 
@@ -14812,7 +14890,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.reservations.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/reservations',
         request_field='',
         request_type_name='ComputeReservationsAggregatedListRequest',
@@ -15082,7 +15160,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.resourcePolicies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/resourcePolicies',
         request_field='',
         request_type_name='ComputeResourcePoliciesAggregatedListRequest',
@@ -15326,7 +15404,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.routers.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/routers',
         request_field='',
         request_type_name='ComputeRoutersAggregatedListRequest',
@@ -15762,7 +15840,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.securityPolicies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/securityPolicies',
         request_field='',
         request_type_name='ComputeSecurityPoliciesAggregatedListRequest',
@@ -16058,7 +16136,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.serviceAttachments.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/serviceAttachments',
         request_field='',
         request_type_name='ComputeServiceAttachmentsAggregatedListRequest',
@@ -16520,7 +16598,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.sslCertificates.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/sslCertificates',
         request_field='',
         request_type_name='ComputeSslCertificatesAggregatedListRequest',
@@ -16660,7 +16738,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.sslPolicies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/sslPolicies',
         request_field='',
         request_type_name='ComputeSslPoliciesAggregatedListRequest',
@@ -16852,7 +16930,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.subnetworks.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/subnetworks',
         request_field='',
         request_type_name='ComputeSubnetworksAggregatedListRequest',
@@ -17314,7 +17392,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.targetHttpProxies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetHttpProxies',
         request_field='',
         request_type_name='ComputeTargetHttpProxiesAggregatedListRequest',
@@ -17506,7 +17584,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.targetHttpsProxies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetHttpsProxies',
         request_field='',
         request_type_name='ComputeTargetHttpsProxiesAggregatedListRequest',
@@ -17802,7 +17880,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.targetInstances.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetInstances',
         request_field='',
         request_type_name='ComputeTargetInstancesAggregatedListRequest',
@@ -18020,7 +18098,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.targetPools.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetPools',
         request_field='',
         request_type_name='ComputeTargetPoolsAggregatedListRequest',
@@ -18534,7 +18612,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.targetTcpProxies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetTcpProxies',
         request_field='',
         request_type_name='ComputeTargetTcpProxiesAggregatedListRequest',
@@ -18726,7 +18804,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.targetVpnGateways.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetVpnGateways',
         request_field='',
         request_type_name='ComputeTargetVpnGatewaysAggregatedListRequest',
@@ -18892,7 +18970,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.urlMaps.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/urlMaps',
         request_field='',
         request_type_name='ComputeUrlMapsAggregatedListRequest',
@@ -19136,7 +19214,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.vpnGateways.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/vpnGateways',
         request_field='',
         request_type_name='ComputeVpnGatewaysAggregatedListRequest',
@@ -19354,7 +19432,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.vpnTunnels.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/vpnTunnels',
         request_field='',
         request_type_name='ComputeVpnTunnelsAggregatedListRequest',

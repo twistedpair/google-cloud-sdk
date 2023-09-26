@@ -1212,7 +1212,7 @@ def Run(
   ):
     raise exceptions.InvalidArgumentException(
         '--gen2',
-        "Function already exist in 1st gen, can't change the environment.",
+        "Function already exists in 1st gen, can't change the environment.",
     )
 
   if existing_function and existing_function.serviceConfig:

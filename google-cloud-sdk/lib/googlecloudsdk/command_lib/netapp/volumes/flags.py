@@ -105,13 +105,9 @@ def AddVolumeProtocolsArg(parser, required=True):
       type=arg_parsers.ArgList(min_length=1, element_type=str),
       required=required,
       metavar='PROTOCOL',
-      help="""Type of File System protocols for the Cloud NetApp Files Volume\
+      help="""Type of File System protocols for the Cloud NetApp Files Volume. \
 Valid component values are:
-            `NFSV3`, `NFSV4`, `SMB`
-
-            For more information, look at\
-https://cloud.google.com/netapp/docs/reference\
-/rest/v1alpha1/projects.locations.volumes#protocols.""")
+            `NFSV3`, `NFSV4`, `SMB`.""")
 
 
 def AddVolumeShareNameArg(parser, required=True):
@@ -200,7 +196,7 @@ def AddVolumeUnixPermissionsArg(parser):
   parser.add_argument(
       '--unix-permissions',
       type=str,
-      help="""Unix permissions the mount point will be created with.\
+      help="""Unix permissions the mount point will be created with. \
 Unix permissions are only applicable with NFS protocol only""")
 
 
@@ -225,16 +221,12 @@ def AddVolumeSmbSettingsArg(parser):
       '--smb-settings',
       type=arg_parsers.ArgList(min_length=1, element_type=str),
       metavar='SMB_SETTING',
-      help="""List of settings specific to SMB protocol\
-for a Cloud NetApp Files Volume\
+      help="""List of settings specific to SMB protocol \
+for a Cloud NetApp Files Volume. \
 Valid component values are:
   `ENCRYPT_DATA`, `BROWSABLE`, `CHANGE_NOTIFY`, `NON_BROWSABLE`,
   `OPLOCKS`, `SHOW_SNAPSHOT`, `SHOW_PREVIOUS_VERSIONS`,
-  `ACCESS_BASED_ENUMERATION`, `CONTINUOUSLY_AVAILABLE`
-
-            For more information, look at \
-https://cloud.google.com/netapp/docs/reference\
-/rest/v1alpha1/projects.locations.volumes#smbsettings.""")
+  `ACCESS_BASED_ENUMERATION`, `CONTINUOUSLY_AVAILABLE`.""")
 
 
 def AddVolumeHourlySnapshotArg(parser):
@@ -409,6 +401,17 @@ def AddVolumeSourceSnapshotArg(parser):
           parser)
 
 
+def AddVolumeSourceBackupArg(parser):
+  """Adds the --source-backup arg to the arg parser."""
+  concept_parsers.ConceptParser.ForResource(
+      '--source-backup',
+      flags.GetBackupResourceSpec(positional=False),
+      flag_name_overrides={'location': ''},
+      group_help='The source Backup to create the Volume from.',
+      hidden=True).AddToParser(
+          parser)
+
+
 def GetVolumeRestrictedActionsEnumFromArg(choice, messages):
   """Returns the Choice Enum for Restricted Actions.
 
@@ -430,13 +433,9 @@ def AddVolumeRestrictedActionsArg(parser):
       '--restricted-actions',
       type=arg_parsers.ArgList(min_length=1, element_type=str),
       metavar='RESTRICTED_ACTION',
-      help="""Actions to be restricted for a volume.\
+      help="""Actions to be restricted for a volume. \
 Valid restricted action options are:
-          'DELETE'
-
-For more information, look at \
-https://cloud.google.com/netapp/volumes/docs/reference/rest/v1/projects.locations.volumes#restrictedaction.
-          """
+          'DELETE'."""
   )
 
 
@@ -503,6 +502,7 @@ def AddVolumeCreateArgs(parser, release_track):
   AddVolumeRestrictedActionsArg(parser)
   if release_track == calliope_base.ReleaseTrack.BETA:
     AddVolumeBackupConfigArg(parser)
+    AddVolumeSourceBackupArg(parser)
   labels_util.AddCreateLabelsFlags(parser)
 
 
@@ -542,4 +542,5 @@ def AddVolumeUpdateArgs(parser, release_track):
   AddVolumeRestrictedActionsArg(parser)
   if release_track == calliope_base.ReleaseTrack.BETA:
     AddVolumeBackupConfigArg(parser)
+    AddVolumeSourceBackupArg(parser)
   labels_util.AddUpdateLabelsFlags(parser)

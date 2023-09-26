@@ -467,20 +467,19 @@ class Platform(object):
 class PythonVersion(object):
   """Class to validate the Python version we are using.
 
-  The Cloud SDK officially supports Python 3.5.
+  The Cloud CLI officially supports Python 3.8.
 
-  However, many commands do work with Python 3.4, so we don't error out when
+  However, many commands do work with Python 3.6, so we don't error out when
   users are using this (we consider it sometimes "compatible" but not
   "supported").
   """
 
   # See class docstring for descriptions of what these mean
-  MIN_REQUIRED_PY3_VERSION = (3, 4)
-  MIN_SUPPORTED_PY3_VERSION = (3, 5)
-  MIN_SUNSET_PY3_VERSION = (3, 5)
-  MAX_SUNSET_PY3_VERSION = (3, 7)
-  UPCOMING_PY3_MIN_SUPPORTED_VERSION = (3, 8)
-  UPCOMING_PY3_DEPRECATION_DATE = 'September 26th, 2023'
+  MIN_REQUIRED_PY3_VERSION = (3, 6)
+  MIN_SUPPORTED_PY3_VERSION = (3, 8)
+  UPCOMING_SUNSET_PY3_VERSION = None
+  UPCOMING_PY3_MIN_SUPPORTED_VERSION = None
+  UPCOMING_PY3_DEPRECATION_DATE = None
   ENV_VAR_MESSAGE = """\
 
 If you have a compatible Python interpreter installed, you can use it by setting
@@ -496,6 +495,13 @@ the CLOUDSDK_PYTHON environment variable to point to it.
     else:
       self.version = None
 
+  def InstallMacPythonMessage(self):
+    if OperatingSystem.Current() != OperatingSystem.MACOSX:
+      return ''
+    return ('\nTo reinstall gcloud, run:\n'
+            '    $ gcloud components reinstall\n\n'
+            'This will also prompt to install a compatible version of Python.')
+
   def SupportedVersionMessage(self):
     return 'Please use Python version {0}.{1} and up.'.format(
         PythonVersion.MIN_SUPPORTED_PY3_VERSION[0],
@@ -504,15 +510,16 @@ the CLOUDSDK_PYTHON environment variable to point to it.
   def UpcomingSupportedVersionMessage(self):
     return 'Please use Python version {0}.{1} and up.'.format(
         PythonVersion.UPCOMING_PY3_MIN_SUPPORTED_VERSION[0],
-        PythonVersion.UPCOMING_PY3_MIN_SUPPORTED_VERSION[1])
+        PythonVersion.UPCOMING_PY3_MIN_SUPPORTED_VERSION[1],
+    )
 
   def IsCompatible(self, raise_exception=False):
     """Ensure that the Python version we are using is compatible.
 
     This will print an error message if not compatible.
 
-    Compatible versions are 3.4+.
-    We don't guarantee support for 3.4 so we want to warn about it.
+    Compatible versions are 3.6+.
+    We don't guarantee support for 3.6 so we want to warn about it.
 
     Args:
       raise_exception: bool, True to raise an exception rather than printing
@@ -535,27 +542,29 @@ the CLOUDSDK_PYTHON environment variable to point to it.
     if not self.version:
       # We don't know the version, not a good sign.
       error = ('ERROR: Your current version of Python is not compatible with '
-               'the Google Cloud SDK. {0}\n'
-               .format(self.SupportedVersionMessage()))
-    else:
-      if self.version[0] < 3:
-        # Python 2 Mode
-        error = (
-            'ERROR: Python 2 is not compatible with the Google '
-            'Cloud SDK. {0}\n'.format(self.SupportedVersionMessage())
-        )
-        py2_error = True
-      else:
-        # Python 3 Mode
-        if self.version < PythonVersion.MIN_REQUIRED_PY3_VERSION:
-          error = ('ERROR: Python {0}.{1} is not compatible with the Google '
-                   'Cloud SDK. {2}\n'
-                   .format(self.version[0], self.version[1],
-                           self.SupportedVersionMessage()))
+               'the Google Cloud CLI. {0}{1}\n'
+               .format(self.SupportedVersionMessage(),
+                       self.InstallMacPythonMessage()))
+    elif self.version[0] < 3:
+      # Python 2 Mode
+      error = (
+          'ERROR: Python 2 is not compatible with the Google '
+          'Cloud CLI. {0}{1}\n'.format(self.SupportedVersionMessage(),
+                                       self.InstallMacPythonMessage())
+      )
+      py2_error = True
+    elif self.version < PythonVersion.MIN_REQUIRED_PY3_VERSION:
+      # Python 3 Mode
+      error = ('ERROR: Python {0}.{1} is not compatible with the Google '
+               'Cloud CLI. {2}{3}\n'
+               .format(self.version[0], self.version[1],
+                       self.SupportedVersionMessage(),
+                       self.InstallMacPythonMessage()))
 
     if error and allow_py2 and py2_error:
       sys.stderr.write(error)
       sys.stderr.write(PythonVersion.ENV_VAR_MESSAGE)
+      return True
     elif error:
       if raise_exception:
         raise Error(error)
@@ -563,32 +572,28 @@ the CLOUDSDK_PYTHON environment variable to point to it.
       sys.stderr.write(PythonVersion.ENV_VAR_MESSAGE)
       return False
 
+    # Warn that Python versions < MIN_SUPPORTED_PY3_VERSION are not supported.
+    if self.version < self.MIN_SUPPORTED_PY3_VERSION:
+      sys.stderr.write((
+          'WARNING:  Python 3.{0}.x is no longer officially supported by the '
+          'Google Cloud CLI\nand may not function correctly. {1}{2}').format(
+              self.version[1],
+              self.SupportedVersionMessage(), self.InstallMacPythonMessage()))
+      sys.stderr.write('\n'+PythonVersion.ENV_VAR_MESSAGE)
+
     # Warn if python version is being deprecated soon.
-    if (
-        self.version[0] == 3
-        and self.version[1] >= PythonVersion.MIN_SUNSET_PY3_VERSION[1]
-        and self.version[1] <= PythonVersion.MAX_SUNSET_PY3_VERSION[1]
-    ):
+    elif (PythonVersion.UPCOMING_PY3_MIN_SUPPORTED_VERSION and
+          self.version <= PythonVersion.UPCOMING_PY3_MIN_SUPPORTED_VERSION):
       sys.stderr.write(
           """\
-WARNING:  Python 3.{0}-3.{1} will be deprecated on {2}. {3}
-{4}""".format(
+WARNING:  Python 3.{0}-3.{1} will be deprecated on {2}. {3}{4}""".format(
               PythonVersion.MIN_SUNSET_PY3_VERSION[1],
               PythonVersion.MAX_SUNSET_PY3_VERSION[1],
               PythonVersion.UPCOMING_PY3_DEPRECATION_DATE,
               self.UpcomingSupportedVersionMessage(),
-              PythonVersion.ENV_VAR_MESSAGE,
+              self.InstallMacPythonMessage()
           )
       )
-
-    # Warn that 3.4 might not work. XXX this logic needs some work
-    if (
-        self.version >= self.MIN_REQUIRED_PY3_VERSION
-        and self.version < self.MIN_SUPPORTED_PY3_VERSION
-    ):
-      sys.stderr.write("""\
-WARNING:  Python 3.4.x is no longer officially supported by the Google Cloud SDK
-and may not function correctly. {0}
-{1}""".format(self.SupportedVersionMessage(), PythonVersion.ENV_VAR_MESSAGE))
+      sys.stderr.write('\n'+PythonVersion.ENV_VAR_MESSAGE)
 
     return True

@@ -47,3 +47,11 @@ class CreateBucketTask(task.Task):
         user_request_args=self._user_request_args)
     api_factory.get_api(provider).create_bucket(
         self._bucket_resource, request_config=request_config)
+
+  def __eq__(self, other):
+    if not isinstance(other, CreateBucketTask):
+      return NotImplemented
+    return (
+        self._bucket_resource == other._bucket_resource
+        and self._user_request_args == other._user_request_args
+    )

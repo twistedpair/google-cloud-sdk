@@ -270,11 +270,16 @@ def GetBackupVaultResourceSpec(positional=True):
   )
 
 
-def GetBackupResourceSpec():
+def GetBackupResourceSpec(positional=True):
   location_attribute_config = GetLocationAttributeConfig()
   backup_vault_attribute_config = GetBackupVaultAttributeConfig(
       positional=False
   )
+  if not positional:
+    location_attribute_config.fallthroughs = [
+        deps.PropertyFallthrough(properties.VALUES.netapp.location),
+        deps.PropertyFallthrough(properties.VALUES.netapp.region)
+    ]
   return concepts.ResourceSpec(
       constants.BACKUPS_COLLECTION,
       resource_name='backup',

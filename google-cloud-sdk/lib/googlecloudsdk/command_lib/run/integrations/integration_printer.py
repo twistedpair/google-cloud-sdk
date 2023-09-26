@@ -22,17 +22,18 @@ from __future__ import unicode_literals
 from frozendict import frozendict
 from googlecloudsdk.command_lib.run.integrations import deployment_states
 from googlecloudsdk.command_lib.run.integrations.formatters import cloudsql_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import default_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import domain_routing_formatter
-from googlecloudsdk.command_lib.run.integrations.formatters import fallback_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import firebasehosting_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import redis_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
 
+
 INTEGRATION_PRINTER_FORMAT = 'integration'
 
-_FALLBACK_FORMATTER = fallback_formatter.FallbackFormatter()
+_DEFAULT_FORMATTER = default_formatter.DefaultFormatter()
 _INTEGRATION_FORMATTER_MAPS = frozendict({
     'custom-domains': domain_routing_formatter.DomainRoutingFormatter(),
     'redis': redis_formatter.RedisFormatter(),
@@ -156,4 +157,4 @@ def GetFormatter(integration_type):
     A formatter object.
   """
   return _INTEGRATION_FORMATTER_MAPS.get(integration_type,
-                                         _FALLBACK_FORMATTER)
+                                         _DEFAULT_FORMATTER)

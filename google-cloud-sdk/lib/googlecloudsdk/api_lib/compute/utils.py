@@ -167,7 +167,9 @@ def ParseErrors(errors):
 
 def CreateQuotaExceededMsg(error):
   """Constructs message to show for quota exceeded error."""
-  if not hasattr(error, 'errorDetails') or not error.errorDetails[0].quotaInfo:
+  if (not hasattr(error, 'errorDetails')
+      or not error.errorDetails
+      or not error.errorDetails[0].quotaInfo):
     return error.message
   details = error.errorDetails[0].quotaInfo
   msg = '{}\n\tmetric name = {}\n\tlimit name = {}\n\tlimit = {}\n'.format(

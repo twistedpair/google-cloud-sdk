@@ -53,6 +53,7 @@ def AddCreateJobFlags(parser):
   )
   parser.add_argument(
       '--batch-mode-priority',
+      type=int,
       help=(
           'Processing priority of a batch mode transcoder job. This value '
           'will override batch mode priority in job config.'

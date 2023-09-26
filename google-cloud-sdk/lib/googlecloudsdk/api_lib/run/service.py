@@ -46,9 +46,9 @@ class Service(k8s_object.KubernetesObject):
 
   @property
   def template(self):
+    if not self.spec.template.metadata:
+      self.spec.template.metadata = k8s_object.MakeMeta(self.MessagesModule())
     ret = revision.Revision.Template(self.spec.template, self.MessagesModule())
-    if not ret.IsFullObject():
-      ret.metadata = k8s_object.MakeMeta(self.MessagesModule())
     return ret
 
   @property

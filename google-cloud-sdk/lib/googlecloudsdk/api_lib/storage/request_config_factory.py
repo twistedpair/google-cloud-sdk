@@ -56,6 +56,7 @@ S3_RESOURCE_WARNING_FIELDS = {
     'event_based_hold': 'Setting Event-Based Holds',
     'placement': 'Setting Dual-Region for a Bucket',
     'preserve_acl': 'Preserving ACLs',
+    'soft_delete_duration': 'Setting Soft Delete Policies',
     'temporary_hold': 'Setting Temporary Holds',
     'uniform_bucket_level_access': 'Setting Uniform Bucket Level Access',
 }
@@ -193,39 +194,44 @@ class _GcsBucketConfig(_BucketConfig):
       dual-region and multi-region buckets.
     retention_period (int|None): Minimum retention period in seconds for objects
       in a bucket. Attempts to delete an object earlier will be denied.
+    soft_delete_duration (int|None): Number of seconds objects are preserved and
+      restorable after deletion in a bucket with soft delete enabled.
     uniform_bucket_level_access (bool|None):
       Determines if the IAM policies will apply to every object in bucket.
   """
 
-  def __init__(self,
-               acl_file_path=None,
-               acl_grants_to_add=None,
-               acl_grants_to_remove=None,
-               cors_file_path=None,
-               default_encryption_key=None,
-               default_event_based_hold=None,
-               default_object_acl_file_path=None,
-               default_object_acl_grants_to_add=None,
-               default_object_acl_grants_to_remove=None,
-               default_storage_class=None,
-               enable_autoclass=None,
-               labels_file_path=None,
-               labels_to_append=None,
-               labels_to_remove=None,
-               lifecycle_file_path=None,
-               location=None,
-               log_bucket=None,
-               log_object_prefix=None,
-               placement=None,
-               public_access_prevention=None,
-               recovery_point_objective=None,
-               requester_pays=None,
-               retention_period=None,
-               retention_period_to_be_locked=None,
-               uniform_bucket_level_access=None,
-               versioning=None,
-               web_error_page=None,
-               web_main_page_suffix=None):
+  def __init__(
+      self,
+      acl_file_path=None,
+      acl_grants_to_add=None,
+      acl_grants_to_remove=None,
+      cors_file_path=None,
+      default_encryption_key=None,
+      default_event_based_hold=None,
+      default_object_acl_file_path=None,
+      default_object_acl_grants_to_add=None,
+      default_object_acl_grants_to_remove=None,
+      default_storage_class=None,
+      enable_autoclass=None,
+      labels_file_path=None,
+      labels_to_append=None,
+      labels_to_remove=None,
+      lifecycle_file_path=None,
+      location=None,
+      log_bucket=None,
+      log_object_prefix=None,
+      placement=None,
+      public_access_prevention=None,
+      recovery_point_objective=None,
+      requester_pays=None,
+      retention_period=None,
+      retention_period_to_be_locked=None,
+      soft_delete_duration=None,
+      uniform_bucket_level_access=None,
+      versioning=None,
+      web_error_page=None,
+      web_main_page_suffix=None,
+  ):
     super(_GcsBucketConfig,
           self).__init__(acl_file_path, acl_grants_to_add, acl_grants_to_remove,
                          cors_file_path, labels_file_path, labels_to_append,
@@ -245,29 +251,33 @@ class _GcsBucketConfig(_BucketConfig):
     self.requester_pays = requester_pays
     self.retention_period = retention_period
     self.retention_period_to_be_locked = retention_period_to_be_locked
+    self.soft_delete_duration = soft_delete_duration
     self.uniform_bucket_level_access = uniform_bucket_level_access
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (
-        super(_GcsBucketConfig, self).__eq__(other) and
-        self.public_access_prevention == other.public_access_prevention and
-        self.default_encryption_key == other.default_encryption_key and
-        self.default_event_based_hold == other.default_event_based_hold and
-        self.default_object_acl_grants_to_add
-        == other.default_object_acl_grants_to_add and
-        self.default_object_acl_grants_to_remove
-        == other.default_object_acl_grants_to_remove and
-        self.default_storage_class == other.default_storage_class and
-        self.enable_autoclass == other.enable_autoclass and
-        self.placement == other.placement and
-        self.recovery_point_objective == other.recovery_point_objective and
-        self.requester_pays == other.requester_pays and
-        self.retention_period == other.retention_period and
-        self.retention_period_to_be_locked
-        == other.retention_period_to_be_locked and
-        self.uniform_bucket_level_access == other.uniform_bucket_level_access)
+        super(_GcsBucketConfig, self).__eq__(other)
+        and self.public_access_prevention == other.public_access_prevention
+        and self.default_encryption_key == other.default_encryption_key
+        and self.default_event_based_hold == other.default_event_based_hold
+        and self.default_object_acl_grants_to_add
+        == other.default_object_acl_grants_to_add
+        and self.default_object_acl_grants_to_remove
+        == other.default_object_acl_grants_to_remove
+        and self.default_storage_class == other.default_storage_class
+        and self.enable_autoclass == other.enable_autoclass
+        and self.placement == other.placement
+        and self.recovery_point_objective == other.recovery_point_objective
+        and self.requester_pays == other.requester_pays
+        and self.retention_period == other.retention_period
+        and self.retention_period_to_be_locked
+        == other.retention_period_to_be_locked
+        and self.soft_delete_duration == other.soft_delete_duration
+        and self.uniform_bucket_level_access
+        == other.uniform_bucket_level_access
+    )
 
 
 class _S3BucketConfig(_BucketConfig):
@@ -607,6 +617,9 @@ def _get_request_config_resource_args(url,
               user_resource_args.retention_period)
           new_resource_args.retention_period_to_be_locked = (
               user_resource_args.retention_period_to_be_locked)
+          new_resource_args.soft_delete_duration = (
+              user_resource_args.soft_delete_duration
+          )
           new_resource_args.uniform_bucket_level_access = (
               user_resource_args.uniform_bucket_level_access)
 

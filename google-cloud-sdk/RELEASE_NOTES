@@ -4,6 +4,79 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
+
+## 448.0.0 (2023-09-26)
+
+### Breaking Changes
+
+*   **(Google Cloud CLI)** Deprecated Python 3.5-3.7. The minimum supported Python version is Python 3.8.
+
+
+### Google Cloud CLI
+
+* Updated Mac installer to prompt to install Python 3.10.11.
+
+### Anthos On-Prem
+
+* Promoted `gcloud container vmware admin-clusters` to GA.
+* Promoted `gcloud container vmware clusters` to GA.
+* Promoted `gcloud container vmware node-pools` to GA.
+* Promoted `gcloud container vmware operations` to GA.
+* Promoted `gcloud container bare-metal admin-clusters` to GA.
+* Promoted `gcloud container bare-metal clusters` to GA.
+* Promoted `gcloud container bare-metal node-pools` to GA.
+* Promoted `gcloud container bare-metal operations` to GA.
+
+### App Engine
+
+* Fixed "https://github.com/GoogleCloudPlatform/java-docs-samples/issues/8659".
+
+### Artifact Registry
+
+* Improved error reporting for `artifacts repositories set-cleanup-policies`.
+* Added `Registry URL` to the output of `artifacts repositories describe`.
+* Added VEX_SCOPE column to `gcloud artifact vulnerabilities list` results.
+
+### Cloud Deploy
+
+* Fixed an issue where you couldn't create a release without
+  `clouddeploy.config.get` permission.
+
+### Cloud Healthcare
+
+* Added `--parser-version` flag to `gcloud healthcare hl7v2-stores create` to enable specifying parser config version.
+* Updated `gcloud healthcare hl7v2-stores list` to include `PARSER_VER` header.
+
+### Cloud NetApp
+
+* Added `--source-backup` flag to `gcloud beta netapp volumes {create,update}` in order to introduce a source backup resource to restore to during disaster recovery.
+
+### Cloud Workstations
+
+*   Added support for the replica zones flag in the `beta workstations config create` command.
+
+### Distributed Cloud Edge
+
+* Added `--control-plane-kms-key` flags to `gcloud edge-cloud container
+clusters create` command to allow specify a KMS key for the control plane data encryption of remote control plane clusters.
+* Fixed parsing of new cluster creation properties `--system-addons-confg`, `--external-lb-ipv4-address-pools`, `--control-plane-node-count`, `--control-plane-machine-filter`, `--control-plane-shared-deployment-policy`, `--version`, `--release-channel`, `--version`, and `--release-channel`.
+
+### Eventarc
+
+* Added `destination-http-endpoint-uri`, `destination-http-endpoint-forward-dns-requests` and `network-attachment` flags to `gcloud eventarc triggers create` as part of Eventarc integration with Message Streams.
+
+### Network Security
+
+* New flag to add description for Firewall Endpoint in `create` and `update` commands.
+
+### Vmware Engine
+
+* Deprecated `--node-type-config` flag from `gcloud vmware private-clouds clusters update` command.
+* Added `--update-nodes-config` and `--remove-nodes-config` flags in `gcloud vmware private-clouds clusters update` command.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
 Note: Support for Python 3.5-3.7 will be deprecated on September 26th, 2023.
 
 ## 447.0.0 (2023-09-19)

@@ -69,6 +69,8 @@ CUSTOM_AUDIENCES_ANNOTATION = RUN_GROUP + '/custom-audiences'
 
 NETWORK_INTERFACES_ANNOTATION = RUN_GROUP + '/network-interfaces'
 
+CONTAINER_DEPENDENCIES_ANNOTATION = RUN_GROUP + '/container-dependencies'
+
 
 def Meta(m):
   """Metadta class from messages module."""

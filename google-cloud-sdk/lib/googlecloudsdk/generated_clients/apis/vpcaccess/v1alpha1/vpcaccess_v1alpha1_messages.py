@@ -520,7 +520,7 @@ class VpcaccessProjectsLocationsConnectorsCreateRequest(_messages.Message):
 
   Fields:
     connector: A Connector resource to be passed as the request body.
-    parent: Required. The project id and location in which the configuration
+    parent: Required. The project ID and location in which the configuration
       should be created, specified in the format `projects/*/locations/*`.
   """
 

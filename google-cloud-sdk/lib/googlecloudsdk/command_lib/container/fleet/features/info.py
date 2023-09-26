@@ -66,6 +66,11 @@ _INFO = {
         api='gkehub.googleapis.com',
         cmd_group='scopes',
     ),
+    'configdeliveryargocd': Info(
+        display_name='Config Delivery backed by Argo CD',
+        api='configdelivery.googleapis.com',
+        cmd_group='argocd',
+    ),
     'configmanagement': Info(
         display_name='Config Management',
         api='anthosconfigmanagement.googleapis.com',

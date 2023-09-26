@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import itertools
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
@@ -123,15 +124,54 @@ class YAMLArgument(six.with_metaclass(abc.ABCMeta, object)):
 
     return Argument.FromData(data)
 
+  @property
+  @abc.abstractmethod
+  def api_fields(self):
+    """List of api fields this argument maps to."""
+
+  @abc.abstractmethod
+  def IsApiFieldSpecified(self, namespace):
+    """Whether the argument with an api field is specified in the namespace."""
+
   @abc.abstractmethod
   def Generate(self, method, message, shared_resource_flags):
     """Generates and returns the base argument."""
-    pass
 
   @abc.abstractmethod
   def Parse(self, method, message, namespace, group_required):
     """Parses namespace for argument's value and appends value to req message."""
-    pass
+
+
+def _IsSpecified(namespace, arg_dest, clearable=False):
+  """Provides whether or not the argument has been specified.
+
+  Args:
+    namespace: user specified arguments
+    arg_dest: str, normalize string of the argument name
+    clearable: Boolean, True if param has clearable arguments
+      such as clear, add, etc
+
+  Returns:
+    Boolean, whether or not the argument is specified in the namespace
+  """
+  specified_args_list = set(
+      resource_util.NormalizeFormat(key)
+      for key in namespace.GetSpecifiedArgs().keys())
+
+  if arg_dest in specified_args_list:
+    return True
+
+  if clearable:
+    update_prefixes = (prefix.value for prefix in update_args.Prefix)
+  else:
+    update_prefixes = ()
+  negative_prefixes = ('no',)
+
+  for prefix in itertools.chain(update_prefixes, negative_prefixes):
+    if '{}_{}'.format(prefix, arg_dest) in specified_args_list:
+      return True
+  else:
+    return False
 
 
 class ArgumentGroup(YAMLArgument):
@@ -173,11 +213,26 @@ class ArgumentGroup(YAMLArgument):
 
   def __init__(self, help_text=None, required=False, mutex=False, hidden=False,
                arguments=None):
+    super(ArgumentGroup, self).__init__()
     self.help_text = help_text
     self.required = required
     self.mutex = mutex
     self.hidden = hidden
     self.arguments = arguments
+
+  @property
+  def api_fields(self):
+    api_fields = []
+    for arg in self.arguments:
+      api_fields.extend(arg.api_fields)
+    return api_fields
+
+  def IsApiFieldSpecified(self, namespace):
+    for arg in self.arguments:
+      if arg.IsApiFieldSpecified(namespace):
+        return True
+    else:
+      return False
 
   def Generate(self, method, message, shared_resource_flags=None):
     """Generates and returns the base argument group.
@@ -317,6 +372,7 @@ class Argument(YAMLArgument):
                generate=True,
                disable_unused_arg_check=False,
                clearable=False):
+    super(Argument, self).__init__()
     self.api_field = api_field
     self.disable_unused_arg_check = disable_unused_arg_check
     self.arg_name = arg_name
@@ -335,6 +391,18 @@ class Argument(YAMLArgument):
     self.repeated = repeated
     self.generate = generate
     self.clearable = clearable
+
+  @property
+  def api_fields(self):
+    return [self.api_field] if self.api_field else []
+
+  def IsApiFieldSpecified(self, namespace):
+    if not self.api_fields:
+      return False
+    return _IsSpecified(
+        namespace=namespace,
+        arg_dest=resource_util.NormalizeFormat(self.arg_name),
+        clearable=self.clearable)
 
   def _GetField(self, message):
     """Gets apitools field associated with api_field."""
@@ -529,6 +597,21 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
       return None
     count = 2 if self.repeated else 1
     return text.Pluralize(count, name, plural_name)
+
+  @property
+  def api_fields(self):
+    if self.resource_method_params:
+      return list(self.resource_method_params.keys())
+    else:
+      return []
+
+  def IsApiFieldSpecified(self, namespace):
+    if not self.api_fields:
+      return False
+    return _IsSpecified(
+        namespace=namespace,
+        arg_dest=resource_util.NormalizeFormat(self.GetAnchorArgName()),
+        clearable=self.clearable)
 
   def IsPositional(self, method=None):
     if self._is_positional is not None:

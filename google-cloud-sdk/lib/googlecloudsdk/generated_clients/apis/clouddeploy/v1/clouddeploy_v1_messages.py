@@ -47,8 +47,6 @@ class AdvanceRolloutOperation(_messages.Message):
   Fields:
     destinationPhase: Output only. The phase to which the rollout will be
       advanced to.
-    initialPhase: Output only. The phase of a deployment that initiated the
-      operation.
     rollout: Output only. The name of the rollout that initiates the
       `AutomationRun`.
     sourcePhase: Output only. The phase of a deployment that initiated the
@@ -57,10 +55,9 @@ class AdvanceRolloutOperation(_messages.Message):
   """
 
   destinationPhase = _messages.StringField(1)
-  initialPhase = _messages.StringField(2)
-  rollout = _messages.StringField(3)
-  sourcePhase = _messages.StringField(4)
-  wait = _messages.StringField(5)
+  rollout = _messages.StringField(2)
+  sourcePhase = _messages.StringField(3)
+  wait = _messages.StringField(4)
 
 
 class AdvanceRolloutRequest(_messages.Message):
@@ -93,12 +90,6 @@ class AdvanceRolloutRule(_messages.Message):
       rule.
     id: Required. ID of the rule. This id must be unique in the `Automation`
       resource to which this rule belongs. The format is a-z{0,62}.
-    phases: Optional. Deprecated: use source_phases instead. Proceeds only
-      after phase name matched any one in the list. This value must consist of
-      lower-case letters, numbers, and hyphens, start with a letter and end
-      with a letter or a number, and have a max length of 63 characters. In
-      other words, it must match the following regex:
-      `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
     sourcePhases: Optional. Proceeds only after phase name matched any one in
       the list. This value must consist of lower-case letters, numbers, and
       hyphens, start with a letter and end with a letter or a number, and have
@@ -125,10 +116,9 @@ class AdvanceRolloutRule(_messages.Message):
 
   condition = _messages.MessageField('AutomationRuleCondition', 1)
   id = _messages.StringField(2)
-  phases = _messages.StringField(3, repeated=True)
-  sourcePhases = _messages.StringField(4, repeated=True)
-  wait = _messages.StringField(5)
-  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
+  sourcePhases = _messages.StringField(3, repeated=True)
+  wait = _messages.StringField(4)
+  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 5)
 
 
 class AnthosCluster(_messages.Message):
@@ -779,6 +769,8 @@ class CloudRunMetadata(_messages.Message):
   r"""CloudRunMetadata contains information from a Cloud Run deployment.
 
   Fields:
+    job: Output only. The name of the Cloud Run job that is associated with a
+      `Rollout`. Format is projects{project}/locations/{location}/jobs/{name}.
     revision: Output only. The Cloud Run Revision id associated with a
       `Rollout`.
     service: Output only. The name of the Cloud Run Service that is associated
@@ -788,9 +780,10 @@ class CloudRunMetadata(_messages.Message):
       with a `Rollout`.
   """
 
-  revision = _messages.StringField(1)
-  service = _messages.StringField(2)
-  serviceUrls = _messages.StringField(3, repeated=True)
+  job = _messages.StringField(1)
+  revision = _messages.StringField(2)
+  service = _messages.StringField(3)
+  serviceUrls = _messages.StringField(4, repeated=True)
 
 
 class CloudRunRenderMetadata(_messages.Message):
@@ -4082,16 +4075,6 @@ class PromoteReleaseRule(_messages.Message):
       promotion sequence.
     id: Required. ID of the rule. This id must be unique in the `Automation`
       resource to which this rule belongs. The format is a-z{0,62}.
-    phase: Optional. Deprecated: use destination_phase instead. The starting
-      phase of the rollout created by this operation. Default to the first
-      phase.
-    targetId: Optional. Deprecated: use destination_target_id instead. The ID
-      of the stage in the pipeline to which this `Release` is deploying. If
-      unspecified, default it to the next stage in the promotion flow. The
-      value of this field could be one of the following: * The last segment of
-      a target name. It only needs the ID to determine if the target is one of
-      the stages in the promotion sequence defined in the pipeline. * "@next",
-      the next target in the promotion sequence.
     wait: Optional. How long the release need to be paused until being
       promoted to the next target.
     waitPolicy: Optional. WaitForDeployPolicy delays a release promotion when
@@ -4116,10 +4099,8 @@ class PromoteReleaseRule(_messages.Message):
   destinationPhase = _messages.StringField(2)
   destinationTargetId = _messages.StringField(3)
   id = _messages.StringField(4)
-  phase = _messages.StringField(5)
-  targetId = _messages.StringField(6)
-  wait = _messages.StringField(7)
-  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 8)
+  wait = _messages.StringField(5)
+  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
 
 
 class Range(_messages.Message):
@@ -5619,12 +5600,16 @@ class TargetRender(_messages.Message):
         successfully because the custom action required for predeploy or
         postdeploy was not found in the skaffold configuration. See
         failure_message for additional details.
+      DEPLOYMENT_STRATEGY_NOT_SUPPORTED: Release failed during rendering
+        because the release configuration is not supported with the specified
+        deployment strategy.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
     CLOUD_BUILD_REQUEST_FAILED = 3
     CUSTOM_ACTION_NOT_FOUND = 4
+    DEPLOYMENT_STRATEGY_NOT_SUPPORTED = 5
 
   class RenderingStateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the render operation for this Target.

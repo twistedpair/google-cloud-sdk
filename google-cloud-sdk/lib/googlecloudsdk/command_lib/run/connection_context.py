@@ -49,9 +49,6 @@ _MANAGED_EVENTS_API_VERSION = 'v1beta1'
 _MANAGED_EVENTS_ALPHA_API_NAME = global_methods.SERVERLESS_API_NAME
 _MANAGED_EVENTS_ALPHA_API_VERSION = 'v1alpha1'
 
-_RUN_APPS_API_NAME = 'runapps'
-_RUN_APPS_API_VERSION = 'v1alpha1'
-
 
 @contextlib.contextmanager
 def _OverrideEndpointOverrides(api_name, override):
@@ -433,8 +430,6 @@ def _GetApiName(product, release_track, is_cluster=False):
       return _MANAGED_EVENTS_ALPHA_API_NAME
     else:
       return _MANAGED_EVENTS_API_NAME
-  elif product == flags.Product.RUN_APPS:
-    return _RUN_APPS_API_NAME
   else:
     raise ValueError('Unrecognized product: ' + six.u(product))
 
@@ -456,8 +451,6 @@ def _GetApiVersion(product,
       return _MANAGED_EVENTS_ALPHA_API_VERSION
     else:
       return _MANAGED_EVENTS_API_VERSION
-  elif product == flags.Product.RUN_APPS:
-    return _RUN_APPS_API_VERSION
   else:
     raise ValueError('Unrecognized product: ' + six.u(product))
 

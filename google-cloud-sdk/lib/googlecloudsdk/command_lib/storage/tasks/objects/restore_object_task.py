@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.core import log
@@ -39,7 +41,16 @@ class RestoreObjectTask(task.Task):
 
   def execute(self, task_status_queue=None):
     log.status.Print('Restoring {}...'.format(self._object_resource))
-    # TODO(b/291789068): Create request_config, and call restore API method.
+    provider = self._object_resource.storage_url.scheme
+    request_config = request_config_factory.get_request_config(
+        self._object_resource.storage_url,
+        user_request_args=self._user_request_args,
+    )
+
+    api_factory.get_api(provider).restore_object(
+        self._object_resource.storage_url,
+        request_config=request_config,
+    )
 
     if task_status_queue:
       progress_callbacks.increment_count_callback(task_status_queue)

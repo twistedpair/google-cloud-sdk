@@ -13,6 +13,26 @@ from apitools.base.py import encoding
 package = 'workflowexecutions'
 
 
+class Callback(_messages.Message):
+  r"""An instance of a Callback created by an execution.
+
+  Fields:
+    availablePayloads: Output only. The payloads received by the callback that
+      have not been processed by a waiting execution step.
+    method: Output only. The method accepted by the callback. For example:
+      GET, POST, PUT.
+    name: Output only. The resource name of the callback. Format: projects/{pr
+      oject}/locations/{location}/workflows/{workflow}/executions/{execution}/
+      callback/{callback}
+    waiters: Output only. Number of execution steps waiting on this callback.
+  """
+
+  availablePayloads = _messages.StringField(1, repeated=True)
+  method = _messages.StringField(2)
+  name = _messages.StringField(3)
+  waiters = _messages.IntegerField(4)
+
+
 class CancelExecutionRequest(_messages.Message):
   r"""Request for the CancelExecution method."""
 
@@ -161,6 +181,30 @@ class Execution(_messages.Message):
   stateError = _messages.MessageField('StateError', 11)
   status = _messages.MessageField('Status', 12)
   workflowRevisionId = _messages.StringField(13)
+
+
+class ExportDataResponse(_messages.Message):
+  r"""Response for the ExportData method.
+
+  Fields:
+    data: The JSON string with customer data and metadata for an execution
+      with the given name
+  """
+
+  data = _messages.StringField(1)
+
+
+class ListCallbacksResponse(_messages.Message):
+  r"""RPC response object for the ListCallbacks method.
+
+  Fields:
+    callbacks: The callbacks which match the request.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  callbacks = _messages.MessageField('Callback', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListExecutionsResponse(_messages.Message):
@@ -430,6 +474,28 @@ class TriggerPubsubExecutionRequest(_messages.Message):
   subscription = _messages.StringField(4)
 
 
+class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCallbacksListRequest(_messages.Message):
+  r"""A
+  WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCallbacksListRequest
+  object.
+
+  Fields:
+    pageSize: Maximum number of callbacks to return per call. The default
+      value is 100 and is also the maximum value.
+    pageToken: A page token, received from a previous `ListCallbacks` call.
+      Provide this to retrieve the subsequent page. Note that pagination is
+      applied to dynamic data. The list of callbacks returned can change
+      between page requests if callbacks are created or deleted.
+    parent: Required. Name of the execution for which the callbacks should be
+      listed. Format: projects/{project}/locations/{location}/workflows/{workf
+      low}/executions/{execution}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCancelRequest(_messages.Message):
   r"""A WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCancelRequest
   object.
@@ -459,6 +525,20 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest(_messa
 
   execution = _messages.MessageField('Execution', 1)
   parent = _messages.StringField(2, required=True)
+
+
+class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsExportDataRequest(_messages.Message):
+  r"""A
+  WorkflowexecutionsProjectsLocationsWorkflowsExecutionsExportDataRequest
+  object.
+
+  Fields:
+    name: Required. Name of the execution for which data is to be exported.
+      Format: projects/{project}/locations/{location}/workflows/{workflow}/exe
+      cutions/{execution}
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsGetRequest(_messages.Message):

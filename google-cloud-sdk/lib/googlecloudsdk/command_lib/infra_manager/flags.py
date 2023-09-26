@@ -222,6 +222,7 @@ Create a deployment from a local storage path `./path/to/blueprint` and stage-bu
   local_source_group.add_argument(
       '--stage-bucket',
       help=stage_bucket_help,
+      hidden=True,
       # This will ensure that "--stage-bucket" takes on the form
       # "gs://my-bucket/".
       type=functions_api_util.ValidateAndStandarizeBucketUriOrRaise,

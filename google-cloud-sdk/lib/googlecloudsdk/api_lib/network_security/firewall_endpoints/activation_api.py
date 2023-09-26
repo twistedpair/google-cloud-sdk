@@ -78,17 +78,21 @@ class Client:
         'networksecurity', _API_VERSION_FOR_TRACK.get(release_track)
     )
 
-  def CreateEndpoint(self, name, parent, labels=None):
+  def CreateEndpoint(self, name, parent, description, labels=None):
     """Calls the CreateEndpoint API."""
-    endpoint = self.messages.FirewallEndpoint(labels=labels)
+    endpoint = self.messages.FirewallEndpoint(
+        labels=labels, description=description
+    )
     create_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsCreateRequest(
         firewallEndpoint=endpoint, firewallEndpointId=name, parent=parent
     )
     return self._endpoint_client.Create(create_request)
 
-  def UpdateEndpointLabels(self, name, labels):
+  def UpdateEndpointLabels(self, name, description, labels):
     """Calls the UpdateEndpoint API with 'labels' as the only mask."""
-    endpoint = self.messages.FirewallEndpoint(labels=labels)
+    endpoint = self.messages.FirewallEndpoint(
+        labels=labels, description=description
+    )
     update_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(
         name=name,
         firewallEndpoint=endpoint,

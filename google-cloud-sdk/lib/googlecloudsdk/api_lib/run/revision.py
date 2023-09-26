@@ -61,11 +61,6 @@ class Revision(container_resource.ContainerResource):
       return cond[self._ACTIVE_CONDITION]['status']
     return None
 
-  def _EnsureMeta(self):
-    if self.metadata is None:
-      self.metadata = self._messages.ObjectMeta()
-    return self.metadata
-
   @property
   def concurrency(self):
     """The concurrency number in the revisionTemplate.

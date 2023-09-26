@@ -314,7 +314,7 @@ def AddAction(parser,
       ),
       'deny-502': (
           'Denies the request from HTTP(S) Load Balancing, with an HTTP '
-          'response status code of 503.'
+          'response status code of 502.'
       ),
       'redirect-to-recaptcha': (
           '(DEPRECATED) Redirects the request from HTTP(S) Load Balancing, for'

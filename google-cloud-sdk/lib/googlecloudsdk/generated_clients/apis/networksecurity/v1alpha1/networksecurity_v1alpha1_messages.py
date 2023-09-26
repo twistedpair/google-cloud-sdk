@@ -508,6 +508,8 @@ class FirewallEndpoint(_messages.Message):
       Format: projects/{project}/global/networks/{name}.
     billingProjectId: Optional. Project to bill on endpoint uptime usage.
     createTime: Output only. Create time stamp
+    description: Optional. Description of the firewall endpoint. Max length
+      2048 characters.
     labels: Optional. Labels as key value pairs
     name: Output only. name of resource
     reconciling: Output only. Whether reconciling is in progress, recommended
@@ -559,11 +561,12 @@ class FirewallEndpoint(_messages.Message):
   associatedNetworks = _messages.StringField(1, repeated=True)
   billingProjectId = _messages.StringField(2)
   createTime = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -4236,12 +4239,13 @@ class SSEGateway(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
-    appTrafficTargetIp: Output only. [Output Only] This is the IP where the
-      app traffic should be routed to.
+    appTrafficTargetIp: Optional. This is the IP where the app traffic should
+      be routed to. Default value is set to "100.64.1.253".
     appTrafficVpc: Output only. [Output only] This is the name of the VPC the
       app_vpc should peer with.
-    appTrafficVpcSubnetRange: Output only. [Output Only] Subnet range of the
-      subnet where app traffic is routed.
+    appTrafficVpcSubnetRange: Optional. Subnet range of the subnet where app
+      traffic is routed. Default value is set to "100.64.1.0/24". User defined
+      subnet range CIDR suffix should be less than or equal to 24.
     appVpc: Optional. name of VPC where the app runs
     appVpcs: Optional. name of VPCs where the app runs
     createTime: Output only. [Output only] Create time stamp
@@ -4251,12 +4255,13 @@ class SSEGateway(_messages.Message):
       and user_traffic_vpc
     sseRealm: Required. name of SSERealm owning the SSEGateway
     updateTime: Output only. [Output only] Update time stamp
-    userTrafficTargetIp: Output only. [Output Only] This is the IP where the
-      customer traffic should be routed to.
+    userTrafficTargetIp: Optional. This is the IP where the customer traffic
+      should be routed to. Default value is set to "100.64.2.253".
     userTrafficVpc: Output only. [Output only] This is the name of the VPC the
       user_vpc should peer with.
-    userTrafficVpcSubnetRange: Output only. [Output Only] Subnet range of the
-      subnet where user traffic is routed.
+    userTrafficVpcSubnetRange: Optional. Subnet range of the subnet where user
+      traffic is routed. Default value is set to "100.64.2.0/24". User defined
+      subnet range CIDR suffix should less than or equal to 24.
     userVpc: Required. name of VPC owned by the customer
   """
 

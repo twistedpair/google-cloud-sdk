@@ -168,7 +168,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.acceleratorTypes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/acceleratorTypes',
         request_field='',
         request_type_name='ComputeAcceleratorTypesAggregatedListRequest',
@@ -256,7 +256,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.addresses.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/addresses',
         request_field='',
         request_type_name='ComputeAddressesAggregatedListRequest',
@@ -474,7 +474,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.autoscalers.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/autoscalers',
         request_field='',
         request_type_name='ComputeAutoscalersAggregatedListRequest',
@@ -1040,7 +1040,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.backendServices.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/backendServices',
         request_field='',
         request_type_name='ComputeBackendServicesAggregatedListRequest',
@@ -1440,7 +1440,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.diskTypes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/diskTypes',
         request_field='',
         request_type_name='ComputeDiskTypesAggregatedListRequest',
@@ -1554,7 +1554,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.disks.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/disks',
         request_field='',
         request_type_name='ComputeDisksAggregatedListRequest',
@@ -2842,7 +2842,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.forwardingRules.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/forwardingRules',
         request_field='',
         request_type_name='ComputeForwardingRulesAggregatedListRequest',
@@ -3086,7 +3086,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.futureReservations.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/futureReservations',
         request_field='',
         request_type_name='ComputeFutureReservationsAggregatedListRequest',
@@ -3880,7 +3880,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.globalOperations.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/operations',
         request_field='',
         request_type_name='ComputeGlobalOperationsAggregatedListRequest',
@@ -4248,7 +4248,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.healthChecks.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/healthChecks',
         request_field='',
         request_type_name='ComputeHealthChecksAggregatedListRequest',
@@ -5164,6 +5164,32 @@ class ComputeBeta(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Cancel(self, request, global_params=None):
+      r"""Cancels the specified resize request and removes it from the queue. Cancelled resize request does no longer wait for the resources to be provisioned. Cancel is only possible for requests that are accepted in the queue.
+
+      Args:
+        request: (ComputeInstanceGroupManagerResizeRequestsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagerResizeRequests.cancel',
+        ordered_params=['project', 'zone', 'instanceGroupManager', 'resizeRequest'],
+        path_params=['instanceGroupManager', 'project', 'resizeRequest', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resizeRequests/{resizeRequest}/cancel',
+        request_field='',
+        request_type_name='ComputeInstanceGroupManagerResizeRequestsCancelRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Delete(self, request, global_params=None):
       r"""Deletes the specified, inactive resize request. Requests that are still active cannot be deleted. Deleting request does not delete instances that were provisioned previously.
 
@@ -5322,7 +5348,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instanceGroupManagers.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instanceGroupManagers',
         request_field='',
         request_type_name='ComputeInstanceGroupManagersAggregatedListRequest',
@@ -5746,6 +5772,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ResumeInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeInstanceGroupManagersResumeInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResumeInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResumeInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.resumeInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/resumeInstances',
+        request_field='instanceGroupManagersResumeInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersResumeInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetAutoHealingPolicies(self, request, global_params=None):
       r"""Motifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Use instanceGroupManagers.patch instead.
 
@@ -5820,6 +5872,84 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
         request_field='instanceGroupManagersSetTargetPoolsRequest',
         request_type_name='ComputeInstanceGroupManagersSetTargetPoolsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StartInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeInstanceGroupManagersStartInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.startInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/startInstances',
+        request_field='instanceGroupManagersStartInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersStartInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeInstanceGroupManagersStopInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.stopInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/stopInstances',
+        request_field='instanceGroupManagersStopInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersStopInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SuspendInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeInstanceGroupManagersSuspendInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SuspendInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuspendInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instanceGroupManagers.suspendInstances',
+        ordered_params=['project', 'zone', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instanceGroupManagers/{instanceGroupManager}/suspendInstances',
+        request_field='instanceGroupManagersSuspendInstancesRequest',
+        request_type_name='ComputeInstanceGroupManagersSuspendInstancesRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -5956,7 +6086,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instanceGroups.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instanceGroups',
         request_field='',
         request_type_name='ComputeInstanceGroupsAggregatedListRequest',
@@ -6262,7 +6392,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instanceTemplates.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instanceTemplates',
         request_field='',
         request_type_name='ComputeInstanceTemplatesAggregatedListRequest',
@@ -6532,7 +6662,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instances.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instances',
         request_field='',
         request_type_name='ComputeInstancesAggregatedListRequest',
@@ -7790,7 +7920,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.instantSnapshots.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/instantSnapshots',
         request_field='',
         request_type_name='ComputeInstantSnapshotsAggregatedListRequest',
@@ -8034,7 +8164,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.interconnectAttachments.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/interconnectAttachments',
         request_field='',
         request_type_name='ComputeInterconnectAttachmentsAggregatedListRequest',
@@ -9066,7 +9196,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.machineTypes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/machineTypes',
         request_field='',
         request_type_name='ComputeMachineTypesAggregatedListRequest',
@@ -9154,7 +9284,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.networkAttachments.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/networkAttachments',
         request_field='',
         request_type_name='ComputeNetworkAttachmentsAggregatedListRequest',
@@ -9398,7 +9528,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.networkEdgeSecurityServices.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/networkEdgeSecurityServices',
         request_field='',
         request_type_name='ComputeNetworkEdgeSecurityServicesAggregatedListRequest',
@@ -9538,7 +9668,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.networkEndpointGroups.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/networkEndpointGroups',
         request_field='',
         request_type_name='ComputeNetworkEndpointGroupsAggregatedListRequest',
@@ -10556,7 +10686,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.nodeGroups.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/nodeGroups',
         request_field='',
         request_type_name='ComputeNodeGroupsAggregatedListRequest',
@@ -10930,7 +11060,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.nodeTemplates.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/nodeTemplates',
         request_field='',
         request_type_name='ComputeNodeTemplatesAggregatedListRequest',
@@ -11148,7 +11278,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.nodeTypes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/nodeTypes',
         request_field='',
         request_type_name='ComputeNodeTypesAggregatedListRequest',
@@ -11636,7 +11766,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.packetMirrorings.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/packetMirrorings',
         request_field='',
         request_type_name='ComputePacketMirroringsAggregatedListRequest',
@@ -12342,7 +12472,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.publicDelegatedPrefixes.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/publicDelegatedPrefixes',
         request_field='',
         request_type_name='ComputePublicDelegatedPrefixesAggregatedListRequest',
@@ -13022,7 +13152,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.regionCommitments.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/commitments',
         request_field='',
         request_type_name='ComputeRegionCommitmentsAggregatedListRequest',
@@ -14510,6 +14640,32 @@ class ComputeBeta(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ResumeInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be resumed. This method increases the targetSize and decreases the targetSuspendedSize of the managed instance group by the number of instances that you resume. The resumeInstances operation is marked DONE if the resumeInstances request is successful. The underlying actions take additional time. You must separately verify the status of the RESUMING action with the listmanagedinstances method. In this request, you can only specify instances that are suspended. For example, if an instance was previously suspended using the suspendInstances method, it can be resumed using the resumeInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are resumed. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersResumeInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('ResumeInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ResumeInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.resumeInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/resumeInstances',
+        request_field='regionInstanceGroupManagersResumeInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersResumeInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def SetAutoHealingPolicies(self, request, global_params=None):
       r"""Modifies the autohealing policy for the instances in this managed instance group. [Deprecated] This method is deprecated. Use regionInstanceGroupManagers.patch instead.
 
@@ -14584,6 +14740,84 @@ class ComputeBeta(base_api.BaseApiClient):
         relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/setTargetPools',
         request_field='regionInstanceGroupManagersSetTargetPoolsRequest',
         request_type_name='ComputeRegionInstanceGroupManagersSetTargetPoolsRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StartInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be started. This method increases the targetSize and decreases the targetStoppedSize of the managed instance group by the number of instances that you start. The startInstances operation is marked DONE if the startInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STARTING action with the listmanagedinstances method. In this request, you can only specify instances that are stopped. For example, if an instance was previously stopped using the stopInstances method, it can be started using the startInstances method. If a health check is attached to the managed instance group, the specified instances will be verified as healthy after they are started. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersStartInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StartInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StartInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.startInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/startInstances',
+        request_field='regionInstanceGroupManagersStartInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersStartInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def StopInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be immediately stopped. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetStoppedSize of the managed instance group by the number of instances that you stop. The stopInstances operation is marked DONE if the stopInstances request is successful. The underlying actions take additional time. You must separately verify the status of the STOPPING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays stopping the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is stopped. Stopped instances can be started using the startInstances method. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersStopInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('StopInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StopInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.stopInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/stopInstances',
+        request_field='regionInstanceGroupManagersStopInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersStopInstancesRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SuspendInstances(self, request, global_params=None):
+      r"""Flags the specified instances in the managed instance group to be immediately suspended. You can only specify instances that are running in this request. This method reduces the targetSize and increases the targetSuspendedSize of the managed instance group by the number of instances that you suspend. The suspendInstances operation is marked DONE if the suspendInstances request is successful. The underlying actions take additional time. You must separately verify the status of the SUSPENDING action with the listmanagedinstances method. If the standbyPolicy.initialDelaySec field is set, the group delays suspension of the instances until initialDelaySec have passed from instance.creationTimestamp (that is, when the instance was created). This delay gives your application time to set itself up and initialize on the instance. If more than initialDelaySec seconds have passed since instance.creationTimestamp when this method is called, there will be zero delay. If the group is part of a backend service that has enabled connection draining, it can take up to 60 seconds after the connection draining duration has elapsed before the VM instance is suspended. Suspended instances can be resumed using the resumeInstances method. You can specify a maximum of 1000 instances with this method per request.
+
+      Args:
+        request: (ComputeRegionInstanceGroupManagersSuspendInstancesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('SuspendInstances')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SuspendInstances.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.regionInstanceGroupManagers.suspendInstances',
+        ordered_params=['project', 'region', 'instanceGroupManager'],
+        path_params=['instanceGroupManager', 'project', 'region'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/regions/{region}/instanceGroupManagers/{instanceGroupManager}/suspendInstances',
+        request_field='regionInstanceGroupManagersSuspendInstancesRequest',
+        request_type_name='ComputeRegionInstanceGroupManagersSuspendInstancesRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -17542,7 +17776,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.reservations.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/reservations',
         request_field='',
         request_type_name='ComputeReservationsAggregatedListRequest',
@@ -17812,7 +18046,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.resourcePolicies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/resourcePolicies',
         request_field='',
         request_type_name='ComputeResourcePoliciesAggregatedListRequest',
@@ -18056,7 +18290,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.routers.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/routers',
         request_field='',
         request_type_name='ComputeRoutersAggregatedListRequest',
@@ -18544,7 +18778,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.securityPolicies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/securityPolicies',
         request_field='',
         request_type_name='ComputeSecurityPoliciesAggregatedListRequest',
@@ -18866,7 +19100,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.serviceAttachments.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/serviceAttachments',
         request_field='',
         request_type_name='ComputeServiceAttachmentsAggregatedListRequest',
@@ -19390,7 +19624,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.sslCertificates.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/sslCertificates',
         request_field='',
         request_type_name='ComputeSslCertificatesAggregatedListRequest',
@@ -19556,7 +19790,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.sslPolicies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/sslPolicies',
         request_field='',
         request_type_name='ComputeSslPoliciesAggregatedListRequest',
@@ -19774,7 +20008,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.subnetworks.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/subnetworks',
         request_field='',
         request_type_name='ComputeSubnetworksAggregatedListRequest',
@@ -20262,7 +20496,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.targetHttpProxies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetHttpProxies',
         request_field='',
         request_type_name='ComputeTargetHttpProxiesAggregatedListRequest',
@@ -20480,7 +20714,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.targetHttpsProxies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetHttpsProxies',
         request_field='',
         request_type_name='ComputeTargetHttpsProxiesAggregatedListRequest',
@@ -20802,7 +21036,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.targetInstances.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetInstances',
         request_field='',
         request_type_name='ComputeTargetInstancesAggregatedListRequest',
@@ -21046,7 +21280,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.targetPools.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetPools',
         request_field='',
         request_type_name='ComputeTargetPoolsAggregatedListRequest',
@@ -21612,7 +21846,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.targetTcpProxies.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetTcpProxies',
         request_field='',
         request_type_name='ComputeTargetTcpProxiesAggregatedListRequest',
@@ -21830,7 +22064,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.targetVpnGateways.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/targetVpnGateways',
         request_field='',
         request_type_name='ComputeTargetVpnGatewaysAggregatedListRequest',
@@ -22022,7 +22256,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.urlMaps.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/urlMaps',
         request_field='',
         request_type_name='ComputeUrlMapsAggregatedListRequest',
@@ -22292,7 +22526,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.vpnGateways.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/vpnGateways',
         request_field='',
         request_type_name='ComputeVpnGatewaysAggregatedListRequest',
@@ -22510,7 +22744,7 @@ class ComputeBeta(base_api.BaseApiClient):
         method_id='compute.vpnTunnels.aggregatedList',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        query_params=['filter', 'includeAllScopes', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess', 'serviceProjectNumber'],
         relative_path='projects/{project}/aggregated/vpnTunnels',
         request_field='',
         request_type_name='ComputeVpnTunnelsAggregatedListRequest',

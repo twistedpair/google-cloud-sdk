@@ -19,8 +19,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.run import exceptions
 from googlecloudsdk.command_lib.run.integrations.typekits import base
+from googlecloudsdk.command_lib.runapps import exceptions
 
 
 class DomainRoutingTypeKit(base.TypeKit):

@@ -18,6 +18,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.tasks import cmek_config
 from googlecloudsdk.api_lib.tasks import locations
 from googlecloudsdk.api_lib.tasks import queues
 from googlecloudsdk.api_lib.tasks import tasks
@@ -64,6 +65,9 @@ class BaseApiAdapter(object):
     self.messages = self.client.MESSAGES_MODULE
     self.locations = locations.Locations(self.client.MESSAGES_MODULE,
                                          self.client.projects_locations)
+    self.cmek_config = cmek_config.CmekConfig(
+        self.client.MESSAGES_MODULE, self.client.projects_locations
+    )
 
 
 class AlphaApiAdapter(BaseApiAdapter):

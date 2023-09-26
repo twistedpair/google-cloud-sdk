@@ -132,5 +132,5 @@ def AddArguments(parser):
 
 
 def _AddDependency(parser):
-  rcf.AddArguments(parser)
+  rcf.AddArguments(parser, include_autotuning=True)
   ecf.AddArguments(parser)

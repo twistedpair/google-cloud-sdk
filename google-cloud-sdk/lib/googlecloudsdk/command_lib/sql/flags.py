@@ -1940,7 +1940,7 @@ def AddEnablePrivateServiceConnect(parser):
       required=False,
       help=(
           'When the flag is set, a Cloud SQL instance will be created with '
-          'PSC enabled.'
+          'Private Service Connect enabled.'
       ),
       **kwargs
   )
@@ -1953,11 +1953,10 @@ def AddAllowedPscProjects(parser):
       required=False,
       metavar='PROJECT',
       help=(
-          'A comma-separated list of projects. Each project in this list may '
-          'be represented by a project number (numeric) or by a project id '
-          '(alphanumeric). This will allow PSC connections to be established '
-          'from specified consumer projects. This can be set only when PSC is '
-          'enabled.'
+          'A comma-separated list of projects. Each project in this list might'
+          ' be represented by a project number (numeric) or by a project ID'
+          ' (alphanumeric). This allows Private Service Connect connections to'
+          ' be established from specified consumer projects.'
       ),
   )
 
@@ -1968,8 +1967,9 @@ def AddClearAllowedPscProjects(parser):
       '--clear-allowed-psc-projects',
       required=False,
       help=(
-          'This will clear the project allowlist of PSC, disallowing all '
-          'projects from creating new PSC bindings to the instance.'
+          'This will clear the project allowlist of Private Service Connect,'
+          ' disallowing all projects from creating new Private Service Connect'
+          ' bindings to the instance.'
       ),
       **kwargs
   )

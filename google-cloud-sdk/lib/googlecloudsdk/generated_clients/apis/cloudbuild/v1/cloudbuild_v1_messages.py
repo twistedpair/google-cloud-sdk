@@ -4608,6 +4608,10 @@ class SourceProvenance(_messages.Message):
       those files. If the build source came in a single package such as a
       gzipped tarfile (`.tar.gz`), the `FileHash` will be for the single path
       to that file.
+    resolvedConnectedRepository: Output only. A copy of the build's
+      `source.connected_repository`, if exists, with any revisions resolved.
+    resolvedGitSource: Output only. A copy of the build's `source.git_source`,
+      if exists, with any revisions resolved.
     resolvedRepoSource: A copy of the build's `source.repo_source`, if exists,
       with any revisions resolved.
     resolvedStorageSource: A copy of the build's `source.storage_source`, if
@@ -4648,9 +4652,11 @@ class SourceProvenance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   fileHashes = _messages.MessageField('FileHashesValue', 1)
-  resolvedRepoSource = _messages.MessageField('RepoSource', 2)
-  resolvedStorageSource = _messages.MessageField('StorageSource', 3)
-  resolvedStorageSourceManifest = _messages.MessageField('StorageSourceManifest', 4)
+  resolvedConnectedRepository = _messages.MessageField('ConnectedRepository', 2)
+  resolvedGitSource = _messages.MessageField('GitSource', 3)
+  resolvedRepoSource = _messages.MessageField('RepoSource', 4)
+  resolvedStorageSource = _messages.MessageField('StorageSource', 5)
+  resolvedStorageSourceManifest = _messages.MessageField('StorageSourceManifest', 6)
 
 
 class StandardQueryParameters(_messages.Message):

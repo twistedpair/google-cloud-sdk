@@ -71,7 +71,7 @@ def _should_perform_sliced_download(source_resource, destination_resource):
           task_util.should_use_parallelism())
 
 
-class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
+class FileDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
   """Represents a command operation triggering a file download."""
 
   def __init__(
@@ -100,27 +100,24 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing downloaded
         gzips.
-      posix_to_set (PosixAttributes|None): Set as local POSIX attributes on
-        target.
-      print_created_message (bool): Print a message containing the versioned URL
-        of the copy result.
-      print_source_version (bool): Print source object version in status message
-        enabled by the `verbose` kwarg.
+      posix_to_set (PosixAttributes|None): See parent class.
+      print_created_message (bool): See parent class.
+      print_source_version (bool): See parent class.
       system_posix_data (SystemPosixData): System-wide POSIX info.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      verbose (bool): Print a "copying" status message on initialization.
+      user_request_args (UserRequestArgs|None): See parent class..
+      verbose (bool): See parent class.
     """
     super(FileDownloadTask, self).__init__(
         source_resource,
         destination_resource,
         posix_to_set=posix_to_set,
+        print_created_message=print_created_message,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
     )
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
-    self._print_created_message = print_created_message
     self._system_posix_data = system_posix_data
 
     self._temporary_destination_resource = (
@@ -302,8 +299,7 @@ class FileDownloadTask(copy_util.CopyTaskWithExitHandler):
         preserve_symlinks=preserve_symlinks,
     )
 
-    if self._print_created_message:
-      log.status.Print('Created: {}'.format(destination_url))
+    self._print_created_message_if_requested(self._destination_resource)
     if self._send_manifest_messages:
       manifest_util.send_success_message(
           task_status_queue,

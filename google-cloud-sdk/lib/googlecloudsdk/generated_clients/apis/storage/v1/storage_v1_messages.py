@@ -32,6 +32,7 @@ class Bucket(_messages.Message):
     LoggingValue: The bucket's logging configuration, which defines the
       destination bucket and optional name prefix for the current bucket's
       logs.
+    ObjectRetentionValue: The bucket's object retention config.
     OwnerValue: The owner of the bucket. This is always the project team's
       owner group.
     RetentionPolicyValue: The bucket's retention policy. The retention policy
@@ -43,6 +44,9 @@ class Bucket(_messages.Message):
       retention policy cannot be removed or shortened in duration for the
       lifetime of the bucket. Attempting to remove or decrease period of a
       locked retention policy will result in a PERMISSION_DENIED error.
+    SoftDeletePolicyValue: The bucket's soft delete policy, which defines the
+      period of time that soft-deleted objects will be retained, and cannot be
+      permanently deleted.
     VersioningValue: The bucket's versioning configuration.
     WebsiteValue: The bucket's website configuration, controlling how the
       service behaves when accessing bucket contents as a web site. See the
@@ -88,6 +92,7 @@ class Bucket(_messages.Message):
       bucket and optional name prefix for the current bucket's logs.
     metageneration: The metadata generation of this bucket.
     name: The name of the bucket.
+    objectRetention: The bucket's object retention config.
     owner: The owner of the bucket. This is always the project team's owner
       group.
     projectNumber: The project number of the project the bucket belongs to.
@@ -104,6 +109,9 @@ class Bucket(_messages.Message):
       to turn on Turbo Replication on a bucket.
     satisfiesPZS: Reserved for future use.
     selfLink: The URI of this bucket.
+    softDeletePolicy: The bucket's soft delete policy, which defines the
+      period of time that soft-deleted objects will be retained, and cannot be
+      permanently deleted.
     storageClass: The bucket's default storage class, used whenever no
       storageClass is specified for a newly-created object. This defines how
       objects in the bucket are stored and determines the SLA and the cost of
@@ -398,6 +406,15 @@ class Bucket(_messages.Message):
     logBucket = _messages.StringField(1)
     logObjectPrefix = _messages.StringField(2)
 
+  class ObjectRetentionValue(_messages.Message):
+    r"""The bucket's object retention config.
+
+    Fields:
+      mode: The bucket's object retention mode. Can be Enabled.
+    """
+
+    mode = _messages.StringField(1)
+
   class OwnerValue(_messages.Message):
     r"""The owner of the bucket. This is always the project team's owner
     group.
@@ -436,6 +453,22 @@ class Bucket(_messages.Message):
     effectiveTime = _message_types.DateTimeField(1)
     isLocked = _messages.BooleanField(2)
     retentionPeriod = _messages.IntegerField(3)
+
+  class SoftDeletePolicyValue(_messages.Message):
+    r"""The bucket's soft delete policy, which defines the period of time that
+    soft-deleted objects will be retained, and cannot be permanently deleted.
+
+    Fields:
+      effectiveTime: Server-determined value that indicates the time from
+        which the policy, or one with a greater retention, was effective. This
+        value is in RFC 3339 format.
+      retentionDurationSeconds: The period of time in seconds, that soft-
+        deleted objects in the bucket will be retained and cannot be
+        permanently deleted.
+    """
+
+    effectiveTime = _message_types.DateTimeField(1)
+    retentionDurationSeconds = _messages.IntegerField(2)
 
   class VersioningValue(_messages.Message):
     r"""The bucket's versioning configuration.
@@ -484,17 +517,19 @@ class Bucket(_messages.Message):
   logging = _messages.MessageField('LoggingValue', 17)
   metageneration = _messages.IntegerField(18)
   name = _messages.StringField(19)
-  owner = _messages.MessageField('OwnerValue', 20)
-  projectNumber = _messages.IntegerField(21, variant=_messages.Variant.UINT64)
-  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 22)
-  rpo = _messages.StringField(23)
-  satisfiesPZS = _messages.BooleanField(24)
-  selfLink = _messages.StringField(25)
-  storageClass = _messages.StringField(26)
-  timeCreated = _message_types.DateTimeField(27)
-  updated = _message_types.DateTimeField(28)
-  versioning = _messages.MessageField('VersioningValue', 29)
-  website = _messages.MessageField('WebsiteValue', 30)
+  objectRetention = _messages.MessageField('ObjectRetentionValue', 20)
+  owner = _messages.MessageField('OwnerValue', 21)
+  projectNumber = _messages.IntegerField(22, variant=_messages.Variant.UINT64)
+  retentionPolicy = _messages.MessageField('RetentionPolicyValue', 23)
+  rpo = _messages.StringField(24)
+  satisfiesPZS = _messages.BooleanField(25)
+  selfLink = _messages.StringField(26)
+  softDeletePolicy = _messages.MessageField('SoftDeletePolicyValue', 27)
+  storageClass = _messages.StringField(28)
+  timeCreated = _message_types.DateTimeField(29)
+  updated = _message_types.DateTimeField(30)
+  versioning = _messages.MessageField('VersioningValue', 31)
+  website = _messages.MessageField('WebsiteValue', 32)
 
 
 class BucketAccessControl(_messages.Message):
@@ -1064,6 +1099,7 @@ class Object(_messages.Message):
     MetadataValue: User-provided metadata, in key/value pairs.
     OwnerValue: The owner of the object. This will always be the uploader of
       the object.
+    RetentionValue: A collection of object level retention parameters.
 
   Fields:
     acl: Access controls on the object.
@@ -1117,6 +1153,7 @@ class Object(_messages.Message):
     name: The name of the object. Required if not specified by URL parameter.
     owner: The owner of the object. This will always be the uploader of the
       object.
+    retention: A collection of object level retention parameters.
     retentionExpirationTime: A server-determined value that specifies the
       earliest time that the object's retention period expires. This value is
       in RFC 3339 format. Note 1: This field is not provided for objects with
@@ -1195,6 +1232,19 @@ class Object(_messages.Message):
     entity = _messages.StringField(1)
     entityId = _messages.StringField(2)
 
+  class RetentionValue(_messages.Message):
+    r"""A collection of object level retention parameters.
+
+    Fields:
+      mode: The bucket's object retention mode, can only be Unlocked or
+        Locked.
+      retainUntilTime: A time in RFC 3339 format until which object retention
+        protects this object.
+    """
+
+    mode = _messages.StringField(1)
+    retainUntilTime = _message_types.DateTimeField(2)
+
   acl = _messages.MessageField('ObjectAccessControl', 1, repeated=True)
   bucket = _messages.StringField(2)
   cacheControl = _messages.StringField(3)
@@ -1218,15 +1268,16 @@ class Object(_messages.Message):
   metageneration = _messages.IntegerField(21)
   name = _messages.StringField(22)
   owner = _messages.MessageField('OwnerValue', 23)
-  retentionExpirationTime = _message_types.DateTimeField(24)
-  selfLink = _messages.StringField(25)
-  size = _messages.IntegerField(26, variant=_messages.Variant.UINT64)
-  storageClass = _messages.StringField(27)
-  temporaryHold = _messages.BooleanField(28)
-  timeCreated = _message_types.DateTimeField(29)
-  timeDeleted = _message_types.DateTimeField(30)
-  timeStorageClassUpdated = _message_types.DateTimeField(31)
-  updated = _message_types.DateTimeField(32)
+  retention = _messages.MessageField('RetentionValue', 24)
+  retentionExpirationTime = _message_types.DateTimeField(25)
+  selfLink = _messages.StringField(26)
+  size = _messages.IntegerField(27, variant=_messages.Variant.UINT64)
+  storageClass = _messages.StringField(28)
+  temporaryHold = _messages.BooleanField(29)
+  timeCreated = _message_types.DateTimeField(30)
+  timeDeleted = _message_types.DateTimeField(31)
+  timeStorageClassUpdated = _message_types.DateTimeField(32)
+  updated = _message_types.DateTimeField(33)
 
 
 class ObjectAccessControl(_messages.Message):
@@ -1680,6 +1731,8 @@ class StorageBucketsInsertRequest(_messages.Message):
 
   Fields:
     bucket: A Bucket resource to be passed as the request body.
+    enableObjectRetention: When set to true, object retention is enabled for
+      this bucket.
     predefinedAcl: Apply a predefined set of access controls to this bucket.
     predefinedDefaultObjectAcl: Apply a predefined set of default object
       access controls to this bucket.
@@ -1747,11 +1800,12 @@ class StorageBucketsInsertRequest(_messages.Message):
     noAcl = 1
 
   bucket = _messages.MessageField('Bucket', 1)
-  predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 2)
-  predefinedDefaultObjectAcl = _messages.EnumField('PredefinedDefaultObjectAclValueValuesEnum', 3)
-  project = _messages.StringField(4, required=True)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 5)
-  userProject = _messages.StringField(6)
+  enableObjectRetention = _messages.BooleanField(2, default=False)
+  predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 3)
+  predefinedDefaultObjectAcl = _messages.EnumField('PredefinedDefaultObjectAclValueValuesEnum', 4)
+  project = _messages.StringField(5, required=True)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 6)
+  userProject = _messages.StringField(7)
 
 
 class StorageBucketsListRequest(_messages.Message):
@@ -2894,6 +2948,9 @@ class StorageObjectsPatchRequest(_messages.Message):
       Parts](https://cloud.google.com/storage/docs/request-
       endpoints#encoding).
     objectResource: A Object resource to be passed as the request body.
+    overrideUnlockedRetention: Must be true to remove the retention
+      configuration, reduce its unlocked retention period, or change its mode
+      from unlocked to locked.
     predefinedAcl: Apply a predefined set of access controls to this object.
     projection: Set of properties to return. Defaults to full.
     userProject: The project to be billed for this request, for Requester Pays
@@ -2941,9 +2998,10 @@ class StorageObjectsPatchRequest(_messages.Message):
   ifMetagenerationNotMatch = _messages.IntegerField(6)
   object = _messages.StringField(7, required=True)
   objectResource = _messages.MessageField('Object', 8)
-  predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 9)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 10)
-  userProject = _messages.StringField(11)
+  overrideUnlockedRetention = _messages.BooleanField(9)
+  predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 10)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 11)
+  userProject = _messages.StringField(12)
 
 
 class StorageObjectsRestoreRequest(_messages.Message):
@@ -3199,6 +3257,9 @@ class StorageObjectsUpdateRequest(_messages.Message):
       Parts](https://cloud.google.com/storage/docs/request-
       endpoints#encoding).
     objectResource: A Object resource to be passed as the request body.
+    overrideUnlockedRetention: Must be true to remove the retention
+      configuration, reduce its unlocked retention period, or change its mode
+      from unlocked to locked.
     predefinedAcl: Apply a predefined set of access controls to this object.
     projection: Set of properties to return. Defaults to full.
     userProject: The project to be billed for this request. Required for
@@ -3246,9 +3307,10 @@ class StorageObjectsUpdateRequest(_messages.Message):
   ifMetagenerationNotMatch = _messages.IntegerField(6)
   object = _messages.StringField(7, required=True)
   objectResource = _messages.MessageField('Object', 8)
-  predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 9)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 10)
-  userProject = _messages.StringField(11)
+  overrideUnlockedRetention = _messages.BooleanField(9)
+  predefinedAcl = _messages.EnumField('PredefinedAclValueValuesEnum', 10)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 11)
+  userProject = _messages.StringField(12)
 
 
 class StorageObjectsWatchAllRequest(_messages.Message):

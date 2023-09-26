@@ -79,8 +79,8 @@ class DatabaseInstancePresentation(object):
 def GetRegionFromZone(gce_zone):
   """Parses and returns the region string from the gce_zone string."""
   zone_components = gce_zone.split('-')
-  # The region is the first two components of the zone.
-  return '-'.join(zone_components[:2])
+  # The region is all but the last component of the zone.
+  return '-'.join(zone_components[:-1])
 
 
 def _IsCloudSqlProxyPresentInSdkBin(cloud_sql_proxy_path):

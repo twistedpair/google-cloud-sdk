@@ -520,6 +520,7 @@ class Environment(_messages.Message):
       "projects/{projectId}/locations/{locationId}/environments/{environmentId
       }" EnvironmentId must start with a lowercase letter followed by up to 63
       lowercase letters, numbers, or hyphens, and cannot end with a hyphen.
+    satisfiesPzs: Output only. Reserved for future use.
     state: The current state of the environment.
     storageConfig: Optional. Storage configuration for this environment.
     updateTime: Output only. The time at which this environment was last
@@ -582,10 +583,11 @@ class Environment(_messages.Message):
   createTime = _messages.StringField(2)
   labels = _messages.MessageField('LabelsValue', 3)
   name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  storageConfig = _messages.MessageField('StorageConfig', 6)
-  updateTime = _messages.StringField(7)
-  uuid = _messages.StringField(8)
+  satisfiesPzs = _messages.BooleanField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  storageConfig = _messages.MessageField('StorageConfig', 7)
+  updateTime = _messages.StringField(8)
+  uuid = _messages.StringField(9)
 
 
 class EnvironmentConfig(_messages.Message):
@@ -1806,6 +1808,22 @@ class StorageConfig(_messages.Message):
   r"""The configuration for data storage in the environment."""
 
 
+class TriggererResource(_messages.Message):
+  r"""Configuration for resources used by Airflow triggerers.
+
+  Fields:
+    count: Optional. The number of triggerers.
+    cpu: Optional. CPU request and limit for a single Airflow triggerer
+      replica.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow
+      triggerer replica.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
 class WebServerConfig(_messages.Message):
   r"""The configuration settings for the Airflow web server App Engine
   instance. Supported for Cloud Composer environments in versions
@@ -1875,13 +1893,15 @@ class WorkloadsConfig(_messages.Message):
 
   Fields:
     scheduler: Optional. Resources used by Airflow schedulers.
+    triggerer: Optional. Resources used by Airflow triggerers.
     webServer: Optional. Resources used by Airflow web server.
     worker: Optional. Resources used by Airflow workers.
   """
 
   scheduler = _messages.MessageField('SchedulerResource', 1)
-  webServer = _messages.MessageField('WebServerResource', 2)
-  worker = _messages.MessageField('WorkerResource', 3)
+  triggerer = _messages.MessageField('TriggererResource', 2)
+  webServer = _messages.MessageField('WebServerResource', 3)
+  worker = _messages.MessageField('WorkerResource', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

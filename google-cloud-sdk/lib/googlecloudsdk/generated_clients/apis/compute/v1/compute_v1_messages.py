@@ -6779,6 +6779,7 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -6788,6 +6789,7 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeAcceleratorTypesGetRequest(_messages.Message):
@@ -6935,6 +6937,7 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -6944,6 +6947,7 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeAddressesDeleteRequest(_messages.Message):
@@ -7197,6 +7201,7 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -7206,6 +7211,7 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeAutoscalersDeleteRequest(_messages.Message):
@@ -7740,6 +7746,7 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -7749,6 +7756,7 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeBackendServicesDeleteRequest(_messages.Message):
@@ -8116,6 +8124,7 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -8125,6 +8134,7 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeDiskTypesGetRequest(_messages.Message):
@@ -8300,6 +8310,7 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -8309,6 +8320,7 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeDisksBulkInsertRequest(_messages.Message):
@@ -9537,6 +9549,7 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -9546,6 +9559,7 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeForwardingRulesDeleteRequest(_messages.Message):
@@ -10442,6 +10456,7 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -10451,6 +10466,7 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeGlobalOperationsDeleteRequest(_messages.Message):
@@ -10870,6 +10886,7 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -10879,6 +10896,7 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeHealthChecksDeleteRequest(_messages.Message):
@@ -11766,6 +11784,7 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -11775,6 +11794,7 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Message):
@@ -12526,6 +12546,7 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -12535,6 +12556,7 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstanceGroupsDeleteRequest(_messages.Message):
@@ -12865,6 +12887,7 @@ class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -12874,6 +12897,7 @@ class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
@@ -13166,6 +13190,7 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -13175,6 +13200,7 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstancesAttachDiskRequest(_messages.Message):
@@ -14510,6 +14536,7 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -14519,6 +14546,7 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInterconnectAttachmentsDeleteRequest(_messages.Message):
@@ -15475,6 +15503,7 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -15484,6 +15513,7 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeMachineTypesGetRequest(_messages.Message):
@@ -15631,6 +15661,7 @@ class ComputeNetworkAttachmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -15640,6 +15671,7 @@ class ComputeNetworkAttachmentsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNetworkAttachmentsDeleteRequest(_messages.Message):
@@ -15890,6 +15922,7 @@ class ComputeNetworkEdgeSecurityServicesAggregatedListRequest(_messages.Message)
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -15899,6 +15932,7 @@ class ComputeNetworkEdgeSecurityServicesAggregatedListRequest(_messages.Message)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNetworkEdgeSecurityServicesDeleteRequest(_messages.Message):
@@ -16066,6 +16100,7 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -16075,6 +16110,7 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
@@ -17208,6 +17244,7 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -17217,6 +17254,7 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNodeGroupsDeleteNodesRequest(_messages.Message):
@@ -17649,6 +17687,7 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -17658,6 +17697,7 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNodeTemplatesDeleteRequest(_messages.Message):
@@ -17905,6 +17945,7 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -17914,6 +17955,7 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNodeTypesGetRequest(_messages.Message):
@@ -18061,6 +18103,7 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -18070,6 +18113,7 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputePacketMirroringsDeleteRequest(_messages.Message):
@@ -18832,6 +18876,7 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -18841,6 +18886,7 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputePublicDelegatedPrefixesDeleteRequest(_messages.Message):
@@ -19527,6 +19573,7 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -19536,6 +19583,7 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeRegionCommitmentsGetRequest(_messages.Message):
@@ -21610,6 +21658,38 @@ class ComputeRegionInstancesBulkInsertRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsAttachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group where you are
+      attaching network endpoints to. It should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where you want to create the network
+      endpoint group. It should comply with RFC1035.
+    regionNetworkEndpointGroupsAttachEndpointsRequest: A
+      RegionNetworkEndpointGroupsAttachEndpointsRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionNetworkEndpointGroupsAttachEndpointsRequest = _messages.MessageField('RegionNetworkEndpointGroupsAttachEndpointsRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
   r"""A ComputeRegionNetworkEndpointGroupsDeleteRequest object.
 
@@ -21635,6 +21715,39 @@ class ComputeRegionNetworkEndpointGroupsDeleteRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsDetachNetworkEndpointsRequest
+  object.
+
+  Fields:
+    networkEndpointGroup: The name of the network endpoint group you are
+      detaching network endpoints from. It should comply with RFC1035.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    regionNetworkEndpointGroupsDetachEndpointsRequest: A
+      RegionNetworkEndpointGroupsDetachEndpointsRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000). end_interface:
+      MixerMutationRequestBuilder
+  """
+
+  networkEndpointGroup = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionNetworkEndpointGroupsDetachEndpointsRequest = _messages.MessageField('RegionNetworkEndpointGroupsDetachEndpointsRequest', 4)
+  requestId = _messages.StringField(5)
 
 
 class ComputeRegionNetworkEndpointGroupsGetRequest(_messages.Message):
@@ -21678,6 +21791,79 @@ class ComputeRegionNetworkEndpointGroupsInsertRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+
+
+class ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest(_messages.Message):
+  r"""A ComputeRegionNetworkEndpointGroupsListNetworkEndpointsRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    networkEndpointGroup: The name of the network endpoint group from which
+      you want to generate a list of included network endpoints. It should
+      comply with RFC1035.
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: The name of the region where the network endpoint group is
+      located. It should comply with RFC1035.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  networkEndpointGroup = _messages.StringField(3, required=True)
+  orderBy = _messages.StringField(4)
+  pageToken = _messages.StringField(5)
+  project = _messages.StringField(6, required=True)
+  region = _messages.StringField(7, required=True)
+  returnPartialSuccess = _messages.BooleanField(8)
 
 
 class ComputeRegionNetworkEndpointGroupsListRequest(_messages.Message):
@@ -23786,6 +23972,7 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -23795,6 +23982,7 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeReservationsDeleteRequest(_messages.Message):
@@ -24103,6 +24291,7 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -24112,6 +24301,7 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeResourcePoliciesDeleteRequest(_messages.Message):
@@ -24391,6 +24581,7 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -24400,6 +24591,7 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeRoutersDeleteRequest(_messages.Message):
@@ -24916,6 +25108,7 @@ class ComputeSecurityPoliciesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -24925,6 +25118,7 @@ class ComputeSecurityPoliciesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
@@ -25272,6 +25466,7 @@ class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -25281,6 +25476,7 @@ class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeServiceAttachmentsDeleteRequest(_messages.Message):
@@ -25742,6 +25938,7 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -25751,6 +25948,7 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeSslCertificatesDeleteRequest(_messages.Message):
@@ -25941,6 +26139,7 @@ class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -25950,6 +26149,7 @@ class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeSslPoliciesDeleteRequest(_messages.Message):
@@ -26233,6 +26433,7 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -26242,6 +26443,7 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeSubnetworksDeleteRequest(_messages.Message):
@@ -26800,6 +27002,7 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -26809,6 +27012,7 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
@@ -27051,6 +27255,7 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -27060,6 +27265,7 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
@@ -27416,6 +27622,7 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -27425,6 +27632,7 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetInstancesDeleteRequest(_messages.Message):
@@ -27708,6 +27916,7 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -27717,6 +27926,7 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetPoolsDeleteRequest(_messages.Message):
@@ -28312,6 +28522,7 @@ class ComputeTargetTcpProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -28321,6 +28532,7 @@ class ComputeTargetTcpProxiesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetTcpProxiesDeleteRequest(_messages.Message):
@@ -28567,6 +28779,7 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -28576,6 +28789,7 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetVpnGatewaysDeleteRequest(_messages.Message):
@@ -28802,6 +29016,7 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -28811,6 +29026,7 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeUrlMapsDeleteRequest(_messages.Message):
@@ -29091,6 +29307,7 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -29100,6 +29317,7 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeVpnGatewaysDeleteRequest(_messages.Message):
@@ -29356,6 +29574,7 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -29365,6 +29584,7 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeVpnTunnelsDeleteRequest(_messages.Message):
@@ -40951,9 +41171,16 @@ class InstanceReference(_messages.Message):
 
 
 class InstanceTemplate(_messages.Message):
-  r"""Represents an Instance Template resource. You can use instance templates
-  to create VM instances and managed instance groups. For more information,
-  read Instance Templates.
+  r"""Represents an Instance Template resource. Google Compute Engine has two
+  Instance Template resources: *
+  [Global](/compute/docs/reference/rest/v1/instanceTemplates) *
+  [Regional](/compute/docs/reference/rest/v1/regionInstanceTemplates) You can
+  reuse a global instance template in different regions whereas you can use a
+  regional instance template in a specified region only. If you want to reduce
+  cross-region dependency or achieve data residency, use a regional instance
+  template. To create VMs, managed instance groups, and reservations, you can
+  use either global or regional instance templates. For more information, read
+  Instance Templates.
 
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this instance
@@ -56757,6 +56984,26 @@ class RegionList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class RegionNetworkEndpointGroupsAttachEndpointsRequest(_messages.Message):
+  r"""A RegionNetworkEndpointGroupsAttachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be attached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
+class RegionNetworkEndpointGroupsDetachEndpointsRequest(_messages.Message):
+  r"""A RegionNetworkEndpointGroupsDetachEndpointsRequest object.
+
+  Fields:
+    networkEndpoints: The list of network endpoints to be detached.
+  """
+
+  networkEndpoints = _messages.MessageField('NetworkEndpoint', 1, repeated=True)
+
+
 class RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse(_messages.Message):
   r"""A RegionNetworkFirewallPoliciesGetEffectiveFirewallsResponse object.
 
@@ -59961,11 +60208,15 @@ class RouterNat(_messages.Message):
     r"""EndpointTypesValueListEntryValuesEnum enum type.
 
     Values:
+      ENDPOINT_TYPE_MANAGED_PROXY_LB: This is used for regional Application
+        Load Balancers (internal and external) and regional proxy Network Load
+        Balancers (internal and external) endpoints.
       ENDPOINT_TYPE_SWG: This is used for Secure Web Gateway endpoints.
       ENDPOINT_TYPE_VM: This is the default.
     """
-    ENDPOINT_TYPE_SWG = 0
-    ENDPOINT_TYPE_VM = 1
+    ENDPOINT_TYPE_MANAGED_PROXY_LB = 0
+    ENDPOINT_TYPE_SWG = 1
+    ENDPOINT_TYPE_VM = 2
 
   class NatIpAllocateOptionValueValuesEnum(_messages.Enum):
     r"""Specify the NatIpAllocateOption, which can take one of the following

@@ -117,6 +117,8 @@ def ParseVexFile(filename, image, version):
         noteid, note = _MakeNote(
             vuln, status, product, publisher, document, ca_messages
         )
+        if version is None:
+          noteid = 'image-{}'.format(noteid)
         note = (
             ca_messages.BatchCreateNotesRequest.NotesValue.AdditionalProperty(
                 key=noteid, value=note

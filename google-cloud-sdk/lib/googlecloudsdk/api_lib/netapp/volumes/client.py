@@ -125,6 +125,7 @@ class VolumesClient(object):
       security_style=None,
       enable_kerberos=None,
       snapshot=None,
+      backup=None,
       restricted_actions=None,
       backup_config=None,
       labels=None,
@@ -146,6 +147,7 @@ class VolumesClient(object):
         security_style=security_style,
         enable_kerberos=enable_kerberos,
         snapshot=snapshot,
+        backup=backup,
         restricted_actions=restricted_actions,
         backup_config=backup_config,
         labels=labels,
@@ -203,6 +205,7 @@ class VolumesClient(object):
       security_style=None,
       enable_kerberos=None,
       snapshot=None,
+      backup=None,
       restricted_actions=None,
       backup_config=None,
   ):
@@ -224,6 +227,7 @@ class VolumesClient(object):
         security_style=security_style,
         enable_kerberos=enable_kerberos,
         snapshot=snapshot,
+        backup=backup,
         restricted_actions=restricted_actions,
         backup_config=backup_config)
 
@@ -384,6 +388,7 @@ class VolumesAdapter(object):
       security_style=None,
       enable_kerberos=None,
       snapshot=None,
+      backup=None,
       restricted_actions=None,
       backup_config=None,
       labels=None,
@@ -406,6 +411,7 @@ class VolumesAdapter(object):
       security_style: the security style of the Volume
       enable_kerberos: Bool on whether to use kerberos for Volume
       snapshot: the snapshot name to create Volume from
+      backup: the backup to create the Volume from.
       restricted_actions: the actions to be restricted on a Volume
       backup_config: the Backup Config attached to the Volume
       labels: the parsed labels value.
@@ -430,11 +436,14 @@ class VolumesAdapter(object):
     volume.snapshotDirectory = snapshot_directory
     volume.securityStyle = security_style
     volume.kerberosEnabled = enable_kerberos
-    volume.restoreParameters = (
-        self.messages.RestoreParameters(sourceSnapshot=snapshot)
-        if snapshot
-        else None
-    )
+    restore_parameters = self.messages.RestoreParameters()
+    if snapshot is not None:
+      restore_parameters.sourceSnapshot = snapshot
+    if backup is not None:
+      restore_parameters.sourceBackup = backup
+    if backup is None and snapshot is None:
+      restore_parameters = None
+    volume.restoreParameters = restore_parameters
     volume.restrictedActions = restricted_actions
     if backup_config is not None:
       self.ParseBackupConfig(volume, backup_config)
@@ -459,6 +468,7 @@ class VolumesAdapter(object):
       enable_kerberos=None,
       active_directory=None,
       snapshot=None,
+      backup=None,
       restricted_actions=None,
       backup_config=None,
   ):
@@ -493,10 +503,8 @@ class VolumesAdapter(object):
       volume_config.kerberosEnabled = enable_kerberos
     if active_directory is not None:
       volume_config.activeDirectory = active_directory
-    if snapshot is not None:
-      volume_config.restoreParameters = self.messages.RestoreParameters(
-          sourceSnapshot=snapshot
-      )
+    if snapshot is not None or backup is not None:
+      self.ParseRestoreParameters(volume_config, snapshot, backup)
     if restricted_actions is not None:
       volume_config.restrictedActions = restricted_actions
     if backup_config is not None:
@@ -523,6 +531,15 @@ class VolumesAdapter(object):
         backup_config.get('enable-scheduled-backups', False)
     )
     volume.backupConfig = backup_config_message
+
+  def ParseRestoreParameters(self, volume, snapshot, backup):
+    """Parses Restore Parameters for Volume into a config."""
+    restore_parameters = self.messages.RestoreParameters()
+    if snapshot:
+      restore_parameters.sourceSnapshot = snapshot
+    if backup:
+      restore_parameters.sourceBackup = backup
+    volume.restoreParameters = restore_parameters
 
 
 class BetaVolumesAdapter(VolumesAdapter):

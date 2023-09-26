@@ -39,7 +39,7 @@ from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 
 
-class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
+class IntraCloudCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
   """Represents a command operation copying an object around the cloud."""
 
   def __init__(
@@ -67,19 +67,17 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
       fetch_source_fields_scope (FieldsScope|None): If present, refetch
         source_resource, populated with metadata determined by this FieldsScope.
         Useful for lazy or parallelized GET calls.
-      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
-        metadata on target.
-      print_created_message (bool): Print a message containing the versioned URL
-        of the copy result.
-      print_source_version (bool): Print source object version in status message
-        enabled by the `verbose` kwarg.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      verbose (bool): Print a "copying" status message on initialization.
+      posix_to_set (PosixAttributes|None): See parent class.
+      print_created_message (bool): See parent class.
+      print_source_version (bool): See parent class.
+      user_request_args (UserRequestArgs|None): See parent class
+      verbose (bool): See parent class.
     """
     super(IntraCloudCopyTask, self).__init__(
         source_resource,
         destination_resource,
         posix_to_set=posix_to_set,
+        print_created_message=print_created_message,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
@@ -95,7 +93,6 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
 
     self._delete_source = delete_source
     self._fetch_source_fields_scope = fetch_source_fields_scope
-    self._print_created_message = print_created_message
 
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
@@ -149,8 +146,7 @@ class IntraCloudCopyTask(copy_util.CopyTaskWithExitHandler):
         progress_callback=progress_callback,
     )
 
-    if self._print_created_message:
-      log.status.Print('Created: {}'.format(result_resource.storage_url))
+    self._print_created_message_if_requested(result_resource)
     if self._send_manifest_messages:
       manifest_util.send_success_message(
           task_status_queue,

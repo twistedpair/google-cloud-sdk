@@ -537,3 +537,21 @@ def AddAcceleratorFields(parser):
   group.add_argument(
       '--accelerator-count', type=int, help=help_text, required=True
   )
+
+
+def AddReplicaZones(parser):
+  """Adds a --replica-zones flag to the given parser."""
+  help_text = """\
+  Specifies the zones the VM and disk resources will be
+  replicated within the region. If set, exactly two zones within the
+  workstation cluster's region must be specified.
+
+  Example:
+
+    $ {command} --replica-zones=us-central1-a,us-central1-f
+  """
+  parser.add_argument(
+      '--replica-zones',
+      metavar='REPLICA_ZONES',
+      type=arg_parsers.ArgList(),
+      help=help_text)

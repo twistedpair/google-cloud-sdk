@@ -45,7 +45,7 @@ class CopyTask(task.Task):
       self,
       source_resource,
       destination_resource,
-      posix_to_set=None,
+      print_created_message=False,
       print_source_version=False,
       user_request_args=None,
       verbose=False,
@@ -56,8 +56,8 @@ class CopyTask(task.Task):
       source_resource (resource_reference.Resource): Source resource to copy.
       destination_resource (resource_reference.Resource): Target resource to
         copy to.
-      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
-        metadata on target.
+      print_created_message (bool): Print a message containing the URL of the
+        copy result.
       print_source_version (bool): Print source object version in status message
         enabled by the `verbose` kwarg.
       user_request_args (UserRequestArgs|None): Various user-set values
@@ -67,7 +67,7 @@ class CopyTask(task.Task):
     super(CopyTask, self).__init__()
     self._source_resource = source_resource
     self._destination_resource = destination_resource
-    self._posix_to_set = posix_to_set
+    self._print_created_message = print_created_message
     self._print_source_version = print_source_version
     self._user_request_args = user_request_args
     self._verbose = verbose
@@ -77,7 +77,7 @@ class CopyTask(task.Task):
     )
 
     if verbose:
-      if print_source_version:
+      if self._print_source_version:
         source_string = source_resource.storage_url.url_string
       else:
         source_string = source_resource.storage_url.versionless_url_string
@@ -88,9 +88,53 @@ class CopyTask(task.Task):
           )
       )
 
+  def _print_created_message_if_requested(self, resource):
+    if self._print_created_message:
+      log.status.Print('Created: {}'.format(resource))
 
-class CopyTaskWithExitHandler(CopyTask):
-  """Parent task that overrides exit handler for copy tasks."""
+
+class ObjectCopyTask(CopyTask):
+  """Parent task that handles common attributes for object copy tasks."""
+
+  def __init__(
+      self,
+      source_resource,
+      destination_resource,
+      posix_to_set=None,
+      print_created_message=False,
+      print_source_version=False,
+      user_request_args=None,
+      verbose=False,
+  ):
+    """Initializes task.
+
+    Args:
+      source_resource (resource_reference.Resource): See parent class.
+      destination_resource (resource_reference.Resource): See parent class.
+      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
+        metadata on target.
+      print_created_message (bool): See parent class.
+      print_source_version (bool): See parent class.
+      user_request_args (UserRequestArgs|None): See parent class.
+      verbose (bool): Print a "copying" status message on initialization.
+    """
+    self._posix_to_set = posix_to_set
+    # Set before super().__init__ call because otherwise the attribute won't be
+    # available for the _get_source_string_for_status_message call.
+    self._print_source_version = print_source_version
+
+    super(ObjectCopyTask, self).__init__(
+        source_resource,
+        destination_resource,
+        print_created_message,
+        print_source_version,
+        user_request_args,
+        verbose,
+    )
+
+
+class _ExitHandlerMixin:
+  """Provides an exit handler for copy tasks."""
 
   def exit_handler(self, error=None, task_status_queue=None):
     """Send copy result info to manifest if requested."""
@@ -103,6 +147,19 @@ class CopyTaskWithExitHandler(CopyTask):
         )
       manifest_util.send_error_message(task_status_queue, self._source_resource,
                                        self._destination_resource, error)
+
+
+class CopyTaskWithExitHandler(
+    # _ExitHandlerMixin must precede CopyTask, otherwise task.Task.exit_hander
+    # overrides the intended implementation.
+    _ExitHandlerMixin,
+    CopyTask,
+):
+  """Parent task with an exit handler for non-object copy tasks."""
+
+
+class ObjectCopyTaskWithExitHandler(_ExitHandlerMixin, ObjectCopyTask):
+  """Parent task with an exit handler for object copy tasks."""
 
 
 def get_no_clobber_message(destination_url):

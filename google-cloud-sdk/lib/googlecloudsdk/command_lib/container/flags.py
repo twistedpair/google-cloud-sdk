@@ -539,10 +539,10 @@ def AddAcceleratorArgs(
         `latest`: Install the latest available driver version. Available only for
         nodes that use Container-Optimized OS.
 
-        `disabled`: Skip automatic driver installation. You must [manually install a
-        driver](https://cloud.google.com/kubernetes-engine/docs/how-to/gpus#installing_drivers)
-        after you create the cluster. If you omit the flag `gpu-driver-version`,
-        this is the default option.
+        `disabled`: Skip automatic driver installation. You must manually install a
+        driver after you create the cluster. If you omit the flag `gpu-driver-version`,
+        this is the default option. To learn how to manually install the GPU driver,
+        refer to: https://cloud.google.com/kubernetes-engine/docs/how-to/gpus#installing_drivers
 
       *gpu-partition-size*::: (Optional) The GPU partition size used when running multi-instance GPUs.
       For information about multi-instance GPUs,

@@ -360,6 +360,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
+      IL2: Information protection as per DoD IL2 requirements.
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
@@ -379,7 +380,8 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
     ISR_REGIONS_AND_SUPPORT = 14
     CA_PROTECTED_B = 15
     IL5 = 16
-    JP_REGIONS_AND_SUPPORT = 17
+    IL2 = 17
+    JP_REGIONS_AND_SUPPORT = 18
 
   complianceRegime = _messages.EnumField('ComplianceRegimeValueValuesEnum', 1)
   createTime = _messages.StringField(2)
@@ -825,6 +827,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
       CA_PROTECTED_B: Assured Workloads for Canada Protected B regime
       IL5: Information protection as per DoD IL5 requirements.
+      IL2: Information protection as per DoD IL2 requirements.
       JP_REGIONS_AND_SUPPORT: Assured Workloads for Japan Regions
     """
     COMPLIANCE_REGIME_UNSPECIFIED = 0
@@ -844,7 +847,8 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
     ISR_REGIONS_AND_SUPPORT = 14
     CA_PROTECTED_B = 15
     IL5 = 16
-    JP_REGIONS_AND_SUPPORT = 17
+    IL2 = 17
+    JP_REGIONS_AND_SUPPORT = 18
 
   class KajEnrollmentStateValueValuesEnum(_messages.Enum):
     r"""Output only. Represents the KAJ enrollment state of the given

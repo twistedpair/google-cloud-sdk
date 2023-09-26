@@ -42,8 +42,9 @@ class ApphubV1alpha(base_api.BaseApiClient):
     self.projects_locations_directories_services = self.ProjectsLocationsDirectoriesServicesService(self)
     self.projects_locations_directories_workloads = self.ProjectsLocationsDirectoriesWorkloadsService(self)
     self.projects_locations_directories = self.ProjectsLocationsDirectoriesService(self)
+    self.projects_locations_global_serviceProjectAttachments = self.ProjectsLocationsGlobalServiceProjectAttachmentsService(self)
+    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
-    self.projects_locations_serviceProjects = self.ProjectsLocationsServiceProjectsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -482,6 +483,161 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsGlobalServiceProjectAttachmentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_global_serviceProjectAttachments resource."""
+
+    _NAME = 'projects_locations_global_serviceProjectAttachments'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsGlobalServiceProjectAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateServiceProjectAttachment attaches a service project to a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsGlobalServiceProjectAttachmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/serviceProjectAttachments',
+        http_method='POST',
+        method_id='apphub.projects.locations.global.serviceProjectAttachments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceProjectAttachmentId'],
+        relative_path='v1alpha/{+parent}/serviceProjectAttachments',
+        request_field='serviceProjectAttachment',
+        request_type_name='ApphubProjectsLocationsGlobalServiceProjectAttachmentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteServiceProjectAttachment detaches a service project attachment from a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsGlobalServiceProjectAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/serviceProjectAttachments/{serviceProjectAttachmentsId}',
+        http_method='DELETE',
+        method_id='apphub.projects.locations.global.serviceProjectAttachments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsGlobalServiceProjectAttachmentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetServiceProjectAttachment gets a service project attachment for a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsGlobalServiceProjectAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceProjectAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/serviceProjectAttachments/{serviceProjectAttachmentsId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.global.serviceProjectAttachments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsGlobalServiceProjectAttachmentsGetRequest',
+        response_type_name='ServiceProjectAttachment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListServiceProjectAttachments lists service projects attached to a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsGlobalServiceProjectAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceProjectAttachmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/serviceProjectAttachments',
+        http_method='GET',
+        method_id='apphub.projects.locations.global.serviceProjectAttachments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/serviceProjectAttachments',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsGlobalServiceProjectAttachmentsListRequest',
+        response_type_name='ListServiceProjectAttachmentsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsGlobalService(base_api.BaseApiService):
+    """Service class for the projects_locations_global resource."""
+
+    _NAME = 'projects_locations_global'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsGlobalService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetHostProject(self, request, global_params=None):
+      r"""GetHostProject gets a HostProject resource. This is a passthrough method.
+
+      Args:
+        request: (ApphubProjectsLocationsGlobalGetHostProjectRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (HostProject) The response message.
+      """
+      config = self.GetMethodConfig('GetHostProject')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetHostProject.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/global/hostProject',
+        http_method='GET',
+        method_id='apphub.projects.locations.global.getHostProject',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsGlobalGetHostProjectRequest',
+        response_type_name='HostProject',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -600,124 +756,6 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsServiceProjectsService(base_api.BaseApiService):
-    """Service class for the projects_locations_serviceProjects resource."""
-
-    _NAME = 'projects_locations_serviceProjects'
-
-    def __init__(self, client):
-      super(ApphubV1alpha.ProjectsLocationsServiceProjectsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""CreateServiceProject attaches a service project to a host project.
-
-      Args:
-        request: (ApphubProjectsLocationsServiceProjectsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjects',
-        http_method='POST',
-        method_id='apphub.projects.locations.serviceProjects.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId', 'serviceProjectId'],
-        relative_path='v1alpha/{+parent}/serviceProjects',
-        request_field='serviceProject',
-        request_type_name='ApphubProjectsLocationsServiceProjectsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""DeleteServiceProject detaches a service project from a host project.
-
-      Args:
-        request: (ApphubProjectsLocationsServiceProjectsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjects/{serviceProjectsId}',
-        http_method='DELETE',
-        method_id='apphub.projects.locations.serviceProjects.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsServiceProjectsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""GetServiceProject gets a service project for a host project.
-
-      Args:
-        request: (ApphubProjectsLocationsServiceProjectsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceProject) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjects/{serviceProjectsId}',
-        http_method='GET',
-        method_id='apphub.projects.locations.serviceProjects.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsServiceProjectsGetRequest',
-        response_type_name='ServiceProject',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""ListServiceProjects lists service projects for a host project.
-
-      Args:
-        request: (ApphubProjectsLocationsServiceProjectsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListServiceProjectsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjects',
-        http_method='GET',
-        method_id='apphub.projects.locations.serviceProjects.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/serviceProjects',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsServiceProjectsListRequest',
-        response_type_name='ListServiceProjectsResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -752,33 +790,6 @@ class ApphubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsGetRequest',
         response_type_name='Location',
-        supports_download=False,
-    )
-
-    def GetHostProject(self, request, global_params=None):
-      r"""GetHostProject gets a HostProject resource. This is a passthrough method.
-
-      Args:
-        request: (ApphubProjectsLocationsGetHostProjectRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (HostProject) The response message.
-      """
-      config = self.GetMethodConfig('GetHostProject')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetHostProject.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/hostProject',
-        http_method='GET',
-        method_id='apphub.projects.locations.getHostProject',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsGetHostProjectRequest',
-        response_type_name='HostProject',
         supports_download=False,
     )
 

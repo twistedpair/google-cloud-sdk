@@ -44,7 +44,7 @@ _SERVICE_RESOURCE = 'services/%s'
 _DEPENDENCY_GROUP = '/groups/dependencies'
 _REVERSE_CLOSURE = '/reverseClosure'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
-_CONSUMER_POLICY_DEFAULT = '/consumerPolicies/default'
+_CONSUMER_POLICY_DEFAULT = '/consumerPolicies/%s'
 _EFFECTIVE_POLICY = '/effectivePolicy'
 _GOOGLE_GROUP_RESOURCE = 'groups/googleServices'
 _LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
@@ -396,13 +396,21 @@ def ListGroupMembers(resource, service_group, page_size=50, limit=sys.maxsize):
     )
 
 
-def AddEnableRule(services, project, folder=None, organization=None):
+def AddEnableRule(
+    services,
+    project,
+    consumer_policy_name='default',
+    folder=None,
+    organization=None,
+):
   """Make API call to enable a specific service.
 
   Args:
     services: The identifier of the service to enable, for example
       'serviceusage.googleapis.com'.
     project: The project for which to enable the service.
+    consumer_policy_name: Name of consumer policy. The default name is
+      "default".
     folder: The folder for which to enable the service.
     organization: The organization for which to enable the service.
 
@@ -424,7 +432,7 @@ def AddEnableRule(services, project, folder=None, organization=None):
   if organization:
     resource_name = _ORGANIZATION_RESOURCE % organization
 
-  policy_name = resource_name + _CONSUMER_POLICY_DEFAULT
+  policy_name = resource_name + _CONSUMER_POLICY_DEFAULT % consumer_policy_name
 
   try:
     policy = GetConsumerPolicy(policy_name)
@@ -448,36 +456,21 @@ def AddEnableRule(services, project, folder=None, organization=None):
 
     return UpdateConsumerPolicy(policy, policy_name)
   except (
-      exceptions.GetConsumerPolicyPermissionDeniedException,
-      exceptions.UpdateConsumerPolicyPermissionDeniedException,
-      exceptions.ListFlattenedMembersPermissionDeniedException,
-  ):
-    try:
-      values = []
-      for service in services:
-        values.append(_SERVICE_RESOURCE % service + _DEPENDENCY_GROUP)
-      add_enable_request = (
-          messages.ServiceusageConsumerPoliciesAddEnableRulesRequest(
-              parent=policy_name,
-              addEnableRulesRequest=messages.AddEnableRulesRequest(
-                  values=values,
-                  flattenGroups=True,
-              ),
-          )
-      )
-
-      return client.consumerPolicies.AddEnableRules(request=add_enable_request)
-    except (
-        apitools_exceptions.HttpForbiddenError,
-        apitools_exceptions.HttpNotFoundError,
-    ) as e:
-      exceptions.ReraiseError(
-          e, exceptions.EnableServicePermissionDeniedException
-      )
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.EnableServicePermissionDeniedException
+    )
 
 
 def RemoveEnableRule(
-    project, service, force=False, folder=None, organization=None
+    project,
+    service,
+    consumer_policy_name='default',
+    force=False,
+    folder=None,
+    organization=None,
 ):
   """Make API call to disable a specific service.
 
@@ -485,6 +478,8 @@ def RemoveEnableRule(
     project: The project for which to disable the service.
     service: The identifier of the service to disable, for example
       'serviceusage.googleapis.com'.
+    consumer_policy_name: Name of consumer policy. The default name is
+      "default".
     force: Disable service with usage within last 30 days or disable recently
       enabled service or disable the service even if there are enabled services
       which depend on it. This also disables the services which depend on the
@@ -499,9 +494,6 @@ def RemoveEnableRule(
   Returns:
     The result of the operation
   """
-  client = _GetClientInstance('v2')
-  messages = client.MESSAGES_MODULE
-
   resource_name = _PROJECT_RESOURCE % project
 
   if folder:
@@ -510,7 +502,7 @@ def RemoveEnableRule(
   if organization:
     resource_name = _ORGANIZATION_RESOURCE % organization
 
-  policy_name = resource_name + _CONSUMER_POLICY_DEFAULT
+  policy_name = resource_name + _CONSUMER_POLICY_DEFAULT % consumer_policy_name
 
   try:
     current_policy = GetConsumerPolicy(policy_name)
@@ -557,53 +549,20 @@ def RemoveEnableRule(
     return UpdateConsumerPolicy(
         updated_consumer_poicy, policy_name, force=force
     )
-
   except (
-      exceptions.GetConsumerPolicyPermissionDeniedException,
-      exceptions.UpdateConsumerPolicyPermissionDeniedException,
-      exceptions.GetReverseDependencyClosurePermissionDeniedException,
-  ):
-    try:
-      value = _SERVICE_RESOURCE % service
-      # TODO(b/274633761) RemoveEnableRule will have force flag later.
-      # When force is not set gcloud command, the DependentValuesValueValuesEnum
-      # shoule be CHECK and force in RemoveEnableRule RPC should be false.
-      # When force is set as True, the DependentValuesValueValuesEnum shoule be
-      # REMOVE and force in RemoveEnableRule RPC should be true.
-      if force:
-        check = (
-            messages.RemoveEnableRulesRequest.DependentValuesValueValuesEnum.REMOVE
-        )
-      else:
-        check = (
-            messages.RemoveEnableRulesRequest.DependentValuesValueValuesEnum.CHECK
-        )
-      remove_enable_request = (
-          messages.ServiceusageConsumerPoliciesRemoveEnableRulesRequest(
-              parent=policy_name,
-              removeEnableRulesRequest=messages.RemoveEnableRulesRequest(
-                  values=[value],
-                  dependentValues=check,
-              ),
-          )
-      )
-      return client.consumerPolicies.RemoveEnableRules(
-          request=remove_enable_request
-      )
-    except (
-        apitools_exceptions.HttpForbiddenError,
-        apitools_exceptions.HttpNotFoundError,
-    ) as e:
-      exceptions.ReraiseError(
-          e, exceptions.EnableServicePermissionDeniedException
-      )
-    except apitools_exceptions.HttpBadRequestError as e:
-      log.status.Print(
-          'Provide the --force flag if you wish to force disable services.'
-      )
-      # TODO(b/274633761) Repharse error message to avoid showing internal
-      # flags in the error message.
-      exceptions.ReraiseError(e, exceptions.Error)
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.EnableServicePermissionDeniedException
+    )
+  except apitools_exceptions.HttpBadRequestError as e:
+    log.status.Print(
+        'Provide the --force flag if you wish to force disable services.'
+    )
+    # TODO(b/274633761) Repharse error message to avoid showing internal
+    # flags in the error message.
+    exceptions.ReraiseError(e, exceptions.Error)
 
 
 def EnableApiCall(project, service):

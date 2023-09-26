@@ -48,8 +48,17 @@ def ParseCleanupPolicy(path):
   except ValueError as e:
     raise apitools_exceptions.InvalidUserInputError(
         'Could not read JSON file {}: {}'.format(path, e))
+  if not isinstance(file_policies, list):
+    raise apitools_exceptions.InvalidUserInputError(
+        'Policy file must contain a list of policies.'
+    )
   policies = dict()
-  for policy in file_policies:
+  for i in range(len(file_policies)):
+    policy = file_policies[i]
+    if not isinstance(policy, dict):
+      raise apitools_exceptions.InvalidUserInputError(
+          'Invalid policy at index {}.'.format(i)
+      )
     name = policy.get('name')
     if name is None:
       raise ar_exceptions.InvalidInputValueError(
@@ -75,6 +84,10 @@ def ParseCleanupPolicy(path):
       )
     condition = policy.get('condition')
     if condition is not None:
+      if not isinstance(condition, dict):
+        raise ar_exceptions.InvalidInputValueError(
+            'Invalid value for "condition" in policy "{}".'.format(name)
+        )
       for duration_key in ['versionAge', 'olderThan', 'newerThan']:
         if duration_key in condition:
           seconds = times.ParseDuration(condition[duration_key])

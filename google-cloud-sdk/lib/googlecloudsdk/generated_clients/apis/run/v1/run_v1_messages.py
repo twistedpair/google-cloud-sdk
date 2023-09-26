@@ -2351,6 +2351,10 @@ class RunNamespacesJobsDeleteRequest(_messages.Message):
 
   Fields:
     apiVersion: Optional. Cloud Run currently ignores this parameter.
+    force: If set to true, the Job and its Executions will be deleted no
+      matter whether any Executions are still running or not. If set to false
+      or unset, the Job and its Executions can only be deleted if there are no
+      running Executions. Any running Execution will fail the deletion.
     kind: Optional. Cloud Run currently ignores this parameter.
     name: Required. The name of the job to delete. Replace {namespace} with
       the project ID or number. It takes the form namespaces/{namespace}. For
@@ -2362,9 +2366,10 @@ class RunNamespacesJobsDeleteRequest(_messages.Message):
   """
 
   apiVersion = _messages.StringField(1)
-  kind = _messages.StringField(2)
-  name = _messages.StringField(3, required=True)
-  propagationPolicy = _messages.StringField(4)
+  force = _messages.BooleanField(2)
+  kind = _messages.StringField(3)
+  name = _messages.StringField(4, required=True)
+  propagationPolicy = _messages.StringField(5)
 
 
 class RunNamespacesJobsGetRequest(_messages.Message):

@@ -28,9 +28,89 @@ from googlecloudsdk.command_lib.tasks import constants
 from googlecloudsdk.command_lib.util.apis import arg_utils
 
 
+def AddCmekConfigResourceFlag(parser):
+  """Add flags for CMEK Update."""
+
+  kms_key_name_arg = base.Argument(
+      '--kms-key-name',
+      help=(
+          'Fully qualified identifier for the key or just the key ID. The'
+          ' latter requires the `--kms-keyring=mykeyring` and'
+          ' `--kms-project=myproject` flags to be provided too.'
+      ),
+      required=True,
+  )
+
+  kms_keyring_arg = base.Argument(
+      '--kms-keyring',
+      help="""\
+            KMS keyring of the KMS key.
+            """,
+  )
+  kms_location_arg = base.Argument(
+      '--location',
+      help="""\
+            Google Cloud location for the KMS key.
+            """,
+  )
+  kms_project_arg = base.Argument(
+      '--kms-project',
+      help="""\
+            Google Cloud project for the KMS key.
+            """,
+  )
+  # UPDATE
+  cmek_update_group = base.ArgumentGroup(
+      help='Flags for Updating CMEK Resource key',
+  )
+  cmek_update_group.AddArgument(kms_key_name_arg)
+  cmek_update_group.AddArgument(kms_keyring_arg)
+  cmek_update_group.AddArgument(kms_project_arg)
+
+  # CLEAR
+  clear_kms_key_name_flag = base.Argument(
+      '--clear-kms-key',
+      action='store_true',
+      required=True,
+      help=(
+          'Disable CMEK for the Cloud Tasks by clearing out Cloud KMS'
+          " cryptokey in the project and the location's CMEK config"
+      ),
+  )
+  cmek_clear_group = base.ArgumentGroup(
+      help='Flags for clearing CMEK Resource key.',
+  )
+  cmek_clear_group.AddArgument(clear_kms_key_name_flag)
+
+  # UPDATE AND CLEAR GROUP.
+  cmek_clear_update_group = base.ArgumentGroup(
+      help='Flags for Clearing or Updating CMEK Resource', mutex=True
+  )
+  cmek_clear_update_group.AddArgument(cmek_clear_group)
+  cmek_clear_update_group.AddArgument(cmek_update_group)
+
+  kms_location_arg.AddToParser(parser)
+  cmek_clear_update_group.AddToParser(parser)
+
+
+def DescribeCmekConfigResourceFlag(parser):
+  """Add flags for CMEK Describe."""
+
+  kms_location_arg = base.Argument(
+      '--location',
+      required=True,
+      help="""\
+            Google Cloud location for the KMS key.
+            """,
+  )
+
+  kms_location_arg.AddToParser(parser)
+
+
 def AddQueueResourceArg(parser, verb):
   base.Argument('queue', help='The queue {}.\n\n'.format(verb)).AddToParser(
-      parser)
+      parser
+  )
 
 
 def AddQueueResourceFlag(parser, required=True, plural_tasks=False):

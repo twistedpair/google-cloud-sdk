@@ -439,7 +439,8 @@ class Workflow(_messages.Message):
       most 64 entries. Keys and values can be no longer than 63 characters and
       can only contain lowercase letters, numeric characters, underscores, and
       dashes. Label keys must start with a letter. International characters
-      are allowed.
+      are allowed. This is a workflow-wide field and is not tied to a specific
+      revision.
     UserEnvVarsValue: Optional. User-defined environment variables associated
       with this workflow revision. This map has a maximum length of 20. Each
       string can take up to 40KiB. Keys cannot be empty strings and cannot
@@ -451,6 +452,7 @@ class Workflow(_messages.Message):
       the workflow and the execution specify a logging level, the execution
       level takes precedence.
     createTime: Output only. The timestamp for when the workflow was created.
+      This is a workflow-wide field and is not tied to a specific revision.
     cryptoKeyName: Optional. The resource name of a KMS crypto key used to
       encrypt or decrypt the data associated with the workflow. Format: projec
       ts/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{cryptoK
@@ -458,14 +460,17 @@ class Workflow(_messages.Message):
       all will infer the project from the account. If not provided, data
       associated with the workflow will not be CMEK-encrypted.
     description: Description of the workflow provided by the user. Must be at
-      most 1000 unicode characters long.
+      most 1000 Unicode characters long. This is a workflow-wide field and is
+      not tied to a specific revision.
     labels: Labels associated with this workflow. Labels can contain at most
       64 entries. Keys and values can be no longer than 63 characters and can
       only contain lowercase letters, numeric characters, underscores, and
       dashes. Label keys must start with a letter. International characters
-      are allowed.
+      are allowed. This is a workflow-wide field and is not tied to a specific
+      revision.
     name: The resource name of the workflow. Format:
-      projects/{project}/locations/{location}/workflows/{workflow}
+      projects/{project}/locations/{location}/workflows/{workflow}. This is a
+      workflow-wide field and is not tied to a specific revision.
     revisionCreateTime: Output only. The timestamp for the latest revision of
       the workflow's creation.
     revisionId: Output only. The revision of the workflow. A new revision of a
@@ -489,7 +494,8 @@ class Workflow(_messages.Message):
       example, this field will have error details if the execution data is
       unavailable due to revoked KMS key permissions.
     updateTime: Output only. The timestamp for when the workflow was last
-      updated.
+      updated. This is a workflow-wide field and is not tied to a specific
+      revision.
     userEnvVars: Optional. User-defined environment variables associated with
       this workflow revision. This map has a maximum length of 20. Each string
       can take up to 40KiB. Keys cannot be empty strings and cannot start with
@@ -533,6 +539,7 @@ class Workflow(_messages.Message):
     entries. Keys and values can be no longer than 63 characters and can only
     contain lowercase letters, numeric characters, underscores, and dashes.
     Label keys must start with a letter. International characters are allowed.
+    This is a workflow-wide field and is not tied to a specific revision.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -745,11 +752,11 @@ class WorkflowsProjectsLocationsWorkflowsListRevisionsRequest(_messages.Message)
   r"""A WorkflowsProjectsLocationsWorkflowsListRevisionsRequest object.
 
   Fields:
-    name: Required. Workflow from which the revisions should be listed.
-      Format: projects/{project}/locations/{location}/workflows/{workflow}
+    name: Required. Workflow for which the revisions should be listed. Format:
+      projects/{project}/locations/{location}/workflows/{workflow}
     pageSize: The maximum number of revisions to return per page. If a value
       is not specified, a default value of 20 is used. The maximum permitted
-      value is 100 and values greater than 100 coerced down to 100.
+      value is 100. Values greater than 100 are coerced down to 100.
     pageToken: The page token, received from a previous ListWorkflowRevisions
       call. Provide this to retrieve the subsequent page.
   """
@@ -764,7 +771,8 @@ class WorkflowsProjectsLocationsWorkflowsPatchRequest(_messages.Message):
 
   Fields:
     name: The resource name of the workflow. Format:
-      projects/{project}/locations/{location}/workflows/{workflow}
+      projects/{project}/locations/{location}/workflows/{workflow}. This is a
+      workflow-wide field and is not tied to a specific revision.
     updateMask: List of fields to be updated. If not present, the entire
       workflow will be updated.
     workflow: A Workflow resource to be passed as the request body.

@@ -189,11 +189,11 @@ class HostConfig(_messages.Message):
   r"""HostConfig has different instance endpoints.
 
   Fields:
-    api: API hostname. This is the hostname to use for **Host: Data Plane**
-      endpoints.
-    gitHttp: Git HTTP hostname.
-    gitSsh: Git SSH hostname.
-    html: HTML hostname.
+    api: Output only. API hostname. This is the hostname to use for **Host:
+      Data Plane** endpoints.
+    gitHttp: Output only. Git HTTP hostname.
+    gitSsh: Output only. Git SSH hostname.
+    html: Output only. HTML hostname.
   """
 
   api = _messages.StringField(1)
@@ -1170,9 +1170,9 @@ class SecuresourcemanagerProjectsLocationsRepositoriesListRequest(_messages.Mess
   r"""A SecuresourcemanagerProjectsLocationsRepositoriesListRequest object.
 
   Fields:
-    filter: Filter results.
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
+    filter: Optional. Filter results.
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
     pageToken: A token identifying a page of results the server should return.
     parent: Required. Parent value for ListRepositoriesRequest.
   """
@@ -1377,9 +1377,10 @@ class URIs(_messages.Message):
   r"""URIs for the repository.
 
   Fields:
-    api: API is the URI for API access.
-    gitHttps: git_https is the git HTTPS URI for git operations.
-    html: HTML is the URI for user to view the repository in a browser.
+    api: Output only. API is the URI for API access.
+    gitHttps: Output only. git_https is the git HTTPS URI for git operations.
+    html: Output only. HTML is the URI for user to view the repository in a
+      browser.
   """
 
   api = _messages.StringField(1)

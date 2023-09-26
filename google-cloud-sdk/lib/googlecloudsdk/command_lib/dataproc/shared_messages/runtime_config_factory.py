@@ -19,8 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
+
 from apitools.base.py import encoding
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.command_lib.dataproc.shared_messages import autotuning_config_factory as standard_autotuning_config_factory
 
 
 class RuntimeConfigFactory(object):
@@ -34,15 +36,28 @@ class RuntimeConfigFactory(object):
       self,
       dataproc,
       use_config_property=False,
+      include_autotuning=False,
+      autotuning_config_factory=None,
   ):
     """Factory for RuntimeConfig message.
 
     Args:
       dataproc: Api_lib.dataproc.Dataproc instance.
       use_config_property: Use --property instead of --properties
+      include_autotuning: Add support for autotuning arguments.
+      autotuning_config_factory: Override the standard AutotuningConfigFactory
+        instance.
     """
     self.dataproc = dataproc
     self.use_config_property = use_config_property
+    self.include_autotuning = include_autotuning
+
+    self.autotuning_config_factory = (
+        autotuning_config_factory
+        or standard_autotuning_config_factory.AutotuningConfigFactory(
+            self.dataproc
+        )
+    )
 
   def GetMessage(self, args):
     """Builds a RuntimeConfig message.
@@ -74,10 +89,16 @@ class RuntimeConfigFactory(object):
       kwargs['properties'] = encoding.DictToAdditionalPropertyMessage(
           flat_property,
           self.dataproc.messages.RuntimeConfig.PropertiesValue,
-          sort_items=True)
+          sort_items=True,
+      )
 
     if args.version:
       kwargs['version'] = args.version
+
+    if self.include_autotuning:
+      autotuning_config = self.autotuning_config_factory.GetMessage(args)
+      if autotuning_config:
+        kwargs['autotuningConfig'] = autotuning_config
 
     if not kwargs:
       return None
@@ -85,22 +106,26 @@ class RuntimeConfigFactory(object):
     return self.dataproc.messages.RuntimeConfig(**kwargs)
 
 
-def AddArguments(parser, use_config_property=False):
+def AddArguments(parser, use_config_property=False, include_autotuning=False):
   """Adds arguments related to RuntimeConfig message to the given parser."""
   parser.add_argument(
       '--container-image',
-      help=('Optional custom container image to use for the batch/session '
-            'runtime environment. If not specified, a default container image '
-            'will be used. The value should follow the container image naming '
-            'format: {registry}/{repository}/{name}:{tag}, for example, '
-            'gcr.io/my-project/my-image:1.2.3'))
+      help=(
+          'Optional custom container image to use for the batch/session '
+          'runtime environment. If not specified, a default container image '
+          'will be used. The value should follow the container image naming '
+          'format: {registry}/{repository}/{name}:{tag}, for example, '
+          'gcr.io/my-project/my-image:1.2.3'
+      ),
+  )
   if use_config_property:
     parser.add_argument(
         '--property',
         type=arg_parsers.ArgDict(),
         action='append',
         metavar='PROPERTY=VALUE',
-        help='Specifies configuration properties.')
+        help='Specifies configuration properties.',
+    )
   else:
     parser.add_argument(
         '--properties',
@@ -109,9 +134,20 @@ def AddArguments(parser, use_config_property=False):
         help="""\
         Specifies configuration properties for the workload. See
         [Dataproc Serverless for Spark documentation](https://cloud.google.com/dataproc-serverless/docs/concepts/properties)
-        for the list of supported properties.""")
+        for the list of supported properties.""",
+    )
 
   parser.add_argument(
       '--version',
-      help=('Optional runtime version.  If not specified, a default '
-            'version will be used.'))
+      help=(
+          'Optional runtime version.  If not specified, a default '
+          'version will be used.'
+      ),
+  )
+
+  _AddDependency(parser, include_autotuning)
+
+
+def _AddDependency(parser, include_autotuning):
+  if include_autotuning:
+    standard_autotuning_config_factory.AddArguments(parser)

@@ -61,18 +61,18 @@ class AccessPolicy(_messages.Message):
     parent: Required. The parent of this `AccessPolicy` in the Cloud Resource
       Hierarchy. Currently immutable once created. Format:
       `organizations/{organization_id}`
-    scopes: The scopes of a policy define which resources an ACM policy can
-      restrict, and where ACM resources can be referenced. For example, a
-      policy with scopes=["folders/123"] has the following behavior: - vpcsc
-      perimeters can only restrict projects within folders/123 - access levels
-      can only be referenced by resources within folders/123. If empty, there
-      are no limitations on which resources can be restricted by an ACM
-      policy, and there are no limitations on where ACM resources can be
-      referenced. Only one policy can include a given scope (attempting to
-      create a second policy which includes "folders/123" will result in an
-      error). Currently, scopes cannot be modified after a policy is created.
-      Currently, policies can only have a single scope. Format: list of
-      `folders/{folder_number}` or `projects/{project_number}`
+    scopes: The scopes of the AccessPolicy. Scopes define which resources a
+      policy can restrict and where its resources can be referenced. For
+      example, policy A with `scopes=["folders/123"]` has the following
+      behavior: - ServicePerimeter can only restrict projects within
+      `folders/123`. - ServicePerimeter within policy A can only reference
+      access levels defined within policy A. - Only one policy can include a
+      given scope; thus, attempting to create a second policy which includes
+      `folders/123` will result in an error. If no scopes are provided, then
+      any resource within the organization can be restricted. Scopes cannot be
+      modified after a policy is created. Policies can only have a single
+      scope. Format: list of `folders/{folder_number}` or
+      `projects/{project_number}`
     title: Required. Human readable title. Does not affect behavior.
   """
 
@@ -673,7 +673,8 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
       "organizations/256/gcpUserAccessBindings/b3-BhcX_Ud5N"
     updateMask: Required. Only the fields specified in this mask are updated.
       Because name and group_key cannot be changed, update_mask is required
-      and must always be: update_mask { paths: "access_levels" }
+      and may only contain the following fields: `access_levels`,
+      `dry_run_access_levels`. update_mask { paths: "access_levels" }
   """
 
   gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
@@ -1029,8 +1030,9 @@ class Condition(_messages.Message):
       `serviceAccount:{emailid}` If not specified, a request may come from any
       user.
     negate: Whether to negate the Condition. If true, the Condition becomes a
-      NAND over its non-empty fields, each field must be false for the
-      Condition overall to be satisfied. Defaults to false.
+      NAND over its non-empty fields. Any non-empty field criteria evaluating
+      to false will result in the Condition to be satisfied. Defaults to
+      false.
     regions: The request must originate from one of the provided
       countries/regions. Must be valid ISO 3166-1 alpha-2 codes.
     requiredAccessLevels: A list of other access levels defined in the same
@@ -1038,6 +1040,9 @@ class Condition(_messages.Message):
       which does not exist is an error. All access levels listed must be
       granted for the Condition to be true. Example:
       "`accessPolicies/MY_POLICY/accessLevels/LEVEL_NAME"`
+    vpcNetworkSources: The request must originate from one of the provided VPC
+      networks in Google Cloud. Cannot specify this field together with
+      `ip_subnetworks`.
   """
 
   devicePolicy = _messages.MessageField('DevicePolicy', 1)
@@ -1046,6 +1051,7 @@ class Condition(_messages.Message):
   negate = _messages.BooleanField(4)
   regions = _messages.StringField(5, repeated=True)
   requiredAccessLevels = _messages.StringField(6, repeated=True)
+  vpcNetworkSources = _messages.MessageField('VpcNetworkSource', 7, repeated=True)
 
 
 class CustomLevel(_messages.Message):
@@ -1143,6 +1149,9 @@ class EgressFrom(_messages.Message):
     IdentityTypeValueValuesEnum: Specifies the type of identities that are
       allowed access to outside the perimeter. If left unspecified, then
       members of `identities` field will be allowed access.
+    SourceRestrictionValueValuesEnum: Whether to enforce traffic restrictions
+      based on `sources` field. If the `sources` fields is non-empty, then
+      this field must be set to `SOURCE_RESTRICTION_ENABLED`.
 
   Fields:
     identities: A list of identities that are allowed access through this
@@ -1151,6 +1160,12 @@ class EgressFrom(_messages.Message):
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
+    sourceRestriction: Whether to enforce traffic restrictions based on
+      `sources` field. If the `sources` fields is non-empty, then this field
+      must be set to `SOURCE_RESTRICTION_ENABLED`.
+    sources: Sources that this EgressPolicy authorizes access from. If this
+      field is not empty, then `source_restriction` must be set to
+      `SOURCE_RESTRICTION_ENABLED`.
   """
 
   class IdentityTypeValueValuesEnum(_messages.Enum):
@@ -1172,8 +1187,27 @@ class EgressFrom(_messages.Message):
     ANY_USER_ACCOUNT = 2
     ANY_SERVICE_ACCOUNT = 3
 
+  class SourceRestrictionValueValuesEnum(_messages.Enum):
+    r"""Whether to enforce traffic restrictions based on `sources` field. If
+    the `sources` fields is non-empty, then this field must be set to
+    `SOURCE_RESTRICTION_ENABLED`.
+
+    Values:
+      SOURCE_RESTRICTION_UNSPECIFIED: Enforcement preference unspecified, will
+        not enforce traffic restrictions based on `sources` in EgressFrom.
+      SOURCE_RESTRICTION_ENABLED: Enforcement preference enabled, traffic
+        restrictions will be enforced based on `sources` in EgressFrom.
+      SOURCE_RESTRICTION_DISABLED: Enforcement preference disabled, will not
+        enforce traffic restrictions based on `sources` in EgressFrom.
+    """
+    SOURCE_RESTRICTION_UNSPECIFIED = 0
+    SOURCE_RESTRICTION_ENABLED = 1
+    SOURCE_RESTRICTION_DISABLED = 2
+
   identities = _messages.StringField(1, repeated=True)
   identityType = _messages.EnumField('IdentityTypeValueValuesEnum', 2)
+  sourceRestriction = _messages.EnumField('SourceRestrictionValueValuesEnum', 3)
+  sources = _messages.MessageField('EgressSource', 4, repeated=True)
 
 
 class EgressPolicy(_messages.Message):
@@ -1199,6 +1233,25 @@ class EgressPolicy(_messages.Message):
 
   egressFrom = _messages.MessageField('EgressFrom', 1)
   egressTo = _messages.MessageField('EgressTo', 2)
+
+
+class EgressSource(_messages.Message):
+  r"""The source that EgressPolicy authorizes access from inside the
+  ServicePerimeter to somewhere outside the ServicePerimeter boundaries.
+
+  Fields:
+    accessLevel: An AccessLevel resource name that allows protected resources
+      inside the ServicePerimeters to access outside the ServicePerimeter
+      boundaries. AccessLevels listed must be in the same policy as this
+      ServicePerimeter. Referencing a nonexistent AccessLevel will cause an
+      error. If an AccessLevel name is not specified, only resources within
+      the perimeter can be accessed through Google Cloud calls with request
+      origins within the perimeter. Example:
+      `accessPolicies/MY_POLICY/accessLevels/MY_LEVEL`. If a single `*` is
+      specified for `access_level`, then all EgressSources will be allowed.
+  """
+
+  accessLevel = _messages.StringField(1)
 
 
 class EgressTo(_messages.Message):
@@ -1282,7 +1335,7 @@ class GcpUserAccessBinding(_messages.Message):
   users using Context-Aware Access.
 
   Fields:
-    accessLevels: Required. Access level that a user must have to be granted
+    accessLevels: Optional. Access level that a user must have to be granted
       access. Only one access level is supported, not multiple. This repeated
       field must have exactly one element. Example:
       "accessPolicies/9522/accessLevels/device_trusted"
@@ -1569,8 +1622,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1592,7 +1645,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1631,9 +1684,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1723,7 +1776,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -1731,15 +1784,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -2141,6 +2194,37 @@ class VpcAccessibleServices(_messages.Message):
 
   allowedServices = _messages.StringField(1, repeated=True)
   enableRestriction = _messages.BooleanField(2)
+
+
+class VpcNetworkSource(_messages.Message):
+  r"""The originating network source in Google Cloud.
+
+  Fields:
+    vpcSubnetwork: Sub-segment ranges of a VPC network.
+  """
+
+  vpcSubnetwork = _messages.MessageField('VpcSubNetwork', 1)
+
+
+class VpcSubNetwork(_messages.Message):
+  r"""Sub-segment ranges inside of a VPC Network.
+
+  Fields:
+    network: Required. Network name. If the network is not part of the
+      organization, the `compute.network.get` permission must be granted to
+      the caller. Format: `//compute.googleapis.com/projects/{PROJECT_ID}/glob
+      al/networks/{NETWORK_NAME}` Example:
+      `//compute.googleapis.com/projects/my-project/global/networks/network-1`
+    vpcIpSubnetworks: CIDR block IP subnetwork specification. The IP address
+      must be an IPv4 address and can be a public or private IP address. Note
+      that for a CIDR IP address block, the specified IP address portion must
+      be properly truncated (i.e. all the host bits must be zero) or the input
+      is considered malformed. For example, "192.0.2.0/24" is accepted but
+      "192.0.2.1/24" is not. If empty, all IP addresses are allowed.
+  """
+
+  network = _messages.StringField(1)
+  vpcIpSubnetworks = _messages.StringField(2, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

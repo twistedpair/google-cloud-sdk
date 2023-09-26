@@ -91,35 +91,38 @@ class _UserResourceArgs(object):
 class _UserBucketArgs(_UserResourceArgs):
   """Contains user flag values affecting cloud bucket settings."""
 
-  def __init__(self,
-               acl_file_path=None,
-               acl_grants_to_add=None,
-               acl_grants_to_remove=None,
-               cors_file_path=None,
-               default_encryption_key=None,
-               default_event_based_hold=None,
-               default_object_acl_file_path=None,
-               default_object_acl_grants_to_add=None,
-               default_object_acl_grants_to_remove=None,
-               default_storage_class=None,
-               enable_autoclass=None,
-               labels_file_path=None,
-               labels_to_append=None,
-               labels_to_remove=None,
-               lifecycle_file_path=None,
-               location=None,
-               log_bucket=None,
-               log_object_prefix=None,
-               placement=None,
-               public_access_prevention=None,
-               recovery_point_objective=None,
-               requester_pays=None,
-               retention_period=None,
-               retention_period_to_be_locked=False,
-               uniform_bucket_level_access=None,
-               versioning=None,
-               web_error_page=None,
-               web_main_page_suffix=None):
+  def __init__(
+      self,
+      acl_file_path=None,
+      acl_grants_to_add=None,
+      acl_grants_to_remove=None,
+      cors_file_path=None,
+      default_encryption_key=None,
+      default_event_based_hold=None,
+      default_object_acl_file_path=None,
+      default_object_acl_grants_to_add=None,
+      default_object_acl_grants_to_remove=None,
+      default_storage_class=None,
+      enable_autoclass=None,
+      labels_file_path=None,
+      labels_to_append=None,
+      labels_to_remove=None,
+      lifecycle_file_path=None,
+      location=None,
+      log_bucket=None,
+      log_object_prefix=None,
+      placement=None,
+      public_access_prevention=None,
+      recovery_point_objective=None,
+      requester_pays=None,
+      retention_period=None,
+      retention_period_to_be_locked=False,
+      soft_delete_duration=None,
+      uniform_bucket_level_access=None,
+      versioning=None,
+      web_error_page=None,
+      web_main_page_suffix=None,
+  ):
     """Initializes class, binding flag values to it."""
     super(_UserBucketArgs, self).__init__(acl_file_path, acl_grants_to_add,
                                           acl_grants_to_remove)
@@ -144,6 +147,7 @@ class _UserBucketArgs(_UserResourceArgs):
     self.requester_pays = requester_pays
     self.retention_period = retention_period
     self.retention_period_to_be_locked = retention_period_to_be_locked
+    self.soft_delete_duration = soft_delete_duration
     self.uniform_bucket_level_access = uniform_bucket_level_access
     self.versioning = versioning
     self.web_error_page = web_error_page
@@ -152,37 +156,40 @@ class _UserBucketArgs(_UserResourceArgs):
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return NotImplemented
-    return (super(_UserBucketArgs, self).__eq__(other) and
-            self.cors_file_path == other.cors_file_path and
-            self.default_encryption_key == other.default_encryption_key and
-            self.default_event_based_hold == other.default_event_based_hold and
-            self.default_object_acl_file_path
-            == other.default_object_acl_file_path and
-            self.default_object_acl_grants_to_add
-            == other.default_object_acl_grants_to_add and
-            self.default_object_acl_grants_to_remove
-            == other.default_object_acl_grants_to_remove and
-            self.default_storage_class == other.default_storage_class and
-            self.enable_autoclass == other.enable_autoclass and
-            self.labels_file_path == other.labels_file_path and
-            self.labels_to_append == other.labels_to_append and
-            self.labels_to_remove == other.labels_to_remove and
-            self.lifecycle_file_path == other.lifecycle_file_path and
-            self.location == other.location and
-            self.log_bucket == other.log_bucket and
-            self.log_object_prefix == other.log_object_prefix and
-            self.placement == other.placement and
-            self.public_access_prevention == other.public_access_prevention and
-            self.recovery_point_objective == other.recovery_point_objective and
-            self.requester_pays == other.requester_pays and
-            self.retention_period == other.retention_period and
-            self.retention_period_to_be_locked
-            == other.retention_period_to_be_locked and
-            self.uniform_bucket_level_access
-            == other.uniform_bucket_level_access and
-            self.versioning == other.versioning and
-            self.web_error_page == other.web_error_page and
-            self.web_main_page_suffix == other.web_main_page_suffix)
+    return (
+        super(_UserBucketArgs, self).__eq__(other)
+        and self.cors_file_path == other.cors_file_path
+        and self.default_encryption_key == other.default_encryption_key
+        and self.default_event_based_hold == other.default_event_based_hold
+        and self.default_object_acl_file_path
+        == other.default_object_acl_file_path
+        and self.default_object_acl_grants_to_add
+        == other.default_object_acl_grants_to_add
+        and self.default_object_acl_grants_to_remove
+        == other.default_object_acl_grants_to_remove
+        and self.default_storage_class == other.default_storage_class
+        and self.enable_autoclass == other.enable_autoclass
+        and self.labels_file_path == other.labels_file_path
+        and self.labels_to_append == other.labels_to_append
+        and self.labels_to_remove == other.labels_to_remove
+        and self.lifecycle_file_path == other.lifecycle_file_path
+        and self.location == other.location
+        and self.log_bucket == other.log_bucket
+        and self.log_object_prefix == other.log_object_prefix
+        and self.placement == other.placement
+        and self.public_access_prevention == other.public_access_prevention
+        and self.recovery_point_objective == other.recovery_point_objective
+        and self.requester_pays == other.requester_pays
+        and self.retention_period == other.retention_period
+        and self.retention_period_to_be_locked
+        == other.retention_period_to_be_locked
+        and self.soft_delete_duration == other.soft_delete_duration
+        and self.uniform_bucket_level_access
+        == other.uniform_bucket_level_access
+        and self.versioning == other.versioning
+        and self.web_error_page == other.web_error_page
+        and self.web_main_page_suffix == other.web_main_page_suffix
+    )
 
 
 class _UserObjectArgs(_UserResourceArgs):
@@ -347,14 +354,18 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           acl_grants_to_remove=getattr(args, 'remove_acl_grant', None),
           cors_file_path=cors_file_path,
           default_encryption_key=default_encryption_key,
-          default_event_based_hold=getattr(args, 'default_event_based_hold',
-                                           None),
-          default_object_acl_file_path=getattr(args, 'default_object_acl_file',
-                                               None),
+          default_event_based_hold=getattr(
+              args, 'default_event_based_hold', None
+          ),
+          default_object_acl_file_path=getattr(
+              args, 'default_object_acl_file', None
+          ),
           default_object_acl_grants_to_add=getattr(
-              args, 'add_default_object_acl_grant', None),
+              args, 'add_default_object_acl_grant', None
+          ),
           default_object_acl_grants_to_remove=getattr(
-              args, 'remove_default_object_acl_grant', None),
+              args, 'remove_default_object_acl_grant', None
+          ),
           default_storage_class=default_storage_class,
           enable_autoclass=getattr(args, 'enable_autoclass', None),
           labels_file_path=labels_file_path,
@@ -366,17 +377,22 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           log_object_prefix=log_object_prefix,
           placement=getattr(args, 'placement', None),
           public_access_prevention=_get_value_or_clear_from_flag(
-              args, 'clear_public_access_prevention',
-              'public_access_prevention'),
-          recovery_point_objective=getattr(args, 'recovery_point_objective',
-                                           None),
+              args, 'clear_public_access_prevention', 'public_access_prevention'
+          ),
+          recovery_point_objective=getattr(
+              args, 'recovery_point_objective', None
+          ),
           requester_pays=getattr(args, 'requester_pays', None),
           retention_period=retention_period,
-          retention_period_to_be_locked=getattr(args, 'lock_retention_period',
-                                                False),
-          uniform_bucket_level_access=getattr(args,
-                                              'uniform_bucket_level_access',
-                                              None),
+          retention_period_to_be_locked=getattr(
+              args, 'lock_retention_period', False
+          ),
+          soft_delete_duration=_get_value_or_clear_from_flag(
+              args, 'clear_soft_delete', 'soft_delete_duration'
+          ),
+          uniform_bucket_level_access=getattr(
+              args, 'uniform_bucket_level_access', None
+          ),
           versioning=getattr(args, 'versioning', None),
           web_error_page=web_error_page,
           web_main_page_suffix=web_main_page_suffix,

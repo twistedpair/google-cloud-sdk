@@ -421,7 +421,7 @@ class BufferController:
       self.exception_raised = error
 
 
-class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
+class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
   """Represents an operation to copy by downloading and uploading.
 
   This task downloads from one cloud location and uplaods to another cloud
@@ -449,19 +449,17 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
         this location will be overwritten. Directories will not be accepted.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
-      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
-        metadata on target.
-      print_created_message (bool): Print a message containing the versioned URL
-        of the copy result.
-      print_source_version (bool): Print source object version in status message
-        enabled by the `verbose` kwarg.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      verbose (bool): Print a "copying" status message on initialization.
+      posix_to_set (PosixAttributes|None): See parent class.
+      print_created_message (bool): See parent class.
+      print_source_version (bool): See parent class.
+      user_request_args (UserRequestArgs|None): See parent class.
+      verbose (bool): See parent class.
     """
     super(DaisyChainCopyTask, self).__init__(
         source_resource,
         destination_resource,
         posix_to_set=posix_to_set,
+        print_created_message=print_created_message,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
@@ -474,7 +472,6 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
       )
 
     self._delete_source = delete_source
-    self._print_created_message = print_created_message
 
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string)
@@ -608,8 +605,7 @@ class DaisyChainCopyTask(copy_util.CopyTaskWithExitHandler):
       raise buffer_controller.exception_raised
 
     if result_resource:
-      if self._print_created_message:
-        log.status.Print('Created: {}'.format(result_resource.storage_url))
+      self._print_created_message_if_requested(result_resource)
       if self._send_manifest_messages:
         manifest_util.send_success_message(
             task_status_queue,

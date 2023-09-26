@@ -167,7 +167,19 @@ class AsyncBatchAnnotateFilesRequest(_messages.Message):
   r"""Multiple async file annotation requests are batched into a single
   service call.
 
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request. Label keys and values can be no longer than 63 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter.
+
   Fields:
+    labels: Optional. The labels with user-defined metadata for the request.
+      Label keys and values can be no longer than 63 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter.
     parent: Optional. Target project and location to make a call. Format:
       `projects/{project-id}/locations/{location-id}`. If no parent is
       specified, a region will be chosen automatically. Supported location-
@@ -178,8 +190,37 @@ class AsyncBatchAnnotateFilesRequest(_messages.Message):
       batch.
   """
 
-  parent = _messages.StringField(1)
-  requests = _messages.MessageField('AsyncAnnotateFileRequest', 2, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request. Label
+    keys and values can be no longer than 63 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. Label values are optional.
+    Label keys must start with a letter.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  parent = _messages.StringField(2)
+  requests = _messages.MessageField('AsyncAnnotateFileRequest', 3, repeated=True)
 
 
 class AsyncBatchAnnotateFilesResponse(_messages.Message):
@@ -196,7 +237,19 @@ class AsyncBatchAnnotateFilesResponse(_messages.Message):
 class AsyncBatchAnnotateImagesRequest(_messages.Message):
   r"""Request for async image annotation for a list of images.
 
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request. Label keys and values can be no longer than 63 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter.
+
   Fields:
+    labels: Optional. The labels with user-defined metadata for the request.
+      Label keys and values can be no longer than 63 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter.
     outputConfig: Required. The desired output location and metadata (e.g.
       format).
     parent: Optional. Target project and location to make a call. Format:
@@ -208,9 +261,38 @@ class AsyncBatchAnnotateImagesRequest(_messages.Message):
     requests: Required. Individual image annotation requests for this batch.
   """
 
-  outputConfig = _messages.MessageField('OutputConfig', 1)
-  parent = _messages.StringField(2)
-  requests = _messages.MessageField('AnnotateImageRequest', 3, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request. Label
+    keys and values can be no longer than 63 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. Label values are optional.
+    Label keys must start with a letter.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  outputConfig = _messages.MessageField('OutputConfig', 2)
+  parent = _messages.StringField(3)
+  requests = _messages.MessageField('AnnotateImageRequest', 4, repeated=True)
 
 
 class AsyncBatchAnnotateImagesResponse(_messages.Message):
@@ -227,7 +309,19 @@ class AsyncBatchAnnotateImagesResponse(_messages.Message):
 class BatchAnnotateFilesRequest(_messages.Message):
   r"""A list of requests to annotate files using the BatchAnnotateFiles API.
 
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request. Label keys and values can be no longer than 63 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter.
+
   Fields:
+    labels: Optional. The labels with user-defined metadata for the request.
+      Label keys and values can be no longer than 63 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter.
     parent: Optional. Target project and location to make a call. Format:
       `projects/{project-id}/locations/{location-id}`. If no parent is
       specified, a region will be chosen automatically. Supported location-
@@ -238,8 +332,37 @@ class BatchAnnotateFilesRequest(_messages.Message):
       support only one AnnotateFileRequest in BatchAnnotateFilesRequest.
   """
 
-  parent = _messages.StringField(1)
-  requests = _messages.MessageField('AnnotateFileRequest', 2, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request. Label
+    keys and values can be no longer than 63 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. Label values are optional.
+    Label keys must start with a letter.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  parent = _messages.StringField(2)
+  requests = _messages.MessageField('AnnotateFileRequest', 3, repeated=True)
 
 
 class BatchAnnotateFilesResponse(_messages.Message):
@@ -257,7 +380,19 @@ class BatchAnnotateImagesRequest(_messages.Message):
   r"""Multiple image annotation requests are batched into a single service
   call.
 
+  Messages:
+    LabelsValue: Optional. The labels with user-defined metadata for the
+      request. Label keys and values can be no longer than 63 characters
+      (Unicode codepoints), can only contain lowercase letters, numeric
+      characters, underscores and dashes. International characters are
+      allowed. Label values are optional. Label keys must start with a letter.
+
   Fields:
+    labels: Optional. The labels with user-defined metadata for the request.
+      Label keys and values can be no longer than 63 characters (Unicode
+      codepoints), can only contain lowercase letters, numeric characters,
+      underscores and dashes. International characters are allowed. Label
+      values are optional. Label keys must start with a letter.
     parent: Optional. Target project and location to make a call. Format:
       `projects/{project-id}/locations/{location-id}`. If no parent is
       specified, a region will be chosen automatically. Supported location-
@@ -267,8 +402,37 @@ class BatchAnnotateImagesRequest(_messages.Message):
     requests: Required. Individual image annotation requests for this batch.
   """
 
-  parent = _messages.StringField(1)
-  requests = _messages.MessageField('AnnotateImageRequest', 2, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. The labels with user-defined metadata for the request. Label
+    keys and values can be no longer than 63 characters (Unicode codepoints),
+    can only contain lowercase letters, numeric characters, underscores and
+    dashes. International characters are allowed. Label values are optional.
+    Label keys must start with a letter.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  parent = _messages.StringField(2)
+  requests = _messages.MessageField('AnnotateImageRequest', 3, repeated=True)
 
 
 class BatchAnnotateImagesResponse(_messages.Message):

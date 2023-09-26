@@ -28,10 +28,9 @@ from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_util
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import delete_temporary_components_task
-from googlecloudsdk.core import log
 
 
-class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
+class FinalizeCompositeUploadTask(copy_util.ObjectCopyTaskWithExitHandler):
   """Composes and deletes object resources received as messages."""
 
   def __init__(
@@ -56,26 +55,23 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
         the final composite object.
       delete_source (bool): If copy completes successfully, delete the source
         object afterwards.
-      posix_to_set (PosixAttributes|None): POSIX info set as custom cloud
-        metadata on target. If provided and preserving POSIX, skip re-parsing
-        from file system.
-      print_created_message (bool): Print a message containing the versioned URL
-        of the copy result.
+      posix_to_set (PosixAttributes|None): See parent class.
+      print_created_message (bool): See parent class.
       random_prefix (str): Random id added to component names.
       temporary_paths_to_clean_up (str): Paths to remove after the composite
         upload completes. This may include a temporary gzipped version of the
         source, or symlink placeholders.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      user_request_args (UserRequestArgs|None): See parent class.
     """
     super(FinalizeCompositeUploadTask, self).__init__(
         source_resource,
         destination_resource,
         posix_to_set=posix_to_set,
+        print_created_message=print_created_message,
         user_request_args=user_request_args,
     )
     self._expected_component_count = expected_component_count
     self._delete_source = delete_source
-    self._print_created_message = print_created_message
     self._random_prefix = random_prefix
     self._temporary_paths_to_clean_up = temporary_paths_to_clean_up
 
@@ -114,8 +110,7 @@ class FinalizeCompositeUploadTask(copy_util.CopyTaskWithExitHandler):
         compose_task_output.messages, task.Topic.CREATED_RESOURCE
     )
     if result_resource:
-      if self._print_created_message:
-        log.status.Print('Created: {}'.format(result_resource.storage_url))
+      self._print_created_message_if_requested(result_resource)
       if self._send_manifest_messages:
         manifest_util.send_success_message(
             task_status_queue,

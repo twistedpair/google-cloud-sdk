@@ -918,7 +918,14 @@ class SasPortalSetupSasAnalyticsMetadata(_messages.Message):
 
 
 class SasPortalSetupSasAnalyticsRequest(_messages.Message):
-  r"""Request for the SetupSasAnalytics rpc."""
+  r"""Request for the SetupSasAnalytics rpc.
+
+  Fields:
+    userId: Optional. User id to setup analytics for, if not provided the user
+      id associated with the project is used. optional
+  """
+
+  userId = _messages.StringField(1)
 
 
 class SasPortalSetupSasAnalyticsResponse(_messages.Message):

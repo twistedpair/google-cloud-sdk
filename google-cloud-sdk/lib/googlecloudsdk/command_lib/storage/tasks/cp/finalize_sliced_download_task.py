@@ -36,7 +36,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
+class FinalizeSlicedDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
   """Performs final steps of sliced download."""
 
   def __init__(
@@ -65,24 +65,22 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
         object afterwards.
       do_not_decompress (bool): Prevents automatically decompressing downloaded
         gzips.
-      posix_to_set (PosixAttributes|None): Set as local POSIX attributes on
-        target.
-      print_created_message (bool): Print a message containing the versioned URL
-        of the copy result.
+      posix_to_set (PosixAttributes|None): See parent class.
+      print_created_message (bool): See parent class.
       system_posix_data (SystemPosixData): System-wide POSIX info.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
+      user_request_args (UserRequestArgs|None): See parent class.
     """
     super(FinalizeSlicedDownloadTask, self).__init__(
         source_resource,
         final_destination_resource,
         posix_to_set=posix_to_set,
+        print_created_message=print_created_message,
         user_request_args=user_request_args,
     )
     self._temporary_destination_resource = temporary_destination_resource
     self._final_destination_resource = final_destination_resource
     self._delete_source = delete_source
     self._do_not_decompress = do_not_decompress
-    self._print_created_message = print_created_message
     self._system_posix_data = system_posix_data
 
   def execute(self, task_status_queue=None):
@@ -156,18 +154,21 @@ class FinalizeSlicedDownloadTask(copy_util.CopyTaskWithExitHandler):
         preserve_symlinks=preserve_symlinks,
     )
 
-    if self._print_created_message:
-      log.status.Print('Created: {}'.format(final_destination_object_path))
+    self._print_created_message_if_requested(self._final_destination_resource)
     if self._send_manifest_messages:
       # Does not send md5_hash because sliced download uses CRC32C.
-      manifest_util.send_success_message(task_status_queue,
-                                         self._source_resource,
-                                         self._final_destination_resource)
+      manifest_util.send_success_message(
+          task_status_queue,
+          self._source_resource,
+          self._final_destination_resource,
+      )
 
     if self._delete_source:
       return task.Output(
           additional_task_iterators=[[
               delete_object_task.DeleteObjectTask(
-                  self._source_resource.storage_url),
+                  self._source_resource.storage_url
+              ),
           ]],
-          messages=None)
+          messages=None,
+      )

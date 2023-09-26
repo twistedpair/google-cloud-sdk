@@ -45,17 +45,3 @@ lbRouteExtension:
     attribute_name: lb_route_extension
     help: |
       Id of the LB Route Extension.
-
-
-lbServiceSteeringExtension:
-  name: LB Service Steering Extension
-  collection: networkservices.projects.locations.lbServiceSteeringExtensions
-  request_id_field: lbServiceSteeringExtensionId
-  attributes:
-  - *project
-  - *location
-  - &lbServiceSteeringExtension:
-    parameter_name: lbServiceSteeringExtensionsId
-    attribute_name: lb_service_steering_extension
-    help: |
-      Id of the LB Service Steering Extension.

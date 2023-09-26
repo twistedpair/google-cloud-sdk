@@ -2932,6 +2932,9 @@ class Job(_messages.Message):
     configuration: [Required] Describes the job configuration.
     etag: [Output-only] A hash of this resource.
     id: [Output-only] Opaque ID field of the job
+    jobCreationReason: [Output-only] If set, it provides the reason why a Job
+      was created. If not set, it should be treated as the default: REQUESTED.
+      This feature is not yet available. Jobs will always be created.
     jobReference: [Optional] Reference describing the unique-per-user name of
       the job.
     kind: [Output-only] The type of the resource.
@@ -2947,12 +2950,13 @@ class Job(_messages.Message):
   configuration = _messages.MessageField('JobConfiguration', 1)
   etag = _messages.StringField(2)
   id = _messages.StringField(3)
-  jobReference = _messages.MessageField('JobReference', 4)
-  kind = _messages.StringField(5, default='bigquery#job')
-  selfLink = _messages.StringField(6)
-  statistics = _messages.MessageField('JobStatistics', 7)
-  status = _messages.MessageField('JobStatus', 8)
-  user_email = _messages.StringField(9)
+  jobCreationReason = _messages.MessageField('extra_types.JsonValue', 4)
+  jobReference = _messages.MessageField('JobReference', 5)
+  kind = _messages.StringField(6, default='bigquery#job')
+  selfLink = _messages.StringField(7)
+  statistics = _messages.MessageField('JobStatistics', 8)
+  status = _messages.MessageField('JobStatus', 9)
+  user_email = _messages.StringField(10)
 
 
 class JobCancelResponse(_messages.Message):
@@ -4511,7 +4515,9 @@ class QueryRequest(_messages.Message):
       if the query is valid, BigQuery returns statistics about the job such as
       how many bytes would be processed. If the query is invalid, an error
       returns. The default value is false.
-    jobCreationMode: This field is for internal use only.
+    jobCreationMode: Optional. If not set, jobs are always required. If set,
+      the query request will follow the behavior described JobCreationMode.
+      This feature is not yet available. Jobs will always be created.
     kind: The resource type of the request.
     labels: The labels associated with this job. You can use these to organize
       and group your jobs. Label keys and values can be no longer than 63
@@ -4642,6 +4648,12 @@ class QueryResponse(_messages.Message):
     jobComplete: Whether the query has completed or not. If rows or totalRows
       are present, this will always be true. If this is false, totalRows will
       not be available.
+    jobCreationReason: Optional. Only relevant when a job_reference is present
+      in the response. If job_reference is not present it will always be
+      unset. When job_reference is present, this field should be interpreted
+      as follows: If set, it will provide the reason of why a Job was created.
+      If not set, it should be treated as the default: REQUESTED. This feature
+      is not yet available. Jobs will always be created.
     jobReference: Reference to the Job that was created to run the query. This
       field will be present even if the original request timed out, in which
       case GetQueryResults can be used to read the results once the query has
@@ -4671,15 +4683,16 @@ class QueryResponse(_messages.Message):
   dmlStats = _messages.MessageField('DmlStatistics', 2)
   errors = _messages.MessageField('ErrorProto', 3, repeated=True)
   jobComplete = _messages.BooleanField(4)
-  jobReference = _messages.MessageField('JobReference', 5)
-  kind = _messages.StringField(6, default='bigquery#queryResponse')
-  numDmlAffectedRows = _messages.IntegerField(7)
-  pageToken = _messages.StringField(8)
-  rows = _messages.MessageField('TableRow', 9, repeated=True)
-  schema = _messages.MessageField('TableSchema', 10)
-  sessionInfo = _messages.MessageField('SessionInfo', 11)
-  totalBytesProcessed = _messages.IntegerField(12)
-  totalRows = _messages.IntegerField(13, variant=_messages.Variant.UINT64)
+  jobCreationReason = _messages.MessageField('extra_types.JsonValue', 5)
+  jobReference = _messages.MessageField('JobReference', 6)
+  kind = _messages.StringField(7, default='bigquery#queryResponse')
+  numDmlAffectedRows = _messages.IntegerField(8)
+  pageToken = _messages.StringField(9)
+  rows = _messages.MessageField('TableRow', 10, repeated=True)
+  schema = _messages.MessageField('TableSchema', 11)
+  sessionInfo = _messages.MessageField('SessionInfo', 12)
+  totalBytesProcessed = _messages.IntegerField(13)
+  totalRows = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
 
 
 class QueryTimelineSample(_messages.Message):

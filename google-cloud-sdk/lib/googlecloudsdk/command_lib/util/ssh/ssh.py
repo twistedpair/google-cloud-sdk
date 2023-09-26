@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import datetime
 import enum
 import errno
 import getpass
@@ -30,6 +31,7 @@ import tempfile
 import textwrap
 
 from googlecloudsdk.api_lib.oslogin import client as oslogin_client
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.oslogin import oslogin_utils
 from googlecloudsdk.command_lib.util import gaia
 from googlecloudsdk.core import config
@@ -45,10 +47,12 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 from googlecloudsdk.core.util import retry
 import six
+from six.moves.urllib.parse import quote
 
 
 PER_USER_SSH_CONFIG_FILE = os.path.join('~', '.ssh', 'config')
 SECURITY_KEY_DIR = os.path.join('~', '.ssh', 'google_compute_engine_sk')
+CERTIFICATE_DIR = os.path.join('~', '.ssh', 'google_compute_engine_cert')
 OSLOGIN_ENABLE_METADATA_KEY = 'enable-oslogin'
 OSLOGIN_ENABLE_2FA_METADATA_KEY = 'enable-oslogin-2fa'
 OSLOGIN_ENABLE_SK_METADATA_KEY = 'enable-oslogin-sk'
@@ -573,6 +577,56 @@ class Keys(object):
           log.debug('Failed to create sentinel file: [{}]'.format(e))
 
 
+def CertFileFromZone(zone):
+  cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
+  return os.path.join(cert_dir, '{}-cert.pub'.format(zone))
+
+
+def WriteCertificate(zone, cert):
+  """Writes a certificate associated with the key pair.
+
+  Args:
+    zone: string, The zone where the SSH certificate may be used.
+    cert: string, The SSH certificate data.
+  """
+  cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
+  files.MakeDir(cert_dir, mode=0o700)
+
+  filepath = CertFileFromZone(zone)
+  try:
+    files.WriteFileContents(filepath, cert)
+  except files.Error as e:
+    log.debug('Failed to update the certificate {}: [{}]'.format(filepath, e))
+
+
+def ValidateCertificate(oslogin_state, zone):
+  """Checks if the certificate is currently valid.
+
+  Args:
+    oslogin_state: An OsloginState object.
+    zone: string, The zone where the SSH certificate may be used.
+  """
+  def IsCertValid(cert):
+    time_format = '%Y-%m-%dT%H:%M:%S'
+    match = re.findall(r'\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}', cert)
+    if not match:
+      return
+    start = datetime.datetime.strptime(match[0], time_format)
+    end = datetime.datetime.strptime(match[1], time_format)
+    now = datetime.datetime.now()
+    oslogin_state.signed_ssh_key = now > start and now < end
+
+  cmd = KeygenCommand(CertFileFromZone(zone), print_cert=True)
+  try:
+    cmd.Run(out_func=IsCertValid)
+  except CommandError as e:
+    log.debug(
+        'Cert File [{0}] could not be opened: {1}'.format(
+            CertFileFromZone(zone), e
+        )
+    )
+
+
 def WriteSecurityKeys(oslogin_state):
   """Writes temporary files from a list of key data.
 
@@ -899,6 +953,7 @@ class OsloginState(object):
     environment: str, A hint about the current enviornment. ('ssh' or 'putty')
     security_keys: list, A list of 'private' keys associated with the security
       keys configured in the user's account.
+    signed_ssh_key: bool, True if a valid signed ssh key exists.
   """
 
   def __init__(
@@ -911,6 +966,7 @@ class OsloginState(object):
       ssh_security_key_support=None,
       environment=None,
       security_keys=None,
+      signed_ssh_key=False,
   ):
     self.oslogin_enabled = oslogin_enabled
     self.oslogin_2fa_enabled = oslogin_2fa_enabled
@@ -923,6 +979,7 @@ class OsloginState(object):
       self.security_keys = []
     else:
       self.security_keys = security_keys
+    self.signed_ssh_key = signed_ssh_key
 
   def __str__(self):
     return textwrap.dedent("""\
@@ -935,6 +992,7 @@ class OsloginState(object):
         Environment: {6}
         Security Keys:
         {7}
+        Signed SSH Key: {8}
         """).format(
         self.oslogin_enabled,
         self.oslogin_2fa_enabled,
@@ -944,6 +1002,7 @@ class OsloginState(object):
         self.ssh_security_key_support,
         self.environment,
         '\n'.join(self.security_keys),
+        self.signed_ssh_key,
     )
 
   def __repr__(self):
@@ -951,7 +1010,7 @@ class OsloginState(object):
         'OsloginState(oslogin_enabled={0}, oslogin_2fa_enabled={1}, '
         'security_keys_enabled={2}, user={3}, third_party_user={4}'
         'ssh_security_key_support={5}, environment={6}, '
-        'security_keys={7})'.format(
+        'security_keys={7}, signed_ssh_key={8})'.format(
             self.oslogin_enabled,
             self.oslogin_2fa_enabled,
             self.security_keys_enabled,
@@ -960,6 +1019,7 @@ class OsloginState(object):
             self.ssh_security_key_support,
             self.environment,
             self.security_keys,
+            self.signed_ssh_key,
         )
     )
 
@@ -1073,39 +1133,60 @@ def GetOsloginState(
       or properties.VALUES.core.account.Get()
   )
 
+  if oslogin_state.third_party_user and release_track in [
+      base.ReleaseTrack.ALPHA,
+      base.ReleaseTrack.BETA,
+  ]:
+    user_email = quote(user_email, safe=':')
+    zone = instance.zone.split('/').pop()
+    ValidateCertificate(oslogin_state, zone)
+    if not oslogin_state.signed_ssh_key:
+      sign_response = oslogin.SignSshPublicKey(
+          user_email,
+          public_key,
+          project.name,
+          zone,
+      )
+      WriteCertificate(zone, sign_response.signedSshPublicKey)
+    login_profile = oslogin.GetLoginProfile(
+        user_email,
+        project.name,
+        include_security_keys=oslogin_state.security_keys_enabled,
+    )
   # Check to see if public key is already in profile and POSIX information
   # exists associated with the project. If either are not set, import an SSH
   # public key. Otherwise update the expiration time if needed.
-  login_profile = oslogin.GetLoginProfile(
-      user_email,
-      project.name,
-      include_security_keys=oslogin_state.security_keys_enabled,
-  )
-  if oslogin_state.security_keys_enabled:
-    oslogin_state.security_keys = oslogin_utils.GetSecurityKeysFromProfile(
-        user_email, oslogin, profile=login_profile
-    )
-    if not login_profile.posixAccounts:
-      import_response = oslogin.ImportSshPublicKey(user_email, '')
-      login_profile = import_response.loginProfile
   else:
-    keys = oslogin_utils.GetKeyDictionaryFromProfile(
-        user_email, oslogin, profile=login_profile
+    login_profile = oslogin.GetLoginProfile(
+        user_email,
+        project.name,
+        include_security_keys=oslogin_state.security_keys_enabled,
     )
-    fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
-    if not fingerprint or not login_profile.posixAccounts:
-      import_response = oslogin.ImportSshPublicKey(
-          user_email, public_key, expiration_time
+    if oslogin_state.security_keys_enabled:
+      oslogin_state.security_keys = oslogin_utils.GetSecurityKeysFromProfile(
+          user_email, oslogin, profile=login_profile
       )
-      login_profile = import_response.loginProfile
-    elif expiration_time:
-      oslogin.UpdateSshPublicKey(
-          user_email,
-          fingerprint,
-          keys[fingerprint],
-          'expirationTimeUsec',
-          expiration_time=expiration_time,
+      if not login_profile.posixAccounts:
+        import_response = oslogin.ImportSshPublicKey(user_email, '')
+        login_profile = import_response.loginProfile
+    else:
+      keys = oslogin_utils.GetKeyDictionaryFromProfile(
+          user_email, oslogin, profile=login_profile
       )
+      fingerprint = oslogin_utils.FindKeyInKeyList(public_key, keys)
+      if not fingerprint or not login_profile.posixAccounts:
+        import_response = oslogin.ImportSshPublicKey(
+            user_email, public_key, expiration_time
+        )
+        login_profile = import_response.loginProfile
+      elif expiration_time:
+        oslogin.UpdateSshPublicKey(
+            user_email,
+            fingerprint,
+            keys[fingerprint],
+            'expirationTimeUsec',
+            expiration_time=expiration_time,
+        )
 
   # Get the username for the oslogin user. If the username is the same as the
   # default user, return that one. Otherwise, return the 'primary' username.
@@ -1438,13 +1519,16 @@ class KeygenCommand(object):
     reencode_ppk: bool, If True, reencode the PPK file if it was generated with
       a bad encoding, instead of generating a new key. This is only valid for
       PuTTY.
+    print_cert: bool, If True, ssh-keygen will print certificate information.
   """
 
-  def __init__(self, identity_file, allow_passphrase=True, reencode_ppk=False):
+  def __init__(self, identity_file, allow_passphrase=True, reencode_ppk=False,
+               print_cert=False):
     """Construct a suite independent `ssh-keygen` command."""
     self.identity_file = identity_file
     self.allow_passphrase = allow_passphrase
     self.reencode_ppk = reencode_ppk
+    self.print_cert = print_cert
 
   def Build(self, env=None):
     """Construct the actual command according to the given environment.
@@ -1465,10 +1549,13 @@ class KeygenCommand(object):
       )
     args = [env.keygen]
     if env.suite is Suite.OPENSSH:
-      prompt_passphrase = self.allow_passphrase and console_io.CanPrompt()
-      if not prompt_passphrase:
-        args.extend(['-N', ''])  # Empty passphrase
-      args.extend(['-t', 'rsa', '-f', self.identity_file])
+      if self.print_cert:
+        args.extend(['-L', '-f', self.identity_file])
+      else:
+        prompt_passphrase = self.allow_passphrase and console_io.CanPrompt()
+        if not prompt_passphrase:
+          args.extend(['-N', ''])  # Empty passphrase
+        args.extend(['-t', 'rsa', '-f', self.identity_file])
     else:
       if self.reencode_ppk:
         args.append('--reencode-ppk')
@@ -1476,11 +1563,12 @@ class KeygenCommand(object):
 
     return args
 
-  def Run(self, env=None):
+  def Run(self, env=None, out_func=None):
     """Run the keygen command in the given environment.
 
     Args:
       env: Environment, environment to run in (or current if None).
+      out_func: str->None: A function call with the stdout of ssh-keygen.
 
     Raises:
       MissingCommandError: Keygen command not found.
@@ -1488,7 +1576,7 @@ class KeygenCommand(object):
     """
     args = self.Build(env)
     log.debug('Running command [{}].'.format(' '.join(args)))
-    status = execution_utils.Exec(args, no_exit=True)
+    status = execution_utils.Exec(args, no_exit=True, out_func=out_func)
     if status:
       raise CommandError(args[0], return_code=status)
 
@@ -1518,6 +1606,7 @@ class SSHCommand(object):
       remote,
       port=None,
       identity_file=None,
+      cert_file=None,
       options=None,
       extra_flags=None,
       remote_command=None,
@@ -1537,6 +1626,7 @@ class SSHCommand(object):
       remote: Remote, the remote to connect to.
       port: str, port.
       identity_file: str, path to private key file.
+      cert_file: str, path to certificate file.
       options: {str: str}, options (`-o`) for OpenSSH, see `ssh_config(5)`.
       extra_flags: [str], extra flags to append to ssh invocation. Both binary
         style flags `['-b']` and flags with values `['-k', 'v']` are accepted.
@@ -1557,6 +1647,7 @@ class SSHCommand(object):
     self.remote = remote
     self.port = port
     self.identity_file = identity_file
+    self.cert_file = cert_file
     self.identity_list = identity_list
     self.options = options or {}
     self.extra_flags = extra_flags or []
@@ -1588,6 +1679,9 @@ class SSHCommand(object):
     if self.port:
       port_flag = '-P' if env.suite is Suite.PUTTY else '-p'
       args.extend([port_flag, self.port])
+
+    if self.cert_file:
+      args.extend(['-o CertificateFile={}'.format(self.cert_file)])
 
     if self.identity_list:
       for identity_file in self.identity_list:

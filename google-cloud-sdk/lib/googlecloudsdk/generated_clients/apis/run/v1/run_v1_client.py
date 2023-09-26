@@ -634,7 +634,7 @@ class RunV1(base_api.BaseApiClient):
         method_id='run.namespaces.jobs.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['apiVersion', 'kind', 'propagationPolicy'],
+        query_params=['apiVersion', 'force', 'kind', 'propagationPolicy'],
         relative_path='apis/run.googleapis.com/v1/{+name}',
         request_field='',
         request_type_name='RunNamespacesJobsDeleteRequest',

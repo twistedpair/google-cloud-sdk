@@ -46,7 +46,7 @@ def GetClusterCreateRequest(args, release_track):
   )
   PopulateClusterMessage(req, messages, args)
   if release_track == base.ReleaseTrack.ALPHA:
-    PopulateClusterAlphaMessage(req, messages, args)
+    PopulateClusterAlphaMessage(req, args)
   return req
 
 
@@ -132,19 +132,6 @@ def PopulateClusterMessage(req, messages, args):
   admin_users.SetAdminUsers(messages, args, req)
   fleet.SetFleetProjectPath(GetClusterReference(args), args, req)
 
-
-def PopulateClusterAlphaMessage(req, messages, args):
-  """Filled the Alpha cluster message from command arguments.
-
-  Args:
-    req: create cluster request message.
-    messages: message module of edgecontainer cluster.
-    args: command line arguments.
-  """
-  if flags.FlagIsExplicitlySet(args, 'cluster_ipv6_cidr'):
-    req.cluster.networking.clusterIpv6CidrBlocks = [args.cluster_ipv6_cidr]
-  if flags.FlagIsExplicitlySet(args, 'services_ipv6_cidr'):
-    req.cluster.networking.servicesIpv6CidrBlocks = [args.services_ipv6_cidr]
   if flags.FlagIsExplicitlySet(args, 'external_lb_ipv4_address_pools'):
     req.cluster.externalLoadBalancerIpv4AddressPools = (
         args.external_lb_ipv4_address_pools
@@ -184,6 +171,19 @@ def PopulateClusterAlphaMessage(req, messages, args):
               args.control_plane_shared_deployment_policy.upper()
           )
       )
+
+
+def PopulateClusterAlphaMessage(req, args):
+  """Filled the Alpha cluster message from command arguments.
+
+  Args:
+    req: create cluster request message.
+    args: command line arguments.
+  """
+  if flags.FlagIsExplicitlySet(args, 'cluster_ipv6_cidr'):
+    req.cluster.networking.clusterIpv6CidrBlocks = [args.cluster_ipv6_cidr]
+  if flags.FlagIsExplicitlySet(args, 'services_ipv6_cidr'):
+    req.cluster.networking.servicesIpv6CidrBlocks = [args.services_ipv6_cidr]
   resource_args.SetSystemAddonsConfig(args, req)
 
 

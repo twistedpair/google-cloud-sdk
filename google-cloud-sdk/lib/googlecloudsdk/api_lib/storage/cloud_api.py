@@ -30,6 +30,7 @@ class Capability(enum.Enum):
   COMPOSE_OBJECTS = 'COMPOSE_OBJECTS'
   CLIENT_SIDE_HASH_VALIDATION = 'CLIENT_SIDE_HASH_VALIDATION'
   ENCRYPTION = 'ENCRYPTION'
+  MANAGED_FOLDERS = 'MANAGED_FOLDERS'
   RESUMABLE_UPLOAD = 'RESUMABLE_UPLOAD'
   SLICED_DOWNLOAD = 'SLICED_DOWNLOAD'
   # For daisy chain operations, the upload stream is not purely seekable.
@@ -509,12 +510,15 @@ class CloudApi(object):
     """
     raise NotImplementedError('get_object_iam_policy must be overridden.')
 
-  def get_object_metadata(self,
-                          bucket_name,
-                          object_name,
-                          request_config=None,
-                          generation=None,
-                          fields_scope=None):
+  def get_object_metadata(
+      self,
+      bucket_name,
+      object_name,
+      request_config=None,
+      generation=None,
+      fields_scope=None,
+      soft_deleted=False,
+  ):
     """Gets object metadata.
 
     If decryption is supported by the implementing class, this function will
@@ -528,6 +532,8 @@ class CloudApi(object):
       generation (string): Generation of the object to retrieve.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
+      soft_deleted (bool): Returns the soft-deleted version of an object (not
+        the live version or a past version in a bucket with versioning enabled).
 
     Returns:
       resource_reference.ObjectResource with object metadata.
@@ -549,7 +555,9 @@ class CloudApi(object):
       all_versions=None,
       fields_scope=None,
       halt_on_empty_response=True,
+      include_folders_as_prefixes=False,
       next_page_token=None,
+      soft_deleted_only=False,
   ):
     """Lists objects (with metadata) and prefixes in a bucket.
 
@@ -563,9 +571,14 @@ class CloudApi(object):
       halt_on_empty_response (bool): For features like soft delete, the API may
         return an empty list and a next page token. If true, print a warning
         instead of using the next page token. See the warning text details.
+      include_folders_as_prefixes (bool): If True, includes managed folders as
+        prefixes in list responses. This means that managed folders that don't
+        contain objects will be listed.
       next_page_token (str|None): Used to resume LIST calls. For example, if
         halt_on_empty_response was true and a halt warning is printed, it will
         contain a next_page_token the user can use to resume querying.
+      soft_deleted_only (bool): Returns soft-deleted objects and not live,
+        past-version, or other lifecycle-status objects.
 
     Yields:
       Iterator over resource_reference.ObjectResource objects.
@@ -678,6 +691,121 @@ class CloudApi(object):
     """
     raise NotImplementedError('upload_object must be overridden.')
 
+  def create_managed_folder(self, bucket_name, managed_folder_name):
+    """Creates a managed folder.
+
+    Args:
+      bucket_name (str): The bucket to create the managed folder in.
+      managed_folder_name (str): The name of the managed folder to create.
+
+    Returns:
+      A resource_reference.ManagedFolderResource for the new managed folder.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('create_managed_folder must be overridden.')
+
+  def delete_managed_folder(self, bucket_name, managed_folder_name):
+    """Deletes a managed folder.
+
+    Args:
+      bucket_name (str): The bucket containing the managed folder to delete.
+      managed_folder_name (str): The name of the managed folder to delete.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('delete_managed_folder must be overridden.')
+
+  def get_managed_folder(self, bucket_name, managed_folder_name):
+    """Gets metadata for a managed folder.
+
+    Args:
+      bucket_name (str): The bucket containing the managed folder to get.
+      managed_folder_name (str): The name of the managed folder to get.
+
+    Returns:
+      A resource_reference.ManagedFolderResource.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('get_managed_folder must be overridden.')
+
+  def get_managed_folder_iam_policy(self, bucket_name, managed_folder_name):
+    """Gets the IAM policy for a managed folder.
+
+    Args:
+      bucket_name (str): The bucket containing the managed folder to get the IAM
+        policy for.
+      managed_folder_name (str): The name of the managed folder to get the IAM
+        policy for.
+
+    Returns:
+      An Apitools message.Policy object.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError(
+        'get_managed_folder_iam_policy must be overridden.'
+    )
+
+  def list_managed_folders(self, bucket_name, prefix=None):
+    """Lists managed folders in a bucket.
+
+    Args:
+      bucket_name (str): The bucket to list managed folders in.
+      prefix (str|None): Only managed folders beginning with `prefix` are listed
+        if specified.
+
+    Yields:
+      resource_reference.ManagedFolderResources
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('list_managed_folders must be overridden.')
+
+  def set_managed_folder_iam_policy(
+      self, bucket_name, managed_folder_name, policy
+  ):
+    """Sets the IAM policy for a managed folder.
+
+    Args:
+      bucket_name (str): The bucket containing the managed folder to get the IAM
+        policy for.
+      managed_folder_name (str): The name of the managed folder to get the IAM
+        policy for.
+      policy (object): Provider-specific data type. Currently, only available
+        for GCS so Apitools messages.Policy object. If supported for more
+        providers in the future, use a generic container.
+
+    Returns:
+      Provider-specific data type. Currently, only available for GCS so returns
+        Apitools messages.Policy object. If supported for
+        more providers in the future, use a generic container.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError(
+        'set_managed_folder_iam_policy must be overridden.'
+    )
+
   def get_service_agent(self, project_id=None, project_number=None):
     """Returns the email address (str) used to identify the service agent.
 
@@ -781,3 +909,96 @@ class CloudApi(object):
     """
     raise NotImplementedError(
         'list_notification_configurations must be overridden.')
+
+  def cancel_operation(self, bucket_name, operation_id):
+    """Cancels a long-running operation if it's still running.
+
+    Args:
+      bucket_name (str): Bucket associated with operation.
+      operation_id (str): Operation to cancel.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: Function not implemented by child class.
+    """
+    raise NotImplementedError('cancel_operation must be overridden.')
+
+  def get_operation(self, bucket_name, operation_id):
+    """Returns metadata of a long-running operation.
+
+    Args:
+      bucket_name (str): Bucket associated with operation.
+      operation_id (str): Operation to fetch.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: Function not implemented by child class.
+
+    Returns:
+      Apitools Operation object (currently Google-only).
+    """
+    raise NotImplementedError('get_operation must be overridden.')
+
+  def list_operations(self, bucket_name):
+    """Lists long-running operations.
+
+    Args:
+      bucket_name (str): Bucket associated with target operations.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: Function not implemented by child class.
+
+    Yields:
+      Apitools Operation objects (currently Google-only).
+    """
+    raise NotImplementedError('list_operations must be overridden.')
+
+  def restore_object(self, url, request_config):
+    """Restores soft-deleted object.
+
+    Args:
+      url (storage_url.CloudUrl): Object URL.
+      request_config (RequestConfig): Contains preconditions for API requests.
+
+    Raises:
+      CloudApiError: API returned an error.
+      InvalidUrlError: Received invalid object URL.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+
+    Returns:
+      ObjectResource of restored resource.
+    """
+    raise NotImplementedError('restore_object must be overridden.')
+
+  def bulk_restore_objects(
+      self,
+      url,
+      request_config,
+      allow_overwrite=False,
+      deleted_after_time=None,
+      deleted_before_time=None,
+  ):
+    """Initiates long-running operation to restore soft-deleted objects.
+
+    Args:
+      url (storage_url.CloudUrl): Object URL. May contain wildcards.
+      request_config (RequestConfig): Contains preconditions for API requests.
+      allow_overwrite (bool): Allow overwriting live objects with soft-deleted
+        versions.
+      deleted_after_time (datetime|None): Restore only objects soft-deleted
+        after this time.
+      deleted_before_time (datetime|None): Restore only objects soft-deleted
+        before this time.
+
+    Raises:
+      CloudApiError: API returned an error.
+      InvalidUrlError: Received invalid object URL.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+
+    Returns:
+      GoogleLongrunningOperation Apitools object for restoring objects.
+    """
+    raise NotImplementedError('bulk_restore_object must be overridden.')

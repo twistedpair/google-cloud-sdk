@@ -4404,7 +4404,6 @@ class LinkedEntity(_messages.Message):
   message lets us add other fields, e.g. confidence.
 
   Fields:
-    confidence: The linker model's confidence. A number between 0 and 1.
     entityId: entity_id is a concept unique identifier. These are prefixed by
       a string that identifies the entity coding system, followed by the
       unique identifier within that system. For example, "UMLS/C0000970". This
@@ -4412,8 +4411,7 @@ class LinkedEntity(_messages.Message):
       mention content.
   """
 
-  confidence = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  entityId = _messages.StringField(2)
+  entityId = _messages.StringField(1)
 
 
 class ListAnnotationStoresResponse(_messages.Message):

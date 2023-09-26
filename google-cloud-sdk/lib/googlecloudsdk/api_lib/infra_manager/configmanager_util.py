@@ -35,10 +35,11 @@ _MAX_WAIT_TIME_MS = 3 * 60 * 60 * 1000
 
 RELEASE_TRACK_TO_API_VERSION = {
     base.ReleaseTrack.ALPHA: 'v1alpha2',
+    base.ReleaseTrack.GA: 'v1',
 }
 
 
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   """Returns the messages module for Config API.
 
   Args:
@@ -53,7 +54,7 @@ def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
   )
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA, use_http=True):
+def GetClientInstance(release_track=base.ReleaseTrack.GA, use_http=True):
   """Returns an instance of the Config client.
 
   Args:

@@ -1270,8 +1270,7 @@ class Cluster(_messages.Message):
       The network must belong to the same project as the cluster. It is
       specified in the form:
       "projects/{project}/global/networks/{network_id}". This is required to
-      create a cluster. It can be updated, but it cannot be removed.
-      Deprecated, use network_config.network instead.
+      create a cluster. Deprecated, use network_config.network instead.
     networkConfig: A NetworkConfig attribute.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
@@ -2265,8 +2264,7 @@ class NetworkConfig(_messages.Message):
       The network must belong to the same project as the cluster. It is
       specified in the form:
       "projects/{project_number}/global/networks/{network_id}". This is
-      required to create a cluster. It can be updated, but it cannot be
-      removed.
+      required to create a cluster.
   """
 
   allocatedIpRange = _messages.StringField(1)

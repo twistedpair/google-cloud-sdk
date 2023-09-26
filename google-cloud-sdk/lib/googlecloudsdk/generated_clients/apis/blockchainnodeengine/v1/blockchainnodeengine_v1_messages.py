@@ -34,7 +34,6 @@ class BlockchainNode(_messages.Message):
     labels: User-provided key-value pairs.
     name: Output only. The fully qualified name of the blockchain node. e.g.
       `projects/my-project/locations/us-central1/blockchainNodes/my-node`.
-    pscOnly: Optional. This can only be accessed through the private ip.
     state: Output only. A status representing the state of the node.
     updateTime: Output only. The timestamp at which the blockchain node was
       last updated.
@@ -105,9 +104,8 @@ class BlockchainNode(_messages.Message):
   ethereumDetails = _messages.MessageField('EthereumDetails', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  pscOnly = _messages.BooleanField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  updateTime = _messages.StringField(8)
 
 
 class BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest(_messages.Message):
@@ -358,6 +356,13 @@ class EthereumDetails(_messages.Message):
       `admin` namespace. Defaults to `false`.
     apiEnableDebug: Immutable. Enables JSON-RPC access to functions in the
       `debug` namespace. Defaults to `false`.
+    beaconFeeRecipient: An Ethereum address which the beacon client will send
+      fee rewards to if no recipient is configured in the validator client.
+      See https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html
+      or https://docs.prylabs.network/docs/execution-node/fee-recipient for
+      examples of how this is used. Note that while this is often described as
+      "suggested", as we run the execution node we can trust the execution
+      node, and therefore this is considered enforced.
     consensusClient: Immutable. The consensus client.
     executionClient: Immutable. The execution client
     gethDetails: Details for the Geth execution client.
@@ -433,11 +438,12 @@ class EthereumDetails(_messages.Message):
   additionalEndpoints = _messages.MessageField('EthereumEndpoints', 1)
   apiEnableAdmin = _messages.BooleanField(2)
   apiEnableDebug = _messages.BooleanField(3)
-  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 4)
-  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 5)
-  gethDetails = _messages.MessageField('GethDetails', 6)
-  network = _messages.EnumField('NetworkValueValuesEnum', 7)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 8)
+  beaconFeeRecipient = _messages.StringField(4)
+  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 5)
+  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 6)
+  gethDetails = _messages.MessageField('GethDetails', 7)
+  network = _messages.EnumField('NetworkValueValuesEnum', 8)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 9)
 
 
 class EthereumEndpoints(_messages.Message):

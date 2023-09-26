@@ -569,14 +569,17 @@ class S3XmlClient(cloud_api.CloudApi):
     return content_encoding
 
   @_catch_client_error_raise_s3_api_error()
-  def get_object_metadata(self,
-                          bucket_name,
-                          object_name,
-                          request_config=None,
-                          generation=None,
-                          fields_scope=None):
+  def get_object_metadata(
+      self,
+      bucket_name,
+      object_name,
+      request_config=None,
+      generation=None,
+      fields_scope=None,
+      soft_deleted=False,
+  ):
     """See super class."""
-    del request_config
+    del request_config, soft_deleted  # Unused.
     request = {'Bucket': bucket_name, 'Key': object_name}
 
     # The VersionId keyword argument to head_object is not nullable if it is
@@ -614,10 +617,16 @@ class S3XmlClient(cloud_api.CloudApi):
       all_versions=False,
       fields_scope=None,
       halt_on_empty_response=True,
+      include_folders_as_prefixes=False,
       next_page_token=None,
+      soft_deleted_only=False,
   ):
     """See super class."""
-    del halt_on_empty_response, next_page_token  # Only used by GCS.
+    del (
+        halt_on_empty_response,
+        include_folders_as_prefixes,
+        next_page_token,
+    )  # Only used by GCS.
     if all_versions:
       api_method_name = 'list_object_versions'
       objects_key = 'Versions'

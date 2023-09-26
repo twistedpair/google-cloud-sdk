@@ -177,6 +177,10 @@ apis:
     v1alpha:
       discovery_doc: authztoolkit_v1alpha.json
       default: true
+  backupdr:
+    v1:
+      discovery_doc: backupdr_v1.json
+      default: true
   batch:
     v1alpha:
       discovery_doc: batch_v1alpha.json
@@ -235,10 +239,10 @@ apis:
   config:
     v1alpha2:
       discovery_doc: config_v1alpha2.json
-      default: true
+      default: false
     v1:
       discovery_doc: config_v1.json
-      default: false
+      default: true
   certificatemanager:
     v1:
       discovery_doc: certificatemanager_v1.json
@@ -1267,6 +1271,9 @@ apis:
       default: true
     v2:
       discovery_doc: serviceusage_v2.json
+  cloudquotas:
+    v1:
+      discovery_doc: cloudquotas_v1.json
   source:
     v1:
       discovery_doc: source_v1.json
@@ -1596,6 +1603,10 @@ canonical_surfaces:
   authztoolkit:
     name: authztoolkit
     command: authz-toolkit
+    hidden: true
+  backupdr:
+    name: backupdr
+    command: backup-dr
     hidden: true
   baremetalsolution:
     name: baremetalsolution
@@ -1960,6 +1971,10 @@ canonical_surfaces:
     hidden: true
   serviceusage:
     name: serviceusage
+    hidden: true
+  cloudquotas:
+    name: cloudquotas
+    command: quotas
     hidden: true
   source:
     name: source

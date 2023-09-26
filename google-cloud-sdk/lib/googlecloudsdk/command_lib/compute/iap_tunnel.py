@@ -91,24 +91,34 @@ def AddSshTunnelArgs(parser, tunnel_through_iap_scope):
       """)
 
 
-def AddHostBasedTunnelArgs(parser):
-  """Add the arguments for supporting IP/FQDN-based tunnels."""
+def AddHostBasedTunnelArgs(parser, support_security_gateway=False):
+  """Add the arguments for supporting host-based connections."""
+
   group = parser.add_argument_group()
-  group.add_argument(
-      '--network',
-      default=None,
-      required=True,
-      help=(
-          'Configures the VPC network to use when connecting via IP address or '
-          'FQDN.'))
   group.add_argument(
       '--region',
       default=None,
       required=True,
       help=('Configures the region to use when connecting via IP address or '
             'FQDN.'))
+  # TODO(b/288931285): Add Security Gateway ExL support.
+  if support_security_gateway:
+    group_mutex = group.add_argument_group(mutex=True)
+    group = group_mutex.add_argument_group()
+  AddOnPremTunnelArgs(group)
+
+
+def AddOnPremTunnelArgs(parser):
+  """Add the arguments for supporting IP/FQDN-based tunnels."""
+  parser.add_argument(
+      '--network',
+      default=None,
+      required=True,
+      help=(
+          'Configures the VPC network to use when connecting via IP address or '
+          'FQDN.'))
   # TODO(b/196572980): Make dest-group required in beta/GA.
-  group.add_argument(
+  parser.add_argument(
       '--dest-group',
       default=None,
       required=False,

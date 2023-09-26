@@ -36,8 +36,21 @@ class PocoCommand:
   """A mixin for Policy Controller specific functionality."""
 
   def current_specs(self) -> SpecMapping:
-    """Fetches the current specs from the server."""
-    return self.hubclient.ToPyDict(self.GetFeature().membershipSpecs)
+    """Fetches the current specs from the server.
+
+    If the feature is not enabled, this will return an empty dictionary.
+
+    Returns:
+      dictionary mapping from full path to membership spec.
+    """
+    try:
+      return self.hubclient.ToPyDict(self.GetFeature().membershipSpecs)
+    except gcloud_exceptions.Error as e:
+      fne = self.FeatureNotEnabledError()
+      if six.text_type(e) == six.text_type(fne):
+        return dict()
+      else:
+        raise e
 
   def path_specs(
       self, args: parser_extensions.Namespace, ignore_missing: bool = False
@@ -59,12 +72,13 @@ class PocoCommand:
     # These memberships have their project id in their full path.
     # Shorten to a set of 'region/membership' paths.
     memberships_paths = {
-        fleet_util.MembershipPartialName(path)
+        fleet_util.MembershipPartialName(path): path
         for path in base.ParseMembershipsPlural(
             args, prompt=True, prompt_cancel=False, autoselect=True
         )
     }
 
+    # Map short path to full path and spec.
     # These specs have their project number in their full path.
     specs = {
         fleet_util.MembershipPartialName(path): (path, spec)
@@ -73,10 +87,10 @@ class PocoCommand:
     }
 
     # Ensure that we find all the memberships we are looking for.
-    missing = (path for path in memberships_paths if path not in specs)
+    missing = [(s, f) for s, f in memberships_paths.items() if s not in specs]
     if ignore_missing:
-      for path in missing:
-        specs.update(path, self.messages.MembershipFeatureSpec())
+      for short, full in missing:
+        specs[short] = (full, self.messages.MembershipFeatureSpec())
     else:
       msg = 'Policy Controller is not enabled for membership {}'
       missing_memberships = [

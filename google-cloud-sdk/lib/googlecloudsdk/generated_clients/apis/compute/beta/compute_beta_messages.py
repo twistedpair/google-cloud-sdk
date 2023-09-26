@@ -7179,6 +7179,7 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -7188,6 +7189,7 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeAcceleratorTypesGetRequest(_messages.Message):
@@ -7335,6 +7337,7 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -7344,6 +7347,7 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeAddressesDeleteRequest(_messages.Message):
@@ -7614,6 +7618,7 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -7623,6 +7628,7 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeAutoscalersDeleteRequest(_messages.Message):
@@ -8218,6 +8224,7 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -8227,6 +8234,7 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeBackendServicesDeleteRequest(_messages.Message):
@@ -8675,6 +8683,7 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -8684,6 +8693,7 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeDiskTypesGetRequest(_messages.Message):
@@ -8859,6 +8869,7 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -8868,6 +8879,7 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeDisksBulkInsertRequest(_messages.Message):
@@ -10111,6 +10123,7 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -10120,6 +10133,7 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeForwardingRulesDeleteRequest(_messages.Message):
@@ -10420,6 +10434,7 @@ class ComputeFutureReservationsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -10429,6 +10444,7 @@ class ComputeFutureReservationsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeFutureReservationsCancelRequest(_messages.Message):
@@ -11332,6 +11348,7 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -11341,6 +11358,7 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeGlobalOperationsDeleteRequest(_messages.Message):
@@ -11760,6 +11778,7 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -11769,6 +11788,7 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeHealthChecksDeleteRequest(_messages.Message):
@@ -12609,6 +12629,36 @@ class ComputeImagesTestIamPermissionsRequest(_messages.Message):
   testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
+class ComputeInstanceGroupManagerResizeRequestsCancelRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagerResizeRequestsCancelRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group. The name
+      should conform to RFC1035 or be a resource ID.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    resizeRequest: The name of the resize request to cancel. The name should
+      conform to RFC1035 or be a resource ID.
+    zone: The name of the zone where the managed instance group is located.
+      The name should conform to RFC1035.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  resizeRequest = _messages.StringField(4, required=True)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstanceGroupManagerResizeRequestsDeleteRequest(_messages.Message):
   r"""A ComputeInstanceGroupManagerResizeRequestsDeleteRequest object.
 
@@ -12854,6 +12904,7 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -12863,6 +12914,7 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstanceGroupManagersApplyUpdatesToInstancesRequest(_messages.Message):
@@ -13462,6 +13514,35 @@ class ComputeInstanceGroupManagersResizeRequest(_messages.Message):
   zone = _messages.StringField(5, required=True)
 
 
+class ComputeInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersResumeInstancesRequest: A
+      InstanceGroupManagersResumeInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersResumeInstancesRequest = _messages.MessageField('InstanceGroupManagersResumeInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
 class ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Message):
   r"""A ComputeInstanceGroupManagersSetAutoHealingPoliciesRequest object.
 
@@ -13544,6 +13625,93 @@ class ComputeInstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
 
   instanceGroupManager = _messages.StringField(1, required=True)
   instanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('InstanceGroupManagersSetTargetPoolsRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersStartInstancesRequest: A
+      InstanceGroupManagersStartInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersStartInstancesRequest = _messages.MessageField('InstanceGroupManagersStartInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersStopInstancesRequest: A
+      InstanceGroupManagersStopInstancesRequest resource to be passed as the
+      request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersStopInstancesRequest = _messages.MessageField('InstanceGroupManagersStopInstancesRequest', 2)
+  project = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  zone = _messages.StringField(5, required=True)
+
+
+class ComputeInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A ComputeInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    instanceGroupManagersSuspendInstancesRequest: A
+      InstanceGroupManagersSuspendInstancesRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone where the managed instance group is located.
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  instanceGroupManagersSuspendInstancesRequest = _messages.MessageField('InstanceGroupManagersSuspendInstancesRequest', 2)
   project = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   zone = _messages.StringField(5, required=True)
@@ -13718,6 +13886,7 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -13727,6 +13896,7 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstanceGroupsDeleteRequest(_messages.Message):
@@ -14115,6 +14285,7 @@ class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -14124,6 +14295,7 @@ class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstanceTemplatesDeleteRequest(_messages.Message):
@@ -14416,6 +14588,7 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -14425,6 +14598,7 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstancesAttachDiskRequest(_messages.Message):
@@ -15833,6 +16007,7 @@ class ComputeInstantSnapshotsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -15842,6 +16017,7 @@ class ComputeInstantSnapshotsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInstantSnapshotsDeleteRequest(_messages.Message):
@@ -16118,6 +16294,7 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -16127,6 +16304,7 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeInterconnectAttachmentsDeleteRequest(_messages.Message):
@@ -17127,6 +17305,7 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -17136,6 +17315,7 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeMachineTypesGetRequest(_messages.Message):
@@ -17283,6 +17463,7 @@ class ComputeNetworkAttachmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -17292,6 +17473,7 @@ class ComputeNetworkAttachmentsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNetworkAttachmentsDeleteRequest(_messages.Message):
@@ -17571,6 +17753,7 @@ class ComputeNetworkEdgeSecurityServicesAggregatedListRequest(_messages.Message)
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -17580,6 +17763,7 @@ class ComputeNetworkEdgeSecurityServicesAggregatedListRequest(_messages.Message)
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNetworkEdgeSecurityServicesDeleteRequest(_messages.Message):
@@ -17747,6 +17931,7 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -17756,6 +17941,7 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNetworkEndpointGroupsAttachNetworkEndpointsRequest(_messages.Message):
@@ -18904,6 +19090,7 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -18913,6 +19100,7 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNodeGroupsDeleteNodesRequest(_messages.Message):
@@ -19373,6 +19561,7 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -19382,6 +19571,7 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNodeTemplatesDeleteRequest(_messages.Message):
@@ -19629,6 +19819,7 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -19638,6 +19829,7 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeNodeTypesGetRequest(_messages.Message):
@@ -20140,6 +20332,7 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -20149,6 +20342,7 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputePacketMirroringsDeleteRequest(_messages.Message):
@@ -20936,6 +21130,7 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -20945,6 +21140,7 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputePublicDelegatedPrefixesDeleteRequest(_messages.Message):
@@ -21734,6 +21930,7 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -21743,6 +21940,7 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeRegionCommitmentsGetRequest(_messages.Message):
@@ -23493,6 +23691,35 @@ class ComputeRegionInstanceGroupManagersResizeRequest(_messages.Message):
   size = _messages.IntegerField(5, required=True, variant=_messages.Variant.INT32)
 
 
+class ComputeRegionInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersResumeInstancesRequest: A
+      RegionInstanceGroupManagersResumeInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersResumeInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersResumeInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
 class ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest(_messages.Message):
   r"""A ComputeRegionInstanceGroupManagersSetAutoHealingPoliciesRequest
   object.
@@ -23578,6 +23805,93 @@ class ComputeRegionInstanceGroupManagersSetTargetPoolsRequest(_messages.Message)
   project = _messages.StringField(2, required=True)
   region = _messages.StringField(3, required=True)
   regionInstanceGroupManagersSetTargetPoolsRequest = _messages.MessageField('RegionInstanceGroupManagersSetTargetPoolsRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersStartInstancesRequest: A
+      RegionInstanceGroupManagersStartInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersStartInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersStartInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: The name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersStopInstancesRequest: A
+      RegionInstanceGroupManagersStopInstancesRequest resource to be passed as
+      the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersStopInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersStopInstancesRequest', 4)
+  requestId = _messages.StringField(5)
+
+
+class ComputeRegionInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A ComputeRegionInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    instanceGroupManager: Name of the managed instance group.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    regionInstanceGroupManagersSuspendInstancesRequest: A
+      RegionInstanceGroupManagersSuspendInstancesRequest resource to be passed
+      as the request body.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  instanceGroupManager = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  regionInstanceGroupManagersSuspendInstancesRequest = _messages.MessageField('RegionInstanceGroupManagersSuspendInstancesRequest', 4)
   requestId = _messages.StringField(5)
 
 
@@ -26830,6 +27144,7 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -26839,6 +27154,7 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeReservationsDeleteRequest(_messages.Message):
@@ -27147,6 +27463,7 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -27156,6 +27473,7 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeResourcePoliciesDeleteRequest(_messages.Message):
@@ -27435,6 +27753,7 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -27444,6 +27763,7 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeRoutersDeleteRequest(_messages.Message):
@@ -27992,6 +28312,7 @@ class ComputeSecurityPoliciesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -28001,6 +28322,7 @@ class ComputeSecurityPoliciesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeSecurityPoliciesDeleteRequest(_messages.Message):
@@ -28367,6 +28689,7 @@ class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -28376,6 +28699,7 @@ class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeServiceAttachmentsDeleteRequest(_messages.Message):
@@ -28874,6 +29198,7 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -28883,6 +29208,7 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeSslCertificatesDeleteRequest(_messages.Message):
@@ -29088,6 +29414,7 @@ class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -29097,6 +29424,7 @@ class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeSslPoliciesDeleteRequest(_messages.Message):
@@ -29395,6 +29723,7 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -29404,6 +29733,7 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeSubnetworksDeleteRequest(_messages.Message):
@@ -29981,6 +30311,7 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -29990,6 +30321,7 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetHttpProxiesDeleteRequest(_messages.Message):
@@ -30247,6 +30579,7 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -30256,6 +30589,7 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetHttpsProxiesDeleteRequest(_messages.Message):
@@ -30627,6 +30961,7 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -30636,6 +30971,7 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetInstancesDeleteRequest(_messages.Message):
@@ -30936,6 +31272,7 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -30945,6 +31282,7 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetPoolsDeleteRequest(_messages.Message):
@@ -31572,6 +31910,7 @@ class ComputeTargetTcpProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -31581,6 +31920,7 @@ class ComputeTargetTcpProxiesAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetTcpProxiesDeleteRequest(_messages.Message):
@@ -31842,6 +32182,7 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -31851,6 +32192,7 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeTargetVpnGatewaysDeleteRequest(_messages.Message):
@@ -32094,6 +32436,7 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -32103,6 +32446,7 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeUrlMapsDeleteRequest(_messages.Message):
@@ -32398,6 +32742,7 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -32407,6 +32752,7 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeVpnGatewaysDeleteRequest(_messages.Message):
@@ -32663,6 +33009,7 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
+    serviceProjectNumber: A string attribute.
   """
 
   filter = _messages.StringField(1)
@@ -32672,6 +33019,7 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
   pageToken = _messages.StringField(5)
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+  serviceProjectNumber = _messages.IntegerField(8)
 
 
 class ComputeVpnTunnelsDeleteRequest(_messages.Message):
@@ -37800,9 +38148,9 @@ class FutureReservation(_messages.Message):
       by GCE. Duration time unit is represented as a count of seconds and
       fractions of seconds at nanosecond resolution.
     autoDeleteAutoCreatedReservations: Setting for enabling or disabling
-      automatic deletion for auto-created reservation. If omitted or set to
-      true, auto-created reservations will be deleted at Future Reservation's
-      end time (default) or at user's defined timestamp if any of the
+      automatic deletion for auto-created reservation. If set to true, auto-
+      created reservations will be deleted at Future Reservation's end time
+      (default) or at user's defined timestamp if any of the
       [auto_created_reservations_delete_time,
       auto_created_reservations_duration] values is specified. For keeping
       auto-created reservation indefinitely, this value should be set to
@@ -43016,6 +43364,7 @@ class InstanceGroupManager(_messages.Message):
       service accounts needs all permissions required to create and delete
       instances. By default, the service account
       {projectNumber}@cloudservices.gserviceaccount.com is used.
+    standbyPolicy: Standby policy for stopped and suspended instances.
     statefulPolicy: Stateful configuration for this Instanced Group Manager
     status: [Output Only] The status of this managed instance group.
     targetPools: The URLs for all TargetPool resources to which instances in
@@ -43025,6 +43374,15 @@ class InstanceGroupManager(_messages.Message):
       instance group. You can reduce this number by using the
       instanceGroupManager deleteInstances or abandonInstances methods.
       Resizing the group also changes this number.
+    targetStoppedSize: The target number of stopped instances for this managed
+      instance group. This number changes when you: - Stop instance using the
+      stopInstances method or start instances using the startInstances method.
+      - Manually change the targetStoppedSize using the update method.
+    targetSuspendedSize: The target number of suspended instances for this
+      managed instance group. This number changes when you: - Suspend instance
+      using the suspendInstances method or resume instances using the
+      resumeInstances method. - Manually change the targetSuspendedSize using
+      the update method.
     updatePolicy: The update policy for this managed instance group.
     versions: Specifies the instance templates used by this managed instance
       group to create instances. Each version is defined by an
@@ -43085,13 +43443,16 @@ class InstanceGroupManager(_messages.Message):
   region = _messages.StringField(19)
   selfLink = _messages.StringField(20)
   serviceAccount = _messages.StringField(21)
-  statefulPolicy = _messages.MessageField('StatefulPolicy', 22)
-  status = _messages.MessageField('InstanceGroupManagerStatus', 23)
-  targetPools = _messages.StringField(24, repeated=True)
-  targetSize = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 26)
-  versions = _messages.MessageField('InstanceGroupManagerVersion', 27, repeated=True)
-  zone = _messages.StringField(28)
+  standbyPolicy = _messages.MessageField('InstanceGroupManagerStandbyPolicy', 22)
+  statefulPolicy = _messages.MessageField('StatefulPolicy', 23)
+  status = _messages.MessageField('InstanceGroupManagerStatus', 24)
+  targetPools = _messages.StringField(25, repeated=True)
+  targetSize = _messages.IntegerField(26, variant=_messages.Variant.INT32)
+  targetStoppedSize = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  targetSuspendedSize = _messages.IntegerField(28, variant=_messages.Variant.INT32)
+  updatePolicy = _messages.MessageField('InstanceGroupManagerUpdatePolicy', 29)
+  versions = _messages.MessageField('InstanceGroupManagerVersion', 30, repeated=True)
+  zone = _messages.StringField(31)
 
 
 class InstanceGroupManagerActionsSummary(_messages.Message):
@@ -43973,6 +44334,34 @@ class InstanceGroupManagerResizeRequestsListResponse(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class InstanceGroupManagerStandbyPolicy(_messages.Message):
+  r"""A InstanceGroupManagerStandbyPolicy object.
+
+  Enums:
+    ModeValueValuesEnum: Defines behaviour of using instances from standby
+      pool to resize MIG.
+
+  Fields:
+    initialDelaySec: A integer attribute.
+    mode: Defines behaviour of using instances from standby pool to resize
+      MIG.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Defines behaviour of using instances from standby pool to resize MIG.
+
+    Values:
+      MANUAL: MIG does not automatically stop/start or suspend/resume VMs.
+      SCALE_OUT_POOL: MIG automatically resumes and starts VMs when it scales
+        out, and replenishes the standby pool afterwards.
+    """
+    MANUAL = 0
+    SCALE_OUT_POOL = 1
+
+  initialDelaySec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  mode = _messages.EnumField('ModeValueValuesEnum', 2)
+
+
 class InstanceGroupManagerStatus(_messages.Message):
   r"""A InstanceGroupManagerStatus object.
 
@@ -44670,6 +45059,17 @@ class InstanceGroupManagersResizeAdvancedRequest(_messages.Message):
   targetSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class InstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to resume. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
 class InstanceGroupManagersScopedList(_messages.Message):
   r"""A InstanceGroupManagersScopedList object.
 
@@ -44866,6 +45266,46 @@ class InstanceGroupManagersSetTargetPoolsRequest(_messages.Message):
 
   fingerprint = _messages.BytesField(1)
   targetPools = _messages.StringField(2, repeated=True)
+
+
+class InstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to start. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class InstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    forceStop: If this flag is set to true, the Instance Group Manager will
+      proceed to stop the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to stop. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceStop = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+
+
+class InstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A InstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    forceSuspend: If this flag is set to true, the Instance Group Manager will
+      proceed to suspend the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to suspend. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceSuspend = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
 
 
 class InstanceGroupManagersUpdatePerInstanceConfigsReq(_messages.Message):
@@ -46138,9 +46578,16 @@ class InstanceSettingsMetadata(_messages.Message):
 
 
 class InstanceTemplate(_messages.Message):
-  r"""Represents an Instance Template resource. You can use instance templates
-  to create VM instances and managed instance groups. For more information,
-  read Instance Templates.
+  r"""Represents an Instance Template resource. Google Compute Engine has two
+  Instance Template resources: *
+  [Global](/compute/docs/reference/rest/beta/instanceTemplates) *
+  [Regional](/compute/docs/reference/rest/beta/regionInstanceTemplates) You
+  can reuse a global instance template in different regions whereas you can
+  use a regional instance template in a specified region only. If you want to
+  reduce cross-region dependency or achieve data residency, use a regional
+  instance template. To create VMs, managed instance groups, and reservations,
+  you can use either global or regional instance templates. For more
+  information, read Instance Templates.
 
   Fields:
     creationTimestamp: [Output Only] The creation timestamp for this instance
@@ -52066,6 +52513,8 @@ class ManagedInstance(_messages.Message):
       empty when instance does not exist.
     instance: [Output Only] The URL of the instance. The URL can exist even if
       the instance has not yet been created.
+    instanceFlexibilityOverride: [Output Only] The overrides to instance
+      properties resulting from InstanceFlexibilityPolicy.
     instanceHealth: [Output Only] Health state of the instance per health-
       check.
     instanceStatus: [Output Only] The status of the instance. This field is
@@ -52184,13 +52633,14 @@ class ManagedInstance(_messages.Message):
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
   instance = _messages.StringField(4)
-  instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 5, repeated=True)
-  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 6)
-  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 7)
-  name = _messages.StringField(8)
-  preservedStateFromConfig = _messages.MessageField('PreservedState', 9)
-  preservedStateFromPolicy = _messages.MessageField('PreservedState', 10)
-  version = _messages.MessageField('ManagedInstanceVersion', 11)
+  instanceFlexibilityOverride = _messages.MessageField('ManagedInstanceInstanceFlexibilityOverride', 5)
+  instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 6, repeated=True)
+  instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 7)
+  lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 8)
+  name = _messages.StringField(9)
+  preservedStateFromConfig = _messages.MessageField('PreservedState', 10)
+  preservedStateFromPolicy = _messages.MessageField('PreservedState', 11)
+  version = _messages.MessageField('ManagedInstanceVersion', 12)
 
 
 class ManagedInstanceAllInstancesConfig(_messages.Message):
@@ -52202,6 +52652,16 @@ class ManagedInstanceAllInstancesConfig(_messages.Message):
   """
 
   revision = _messages.StringField(1)
+
+
+class ManagedInstanceInstanceFlexibilityOverride(_messages.Message):
+  r"""A ManagedInstanceInstanceFlexibilityOverride object.
+
+  Fields:
+    machineType: The machine type to be used for this instance.
+  """
+
+  machineType = _messages.StringField(1)
 
 
 class ManagedInstanceInstanceHealth(_messages.Message):
@@ -62715,6 +63175,17 @@ class RegionInstanceGroupManagersResizeAdvancedRequest(_messages.Message):
   targetSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class RegionInstanceGroupManagersResumeInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersResumeInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to resume. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
 class RegionInstanceGroupManagersSetAutoHealingRequest(_messages.Message):
   r"""A RegionInstanceGroupManagersSetAutoHealingRequest object.
 
@@ -62750,6 +63221,46 @@ class RegionInstanceGroupManagersSetTemplateRequest(_messages.Message):
   """
 
   instanceTemplate = _messages.StringField(1)
+
+
+class RegionInstanceGroupManagersStartInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersStartInstancesRequest object.
+
+  Fields:
+    instances: The URLs of one or more instances to start. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  instances = _messages.StringField(1, repeated=True)
+
+
+class RegionInstanceGroupManagersStopInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersStopInstancesRequest object.
+
+  Fields:
+    forceStop: If this flag is set to true, the Instance Group Manager will
+      proceed to stop the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to stop. This can be a full
+      URL or a partial URL, such as zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceStop = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
+
+
+class RegionInstanceGroupManagersSuspendInstancesRequest(_messages.Message):
+  r"""A RegionInstanceGroupManagersSuspendInstancesRequest object.
+
+  Fields:
+    forceSuspend: If this flag is set to true, the Instance Group Manager will
+      proceed to suspend the instances, skipping initialization on them.
+    instances: The URLs of one or more instances to suspend. This can be a
+      full URL or a partial URL, such as
+      zones/[ZONE]/instances/[INSTANCE_NAME].
+  """
+
+  forceSuspend = _messages.BooleanField(1)
+  instances = _messages.StringField(2, repeated=True)
 
 
 class RegionInstanceGroupsListInstances(_messages.Message):
@@ -66450,8 +66961,9 @@ class RouterNat(_messages.Message):
     r"""EndpointTypesValueListEntryValuesEnum enum type.
 
     Values:
-      ENDPOINT_TYPE_MANAGED_PROXY_LB: This is used for Regional
-        Internal/External HTTP(S) and TCP Proxy load balancer endpoints.
+      ENDPOINT_TYPE_MANAGED_PROXY_LB: This is used for regional Application
+        Load Balancers (internal and external) and regional proxy Network Load
+        Balancers (internal and external) endpoints.
       ENDPOINT_TYPE_SWG: This is used for Secure Web Gateway endpoints.
       ENDPOINT_TYPE_VM: This is the default.
     """

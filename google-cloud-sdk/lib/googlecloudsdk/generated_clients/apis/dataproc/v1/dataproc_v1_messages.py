@@ -2886,19 +2886,20 @@ class ExecutionConfig(_messages.Message):
       This field requires a Cloud Storage bucket name, not a gs://... URI to a
       Cloud Storage bucket.
     subnetworkUri: Optional. Subnetwork URI to connect workload to.
-    ttl: Optional. The duration after which the workload will be terminated.
-      When the workload exceeds this duration, it will be unconditionally
-      terminated without waiting for ongoing work to finish. If ttl is not
-      specified for a batch workload, the workload will be allowed to run
-      until it exits naturally (or runs forever without exiting). If ttl is
-      not specified for an interactive session, it defaults to 24h. If ttl is
-      not specified for a batch that uses 2.1+ runtime version, it defaults to
-      4h. Minimum value is 10 minutes; maximum value is 14 days (see JSON
-      representation of Duration (https://developers.google.com/protocol-
-      buffers/docs/proto3#json)). If both ttl and idle_ttl are specified (for
-      an interactive session), the conditions are treated as OR conditions:
-      the workload will be terminated when it has been idle for idle_ttl or
-      when ttl has been exceeded, whichever occurs first.
+    ttl: Optional. The duration after which the workload will be terminated,
+      specified as the JSON representation for Duration
+      (https://protobuf.dev/programming-guides/proto3/#json). When the
+      workload exceeds this duration, it will be unconditionally terminated
+      without waiting for ongoing work to finish. If ttl is not specified for
+      a batch workload, the workload will be allowed to run until it exits
+      naturally (or run forever without exiting). If ttl is not specified for
+      an interactive session, it defaults to 24 hours. If ttl is not specified
+      for a batch that uses 2.1+ runtime version, it defaults to 4 hours.
+      Minimum value is 10 minutes; maximum value is 14 days. If both ttl and
+      idle_ttl are specified (for an interactive session), the conditions are
+      treated as OR conditions: the workload will be terminated when it has
+      been idle for idle_ttl or when ttl has been exceeded, whichever occurs
+      first.
   """
 
   class PerformanceTierValueValuesEnum(_messages.Enum):
@@ -2964,38 +2965,36 @@ class Expr(_messages.Message):
 
 
 class FlinkJob(_messages.Message):
-  r"""A Dataproc job for running Apache Flink (https://flink.apache.org/)
-  applications on YARN.
+  r"""A Dataproc job for running Apache Flink applications on YARN.
 
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Flink. Properties that conflict with values set by the
-      Dataproc API may beoverwritten. Can include properties set
+      Dataproc API might beoverwritten. Can include properties set
       in/etc/flink/conf/flink-defaults.conf and classes in user code.
 
   Fields:
     args: Optional. The arguments to pass to the driver. Do not include
       arguments, such as --conf, that can be set as job properties, since a
-      collision may occur that causes an incorrect job submission.
+      collision might occur that causes an incorrect job submission.
     jarFileUris: Optional. HCFS URIs of jar files to add to the CLASSPATHs of
       the Flink driver and tasks.
     loggingConfig: Optional. The runtime log config for job execution.
     mainClass: The name of the driver's main class. The jar file that contains
-      the class must be in the default CLASSPATH or specified in
-      jar_file_uris.
+      the class must be in the default CLASSPATH or specified in jarFileUris.
     mainJarFileUri: The HCFS URI of the jar file that contains the main class.
     properties: Optional. A mapping of property names to values, used to
       configure Flink. Properties that conflict with values set by the
-      Dataproc API may beoverwritten. Can include properties set
+      Dataproc API might beoverwritten. Can include properties set
       in/etc/flink/conf/flink-defaults.conf and classes in user code.
-    savepointUri: Optional. HCFS URI of the savepoint which contains the last
-      saved progress for this job
+    savepointUri: Optional. HCFS URI of the savepoint, which contains the last
+      saved progress for starting the current job.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    Flink. Properties that conflict with values set by the Dataproc API may
+    Flink. Properties that conflict with values set by the Dataproc API might
     beoverwritten. Can include properties set in/etc/flink/conf/flink-
     defaults.conf and classes in user code.
 
@@ -3440,7 +3439,7 @@ class HadoopJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Hadoop. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site and classes in user code.
 
   Fields:
@@ -3449,7 +3448,7 @@ class HadoopJob(_messages.Message):
       .jar, .tar, .tar.gz, .tgz, or .zip.
     args: Optional. The arguments to pass to the driver. Do not include
       arguments, such as -libjars or -Dfoo=bar, that can be set as job
-      properties, since a collision may occur that causes an incorrect job
+      properties, since a collision might occur that causes an incorrect job
       submission.
     fileUris: Optional. HCFS (Hadoop Compatible Filesystem) URIs of files to
       be copied to the working directory of Hadoop drivers and distributed
@@ -3466,14 +3465,14 @@ class HadoopJob(_messages.Message):
       'file:///home/usr/lib/hadoop-mapreduce/hadoop-mapreduce-examples.jar'
     properties: Optional. A mapping of property names to values, used to
       configure Hadoop. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site and classes in user code.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    Hadoop. Properties that conflict with values set by the Dataproc API may
+    Hadoop. Properties that conflict with values set by the Dataproc API might
     be overwritten. Can include properties set in /etc/hadoop/conf/*-site and
     classes in user code.
 
@@ -3514,7 +3513,7 @@ class HiveJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names and values, used to
       configure Hive. Properties that conflict with values set by the Dataproc
-      API may be overwritten. Can include properties set in
+      API might be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes
       in user code.
     ScriptVariablesValue: Optional. Mapping of query variable names to values
@@ -3529,7 +3528,7 @@ class HiveJob(_messages.Message):
       and UDFs.
     properties: Optional. A mapping of property names and values, used to
       configure Hive. Properties that conflict with values set by the Dataproc
-      API may be overwritten. Can include properties set in
+      API might be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/hive/conf/hive-site.xml, and classes
       in user code.
     queryFileUri: The HCFS URI of the script that contains Hive queries.
@@ -3541,8 +3540,8 @@ class HiveJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names and values, used to configure
-    Hive. Properties that conflict with values set by the Dataproc API may be
-    overwritten. Can include properties set in /etc/hadoop/conf/*-site.xml,
+    Hive. Properties that conflict with values set by the Dataproc API might
+    be overwritten. Can include properties set in /etc/hadoop/conf/*-site.xml,
     /etc/hive/conf/hive-site.xml, and classes in user code.
 
     Messages:
@@ -3970,7 +3969,7 @@ class Job(_messages.Message):
   Messages:
     LabelsValue: Optional. The labels to associate with this job. Label keys
       must contain 1 to 63 characters, and must conform to RFC 1035
-      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty, but,
       if present, must contain 1 to 63 characters, and must conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a job.
@@ -3981,8 +3980,8 @@ class Job(_messages.Message):
       status.state field will indicate if it was successful, failed, or
       cancelled.
     driverControlFilesUri: Output only. If present, the location of
-      miscellaneous control files which may be used as part of job setup and
-      handling. If not present, control files may be placed in the same
+      miscellaneous control files which can be used as part of job setup and
+      handling. If not present, control files might be placed in the same
       location as driver_output_uri.
     driverOutputResourceUri: Output only. A URI pointing to the location of
       the stdout of the job's driver program.
@@ -3993,10 +3992,10 @@ class Job(_messages.Message):
     hiveJob: Optional. Job is a Hive job.
     jobUuid: Output only. A UUID that uniquely identifies a job within the
       project over time. This is in contrast to a user-settable
-      reference.job_id that may be reused over time.
+      reference.job_id that might be reused over time.
     labels: Optional. The labels to associate with this job. Label keys must
       contain 1 to 63 characters, and must conform to RFC 1035
-      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty, but,
       if present, must contain 1 to 63 characters, and must conform to RFC
       1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
       be associated with a job.
@@ -4015,20 +4014,20 @@ class Job(_messages.Message):
     sparkRJob: Optional. Job is a SparkR job.
     sparkSqlJob: Optional. Job is a SparkSql job.
     status: Output only. The job status. Additional application-specific
-      status information may be contained in the type_job and
+      status information might be contained in the type_job and
       yarn_applications fields.
     statusHistory: Output only. The previous job status.
     trinoJob: Optional. Job is a Trino job.
     yarnApplications: Output only. The collection of YARN applications spun up
       by this job.Beta Feature: This report is available for testing purposes
-      only. It may be changed before final release.
+      only. It might be changed before final release.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels to associate with this job. Label keys must
     contain 1 to 63 characters, and must conform to RFC 1035
-    (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
+    (https://www.ietf.org/rfc/rfc1035.txt). Label values can be empty, but, if
     present, must contain 1 to 63 characters, and must conform to RFC 1035
     (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can be
     associated with a job.
@@ -4163,14 +4162,14 @@ class JobScheduling(_messages.Message):
 
   Fields:
     maxFailuresPerHour: Optional. Maximum number of times per hour a driver
-      may be restarted as a result of driver exiting with non-zero code before
-      job is reported failed.A job may be reported as thrashing if the driver
-      exits with a non-zero code four times within a 10-minute window.Maximum
-      value is 10.Note: This restartable job option is not supported in
-      Dataproc workflow templates
+      can be restarted as a result of driver exiting with non-zero code before
+      job is reported failed.A job might be reported as thrashing if the
+      driver exits with a non-zero code four times within a 10-minute
+      window.Maximum value is 10.Note: This restartable job option is not
+      supported in Dataproc workflow templates
       (https://cloud.google.com/dataproc/docs/concepts/workflows/using-
       workflows#adding_jobs_to_a_template).
-    maxFailuresTotal: Optional. Maximum total number of times a driver may be
+    maxFailuresTotal: Optional. Maximum total number of times a driver can be
       restarted as a result of the driver exiting with a non-zero code. After
       the maximum number is reached, the job will be reported as
       failed.Maximum value is 240.Note: Currently, this restartable job option
@@ -4238,10 +4237,10 @@ class JobStatus(_messages.Message):
     Values:
       UNSPECIFIED: The job substate is unknown.
       SUBMITTED: The Job is submitted to the agent.Applies to RUNNING state.
-      QUEUED: The Job has been received and is awaiting execution (it may be
+      QUEUED: The Job has been received and is awaiting execution (it might be
         waiting for a condition to be met). See the "details" field for the
         reason for the delay.Applies to RUNNING state.
-      STALE_STATUS: The agent-reported status is out of date, which may be
+      STALE_STATUS: The agent-reported status is out of date, which can be
         caused by a loss of communication between the agent and Dataproc. If
         the agent does not send a timely update, the job will fail.Applies to
         RUNNING state.
@@ -4648,19 +4647,19 @@ class LoggingConfig(_messages.Message):
   r"""The runtime logging config of the job.
 
   Messages:
-    DriverLogLevelsValue: The per-package log levels for the driver. This may
+    DriverLogLevelsValue: The per-package log levels for the driver. This can
       include "root" package name to configure rootLogger. Examples: -
       'com.google = FATAL' - 'root = INFO' - 'org.apache = DEBUG'
 
   Fields:
-    driverLogLevels: The per-package log levels for the driver. This may
+    driverLogLevels: The per-package log levels for the driver. This can
       include "root" package name to configure rootLogger. Examples: -
       'com.google = FATAL' - 'root = INFO' - 'org.apache = DEBUG'
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DriverLogLevelsValue(_messages.Message):
-    r"""The per-package log levels for the driver. This may include "root"
+    r"""The per-package log levels for the driver. This can include "root"
     package name to configure rootLogger. Examples: - 'com.google = FATAL' -
     'root = INFO' - 'org.apache = DEBUG'
 
@@ -5232,6 +5231,7 @@ class OrderedJob(_messages.Message):
       be associated with a given job.
 
   Fields:
+    flinkJob: Optional. Job is a Flink job.
     hadoopJob: Optional. Job is a Hadoop job.
     hiveJob: Optional. Job is a Hive job.
     labels: Optional. The labels to associate with this job.Label keys must be
@@ -5288,19 +5288,20 @@ class OrderedJob(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  hadoopJob = _messages.MessageField('HadoopJob', 1)
-  hiveJob = _messages.MessageField('HiveJob', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  pigJob = _messages.MessageField('PigJob', 4)
-  prerequisiteStepIds = _messages.StringField(5, repeated=True)
-  prestoJob = _messages.MessageField('PrestoJob', 6)
-  pysparkJob = _messages.MessageField('PySparkJob', 7)
-  scheduling = _messages.MessageField('JobScheduling', 8)
-  sparkJob = _messages.MessageField('SparkJob', 9)
-  sparkRJob = _messages.MessageField('SparkRJob', 10)
-  sparkSqlJob = _messages.MessageField('SparkSqlJob', 11)
-  stepId = _messages.StringField(12)
-  trinoJob = _messages.MessageField('TrinoJob', 13)
+  flinkJob = _messages.MessageField('FlinkJob', 1)
+  hadoopJob = _messages.MessageField('HadoopJob', 2)
+  hiveJob = _messages.MessageField('HiveJob', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  pigJob = _messages.MessageField('PigJob', 5)
+  prerequisiteStepIds = _messages.StringField(6, repeated=True)
+  prestoJob = _messages.MessageField('PrestoJob', 7)
+  pysparkJob = _messages.MessageField('PySparkJob', 8)
+  scheduling = _messages.MessageField('JobScheduling', 9)
+  sparkJob = _messages.MessageField('SparkJob', 10)
+  sparkRJob = _messages.MessageField('SparkRJob', 11)
+  sparkSqlJob = _messages.MessageField('SparkSqlJob', 12)
+  stepId = _messages.StringField(13)
+  trinoJob = _messages.MessageField('TrinoJob', 14)
 
 
 class ParameterValidation(_messages.Message):
@@ -5337,7 +5338,7 @@ class PigJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Pig. Properties that conflict with values set by the Dataproc
-      API may be overwritten. Can include properties set in
+      API might be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes
       in user code.
     ScriptVariablesValue: Optional. Mapping of query variable names to values
@@ -5352,7 +5353,7 @@ class PigJob(_messages.Message):
     loggingConfig: Optional. The runtime log config for job execution.
     properties: Optional. A mapping of property names to values, used to
       configure Pig. Properties that conflict with values set by the Dataproc
-      API may be overwritten. Can include properties set in
+      API might be overwritten. Can include properties set in
       /etc/hadoop/conf/*-site.xml, /etc/pig/conf/pig.properties, and classes
       in user code.
     queryFileUri: The HCFS URI of the script that contains the Pig queries.
@@ -5364,7 +5365,7 @@ class PigJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    Pig. Properties that conflict with values set by the Dataproc API may be
+    Pig. Properties that conflict with values set by the Dataproc API might be
     overwritten. Can include properties set in /etc/hadoop/conf/*-site.xml,
     /etc/pig/conf/pig.properties, and classes in user code.
 
@@ -5594,7 +5595,7 @@ class PyFlinkJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure PyFlink. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/flink/conf/flink-defaults.conf and classes in user code.
 
   Fields:
@@ -5603,7 +5604,7 @@ class PyFlinkJob(_messages.Message):
       .tar.gz, .tgz, and .zip.
     args: Optional. The arguments to pass to the driver. Do not include
       arguments, such as --conf, that can be set as job properties, since a
-      collision may occur that causes an incorrect job submission.
+      collision might occur that causes an incorrect job submission.
     jarFileUris: Optional. HCFS URIs of jar files to add to the CLASSPATHs of
       the Python driver and tasks.
     loggingConfig: Optional. The runtime log config for job execution.
@@ -5611,7 +5612,7 @@ class PyFlinkJob(_messages.Message):
       as the driver. Must be a .py file.
     properties: Optional. A mapping of property names to values, used to
       configure PyFlink. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/flink/conf/flink-defaults.conf and classes in user code.
     pythonFileUris: Optional. HCFS file URIs of Python files to pass to the
       PyFlink framework. Supported file types: .py, .egg, and .zip.
@@ -5626,8 +5627,8 @@ class PyFlinkJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    PyFlink. Properties that conflict with values set by the Dataproc API may
-    be overwritten. Can include properties set in /etc/flink/conf/flink-
+    PyFlink. Properties that conflict with values set by the Dataproc API
+    might be overwritten. Can include properties set in /etc/flink/conf/flink-
     defaults.conf and classes in user code.
 
     Messages:
@@ -5709,7 +5710,7 @@ class PySparkJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure PySpark. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
   Fields:
@@ -5728,7 +5729,7 @@ class PySparkJob(_messages.Message):
       as the driver. Must be a .py file.
     properties: Optional. A mapping of property names to values, used to
       configure PySpark. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
     pythonFileUris: Optional. HCFS file URIs of Python files to pass to the
       PySpark framework. Supported file types: .py, .egg, and .zip.
@@ -5737,8 +5738,8 @@ class PySparkJob(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    PySpark. Properties that conflict with values set by the Dataproc API may
-    be overwritten. Can include properties set in /etc/spark/conf/spark-
+    PySpark. Properties that conflict with values set by the Dataproc API
+    might be overwritten. Can include properties set in /etc/spark/conf/spark-
     defaults.conf and classes in user code.
 
     Messages:
@@ -6556,7 +6557,7 @@ class SparkJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Spark. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
   Fields:
@@ -6573,19 +6574,19 @@ class SparkJob(_messages.Message):
     loggingConfig: Optional. The runtime log config for job execution.
     mainClass: The name of the driver's main class. The jar file that contains
       the class must be in the default CLASSPATH or specified in
-      jar_file_uris.
+      SparkJob.jar_file_uris.
     mainJarFileUri: The HCFS URI of the jar file that contains the main class.
     properties: Optional. A mapping of property names to values, used to
       configure Spark. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    Spark. Properties that conflict with values set by the Dataproc API may be
-    overwritten. Can include properties set in /etc/spark/conf/spark-
+    Spark. Properties that conflict with values set by the Dataproc API might
+    be overwritten. Can include properties set in /etc/spark/conf/spark-
     defaults.conf and classes in user code.
 
     Messages:
@@ -6648,7 +6649,7 @@ class SparkRJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure SparkR. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
 
   Fields:
@@ -6665,14 +6666,14 @@ class SparkRJob(_messages.Message):
       driver. Must be a .R file.
     properties: Optional. A mapping of property names to values, used to
       configure SparkR. Properties that conflict with values set by the
-      Dataproc API may be overwritten. Can include properties set in
+      Dataproc API might be overwritten. Can include properties set in
       /etc/spark/conf/spark-defaults.conf and classes in user code.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
-    SparkR. Properties that conflict with values set by the Dataproc API may
+    SparkR. Properties that conflict with values set by the Dataproc API might
     be overwritten. Can include properties set in /etc/spark/conf/spark-
     defaults.conf and classes in user code.
 
@@ -6759,7 +6760,7 @@ class SparkSqlJob(_messages.Message):
   Messages:
     PropertiesValue: Optional. A mapping of property names to values, used to
       configure Spark SQL's SparkConf. Properties that conflict with values
-      set by the Dataproc API may be overwritten.
+      set by the Dataproc API might be overwritten.
     ScriptVariablesValue: Optional. Mapping of query variable names to values
       (equivalent to the Spark SQL command: SET name="value";).
 
@@ -6769,7 +6770,7 @@ class SparkSqlJob(_messages.Message):
     loggingConfig: Optional. The runtime log config for job execution.
     properties: Optional. A mapping of property names to values, used to
       configure Spark SQL's SparkConf. Properties that conflict with values
-      set by the Dataproc API may be overwritten.
+      set by the Dataproc API might be overwritten.
     queryFileUri: The HCFS URI of the script that contains SQL queries.
     queryList: A list of queries.
     scriptVariables: Optional. Mapping of query variable names to values
@@ -6780,7 +6781,7 @@ class SparkSqlJob(_messages.Message):
   class PropertiesValue(_messages.Message):
     r"""Optional. A mapping of property names to values, used to configure
     Spark SQL's SparkConf. Properties that conflict with values set by the
-    Dataproc API may be overwritten.
+    Dataproc API might be overwritten.
 
     Messages:
       AdditionalProperty: An additional property for a PropertiesValue object.

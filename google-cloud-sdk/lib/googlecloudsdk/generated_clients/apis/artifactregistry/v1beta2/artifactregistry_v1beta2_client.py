@@ -78,13 +78,13 @@ class ArtifactregistryV1beta2(base_api.BaseApiClient):
           download=download)
 
     Download.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}:download',
+        flat_path='v1beta2/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/files/{filesId}:downloadFile',
         http_method='GET',
         method_id='artifactregistry.media.download',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
-        relative_path='v1beta2/{+name}:download',
+        relative_path='v1beta2/{+name}:downloadFile',
         request_field='',
         request_type_name='ArtifactregistryMediaDownloadRequest',
         response_type_name='DownloadFileResponse',

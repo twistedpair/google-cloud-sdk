@@ -43,28 +43,39 @@ def GetMaskString(args, spec, mask_path, is_dotted=True):
   Raises:
     NoFieldsSpecifiedError: this error would happen when no args are specified.
   """
-  specified_args_list = set(args.GetSpecifiedArgs().keys())
-  if not specified_args_list:
+  if not args.GetSpecifiedArgs():
     raise NoFieldsSpecifiedError(
         'Must specify at least one valid parameter to update.')
 
-  field_list = []
+  field_set = set()
   for param in _GetSpecParams(spec.arguments.params):
-    if isinstance(param, yaml_arg_schema.YAMLConceptArgument):
-      continue
-    is_arg_specified = (
-        '--' + param.arg_name in specified_args_list or
-        '--no-' + param.arg_name in specified_args_list or
-        param.arg_name in specified_args_list)
-    if is_arg_specified and param.api_field is not None:
-      api_field_name = _ExtractMaskField(mask_path, param.api_field, is_dotted)
-      field_list.append(api_field_name)
+    field_set.update(_GetMaskFields(param, args, mask_path, is_dotted))
 
-  # Removes the duplicates and sorts the list for better testing.
-  trimmed_field_list = sorted(set(field_list))
-  mask = ','.join(trimmed_field_list)
+  # Sorts the list for better testing.
+  return ','.join(sorted(field_set))
 
-  return mask
+
+def _GetMaskFields(param, args, mask_path, is_dotted):
+  """Gets the fieldMask based on the yaml arg and the arguments specified.
+
+  Args:
+    param: yaml_arg_schema.YAMLArgument, the yaml argument added to parser
+    args: parser_extensions.Namespace, user specified arguments
+    mask_path: str, path to where update mask applies
+    is_dotted: bool, True if the dotted path of the name is returned
+
+  Returns:
+    Set of fields (str) to add to the update mask
+  """
+  field_set = set()
+  if not param.IsApiFieldSpecified(args):
+    return field_set
+
+  for api_field in param.api_fields:
+    mask_field = _ExtractMaskField(mask_path, api_field, is_dotted)
+    if mask_field:
+      field_set.add(mask_field)
+  return field_set
 
 
 def _GetSpecParams(params):

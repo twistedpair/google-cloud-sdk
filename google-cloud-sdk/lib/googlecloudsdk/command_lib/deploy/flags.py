@@ -73,16 +73,14 @@ def AddImagesGroup(parser, hidden=False):
       metavar='NAME=TAG',
       type=arg_parsers.ArgDict(),
       hidden=hidden,
-      help=textwrap.dedent(
-          """\
+      help=textwrap.dedent("""\
       Reference to a collection of individual image name to image full path replacements.
 
       For example:
 
           $ gcloud deploy releases create foo \\
               --images image1=path/to/image1:v1@sha256:45db24
-      """
-      ),
+      """),
   )
   images_group.add_argument(
       '--build-artifacts',
@@ -159,9 +157,7 @@ def AddDeliveryPipeline(parser, required=True):
 
 def AddAnnotationsFlag(parser, resource_type):
   """Adds --annotations flag."""
-  help_text = (
-      textwrap.dedent(
-          """\
+  help_text = textwrap.dedent("""\
   Annotations to apply to the %s. Annotations take the form of key/value string pairs.
 
   Examples:
@@ -170,10 +166,7 @@ def AddAnnotationsFlag(parser, resource_type):
 
     $ {command} --annotations="from_target=test,status=stable"
 
-  """
-      )
-      % (resource_type)
-  )
+  """) % (resource_type)
 
   parser.add_argument(
       '--annotations',
@@ -185,9 +178,7 @@ def AddAnnotationsFlag(parser, resource_type):
 
 def AddLabelsFlag(parser, resource_type):
   """Add --labels flag."""
-  help_text = (
-      textwrap.dedent(
-          """\
+  help_text = textwrap.dedent("""\
   Labels to apply to the %s. Labels take the form of key/value string pairs.
 
   Examples:
@@ -196,10 +187,7 @@ def AddLabelsFlag(parser, resource_type):
 
     $ {command} --labels="commit=abc123,author=foo"
 
-"""
-      )
-      % (resource_type)
-  )
+""") % (resource_type)
 
   parser.add_argument(
       '--labels',
@@ -218,8 +206,7 @@ def AddSkaffoldVersion(parser):
 
 def AddSkaffoldFileFlag():
   """Add --skaffold-file flag."""
-  help_text = textwrap.dedent(
-      """\
+  help_text = textwrap.dedent("""\
   Path of the skaffold file absolute or relative to the source directory.
 
   Examples:
@@ -240,8 +227,7 @@ def AddSkaffoldFileFlag():
 
     $ {command} --skaffold-file=/home/user/source/config/skaffold.yaml
 
-  """
-  )
+  """)
   return base.Argument('--skaffold-file', help=help_text)
 
 
@@ -278,6 +264,44 @@ def AddCloudRunFileFlag():
   )
 
 
+def AddServicesFlag():
+  return base.Argument(
+      '--services',
+      metavar='NAME=TAG',
+      type=arg_parsers.ArgDict(),
+      hidden=True,
+      help="""
+        The flag to be used with the --from-run-container flag to specify the
+        name of the service present in a given target.
+        This will be a repeated flag.
+
+        *target_id*::: The target_id.
+        *service*::: The name of the service in the specified target_id.
+
+        For example:
+
+          $gcloud deploy releases create foo \\
+              --from-run-container=path/to/image1:v1@sha256:45db24
+              --services=dev_target:dev_service
+              --services=prod_target:prod_service
+      """,
+  )
+
+
+def AddFromRunContainerFlag():
+  return base.Argument(
+      '--from-run-container',
+      hidden=True,
+      help="""
+          The container name, which Cloud Deploy will use to
+          generate a CloudRun manifest.yaml and a skaffold.yaml file.
+          The generated Skaffold file and manifest file will be
+          available in the Google Cloud Storage source staging directory
+          after the release is complete.
+      """,
+  )
+
+
 def AddSkaffoldSources(parser):
   """Add Skaffold sources."""
   skaffold_source_config_group = parser.add_mutually_exclusive_group()
@@ -289,6 +313,11 @@ def AddSkaffoldSources(parser):
   # Add the from-k8s-manifest and --from-run-manifest flag to the mutex group.
   AddKubernetesFileFlag().AddToParser(skaffold_source_config_group)
   AddCloudRunFileFlag().AddToParser(skaffold_source_config_group)
+  # Add from-k8s-container and the from-run-container flag to the mutex group.
+  run_container_group = skaffold_source_config_group.add_group(mutex=False,
+                                                               hidden=True)
+  AddFromRunContainerFlag().AddToParser(run_container_group)
+  AddServicesFlag().AddToParser(run_container_group)
 
 
 def AddDescriptionFlag(parser):
@@ -304,16 +333,14 @@ def AddDescriptionFlag(parser):
 
 def AddListAllPipelines(parser):
   """Add --list-all-pipelines flag."""
-  help_text = textwrap.dedent(
-      """\
+  help_text = textwrap.dedent("""\
   List all Delivery Pipelines associated with a target.
 
   Usage:
 
     $ {command} --list-all-pipelines
 
-"""
-  )
+""")
 
   parser.add_argument(
       '--list-all-pipelines', action='store_true', default=None, help=help_text
@@ -322,16 +349,14 @@ def AddListAllPipelines(parser):
 
 def AddSkipPipelineLookup(parser):
   """Add --skip-pipeline-lookup flag."""
-  help_text = textwrap.dedent(
-      """\
+  help_text = textwrap.dedent("""\
   If set, skip fetching details of associated pipelines when describing a target.
 
   Usage:
 
     $ {command} --skip-pipeline-lookup
 
-"""
-  )
+""")
 
   parser.add_argument(
       '--skip-pipeline-lookup',
@@ -367,16 +392,14 @@ def AddRollbackOfRollout(parser):
 
 def AddStartingPhaseId(parser):
   """Add --starting-phase-id flag."""
-  help_text = textwrap.dedent(
-      """\
+  help_text = textwrap.dedent("""\
   If set, starts the created rollout at the specified phase.
 
   Start rollout at `stable` phase:
 
     $ {command} --starting-phase-id=stable
 
-  """
-  )
+  """)
 
   parser.add_argument(
       '--starting-phase-id',
@@ -390,8 +413,7 @@ def AddStartingPhaseId(parser):
 
 def AddInitialRolloutLabelsFlag():
   """Add --initial-rollout-labels flag."""
-  help_text = textwrap.dedent(
-      """\
+  help_text = textwrap.dedent("""\
   Labels to apply to the initial rollout when creating the release. Labels take
   the form of key/value string pairs.
 
@@ -401,8 +423,7 @@ def AddInitialRolloutLabelsFlag():
 
     $ {command} initial-rollout-labels="commit=abc123,author=foo"
 
-"""
-  )
+""")
   return base.Argument(
       '--initial-rollout-labels',
       help=help_text,
@@ -413,8 +434,7 @@ def AddInitialRolloutLabelsFlag():
 
 def AddInitialRolloutAnnotationsFlag():
   """Adds --initial-rollout-annotations flag."""
-  help_text = textwrap.dedent(
-      """\
+  help_text = textwrap.dedent("""\
   Annotations to apply to the initial rollout when creating the release.
   Annotations take the form of key/value string pairs.
 
@@ -424,8 +444,7 @@ def AddInitialRolloutAnnotationsFlag():
 
     $ {command} --initial-rollout-annotations="from_target=test,status=stable"
 
-  """
-  )
+  """)
 
   return base.Argument(
       '--initial-rollout-annotations',
@@ -437,8 +456,7 @@ def AddInitialRolloutAnnotationsFlag():
 
 def AddInitialRolloutPhaseIDFlag():
   """Adds --initial-rollout-phase-id flag."""
-  help_text = textwrap.dedent(
-      """\
+  help_text = textwrap.dedent("""\
   The phase to start the initial rollout at when creating the release.
   The phase ID must be a valid phase on the rollout. If not specified, then the
   rollout will start at the first phase.
@@ -449,8 +467,7 @@ def AddInitialRolloutPhaseIDFlag():
 
     $ {command} --initial-rollout-phase-id=stable
 
-  """
-  )
+  """)
 
   return base.Argument(
       '--initial-rollout-phase-id',
@@ -521,14 +538,13 @@ def AddPhaseId(parser, required=True, hidden=False):
       '--phase-id',
       hidden=hidden,
       help='Phase ID on a rollout resource',
-      required=required)
+      required=required,
+  )
 
 
 def AddDeployParametersFlag(parser, hidden=False):
   """Add --deploy-parameters flag."""
-  help_text = (
-      textwrap.dedent(
-          """\
+  help_text = textwrap.dedent("""\
   Deployment parameters to apply to the release. Deployment parameters take the form of key/value string pairs.
 
   Examples:
@@ -537,9 +553,7 @@ def AddDeployParametersFlag(parser, hidden=False):
 
     $ {command} --deploy-parameters="key1=value1,key2=value2"
 
-"""
-      )
-  )
+""")
 
   parser.add_argument(
       '--deploy-parameters',

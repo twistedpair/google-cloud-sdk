@@ -1132,16 +1132,6 @@ class GkebackupProjectsLocationsBackupPlansTestIamPermissionsRequest(_messages.M
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class GkebackupProjectsLocationsDeleteOperationsRequest(_messages.Message):
-  r"""A GkebackupProjectsLocationsDeleteOperationsRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class GkebackupProjectsLocationsGetRequest(_messages.Message):
   r"""A GkebackupProjectsLocationsGetRequest object.
 
@@ -1184,6 +1174,16 @@ class GkebackupProjectsLocationsOperationsCancelRequest(_messages.Message):
 
   googleLongrunningCancelOperationRequest = _messages.MessageField('GoogleLongrunningCancelOperationRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class GkebackupProjectsLocationsOperationsDeleteRequest(_messages.Message):
+  r"""A GkebackupProjectsLocationsOperationsDeleteRequest object.
+
+  Fields:
+    name: The name of the operation resource to be deleted.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class GkebackupProjectsLocationsOperationsGetRequest(_messages.Message):
@@ -2162,9 +2162,7 @@ class ResourceFilter(_messages.Message):
       transformation must be contained within one of the listed Kubernetes
       Namespace in the Backup. If this field is not provided, no namespace
       filtering will be performed (all resources in all Namespaces, including
-      all cluster-scoped resources, will be candidates for transformation). To
-      mix cluster-scoped and namespaced resources in the same rule, use an
-      empty string ("") as one of the target namespaces.
+      all cluster-scoped resources, will be candidates for transformation).
   """
 
   groupKinds = _messages.MessageField('GroupKind', 1, repeated=True)
@@ -2393,10 +2391,40 @@ class RestoreConfig(_messages.Message):
         conflict occurs during the restore process itself (e.g., because an
         out of band process creates conflicting resources), a conflict will be
         reported.
+      MERGE_SKIP_ON_CONFLICT: This mode merges the backup and the target
+        cluster and skips the conflicting resources. If a single resource to
+        restore exists in the cluster before restoration, the resource will be
+        skipped, otherwise it will be restored.
+      MERGE_REPLACE_VOLUME_ON_CONFLICT: This mode merges the backup and the
+        target cluster and skips the conflicting resources except volume data.
+        If a PVC to restore already exists, this mode will restore/reconnect
+        the volume without overwriting the PVC. It is similar to
+        MERGE_SKIP_ON_CONFLICT except that it will apply the volume data
+        policy for the conflicting PVCs: - RESTORE_VOLUME_DATA_FROM_BACKUP:
+        restore data only and respect the reclaim policy of the original PV; -
+        REUSE_VOLUME_HANDLE_FROM_BACKUP: reconnect and respect the reclaim
+        policy of the original PV; - NO_VOLUME_DATA_RESTORATION: new provision
+        and respect the reclaim policy of the original PV. Note that this mode
+        could cause data loss as the original PV can be retained or deleted
+        depending on its reclaim policy.
+      MERGE_REPLACE_ON_CONFLICT: This mode merges the backup and the target
+        cluster and replaces the conflicting resources with the ones in the
+        backup. If a single resource to restore exists in the cluster before
+        restoration, the resource will be replaced with the one from the
+        backup. To replace an existing resource, the first attempt is to
+        update the resource to match the one from the backup; if the update
+        fails, the second attempt is to delete the resource and restore it
+        from the backup. Note that this mode could cause data loss as it
+        replaces the existing resources in the target cluster, and the
+        original PV can be retained or deleted depending on its reclaim
+        policy.
     """
     NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED = 0
     DELETE_AND_RESTORE = 1
     FAIL_ON_CONFLICT = 2
+    MERGE_SKIP_ON_CONFLICT = 3
+    MERGE_REPLACE_VOLUME_ON_CONFLICT = 4
+    MERGE_REPLACE_ON_CONFLICT = 5
 
   class VolumeDataRestorePolicyValueValuesEnum(_messages.Enum):
     r"""Optional. Specifies the mechanism to be used to restore volume data.
@@ -2560,8 +2588,9 @@ class RetentionPolicy(_messages.Message):
       field does NOT affect existing Backups under it. Backups created AFTER a
       successful update will automatically pick up the new value. NOTE:
       backup_retain_days must be >= backup_delete_lock_days. If cron_schedule
-      is defined, then this must be <= 360 * the creation interval. Default: 0
-      (no automatic deletion)
+      is defined, then this must be <= 360 * the creation interval. If
+      rpo_config is defined, then this must be <= 360 * target_rpo_minutes /
+      (1440minutes/day). Default: 0 (no automatic deletion)
     locked: Optional. This flag denotes whether the retention policy of this
       BackupPlan is locked. If set to True, no further update is allowed on
       this policy, including the `locked` field itself. Default: False
@@ -2587,7 +2616,8 @@ class RpoConfig(_messages.Message):
       the API are in UTC.
     targetRpoMinutes: Required. Defines the target RPO for the BackupPlan in
       minutes, which means the target maximum data loss in time that is
-      acceptable for this BackupPlan. This must be at least 1.
+      acceptable for this BackupPlan. This must be at least 60, i.e., 1 hour,
+      and at most 86400, i.e., 60 days.
   """
 
   exclusionWindows = _messages.MessageField('ExclusionWindow', 1, repeated=True)

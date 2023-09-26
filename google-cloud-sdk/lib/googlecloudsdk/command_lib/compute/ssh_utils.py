@@ -520,12 +520,15 @@ class BaseSSHHelper(object):
 
   def GetInstance(self, client, instance_ref):
     """Fetch an instance based on the given instance_ref."""
-    request = (client.apitools_client.instances,
-               'Get',
-               client.messages.ComputeInstancesGetRequest(
-                   instance=instance_ref.Name(),
-                   project=instance_ref.project,
-                   zone=instance_ref.zone))
+    request = (
+        client.apitools_client.instances,
+        'Get',
+        client.messages.ComputeInstancesGetRequest(
+            instance=instance_ref.Name(),
+            project=instance_ref.project,
+            zone=instance_ref.zone,
+        ),
+    )
 
     return client.MakeRequests([request])[0]
 

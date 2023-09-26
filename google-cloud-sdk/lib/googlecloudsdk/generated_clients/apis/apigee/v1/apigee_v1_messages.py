@@ -9084,6 +9084,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       organization based on the Apigee subscription purchased.
     StateValueValuesEnum: Output only. State of the organization. Values other
       than ACTIVE means the resource is not ready to use.
+    SubscriptionPlanValueValuesEnum: Output only. Subscription plan that the
+      customer has purchased. Output only.
     SubscriptionTypeValueValuesEnum: Output only. DEPRECATED: This will
       eventually be replaced by BillingType. Subscription type of the Apigee
       organization. Valid values include trial (free, limited, and for
@@ -9189,6 +9191,8 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       the Apigee subscription purchased.
     state: Output only. State of the organization. Values other than ACTIVE
       means the resource is not ready to use.
+    subscriptionPlan: Output only. Subscription plan that the customer has
+      purchased. Output only.
     subscriptionType: Output only. DEPRECATED: This will eventually be
       replaced by BillingType. Subscription type of the Apigee organization.
       Valid values include trial (free, limited, and for evaluation purposes
@@ -9265,6 +9269,20 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
     DELETING = 3
     UPDATING = 4
 
+  class SubscriptionPlanValueValuesEnum(_messages.Enum):
+    r"""Output only. Subscription plan that the customer has purchased. Output
+    only.
+
+    Values:
+      SUBSCRIPTION_PLAN_UNSPECIFIED: Subscription plan not specified.
+      SUBSCRIPTION_2021: Traditional subscription plan.
+      SUBSCRIPTION_2024: New subscription plan that provides standard proxy
+        and scaled proxy implementation.
+    """
+    SUBSCRIPTION_PLAN_UNSPECIFIED = 0
+    SUBSCRIPTION_2021 = 1
+    SUBSCRIPTION_2024 = 2
+
   class SubscriptionTypeValueValuesEnum(_messages.Enum):
     r"""Output only. DEPRECATED: This will eventually be replaced by
     BillingType. Subscription type of the Apigee organization. Valid values
@@ -9324,8 +9342,9 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
   runtimeDatabaseEncryptionKeyName = _messages.StringField(24)
   runtimeType = _messages.EnumField('RuntimeTypeValueValuesEnum', 25)
   state = _messages.EnumField('StateValueValuesEnum', 26)
-  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 27)
-  type = _messages.EnumField('TypeValueValuesEnum', 28)
+  subscriptionPlan = _messages.EnumField('SubscriptionPlanValueValuesEnum', 27)
+  subscriptionType = _messages.EnumField('SubscriptionTypeValueValuesEnum', 28)
+  type = _messages.EnumField('TypeValueValuesEnum', 29)
 
 
 class GoogleCloudApigeeV1OrganizationProjectMapping(_messages.Message):

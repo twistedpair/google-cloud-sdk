@@ -3258,26 +3258,12 @@ class WhenExpression(_messages.Message):
 
     Values:
       EXPRESSION_OPERATOR_UNSPECIFIED: Default enum type; should not be used.
-      DOES_NOT_EXIST: Input does not exist.
-      EQUALS: Input equals values.
-      DOUBLE_EQUALS: Input double equals values.
       IN: Input is in values.
-      NOT_EQUALS: Input does not equal values.
       NOT_IN: Input is not in values.
-      EXISTS: Input exists.
-      GREATER_THAN: Input is greater than values.
-      LESS_THAN: Input is less than values.
     """
     EXPRESSION_OPERATOR_UNSPECIFIED = 0
-    DOES_NOT_EXIST = 1
-    EQUALS = 2
-    DOUBLE_EQUALS = 3
-    IN = 4
-    NOT_EQUALS = 5
-    NOT_IN = 6
-    EXISTS = 7
-    GREATER_THAN = 8
-    LESS_THAN = 9
+    IN = 1
+    NOT_IN = 2
 
   expressionOperator = _messages.EnumField('ExpressionOperatorValueValuesEnum', 1)
   input = _messages.StringField(2)

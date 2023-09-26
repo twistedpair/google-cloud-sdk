@@ -137,9 +137,6 @@ class DescribeCommand(feature_base.FeatureCommand, ClusterUpgradeCommand):
         )[scope_name].clusterupgrade
         or self.messages.ClusterUpgradeScopeState()
     )
-    gke_state = state.gkeState
-    if gke_state is not None:
-      gke_state.reset('state')
 
     return {
         'scope': scope_name,

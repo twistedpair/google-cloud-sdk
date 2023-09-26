@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import abc
+import enum
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import arg_parsers_usage_text as usage_text
@@ -34,6 +35,13 @@ import six
 
 # TODO(b/283949482): Place this file in util/args and replace the duplicate
 # logic in the util files.
+
+
+class Prefix(enum.Enum):
+  ADD = 'add'
+  UPDATE = 'update'
+  REMOVE = 'remove'
+  CLEAR = 'clear'
 
 
 class _ConvertValueType(usage_text.DefaultArgTypeWrapper):
@@ -93,7 +101,7 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
     Args:
       arg_name: str, root name of the arg
-      flag_prefix: str | None, prefix for the flag name
+      flag_prefix: Prefix | None, prefix for the flag name
       flag_type: func, type that flag is used to convert user input
       action: str, flag action
       help_text: str,
@@ -102,7 +110,7 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
       base.Argument with correct params
     """
     arg = base.Argument(
-        arg_utils.GetFlagName(arg_name, flag_prefix),
+        arg_utils.GetFlagName(arg_name, flag_prefix and flag_prefix.value),
         action=action, help=help_text
     )
     if action != 'store_true':
@@ -380,7 +388,7 @@ class UpdateDefaultArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def clear_arg(self):
     return self._CreateBasicFlag(
-        flag_prefix='clear',
+        flag_prefix=Prefix.CLEAR,
         action='store_true',
         help_text='Clear {} value and set to {}.'.format(
             self.arg_name, self._GetTextFormatOfEmptyValue(self._empty_value)),
@@ -415,7 +423,7 @@ class UpdateListArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def clear_arg(self):
     return self._CreateBasicFlag(
-        flag_prefix='clear',
+        flag_prefix=Prefix.CLEAR,
         action='store_true',
         help_text='Clear {} value and set to {}.'.format(
             self.arg_name, self._GetTextFormatOfEmptyValue(self._empty_value)),
@@ -424,7 +432,7 @@ class UpdateListArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def update_arg(self):
     return self._CreateBasicFlag(
-        flag_prefix='add',
+        flag_prefix=Prefix.ADD,
         flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Add new value to {} list.'.format(self.arg_name),
@@ -433,7 +441,7 @@ class UpdateListArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def remove_arg(self):
     return self._CreateBasicFlag(
-        flag_prefix='remove',
+        flag_prefix=Prefix.REMOVE,
         flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Remove existing value from {} list.'.format(self.arg_name),
@@ -513,7 +521,7 @@ class UpdateMapArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def clear_arg(self):
     return self._CreateBasicFlag(
-        flag_prefix='clear',
+        flag_prefix=Prefix.CLEAR,
         action='store_true',
         help_text='Clear {} value and set to {}.'.format(
             self.arg_name, self._GetTextFormatOfEmptyValue(self._empty_value)),
@@ -522,7 +530,7 @@ class UpdateMapArgumentGenerator(UpdateBasicArgumentGenerator):
   @property
   def update_arg(self):
     return self._CreateBasicFlag(
-        flag_prefix='update',
+        flag_prefix=Prefix.UPDATE,
         flag_type=_ConvertValueType(self),
         action=self.action,
         help_text='Update {} value or add key value pair.'.format(
@@ -544,7 +552,7 @@ class UpdateMapArgumentGenerator(UpdateBasicArgumentGenerator):
     key_list = arg_parsers.ArgList(element_type=key_type)
 
     return self._CreateBasicFlag(
-        flag_prefix='remove',
+        flag_prefix=Prefix.REMOVE,
         flag_type=key_list,
         action='store',
         help_text='Remove existing value from map {}.'.format(self.arg_name),

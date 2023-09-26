@@ -505,6 +505,12 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
     bucket_metadata.retentionPolicy = (
         metadata_field_converters.process_retention_period(
             resource_args.retention_period))
+  if resource_args.soft_delete_duration is not None:
+    bucket_metadata.softDeletePolicy = (
+        metadata_field_converters.process_soft_delete_duration(
+            resource_args.soft_delete_duration
+        )
+    )
   if resource_args.versioning is not None:
     bucket_metadata.versioning = (
         metadata_field_converters.process_versioning(

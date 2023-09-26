@@ -46,6 +46,7 @@ from googlecloudsdk.command_lib.run import platforms
 from googlecloudsdk.command_lib.run import pretty_print
 from googlecloudsdk.command_lib.run import resource_args
 from googlecloudsdk.command_lib.run import secrets_mapping
+from googlecloudsdk.command_lib.run import volumes
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.command_lib.util.args import map_util
 from googlecloudsdk.command_lib.util.args import repeated
@@ -572,6 +573,31 @@ def AddCloudSQLFlags(parser):
       You can specify a name of a Cloud SQL instance if it's in the same
       project and region as your Cloud Run service; otherwise specify
       <project>:<region>:<instance> for the instance.""",
+  )
+
+
+def AddVolumesFlags(parser, release_track):
+  """Add flags for adding and removing volumes."""
+  group = parser.add_group(hidden=True)
+  group.add_argument(
+      '--add-volume',
+      type=arg_parsers.ArgDict(),
+      action='append',
+      metavar='KEY=VALUE',
+      help=(
+          'Adds a volume to the Cloud Run service. To add more than one '
+          'volume, specify this flag mulitple times.'
+          ' Volumes must have a `name` and `type` key. '
+          'Only certain values are supported for `type`. Depending on the '
+          'provided type, other keys will be required. The following types '
+          'are supported with the specified additional keys:\n\n'
+          + volumes.volume_help(release_track)
+      ),
+  )
+  group.add_argument(
+      '--remove-volume',
+      action='append',
+      help='Removes volumes from the Cloud Run service.',
   )
 
 
@@ -1983,7 +2009,7 @@ def _PrependClientNameAndVersionChange(args, changes):
     )
 
 
-def _GetConfigurationChanges(args):
+def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   """Returns a list of changes shared by multiple resources, based on the flags set."""
   changes = []
 
@@ -2005,8 +2031,16 @@ def _GetConfigurationChanges(args):
       _CheckCloudSQLApiEnablement()
     changes.append(config_changes.CloudSQLChanges(project, region, args))
 
+  # we need to sandwich secrets changes between removing and adding volumes
+  # because secrets changes can also impact volumes
+  if FlagIsExplicitlySet(args, 'remove_volume') and args.remove_volume:
+    changes.append(config_changes.RemoveVolumeChange(args.remove_volume))
   if _HasSecretsChanges(args):
     changes.extend(_GetSecretsChanges(args))
+  if FlagIsExplicitlySet(args, 'add_volume') and args.add_volume:
+    changes.append(
+        config_changes.AddVolumeChange(args.add_volume, release_track)
+    )
 
   if _HasConfigMapsChanges(args):
     changes.extend(_GetConfigMapsChanges(args))
@@ -2221,9 +2255,9 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
   return changes
 
 
-def GetServiceConfigurationChanges(args):
+def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   """Returns a list of changes to the service config, based on the flags set."""
-  changes = _GetConfigurationChanges(args)
+  changes = _GetConfigurationChanges(args, release_track=release_track)
 
   changes.extend(_GetScalingChanges(args))
   changes.extend(_GetServiceScalingChanges(args))
@@ -2283,10 +2317,24 @@ def GetServiceConfigurationChanges(args):
 
   _PrependClientNameAndVersionChange(args, changes)
 
+  if FlagIsExplicitlySet(args, 'depends_on'):
+    changes.append(
+        config_changes.ContainerDependenciesChange({'': args.depends_on})
+    )
+
   if FlagIsExplicitlySet(args, 'containers'):
     for container_name, container_args in args.containers.items():
       changes.extend(
           _GetServiceContainerChanges(container_args, container_name)
+      )
+    dependency_changes = {
+        container_name: container_args.depends_on
+        for container_name, container_args in args.containers.items()
+        if container_args.IsSpecified('depends_on')
+    }
+    if dependency_changes or args.IsSpecified('remove_containers'):
+      changes.append(
+          config_changes.ContainerDependenciesChange(dependency_changes)
       )
 
   return changes
@@ -2937,6 +2985,17 @@ def VerifyGKEFlags(args, release_track, product):
         )
     )
 
+  if FlagIsExplicitlySet(args, 'add_volume'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--add-volume',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED
+            ],
+        )
+    )
+
 
 def VerifyKubernetesFlags(args, release_track, product):
   """Raise ConfigurationError if args includes OnePlatform or GKE only arguments."""
@@ -3193,6 +3252,17 @@ def VerifyKubernetesFlags(args, release_track, product):
         )
     )
 
+  if FlagIsExplicitlySet(args, 'add_volume'):
+    raise serverless_exceptions.ConfigurationError(
+        error_msg.format(
+            flag='--add-volume',
+            platform=platforms.PLATFORM_MANAGED,
+            platform_desc=platforms.PLATFORM_SHORT_DESCRIPTIONS[
+                platforms.PLATFORM_MANAGED
+            ],
+        )
+    )
+
 
 def GetAndValidatePlatform(args, release_track, product):
   """Returns the platform to run on and validates specified flags.
@@ -3416,8 +3486,18 @@ def RemoveContainersFlag():
       '--remove-containers',
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgList(element_type=_CONTAINER_NAME_TYPE, max_length=9),
-      metavar='CONTAINERS',
+      metavar='CONTAINER',
       help='List of containers to remove.',
+  )
+
+
+def DependsOnFlag():
+  return base.Argument(
+      '--depends-on',
+      action=arg_parsers.UpdateAction,
+      type=arg_parsers.ArgList(element_type=_CONTAINER_NAME_TYPE, max_length=9),
+      metavar='CONTAINER',
+      help='List of container dependencies to add to the current container.',
   )
 
 

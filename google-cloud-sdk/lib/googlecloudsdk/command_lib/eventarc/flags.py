@@ -379,7 +379,7 @@ def AddCreateDestinationArgs(parser, release_track, required=False):
     _AddCreateGKEDestinationArgs(dest_group)
     _AddCreateWorkflowDestinationArgs(dest_group, hidden=True)
     _AddCreateFunctionDestinationArgs(dest_group, hidden=True)
-    _AddCreateHTTPEndpointDestinationArgs(dest_group, hidden=True)
+    _AddCreateHTTPEndpointDestinationArgs(dest_group)
 
 
 def _AddCreateCloudRunDestinationArgs(parser, release_track, required=False):
@@ -428,7 +428,7 @@ def _AddCreateHTTPEndpointDestinationArgs(parser, required=False, hidden=False):
       hidden=hidden,
       help='Flags for specifying a HTTP Endpoint destination.')
   _AddDestinationHTTPEndpointUriArg(http_endpoint_group, required=True)
-  _AddCreateNetworkConfigDestinationArgs(http_endpoint_group, hidden=True)
+  _AddCreateNetworkConfigDestinationArgs(http_endpoint_group)
 
 
 def _AddCreateNetworkConfigDestinationArgs(

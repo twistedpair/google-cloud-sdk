@@ -75,10 +75,6 @@ class ExecutionNotFoundError(exceptions.Error):
   """Indicates that a provided execution name was not found."""
 
 
-class IntegrationNotFoundError(exceptions.Error):
-  """Indicates that a provided integration name was not found."""
-
-
 class DockerVersionError(exceptions.Error):
   """Indicates an error in determining the docker version."""
 
@@ -215,14 +211,6 @@ class KubernetesError(exceptions.Error):
 
 class UnsupportedOperationError(exceptions.Error):
   """The requested operation is not supported."""
-
-
-class IntegrationsOperationError(exceptions.Error):
-  """An error encountered when waiting for LRO to finish."""
-
-
-class UnsupportedIntegrationsLocationError(exceptions.Error):
-  """An error encountered when an unsupported location is provided."""
 
 
 class KubernetesExceptionParser(object):

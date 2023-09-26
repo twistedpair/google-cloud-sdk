@@ -505,6 +505,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'backupdr': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.backupdr.v1',
+                    client_classpath='backupdr_v1_client.BackupdrV1',
+                    base_url='https://backupdr.googleapis.com/',
+                    messages_modulepath='backupdr_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'baremetalsolution': {
         'v1':
             APIDef(
@@ -987,6 +999,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'cloudquotas': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudquotas.v1',
+                    client_classpath='cloudquotas_v1_client.CloudquotasV1',
+                    base_url='https://cloudquotas.googleapis.com/',
+                    messages_modulepath='cloudquotas_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'cloudresourcemanager': {
         'v1':
             APIDef(
@@ -1231,7 +1255,7 @@ MAP = {
                     client_classpath='config_v1_client.ConfigV1',
                     base_url='https://config.googleapis.com/',
                     messages_modulepath='config_v1_messages'),
-                default_version=False,
+                default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
         'v1alpha2':
@@ -1241,7 +1265,7 @@ MAP = {
                     client_classpath='config_v1alpha2_client.ConfigV1alpha2',
                     base_url='https://config.googleapis.com/',
                     messages_modulepath='config_v1alpha2_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

@@ -5791,7 +5791,7 @@ class GoogleCloudDocumentaiV1beta3CommonOperationMetadata(_messages.Message):
 
 class GoogleCloudDocumentaiV1beta3Dataset(_messages.Message):
   r"""A singleton resource under a Processor which configures a collection of
-  documents.
+  documents. Next Id: 8.
 
   Enums:
     StateValueValuesEnum: Required. State of the dataset. Ignored when

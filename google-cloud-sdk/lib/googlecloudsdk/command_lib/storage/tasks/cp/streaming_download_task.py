@@ -32,10 +32,9 @@ from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
-from googlecloudsdk.core import log
 
 
-class StreamingDownloadTask(copy_util.CopyTask):
+class StreamingDownloadTask(copy_util.ObjectCopyTask):
   """Represents a command operation triggering a streaming download."""
 
   def __init__(
@@ -61,26 +60,24 @@ class StreamingDownloadTask(copy_util.CopyTask):
         copy to. In this case, it contains the path of the destination stream or
         '-' for stdout.
       download_stream (stream): Reusable stream to write download to.
-      print_created_message (bool): Print a message containing the versioned URL
-        of the copy result.
-      print_source_version (bool): Print source object version in status message
-        enabled by the `verbose` kwarg.
+      print_created_message (bool): See parent class.
+      print_source_version (bool): See parent class.
       show_url (bool): Says whether or not to print the header before each
         object's content
       start_byte (int): The byte index to start streaming from.
       end_byte (int|None): The byte index to stop streaming from.
-      user_request_args (UserRequestArgs|None): Values for RequestConfig.
-      verbose (bool): Print a "copying" status message on initialization.
+      user_request_args (UserRequestArgs|None): See parent class.
+      verbose (bool): See parent class.
     """
     super(StreamingDownloadTask, self).__init__(
         source_resource,
         destination_resource,
+        print_created_message=print_created_message,
         print_source_version=print_source_version,
         user_request_args=user_request_args,
         verbose=verbose,
     )
     self._download_stream = download_stream
-    self._print_created_message = print_created_message
     self._show_url = show_url
     self._start_byte = start_byte
     self._end_byte = end_byte
@@ -125,8 +122,7 @@ class StreamingDownloadTask(copy_util.CopyTask):
         start_byte=self._start_byte,
         end_byte=self._end_byte)
     self._download_stream.flush()
-    if self._print_created_message:
-      log.status.Print('Created: {}'.format(self._destination_resource))
+    self._print_created_message_if_requested(self._destination_resource)
 
   def __eq__(self, other):
     if not isinstance(other, self.__class__):

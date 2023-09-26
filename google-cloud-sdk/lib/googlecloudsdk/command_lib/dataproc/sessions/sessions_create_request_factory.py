@@ -116,17 +116,6 @@ def AddArguments(parser):
           Run [gcloud topic datetimes](https://cloud.google.com/sdk/gcloud/reference/topic/datetimes)
           for information on duration formats.""")
 
-  # If enable-credentials-injection flag is used, we set authentication_type as
-  # CREDENTIALS_INJECTION, else, the default is SERVICE_ACCOUNT.
-  parser.add_argument(
-      '--enable-credentials-injection',
-      action='store_true',
-      help="""\
-        Enable injection of user credentials for authentication.
-        """,
-      hidden=True
-  )
-
   _AddDependency(parser)
 
 

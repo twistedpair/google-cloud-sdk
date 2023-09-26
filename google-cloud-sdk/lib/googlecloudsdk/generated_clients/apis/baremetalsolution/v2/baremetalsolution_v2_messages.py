@@ -242,7 +242,7 @@ class BaremetalsolutionProjectsLocationsInstancesPatchRequest(_messages.Message)
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/instances/{instance}`
     updateMask: The list of fields to update. The currently supported fields
-      are: `labels` `hyperthreading_enabled` `os_image`
+      are: `labels` `hyperthreading_enabled` `os_image` `ssh_keys`
   """
 
   instance = _messages.MessageField('Instance', 1)
