@@ -25,11 +25,10 @@ import datetime
 from googlecloudsdk.api_lib.storage import errors
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
-
 import six
 
-
 ACL_KEY = 'acl'
+DEFAULT_ACL_KEY = 'default_acl'
 
 
 class FieldDisplayTitleAndDefault(object):
@@ -81,7 +80,7 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'satisfies_pzs',
         'soft_delete_policy',
         ACL_KEY,
-        'default_acl',
+        DEFAULT_ACL_KEY,
     ),
 )
 
@@ -163,6 +162,12 @@ def get_formatted_string(
     A string representing the Resource for ls -L command.
   """
   lines = []
+
+  if show_acl:
+    formatted_acl_dict = resource.get_formatted_acl()
+  else:
+    formatted_acl_dict = {}
+
   # In namedtuple, to prevent conflicts with field names,
   # the method and attribute names start with an underscore.
   for key in display_titles_and_defaults._fields:
@@ -179,13 +184,19 @@ def get_formatted_string(
     else:
       field_name = key
 
-    value = getattr(resource, field_name, None)
+    if field_name in formatted_acl_dict:
+      value = formatted_acl_dict.get(field_name)
+    else:
+      value = getattr(resource, field_name, None)
+
     if value == resource_reference.NOT_SUPPORTED_DO_NOT_DISPLAY:
       continue
+
     line = _get_formatted_line(
         field_display_title_and_default.title,
         value,
-        field_display_title_and_default.default)
+        field_display_title_and_default.default,
+    )
     if line:
       lines.append(line)
 

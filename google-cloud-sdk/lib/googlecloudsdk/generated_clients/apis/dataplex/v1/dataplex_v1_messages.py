@@ -3636,15 +3636,31 @@ class GoogleCloudDataplexV1DataProfileSpecSelectedFields(_messages.Message):
   fieldNames = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudDataplexV1DataQualityDimension(_messages.Message):
+  r"""A dimension captures data quality intent about a defined subset of the
+  rules specified.
+
+  Fields:
+    name: The dimension name a rule belongs to. Supported dimensions are
+      "COMPLETENESS", "ACCURACY", "CONSISTENCY", "VALIDITY", "UNIQUENESS",
+      "INTEGRITY"
+  """
+
+  name = _messages.StringField(1)
+
+
 class GoogleCloudDataplexV1DataQualityDimensionResult(_messages.Message):
   r"""DataQualityDimensionResult provides a more detailed, per-dimension view
   of the results.
 
   Fields:
+    dimension: Output only. The dimension config specified in the
+      DataQualitySpec, as is.
     passed: Whether the dimension passed or failed.
   """
 
-  passed = _messages.BooleanField(1)
+  dimension = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimension', 1)
+  passed = _messages.BooleanField(2)
 
 
 class GoogleCloudDataplexV1DataQualityResult(_messages.Message):

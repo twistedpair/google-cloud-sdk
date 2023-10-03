@@ -677,6 +677,15 @@ def AddBootDiskArgs(parser, enable_kms=False):
       between 10,000 and 120,000.
       """)
 
+  parser.add_argument(
+      '--boot-disk-provisioned-throughput',
+      type=arg_parsers.BoundedInt(),
+      help="""\
+      Indicates how much throughput to provision for the disk. This sets the
+      number of throughput mb per second that the disk can handle.
+      """,
+  )
+
   if enable_kms:
     kms_resource_args.AddKmsKeyResourceArg(
         parser, 'disk', boot_disk_prefix=True)
@@ -1164,6 +1173,16 @@ def ValidateDiskBootFlags(args, enable_kms=False):
       raise exceptions.InvalidArgumentException(
           '--boot-disk-provisioned-iops',
           '--boot-disk-provisioned-iops cannot be used with the given disk type.'
+      )
+
+  if args.IsSpecified('boot_disk_provisioned_throughput'):
+    if not args.IsSpecified(
+        'boot_disk_type'
+    ) or not disks_util.IsProvisioningTypeThroughput(args.boot_disk_type):
+      raise exceptions.InvalidArgumentException(
+          '--boot-disk-provisioned-throughput',
+          '--boot-disk-provisioned-throughput cannot be used with the given'
+          ' disk type.',
       )
 
   if args.IsSpecified('boot_disk_size'):

@@ -261,12 +261,15 @@ class Autopilot(_messages.Message):
   r"""Autopilot is the configuration for Autopilot settings on the cluster.
 
   Fields:
+    conversionStatus: ConversionStatus is the status of conversion between
+      Autopilot and standard.
     enabled: Enable Autopilot
     workloadPolicyConfig: Workload policy configuration for Autopilot.
   """
 
-  enabled = _messages.BooleanField(1)
-  workloadPolicyConfig = _messages.MessageField('WorkloadPolicyConfig', 2)
+  conversionStatus = _messages.MessageField('ConversionStatus', 1)
+  enabled = _messages.BooleanField(2)
+  workloadPolicyConfig = _messages.MessageField('WorkloadPolicyConfig', 3)
 
 
 class AutopilotCompatibilityIssue(_messages.Message):
@@ -1470,6 +1473,13 @@ class ClusterUpdate(_messages.Message):
   removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 78)
 
 
+class CompleteConvertToAutopilotRequest(_messages.Message):
+  r"""CompleteConvertToAutopilotRequest completes the Autopilot conversion for
+  a given cluster.
+  """
+
+
+
 class CompleteIPRotationRequest(_messages.Message):
   r"""CompleteIPRotationRequest moves the cluster master back into single-IP
   mode.
@@ -1595,6 +1605,21 @@ class ContainerProjectsLocationsClustersCheckAutopilotCompatibilityRequest(_mess
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class ContainerProjectsLocationsClustersCompleteConvertToAutopilotRequest(_messages.Message):
+  r"""A ContainerProjectsLocationsClustersCompleteConvertToAutopilotRequest
+  object.
+
+  Fields:
+    completeConvertToAutopilotRequest: A CompleteConvertToAutopilotRequest
+      resource to be passed as the request body.
+    name: The name (project, location, cluster) of the cluster to convert.
+      Specified in the format `projects/*/locations/*/clusters/*`.
+  """
+
+  completeConvertToAutopilotRequest = _messages.MessageField('CompleteConvertToAutopilotRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class ContainerProjectsLocationsClustersDeleteRequest(_messages.Message):
@@ -2106,6 +2131,72 @@ class ControlPlaneEndpointsConfig(_messages.Message):
   """
 
   dnsEndpointConfig = _messages.MessageField('DNSEndpointConfig', 1)
+
+
+class ConversionStatus(_messages.Message):
+  r"""ConversionStatus is the status of conversion between Autopilot and
+  standard.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the conversion.
+    TypeValueValuesEnum: Type represents the direction of conversion.
+
+  Fields:
+    nodesMigrated: The number of nodes that have been migrated.
+    nodesRemaining: The number of nodes waiting for migration.
+    state: Output only. The current state of the conversion.
+    type: Type represents the direction of conversion.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the conversion.
+
+    Values:
+      STATE_UNSPECIFIED: STATE_UNSPECIFIED indicates the state is unspecified.
+      CONFIGURING: CONFIGURING indicates this cluster is being configured for
+        conversion. The KCP will be restarted in the desired mode (i.e.
+        Autopilot or Standard) and all workloads will be migrated to new
+        nodes. If the cluster is being converted to Autopilot, CA rotation
+        will also begin.
+      MIGRATING: MIGRATING indicates this cluster is migrating workloads.
+      MIGRATED_WAITING_FOR_COMMIT: MIGRATED_WAITING_FOR_COMMIT indicates this
+        cluster has finished migrating all the workloads to Autopilot node
+        pools and is waiting for the customer to commit the conversion. Once
+        migration is committed, CA rotation will be completed and old node
+        pools will be deleted. This action will be automatically performed 72
+        hours after conversion.
+      COMMITTING: COMMITTING indicates this cluster is finishing CA rotation
+        by removing the old CA from the cluster and restarting the KCP.
+        Additionally, old node pools will begin deletion.
+      DONE: DONE indicates the conversion has been completed. Old node pools
+        will continue being deleted in the background.
+    """
+    STATE_UNSPECIFIED = 0
+    CONFIGURING = 1
+    MIGRATING = 2
+    MIGRATED_WAITING_FOR_COMMIT = 3
+    COMMITTING = 4
+    DONE = 5
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type represents the direction of conversion.
+
+    Values:
+      TYPE_UNSPECIFIED: TYPE_UNSPECIFIED indicates the conversion type is
+        unspecified.
+      CONVERT_TO_AUTOPILOT: CONVERT_TO_AUTOPILOT indicates the conversion is
+        from Standard to Autopilot.
+      CONVERT_TO_STANDARD: CONVERT_TO_STANDARD indicates the conversion is
+        from Autopilot to Standard.
+    """
+    TYPE_UNSPECIFIED = 0
+    CONVERT_TO_AUTOPILOT = 1
+    CONVERT_TO_STANDARD = 2
+
+  nodesMigrated = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  nodesRemaining = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class CostManagementConfig(_messages.Message):

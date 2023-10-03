@@ -19,62 +19,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import default_formatter as default
 from googlecloudsdk.command_lib.run.integrations.formatters import states
-from googlecloudsdk.core.resource import custom_printer_base as cp
 
 
-class CloudSQLFormatter(base_formatter.BaseFormatter):
+class CloudSQLFormatter(default.DefaultFormatter):
   """CloudSQL formatter."""
-
-  def TransformConfig(self, record):
-    """Prints the config of the integration.
-
-    Args:
-      record: integration_printer.Record class that only holds data.
-
-    Returns:
-      The formatted output to be printed to the console.
-    """
-    res_config = record.config.get('cloudsql', {})
-    version = ('Database version', res_config.get('version'))
-    tier = ('Instance tier', res_config.get('settings').get('tier'))
-
-    labeled = [
-        version,
-        tier
-    ]
-    return cp.Labeled(labeled)
-
-  def TransformComponentStatus(self, record):
-    """Prints the status of the integration components.
-
-    Args:
-      record: integration_printer.Record class that only holds data.
-
-    Returns:
-      The formatted output to be printed to the console.
-    """
-    resources = record.status.get('resourceComponentStatuses', {})
-    db_instance = _DBInstanceFromResources(resources)
-    secret = _SecretFromResources(resources)
-
-    return cp.Labeled([
-        cp.Lines([
-            ('Database Instance ({})'.format(db_instance.get('name', ''))),
-            cp.Labeled([
-                ('Console link', db_instance.get('consoleLink', 'n/a')),
-                ('Resource Status', db_instance.get('state', 'n/a')),
-            ]),
-        ]),
-        cp.Lines([
-            ('Secret ({})'.format(secret.get('name', ''))),
-            cp.Labeled([
-                ('Console link', secret.get('consoleLink', 'n/a')),
-                ('Resource Status', secret.get('state', 'n/a')),
-            ]),
-        ])
-    ])
 
   def CallToAction(self, record):
     """Call to action to use generated environment variables.
@@ -98,18 +48,3 @@ class CloudSQLFormatter(base_formatter.BaseFormatter):
             'been added to the Cloud Run service for you.'.format(
                 'DB_NAME', 'DB_SOCKET', 'DB_USER', 'DB_PASS'))
 
-
-def _DBInstanceFromResources(resources):
-  for res in resources:
-    if res.get('type', None) == 'google_sql_database_instance':
-      return res
-
-  return {}
-
-
-def _SecretFromResources(resources):
-  for res in resources:
-    if res.get('type', None) == 'google_secret_manager_secret':
-      return res
-
-  return {}

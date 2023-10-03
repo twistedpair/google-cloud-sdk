@@ -96,7 +96,7 @@ class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Messa
       as the request body.
     parent: Required. The name of the parent resource where the repository
       will be created.
-    repositoryId: The repository id to use for this repository.
+    repositoryId: Required. The repository id to use for this repository.
   """
 
   googleDevtoolsArtifactregistryV1alpha1Repository = _messages.MessageField('GoogleDevtoolsArtifactregistryV1alpha1Repository', 1)

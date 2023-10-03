@@ -329,3 +329,12 @@ boot_disk:
     *kms-key*::: Specifies fully qualified Cloud KMS cryptokey name
     which will be used to protect the disk. KMS cryptokey name format:
       projects/<kms-project>/locations/<kms-location>/keyRings/<kms-keyring>/cryptoKeys/<key-name>
+
+autocheckpoint_enabled:
+  api_field: node.autocheckpointEnabled
+  arg_name: autocheckpoint-enabled
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    If specified, the TPU node is created with the Autocheckpoint feature enabled.

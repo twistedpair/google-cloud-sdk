@@ -1081,7 +1081,7 @@ class BigtableadminProjectsInstancesTablesViewsDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The current etag of the view. If an etag is provided and
       does not match the current etag of the view, deletion will be blocked
-      and an ABORTED error will be returned.
+      and a CANCELLED error will be returned.
     name: Required. The unique name of the view to be deleted. Values are of
       the form
       `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
@@ -1115,7 +1115,7 @@ class BigtableadminProjectsInstancesTablesViewsGetRequest(_messages.Message):
         documented in the request
       NAME_ONLY: Only populates `name`.
       BASIC: Only populates the view's basic metadata. This includes: name,
-        view_type, deletion_protection, create_time, update_time.
+        view_type, deletion_protection, create_time, update_time, etag.
       FULL: Populates every fields
     """
     RESPONSE_VIEW_UNSPECIFIED = 0
@@ -1159,7 +1159,7 @@ class BigtableadminProjectsInstancesTablesViewsListRequest(_messages.Message):
         documented in the request
       NAME_ONLY: Only populates `name`.
       BASIC: Only populates the view's basic metadata. This includes: name,
-        view_type, deletion_protection, create_time, update_time.
+        view_type, deletion_protection, create_time, update_time, etag.
       FULL: Populates every fields
     """
     RESPONSE_VIEW_UNSPECIFIED = 0
@@ -3443,6 +3443,9 @@ class View(_messages.Message):
     deletionProtection: Set to true to make the view protected against
       deletion. The parent Table and containing Instance cannot be deleted if
       a View has this bit set.
+    etag: The etag for this View. If this is provided on update, it must match
+      the server's etag. The server returns CANCELLED error on a mismatched
+      etag.
     name: The name of the view. Values are of the form
       `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
     subsetView: A view permitting access to an explicit subset of a Table.
@@ -3452,9 +3455,10 @@ class View(_messages.Message):
 
   createTime = _messages.StringField(1)
   deletionProtection = _messages.BooleanField(2)
-  name = _messages.StringField(3)
-  subsetView = _messages.MessageField('SubsetView', 4)
-  updateTime = _messages.StringField(5)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  subsetView = _messages.MessageField('SubsetView', 5)
+  updateTime = _messages.StringField(6)
 
 
 encoding.AddCustomJsonFieldMapping(

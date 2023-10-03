@@ -48,12 +48,16 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
+from googlecloudsdk.core import requests
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
 import six
 
-_DEFAULT_BUILDER_DOCKER_PATTERN = 'gcr.io/compute-image-tools/{executable}:{docker_image_tag}'
-_REGIONALIZED_BUILDER_DOCKER_PATTERN = '{region}-docker.pkg.dev/compute-image-tools/wrappers/{executable}:{docker_image_tag}'
+_DEFAULT_BUILDER_DOCKER_PATTERN = 'gcr.io/{gcp_project}/{executable}:{docker_image_tag}'
+_REGIONALIZED_BUILDER_DOCKER_PATTERN = '{region}-docker.pkg.dev/{gcp_project}/wrappers/{executable}:{docker_image_tag}'
+
+_COMPUTE_IMAGE_IMPORT_PROJECT_NAME = 'compute-image-import'
+_COMPUTE_IMAGE_TOOLS_PROJECT_NAME = 'compute-image-tools'
 
 _IMAGE_IMPORT_BUILDER_EXECUTABLE = 'gce_vm_image_import'
 _IMAGE_EXPORT_BUILDER_EXECUTABLE = 'gce_vm_image_export'
@@ -823,15 +827,15 @@ def _GetBuilder(executable, docker_image_tag, builder_region):
     str: a path to a builder Docker images.
   """
   if builder_region:
-    regionalized_builder = _GetRegionalizedBuilder(executable, builder_region,
-                                                   docker_image_tag)
+    regionalized_builder = GetRegionalizedBuilder(executable, builder_region,
+                                                  docker_image_tag)
     if regionalized_builder:
       return regionalized_builder
-  return _DEFAULT_BUILDER_DOCKER_PATTERN.format(
-      executable=executable, docker_image_tag=docker_image_tag)
+  return GetDefaultBuilder(executable=executable,
+                           docker_image_tag=docker_image_tag)
 
 
-def _GetRegionalizedBuilder(executable, region, docker_image_tag):
+def GetRegionalizedBuilder(executable, region, docker_image_tag):
   """Return Docker image path for regionalized builder wrapper.
 
   Args:
@@ -845,20 +849,150 @@ def _GetRegionalizedBuilder(executable, region, docker_image_tag):
   if not region:
     return ''
 
+  # Verify if builder image exists in 'compute-image-import' project's AR or
+  # not. If not exist, then fallback on 'compute-image-tools' GCP project.
+  # NOTE: Image Import/Export tools wrappers are being published into both GCP
+  # projects AR/GCR for backward compatibility.
+  # TODO(b/298197996): Remove the fallback on `compute-image-tools` project's
+  # GCR/AR after our metrics show that the wrappers in this project are no
+  # longer being used.
+  # - Some situations when an image won't be exist:
+  #     - Not supported regions (e.g. us-west3/us-west4).
+  #     - Permission issue, unreachable wrappers in the new project.
+
+  gcp_project = GetGcpProjectName(executable)
+  regionalized_builder = GetRegionalisedBuilderIfExists(
+      gcp_project, executable, region, docker_image_tag)
+
+  if regionalized_builder:
+    return regionalized_builder
+
+  if gcp_project == _COMPUTE_IMAGE_TOOLS_PROJECT_NAME:
+    # no fallback for tools other than image import tools (e.g. os_upgrade)
+    return ''
+
+  fallback_project_name = _COMPUTE_IMAGE_TOOLS_PROJECT_NAME
+  fallback_regionalized_builder = GetRegionalisedBuilderIfExists(
+      fallback_project_name, executable, region, docker_image_tag)
+
+  if fallback_regionalized_builder:
+    return fallback_regionalized_builder
+
+  return ''
+
+
+def GetRegionalisedBuilderIfExists(
+    gcp_project, executable, region, docker_image_tag):
+  """Return Docker image path for regionalized builder wrapper if exist.
+
+  Args:
+    gcp_project: Artifact Registry's GCP project name.
+    executable: name of builder executable to run
+    region: GCS region for the builder
+    docker_image_tag: tag for Docker builder images (e.g. 'release')
+
+  Returns:
+    str: Docker image path for regionalized builder wrapper if exist, otherwise
+      return empty string.
+  """
   regionalized_builder = _REGIONALIZED_BUILDER_DOCKER_PATTERN.format(
+      gcp_project=gcp_project,
       executable=executable,
       region=region,
       docker_image_tag=docker_image_tag)
 
-  # Verify builder image exists. Some situations when a repo won't exist:
-  # - new region wrappers are not deployed to
-  # - Artifact registry not in a region (e.g. us-west3/us-west4)
-  try:
-    docker_util.GetDockerImage(regionalized_builder)
+  if IsArtifactRegistryImageExist(regionalized_builder):
     return regionalized_builder
+
+  return ''
+
+
+def GetDefaultBuilder(executable, docker_image_tag):
+  """Return Docker image path for GCR builder wrapper.
+
+  Args:
+    executable: name of builder executable to run
+    docker_image_tag: tag for Docker builder images (e.g. 'release')
+
+  Returns:
+    str: path to Docker images for GCR builder.
+  """
+  gcp_project = GetGcpProjectName(executable)
+  gcr_image_get_api_url = 'https://gcr.io/v2/{gcp_project}/{executable}/manifests/{tag}'
+  fallback_project_name = _COMPUTE_IMAGE_TOOLS_PROJECT_NAME
+
+  if IsGcrImageExist(gcr_image_get_api_url.format(
+      gcp_project=gcp_project,
+      executable=executable,
+      tag=docker_image_tag)):
+    return _DEFAULT_BUILDER_DOCKER_PATTERN.format(
+        gcp_project=gcp_project,
+        executable=executable,
+        docker_image_tag=docker_image_tag)
+
+  # fallback on 'compute-image-tools' GCP project's artifacts.
+  return _DEFAULT_BUILDER_DOCKER_PATTERN.format(
+      gcp_project=fallback_project_name,
+      executable=executable,
+      docker_image_tag=docker_image_tag)
+
+
+def GetGcpProjectName(executable):
+  """Returns the GCP project name based on the executable/tool name.
+
+  Args:
+    executable: name of builder executable to run
+
+  Returns:
+    str: the GCP project name.
+  """
+  compute_image_import_executables = [_IMAGE_IMPORT_BUILDER_EXECUTABLE,
+                                      _IMAGE_EXPORT_BUILDER_EXECUTABLE,
+                                      _OVF_IMPORT_BUILDER_EXECUTABLE,
+                                      _IMAGE_ONESTEP_IMPORT_BUILDER_EXECUTABLE]
+
+  if executable not in compute_image_import_executables:
+    return _COMPUTE_IMAGE_TOOLS_PROJECT_NAME
+
+  return _COMPUTE_IMAGE_IMPORT_PROJECT_NAME
+
+
+def IsArtifactRegistryImageExist(image_url):
+  """Checks if Artifact Registry Image is reachable or not.
+
+  Args:
+    image_url: The Image URL to check.
+
+  Returns:
+    True if the AR image is reachable, False otherwise.
+  """
+  try:
+    docker_util.GetDockerImage(image_url)
+    return True
   except (HttpNotFoundError, HttpError):
-    # We can't verify the repo exists
-    return ''
+    return False
+
+
+def IsGcrImageExist(image_url):
+  """Checks if a Container Registry Image is reachable or not.
+
+  Args:
+    image_url: The Image URL to check.
+
+  Returns:
+    True if the URL is reachable, False otherwise.
+  """
+  try:
+    headers = {'Content-Type': 'application/json'}
+    response = requests.GetSession().head(
+        image_url,
+        headers=headers)
+    if response.status_code == 200:
+      return True
+    else:
+      return False
+  except (HttpNotFoundError, HttpError):
+    return False
 
 
 def _GetImageImportRegion(args):
@@ -1879,12 +2013,12 @@ def ValidateZone(args, compute_client):
   if not args.zone:
     return
 
-  requests = [(compute_client.apitools_client.zones, 'Get',
-               compute_client.messages.ComputeZonesGetRequest(
-                   project=properties.VALUES.core.project.GetOrFail(),
-                   zone=args.zone))]
+  zone_requests = [(compute_client.apitools_client.zones, 'Get',
+                    compute_client.messages.ComputeZonesGetRequest(
+                        project=properties.VALUES.core.project.GetOrFail(),
+                        zone=args.zone))]
   try:
-    compute_client.MakeRequests(requests)
+    compute_client.MakeRequests(zone_requests)
   except calliope_exceptions.ToolException:
     raise calliope_exceptions.InvalidArgumentException('--zone', args.zone)
 

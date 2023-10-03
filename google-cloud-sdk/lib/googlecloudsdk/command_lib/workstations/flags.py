@@ -181,6 +181,21 @@ def AddServiceAccountFlag(parser):
   parser.add_argument('--service-account', help=help_text)
 
 
+def AddServiceAccountScopes(parser):
+  """Adds a --service-account-scopes flag to the given parser."""
+  help_text = """\
+  Scopes to grant to the service_account. Various scopes are
+  automatically added based on feature usage. When specified, users of
+  workstations under this configuration must have
+  iam.serviceAccounts.actAs` on the service account.
+  """
+  parser.add_argument(
+      '--service-account-scopes',
+      metavar='SERVICE_ACCOUNT_SCOPES',
+      type=arg_parsers.ArgList(),
+      help=help_text)
+
+
 def AddNetworkTags(parser):
   """Adds a --network-tags flag to the given parser."""
   help_text = """\

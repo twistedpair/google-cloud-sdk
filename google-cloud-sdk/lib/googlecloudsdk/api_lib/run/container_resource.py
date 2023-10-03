@@ -42,6 +42,7 @@ ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION = (
 SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
 CPU_THROTTLE_ANNOTATION = 'run.googleapis.com/cpu-throttling'
 COLD_START_BOOST_ANNOTATION = 'run.googleapis.com/startup-cpu-boost'
+DISABLE_URL_ANNOTATION = 'run.googleapis.com/disable-default-url'
 
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 EGRESS_SETTINGS_ALL = 'all'
@@ -190,6 +191,14 @@ class Container(object):
       vols = getattr(vols, subgroup)
       mounts = getattr(mounts, subgroup)
     return {path: vols.get(vol) for path, vol in mounts.items()}
+
+  def NamedMountedVolumeJoin(self, subgroup=None):
+    vols = self._volumes
+    mounts = self.volume_mounts
+    if subgroup:
+      vols = getattr(vols, subgroup)
+      mounts = getattr(mounts, subgroup)
+    return {path: (vol, vols.get(vol)) for path, vol in mounts.items()}
 
 
 class ContainerSequenceWrapper(collections_abc.MutableSequence):

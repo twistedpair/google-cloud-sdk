@@ -91,47 +91,50 @@ class _UserResourceArgs(object):
 class _UserBucketArgs(_UserResourceArgs):
   """Contains user flag values affecting cloud bucket settings."""
 
-  def __init__(
-      self,
-      acl_file_path=None,
-      acl_grants_to_add=None,
-      acl_grants_to_remove=None,
-      cors_file_path=None,
-      default_encryption_key=None,
-      default_event_based_hold=None,
-      default_object_acl_file_path=None,
-      default_object_acl_grants_to_add=None,
-      default_object_acl_grants_to_remove=None,
-      default_storage_class=None,
-      enable_autoclass=None,
-      labels_file_path=None,
-      labels_to_append=None,
-      labels_to_remove=None,
-      lifecycle_file_path=None,
-      location=None,
-      log_bucket=None,
-      log_object_prefix=None,
-      placement=None,
-      public_access_prevention=None,
-      recovery_point_objective=None,
-      requester_pays=None,
-      retention_period=None,
-      retention_period_to_be_locked=False,
-      soft_delete_duration=None,
-      uniform_bucket_level_access=None,
-      versioning=None,
-      web_error_page=None,
-      web_main_page_suffix=None,
-  ):
+  def __init__(self,
+               acl_file_path=None,
+               acl_grants_to_add=None,
+               acl_grants_to_remove=None,
+               autoclass_terminal_storage_class=None,
+               cors_file_path=None,
+               default_encryption_key=None,
+               default_event_based_hold=None,
+               default_object_acl_file_path=None,
+               default_object_acl_grants_to_add=None,
+               default_object_acl_grants_to_remove=None,
+               default_storage_class=None,
+               enable_autoclass=None,
+               labels_file_path=None,
+               labels_to_append=None,
+               labels_to_remove=None,
+               lifecycle_file_path=None,
+               location=None,
+               log_bucket=None,
+               log_object_prefix=None,
+               placement=None,
+               public_access_prevention=None,
+               recovery_point_objective=None,
+               requester_pays=None,
+               retention_period=None,
+               retention_period_to_be_locked=False,
+               soft_delete_duration=None,
+               uniform_bucket_level_access=None,
+               versioning=None,
+               web_error_page=None,
+               web_main_page_suffix=None):
     """Initializes class, binding flag values to it."""
-    super(_UserBucketArgs, self).__init__(acl_file_path, acl_grants_to_add,
-                                          acl_grants_to_remove)
+    super(_UserBucketArgs, self).__init__(
+        acl_file_path, acl_grants_to_add, acl_grants_to_remove
+    )
+    self.autoclass_terminal_storage_class = autoclass_terminal_storage_class
     self.cors_file_path = cors_file_path
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_object_acl_file_path = default_object_acl_file_path
     self.default_object_acl_grants_to_add = default_object_acl_grants_to_add
-    self.default_object_acl_grants_to_remove = default_object_acl_grants_to_remove
+    self.default_object_acl_grants_to_remove = (
+        default_object_acl_grants_to_remove
+    )
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
     self.labels_file_path = labels_file_path
@@ -158,6 +161,8 @@ class _UserBucketArgs(_UserResourceArgs):
       return NotImplemented
     return (
         super(_UserBucketArgs, self).__eq__(other)
+        and self.autoclass_terminal_storage_class
+        == other.autoclass_terminal_storage_class
         and self.cors_file_path == other.cors_file_path
         and self.default_encryption_key == other.default_encryption_key
         and self.default_event_based_hold == other.default_event_based_hold
@@ -352,6 +357,9 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           acl_file_path=getattr(args, 'acl_file', None),
           acl_grants_to_add=getattr(args, 'add_acl_grant', None),
           acl_grants_to_remove=getattr(args, 'remove_acl_grant', None),
+          autoclass_terminal_storage_class=getattr(
+              args, 'autoclass_terminal_storage_class', None
+          ),
           cors_file_path=cors_file_path,
           default_encryption_key=default_encryption_key,
           default_event_based_hold=getattr(

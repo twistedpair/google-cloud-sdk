@@ -395,6 +395,7 @@ class AutomationEvent(_messages.Message):
       TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RESTRICTION_VIOLATED: Restriction check failed.
       TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -404,7 +405,8 @@ class AutomationEvent(_messages.Message):
     TYPE_PROCESS_ABORTED = 3
     TYPE_RESTRICTION_VIOLATED = 4
     TYPE_RESOURCE_DELETED = 5
-    TYPE_RENDER_STATUES_CHANGE = 6
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
 
   automation = _messages.StringField(1)
   message = _messages.StringField(2)
@@ -560,6 +562,7 @@ class AutomationRunEvent(_messages.Message):
       TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RESTRICTION_VIOLATED: Restriction check failed.
       TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -569,7 +572,8 @@ class AutomationRunEvent(_messages.Message):
     TYPE_PROCESS_ABORTED = 3
     TYPE_RESTRICTION_VIOLATED = 4
     TYPE_RESOURCE_DELETED = 5
-    TYPE_RENDER_STATUES_CHANGE = 6
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
 
   automationId = _messages.StringField(1)
   automationRun = _messages.StringField(2)
@@ -2538,6 +2542,7 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
       TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RESTRICTION_VIOLATED: Restriction check failed.
       TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -2547,7 +2552,8 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
     TYPE_PROCESS_ABORTED = 3
     TYPE_RESTRICTION_VIOLATED = 4
     TYPE_RESOURCE_DELETED = 5
-    TYPE_RENDER_STATUES_CHANGE = 6
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
 
   deliveryPipeline = _messages.StringField(1)
   message = _messages.StringField(2)
@@ -3205,6 +3211,7 @@ class JobRunNotificationEvent(_messages.Message):
       TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RESTRICTION_VIOLATED: Restriction check failed.
       TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -3214,7 +3221,8 @@ class JobRunNotificationEvent(_messages.Message):
     TYPE_PROCESS_ABORTED = 3
     TYPE_RESTRICTION_VIOLATED = 4
     TYPE_RESOURCE_DELETED = 5
-    TYPE_RENDER_STATUES_CHANGE = 6
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
 
   jobRun = _messages.StringField(1)
   message = _messages.StringField(2)
@@ -4439,6 +4447,7 @@ class ReleaseNotificationEvent(_messages.Message):
       TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RESTRICTION_VIOLATED: Restriction check failed.
       TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -4448,7 +4457,8 @@ class ReleaseNotificationEvent(_messages.Message):
     TYPE_PROCESS_ABORTED = 3
     TYPE_RESTRICTION_VIOLATED = 4
     TYPE_RESOURCE_DELETED = 5
-    TYPE_RENDER_STATUES_CHANGE = 6
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
 
   message = _messages.StringField(1)
   release = _messages.StringField(2)
@@ -4904,6 +4914,7 @@ class RolloutNotificationEvent(_messages.Message):
       TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RESTRICTION_VIOLATED: Restriction check failed.
       TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -4913,7 +4924,8 @@ class RolloutNotificationEvent(_messages.Message):
     TYPE_PROCESS_ABORTED = 3
     TYPE_RESTRICTION_VIOLATED = 4
     TYPE_RESOURCE_DELETED = 5
-    TYPE_RENDER_STATUES_CHANGE = 6
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
 
   message = _messages.StringField(1)
   pipelineUid = _messages.StringField(2)
@@ -5543,6 +5555,7 @@ class TargetNotificationEvent(_messages.Message):
       TYPE_PROCESS_ABORTED: A process aborted.
       TYPE_RESTRICTION_VIOLATED: Restriction check failed.
       TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
       TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
         release_render log type instead.
     """
@@ -5552,7 +5565,8 @@ class TargetNotificationEvent(_messages.Message):
     TYPE_PROCESS_ABORTED = 3
     TYPE_RESTRICTION_VIOLATED = 4
     TYPE_RESOURCE_DELETED = 5
-    TYPE_RENDER_STATUES_CHANGE = 6
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
 
   message = _messages.StringField(1)
   target = _messages.StringField(2)

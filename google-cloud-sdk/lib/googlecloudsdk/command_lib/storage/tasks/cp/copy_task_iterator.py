@@ -380,7 +380,6 @@ class CopyTaskIterator:
           )
           self._print_skip_and_maybe_send_to_manifest(message, source)
           continue
-
       if (
           source.resource.storage_url.url_string
           in self._already_completed_sources
@@ -394,7 +393,6 @@ class CopyTaskIterator:
 
       destination_resource = self._get_copy_destination(self._raw_destination,
                                                         source)
-
       source_url = source.resource.storage_url
       destination_url = destination_resource.storage_url
       posix_util.run_if_setting_posix(
@@ -467,7 +465,6 @@ class CopyTaskIterator:
         or source.resource.storage_url.versionless_url_string !=
         source.expanded_url.versionless_url_string  # Recursion case.
     )
-
     if completion_is_necessary:
       if (isinstance(source.expanded_url, storage_url.FileUrl) and
           source.expanded_url.is_stdio):
@@ -476,7 +473,6 @@ class CopyTaskIterator:
       destination_resource = self._complete_destination(raw_destination, source)
     else:
       destination_resource = raw_destination
-
     sanitized_destination_resource = _sanitize_destination_resource_if_needed(
         destination_resource)
     return sanitized_destination_resource
@@ -503,25 +499,31 @@ class CopyTaskIterator:
     """
     destination_url = destination_container.storage_url
     source_url = source.resource.storage_url
-    if (source_url.versionless_url_string !=
-        source.expanded_url.versionless_url_string):
+    if (
+        source_url.versionless_url_string
+        != source.expanded_url.versionless_url_string
+    ):
       # In case of recursion, the expanded_url can be the expanded wildcard URL
       # representing the container, and the source url can be the file/object.
       destination_suffix = self._get_destination_suffix_for_recursion(
-          destination_container, source)
+          destination_container, source
+      )
     else:
       # Schema might give us incorrect suffix for Windows.
       # TODO(b/169093672) This will not be required if we get rid of file://
       schemaless_url = source_url.versionless_url_string.rpartition(
-          source_url.scheme.value + '://')[2]
-
+          source_url.scheme.value + '://'
+      )[2]
       destination_suffix = schemaless_url.rpartition(source_url.delimiter)[2]
-
-    new_destination_url = destination_url.join(destination_suffix)
+    destination_url_prefix = storage_url.storage_url_from_string(
+        destination_url.versionless_url_string.rstrip(destination_url.delimiter)
+    )
+    new_destination_url = destination_url_prefix.join(destination_suffix)
     return resource_reference.UnknownResource(new_destination_url)
 
-  def _get_destination_suffix_for_recursion(self, destination_container,
-                                            source):
+  def _get_destination_suffix_for_recursion(
+      self, destination_container, source
+  ):
     """Returns the suffix required to complete the destination URL.
 
     Let's assume the following:
@@ -544,37 +546,48 @@ class CopyTaskIterator:
     """
     source_prefix_to_ignore = storage_url.rstrip_one_delimiter(
         source.expanded_url.versionless_url_string,
-        source.expanded_url.delimiter)
+        source.expanded_url.delimiter,
+    )
 
     expanded_url_is_valid_parent = _is_expanded_url_valid_parent_dir(
-        source.expanded_url)
-    if not expanded_url_is_valid_parent and self._has_multiple_top_level_sources:
+        source.expanded_url
+    )
+    if (
+        not expanded_url_is_valid_parent
+        and self._has_multiple_top_level_sources
+    ):
       # To avoid top-level name conflicts, we need to copy the parent dir.
       # However, that cannot be done because the parent dir has an invalid name.
       raise errors.InvalidUrlError(
           'Presence of multiple top-level sources and invalid expanded URL'
           ' make file name conflicts possible for URL: {}'.format(
-              source.resource))
+              source.resource
+          )
+      )
 
     is_top_level_source_object_name_conflict_possible = (
         isinstance(destination_container, resource_reference.UnknownResource)
-        and self._has_multiple_top_level_sources)
+        and self._has_multiple_top_level_sources
+    )
 
     destination_exists = not isinstance(
-        destination_container, resource_reference.UnknownResource)
+        destination_container, resource_reference.UnknownResource
+    )
 
     destination_is_existing_dir = (
-        destination_exists and
-        destination_container.is_container())
+        destination_exists and destination_container.is_container()
+    )
 
-    treat_destination_as_existing_dir = (
-        destination_is_existing_dir or (
-            not destination_exists and
-            destination_container.storage_url.url_string.endswith(
-                destination_container.storage_url.delimiter)))
+    treat_destination_as_existing_dir = destination_is_existing_dir or (
+        not destination_exists
+        and destination_container.storage_url.url_string.endswith(
+            destination_container.storage_url.delimiter
+        )
+    )
 
     if is_top_level_source_object_name_conflict_possible or (
-        expanded_url_is_valid_parent and treat_destination_as_existing_dir):
+        expanded_url_is_valid_parent and treat_destination_as_existing_dir
+    ):
       # Remove the leaf name unless it is a relative path symbol, so that
       # only top-level source directories are ignored.
 
@@ -608,13 +621,16 @@ class CopyTaskIterator:
         source_prefix_to_ignore = source.expanded_url.scheme.value + '://'
 
     full_source_url = source.resource.storage_url.versionless_url_string
-    suffix_for_destination = full_source_url.split(source_prefix_to_ignore)[1]
-
+    delimiter = source.resource.storage_url.delimiter
+    suffix_for_destination = delimiter + (
+        full_source_url.split(source_prefix_to_ignore)[1]
+    ).lstrip(delimiter)
     # Windows uses \ as a delimiter. Force the suffix to use the same
     # delimiter used by the destination container.
     source_delimiter = source.resource.storage_url.delimiter
     destination_delimiter = destination_container.storage_url.delimiter
     if source_delimiter != destination_delimiter:
-      return suffix_for_destination.replace(source_delimiter,
-                                            destination_delimiter)
+      return suffix_for_destination.replace(
+          source_delimiter, destination_delimiter
+      )
     return suffix_for_destination

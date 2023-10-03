@@ -161,7 +161,7 @@ class ComputeDeploymentStatusResponse(_messages.Message):
 
   Fields:
     name: The name of the deployment.
-    resourceStatusDetail: Output only. Resource level status details in
+    resourceStatuses: Output only. Resource level status details in
       deployments.
     status: Output only. Aggregated status of a deployment.
   """
@@ -183,7 +183,7 @@ class ComputeDeploymentStatusResponse(_messages.Message):
     STATUS_PEERING = 4
 
   name = _messages.StringField(1)
-  resourceStatusDetail = _messages.MessageField('ResourceStatusDetail', 2, repeated=True)
+  resourceStatuses = _messages.MessageField('ResourceStatus', 2, repeated=True)
   status = _messages.EnumField('StatusValueValuesEnum', 3)
 
 
@@ -1015,20 +1015,25 @@ class RemoveDeploymentRequest(_messages.Message):
   r"""Request object for `RemoveDeployment`."""
 
 
-class ResourceStatusDetail(_messages.Message):
+class ResourceStatus(_messages.Message):
   r"""Status of a deployment resource.
 
   Enums:
-    ResourceTypeValueValuesEnum: Represent type of CR.
-    StatusValueValuesEnum: Output only. Status of a resource.
+    ResourceTypeValueValuesEnum: Output only. Resource type.
+    StatusValueValuesEnum: Output only. Status of the resource.
 
   Fields:
-    resourceType: Represent type of CR.
-    status: Output only. Status of a resource.
+    group: Group to which the resource belongs to.
+    kind: Kind of the resource.
+    name: Name of the resource.
+    resourceNamespace: Namespace of the resource.
+    resourceType: Output only. Resource type.
+    status: Output only. Status of the resource.
+    version: Version of the resource.
   """
 
   class ResourceTypeValueValuesEnum(_messages.Enum):
-    r"""Represent type of CR.
+    r"""Output only. Resource type.
 
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Unspecified resource type.
@@ -1040,7 +1045,7 @@ class ResourceStatusDetail(_messages.Message):
     BLUEPRINT_CUSTOM_RESOURCE = 2
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""Output only. Status of a resource.
+    r"""Output only. Status of the resource.
 
     Values:
       STATUS_UNSPECIFIED: Unknown state.
@@ -1055,8 +1060,13 @@ class ResourceStatusDetail(_messages.Message):
     STATUS_FAILED = 3
     STATUS_PEERING = 4
 
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 1)
-  status = _messages.EnumField('StatusValueValuesEnum', 2)
+  group = _messages.StringField(1)
+  kind = _messages.StringField(2)
+  name = _messages.StringField(3)
+  resourceNamespace = _messages.StringField(4)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 5)
+  status = _messages.EnumField('StatusValueValuesEnum', 6)
+  version = _messages.StringField(7)
 
 
 class RollbackDeploymentRequest(_messages.Message):

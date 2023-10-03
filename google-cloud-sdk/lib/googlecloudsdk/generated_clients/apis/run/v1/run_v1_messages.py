@@ -3562,9 +3562,8 @@ class ServiceStatus(_messages.Message):
       LatestReadyRevisionName.
     latestReadyRevisionName: Name of the latest Revision from this Service's
       Configuration that has had its `Ready` condition become `True`.
-    observedGeneration: Returns the generation last fully processed by the
-      system. This will only match metadata.generation when reconciliation is
-      complete. Clients polling for completed reconciliation should poll until
+    observedGeneration: Returns the generation last seen by the system.
+      Clients polling for completed reconciliation should poll until
       observedGeneration = metadata.generation and the Ready condition's
       status is True or False.
     traffic: Holds the configured traffic distribution. These entries will

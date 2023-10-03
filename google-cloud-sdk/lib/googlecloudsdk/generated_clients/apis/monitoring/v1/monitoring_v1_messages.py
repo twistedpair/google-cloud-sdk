@@ -2314,6 +2314,8 @@ class TextStyle(_messages.Message):
     HorizontalAlignmentValueValuesEnum: The horizontal alignment of both the
       title and content
     PaddingValueValuesEnum: The amount of padding around the widget
+    PointerLocationValueValuesEnum: The pointer location for this widget (also
+      sometimes called a "tail")
     VerticalAlignmentValueValuesEnum: The vertical alignment of both the title
       and content
 
@@ -2324,6 +2326,8 @@ class TextStyle(_messages.Message):
     horizontalAlignment: The horizontal alignment of both the title and
       content
     padding: The amount of padding around the widget
+    pointerLocation: The pointer location for this widget (also sometimes
+      called a "tail")
     textColor: The text color as a hex string. "#RRGGBB" or "#RGB"
     verticalAlignment: The vertical alignment of both the title and content
   """
@@ -2381,6 +2385,38 @@ class TextStyle(_messages.Message):
     P_LARGE = 4
     P_EXTRA_LARGE = 5
 
+  class PointerLocationValueValuesEnum(_messages.Enum):
+    r"""The pointer location for this widget (also sometimes called a "tail")
+
+    Values:
+      POINTER_LOCATION_UNSPECIFIED: No visual pointer
+      PL_TOP: Placed in the middle of the top of the widget
+      PL_RIGHT: Placed in the middle of the right side of the widget
+      PL_BOTTOM: Placed in the middle of the bottom of the widget
+      PL_LEFT: Placed in the middle of the left side of the widget
+      PL_TOP_LEFT: Placed on the left side of the top of the widget
+      PL_TOP_RIGHT: Placed on the right side of the top of the widget
+      PL_RIGHT_TOP: Placed on the top of the right side of the widget
+      PL_RIGHT_BOTTOM: Placed on the bottom of the right side of the widget
+      PL_BOTTOM_RIGHT: Placed on the right side of the bottom of the widget
+      PL_BOTTOM_LEFT: Placed on the left side of the bottom of the widget
+      PL_LEFT_BOTTOM: Placed on the bottom of the left side of the widget
+      PL_LEFT_TOP: Placed on the top of the left side of the widget
+    """
+    POINTER_LOCATION_UNSPECIFIED = 0
+    PL_TOP = 1
+    PL_RIGHT = 2
+    PL_BOTTOM = 3
+    PL_LEFT = 4
+    PL_TOP_LEFT = 5
+    PL_TOP_RIGHT = 6
+    PL_RIGHT_TOP = 7
+    PL_RIGHT_BOTTOM = 8
+    PL_BOTTOM_RIGHT = 9
+    PL_BOTTOM_LEFT = 10
+    PL_LEFT_BOTTOM = 11
+    PL_LEFT_TOP = 12
+
   class VerticalAlignmentValueValuesEnum(_messages.Enum):
     r"""The vertical alignment of both the title and content
 
@@ -2400,8 +2436,9 @@ class TextStyle(_messages.Message):
   fontSize = _messages.EnumField('FontSizeValueValuesEnum', 2)
   horizontalAlignment = _messages.EnumField('HorizontalAlignmentValueValuesEnum', 3)
   padding = _messages.EnumField('PaddingValueValuesEnum', 4)
-  textColor = _messages.StringField(5)
-  verticalAlignment = _messages.EnumField('VerticalAlignmentValueValuesEnum', 6)
+  pointerLocation = _messages.EnumField('PointerLocationValueValuesEnum', 5)
+  textColor = _messages.StringField(6)
+  verticalAlignment = _messages.EnumField('VerticalAlignmentValueValuesEnum', 7)
 
 
 class Threshold(_messages.Message):

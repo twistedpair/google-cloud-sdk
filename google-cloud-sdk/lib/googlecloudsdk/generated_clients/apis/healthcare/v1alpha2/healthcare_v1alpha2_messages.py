@@ -1023,6 +1023,30 @@ class DicomStore(_messages.Message):
   streamConfigs = _messages.MessageField('GoogleCloudHealthcareV1alpha2DicomStreamConfig', 4, repeated=True)
 
 
+class DicomStoreMetrics(_messages.Message):
+  r"""DicomStoreMetrics contains metrics describing a DICOM store.
+
+  Fields:
+    blobStorageSizeBytes: Total blob storage bytes for all instances in the
+      store.
+    instanceCount: Number of instances in the store.
+    name: Resource name of the DICOM store, of the form `projects/{project_id}
+      /locations/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_
+      id}`.
+    seriesCount: Number of series in the store.
+    structuredStorageSizeBytes: Total structured storage bytes for all
+      instances in the store.
+    studyCount: Number of studies in the store.
+  """
+
+  blobStorageSizeBytes = _messages.IntegerField(1)
+  instanceCount = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  seriesCount = _messages.IntegerField(4)
+  structuredStorageSizeBytes = _messages.IntegerField(5)
+  studyCount = _messages.IntegerField(6)
+
+
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -3224,6 +3248,18 @@ class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Mess
   name = _messages.StringField(2, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDicomStoresGetDICOMStoreMetricsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDicomStoresGetDICOMStoreMetricsRequest
+  object.
+
+  Fields:
+    name: The resource name of the DICOM store to get metrics for.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest
   object.
@@ -3657,6 +3693,20 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest(_messages.Mess
 
   exportMessagesRequest = _messages.MessageField('ExportMessagesRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest
+  object.
+
+  Fields:
+    name: The resource name of the HL7v2 store to get metrics for, in the
+      format `projects/{project_id}/locations/{location_id}/datasets/{dataset_
+      id}/hl7V2Stores/{hl7v2_store_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_messages.Message):
@@ -4096,6 +4146,37 @@ class Hl7V2Store(_messages.Message):
   name = _messages.StringField(2)
   notificationConfig = _messages.MessageField('NotificationConfig', 3)
   parserConfig = _messages.MessageField('ParserConfig', 4)
+
+
+class Hl7V2StoreMetric(_messages.Message):
+  r"""Count of messages and total storage size by type for a given HL7 store.
+
+  Fields:
+    count: The total count of HL7v2 messages in the store for the given
+      message type.
+    messageType: The Hl7v2 message type this metric applies to, such as `ADT`
+      or `ORU`.
+    structuredStorageSizeBytes: The total amount of structured storage used by
+      HL7v2 messages of this message type in the store.
+  """
+
+  count = _messages.IntegerField(1)
+  messageType = _messages.StringField(2)
+  structuredStorageSizeBytes = _messages.IntegerField(3)
+
+
+class Hl7V2StoreMetrics(_messages.Message):
+  r"""List of metrics for a given HL7v2 store.
+
+  Fields:
+    metrics: List of HL7v2 store metrics by message type.
+    name: The resource name of the HL7v2 store to get metrics for, in the
+      format `projects/{project_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_s
+      tore_id}`.
+  """
+
+  metrics = _messages.MessageField('Hl7V2StoreMetric', 1, repeated=True)
+  name = _messages.StringField(2)
 
 
 class HttpBody(_messages.Message):

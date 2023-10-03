@@ -151,7 +151,7 @@ class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Messa
     parent: Required. The name of the parent resource where the repository
       will be created.
     repository: A Repository resource to be passed as the request body.
-    repositoryId: The repository id to use for this repository.
+    repositoryId: Required. The repository id to use for this repository.
   """
 
   parent = _messages.StringField(1, required=True)

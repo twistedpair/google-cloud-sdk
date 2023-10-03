@@ -85,6 +85,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_OSIMAGES = (
+      'projects.locations.osImages',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/osImages/'
+              '{osImagesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_PROVISIONINGCONFIGS = (
       'projects.locations.provisioningConfigs',
       '{+name}',

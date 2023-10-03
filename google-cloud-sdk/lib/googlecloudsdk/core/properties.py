@@ -1178,6 +1178,8 @@ class _SectionApiEndpointOverrides(_Section):
     self.cloudidentity = self._Add('cloudidentity', command='gcloud identity')
     self.cloudiot = self._Add('cloudiot', command='gcloud iot')
     self.cloudkms = self._Add('cloudkms', command='gcloud kms')
+    self.cloudquotas = self._Add(
+        'cloudquotas', command='gcloud quotas', hidden=True)
     self.cloudresourcemanager = self._Add(
         'cloudresourcemanager', command='gcloud projects')
     self.cloudresourcesearch = self._Add('cloudresourcesearch', hidden=True)

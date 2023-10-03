@@ -86,9 +86,10 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
       resource,
       all_versions=False,
       display_detail=DisplayDetail.SHORT,
+      full_formatter=None,
       include_etag=False,
       readable_sizes=False,
-      full_formatter=None,
+      soft_deleted=False,
       use_gsutil_style=False,
   ):
     """See BaseFormatWrapper class for function doc strings."""
@@ -99,6 +100,7 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
         display_detail=display_detail,
         include_etag=include_etag,
         readable_sizes=readable_sizes,
+        soft_deleted=soft_deleted,
         use_gsutil_style=use_gsutil_style,
     )
 
@@ -154,7 +156,7 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
       )
     if self._display_detail == DisplayDetail.JSON:
       return self.resource.get_json_dump()
-    if self._all_versions:
+    if self._all_versions or self._soft_deleted:
       # Include generation in URL.
       return self.resource.storage_url.url_string
     return self.resource.storage_url.versionless_url_string

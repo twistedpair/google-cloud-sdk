@@ -1851,6 +1851,8 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
       details.
     soleTenantNodeType: The node type name to be used for sole-tenant nodes.
     vmImage: The name of the image used by each VM.
+    zones: Optional. Zones in the region where the pool VMs should be. Leave
+      empty for no restrictions.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1892,6 +1894,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
   reserved = _messages.BooleanField(9)
   soleTenantNodeType = _messages.StringField(10)
   vmImage = _messages.StringField(11)
+  zones = _messages.StringField(12, repeated=True)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):

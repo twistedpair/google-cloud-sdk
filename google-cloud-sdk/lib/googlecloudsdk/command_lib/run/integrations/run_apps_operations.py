@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 import contextlib
 import datetime
 import json
-from typing import List
+from typing import List, Optional
 
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
@@ -354,6 +354,31 @@ class RunAppsOperations(object):
           'Integration [{}] cannot be found'.format(name)
       )
 
+  def GetIntegrationGeneric(
+      self,
+      name: str,
+      res_type: Optional[str] = None,
+  ) -> Optional[runapps_v1alpha1_messages.Resource]:
+    """Get an integration.
+
+    Args:
+      name: the name of the resource.
+      res_type: type of the resource. If empty, will match any type.
+
+    Raises:
+      IntegrationNotFoundError: If the integration is not found.
+
+    Returns:
+      The integration config.
+    """
+    appconfig = self.GetDefaultAppConfig()
+    for res in appconfig.resourceList:
+      if res.id.name == name and (not res_type or res.id.type == res_type):
+        return res
+    raise exceptions.IntegrationNotFoundError(
+        'Integration [{}] cannot be found'.format(name)
+    )
+
   def GetIntegrationStatus(self, name):
     """Get status of an integration.
 
@@ -377,11 +402,13 @@ class RunAppsOperations(object):
     except api_exceptions.HttpError:
       return None
 
-  def GetLatestDeployment(self, resource_config):
+  def GetLatestDeployment(
+      self, resource: runapps_v1alpha1_messages.Resource
+  ) -> Optional[runapps_v1alpha1_messages.Deployment]:
     """Fetches the deployment object given a resource config.
 
     Args:
-      resource_config: dict, may contain a key called 'latestDeployment'
+      resource: the resource object.
 
     Returns:
       run_apps.v1alpha1.Deployment, the Deployment object.  This is None if
@@ -389,15 +416,11 @@ class RunAppsOperations(object):
         cannot be found via the name or any http errors occur, then None will
         be returned.
     """
-    latest_deployment_name = resource_config.get(
-        types_utils.LATEST_DEPLOYMENT_FIELD
-    )
-
-    if not latest_deployment_name:
+    if not resource.latestDeployment:
       return None
 
     try:
-      return api_utils.GetDeployment(self._client, latest_deployment_name)
+      return api_utils.GetDeployment(self._client, resource.latestDeployment)
     except api_exceptions.HttpError:
       return None
 
@@ -905,6 +928,17 @@ class RunAppsOperations(object):
           config={api_utils.APP_CONFIG_DICT_RESOURCES_KEY: {}},
       )
     return api_utils.ApplicationToDict(application)
+
+  def GetDefaultAppConfig(self) -> runapps_v1alpha1_messages.Config:
+    """Returns the default application config.
+
+    Returns:
+      the application config.
+    """
+    app = api_utils.GetApplication(
+        self._client, self.GetAppRef(_DEFAULT_APP_NAME)
+    )
+    return app.config if app else runapps_v1alpha1_messages.Config()
 
   def GetAppRef(self, name):
     """Returns the application resource object.

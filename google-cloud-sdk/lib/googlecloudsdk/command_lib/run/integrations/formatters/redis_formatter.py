@@ -19,65 +19,15 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import default_formatter as default
 from googlecloudsdk.command_lib.run.integrations.formatters import states
-from googlecloudsdk.core.resource import custom_printer_base as cp
 
 _REDIS_INSTANCE_TYPE = 'google_redis_instance'
 _VPC_INSTANCE_TYPE = 'google_vpc_access_connector'
 
 
-class RedisFormatter(base_formatter.BaseFormatter):
+class RedisFormatter(default.DefaultFormatter):
   """Format logics for redis integration."""
-
-  def TransformConfig(self, record):
-    """Print the config of the integration.
-
-    Args:
-      record: integration_printer.Record class that just holds data.
-
-    Returns:
-      The printed output.
-    """
-    res_config = record.config.get('redis', {}).get('instance', {})
-
-    labeled = [('Memory Size GB', res_config.get('memory-size-gb'))]
-    if 'tier' in res_config:
-      labeled.append(('Tier', res_config.get('tier')))
-    if 'version' in res_config:
-      labeled.append(('Version', res_config.get('version')))
-
-    return cp.Labeled(labeled)
-
-  def TransformComponentStatus(self, record):
-    """Print the component status of the integration.
-
-    Args:
-      record: integration_printer.Record class that just holds data.
-
-    Returns:
-      The printed output.
-    """
-    resource_status = record.status
-    resources = resource_status.get('resourceComponentStatuses', {})
-    redis = self._RedisFromResources(resources)
-    vpc = self._VpcFromResources(resources)
-    return cp.Labeled([
-        cp.Lines([
-            ('MemoryStore Redis ({})'.format(
-                redis.get('name', ''))),
-            cp.Labeled([
-                ('Console link', redis.get('consoleLink', 'n/a')),
-                ('Resource Status', redis.get('state', 'n/a')),
-            ]),
-        ]),
-        cp.Lines([
-            ('Serverless VPC Connector ({})'.format(vpc.get('name', ''))),
-            cp.Labeled([
-                ('Console link', vpc.get('consoleLink', 'n/a')),
-            ]),
-        ])
-    ])
 
   def CallToAction(self, record):
     """Call to action to use generated environment variables.
@@ -105,16 +55,3 @@ class RedisFormatter(base_formatter.BaseFormatter):
             'been added to the Cloud Run service for you.'.format(
                 'REDISHOST', 'REDISPORT'))
 
-  def _VpcFromResources(self, records):
-    for rec in records:
-      if rec.get('type', None) == _VPC_INSTANCE_TYPE:
-        return rec
-
-    return {}
-
-  def _RedisFromResources(self, records):
-    for rec in records:
-      if rec.get('type', None) == _REDIS_INSTANCE_TYPE:
-        return rec
-
-    return {}

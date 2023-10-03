@@ -3124,6 +3124,26 @@ class IamRolesListRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
+class IdentityAssignment(_messages.Message):
+  r"""Defines how to assign an identity to a workload. At least one workload
+  selector and at least one identity assignment method must be defined.
+
+  Fields:
+    allowIdentitySelfSelection: Optional. Identity assignment method that
+      authorizes matched workloads to self select an identity within the
+      parent's scope (e.g. within the namespace when the WorkloadSource is
+      defined on a Namespace).
+    matchAll: Optional. Workload selector that matches all workloads from the
+      source.
+    singleAttributeSelectors: Optional. Workload selector that matches
+      workloads based on their attested attributes.
+  """
+
+  allowIdentitySelfSelection = _messages.BooleanField(1)
+  matchAll = _messages.BooleanField(2)
+  singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 3, repeated=True)
+
+
 class KeyData(_messages.Message):
   r"""Represents a public key data along with its format.
 
@@ -3499,11 +3519,11 @@ class OauthClient(_messages.Message):
     StateValueValuesEnum: Output only. The state of the oauth client.
 
   Fields:
-    allowedGrantTypes: Optional. The list of OAuth grant type is allowed for
+    allowedGrantTypes: Required. The list of OAuth grant type is allowed for
       the oauth client.
-    allowedRedirectUris: Optional. The list of redirect uris that is allowed
+    allowedRedirectUris: Required. The list of redirect uris that is allowed
       to redirect back when authorization process is completed.
-    allowedScopes: Optional. The list of scopes that the oauth client is
+    allowedScopes: Required. The list of scopes that the oauth client is
       allowed to request during OAuth flows. The following scopes are
       supported: * `https://www.googleapis.com/auth/cloud-platform`: See,
       edit, configure, and delete your Google Cloud data and see the email
@@ -4432,6 +4452,27 @@ class SignJwtResponse(_messages.Message):
 
   keyId = _messages.StringField(1)
   signedJwt = _messages.StringField(2)
+
+
+class SingleAttributeSelector(_messages.Message):
+  r"""Matches a single attribute.
+
+  Fields:
+    attribute: Required. The attribute key that will be matched. The following
+      attributes are supported: - `attached_service_account` matches workloads
+      with the references Google Cloud service account attached. The service
+      account should be referenced using its either its email address
+      (example: `service-account-id@project-id.iam.gserviceaccount.com`) or
+      unique ID (example: `123456789012345678901`). Service account email
+      addresses can be reused over time. You should use the service account's
+      unique ID if you don't want to match a service account that is deleted,
+      and then a new service account is created with the same name.
+    value: Required. The value that should exactly match the attribute of the
+      workload.
+  """
+
+  attribute = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -5502,21 +5543,31 @@ class WorkloadSource(_messages.Message):
   WorkloadSource is defined under a namespace, matching workloads may receive
   any identity within that namespace. When a WorkloadSource is defined under a
   managed identity, matching workloads may receive that specific identity.
+  Each WorkloadSource may set at most 50 workload selectors.
 
   Fields:
     conditionSet: The set of conditions that workloads must attest to be
       matched by the policy.
     etag: Optional. The etag for this resource. If this is provided on update,
       it must match the server's etag.
+    identityAssignments: Optional. Defines how a matched workload has its
+      identity assigned. This option may only be set when the Workload Source
+      is defined on a Namespace.
+    matchAll: Optional. Matches all workloads from the source.
     name: Output only. The resource name of the workload source. If ID of the
       WorkloadSource resource determines which workloads may be matched. The
       following formats are supported: - `project-{project_number}` matches
       workloads within the referenced Google Cloud project.
+    singleAttributeSelectors: Optional. Defines the set of attributes that a
+      workload must attest in order to be matched by the policy.
   """
 
   conditionSet = _messages.MessageField('WorkloadSourceConditionSet', 1)
   etag = _messages.StringField(2)
-  name = _messages.StringField(3)
+  identityAssignments = _messages.MessageField('IdentityAssignment', 3, repeated=True)
+  matchAll = _messages.BooleanField(4)
+  name = _messages.StringField(5)
+  singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 6, repeated=True)
 
 
 class WorkloadSourceCondition(_messages.Message):

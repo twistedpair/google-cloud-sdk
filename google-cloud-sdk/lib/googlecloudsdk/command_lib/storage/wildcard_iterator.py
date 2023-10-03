@@ -83,6 +83,8 @@ def contains_wildcard(url_string):
   return bool(WILDCARD_REGEX.search(url_string))
 
 
+# TODO(b/301620718): Make version setting enum, where all_versions and
+# soft_deleted_only are mutually exclusive.
 def get_wildcard_iterator(
     url_str,
     all_versions=False,
@@ -512,10 +514,14 @@ class CloudWildcardIterator(WildcardIterator):
           self._managed_folder_setting is not ManagedFolderSetting.DO_NOT_LIST
       )
 
+      # Backend does not accept both all_versions and soft_deleted_only.
+      fetch_all_versions = not self._soft_deleted_only and (
+          self._all_versions or bool(self._url.generation)
+      )
       # TODO(b/299973762): Allow the list_objects API method to only yield
       # prefixes if we want managed folders without objects.
       object_iterator = self._client.list_objects(
-          all_versions=self._all_versions or bool(self._url.generation),
+          all_versions=fetch_all_versions,
           bucket_name=bucket_name,
           delimiter=wildcard_parts.delimiter,
           fields_scope=self._fields_scope,

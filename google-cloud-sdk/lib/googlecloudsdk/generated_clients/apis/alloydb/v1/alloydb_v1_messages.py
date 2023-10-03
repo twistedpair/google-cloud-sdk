@@ -252,6 +252,21 @@ class AlloydbProjectsLocationsClustersDeleteRequest(_messages.Message):
   validateOnly = _messages.BooleanField(5)
 
 
+class AlloydbProjectsLocationsClustersGenerateClientCertificateRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersGenerateClientCertificateRequest
+  object.
+
+  Fields:
+    generateClientCertificateRequest: A GenerateClientCertificateRequest
+      resource to be passed as the request body.
+    parent: Required. The name of the parent resource. The required format is:
+      * projects/{project}/locations/{location}/clusters/{cluster}
+  """
+
+  generateClientCertificateRequest = _messages.MessageField('GenerateClientCertificateRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class AlloydbProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersGetRequest object.
 
@@ -395,6 +410,31 @@ class AlloydbProjectsLocationsClustersInstancesFailoverRequest(_messages.Message
 
   failoverInstanceRequest = _messages.MessageField('FailoverInstanceRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class AlloydbProjectsLocationsClustersInstancesGetConnectionInfoRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersInstancesGetConnectionInfoRequest
+  object.
+
+  Fields:
+    parent: Required. The name of the parent resource. The required format is:
+      projects/{project}/locations/{location}/clusters/{cluster}/instances/{in
+      stance}
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
 
 
 class AlloydbProjectsLocationsClustersInstancesGetRequest(_messages.Message):
@@ -1390,6 +1430,25 @@ class Cluster(_messages.Message):
   updateTime = _messages.StringField(26)
 
 
+class ConnectionInfo(_messages.Message):
+  r"""ConnectionInfo singleton resource. https://google.aip.dev/156
+
+  Fields:
+    instanceUid: Output only. The unique ID of the Instance.
+    ipAddress: Output only. The private network IP address for the Instance.
+      This is the default IP for the instance and is always created (even if
+      enable_public_ip is set). This is the connection endpoint for an end-
+      user application.
+    name: The name of the ConnectionInfo singleton resource, e.g.: projects/{p
+      roject}/locations/{location}/clusters/*/instances/*/connectionInfo This
+      field currently has no semantic meaning.
+  """
+
+  instanceUid = _messages.StringField(1)
+  ipAddress = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class ContinuousBackupConfig(_messages.Message):
   r"""ContinuousBackupConfig describes the continuous backups recovery
   configurations of a cluster.
@@ -1548,6 +1607,49 @@ class FailoverInstanceRequest(_messages.Message):
 
   requestId = _messages.StringField(1)
   validateOnly = _messages.BooleanField(2)
+
+
+class GenerateClientCertificateRequest(_messages.Message):
+  r"""Message for requests to generate a client certificate signed by the
+  Cluster CA.
+
+  Fields:
+    certDuration: Optional. An optional hint to the endpoint to generate the
+      client certificate with the requested duration. The duration can be from
+      1 hour to 24 hours. The endpoint may or may not honor the hint. If the
+      hint is left unspecified or is not honored, then the endpoint will pick
+      an appropriate default duration.
+    publicKey: Optional. The public key from the client.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  certDuration = _messages.StringField(1)
+  publicKey = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+
+
+class GenerateClientCertificateResponse(_messages.Message):
+  r"""Message returned by a GenerateClientCertificate operation.
+
+  Fields:
+    caCert: Optional. The pem-encoded cluster ca X.509 certificate.
+    pemCertificateChain: Output only. The pem-encoded chain that may be used
+      to verify the X.509 certificate. Expected to be in issuer-to-root order
+      according to RFC 5246.
+  """
+
+  caCert = _messages.StringField(1)
+  pemCertificateChain = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudLocationListLocationsResponse(_messages.Message):
@@ -2122,8 +2224,8 @@ class NetworkConfig(_messages.Message):
       set, the instance IPs for this cluster will be created in the allocated
       range. The range name must comply with RFC 1035. Specifically, the name
       must be 1-63 characters long and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])?. Field name is intended to be consistent with
-      CloudSQL.
+      `[a-z]([-a-z0-9]*[a-z0-9])?`. Field name is intended to be consistent
+      with Cloud SQL.
     network: Required. The resource link for the VPC network in which cluster
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
@@ -3075,13 +3177,15 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     Values:
       INSTANCE_TYPE_UNSPECIFIED: <no description>
       PRIMARY: A regular primary database instance.
+      SECONDARY: A cluster or an instance acting as a secondary.
       READ_REPLICA: An instance acting as a read-replica.
       OTHER: For rest of the other categories.
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
-    READ_REPLICA = 2
-    OTHER = 3
+    SECONDARY = 2
+    READ_REPLICA = 3
+    OTHER = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):

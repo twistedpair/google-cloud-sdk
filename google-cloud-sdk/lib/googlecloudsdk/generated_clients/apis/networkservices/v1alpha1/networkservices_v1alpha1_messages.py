@@ -1127,19 +1127,22 @@ class Expr(_messages.Message):
 
 
 class ExtensionChain(_messages.Message):
-  r"""A single extension wrapper that contains the match conditions and
-  extensions that will be executed.
+  r"""A single extension chain wrapper that contains the match conditions and
+  extensions to execute.
 
   Fields:
-    extensions: Required. A set of extensions that will execute for the
-      matching request. Up to 3 extensions can be defined for each
-      ExtensionChain for LbTrafficExtension resource.
-      LbServiceSteeringExtension chains are limited to 1 extension per
-      ExtensionChain
-    matchCondition: Required. Conditions under which this chain should be
-      invoked for a request.
-    name: Required. The name for this extension chain. The name will be logged
-      as part of HTTP request logs.
+    extensions: Required. A set of extensions to execute for the matching
+      request. At least one extension is required. Up to 3 extensions can be
+      defined for each extension chain for `LbTrafficExtension` resource.
+      `LbRouteExtension` chains are limited to 1 extension per extension
+      chain.
+    matchCondition: Required. Conditions under which this chain is invoked for
+      a request.
+    name: Required. The name for this extension chain. The name is logged as
+      part of the HTTP request logs. The name must conform with RFC-1034, is
+      restricted to lower-cased letters, numbers and hyphens, and can have a
+      maximum length of 63 characters. Additionally, the first character must
+      be a letter and the last a letter or a number.
   """
 
   extensions = _messages.MessageField('ExtensionChainExtension', 1, repeated=True)
@@ -1148,36 +1151,38 @@ class ExtensionChain(_messages.Message):
 
 
 class ExtensionChainExtension(_messages.Message):
-  r"""A single Extension in the chain that will execute for the matching
-  request.
+  r"""A single extension in the chain to execute for the matching request.
 
   Enums:
     SupportedEventsValueListEntryValuesEnum:
 
   Fields:
-    authority: Required. The :authority header in the gRPC request sent from
+    authority: Required. The `:authority` header in the gRPC request sent from
       Envoy to the extension service.
-    failOpen: Optional. Determines how the proxy should behave if the call to
-      the extension fails or times out. When set to TRUE, request/response
+    failOpen: Optional. Determines how the proxy behaves if the call to the
+      extension fails or times out. When set to `TRUE`, request or response
       processing continues without error. Any subsequent extensions in the
-      ExtensionChain will also execute. When set to FALSE: * If Response
-      Headers have not been delivered to the downstream client, a generic 500
+      extension chain are also executed. When set to `FALSE`: * If response
+      headers have not been delivered to the downstream client, a generic 500
       error is returned to the client. The error response can be tailored by
-      configuring a custom error response in the Load Balancer, the error
-      response. * If Response Headers have been delivered, then the HTTP
-      stream to the downstream client will be reset. Default is False.
-    forwardHeaders: Optional. List of HTTP headers (from the client or
-      backend) to forward to the Extension. If omitted, all headers will be
-      sent.
-    name: Required. The name for this extension. The name will be logged as
-      part of HTTP request logs.
-    service: Required. The reference to the service that will run the
-      extension. Must be a reference to a Backend Service (https://cloud.googl
-      e.com/compute/docs/reference/rest/v1/backendServices).
+      configuring a custom error response in the load balancer. * If response
+      headers have been delivered, then the HTTP stream to the downstream
+      client is reset. Default is `FALSE`.
+    forwardHeaders: Optional. List of the HTTP headers to forward to the
+      extension (from the client or backend). If omitted, all headers are
+      sent. Each element is a string indicating the header name.
+    name: Required. The name for this extension. The name is logged as part of
+      the HTTP request logs. The name must conform with RFC-1034, is
+      restricted to lower-cased letters, numbers and hyphens, and can have a
+      maximum length of 63 characters. Additionally, the first character must
+      be a letter and the last a letter or a number.
+    service: Required. The reference to the service that runs the extension.
+      Must be a reference to a [backend service](https://cloud.google.com/comp
+      ute/docs/reference/rest/v1/backendServices).
     supportedEvents: Optional. A set of events during request or response
-      processing for which this extension should be called. Note that usage of
-      this field is only allowed and is required for LbTrafficExtension
-      resource.
+      processing for which this extension is called. This field is required
+      for the `LbTrafficExtension` resource. It's not relevant for the
+      `LbRouteExtension` resource.
     timeout: Required. Specifies the timeout for each individual message on
       the stream. The timeout must be between 10-1000 milliseconds.
   """
@@ -1187,14 +1192,14 @@ class ExtensionChainExtension(_messages.Message):
 
     Values:
       EVENT_TYPE_UNSPECIFIED: Unspecified value. Do not use.
-      REQUEST_HEADERS: If included in 'supported_events', the extension will
-        be called when HTTP request headers arrive.
-      REQUEST_BODY: If included in 'supported_events', the extension will be
-        called when HTTP request body arrives.
-      RESPONSE_HEADERS: If included in 'supported_events', the extension will
-        be called when HTTP response headers arrive.
-      RESPONSE_BODY: If included in 'supported_events', the extension will be
-        called when HTTP response body arrives.
+      REQUEST_HEADERS: If included in `supported_events`, the extension is
+        called when the HTTP request headers arrive.
+      REQUEST_BODY: If included in `supported_events`, the extension is called
+        when the HTTP request body arrives.
+      RESPONSE_HEADERS: If included in `supported_events`, the extension is
+        called when the HTTP response headers arrive.
+      RESPONSE_BODY: If included in `supported_events`, the extension is
+        called when the HTTP response body arrives.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     REQUEST_HEADERS = 1
@@ -1212,11 +1217,12 @@ class ExtensionChainExtension(_messages.Message):
 
 
 class ExtensionChainMatchCondition(_messages.Message):
-  r"""Conditions under which this chain should be invoked for a request.
+  r"""Conditions under which this chain is invoked for a request.
 
   Fields:
-    celExpression: Required. A Common Expression Language expression that is
-      used to match requests for which the extension chain should be executed.
+    celExpression: Required. A Common Expression Language (CEL) expression
+      that is used to match requests for which the extension chain is
+      executed.
   """
 
   celExpression = _messages.StringField(1)
@@ -1640,6 +1646,8 @@ class GrpcRouteRouteAction(_messages.Message):
       with a fault_injection_policy
     retryPolicy: Optional. Specifies the retry policy associated with this
       route.
+    statefulSessionAffinity: Optional. Specifies cookie-based stateful session
+      affinity.
     timeout: Optional. Specifies the timeout for selected route. Timeout is
       computed from the time the request has been fully processed (i.e. end of
       stream) up until the response has been completely processed. Timeout
@@ -1649,7 +1657,8 @@ class GrpcRouteRouteAction(_messages.Message):
   destinations = _messages.MessageField('GrpcRouteDestination', 1, repeated=True)
   faultInjectionPolicy = _messages.MessageField('GrpcRouteFaultInjectionPolicy', 2)
   retryPolicy = _messages.MessageField('GrpcRouteRetryPolicy', 3)
-  timeout = _messages.StringField(4)
+  statefulSessionAffinity = _messages.MessageField('GrpcRouteStatefulSessionAffinityPolicy', 4)
+  timeout = _messages.StringField(5)
 
 
 class GrpcRouteRouteMatch(_messages.Message):
@@ -1681,6 +1690,24 @@ class GrpcRouteRouteRule(_messages.Message):
 
   action = _messages.MessageField('GrpcRouteRouteAction', 1)
   matches = _messages.MessageField('GrpcRouteRouteMatch', 2, repeated=True)
+
+
+class GrpcRouteStatefulSessionAffinityPolicy(_messages.Message):
+  r"""The specification for cookie-based stateful session affinity where the
+  date plane supplies a "session cookie" with the name "GSSA" which encodes a
+  specific destination host and each request containing that cookie will be
+  directed to that host as long as the destination host remains up and
+  healthy. The gRPC proxyless mesh library or sidecar proxy will manage the
+  session cookie but the client application code is responsible for copying
+  the cookie from each RPC in the session to the next.
+
+  Fields:
+    cookieTtl: Required. The cookie TTL value for the Set-Cookie header
+      generated by the data plane. The lifetime of the cookie may be set to a
+      value from 1 to 86400 seconds (24 hours) inclusive.
+  """
+
+  cookieTtl = _messages.StringField(1)
 
 
 class HeaderAction(_messages.Message):
@@ -2345,6 +2372,8 @@ class HttpRouteRouteAction(_messages.Message):
       they will be merged. Conflicts between the two will not be resolved on
       the configuration.
     retryPolicy: Specifies the retry policy associated with this route.
+    statefulSessionAffinity: Optional. Specifies cookie-based stateful session
+      affinity.
     timeout: Specifies the timeout for selected route. Timeout is computed
       from the time the request has been fully processed (i.e. end of stream)
       up until the response has been completely processed. Timeout includes
@@ -2361,8 +2390,9 @@ class HttpRouteRouteAction(_messages.Message):
   requestMirrorPolicy = _messages.MessageField('HttpRouteRequestMirrorPolicy', 6)
   responseHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 7)
   retryPolicy = _messages.MessageField('HttpRouteRetryPolicy', 8)
-  timeout = _messages.StringField(9)
-  urlRewrite = _messages.MessageField('HttpRouteURLRewrite', 10)
+  statefulSessionAffinity = _messages.MessageField('HttpRouteStatefulSessionAffinityPolicy', 9)
+  timeout = _messages.StringField(10)
+  urlRewrite = _messages.MessageField('HttpRouteURLRewrite', 11)
 
 
 class HttpRouteRouteMatch(_messages.Message):
@@ -2416,6 +2446,24 @@ class HttpRouteRouteRule(_messages.Message):
   matches = _messages.MessageField('HttpRouteRouteMatch', 2, repeated=True)
 
 
+class HttpRouteStatefulSessionAffinityPolicy(_messages.Message):
+  r"""The specification for cookie-based stateful session affinity where the
+  date plane supplies a "session cookie" with the name "GSSA" which encodes a
+  specific destination host and each request containing that cookie will be
+  directed to that host as long as the destination host remains up and
+  healthy. The gRPC proxyless mesh library or sidecar proxy will manage the
+  session cookie but the client application code is responsible for copying
+  the cookie from each RPC in the session to the next.
+
+  Fields:
+    cookieTtl: Required. The cookie TTL value for the Set-Cookie header
+      generated by the data plane. The lifetime of the cookie may be set to a
+      value from 1 to 86400 seconds (24 hours) inclusive.
+  """
+
+  cookieTtl = _messages.StringField(1)
+
+
 class HttpRouteURLRewrite(_messages.Message):
   r"""The specification for modifying the URL of the request, prior to
   forwarding the request to the destination.
@@ -2463,53 +2511,55 @@ class InvalidateCacheResponse(_messages.Message):
 
 
 class LbRouteExtension(_messages.Message):
-  r"""Message describing LbRouteExtension object
+  r"""`LbRouteExtension` is a resource that lets you control where traffic is
+  routed to for a given request.
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
-      balancing scheme. Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `EXTERNAL_MANAGED`.
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the
-      LbRouteExtension resource.
+    LabelsValue: Optional. Set of labels associated with the
+      `LbRouteExtension` resource. The format must comply with [the following
+      requirements](/compute/docs/labeling-resources#requirements).
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     extensionChains: Required. A set of ordered extension chains that contain
-      the match conditions and extensions that will be executed. Match
-      conditions for each extension chain are evaluated in sequence for a
-      given request. The first extension chain that has a condition that
-      matches the request will execute. Any subsequent extension chains will
-      not execute.
-    forwardingRules: Required. A list of references to the Forwarding Rules to
-      which this service extension will attach to in format:
-      projects/{project}/global/forwardingRules/{forwarding_rule} or
-      projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}.
-      At least one forwarding rule is required. There can be only one
-      LbRouteExtension resource per Forwarding Rule.
-    labels: Optional. Set of label tags associated with the LbRouteExtension
-      resource.
+      the match conditions and extensions to execute. Match conditions for
+      each extension chain are evaluated in sequence for a given request. The
+      first extension chain that has a condition that matches the request is
+      executed. Any subsequent extension chains do not execute. Limited to 5
+      extension chains per resource.
+    forwardingRules: Required. A list of references to the forwarding rules to
+      which this service extension is attach to. At least one forwarding rule
+      is required. There can be only one `LbRouteExtension` resource per
+      forwarding rule.
+    labels: Optional. Set of labels associated with the `LbRouteExtension`
+      resource. The format must comply with [the following
+      requirements](/compute/docs/labeling-resources#requirements).
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
-      Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
-    name: Required. Name of the LbRouteExtension resource. It matches pattern
-      `projects/{project}/locations/{location}/lbRouteExtensions/{lb_route_ext
-      ension}`.
+      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`.
+    name: Required. Name of the `LbRouteExtension` resource in the following
+      format: `projects/{project}/locations/{location}/lbRouteExtensions/{lb_r
+      oute_extension}`.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
-    INTERNAL_MANAGED, EXTERNAL_MANAGED.
+    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`.
 
     Values:
-      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Should not be used.
-      INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
-        Load Balancing.
-      EXTERNAL_MANAGED: Signifies that this will be used for External Managed
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Internal HTTP(S) Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for External Managed
         HTTP(S) Load Balancing.
     """
     LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
@@ -2518,97 +2568,9 @@ class LbRouteExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the LbRouteExtension
-    resource.
-
-    Messages:
-      AdditionalProperty: An additional property for a LabelsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type LabelsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a LabelsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  extensionChains = _messages.MessageField('ExtensionChain', 3, repeated=True)
-  forwardingRules = _messages.StringField(4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
-  name = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
-
-
-class LbServiceSteeringExtension(_messages.Message):
-  r"""Message describing LbServiceSteeringExtension object
-
-  Enums:
-    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
-      forwarding rules referenced by this extension must share the same load
-      balancing scheme. Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
-
-  Messages:
-    LabelsValue: Optional. Set of label tags associated with the
-      LbServiceSteeringExtension resource.
-
-  Fields:
-    createTime: Output only. The timestamp when the resource was created.
-    description: Optional. A human-readable description of the resource.
-    extensionChains: Required. A set of ordered extension chains that contain
-      the match conditions and extensions that will be executed. Match
-      conditions for each extension chain are evaluated in sequence for a
-      given request. The first extension chain that has a condition that
-      matches the request will execute. Any subsequent extension chains will
-      not execute.
-    forwardingRules: Required. A list of references to the Forwarding Rules to
-      which this service extension will attach to in format:
-      projects/{project}/global/forwardingRules/{forwarding_rule} or
-      projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}.
-      At least one forwarding rule is required. There can be only one
-      LbServiceSteeringExtension resource per Forwarding Rule.
-    labels: Optional. Set of label tags associated with the
-      LbServiceSteeringExtension resource.
-    loadBalancingScheme: Required. All backend services and forwarding rules
-      referenced by this extension must share the same load balancing scheme.
-      Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
-    name: Required. Name of the LbServiceSteeringExtension resource. It
-      matches pattern `projects/{project}/locations/{location}/lbServiceSteeri
-      ngExtensions/{lb_service_steering_extension}`.
-    updateTime: Output only. The timestamp when the resource was updated.
-  """
-
-  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
-    r"""Required. All backend services and forwarding rules referenced by this
-    extension must share the same load balancing scheme. Supported values:
-    INTERNAL_MANAGED, EXTERNAL_MANAGED.
-
-    Values:
-      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Should not be used.
-      INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
-        Load Balancing.
-      EXTERNAL_MANAGED: Signifies that this will be used for External Managed
-        HTTP(S) Load Balancing.
-    """
-    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
-    INTERNAL_MANAGED = 1
-    EXTERNAL_MANAGED = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the
-    LbServiceSteeringExtension resource.
+    r"""Optional. Set of labels associated with the `LbRouteExtension`
+    resource. The format must comply with [the following
+    requirements](/compute/docs/labeling-resources#requirements).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2641,43 +2603,46 @@ class LbServiceSteeringExtension(_messages.Message):
 
 
 class LbTrafficExtension(_messages.Message):
-  r"""Message describing LbTrafficExtension object
+  r"""`LbTrafficExtension` is a resource that lets the extension service
+  modify the headers and payloads of both requests and responses without
+  impacting the choice of backend services or any other security policies
+  associated with the backend service.
 
   Enums:
     LoadBalancingSchemeValueValuesEnum: Required. All backend services and
       forwarding rules referenced by this extension must share the same load
-      balancing scheme. Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED.
-      For more information, refer to [Choosing a load
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
 
   Messages:
-    LabelsValue: Optional. Set of label tags associated with the
-      LbTrafficExtension resource.
+    LabelsValue: Optional. Set of labels associated with the
+      `LbTrafficExtension` resource. The format must comply with [the
+      following requirements](/compute/docs/labeling-resources#requirements).
 
   Fields:
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A human-readable description of the resource.
     extensionChains: Required. A set of ordered extension chains that contain
-      the match conditions and extensions that will be executed. Match
-      conditions for each extension chain are evaluated in sequence for a
-      given request. The first extension chain that has a condition that
-      matches the request will execute. Any subsequent extension chains will
-      not execute.
-    forwardingRules: Required. A list of references to the Forwarding Rules to
-      which this service extension will attach to in format:
-      projects/{project}/global/forwardingRules/{forwarding_rule} or
-      projects/{project}/regions/{region}/forwardingRules/{forwarding_rule}.
-      At least one forwarding rule is required. There can be only one
-      LBTrafficExtension resource per Forwarding Rule.
-    labels: Optional. Set of label tags associated with the LbTrafficExtension
-      resource.
+      the match conditions and extensions to execute. Match conditions for
+      each extension chain are evaluated in sequence for a given request. The
+      first extension chain that has a condition that matches the request is
+      executed. Any subsequent extension chains do not execute. Limited to 5
+      extension chains per resource.
+    forwardingRules: Required. A list of references to the forwarding rules to
+      which this service extension is attach to. At least one forwarding rule
+      is required. There can be only one `LBTrafficExtension` resource per
+      forwarding rule.
+    labels: Optional. Set of labels associated with the `LbTrafficExtension`
+      resource. The format must comply with [the following
+      requirements](/compute/docs/labeling-resources#requirements).
     loadBalancingScheme: Required. All backend services and forwarding rules
       referenced by this extension must share the same load balancing scheme.
-      Supported values: INTERNAL_MANAGED, EXTERNAL_MANAGED. For more
+      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
-    name: Required. Name of the LbTrafficExtension resource. It matches
-      pattern `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
+    name: Required. Name of the `LbTrafficExtension` resource in the following
+      format: `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
       _traffic_extension}`.
     updateTime: Output only. The timestamp when the resource was updated.
   """
@@ -2685,15 +2650,15 @@ class LbTrafficExtension(_messages.Message):
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Required. All backend services and forwarding rules referenced by this
     extension must share the same load balancing scheme. Supported values:
-    INTERNAL_MANAGED, EXTERNAL_MANAGED. For more information, refer to
+    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
     [Choosing a load balancer](https://cloud.google.com/load-
     balancing/docs/backend-service).
 
     Values:
-      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Should not be used.
-      INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
-        Load Balancing.
-      EXTERNAL_MANAGED: Signifies that this will be used for External Managed
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Internal HTTP(S) Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for External Managed
         HTTP(S) Load Balancing.
     """
     LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
@@ -2702,8 +2667,9 @@ class LbTrafficExtension(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Optional. Set of label tags associated with the LbTrafficExtension
-    resource.
+    r"""Optional. Set of labels associated with the `LbTrafficExtension`
+    resource. The format must comply with [the following
+    requirements](/compute/docs/labeling-resources#requirements).
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2858,12 +2824,12 @@ class ListHttpRoutesResponse(_messages.Message):
 
 
 class ListLbRouteExtensionsResponse(_messages.Message):
-  r"""Message for response to listing LbRouteExtensions
+  r"""Message for response to listing `LbRouteExtension` resources.
 
   Fields:
-    lbRouteExtensions: The list of LbRouteExtension
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    lbRouteExtensions: The list of `LbRouteExtension` resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
     unreachable: Locations that could not be reached.
   """
 
@@ -2872,28 +2838,13 @@ class ListLbRouteExtensionsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
-class ListLbServiceSteeringExtensionsResponse(_messages.Message):
-  r"""Message for response to listing LbServiceSteeringExtensions
-
-  Fields:
-    lbServiceSteeringExtensions: The list of LbServiceSteeringExtension
-    nextPageToken: A token identifying a page of results the server should
-      return.
-    unreachable: Locations that could not be reached.
-  """
-
-  lbServiceSteeringExtensions = _messages.MessageField('LbServiceSteeringExtension', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
-  unreachable = _messages.StringField(3, repeated=True)
-
-
 class ListLbTrafficExtensionsResponse(_messages.Message):
-  r"""Message for response to listing LbTrafficExtensions
+  r"""Message for response to listing `LbTrafficExtension` resources.
 
   Fields:
-    lbTrafficExtensions: The list of LbTrafficExtension
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    lbTrafficExtensions: The list of `LbTrafficExtension` resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
     unreachable: Locations that could not be reached.
   """
 
@@ -4877,20 +4828,21 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.M
   Fields:
     lbRouteExtension: A LbRouteExtension resource to be passed as the request
       body.
-    lbRouteExtensionId: Required. User-provided ID of the LbRouteExtension
+    lbRouteExtensionId: Required. User-provided ID of the `LbRouteExtension`
       resource to be created.
-    parent: Required. Value for parent.
+    parent: Required. The parent resource of the `LbRouteExtension` resource.
+      Must be in the format `projects/{project}/locations/{location}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
@@ -4903,18 +4855,20 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest(_messages.M
   r"""A NetworkservicesProjectsLocationsLbRouteExtensionsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The name of the `LbRouteExtension` resource to delete.
+      Must be in the format `projects/{project}/locations/{location}/lbRouteEx
+      tensions/{lb_route_extension}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
@@ -4925,7 +4879,9 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest(_messages.Mess
   r"""A NetworkservicesProjectsLocationsLbRouteExtensionsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. A name of the `LbRouteExtension` resource to get. Must be
+      in the format `projects/{project}/locations/{location}/lbRouteExtensions
+      /{lb_route_extension}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4935,13 +4891,16 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsListRequest(_messages.Mes
   r"""A NetworkservicesProjectsLocationsLbRouteExtensionsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListLbRouteExtensionsRequest
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the
+      `LbRouteExtension` resources are listed, specified in the following
+      format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -4957,149 +4916,28 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
   Fields:
     lbRouteExtension: A LbRouteExtension resource to be passed as the request
       body.
-    name: Required. Name of the LbRouteExtension resource. It matches pattern
-      `projects/{project}/locations/{location}/lbRouteExtensions/{lb_route_ext
-      ension}`.
+    name: Required. Name of the `LbRouteExtension` resource in the following
+      format: `projects/{project}/locations/{location}/lbRouteExtensions/{lb_r
+      oute_extension}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the LbRouteExtension resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Used to specify the fields to be overwritten in the
+      `LbRouteExtension` resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      is overwritten if it is in the mask. If the user does not specify a
+      mask, then all fields are overwritten.
   """
 
   lbRouteExtension = _messages.MessageField('LbRouteExtension', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
-
-
-class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsLbServiceSteeringExtensionsCreateRequest
-  object.
-
-  Fields:
-    lbServiceSteeringExtension: A LbServiceSteeringExtension resource to be
-      passed as the request body.
-    lbServiceSteeringExtensionId: Required. User-provided ID of the
-      LbServiceSteeringExtension resource to be created.
-    parent: Required. Value for parent.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  lbServiceSteeringExtension = _messages.MessageField('LbServiceSteeringExtension', 1)
-  lbServiceSteeringExtensionId = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
-  requestId = _messages.StringField(4)
-
-
-class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsDeleteRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsLbServiceSteeringExtensionsDeleteRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
-
-
-class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsGetRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsLbServiceSteeringExtensionsGetRequest
-  object.
-
-  Fields:
-    name: Required. Name of the resource
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsListRequest(_messages.Message):
-  r"""A NetworkservicesProjectsLocationsLbServiceSteeringExtensionsListRequest
-  object.
-
-  Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListLbServiceSteeringExtensionsRequest
-  """
-
-  filter = _messages.StringField(1)
-  orderBy = _messages.StringField(2)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
-
-
-class NetworkservicesProjectsLocationsLbServiceSteeringExtensionsPatchRequest(_messages.Message):
-  r"""A
-  NetworkservicesProjectsLocationsLbServiceSteeringExtensionsPatchRequest
-  object.
-
-  Fields:
-    lbServiceSteeringExtension: A LbServiceSteeringExtension resource to be
-      passed as the request body.
-    name: Required. Name of the LbServiceSteeringExtension resource. It
-      matches pattern `projects/{project}/locations/{location}/lbServiceSteeri
-      ngExtensions/{lb_service_steering_extension}`.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the LbServiceSteeringExtension resource by the update.
-      The fields specified in the update_mask are relative to the resource,
-      not the full request. A field will be overwritten if it is in the mask.
-      If the user does not provide a mask then all fields will be overwritten.
-  """
-
-  lbServiceSteeringExtension = _messages.MessageField('LbServiceSteeringExtension', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -5112,20 +4950,22 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsCreateRequest(_messages
   Fields:
     lbTrafficExtension: A LbTrafficExtension resource to be passed as the
       request body.
-    lbTrafficExtensionId: Required. User-provided ID of the LbTrafficExtension
-      resource to be created.
-    parent: Required. Value for parent.
+    lbTrafficExtensionId: Required. User-provided ID of the
+      `LbTrafficExtension` resource to be created.
+    parent: Required. The parent resource of the `LbTrafficExtension`
+      resource. Must be in the format
+      `projects/{project}/locations/{location}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   lbTrafficExtension = _messages.MessageField('LbTrafficExtension', 1)
@@ -5139,18 +4979,20 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsDeleteRequest(_messages
   object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. The name of the `LbTrafficExtension` resource to delete.
+      Must be in the format `projects/{project}/locations/{location}/lbTraffic
+      Extensions/{lb_traffic_extension}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes after the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
   """
 
   name = _messages.StringField(1, required=True)
@@ -5161,7 +5003,9 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsGetRequest(_messages.Me
   r"""A NetworkservicesProjectsLocationsLbTrafficExtensionsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. A name of the `LbTrafficExtension` resource to get. Must
+      be in the format `projects/{project}/locations/{location}/lbTrafficExten
+      sions/{lb_traffic_extension}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5171,13 +5015,16 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest(_messages.M
   r"""A NetworkservicesProjectsLocationsLbTrafficExtensionsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListLbTrafficExtensionsRequest
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the
+      `LbTrafficExtension` resources are listed, specified in the following
+      format: `projects/{project}/locations/{location}`.
   """
 
   filter = _messages.StringField(1)
@@ -5194,25 +5041,25 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.
   Fields:
     lbTrafficExtension: A LbTrafficExtension resource to be passed as the
       request body.
-    name: Required. Name of the LbTrafficExtension resource. It matches
-      pattern `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
+    name: Required. Name of the `LbTrafficExtension` resource in the following
+      format: `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
       _traffic_extension}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the LbTrafficExtension resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Used to specify the fields to be overwritten in the
+      `LbTrafficExtension` resource by the update. The fields specified in the
+      update_mask are relative to the resource, not the full request. A field
+      is overwritten if it is in the mask. If the user does not specify a
+      mask, then all fields are overwritten.
   """
 
   lbTrafficExtension = _messages.MessageField('LbTrafficExtension', 1)

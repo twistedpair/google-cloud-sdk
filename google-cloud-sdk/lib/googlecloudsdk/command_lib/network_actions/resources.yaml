@@ -6,7 +6,7 @@ project:
     parameter_name: projectsId
     attribute_name: project
     help: |
-      The project Id.
+      The project ID.
     property: core/project
 
 location:
@@ -18,7 +18,7 @@ location:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      The location Id.
+      The location ID.
     fallthroughs:
     # If the location is not specified, assume 'global' by default.
     - hook: googlecloudsdk.command_lib.network_actions.util:SetLocationAsGlobal
@@ -34,7 +34,7 @@ wasmAction:
   - &wasmAction
     parameter_name: wasmActionsId
     attribute_name: wasm_action
-    help: The ID of the WasmAction.
+    help: The ID of the `WasmAction`.
 
 wasmPlugin:
   name: WasmPlugin
@@ -46,7 +46,7 @@ wasmPlugin:
   - &wasmPlugin
     parameter_name: wasmPluginsId
     attribute_name: wasm_plugin
-    help: The ID of the WasmPlugin.
+    help: The ID of the `WasmPlugin`.
 
 wasmPluginVersion:
   name: WasmPluginVersion
@@ -59,4 +59,4 @@ wasmPluginVersion:
   - &version
     parameter_name: versionsId
     attribute_name: wasm_plugin_version
-    help: The ID of the WasmPluginVersion.
+    help: The ID of the `WasmPluginVersion`.

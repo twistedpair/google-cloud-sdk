@@ -496,6 +496,7 @@ class FirewallEndpoint(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the endpoint.
+    TypeValueValuesEnum: Optional. Endpoint type.
 
   Messages:
     LabelsValue: Optional. Labels as key value pairs
@@ -510,11 +511,16 @@ class FirewallEndpoint(_messages.Message):
     createTime: Output only. Create time stamp
     description: Optional. Description of the firewall endpoint. Max length
       2048 characters.
+    firstPartyEndpointSettings: Optional. Firewall endpoint settings for first
+      party firewall endpoints.
     labels: Optional. Labels as key value pairs
     name: Output only. name of resource
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     state: Output only. Current state of the endpoint.
+    thirdPartyEndpointSettings: Optional. Firewall endpoint settings for third
+      party firewall endpoints.
+    type: Optional. Endpoint type.
     updateTime: Output only. Update time stamp
   """
 
@@ -533,6 +539,18 @@ class FirewallEndpoint(_messages.Message):
     ACTIVE = 2
     DELETING = 3
     INACTIVE = 4
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Endpoint type.
+
+    Values:
+      TYPE_UNSPECIFIED: Not set.
+      FIRST_PARTY: First party firewall endpoint.
+      THIRD_PARTY: Third party firewall endpoint.
+    """
+    TYPE_UNSPECIFIED = 0
+    FIRST_PARTY = 1
+    THIRD_PARTY = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -562,11 +580,14 @@ class FirewallEndpoint(_messages.Message):
   billingProjectId = _messages.StringField(2)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  reconciling = _messages.BooleanField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 10)
+  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  updateTime = _messages.StringField(12)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -642,6 +663,10 @@ class FirewallEndpointAssociation(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 7)
   tlsInspectionPolicy = _messages.StringField(8)
   updateTime = _messages.StringField(9)
+
+
+class FirstPartyEndpointSettings(_messages.Message):
+  r"""Next ID: 1."""
 
 
 class GatewaySecurityPolicy(_messages.Message):
@@ -1910,9 +1935,9 @@ class NetworksecurityOrganizationsLocationsSecurityProfileGroupsPatchRequest(_me
   object.
 
   Fields:
-    name: Immutable. Name of the SecurityProfileGroup resource. It matches
-      pattern `projects|organizations/*/locations/{location}/securityProfileGr
-      oups/{security_profile_group}`.
+    name: Immutable. Identifier. Name of the SecurityProfileGroup resource. It
+      matches pattern `projects|organizations/*/locations/{location}/securityP
+      rofileGroups/{security_profile_group}`.
     securityProfileGroup: A SecurityProfileGroup resource to be passed as the
       request body.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -1999,9 +2024,9 @@ class NetworksecurityOrganizationsLocationsSecurityProfilesPatchRequest(_message
   object.
 
   Fields:
-    name: Immutable. Name of the SecurityProfile resource. It matches pattern
-      `projects|organizations/*/locations/{location}/securityProfiles/{securit
-      y_profile}`.
+    name: Immutable. Identifier. Name of the SecurityProfile resource. It
+      matches pattern `projects|organizations/*/locations/{location}/securityP
+      rofiles/{security_profile}`.
     securityProfile: A SecurityProfile resource to be passed as the request
       body.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -3284,9 +3309,9 @@ class NetworksecurityProjectsLocationsSecurityProfileGroupsPatchRequest(_message
   object.
 
   Fields:
-    name: Immutable. Name of the SecurityProfileGroup resource. It matches
-      pattern `projects|organizations/*/locations/{location}/securityProfileGr
-      oups/{security_profile_group}`.
+    name: Immutable. Identifier. Name of the SecurityProfileGroup resource. It
+      matches pattern `projects|organizations/*/locations/{location}/securityP
+      rofileGroups/{security_profile_group}`.
     securityProfileGroup: A SecurityProfileGroup resource to be passed as the
       request body.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -3368,9 +3393,9 @@ class NetworksecurityProjectsLocationsSecurityProfilesPatchRequest(_messages.Mes
   r"""A NetworksecurityProjectsLocationsSecurityProfilesPatchRequest object.
 
   Fields:
-    name: Immutable. Name of the SecurityProfile resource. It matches pattern
-      `projects|organizations/*/locations/{location}/securityProfiles/{securit
-      y_profile}`.
+    name: Immutable. Identifier. Name of the SecurityProfile resource. It
+      matches pattern `projects|organizations/*/locations/{location}/securityP
+      rofiles/{security_profile}`.
     securityProfile: A SecurityProfile resource to be passed as the request
       body.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -4467,9 +4492,9 @@ class SecurityProfile(_messages.Message):
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
     labels: Optional. Labels as key value pairs.
-    name: Immutable. Name of the SecurityProfile resource. It matches pattern
-      `projects|organizations/*/locations/{location}/securityProfiles/{securit
-      y_profile}`.
+    name: Immutable. Identifier. Name of the SecurityProfile resource. It
+      matches pattern `projects|organizations/*/locations/{location}/securityP
+      rofiles/{security_profile}`.
     threatPreventionProfile: The threat prevention configuration for the
       SecurityProfile.
     type: Immutable. The single ProfileType that the SecurityProfile resource
@@ -4537,9 +4562,9 @@ class SecurityProfileGroup(_messages.Message):
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
     labels: Optional. Labels as key value pairs.
-    name: Immutable. Name of the SecurityProfileGroup resource. It matches
-      pattern `projects|organizations/*/locations/{location}/securityProfileGr
-      oups/{security_profile_group}`.
+    name: Immutable. Identifier. Name of the SecurityProfileGroup resource. It
+      matches pattern `projects|organizations/*/locations/{location}/securityP
+      rofileGroups/{security_profile_group}`.
     threatPreventionProfile: Optional. Reference to a SecurityProfile with the
       threat prevention configuration for the SecurityProfileGroup.
     updateTime: Output only. Last resource update timestamp.
@@ -4860,6 +4885,16 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class ThirdPartyEndpointSettings(_messages.Message):
+  r"""Next ID: 2.
+
+  Fields:
+    targetFirewallAttachment: Optional. URL of the target firewall attachment.
+  """
+
+  targetFirewallAttachment = _messages.StringField(1)
 
 
 class ThreatOverride(_messages.Message):

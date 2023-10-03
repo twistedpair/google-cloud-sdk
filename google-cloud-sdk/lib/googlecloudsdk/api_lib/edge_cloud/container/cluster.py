@@ -205,6 +205,20 @@ def IsLCPCluster(args):
   return False
 
 
+def IsOfflineCredential(args):
+  """Identify if the command is requesting an offline credential for LCP cluster.
+
+  Args:
+    args: command line arguments.
+
+  Returns:
+    Boolean, indication of requesting offline credential.
+  """
+  if flags.FlagIsExplicitlySet(args, 'offline_credential'):
+    return True
+  return False
+
+
 def GetClusterReference(args):
   """Get edgecontainer cluster resources.
 

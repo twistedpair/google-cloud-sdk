@@ -25,7 +25,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.run.integrations import deployment_states
-from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import base
 
 
 class Row(object):
@@ -72,15 +72,15 @@ def _GetSymbolFromDeploymentStatus(status):
   """
   status_to_symbol = {
       deployment_states.SUCCEEDED:
-          base_formatter.GetSymbol(base_formatter.SUCCESS),
+          base.GetSymbol(base.SUCCESS),
       deployment_states.FAILED:
-          base_formatter.GetSymbol(base_formatter.FAILED),
+          base.GetSymbol(base.FAILED),
       deployment_states.IN_PROGRESS:
-          base_formatter.GetSymbol(base_formatter.UPDATING),
+          base.GetSymbol(base.UPDATING),
   }
 
   return status_to_symbol.get(status,
-                              base_formatter.GetSymbol(
-                                  base_formatter.FAILED
+                              base.GetSymbol(
+                                  base.FAILED
                                   )
                               )

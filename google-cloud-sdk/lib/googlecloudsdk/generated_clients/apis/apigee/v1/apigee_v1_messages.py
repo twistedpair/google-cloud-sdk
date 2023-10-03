@@ -10712,9 +10712,8 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
     botReasons: Optional. A list of Bot Reasons. Current options: Flooder,
       Brute Guessor, Static Content Scraper, OAuth Abuser, Robot Abuser,
       TorListRule, Advanced Anomaly Detection and Advanced API Scraper.
-    ipAddressRanges: Optional. A list of IP ranges. This could be either IPv4
-      or IPv6. 200,000 per rule at the environment level or 1000 at the proxy
-      level.
+    ipAddressRanges: Optional. A list of IP addresses. This could be either
+      IPv4 or IPv6. Limited to 100 per action.
   """
 
   botReasons = _messages.StringField(1, repeated=True)

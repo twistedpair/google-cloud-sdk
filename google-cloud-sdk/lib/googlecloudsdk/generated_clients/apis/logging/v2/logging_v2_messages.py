@@ -7144,8 +7144,8 @@ class ReadQueryResultsRequest(_messages.Message):
       ReadQueryResults to paginate through the response rows.
     queryStepHandle: Required. A query step handle returned by QueryData.
     readMetadataOnly: Optional. If this flag is true, no rows will be returned
-      regardless of the value of page_size; the rows, total_rows, and
-      next_page_token members of the response will be empty.
+      regardless of the value of page_size; the rows and next_page_token
+      members of the response will be empty.
     resourceNames: Required. Names of one or more log views that were used in
       the original query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID
       ]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on

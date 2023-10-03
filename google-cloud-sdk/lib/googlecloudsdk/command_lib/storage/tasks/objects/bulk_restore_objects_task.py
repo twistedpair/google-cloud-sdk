@@ -58,7 +58,9 @@ class BulkRestoreObjectsTask(task.Task):
 
   def execute(self, task_status_queue=None):
     log.status.Print(
-        'Bulk restoring {}...'.format(self._url.versionless_url_string)
+        'Creating bulk restore operation for {}...'.format(
+            self._url.versionless_url_string
+        )
     )
     provider = self._url.scheme
     request_config = request_config_factory.get_request_config(

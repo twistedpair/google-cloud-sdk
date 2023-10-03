@@ -168,16 +168,20 @@ class AuthMethod(_messages.Message):
   Fields:
     azureadConfig: AzureAD specific configuration.
     googleConfig: GoogleConfig specific configuration
+    ldapConfig: Optional. LDAP specific configuration.
     name: Identifier for auth config.
     oidcConfig: OIDC specific configuration.
     proxy: Proxy server address to use for auth method.
+    samlConfig: Optional. SAML specific configuration.
   """
 
   azureadConfig = _messages.MessageField('AzureADConfig', 1)
   googleConfig = _messages.MessageField('GoogleConfig', 2)
-  name = _messages.StringField(3)
-  oidcConfig = _messages.MessageField('OidcConfig', 4)
-  proxy = _messages.StringField(5)
+  ldapConfig = _messages.MessageField('LdapConfig', 3)
+  name = _messages.StringField(4)
+  oidcConfig = _messages.MessageField('OidcConfig', 5)
+  proxy = _messages.StringField(6)
+  samlConfig = _messages.MessageField('SamlConfig', 7)
 
 
 class AuthorizationLoggingOptions(_messages.Message):
@@ -233,16 +237,22 @@ class AzureADConfig(_messages.Message):
     clientSecret: Input only. Unencrypted AzureAD client secret will be passed
       to the GKE Hub CLH.
     encryptedClientSecret: Output only. Encrypted AzureAD client secret.
+    groupFormat: Optional. Format of the AzureAD groups that the client wants
+      for auth.
     kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
     tenant: Kind of Azure AD account to be authenticated. Supported values are
       or for accounts belonging to a specific tenant.
+    userClaim: Optional. Claim in the AzureAD ID Token that holds the user
+      details.
   """
 
   clientId = _messages.StringField(1)
   clientSecret = _messages.StringField(2)
   encryptedClientSecret = _messages.BytesField(3)
-  kubectlRedirectUri = _messages.StringField(4)
-  tenant = _messages.StringField(5)
+  groupFormat = _messages.StringField(4)
+  kubectlRedirectUri = _messages.StringField(5)
+  tenant = _messages.StringField(6)
+  userClaim = _messages.StringField(7)
 
 
 class BinauthzConfig(_messages.Message):
@@ -639,7 +649,7 @@ class ConfigSync(_messages.Message):
       and Cloud Monarch when Workload Identity is enabled. The GSA should have
       the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
       The Kubernetes ServiceAccount `default` in the namespace `config-
-      management-monitoring` should be binded to the GSA. This field is
+      management-monitoring` should be bound to the GSA. This field is
       required when automatic Feature management is enabled.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
@@ -1591,15 +1601,11 @@ class FleetDefaultMemberConfig(_messages.Message):
 
   Fields:
     identityService: Spec for IdentityService.
-    retroactiveApply: If true, then changes to the default membership spec are
-      applied to all existing Memberships in addition to any future
-      Memberships.
     serviceMesh: Spec for ServiceMesh.
   """
 
   identityService = _messages.MessageField('MemberConfig', 1)
-  retroactiveApply = _messages.BooleanField(2)
-  serviceMesh = _messages.MessageField('ServiceMeshMembershipSpec', 3)
+  serviceMesh = _messages.MessageField('ServiceMeshMembershipSpec', 2)
 
 
 class FleetObservabilityBaseFeatureState(_messages.Message):
@@ -2209,6 +2215,28 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class GroupConfig(_messages.Message):
+  r"""Contains the properties for locating and authenticating groups in the
+  directory.
+
+  Fields:
+    baseDn: Required. The location of the subtree in the LDAP directory to
+      search for group entries.
+    filter: Optional. Optional filter to be used when searching for groups a
+      user belongs to. This can be used to explicitly match only certain
+      groups in order to reduce the amount of groups returned for each user.
+      This defaults to "(objectClass=Group)".
+    idAttribute: Optional. The identifying name of each group a user belongs
+      to. For example, if this is set to "distinguishedName" then RBACs and
+      other group expectations should be written as full DNs. This defaults to
+      "distinguishedName".
+  """
+
+  baseDn = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  idAttribute = _messages.StringField(3)
+
+
 class GroupVersionKind(_messages.Message):
   r"""A Kubernetes object's GVK
 
@@ -2417,6 +2445,26 @@ class InstallError(_messages.Message):
   errorMessage = _messages.StringField(1)
 
 
+class LdapConfig(_messages.Message):
+  r"""Configuration for the LDAP Auth flow.
+
+  Fields:
+    group: Optional. Contains the properties for locating and authenticating
+      groups in the directory.
+    server: Required. Server settings for the external LDAP server.
+    serviceAccount: Required. Contains the credentials of the service account
+      which is authorized to perform the LDAP search in the directory. The
+      credentials can be supplied by the combination of the DN and password or
+      the client certificate.
+    user: Required. Defines where users exist in the LDAP directory.
+  """
+
+  group = _messages.MessageField('GroupConfig', 1)
+  server = _messages.MessageField('ServerConfig', 2)
+  serviceAccount = _messages.MessageField('ServiceAccountConfig', 3)
+  user = _messages.MessageField('UserConfig', 4)
+
+
 class ListFeaturesResponse(_messages.Message):
   r"""Response message for the `GkeHubDomainFeatureService.ListFeatures`
   method.
@@ -2617,7 +2665,8 @@ class MembershipConfig(_messages.Message):
     ManagementValueValuesEnum: Enables automatic Feature management.
 
   Fields:
-    binauthz: Binauthz conifguration for the cluster.
+    binauthz: Binauthz conifguration for the cluster. Deprecated: This field
+      will be ignored and should not be set.
     cluster: The user-specified cluster name used by Config Sync cluster-name-
       selector annotation or ClusterSelector, for applying configs to only a
       subset of clusters. Omit this field if the cluster's fleet membership
@@ -2929,8 +2978,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -2952,7 +3001,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -2991,9 +3040,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -3097,7 +3146,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -3105,15 +3154,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -3896,6 +3945,114 @@ class Rule(_messages.Message):
   permissions = _messages.StringField(7, repeated=True)
 
 
+class SamlConfig(_messages.Message):
+  r"""Configuration for the SAML Auth flow.
+
+  Messages:
+    AttributeMappingValue: Optional. The mapping of additional user attributes
+      like nickname, birthday and address etc.. `key` is the name of this
+      additional attribute. `value` is a string presenting as CEL(common
+      expression language, go/cel) used for getting the value from the
+      resources. Take nickname as an example, in this case, `key` is
+      "attribute.nickname" and `value` is "assertion.nickname".
+
+  Fields:
+    attributeMapping: Optional. The mapping of additional user attributes like
+      nickname, birthday and address etc.. `key` is the name of this
+      additional attribute. `value` is a string presenting as CEL(common
+      expression language, go/cel) used for getting the value from the
+      resources. Take nickname as an example, in this case, `key` is
+      "attribute.nickname" and `value` is "assertion.nickname".
+    groupPrefix: Optional. Prefix to prepend to group name.
+    groupsAttribute: Optional. The SAML attribute to read groups from. This
+      value is expected to be a string and will be passed along as-is (with
+      the option of being prefixed by the `group_prefix`).
+    identityProviderCertificates: Required. The list of IdP certificates to
+      validate the SAML response against.
+    identityProviderId: Required. The entity ID of the SAML IdP.
+    identityProviderSsoUri: Required. The URI where the SAML IdP exposes the
+      SSO service.
+    userAttribute: Optional. The SAML attribute to read username from. If
+      unspecified, the username will be read from the NameID element of the
+      assertion in SAML response. This value is expected to be a string and
+      will be passed along as-is (with the option of being prefixed by the
+      `user_prefix`).
+    userPrefix: Optional. Prefix to prepend to user name.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AttributeMappingValue(_messages.Message):
+    r"""Optional. The mapping of additional user attributes like nickname,
+    birthday and address etc.. `key` is the name of this additional attribute.
+    `value` is a string presenting as CEL(common expression language, go/cel)
+    used for getting the value from the resources. Take nickname as an
+    example, in this case, `key` is "attribute.nickname" and `value` is
+    "assertion.nickname".
+
+    Messages:
+      AdditionalProperty: An additional property for a AttributeMappingValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AttributeMappingValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AttributeMappingValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  attributeMapping = _messages.MessageField('AttributeMappingValue', 1)
+  groupPrefix = _messages.StringField(2)
+  groupsAttribute = _messages.StringField(3)
+  identityProviderCertificates = _messages.StringField(4, repeated=True)
+  identityProviderId = _messages.StringField(5)
+  identityProviderSsoUri = _messages.StringField(6)
+  userAttribute = _messages.StringField(7)
+  userPrefix = _messages.StringField(8)
+
+
+class ServerConfig(_messages.Message):
+  r"""Server settings for the external LDAP server.
+
+  Fields:
+    certificateAuthorityData: Optional. Contains a Base64 encoded, PEM
+      formatted certificate authority certificate for the LDAP server. This
+      must be provided for the "ldaps" and "startTLS" connections.
+    connectionType: Optional. Defines the connection type to communicate with
+      the LDAP server. If `starttls` or `ldaps` is specified, the
+      certificate_authority_data should not be empty.
+    host: Required. Defines the hostname or IP of the LDAP server. Port is
+      optional and will default to 389, if unspecified. For example,
+      "ldap.server.example" or "10.10.10.10:389".
+  """
+
+  certificateAuthorityData = _messages.BytesField(1)
+  connectionType = _messages.StringField(2)
+  host = _messages.StringField(3)
+
+
+class ServiceAccountConfig(_messages.Message):
+  r"""Contains the credentials of the service account which is authorized to
+  perform the LDAP search in the directory. The credentials can be supplied by
+  the combination of the DN and password or the client certificate.
+
+  Fields:
+    simpleBindCredentials: Credentials for basic auth.
+  """
+
+  simpleBindCredentials = _messages.MessageField('SimpleBindCredentials', 1)
+
+
 class ServiceDirectoryFeatureSpec(_messages.Message):
   r"""An empty spec for service directory feature. This is required since
   Feature proto requires a spec.
@@ -4199,6 +4356,23 @@ class SetIamPolicyRequest(_messages.Message):
   updateMask = _messages.StringField(2)
 
 
+class SimpleBindCredentials(_messages.Message):
+  r"""The structure holds the LDAP simple binding credential.
+
+  Fields:
+    dn: Required. The distinguished name(DN) of the service account
+      object/user.
+    encryptedPassword: Output only. The encrypted password of the service
+      account object/user.
+    password: Required. Input only. The password of the service account
+      object/user.
+  """
+
+  dn = _messages.StringField(1)
+  encryptedPassword = _messages.BytesField(2)
+  password = _messages.StringField(3)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -4347,13 +4521,13 @@ class SyncState(_messages.Message):
     r"""Sync status code
 
     Values:
-      SYNC_CODE_UNSPECIFIED: ACM cannot determine a sync code
-      SYNCED: ACM successfully synced the git Repo with the cluster
-      PENDING: ACM is in the progress of syncing a new change
-      ERROR: Indicates an error configuring ACM, and user action is required
-      NOT_CONFIGURED: ACM has been installed (operator manifest deployed), but
-        not configured.
-      NOT_INSTALLED: ACM has not been installed (no operator pod found)
+      SYNC_CODE_UNSPECIFIED: Config Sync cannot determine a sync code
+      SYNCED: Config Sync successfully synced the git Repo with the cluster
+      PENDING: Config Sync is in the progress of syncing a new change
+      ERROR: Indicates an error configuring Config Sync, and user action is
+        required
+      NOT_CONFIGURED: Config Sync has been installed but not configured
+      NOT_INSTALLED: Config Sync has not been installed
       UNAUTHORIZED: Error authorizing with the cluster
       UNREACHABLE: Cluster could not be reached
     """
@@ -4462,6 +4636,36 @@ class Type(_messages.Message):
 
   code = _messages.StringField(1)
   displayName = _messages.StringField(2)
+
+
+class UserConfig(_messages.Message):
+  r"""Defines where users exist in the LDAP directory.
+
+  Fields:
+    baseDn: Required. The location of the subtree in the LDAP directory to
+      search for user entries.
+    filter: Optional. Filter to apply when searching for the user. This can be
+      used to further restrict the user accounts which are allowed to login.
+      This defaults to "(objectClass=User)".
+    idAttribute: Optional. Determines which attribute to use as the user's
+      identity after they are authenticated. This is distinct from the
+      loginAttribute field to allow users to login with a username, but then
+      have their actual identifier be an email address or full Distinguished
+      Name (DN). For example, setting loginAttribute to "sAMAccountName" and
+      identifierAttribute to "userPrincipalName" would allow a user to login
+      as "bsmith", but actual RBAC policies for the user would be written as
+      "bsmith@example.com". Using "userPrincipalName" is recommended since
+      this will be unique for each user. This defaults to "userPrincipalName".
+    loginAttribute: Optional. The name of the attribute which matches against
+      the input username. This is used to find the user in the LDAP database
+      e.g. "(=)" and is combined with the optional filter field. This defaults
+      to "userPrincipalName".
+  """
+
+  baseDn = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  idAttribute = _messages.StringField(3)
+  loginAttribute = _messages.StringField(4)
 
 
 class WorkloadCertificateFeatureSpec(_messages.Message):

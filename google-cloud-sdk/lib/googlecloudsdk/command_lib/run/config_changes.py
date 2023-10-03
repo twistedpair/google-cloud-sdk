@@ -1317,6 +1317,20 @@ class StartupCpuBoostChange(ConfigChanger):
     return resource
 
 
+class DefaultUrlChange(ConfigChanger):
+  """Sets the disable-default-url annotation on the service template."""
+
+  def __init__(self, default_url):
+    super(DefaultUrlChange, self).__init__(adjusts_template=True)
+    self._default_url = default_url
+
+  def Adjust(self, resource):
+    resource.template.annotations[
+        container_resource.DISABLE_URL_ANNOTATION
+    ] = str(not self._default_url)
+    return resource
+
+
 class NetworkInterfacesChange(ConfigChanger):
   """Sets or updates the network interfaces annotation on the template."""
 
@@ -1482,9 +1496,7 @@ class ContainerDependenciesChange(ConfigChanger):
   dependencies of other containers will be left unchanged.
   """
 
-  def __init__(
-      self, new_dependencies
-  ):
+  def __init__(self, new_dependencies):
     """ContainerDependenciesChange constructor.
 
     Args:
@@ -1576,3 +1588,34 @@ class AddVolumeChange(ConfigChanger):
           self._release_track,
       )
     return resource
+
+
+class RemoveVolumeMountChange(ContainerConfigChanger):
+  """Removes Volume Mounts from the container."""
+
+  def __init__(self, removed_mounts, **kwargs):
+    super(RemoveVolumeMountChange, self).__init__(**kwargs)
+    self._removed_mounts = removed_mounts
+
+  def AdjustContainer(self, container, messages_mod):
+    for to_remove in self._removed_mounts:
+      if to_remove in container.volume_mounts:
+        del container.volume_mounts[to_remove]
+    return container
+
+
+class AddVolumeMountChange(ContainerConfigChanger):
+  """Updates Volume Mounts set on the container."""
+
+  def __init__(self, new_mounts, **kwargs):
+    super(AddVolumeMountChange, self).__init__(**kwargs)
+    self._new_mounts = new_mounts
+
+  def AdjustContainer(self, container, messages_mod):
+    for mount in self._new_mounts:
+      if 'name' not in mount or 'path' not in mount:
+        raise exceptions.ConfigurationError(
+            'Added Volume mounts must have a `name` and a `path`.'
+        )
+      container.volume_mounts[mount['path']] = mount['name']
+    return container

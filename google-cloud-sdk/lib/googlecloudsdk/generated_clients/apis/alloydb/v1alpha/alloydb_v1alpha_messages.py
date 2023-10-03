@@ -1000,7 +1000,7 @@ class Backup(_messages.Message):
       (https://google.aip.dev/128#reconciliation), if true, indicates that the
       service is actively updating the resource. This can happen due to user-
       triggered updates or system actions like failover or maintenance.
-    satisfiesPzs: Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     sizeBytes: Output only. The size of the backup in bytes.
     state: Output only. The current state of the backup.
     type: The backup type, which suggests the trigger for the backup.
@@ -1280,7 +1280,7 @@ class Cluster(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
-    satisfiesPzs: Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     secondaryConfig: Cross Region replication config specific to SECONDARY
       cluster.
     sslConfig: SSL configuration for this AlloyDB cluster.
@@ -1636,6 +1636,7 @@ class GenerateClientCertificateRequest(_messages.Message):
       hint is left unspecified or is not honored, then the endpoint will pick
       an appropriate default duration.
     pemCsr: Optional. A pem-encoded X.509 certificate signing request (CSR).
+      It is recommended to use public_key instead.
     publicKey: Optional. The public key from the client.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -1911,6 +1912,9 @@ class Instance(_messages.Message):
       projects/{project}/locations/{region}/clusters/{cluster_id}
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
+    publicIpAddress: Output only. The public IP addresses for the Instance.
+      This is available ONLY when enable_public_ip is set. This is the
+      connection endpoint for an end-user application.
     queryInsightsConfig: Configuration for query insights.
     readPoolConfig: Read pool specific config.
     reconciling: Output only. Reconciling
@@ -1919,7 +1923,7 @@ class Instance(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
-    satisfiesPzs: Reserved for future use.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current serving state of the instance.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -2099,15 +2103,16 @@ class Instance(_messages.Message):
   machineConfig = _messages.MessageField('MachineConfig', 14)
   name = _messages.StringField(15)
   nodes = _messages.MessageField('Node', 16, repeated=True)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 17)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 18)
-  reconciling = _messages.BooleanField(19)
-  satisfiesPzs = _messages.BooleanField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  uid = _messages.StringField(22)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 23)
-  updateTime = _messages.StringField(24)
-  writableNode = _messages.MessageField('Node', 25)
+  publicIpAddress = _messages.StringField(17)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 18)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 19)
+  reconciling = _messages.BooleanField(20)
+  satisfiesPzs = _messages.BooleanField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  uid = _messages.StringField(23)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 24)
+  updateTime = _messages.StringField(25)
+  writableNode = _messages.MessageField('Node', 26)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2257,8 +2262,8 @@ class NetworkConfig(_messages.Message):
       set, the instance IPs for this cluster will be created in the allocated
       range. The range name must comply with RFC 1035. Specifically, the name
       must be 1-63 characters long and match the regular expression
-      [a-z]([-a-z0-9]*[a-z0-9])?. Field name is intended to be consistent with
-      CloudSQL.
+      `[a-z]([-a-z0-9]*[a-z0-9])?`. Field name is intended to be consistent
+      with Cloud SQL.
     network: Required. The resource link for the VPC network in which cluster
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
@@ -3210,13 +3215,15 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     Values:
       INSTANCE_TYPE_UNSPECIFIED: <no description>
       PRIMARY: A regular primary database instance.
+      SECONDARY: A cluster or an instance acting as a secondary.
       READ_REPLICA: An instance acting as a read-replica.
       OTHER: For rest of the other categories.
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
     PRIMARY = 1
-    READ_REPLICA = 2
-    OTHER = 3
+    SECONDARY = 2
+    READ_REPLICA = 3
+    OTHER = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):

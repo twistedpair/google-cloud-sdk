@@ -85,6 +85,8 @@ class Configs:
     config.host.gceInstance = self.messages.GceInstance()
     config.host.gceInstance.machineType = args.machine_type
     config.host.gceInstance.serviceAccount = args.service_account
+    if args.service_account_scopes:
+      config.host.gceInstance.serviceAccountScopes = args.service_account_scopes
     if args.network_tags:
       config.host.gceInstance.tags = args.network_tags
     config.host.gceInstance.poolSize = args.pool_size
@@ -251,6 +253,10 @@ class Configs:
     if args.IsSpecified('service_account'):
       config.host.gceInstance.serviceAccount = args.service_account
       update_mask.append('host.gce_instance.service_account')
+
+    if args.IsSpecified('service_account_scopes'):
+      config.host.gceInstance.serviceAccountScopes = args.service_account_scopes
+      update_mask.append('host.gce_instance.service_account_scopes')
 
     if args.IsSpecified('network_tags'):
       config.host.gceInstance.tags = args.network_tags

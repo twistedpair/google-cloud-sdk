@@ -2838,13 +2838,14 @@ class PartitionQueryRequest(_messages.Message):
     partitionOptions: Additional options that affect how many partitions are
       created.
     sql: Required. The query request to generate partitions for. The request
-      will fail if the query is not root partitionable. The query plan of a
-      root partitionable query has a single distributed union operator. A
-      distributed union operator conceptually divides one or more tables into
-      multiple splits, remotely evaluates a subquery independently on each
-      split, and then unions all results. This must not contain DML commands,
-      such as INSERT, UPDATE, or DELETE. Use ExecuteStreamingSql with a
-      PartitionedDml transaction for large, partition-friendly DML operations.
+      will fail if the query is not root partitionable. For a query to be root
+      partitionable, it needs to satisfy a few conditions. For example, the
+      first operator in the query execution plan must be a distributed union
+      operator. For more information about other conditions, see [Read data in
+      parallel](https://cloud.google.com/spanner/docs/reads#read_data_in_paral
+      lel). The query request must not contain DML commands, such as INSERT,
+      UPDATE, or DELETE. Use ExecuteStreamingSql with a PartitionedDml
+      transaction for large, partition-friendly DML operations.
     transaction: Read only snapshot transactions are supported, read/write and
       single use transactions are not.
   """

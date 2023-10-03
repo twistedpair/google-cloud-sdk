@@ -81,6 +81,8 @@ def _translate_display_detail_to_fields_scope(
 class BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
   """For formatting how items are printed when listed.
 
+  Child classes should set _header_wrapper and _object_wrapper.
+
   Attributes:
     resource (resource_reference.Resource): Item to be formatted for printing.
   """
@@ -93,6 +95,7 @@ class BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
       full_formatter=None,
       include_etag=None,
       readable_sizes=False,
+      soft_deleted=False,
       use_gsutil_style=False,
   ):
     """Initializes wrapper instance.
@@ -107,6 +110,7 @@ class BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
       include_etag (bool): Display etag string of resource.
       readable_sizes (bool): Convert bytes to a more human readable format for
         long lising. For example, print 1024B as 1KiB.
+      soft_deleted (bool): Printing a soft deleted object.
       use_gsutil_style (bool): Outputs closer to the style of the gsutil CLI.
     """
     self.resource = resource
@@ -115,6 +119,7 @@ class BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
     self._full_formatter = full_formatter
     self._include_etag = include_etag
     self._readable_sizes = readable_sizes
+    self._soft_deleted = soft_deleted
     self._use_gsutil_style = use_gsutil_style
 
   def _check_and_handles_all_versions(self):
@@ -141,6 +146,7 @@ class NullFormatWrapper(BaseFormatWrapper):
       full_formatter=None,
       include_etag=None,
       readable_sizes=None,
+      soft_deleted=None,
       use_gsutil_style=None,
   ):
     super(NullFormatWrapper, self).__init__(resource)
@@ -151,8 +157,9 @@ class NullFormatWrapper(BaseFormatWrapper):
         full_formatter,
         include_etag,
         readable_sizes,
+        soft_deleted,
         use_gsutil_style,
-    )
+    )  # Unused.
 
   def __str__(self):
     return ''
@@ -323,9 +330,10 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
             resource,
             all_versions=self._all_versions,
             display_detail=self._display_detail,
+            full_formatter=self._full_formatter,
             include_etag=self._include_etag,
             readable_sizes=self._readable_sizes,
-            full_formatter=self._full_formatter,
+            soft_deleted=self._soft_deleted_only,
             use_gsutil_style=self._use_gsutil_style,
         )
 

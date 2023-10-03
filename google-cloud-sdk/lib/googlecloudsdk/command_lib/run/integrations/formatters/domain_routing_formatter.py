@@ -19,16 +19,19 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from typing import Optional
+from apitools.base.py import encoding
+from googlecloudsdk.command_lib.run.integrations.formatters import base
 from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages as runapps
 
 
-class DomainRoutingFormatter(base_formatter.BaseFormatter):
+class DomainRoutingFormatter(base.BaseFormatter):
   """Format logics for custom domain integration."""
 
-  def TransformConfig(self, record):
+  def TransformConfig(self, record: base.Record) -> cp._Marker:
     """Print the config of the integration.
 
     Args:
@@ -37,17 +40,18 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
     Returns:
       The printed output.
     """
-    res_config = record.config.get('router', {})
     labeled = []
-    for domain_config in res_config.get('domains') or []:
-      domain = domain_config.get('domain') or ''
-      for route in domain_config.get('routes', []):
-        service = self._GetServiceName(route.get('ref', ''))
-        for path in route.get('paths', []):
+    for domain_config in record.resource.subresources or []:
+      cfg = encoding.MessageToDict(domain_config.config)
+      domain = cfg.get('domain', '')
+      for binding in domain_config.bindings:
+        service = binding.targetRef.id.name
+        rcfg = encoding.MessageToDict(binding.config)
+        for path in rcfg.get('paths', []):
           labeled.append((domain+path, service))
     return cp.Labeled(labeled)
 
-  def TransformComponentStatus(self, record):
+  def TransformComponentStatus(self, record: base.Record) -> cp._Marker:
     """Print the component status of the integration.
 
     Args:
@@ -63,7 +67,7 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
         ('Console link', resource_status.get('consoleLink', 'n/a')),
         ('Frontend', details.get('ipAddress', 'n/a')),
     ]
-    for component in self._GetSSLStatuses(resource_components, record.config):
+    for component in self._GetSSLStatuses(resource_components, record.resource):
       name, status = component
       components.append(('SSL Certificate [{}]'.format(name), status))
 
@@ -75,7 +79,7 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
         ])
     ])
 
-  def CallToAction(self, record):
+  def CallToAction(self, record: base.Record) -> Optional[str]:
     """Call to action to configure IP for the domain.
 
     Args:
@@ -96,7 +100,7 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
     missing_domains = []
     max_domain_length = 0
     for domain, status in self._GetSSLStatuses(resource_components,
-                                               record.config):
+                                               record.resource):
       if status != states.ACTIVE:
         missing_domains.append(domain)
         max_domain_length = max(max_domain_length, len(domain))
@@ -139,25 +143,27 @@ class DomainRoutingFormatter(base_formatter.BaseFormatter):
       if resource.get('type') == rtype:
         return resource
 
-  def _GetSSLStatuses(self, resource_components, resource_config):
+  def _GetSSLStatuses(self, resource_components, resource: runapps.Resource):
     ssl_cert_components = self._FindAllResourceByType(
-        resource_components, 'google_compute_managed_ssl_certificate')
+        resource_components, 'google_compute_managed_ssl_certificate'
+    )
     statuses = []
     for component in ssl_cert_components:
       gussed_domain = self._GuessDomainFromSSLComponentName(
-          component.get('name'))
+          component.get('name')
+      )
       matched_domain = None
-      for domain_config in resource_config.get('router', {}).get('domains', []):
-        res_domain = domain_config.get('domain', '')
+      for domain_config in resource.subresources:
+        res_domain = encoding.MessageToDict(domain_config.config).get(
+            'domain', ''
+        )
         if gussed_domain == res_domain:
           matched_domain = res_domain
         elif res_domain.startswith(gussed_domain) and matched_domain is None:
           matched_domain = res_domain
       if matched_domain is None:
         matched_domain = gussed_domain
-      statuses.append(
-          (matched_domain,
-           component.get('state', states.UNKNOWN)))
+      statuses.append((matched_domain, component.get('state', states.UNKNOWN)))
     return statuses
 
   def _FindAllResourceByType(self, resources, rtype):

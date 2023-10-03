@@ -19,8 +19,11 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import Optional
 from frozendict import frozendict
+from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run.integrations import deployment_states
+from googlecloudsdk.command_lib.run.integrations.formatters import base
 from googlecloudsdk.command_lib.run.integrations.formatters import cloudsql_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import default_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import domain_routing_formatter
@@ -29,6 +32,7 @@ from googlecloudsdk.command_lib.run.integrations.formatters import redis_formatt
 from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages as runapps
 
 
 INTEGRATION_PRINTER_FORMAT = 'integration'
@@ -42,37 +46,12 @@ _INTEGRATION_FORMATTER_MAPS = frozendict({
 })
 
 
-class Record(object):
-  """Record holds data that is passed around to printers for formatting.
-
-  Attributes:
-    name: str, name of the integration
-    region: str, GCP region for the integration.
-    integration_type: str, type of the integration, for example: redis,
-      custom-domains, or cloudsql.
-    config: dict, resource config for the given integration.
-    status: dict, application status for the given integration.
-    latest_deployment:
-      str, canonical deployment name for the latest deployment for the given
-      integration.
-  """
-
-  def __init__(self, name, region, integration_type, config, status,
-               latest_deployment):
-    self.name = name
-    self.region = region
-    self.integration_type = integration_type
-    self.config = config if config is not None else {}
-    self.status = status if status is not None else {}
-    self.latest_deployment = latest_deployment
-
-
 class IntegrationPrinter(cp.CustomPrinterBase):
   """Prints the run Integration in a custom human-readable format."""
 
-  def Transform(self, record):
+  def Transform(self, record: base.Record) -> cp._Marker:
     """Transform an integration into the output structure of marker classes."""
-    formatter = GetFormatter(record.integration_type)
+    formatter = GetFormatter(record.metadata)
     config_block = formatter.TransformConfig(record)
     component_block = (
         formatter.TransformComponentStatus(record)
@@ -101,7 +80,7 @@ class IntegrationPrinter(cp.CustomPrinterBase):
 
     return cp.Lines(lines)
 
-  def Header(self, record):
+  def Header(self, record: base.Record):
     """Print the header of the integration.
 
     Args:
@@ -111,13 +90,20 @@ class IntegrationPrinter(cp.CustomPrinterBase):
       The printed output.
     """
     con = console_attr.GetConsoleAttr()
-    formatter = GetFormatter(record.integration_type)
+    formatter = GetFormatter(record.metadata)
     resource_state = record.status.get('state', states.UNKNOWN)
     symbol = formatter.StatusSymbolAndColor(resource_state)
-    return con.Emphasize('{} Integration status: {} in region {}'.format(
-        symbol, record.name, record.region))
+    return con.Emphasize(
+        '{} Integration status: {} in region {}'.format(
+            symbol, record.name, record.region
+        )
+    )
 
-  def _DeploymentProgress(self, deployment, formatter):
+  def _DeploymentProgress(
+      self,
+      deployment: runapps.Deployment,
+      formatter: base.BaseFormatter,
+  ) -> str:
     """Returns a message denoting the deployment progress.
 
     If there is no ongoing deployment and the deployment was successful, then
@@ -132,7 +118,7 @@ class IntegrationPrinter(cp.CustomPrinterBase):
       formatter: The specific formatter used for the integration type.
 
     Returns:
-      str, The message denoting the most recent deployment's progress (failure).
+      The message denoting the most recent deployment's progress (failure).
     """
     if deployment is None:
       return ''
@@ -147,14 +133,17 @@ class IntegrationPrinter(cp.CustomPrinterBase):
     return ''
 
 
-def GetFormatter(integration_type):
+def GetFormatter(
+    metadata: Optional[types_utils.TypeMetadata] = None,
+) -> IntegrationPrinter:
   """Returns the formatter for the given integration type.
 
   Args:
-    integration_type: string, the integration type.
+    metadata: the typekit metadata for the integration.
 
   Returns:
     A formatter object.
   """
-  return _INTEGRATION_FORMATTER_MAPS.get(integration_type,
+  if not metadata: return _DEFAULT_FORMATTER
+  return _INTEGRATION_FORMATTER_MAPS.get(metadata.integration_type,
                                          _DEFAULT_FORMATTER)

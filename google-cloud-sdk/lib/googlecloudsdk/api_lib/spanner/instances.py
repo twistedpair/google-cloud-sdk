@@ -40,14 +40,22 @@ KNOWN_ROLES = [
 UNREACHABLE_INSTANCE_TIMEOUT = datetime.timedelta(seconds=20)
 
 
-def Create(instance,
-           config,
-           description,
-           nodes,
-           processing_units=None,
-           instance_type=None,
-           expire_behavior=None,
-           default_storage_type=None):
+def Create(
+    instance,
+    config,
+    description,
+    nodes,
+    processing_units=None,
+    autoscaling_min_nodes=None,
+    autoscaling_max_nodes=None,
+    autoscaling_min_processing_units=None,
+    autoscaling_max_processing_units=None,
+    autoscaling_high_priority_cpu_target=None,
+    autoscaling_storage_target=None,
+    instance_type=None,
+    expire_behavior=None,
+    default_storage_type=None,
+):
   """Create a new instance."""
   client = apis.GetClientInstance('spanner', 'v1')
   # Module containing the definitions of messages for the specified API.
@@ -64,6 +72,26 @@ def Create(instance,
     instance_obj.nodeCount = nodes
   elif processing_units:
     instance_obj.processingUnits = processing_units
+  elif (
+      autoscaling_min_nodes
+      or autoscaling_max_nodes
+      or autoscaling_min_processing_units
+      or autoscaling_max_processing_units
+      or autoscaling_high_priority_cpu_target
+      or autoscaling_storage_target
+  ):
+    instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
+        autoscalingLimits=msgs.AutoscalingLimits(
+            minNodes=autoscaling_min_nodes,
+            maxNodes=autoscaling_max_nodes,
+            minProcessingUnits=autoscaling_min_processing_units,
+            maxProcessingUnits=autoscaling_max_processing_units,
+        ),
+        autoscalingTargets=msgs.AutoscalingTargets(
+            highPriorityCpuUtilizationPercent=autoscaling_high_priority_cpu_target,
+            storageUtilizationPercent=autoscaling_storage_target,
+        ),
+    )
   if instance_type is not None:
     instance_obj.instanceType = instance_type
   if expire_behavior is not None:
@@ -147,28 +175,79 @@ def List():
       get_field_func=response_util.GetFieldAndLogUnreachable)
 
 
-def Patch(instance,
-          description=None,
-          nodes=None,
-          processing_units=None,
-          instance_type=None,
-          expire_behavior=None):
+def Patch(
+    instance,
+    description=None,
+    nodes=None,
+    processing_units=None,
+    autoscaling_min_nodes=None,
+    autoscaling_max_nodes=None,
+    autoscaling_min_processing_units=None,
+    autoscaling_max_processing_units=None,
+    autoscaling_high_priority_cpu_target=None,
+    autoscaling_storage_target=None,
+    instance_type=None,
+    expire_behavior=None,
+):
   """Update an instance."""
   fields = []
   if description is not None:
     fields.append('displayName')
   if nodes is not None:
-    fields.append('nodeCount')
+    fields.append('nodeCount,autoscalingConfig')
   if processing_units is not None:
-    fields.append('processingUnits')
+    fields.append('processingUnits,autoscalingConfig')
+
+  if (
+      (autoscaling_min_nodes and autoscaling_max_nodes)
+      or (autoscaling_min_processing_units and autoscaling_max_processing_units)
+  ) and (autoscaling_high_priority_cpu_target and autoscaling_storage_target):
+    fields.append('autoscalingConfig')
+  else:
+    if autoscaling_min_nodes:
+      fields.append('autoscalingConfig.autoscalingLimits.minNodes')
+    if autoscaling_max_nodes:
+      fields.append('autoscalingConfig.autoscalingLimits.maxNodes')
+    if autoscaling_min_processing_units:
+      fields.append('autoscalingConfig.autoscalingLimits.minProcessingUnits')
+    if autoscaling_max_processing_units:
+      fields.append('autoscalingConfig.autoscalingLimits.maxProcessingUnits')
+    if autoscaling_high_priority_cpu_target:
+      fields.append(
+          'autoscalingConfig.autoscalingTargets.highPriorityCpuUtilizationPercent'
+      )
+    if autoscaling_storage_target:
+      fields.append(
+          'autoscalingConfig.autoscalingTargets.storageUtilizationPercent'
+      )
   client = apis.GetClientInstance('spanner', 'v1')
   msgs = apis.GetMessagesModule('spanner', 'v1')
 
+  instance_obj = msgs.Instance(displayName=description)
   if processing_units:
-    instance_obj = msgs.Instance(
-        displayName=description, processingUnits=processing_units)
-  else:
-    instance_obj = msgs.Instance(displayName=description, nodeCount=nodes)
+    instance_obj.processingUnits = processing_units
+  elif nodes:
+    instance_obj.nodeCount = nodes
+  elif (
+      autoscaling_min_nodes
+      or autoscaling_max_nodes
+      or autoscaling_min_processing_units
+      or autoscaling_max_processing_units
+      or autoscaling_high_priority_cpu_target
+      or autoscaling_storage_target
+  ):
+    instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
+        autoscalingLimits=msgs.AutoscalingLimits(
+            minNodes=autoscaling_min_nodes,
+            maxNodes=autoscaling_max_nodes,
+            minProcessingUnits=autoscaling_min_processing_units,
+            maxProcessingUnits=autoscaling_max_processing_units,
+        ),
+        autoscalingTargets=msgs.AutoscalingTargets(
+            highPriorityCpuUtilizationPercent=autoscaling_high_priority_cpu_target,
+            storageUtilizationPercent=autoscaling_storage_target,
+        ),
+    )
 
   if instance_type is not None:
     fields.append('instanceType')

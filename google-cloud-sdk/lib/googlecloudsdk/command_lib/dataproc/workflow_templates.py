@@ -57,6 +57,26 @@ def AddDagTimeoutFlag(parser, is_required):
           """)
 
 
+def AddKmsKeyFlag(parser, is_required):
+  parser.add_argument(
+      '--kms-key',
+      type=str,
+      required=is_required,
+      hidden=True,
+      help="""\
+          The KMS key used to encrypt sensitive data in the workflow template.
+          """,
+  )
+
+
+def GenerateEncryptionConfig(kms_key, dataproc):
+  encryption_config = (
+      dataproc.messages.GoogleCloudDataprocV1WorkflowTemplateEncryptionConfig()
+  )
+  encryption_config.kmsKey = kms_key
+  return encryption_config
+
+
 def CreateWorkflowTemplateOrderedJob(args, dataproc):
   """Create an ordered job for workflow template."""
   ordered_job = dataproc.messages.OrderedJob(stepId=args.step_id)

@@ -453,6 +453,33 @@ class ContainerV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def CompleteConvertToAutopilot(self, request, global_params=None):
+      r"""CompleteConvertToAutopilot is an optional API that commits the conversion by deleting all Standard node pools and completing CA rotation. This action requires that a conversion has been started and that workload migration has completed, with no pods running on GKE Standard node pools. This action will be automatically performed 72 hours after conversion.
+
+      Args:
+        request: (ContainerProjectsLocationsClustersCompleteConvertToAutopilotRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CompleteConvertToAutopilot')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CompleteConvertToAutopilot.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:CompleteConvertToAutopilot',
+        http_method='POST',
+        method_id='container.projects.locations.clusters.completeConvertToAutopilot',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:CompleteConvertToAutopilot',
+        request_field='completeConvertToAutopilotRequest',
+        request_type_name='ContainerProjectsLocationsClustersCompleteConvertToAutopilotRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def CompleteIpRotation(self, request, global_params=None):
       r"""Completes master IP rotation.
 

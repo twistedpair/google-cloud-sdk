@@ -1274,12 +1274,18 @@ class JsonClient(cloud_api.CloudApi):
   @error_util.catch_http_error_raise_gcs_api_error()
   def restore_object(self, url, request_config):
     """See CloudApi class."""
+    if request_config.resource_args:
+      preserve_acl = request_config.resource_args.preserve_acl
+    else:
+      preserve_acl = None
+
     object_metadata = self.client.objects.Restore(
         self.messages.StorageObjectsRestoreRequest(
             bucket=url.bucket_name,
+            copySourceAcl=preserve_acl,
             generation=int(url.generation),
-            ifGenerationMatch=int(request_config.precondition_generation_match),
-            ifMetagenerationMatch=int(
+            ifGenerationMatch=request_config.precondition_generation_match,
+            ifMetagenerationMatch=(
                 request_config.precondition_metageneration_match
             ),
             object=url.object_name,

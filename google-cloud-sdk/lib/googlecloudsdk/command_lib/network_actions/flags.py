@@ -50,8 +50,7 @@ def AddWasmPluginResource(parser, api_version, message):
 def AddDescriptionFlag(parser):
   parser.add_argument(
       '--description',
-      help='Provides an optional, human-'
-      'readable description of the service.')
+      help='A human-readable description of the resource.')
 
 
 def AddLogConfigFlag(parser):
@@ -62,22 +61,22 @@ def AddLogConfigFlag(parser):
       required=False,
       metavar='LOG_CONFIG',
       help=textwrap.dedent("""\
-        Logging options for the activity performed by this WasmPlugin.
-        Following options can be set:
-        * enable - whether to enable logging. If log-config flag is set,
-          enable option is required.
+        Logging options for the activity performed by this plugin.
+        The following options can be set:
+        * `enable`: whether to enable logging. If `log-config` flag is set,
+          `enable` option is required.
 
-        * sample-rate - configures the sampling rate of activity logs, where
-          1.0 means all logged activity is reported and 0.0 means no activity
-          is reported. The default value is 1.0, and the value of the field
-          must be in [0, 1].
+        * `sample-rate`: configures the sampling rate of activity logs, where
+          `1.0` means all logged activity is reported and `0.0` means no
+          activity is reported. The default value is `1.0`, and the value of
+          the field must be in range `0` to `1` (inclusive).
 
-        * min-log-level - specificies the lowest level of the logs which
-          should be exported to Cloud Logging. The default value is INFO.
+        * `min-log-level`: specifies the lowest level of the logs that
+          should be exported to Cloud Logging. The default value is `INFO`.
 
         Example usage:
-        --log-config=enable=True,sample-rate=0.5,min-log-level=INFO
-        --log_config=enable=False
+        `--log-config=enable=True,sample-rate=0.5,min-log-level=INFO
+        --log_config=enable=False`
         """),
   )
 
@@ -90,8 +89,8 @@ def AddImageFlag(parser):
   parser.add_argument(
       '--image',
       help=textwrap.dedent("""\
-          URI of the container image containing the Wasm module, stored in the
-          Artifact Registry."""),
+          URI of the container image containing the plugin's Wasm module,
+          stored in the Artifact Registry."""),
   )
 
 
@@ -100,26 +99,27 @@ def AddPluginConfigFlag(parser):
   plugin_config_group = parser.add_group(
       mutex=True,
       required=False,
-      help="""Configuration for the WasmPlugin, provided to the plugin at
-              runtime via the proxy_on_configure call (the exact name of the
-              invoked function depends on the Proxy-Wasm SDK used).""",
+      help="""Configuration for the plugin, provided at runtime by the
+              `on_configure` function (Rust Proxy-Wasm SDK) or the
+              `onConfigure` method (C++ Proxy-Wasm SDK).""",
   )
   plugin_config_group.add_argument(
       '--plugin-config',
       required=False,
-      help="""WasmPlugin configuration in the textual format."""
+      help="""Plugin runtime configuration in the textual format."""
   )
   plugin_config_group.add_argument(
       '--plugin-config-file',
       required=False,
       type=arg_parsers.FileContents(binary=True),
-      help="""Path to a local file containing the plugin configuration."""
+      help="""Path to a local file containing the plugin runtime
+              configuration."""
   )
   plugin_config_group.add_argument(
       '--plugin-config-uri',
       required=False,
-      help="""URI of the container image containing the plugin configuration,
-              stored in the Artifact Registry."""
+      help="""URI of the container image containing the plugin's runtime
+              configuration, stored in the Artifact Registry."""
   )
 
 

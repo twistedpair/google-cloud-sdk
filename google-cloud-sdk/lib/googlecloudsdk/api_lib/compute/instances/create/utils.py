@@ -186,6 +186,7 @@ def CreateDiskMessages(
         kms_args=args,
         snapshot_uri=boot_snapshot_uri,
         disk_provisioned_iops=args.boot_disk_provisioned_iops,
+        disk_provisioned_throughput=args.boot_disk_provisioned_throughput,
         use_disk_type_uri=use_disk_type_uri,
         instant_snapshot_uri=boot_instant_snapshot_uri,
         support_source_instant_snapshot=support_source_instant_snapshot,

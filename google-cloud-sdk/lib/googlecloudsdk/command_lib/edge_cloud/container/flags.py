@@ -304,3 +304,13 @@ def AddUpgradeSchedule(parser):
       Support values: IMMEDIATELY.
       """
   )
+
+
+def AddOfflineCredential(parser):
+  parser.add_argument(
+      '--offline-credential',
+      action='store_true',
+      help="""
+      Once specified, an offline credential will be generated for the cluster.
+      """,
+  )

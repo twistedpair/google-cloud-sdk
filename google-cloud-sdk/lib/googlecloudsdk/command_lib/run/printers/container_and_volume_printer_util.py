@@ -70,6 +70,7 @@ def GetContainer(
           'Env vars',
           GetUserEnvironmentVariables(container),
       ),
+      ('Volumes', GetVolumeMounts(container)),
       ('Secrets', GetSecrets(container)),
       ('Config Maps', GetConfigMaps(container)),
       (
@@ -115,6 +116,63 @@ def GetSecrets(container: container_resource.Container) -> cp.Table:
       }
   )
   return cp.Mapped(k8s_util.OrderByKey(secrets))
+
+
+def GetVolumeMounts(container: container_resource.Container) -> cp.Table:
+  """Returns a print mapping for volumes."""
+  volumes = {
+      k: _FormatVolumeMount(*v)
+      for k, v in container.NamedMountedVolumeJoin().items()
+  }
+  volumes = {k: v for k, v in volumes.items() if v}
+  return cp.Mapped(k8s_util.OrderByKey(volumes))
+
+
+def _FormatVolumeMount(name, volume):
+  """Format details about a volume mount."""
+  if volume.emptyDir:
+    return cp.Labeled([
+        ('name', name),
+        ('type', 'in-memory'),
+    ])
+  elif volume.nfs:
+    return cp.Labeled([
+        ('name', name),
+        ('type', 'nfs'),
+    ])
+  elif volume.csi:
+    if volume.csi.driver == 'gcsfuse.run.googleapis.com':
+      return cp.Labeled([('name', name), ('type', 'cloud-storage')])
+
+
+def GetVolumes(record):
+  """Returns a print mapping for volumes."""
+  volumes = {v.name: _FormatVolume(v) for v in record.spec.volumes}
+  volumes = {k: v for k, v in volumes.items() if v}
+  return cp.Mapped(k8s_util.OrderByKey(volumes))
+
+
+def _FormatVolume(volume):
+  """Format a volume for the volumes list."""
+  if volume.emptyDir:
+    return cp.Labeled([
+        ('type', 'in-memory'),
+        ('size-limit', volume.empty_dir.sizeLimit),
+    ])
+  elif volume.nfs:
+    return cp.Labeled([
+        ('type', 'nfs'),
+        ('location', '{}:{}'.format(volume.nfs.server, volume.nfs.path)),
+        'read-only',
+        volume.nfs.readOnly,
+    ])
+  elif volume.csi:
+    if volume.csi.driver == 'gcsfuse.run.googleapis.com':
+      bucket = None
+      for prop in volume.csi.volumeAttributes.additionalProperties:
+        if prop.key == 'bucketName':
+          bucket = prop.value
+      return cp.Labeled([('type', 'cloud-storage'), ('bucket', bucket)])
 
 
 def GetConfigMaps(container: container_resource.Container) -> cp.Table:

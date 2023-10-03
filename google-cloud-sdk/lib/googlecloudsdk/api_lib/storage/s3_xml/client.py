@@ -395,6 +395,7 @@ class S3XmlClient(cloud_api.CloudApi):
       posix_to_set=None,
       progress_callback=None,
       should_deep_copy_metadata=False,
+      attributes_resource=None,
   ):
     """See super class."""
     if _modifies_full_acl_policy(request_config):
@@ -441,10 +442,21 @@ class S3XmlClient(cloud_api.CloudApi):
           ),
           copy_kwargs,
       )
+    else:
+      if xml_metadata_util.is_user_metadata_field_present_in_request_config(
+          request_config,
+          attributes_resource=attributes_resource,
+          known_posix=posix_to_set,
+      ):
+        copy_kwargs['MetadataDirective'] = 'REPLACE'
+        xml_metadata_util.copy_user_metadata_fields(
+            source_resource.metadata, copy_kwargs
+        )
 
     xml_metadata_util.update_object_metadata_dict_from_request_config(
         copy_kwargs, request_config, posix_to_set=posix_to_set
     )
+
     copy_response = self.client.copy_object(**copy_kwargs)
     if progress_callback:
       progress_callback(source_resource.size)

@@ -82,3 +82,7 @@ properties:
       The specification for rewrite URL before forwarding requests to the
       destination.
     $ref: HttpRouteURLRewrite.yaml
+  statefulSessionAffinity:
+    description: |-
+      Specifies cookie-based stateful session affinity.
+    $ref: HttpRouteStatefulSessionAffinity.yaml

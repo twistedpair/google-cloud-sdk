@@ -170,6 +170,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATASETS_DATASETVERSIONS = (
+      'projects.locations.datasets.datasetVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datasets/'
+              '{datasetsId}/datasetVersions/{datasetVersionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DATASETS_OPERATIONS = (
       'projects.locations.datasets.operations',
       '{+name}',
@@ -265,20 +276,143 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EXTENSIONCONTROLLERS = (
+      'projects.locations.extensionControllers',
+      'projects/{projectsId}/locations/{locationsId}/extensionControllers/'
+      '{extensionControllersId}',
+      {},
+      ['projectsId', 'locationsId', 'extensionControllersId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXTENSIONCONTROLLERS_OPERATIONS = (
+      'projects.locations.extensionControllers.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'extensionControllers/{extensionControllersId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXTENSIONS = (
+      'projects.locations.extensions',
+      'projects/{projectsId}/locations/{locationsId}/extensions/'
+      '{extensionsId}',
+      {},
+      ['projectsId', 'locationsId', 'extensionsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXTENSIONS_DEPLOYMENTS = (
+      'projects.locations.extensions.deployments',
+      'projects/{projectsId}/locations/{locationsId}/extensions/'
+      '{extensionsId}/deployments/{deploymentsId}',
+      {},
+      ['projectsId', 'locationsId', 'extensionsId', 'deploymentsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXTENSIONS_DEPLOYMENTS_OPERATIONS = (
+      'projects.locations.extensions.deployments.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/extensions/'
+              '{extensionsId}/deployments/{deploymentsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXTENSIONS_OPERATIONS = (
+      'projects.locations.extensions.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/extensions/'
+              '{extensionsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREGROUPS = (
+      'projects.locations.featureGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREGROUPS_FEATURES = (
+      'projects.locations.featureGroups.features',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}/features/{featuresId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREGROUPS_FEATURES_OPERATIONS = (
+      'projects.locations.featureGroups.features.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}/features/{featuresId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREGROUPS_OPERATIONS = (
+      'projects.locations.featureGroups.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FEATUREONLINESTORES = (
       'projects.locations.featureOnlineStores',
-      'projects/{projectsId}/locations/{locationsId}/featureOnlineStores/'
-      '{featureOnlineStoresId}',
-      {},
-      ['projectsId', 'locationsId', 'featureOnlineStoresId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'featureOnlineStores/{featureOnlineStoresId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_FEATUREONLINESTORES_FEATUREVIEWS = (
       'projects.locations.featureOnlineStores.featureViews',
-      'projects/{projectsId}/locations/{locationsId}/featureOnlineStores/'
-      '{featureOnlineStoresId}/featureViews/{featureViewsId}',
-      {},
-      ['projectsId', 'locationsId', 'featureOnlineStoresId', 'featureViewsId'],
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'featureOnlineStores/{featureOnlineStoresId}/featureViews/'
+              '{featureViewsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREONLINESTORES_FEATUREVIEWS_FEATUREVIEWSYNCS = (
+      'projects.locations.featureOnlineStores.featureViews.featureViewSyncs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'featureOnlineStores/{featureOnlineStoresId}/featureViews/'
+              '{featureViewsId}/featureViewSyncs/{featureViewSyncsId}',
+      },
+      ['name'],
       True
   )
   PROJECTS_LOCATIONS_FEATUREONLINESTORES_FEATUREVIEWS_OPERATIONS = (
@@ -633,6 +767,28 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/nasJobs/'
               '{nasJobsId}/nasTrialDetails/{nasTrialDetailsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NOTEBOOKRUNTIMETEMPLATES = (
+      'projects.locations.notebookRuntimeTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'notebookRuntimeTemplates/{notebookRuntimeTemplatesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NOTEBOOKRUNTIMES = (
+      'projects.locations.notebookRuntimes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'notebookRuntimes/{notebookRuntimesId}',
       },
       ['name'],
       True

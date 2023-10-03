@@ -145,13 +145,14 @@ class Authority(_messages.Message):
     identityProvider: Output only. An identity provider that reflects the
       `issuer` in the workload identity pool.
     issuer: Optional. A JSON Web Token (JWT) issuer URI. `issuer` must start
-      with `https://` and be a valid URL with length <2000 characters. If set,
-      then Google will allow valid OIDC tokens from this issuer to
-      authenticate within the workload_identity_pool. OIDC discovery will be
-      performed on this URI to validate tokens from the issuer. Clearing
-      `issuer` disables Workload Identity. `issuer` cannot be directly
-      modified; it must be cleared (and Workload Identity disabled) before
-      using a new issuer (and re-enabling Workload Identity).
+      with `https://` and be a valid URL with length <2000 characters, it must
+      use `location` rather than `zone` for GKE clusters. If set, then Google
+      will allow valid OIDC tokens from this issuer to authenticate within the
+      workload_identity_pool. OIDC discovery will be performed on this URI to
+      validate tokens from the issuer. Clearing `issuer` disables Workload
+      Identity. `issuer` cannot be directly modified; it must be cleared (and
+      Workload Identity disabled) before using a new issuer (and re-enabling
+      Workload Identity).
     oidcJwks: Optional. OIDC verification keys for this Membership in JWKS
       format (RFC 7517). When this field is set, OIDC discovery will NOT be
       performed on `issuer`, and instead OIDC tokens will be validated using
@@ -295,300 +296,12 @@ class CloudAuditOptions(_messages.Message):
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
-class ClusterUpgradeFleetSpec(_messages.Message):
-  r"""**ClusterUpgrade**: The configuration for the fleet-level ClusterUpgrade
-  feature.
-
-  Fields:
-    gkeUpgradeOverrides: Allow users to override some properties of each GKE
-      upgrade.
-    postConditions: Required. Post conditions to evaluate to mark an upgrade
-      COMPLETE. Required.
-    upstreamFleets: This fleet consumes upgrades that have COMPLETE status
-      code in the upstream fleets. See UpgradeStatus.Code for code
-      definitions. The fleet name should be either fleet project number or id.
-      This is defined as repeated for future proof reasons. Initial
-      implementation will enforce at most one upstream fleet.
-  """
-
-  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
-  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
-  upstreamFleets = _messages.StringField(3, repeated=True)
-
-
-class ClusterUpgradeFleetState(_messages.Message):
-  r"""**ClusterUpgrade**: The state for the fleet-level ClusterUpgrade
-  feature.
-
-  Messages:
-    IgnoredValue: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format: `projects/{p}/locations/{l}/membership/{m}`.
-
-  Fields:
-    downstreamFleets: This fleets whose upstream_fleets contain the current
-      fleet. The fleet name should be either fleet project number or id.
-    gkeState: Feature state for GKE clusters.
-    ignored: A list of memberships ignored by the feature. For example,
-      manually upgraded clusters can be ignored if they are newer than the
-      default versions of its release channel. The membership resource is in
-      the format: `projects/{p}/locations/{l}/membership/{m}`.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class IgnoredValue(_messages.Message):
-    r"""A list of memberships ignored by the feature. For example, manually
-    upgraded clusters can be ignored if they are newer than the default
-    versions of its release channel. The membership resource is in the format:
-    `projects/{p}/locations/{l}/membership/{m}`.
-
-    Messages:
-      AdditionalProperty: An additional property for a IgnoredValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type IgnoredValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a IgnoredValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A ClusterUpgradeIgnoredMembership attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  downstreamFleets = _messages.StringField(1, repeated=True)
-  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
-  ignored = _messages.MessageField('IgnoredValue', 3)
-
-
-class ClusterUpgradeGKEUpgrade(_messages.Message):
-  r"""GKEUpgrade represents a GKE provided upgrade, e.g., control plane
-  upgrade.
-
-  Fields:
-    name: Name of the upgrade, e.g., "k8s_control_plane". It should be a valid
-      upgrade name. It must not exceet 99 characters.
-    version: Version of the upgrade, e.g., "1.22.1-gke.100". It should be a
-      valid version. It must not exceet 99 characters.
-  """
-
-  name = _messages.StringField(1)
-  version = _messages.StringField(2)
-
-
-class ClusterUpgradeGKEUpgradeFeatureCondition(_messages.Message):
-  r"""GKEUpgradeFeatureCondition describes the condition of the feature for
-  GKE clusters at a certain point of time.
-
-  Fields:
-    reason: Reason why the feature is in this status.
-    status: Status of the condition, one of True, False, Unknown.
-    type: Type of the condition, for example, "ready".
-    updateTime: Last timestamp the condition was updated.
-  """
-
-  reason = _messages.StringField(1)
-  status = _messages.StringField(2)
-  type = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
-
-
-class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
-  r"""GKEUpgradeFeatureState contains feature states for GKE clusters in the
-  scope.
-
-  Fields:
-    conditions: Current conditions of the feature.
-    state: Scope-level upgrade state.
-    upgradeState: Upgrade state. It will eventually replace `state`.
-  """
-
-  conditions = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureCondition', 1, repeated=True)
-  state = _messages.MessageField('ClusterUpgradeScopeGKEUpgradeState', 2, repeated=True)
-  upgradeState = _messages.MessageField('ClusterUpgradeGKEUpgradeState', 3, repeated=True)
-
-
-class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
-  r"""Properties of a GKE upgrade that can be overridden by the user. For
-  example, a user can skip soaking by overriding the soaking to 0.
-
-  Fields:
-    postConditions: Required. Post conditions to override for the specified
-      upgrade (name + version). Required.
-    upgrade: Required. Which upgrade to override. Required.
-  """
-
-  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 1)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
-
-
-class ClusterUpgradeGKEUpgradeState(_messages.Message):
-  r"""GKEUpgradeState is a GKEUpgrade and its state at the scope and fleet
-  level.
-
-  Messages:
-    StatsValue: Number of GKE clusters in each status code.
-
-  Fields:
-    stats: Number of GKE clusters in each status code.
-    status: Status of the upgrade.
-    upgrade: Which upgrade to track the state.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class StatsValue(_messages.Message):
-    r"""Number of GKE clusters in each status code.
-
-    Messages:
-      AdditionalProperty: An additional property for a StatsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type StatsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a StatsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.IntegerField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  stats = _messages.MessageField('StatsValue', 1)
-  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
-
-
-class ClusterUpgradeIgnoredMembership(_messages.Message):
-  r"""IgnoredMembership represents a membership ignored by the feature. A
-  membership can be ignored because it was manually upgraded to a newer
-  version than RC default.
-
-  Fields:
-    ignoredTime: Time when the membership was first set to ignored.
-    reason: Reason why the membership is ignored.
-  """
-
-  ignoredTime = _messages.StringField(1)
-  reason = _messages.StringField(2)
-
-
-class ClusterUpgradePostConditions(_messages.Message):
-  r"""Post conditional checks after an upgrade has been applied on all
-  eligible clusters.
-
-  Fields:
-    soaking: Required. Amount of time to "soak" after a rollout has been
-      finished before marking it COMPLETE. Cannot exceed 30 days. Required.
-  """
-
-  soaking = _messages.StringField(1)
-
-
-class ClusterUpgradeScopeGKEUpgradeState(_messages.Message):
-  r"""ScopeGKEUpgradeState is a GKEUpgrade and its state at the scope level.
-
-  Messages:
-    StatsValue: Number of GKE clusters in each status code.
-
-  Fields:
-    stats: Number of GKE clusters in each status code.
-    status: Status of the upgrade.
-    upgrade: Which upgrade to track the state.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class StatsValue(_messages.Message):
-    r"""Number of GKE clusters in each status code.
-
-    Messages:
-      AdditionalProperty: An additional property for a StatsValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type StatsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a StatsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.IntegerField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  stats = _messages.MessageField('StatsValue', 1)
-  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
-  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
-
-
-class ClusterUpgradeUpgradeStatus(_messages.Message):
-  r"""UpgradeStatus provides status information for each upgrade.
-
-  Enums:
-    CodeValueValuesEnum: Status code of the upgrade.
-
-  Fields:
-    code: Status code of the upgrade.
-    reason: Reason for this status.
-    updateTime: Last timestamp the status was updated.
-  """
-
-  class CodeValueValuesEnum(_messages.Enum):
-    r"""Status code of the upgrade.
-
-    Values:
-      CODE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
-      INELIGIBLE: The upgrade is ineligible. At the scope level, this means
-        the upgrade is ineligible for all the clusters in the scope.
-      PENDING: The upgrade is pending. At the scope level, this means the
-        upgrade is pending for all the clusters in the scope.
-      IN_PROGRESS: The upgrade is in progress. At the scope level, this means
-        the upgrade is in progress for at least one cluster in the scope.
-      SOAKING: The upgrade has finished and is soaking until the soaking time
-        is up. At the scope level, this means at least one cluster is in
-        soaking while the rest are either soaking or complete.
-      FORCED_SOAKING: A cluster will be forced to enter soaking if an upgrade
-        doesn't finish within a certain limit, despite it's actual status.
-      COMPLETE: The upgrade has passed all post conditions (soaking). At the
-        scope level, this means all eligible clusters are in COMPLETE status.
-    """
-    CODE_UNSPECIFIED = 0
-    INELIGIBLE = 1
-    PENDING = 2
-    IN_PROGRESS = 3
-    SOAKING = 4
-    FORCED_SOAKING = 5
-    COMPLETE = 6
-
-  code = _messages.EnumField('CodeValueValuesEnum', 1)
-  reason = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
-
-
 class CommonFeatureSpec(_messages.Message):
   r"""CommonFeatureSpec contains Hub-wide configuration information
 
   Fields:
     anthosobservability: Anthos Observability spec
     appdevexperience: Appdevexperience specific spec.
-    clusterupgrade: ClusterUpgrade (fleet-based) feature spec.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
@@ -597,11 +310,10 @@ class CommonFeatureSpec(_messages.Message):
 
   anthosobservability = _messages.MessageField('AnthosObservabilityFeatureSpec', 1)
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 2)
-  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetSpec', 3)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 4)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 7)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 4)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 5)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 6)
 
 
 class CommonFeatureState(_messages.Message):
@@ -609,17 +321,15 @@ class CommonFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
-    clusterupgrade: ClusterUpgrade fleet-level state.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
     state: Output only. The "running state" of the Feature in this Hub.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetState', 2)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 3)
-  helloworld = _messages.MessageField('HelloWorldFeatureState', 4)
-  state = _messages.MessageField('FeatureState', 5)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 2)
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 3)
+  state = _messages.MessageField('FeatureState', 4)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -627,12 +337,16 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
   information for memberships of a fleet
 
   Fields:
+    configmanagement: Config Management-specific spec.
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
+    policycontroller: Policy Controller spec.
   """
 
-  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 1)
-  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 2)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
+  helloworld = _messages.MessageField('HelloWorldMembershipSpec', 2)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 3)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 4)
 
 
 class Condition(_messages.Message):
@@ -1255,7 +969,8 @@ class ConfigManagementMembershipSpec(_messages.Message):
     ManagementValueValuesEnum: Enables automatic Feature management.
 
   Fields:
-    binauthz: Binauthz conifguration for the cluster.
+    binauthz: Binauthz conifguration for the cluster. Deprecated: This field
+      will be ignored and should not be set.
     cluster: The user-specified cluster name used by Config Sync cluster-name-
       selector annotation or ClusterSelector, for applying configs to only a
       subset of clusters. Omit this field if the cluster's fleet membership
@@ -1527,13 +1242,13 @@ class ConfigManagementSyncState(_messages.Message):
     r"""Sync status code
 
     Values:
-      SYNC_CODE_UNSPECIFIED: ACM cannot determine a sync code
-      SYNCED: ACM successfully synced the git Repo with the cluster
-      PENDING: ACM is in the progress of syncing a new change
-      ERROR: Indicates an error configuring ACM, and user action is required
-      NOT_CONFIGURED: ACM has been installed (operator manifest deployed), but
-        not configured.
-      NOT_INSTALLED: ACM has not been installed (no operator pod found)
+      SYNC_CODE_UNSPECIFIED: Config Sync cannot determine a sync code
+      SYNCED: Config Sync successfully synced the git Repo with the cluster
+      PENDING: Config Sync is in the progress of syncing a new change
+      ERROR: Indicates an error configuring Config Sync, and user action is
+        required
+      NOT_CONFIGURED: Config Sync has been installed but not configured
+      NOT_INSTALLED: Config Sync has not been installed
       UNAUTHORIZED: Error authorizing with the cluster
       UNREACHABLE: Cluster could not be reached
     """
@@ -1707,6 +1422,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class Expr(_messages.Message):
@@ -2089,10 +1805,6 @@ class FeatureState(_messages.Message):
 class Fleet(_messages.Message):
   r"""Fleet contains the Fleet-wide metadata and configuration.
 
-  Enums:
-    SamenessModeValueValuesEnum: Optional. The sameness mode this fleet is
-      using.
-
   Messages:
     LabelsValue: Optional. Labels for this Fleet.
 
@@ -2108,28 +1820,12 @@ class Fleet(_messages.Message):
       format of `projects/{project}/locations/{location}/fleets/{fleet}`. Each
       Google Cloud project can have at most one fleet resource, named
       "default".
-    samenessMode: Optional. The sameness mode this fleet is using.
     state: Output only. State of the namespace resource.
     uid: Output only. Google-generated UUID for this resource. This is unique
       across all Fleet resources. If a Fleet resource is deleted and another
       resource with the same name is created, it gets a different uid.
     updateTime: Output only. When the Fleet was last updated.
   """
-
-  class SamenessModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The sameness mode this fleet is using.
-
-    Values:
-      SAMENESS_MODE_UNSPECIFIED: Unknown mode, will default to
-        ALL_CLUSTER_NAMESPACES.
-      ALL_CLUSTER_NAMESPACES: All cluster namespaces are considered the same
-        (default).
-      MAPPED_FLEET_NAMESPACES: Restrict sameness to cluster namespaces that
-        are active-fleet namespaces on the membership.
-    """
-    SAMENESS_MODE_UNSPECIFIED = 0
-    ALL_CLUSTER_NAMESPACES = 1
-    MAPPED_FLEET_NAMESPACES = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -2160,10 +1856,9 @@ class Fleet(_messages.Message):
   displayName = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  samenessMode = _messages.EnumField('SamenessModeValueValuesEnum', 6)
-  state = _messages.MessageField('FleetLifecycleState', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  state = _messages.MessageField('FleetLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class FleetLifecycleState(_messages.Message):
@@ -2307,10 +2002,12 @@ class FleetObservabilityMembershipSpec(_messages.Message):
   """
 
 
+
 class FleetObservabilityMembershipState(_messages.Message):
   r"""**FleetObservability**: Membership-specific Feature state for
   fleetobservability.
   """
+
 
 
 class FleetObservabilityRoutingConfig(_messages.Message):
@@ -3765,6 +3462,7 @@ class HelloWorldFeatureState(_messages.Message):
   """
 
 
+
 class HelloWorldFeatureTest(_messages.Message):
   r"""Represents message used in feature e2e create/mutate testing.
 
@@ -3891,6 +3589,7 @@ class HelloWorldMembershipState(_messages.Message):
   """
 
 
+
 class HelloWorldScopeSpec(_messages.Message):
   r"""**Hello World**: The scope-specific input for HelloWorld feature.
 
@@ -3911,6 +3610,7 @@ class HelloWorldScopeState(_messages.Message):
   """
 
 
+
 class IdentityServiceAuthMethod(_messages.Message):
   r"""Configuration of an auth method for a member/cluster. Only one
   authentication method (e.g., OIDC and LDAP) can be set per AuthMethod.
@@ -3918,6 +3618,7 @@ class IdentityServiceAuthMethod(_messages.Message):
   Fields:
     azureadConfig: AzureAD specific Configuration.
     googleConfig: GoogleConfig specific configuration.
+    ldapConfig: LDAP specific configuration.
     name: Identifier for auth config.
     oidcConfig: OIDC specific configuration.
     proxy: Proxy server address to use for auth method.
@@ -3926,10 +3627,11 @@ class IdentityServiceAuthMethod(_messages.Message):
 
   azureadConfig = _messages.MessageField('IdentityServiceAzureADConfig', 1)
   googleConfig = _messages.MessageField('IdentityServiceGoogleConfig', 2)
-  name = _messages.StringField(3)
-  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 4)
-  proxy = _messages.StringField(5)
-  samlConfig = _messages.MessageField('IdentityServiceSamlConfig', 6)
+  ldapConfig = _messages.MessageField('IdentityServiceLdapConfig', 3)
+  name = _messages.StringField(4)
+  oidcConfig = _messages.MessageField('IdentityServiceOidcConfig', 5)
+  proxy = _messages.StringField(6)
+  samlConfig = _messages.MessageField('IdentityServiceSamlConfig', 7)
 
 
 class IdentityServiceAzureADConfig(_messages.Message):
@@ -3942,7 +3644,7 @@ class IdentityServiceAzureADConfig(_messages.Message):
       to the GKE Hub CLH.
     encryptedClientSecret: Output only. Encrypted AzureAD client secret.
     groupFormat: Optional. Format of the AzureAD groups that the client wants
-    for auth.
+      for auth.
     kubectlRedirectUri: The redirect URL that kubectl uses for authorization.
     tenant: Kind of Azure AD account to be authenticated. Supported values are
       or for accounts belonging to a specific tenant.
@@ -3968,6 +3670,48 @@ class IdentityServiceGoogleConfig(_messages.Message):
   """
 
   disable = _messages.BooleanField(1)
+
+
+class IdentityServiceGroupConfig(_messages.Message):
+  r"""Contains the properties for locating and authenticating groups in the
+  directory.
+
+  Fields:
+    baseDn: Required. The location of the subtree in the LDAP directory to
+      search for group entries.
+    filter: Optional. Optional filter to be used when searching for groups a
+      user belongs to. This can be used to explicitly match only certain
+      groups in order to reduce the amount of groups returned for each user.
+      This defaults to "(objectClass=Group)".
+    idAttribute: Optional. The identifying name of each group a user belongs
+      to. For example, if this is set to "distinguishedName" then RBACs and
+      other group expectations should be written as full DNs. This defaults to
+      "distinguishedName".
+  """
+
+  baseDn = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  idAttribute = _messages.StringField(3)
+
+
+class IdentityServiceLdapConfig(_messages.Message):
+  r"""Configuration for the LDAP Auth flow.
+
+  Fields:
+    group: Optional. Contains the properties for locating and authenticating
+      groups in the directory.
+    server: Required. Server settings for the external LDAP server.
+    serviceAccount: Required. Contains the credentials of the service account
+      which is authorized to perform the LDAP search in the directory. The
+      credentials can be supplied by the combination of the DN and password or
+      the client certificate.
+    user: Required. Defines where users exist in the LDAP directory.
+  """
+
+  group = _messages.MessageField('IdentityServiceGroupConfig', 1)
+  server = _messages.MessageField('IdentityServiceServerConfig', 2)
+  serviceAccount = _messages.MessageField('IdentityServiceServiceAccountConfig', 3)
+  user = _messages.MessageField('IdentityServiceUserConfig', 4)
 
 
 class IdentityServiceMembershipSpec(_messages.Message):
@@ -4127,6 +3871,85 @@ class IdentityServiceSamlConfig(_messages.Message):
   identityProviderSsoUri = _messages.StringField(6)
   userAttribute = _messages.StringField(7)
   userPrefix = _messages.StringField(8)
+
+
+class IdentityServiceServerConfig(_messages.Message):
+  r"""Server settings for the external LDAP server.
+
+  Fields:
+    certificateAuthorityData: Optional. Contains a Base64 encoded, PEM
+      formatted certificate authority certificate for the LDAP server. This
+      must be provided for the "ldaps" and "startTLS" connections.
+    connectionType: Optional. Defines the connection type to communicate with
+      the LDAP server. If `starttls` or `ldaps` is specified, the
+      certificate_authority_data should not be empty.
+    host: Required. Defines the hostname or IP of the LDAP server. Port is
+      optional and will default to 389, if unspecified. For example,
+      "ldap.server.example" or "10.10.10.10:389".
+  """
+
+  certificateAuthorityData = _messages.BytesField(1)
+  connectionType = _messages.StringField(2)
+  host = _messages.StringField(3)
+
+
+class IdentityServiceServiceAccountConfig(_messages.Message):
+  r"""Contains the credentials of the service account which is authorized to
+  perform the LDAP search in the directory. The credentials can be supplied by
+  the combination of the DN and password or the client certificate.
+
+  Fields:
+    simpleBindCredentials: Credentials for basic auth.
+  """
+
+  simpleBindCredentials = _messages.MessageField('IdentityServiceSimpleBindCredentials', 1)
+
+
+class IdentityServiceSimpleBindCredentials(_messages.Message):
+  r"""The structure holds the LDAP simple binding credential.
+
+  Fields:
+    dn: Required. The distinguished name(DN) of the service account
+      object/user.
+    encryptedPassword: Output only. The encrypted password of the service
+      account object/user.
+    password: Required. Input only. The password of the service account
+      object/user.
+  """
+
+  dn = _messages.StringField(1)
+  encryptedPassword = _messages.BytesField(2)
+  password = _messages.StringField(3)
+
+
+class IdentityServiceUserConfig(_messages.Message):
+  r"""Defines where users exist in the LDAP directory.
+
+  Fields:
+    baseDn: Required. The location of the subtree in the LDAP directory to
+      search for user entries.
+    filter: Optional. Filter to apply when searching for the user. This can be
+      used to further restrict the user accounts which are allowed to login.
+      This defaults to "(objectClass=User)".
+    idAttribute: Optional. Determines which attribute to use as the user's
+      identity after they are authenticated. This is distinct from the
+      loginAttribute field to allow users to login with a username, but then
+      have their actual identifier be an email address or full Distinguished
+      Name (DN). For example, setting loginAttribute to "sAMAccountName" and
+      identifierAttribute to "userPrincipalName" would allow a user to login
+      as "bsmith", but actual RBAC policies for the user would be written as
+      "bsmith@example.com". Using "userPrincipalName" is recommended since
+      this will be unique for each user. This defaults to "userPrincipalName".
+    loginAttribute: Optional. The name of the attribute which matches against
+      the input username. This is used to find the user in the LDAP database
+      e.g. "(=)" and is combined with the optional filter field. This defaults
+      to "userPrincipalName".
+  """
+
+  baseDn = _messages.StringField(1)
+  filter = _messages.StringField(2)
+  idAttribute = _messages.StringField(3)
+  loginAttribute = _messages.StringField(4)
 
 
 class KubernetesMetadata(_messages.Message):
@@ -4622,8 +4445,6 @@ class MembershipBinding(_messages.Message):
   Fields:
     createTime: Output only. When the membership binding was created.
     deleteTime: Output only. When the membership binding was deleted.
-    fleet: Whether the membershipbinding is Fleet-wide; true means that this
-      Membership should be bound to all Namespaces in this entire Fleet.
     labels: Optional. Labels for this MembershipBinding.
     name: The resource name for the membershipbinding itself `projects/{projec
       t}/locations/{location}/memberships/{membership}/bindings/{membershipbin
@@ -4664,13 +4485,12 @@ class MembershipBinding(_messages.Message):
 
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
-  fleet = _messages.BooleanField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  scope = _messages.StringField(6)
-  state = _messages.MessageField('MembershipBindingLifecycleState', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  scope = _messages.StringField(5)
+  state = _messages.MessageField('MembershipBindingLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class MembershipBindingLifecycleState(_messages.Message):
@@ -5149,8 +4969,8 @@ class Operation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -5172,7 +4992,7 @@ class Operation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -5211,9 +5031,9 @@ class Operation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -5289,11 +5109,14 @@ class Origin(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Type is unknown or not set.
       FLEET: Per-Membership spec was inherited from the fleet-level default.
+      FLEET_OUT_OF_SYNC: Per-Membership spec was inherited from the fleet-
+        level default but is now out of sync with the current default.
       USER: Per-Membership spec was inherited from a user specification.
     """
     TYPE_UNSPECIFIED = 0
     FLEET = 1
-    USER = 2
+    FLEET_OUT_OF_SYNC = 2
+    USER = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -5311,7 +5134,7 @@ class Policy(_messages.Message):
   constraints based on attributes of the request, the resource, or both. To
   learn which resources support conditions in their IAM policies, see the [IAM
   documentation](https://cloud.google.com/iam/help/conditions/resource-
-  policies). **JSON example:** { "bindings": [ { "role":
+  policies). **JSON example:** ``` { "bindings": [ { "role":
   "roles/resourcemanager.organizationAdmin", "members": [
   "user:mike@example.com", "group:admins@example.com", "domain:google.com",
   "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
@@ -5319,15 +5142,15 @@ class Policy(_messages.Message):
   "user:eve@example.com" ], "condition": { "title": "expirable access",
   "description": "Does not grant access after Sep 2020", "expression":
   "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
-  "BwWWja0YfJA=", "version": 3 } **YAML example:** bindings: - members: -
-  user:mike@example.com - group:admins@example.com - domain:google.com -
-  serviceAccount:my-project-id@appspot.gserviceaccount.com role:
-  roles/resourcemanager.organizationAdmin - members: - user:eve@example.com
-  role: roles/resourcemanager.organizationViewer condition: title: expirable
-  access description: Does not grant access after Sep 2020 expression:
-  request.time < timestamp('2020-10-01T00:00:00.000Z') etag: BwWWja0YfJA=
-  version: 3 For a description of IAM and its features, see the [IAM
-  documentation](https://cloud.google.com/iam/docs/).
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
 
   Fields:
     auditConfigs: Specifies cloud audit logging configuration for this policy.
@@ -6266,7 +6089,6 @@ class Scope(_messages.Message):
       conformant.
 
   Fields:
-    allMemberships: If true, all Memberships in the Fleet bind to this Scope.
     createTime: Output only. When the scope was created.
     deleteTime: Output only. When the scope was deleted.
     labels: Optional. Labels for this Scope.
@@ -6338,15 +6160,14 @@ class Scope(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  allMemberships = _messages.BooleanField(1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  namespaceLabels = _messages.MessageField('NamespaceLabelsValue', 6)
-  state = _messages.MessageField('ScopeLifecycleState', 7)
-  uid = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  createTime = _messages.StringField(1)
+  deleteTime = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  name = _messages.StringField(4)
+  namespaceLabels = _messages.MessageField('NamespaceLabelsValue', 5)
+  state = _messages.MessageField('ScopeLifecycleState', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class ScopeFeatureSpec(_messages.Message):
@@ -6713,6 +6534,7 @@ class WorkloadMigrationFeatureSpec(_messages.Message):
   r"""**WorkloadMigration**: The Hub-wide input for the WorkloadMigration
   feature. This is currently empty, but is used to restrict API visibility.
   """
+
 
 
 encoding.AddCustomJsonFieldMapping(

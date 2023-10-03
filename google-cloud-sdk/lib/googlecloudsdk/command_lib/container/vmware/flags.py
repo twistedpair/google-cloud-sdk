@@ -875,7 +875,12 @@ def _AddManualLbConfig(lb_config_mutex_group, for_update=False):
   if for_update:
     return
   manual_lb_config_group = lb_config_mutex_group.add_group(
-      help='Manual load balancer configuration',
+      help=textwrap.dedent("""\
+        Manual load balancer configuration.
+
+        With manual load balancing mode, DHCP is not supported. Specify static IP addresses for cluster nodes instead.
+        For more details, see https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/manual-load-balance#setting_aside_node_ip_addresses.
+        """),
   )
   manual_lb_config_group.add_argument(
       '--ingress-http-node-port',
@@ -1126,7 +1131,11 @@ def _AddVmwareDhcpIpConfig(ip_configuration_mutex_group, for_update=False):
   )
   dhcp_config_group.add_argument(
       '--enable-dhcp',
-      help='Enable DHCP IP allocation for VMware user clusters.',
+      help=textwrap.dedent("""\
+        Enable DHCP IP allocation for VMware user clusters.
+
+        While using DHCP, manual load balancing mode is not supported. For more details, see https://cloud.google.com/anthos/clusters/docs/on-prem/latest/how-to/manual-load-balance#setting_aside_node_ip_addresses.
+        """),
       action='store_true',
   )
 

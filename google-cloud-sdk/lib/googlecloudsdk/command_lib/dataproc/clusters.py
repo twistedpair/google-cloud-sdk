@@ -1344,6 +1344,7 @@ def GetClusterConfig(
       or args.secondary_worker_type == 'non-preemptible'
       or args.secondary_worker_type == 'spot'
       or args.secondary_worker_required_registration_fraction is not None
+      or args.secondary_worker_machine_types is not None
   ):
     instance_flexibility_policy = GetInstanceFlexibilityPolicy(
         dataproc, args, alpha

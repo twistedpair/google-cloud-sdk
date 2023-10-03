@@ -5,6 +5,76 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 449.0.0 (2023-10-03)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Modified `gcloud beta compute future-reservations update` to replace the
+    `paths` query parameter with `update_mask`.
+
+
+### App Engine
+
+* Enable devappserver support for Go 1.21 runtime.
+
+### Cloud Dataproc
+
+* Fixed a bug that caused Instance Flexibility Policy to be disabled if a user only specified `--secondary-worker-machine-types` in `dataproc clusters create` command for the secondary workers flags.
+
+### Cloud Functions
+
+*  Updated `gcloud functions add-invoker-policy-binding` and
+   `gcloud functions remove-invoker-policy-binding` to support Cloud Functions
+   (1st gen).
+
+### Cloud Run
+
+* Show mounted volumes in `gcloud run services describe` and `gcloud run revisions describe`.
+* Updated display format for task timeout in `gcloud run jobs describe` and
+ `gcloud run jobs executions describe`. Timeouts larger than 1 minute will now
+ show the duration in hours, minutes, and seconds.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.26.
+* Resolved an issue where metadata flags were disregarded when interacting with the Google Cloud Storage and S3 XML APIs.
+
+### Cloud TPU
+
+* Promote `--internal-ips` flag of `gcloud compute tpus tpu-vm update` to GA.
+
+### Cloud Workstations
+
+*   Added `--service-account-scopes` flag to `workstations configs create` and `workstations configs update`.
+
+### Compute Engine
+
+* Added  `--public-delegated-prefix` flag to `gcloud compute public-delegated-prefixes create` and promoted the new flag to GA.
+* Added boot-disk-provisioned-throughput support to `gcloud compute instances create` and `gcloud compute instance-templates create`.
+
+### Distributed Cloud Edge
+
+* Add `gcloud edge-cloud container get-server-config`command with `--location` flag to get server config in target location.
+
+### Kubernetes Engine
+
+* Added `--enable-fleet` flag to `gcloud container clusters create`, `gcloud container clusters create-auto` and `gcloud container clusters update` in GA track.
+* Added `--fleet-project` flag to `gcloud container clusters create`, `gcloud container clusters create-auto` and `gcloud container clusters update` in GA track.
+* Added `--clear-fleet-project` flag to `gcloud container clusters update` in GA track.
+* Added `--resource-manager-tags` flag to `gcloud container clusters create`,
+  `gcloud container node-pools create`, and `gcloud container node-pools update`
+  to manage tags on the underlying Compute Engine VMs of GKE Nodes which can be
+  used to selectively enforce Cloud Firewall network firewall policies.
+* Added `--autoprovisioning-resource-manager-tags` flag to
+  `gcloud container clusters create`, `gcloud container clusters create-auto`,
+  and `gcloud container clusters update` to manage tags on the underlying
+  Compute Engine VMs of GKE Nodes which can be used to selectively enforce
+  Cloud Firewall network firewall policies.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 448.0.0 (2023-09-26)
 
 ### Breaking Changes

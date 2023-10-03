@@ -2900,8 +2900,8 @@ class GoogleCloudDocumentaiV1OcrConfig(_messages.Message):
     computeStyleInfo: Turn on font identification model and return font style
       information. Deprecated, use PremiumFeatures.compute_style_info instead.
     disableCharacterBoxesDetection: Turn off character box detector in OCR
-      engine. Character box detection is enabled by default in OCR 2.0+
-      processors.
+      engine. Character box detection is enabled by default in OCR 2.0 (and
+      later) processors.
     enableImageQualityScores: Enables intelligent document quality scores
       after OCR. Can help with diagnosing why OCR responses are of poor
       quality for a given input. Adds additional latency comparable to regular
@@ -2947,7 +2947,7 @@ class GoogleCloudDocumentaiV1OcrConfigPremiumFeatures(_messages.Message):
       information.
     enableMathOcr: Turn on the model that can extract LaTeX math formulas.
     enableSelectionMarkDetection: Turn on selection mark detector in OCR
-      engine. Only available in OCR 2.0+ processors.
+      engine. Only available in OCR 2.0 (and later) processors.
   """
 
   computeStyleInfo = _messages.BooleanField(1)
@@ -2960,8 +2960,8 @@ class GoogleCloudDocumentaiV1ProcessOptions(_messages.Message):
 
   Fields:
     fromEnd: Only process certain pages from the end, same as above.
-    fromStart: Only process certain pages from the start, process all if the
-      document has less pages.
+    fromStart: Only process certain pages from the start. Process all if the
+      document has fewer pages.
     individualPageSelector: Which pages to process (1-indexed).
     ocrConfig: Only applicable to `OCR_PROCESSOR`. Returns error if set on
       other processor types.
@@ -5791,7 +5791,7 @@ class GoogleCloudDocumentaiV1beta3CommonOperationMetadata(_messages.Message):
 
 class GoogleCloudDocumentaiV1beta3Dataset(_messages.Message):
   r"""A singleton resource under a Processor which configures a collection of
-  documents. Next Id: 8.
+  documents.
 
   Enums:
     StateValueValuesEnum: Required. State of the dataset. Ignored when

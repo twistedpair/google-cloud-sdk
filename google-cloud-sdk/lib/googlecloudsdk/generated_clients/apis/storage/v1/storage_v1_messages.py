@@ -3012,6 +3012,8 @@ class StorageObjectsRestoreRequest(_messages.Message):
 
   Fields:
     bucket: Name of the bucket in which the object resides.
+    copySourceAcl: If true, copies the source object's ACL; otherwise, uses
+      the bucket's default object ACL. The default is false.
     generation: Selects a specific revision of this object.
     ifGenerationMatch: Makes the operation conditional on whether the object's
       one live generation matches the given value. Setting to 0 makes the
@@ -3043,15 +3045,16 @@ class StorageObjectsRestoreRequest(_messages.Message):
     noAcl = 1
 
   bucket = _messages.StringField(1, required=True)
-  generation = _messages.IntegerField(2, required=True)
-  ifGenerationMatch = _messages.IntegerField(3)
-  ifGenerationNotMatch = _messages.IntegerField(4)
-  ifMetagenerationMatch = _messages.IntegerField(5)
-  ifMetagenerationNotMatch = _messages.IntegerField(6)
-  object = _messages.StringField(7, required=True)
-  objectResource = _messages.MessageField('Object', 8)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 9)
-  userProject = _messages.StringField(10)
+  copySourceAcl = _messages.BooleanField(2)
+  generation = _messages.IntegerField(3, required=True)
+  ifGenerationMatch = _messages.IntegerField(4)
+  ifGenerationNotMatch = _messages.IntegerField(5)
+  ifMetagenerationMatch = _messages.IntegerField(6)
+  ifMetagenerationNotMatch = _messages.IntegerField(7)
+  object = _messages.StringField(8, required=True)
+  objectResource = _messages.MessageField('Object', 9)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 10)
+  userProject = _messages.StringField(11)
 
 
 class StorageObjectsRewriteRequest(_messages.Message):

@@ -22,7 +22,7 @@ import collections
 import json
 
 from apitools.base.py import encoding
-
+from googlecloudsdk.command_lib.storage.resources import full_resource_formatter
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import resource_util
 
@@ -62,11 +62,30 @@ def _message_to_dict(message):
   return None
 
 
+def _get_formatted_acl(acl):
+  """Removes unnecessary fields from acl."""
+  if acl is None:
+    return acl
+  formatted_acl = []
+  for acl_entry in acl:
+    acl_entry_copy = acl_entry.copy()
+    if acl_entry_copy.get('kind') == 'storage#objectAccessControl':
+      acl_entry_copy.pop('object', None)
+      acl_entry_copy.pop('generation', None)
+    acl_entry_copy.pop('kind', None)
+    acl_entry_copy.pop('bucket', None)
+    acl_entry_copy.pop('id', None)
+    acl_entry_copy.pop('selfLink', None)
+    acl_entry_copy.pop('etag', None)
+    formatted_acl.append(acl_entry_copy)
+  return formatted_acl
+
+
 class GcsBucketResource(resource_reference.BucketResource):
   """API-specific subclass for handling metadata.
 
   Additional GCS Attributes:
-    autoclass_enabled_time (datetime|None): Datetime autoclass feature was
+    autoclass_enabled_time (datetime|None): Datetime Autoclass feature was
       enabled on bucket. None means the feature is disabled.
     custom_placement_config (dict|None): Dual Region of a bucket.
     default_acl (dict|None): Default object ACLs for the bucket.
@@ -184,6 +203,15 @@ class GcsBucketResource(resource_reference.BucketResource):
   def get_json_dump(self):
     return _get_json_dump(self)
 
+  def get_formatted_acl(self):
+    """See base class."""
+    return {
+        full_resource_formatter.ACL_KEY: _get_formatted_acl(self.acl),
+        full_resource_formatter.DEFAULT_ACL_KEY: _get_formatted_acl(
+            self.default_acl
+        ),
+    }
+
 
 class GcsHmacKeyResource:
   """Holds HMAC key metadata."""
@@ -211,6 +239,9 @@ class GcsObjectResource(resource_reference.ObjectResource):
 
   Additional GCS Attributes:
     storage_class_update_time (datetime|None): Storage class update time.
+    hard_delete_time (datetime|None): Time that soft-deleted objects will be
+      permanently deleted.
+    soft_delete_time (datetime|None): Time that object was soft-deleted.
   """
 
   def __init__(
@@ -292,3 +323,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
   def is_encrypted(self):
     cmek_in_metadata = self.metadata.kmsKeyName if self.metadata else False
     return cmek_in_metadata or self.decryption_key_hash_sha256
+
+  def get_formatted_acl(self):
+    """See base class."""
+    return {full_resource_formatter.ACL_KEY: _get_formatted_acl(self.acl)}

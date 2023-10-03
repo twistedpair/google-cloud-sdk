@@ -19,7 +19,12 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import Optional
+
+from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run.integrations import integration_printer
+from googlecloudsdk.command_lib.run.integrations.formatters import base
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages as runapps
 
 
 def GetSuccessMessage(integration_type, integration_name, action='deployed'):
@@ -30,28 +35,33 @@ def GetSuccessMessage(integration_type, integration_name, action='deployed'):
     integration_name: str, name of the integration
     action: str, the action that succeeded
   """
-  return ('[{{bold}}{}{{reset}}] integration [{{bold}}{}{{reset}}] '
-          'has been {} successfully.').format(integration_type,
-                                              integration_name, action)
+  return (
+      '[{{bold}}{}{{reset}}] integration [{{bold}}{}{{reset}}] '
+      'has been {} successfully.'
+  ).format(integration_type, integration_name, action)
 
 
-def GetCallToAction(integration_type, resource_config, resource_status):
+def GetCallToAction(
+    metadata: Optional[types_utils.TypeMetadata],
+    resource: runapps.Resource,
+    resource_status,
+):
   """Print the call to action message for the given integration.
 
   Args:
-    integration_type: str, type of the integration
-    resource_config: dict, config of the integration
+    metadata: the type metadata
+    resource: the integration resource object
     resource_status: dict, status of the integration
 
   Returns:
     A formatted string of the call to action message.
   """
-  formatter = integration_printer.GetFormatter(integration_type)
-  return formatter.CallToAction(integration_printer.Record(
+  formatter = integration_printer.GetFormatter(metadata)
+  return formatter.CallToAction(base.Record(
       name=None,
-      integration_type=integration_type,
+      metadata=metadata,
       region=None,
-      config=resource_config,
+      resource=resource,
       status=resource_status,
       latest_deployment=None
   ))

@@ -146,21 +146,14 @@ def get_bucket_resource_from_metadata(metadata):
       getattr(metadata.iamConfiguration, 'uniformBucketLevelAccess', None),
       'enabled', None)
 
-  # TODO(b/264528234): Delete `remove_excess_acl_fields`.
   return gcs_resource_reference.GcsBucketResource(
       url,
-      acl=_message_to_dict(
-          metadata_field_converters.remove_excess_acl_fields(metadata.acl)
-      ),
+      acl=_message_to_dict(metadata.acl),
       autoclass_enabled_time=autoclass_enabled_time,
       cors_config=_message_to_dict(metadata.cors),
       creation_time=metadata.timeCreated,
       custom_placement_config=_message_to_dict(metadata.customPlacementConfig),
-      default_acl=_message_to_dict(
-          metadata_field_converters.remove_excess_acl_fields(
-              metadata.defaultObjectAcl
-          )
-      ),
+      default_acl=_message_to_dict(metadata.defaultObjectAcl),
       default_event_based_hold=metadata.defaultEventBasedHold or None,
       default_kms_key=getattr(metadata.encryption, 'defaultKmsKeyName', None),
       default_storage_class=metadata.storageClass,
@@ -180,6 +173,7 @@ def get_bucket_resource_from_metadata(metadata):
       retention_policy=_message_to_dict(metadata.retentionPolicy),
       rpo=metadata.rpo,
       satisfies_pzs=metadata.satisfiesPZS,
+      soft_delete_policy=_message_to_dict(metadata.softDeletePolicy),
       uniform_bucket_level_access=uniform_bucket_level_access,
       update_time=metadata.updated,
       versioning_enabled=getattr(metadata.versioning, 'enabled', None),
@@ -241,12 +235,9 @@ def get_object_resource_from_metadata(metadata):
   else:
     decryption_key_hash_sha256 = encryption_algorithm = None
 
-  # TODO(b/264528234): Delete `remove_excess_acl_fields`.
   return gcs_resource_reference.GcsObjectResource(
       url,
-      acl=_message_to_dict(
-          metadata_field_converters.remove_excess_acl_fields(metadata.acl)
-      ),
+      acl=_message_to_dict(metadata.acl),
       cache_control=metadata.cacheControl,
       component_count=metadata.componentCount,
       content_disposition=metadata.contentDisposition,
@@ -454,9 +445,14 @@ def update_bucket_metadata_from_request_config(bucket_metadata, request_config):
   if not resource_args:
     return
 
-  if resource_args.enable_autoclass is not None:
+  if (
+      resource_args.enable_autoclass is not None
+      or resource_args.autoclass_terminal_storage_class is not None
+  ):
     bucket_metadata.autoclass = metadata_field_converters.process_autoclass(
-        resource_args.enable_autoclass)
+        resource_args.enable_autoclass,
+        resource_args.autoclass_terminal_storage_class,
+    )
   if resource_args.cors_file_path is not None:
     bucket_metadata.cors = metadata_field_converters.process_cors(
         resource_args.cors_file_path)
@@ -598,6 +594,9 @@ def get_cleared_bucket_fields(request_config):
 
   if resource_args.retention_period == user_request_args_factory.CLEAR:
     cleared_fields.append('retentionPolicy')
+
+  if resource_args.soft_delete_duration == user_request_args_factory.CLEAR:
+    cleared_fields.append('softDeletePolicy')
 
   if (
       resource_args.web_error_page

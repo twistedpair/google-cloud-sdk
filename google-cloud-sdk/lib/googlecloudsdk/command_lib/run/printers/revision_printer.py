@@ -129,6 +129,7 @@ class RevisionPrinter(cp.CustomPrinterBase):
                 'Session Affinity',
                 RevisionPrinter.GetSessionAffinity(record),
             ),
+            ('Volumes', container_util.GetVolumes(record)),
         ]),
     ])
 

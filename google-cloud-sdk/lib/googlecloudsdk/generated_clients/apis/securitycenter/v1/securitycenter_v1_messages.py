@@ -1454,6 +1454,7 @@ class Finding(_messages.Message):
     securityMarks: Output only. User specified security marks. These marks are
       entirely managed by the user and come from the SecurityMarks resource
       that belongs to the finding.
+    securityPosture: The security posture associated with the finding.
     severity: The severity of the finding. This field is managed by the source
       that writes the finding.
     sourceProperties: Source specific properties. These properties are managed
@@ -1689,10 +1690,11 @@ class Finding(_messages.Message):
   processes = _messages.MessageField('Process', 34, repeated=True)
   resourceName = _messages.StringField(35)
   securityMarks = _messages.MessageField('SecurityMarks', 36)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 37)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 38)
-  state = _messages.EnumField('StateValueValuesEnum', 39)
-  vulnerability = _messages.MessageField('Vulnerability', 40)
+  securityPosture = _messages.MessageField('SecurityPosture', 37)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 38)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 39)
+  state = _messages.EnumField('StateValueValuesEnum', 40)
+  vulnerability = _messages.MessageField('Vulnerability', 41)
 
 
 class Folder(_messages.Message):
@@ -4105,6 +4107,31 @@ class SecurityMarks(_messages.Message):
   canonicalName = _messages.StringField(1)
   marks = _messages.MessageField('MarksValue', 2)
   name = _messages.StringField(3)
+
+
+class SecurityPosture(_messages.Message):
+  r"""Represents a posture that is deployed on Google Cloud by the Security
+  Command Center Posture Management service. A posture contains one or more
+  policy sets. A policy set is a group of policies that enforce a set of
+  security rules on Google Cloud.
+
+  Fields:
+    changedPolicy: The name of the policy that has been updated, for example,
+      `projects/{project_id}/policies/{constraint_name}`.
+    name: Name of the posture, for example,
+      `organizations/{org_id}/locations/{location}/postures/{posture_name}`.
+    postureDeployment: The name of the posture deployment, for example,
+      `projects/{project_id}/posturedeployments/{posture_deployment_id}`.
+    postureDeploymentResource: The project, folder, or organization on which
+      the posture is deployed, for example, `projects/{project_id}`.
+    revisionId: The version of the posture, for example, `c7cfa2a8`.
+  """
+
+  changedPolicy = _messages.StringField(1)
+  name = _messages.StringField(2)
+  postureDeployment = _messages.StringField(3)
+  postureDeploymentResource = _messages.StringField(4)
+  revisionId = _messages.StringField(5)
 
 
 class SecuritycenterFoldersAssetsGroupRequest(_messages.Message):
@@ -7534,9 +7561,9 @@ class Source(_messages.Message):
   findings that come from the same scanner, logger, monitor, and other tools.
 
   Fields:
-    canonicalName: The canonical name of the finding. It's either
+    canonicalName: The canonical name of the finding source. It's either
       "organizations/{organization_id}/sources/{source_id}",
-      "folders/{folder_id}/sources/{source_id}" or
+      "folders/{folder_id}/sources/{source_id}", or
       "projects/{project_number}/sources/{source_id}", depending on the
       closest CRM ancestor of the resource associated with the finding.
     description: The description of the source (max of 1024 characters).

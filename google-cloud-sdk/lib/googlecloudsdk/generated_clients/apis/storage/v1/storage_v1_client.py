@@ -1246,7 +1246,7 @@ class StorageV1(base_api.BaseApiClient):
         method_id='storage.objects.restore',
         ordered_params=['bucket', 'object'],
         path_params=['bucket', 'object'],
-        query_params=['generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'userProject'],
+        query_params=['copySourceAcl', 'generation', 'ifGenerationMatch', 'ifGenerationNotMatch', 'ifMetagenerationMatch', 'ifMetagenerationNotMatch', 'projection', 'userProject'],
         relative_path='b/{bucket}/o/{object}/restore',
         request_field='objectResource',
         request_type_name='StorageObjectsRestoreRequest',

@@ -171,6 +171,10 @@ class IndexEndpointsClient(object):
         displayName=args.display_name,
         id=args.deployed_index_id,
         index=index_ref.RelativeName())
+
+    if args.reserved_ip_ranges is not None:
+      deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
     deploy_index_req = self.messages.GoogleCloudAiplatformV1beta1DeployIndexRequest(
         deployedIndex=deployed_index)
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest(
@@ -194,6 +198,10 @@ class IndexEndpointsClient(object):
         displayName=args.display_name,
         id=args.deployed_index_id,
         index=index_ref.RelativeName())
+
+    if args.reserved_ip_ranges is not None:
+      deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
     deploy_index_req = self.messages.GoogleCloudAiplatformV1DeployIndexRequest(
         deployedIndex=deployed_index)
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsDeployIndexRequest(
@@ -231,6 +239,10 @@ class IndexEndpointsClient(object):
 
     deployed_index = self.messages.GoogleCloudAiplatformV1beta1DeployedIndex(
         automaticResources=automatic_resources, id=args.deployed_index_id)
+
+    if args.reserved_ip_ranges is not None:
+      deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest(
         indexEndpoint=index_endpoint_ref.RelativeName(),
         googleCloudAiplatformV1beta1DeployedIndex=deployed_index)
@@ -248,6 +260,10 @@ class IndexEndpointsClient(object):
 
     deployed_index = self.messages.GoogleCloudAiplatformV1DeployedIndex(
         id=args.deployed_index_id, automaticResources=automatic_resources)
+
+    if args.reserved_ip_ranges is not None:
+      deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest(
         indexEndpoint=index_endpoint_ref.RelativeName(),
         googleCloudAiplatformV1DeployedIndex=deployed_index)

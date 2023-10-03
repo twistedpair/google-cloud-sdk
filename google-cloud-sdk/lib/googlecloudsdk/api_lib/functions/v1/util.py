@@ -557,17 +557,15 @@ def RemoveFunctionIamPolicyBindingIfFound(
   client = GetApiClientInstance()
   messages = client.MESSAGES_MODULE
   policy = GetFunctionIamPolicy(function_resource_name)
-  if iam_util.BindingInPolicy(policy, member, role):
-    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
-    client.projects_locations_functions.SetIamPolicy(
-        messages.CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(
-            resource=function_resource_name,
-            setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy),
-        )
-    )
-    return True
-  else:
-    return False
+  if not iam_util.BindingInPolicy(policy, member, role):
+    return policy
+  iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+  return client.projects_locations_functions.SetIamPolicy(
+      messages.CloudfunctionsProjectsLocationsFunctionsSetIamPolicyRequest(
+          resource=function_resource_name,
+          setIamPolicyRequest=messages.SetIamPolicyRequest(policy=policy),
+      )
+  )
 
 
 @CatchHTTPErrorRaiseHTTPException

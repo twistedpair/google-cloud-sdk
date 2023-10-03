@@ -46,6 +46,9 @@ class HealthcareV1beta1(base_api.BaseApiClient):
     self.projects_locations_datasets_consentStores_consents = self.ProjectsLocationsDatasetsConsentStoresConsentsService(self)
     self.projects_locations_datasets_consentStores_userDataMappings = self.ProjectsLocationsDatasetsConsentStoresUserDataMappingsService(self)
     self.projects_locations_datasets_consentStores = self.ProjectsLocationsDatasetsConsentStoresService(self)
+    self.projects_locations_datasets_dicomStores_dicomWeb_studies_series = self.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService(self)
+    self.projects_locations_datasets_dicomStores_dicomWeb_studies = self.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService(self)
+    self.projects_locations_datasets_dicomStores_dicomWeb = self.ProjectsLocationsDatasetsDicomStoresDicomWebService(self)
     self.projects_locations_datasets_dicomStores_studies_series_instances_frames = self.ProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesFramesService(self)
     self.projects_locations_datasets_dicomStores_studies_series_instances = self.ProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesService(self)
     self.projects_locations_datasets_dicomStores_studies_series = self.ProjectsLocationsDatasetsDicomStoresStudiesSeriesService(self)
@@ -1536,6 +1539,90 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies_series resource."""
+
+    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb_studies_series'
+
+    def __init__(self, client):
+      super(HealthcareV1beta1.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetSeriesMetrics(self, request, global_params=None):
+      r"""GetSeriesMetrics returns metrics for a series.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesGetSeriesMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SeriesMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetSeriesMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSeriesMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}:getSeriesMetrics',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.getSeriesMetrics',
+        ordered_params=['series'],
+        path_params=['series'],
+        query_params=[],
+        relative_path='v1beta1/{+series}:getSeriesMetrics',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesGetSeriesMetricsRequest',
+        response_type_name='SeriesMetrics',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies resource."""
+
+    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb_studies'
+
+    def __init__(self, client):
+      super(HealthcareV1beta1.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetStudyMetrics(self, request, global_params=None):
+      r"""GetStudyMetrics returns metrics for a study.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesGetStudyMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StudyMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetStudyMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetStudyMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}:getStudyMetrics',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.getStudyMetrics',
+        ordered_params=['study'],
+        path_params=['study'],
+        query_params=[],
+        relative_path='v1beta1/{+study}:getStudyMetrics',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesGetStudyMetricsRequest',
+        response_type_name='StudyMetrics',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDatasetsDicomStoresDicomWebService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_dicomStores_dicomWeb resource."""
+
+    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb'
+
+    def __init__(self, client):
+      super(HealthcareV1beta1.ProjectsLocationsDatasetsDicomStoresDicomWebService, self).__init__(client)
+      self._upload_configs = {
+          }
+
   class ProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesFramesService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_dicomStores_studies_series_instances_frames resource."""
 
@@ -2150,6 +2237,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresGetRequest',
         response_type_name='DicomStore',
+        supports_download=False,
+    )
+
+    def GetDICOMStoreMetrics(self, request, global_params=None):
+      r"""Gets metrics associated with the DICOM store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresGetDICOMStoreMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DicomStoreMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetDICOMStoreMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDICOMStoreMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:getDICOMStoreMetrics',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dicomStores.getDICOMStoreMetrics',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:getDICOMStoreMetrics',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresGetDICOMStoreMetricsRequest',
+        response_type_name='DicomStoreMetrics',
         supports_download=False,
     )
 
@@ -3783,6 +3897,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest',
         response_type_name='Hl7V2Store',
+        supports_download=False,
+    )
+
+    def GetHL7v2StoreMetrics(self, request, global_params=None):
+      r"""Gets metrics asssociated with the HL7v2 store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Hl7V2StoreMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetHL7v2StoreMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetHL7v2StoreMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:getHL7v2StoreMetrics',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.getHL7v2StoreMetrics',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:getHL7v2StoreMetrics',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest',
+        response_type_name='Hl7V2StoreMetrics',
         supports_download=False,
     )
 

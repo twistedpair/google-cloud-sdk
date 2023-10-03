@@ -601,6 +601,43 @@ def AddVolumesFlags(parser, release_track):
   )
 
 
+def AddVolumeMountFlag():
+  """Returns container flag for adding a volume mount."""
+
+  def _LimitMountKeys(key):
+    if key not in {'name', 'path'}:
+      raise serverless_exceptions.ArgumentError(
+          'Key [{}] not recognized for dict arg'.format(key)
+      )
+    return key
+
+  return base.Argument(
+      '--add-volume-mount',
+      action='append',
+      hidden=True,
+      type=arg_parsers.ArgDict(
+          required_keys=['name', 'path'], key_type=_LimitMountKeys
+      ),
+      metavar='KEY=VALUE',
+      help=(
+          'Adds a mount to the current container. Must contain the keys'
+          ' `name=NAME` and `path=/PATH`'
+      ),
+  )
+
+
+def RemoveVolumeMountFlag():
+  """Returns container flag for removing a volume mount."""
+  return base.Argument(
+      '--remove-volume-mount',
+      action=arg_parsers.UpdateAction,
+      hidden=True,
+      type=arg_parsers.ArgList(),
+      metavar='MOUNT',
+      help='Removes a mount from the current container.',
+  )
+
+
 def MapFlagsNoFile(
     flag_name,
     group_help='',
@@ -1223,6 +1260,15 @@ def ArgsFlag(for_execution_overrides=False):
 def AddArgsFlag(parser, for_execution_overrides=False):
   """Add flags for specifying container's startup args."""
   ArgsFlag(for_execution_overrides=for_execution_overrides).AddToParser(parser)
+
+
+def AddDefaultUrlFlag(parser):
+  """Add flag enable and disable default url."""
+  parser.add_argument(
+      '--default-url',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=('enables the default url for a run service.'),
+  )
 
 
 def AddClientNameAndVersionFlags(parser):
@@ -2033,6 +2079,13 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
 
   # we need to sandwich secrets changes between removing and adding volumes
   # because secrets changes can also impact volumes
+  if (
+      FlagIsExplicitlySet(args, 'remove_volume_mount')
+      and args.remove_volume_mount
+  ):
+    changes.append(
+        config_changes.RemoveVolumeMountChange(args.remove_volume_mount)
+    )
   if FlagIsExplicitlySet(args, 'remove_volume') and args.remove_volume:
     changes.append(config_changes.RemoveVolumeChange(args.remove_volume))
   if _HasSecretsChanges(args):
@@ -2042,6 +2095,8 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
         config_changes.AddVolumeChange(args.add_volume, release_track)
     )
 
+  if FlagIsExplicitlySet(args, 'add_volume_mount') and args.add_volume_mount:
+    changes.append(config_changes.AddVolumeMountChange(args.add_volume_mount))
   if _HasConfigMapsChanges(args):
     changes.extend(_GetConfigMapsChanges(args))
 
@@ -2248,9 +2303,19 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
             container_args.args, container_name=container_name
         )
     )
+  if FlagIsExplicitlySet(container_args, 'remove_volume_mount'):
+    changes.append(
+        config_changes.RemoveVolumeMountChange(
+            container_args.remove_volume_mount
+        )
+    )
   if _HasSecretsChanges(container_args):
     changes.extend(
         _GetSecretsChanges(container_args, container_name=container_name)
+    )
+  if FlagIsExplicitlySet(container_args, 'add_volume_mount'):
+    changes.append(
+        config_changes.AddVolumeMountChange(container_args.add_volume_mount)
     )
   return changes
 
@@ -2297,6 +2362,10 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if FlagIsExplicitlySet(args, 'cpu_boost'):
     changes.append(
         config_changes.StartupCpuBoostChange(cpu_boost=args.cpu_boost)
+    )
+  if FlagIsExplicitlySet(args, 'default_url'):
+    changes.append(
+        config_changes.DefaultUrlChange(default_url=args.default_url)
     )
   if FlagIsExplicitlySet(args, 'session_affinity'):
     if args.session_affinity:

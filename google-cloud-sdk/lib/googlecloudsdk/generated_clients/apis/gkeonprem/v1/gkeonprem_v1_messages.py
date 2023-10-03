@@ -5755,7 +5755,6 @@ class UpgradeDependency(_messages.Message):
 
   Fields:
     currentVersion: Current version of the dependency e.g. 1.15.0.
-    localName: Local name of the dependency.
     membership: Membership names are formatted as
       `projects//locations//memberships/`.
     resourceName: Resource name of the dependency.
@@ -5765,10 +5764,9 @@ class UpgradeDependency(_messages.Message):
   """
 
   currentVersion = _messages.StringField(1)
-  localName = _messages.StringField(2)
-  membership = _messages.StringField(3)
-  resourceName = _messages.StringField(4)
-  targetVersion = _messages.StringField(5)
+  membership = _messages.StringField(2)
+  resourceName = _messages.StringField(3)
+  targetVersion = _messages.StringField(4)
 
 
 class ValidationCheck(_messages.Message):

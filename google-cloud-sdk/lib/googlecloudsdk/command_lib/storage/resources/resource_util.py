@@ -26,7 +26,6 @@ import textwrap
 
 from googlecloudsdk.command_lib.storage import storage_url
 
-
 LONGEST_METADATA_KEY_LENGTH = 26
 METADATA_LINE_INDENT_LENGTH = 2
 METADATA_LINE_INDENT_STRING = ' ' * METADATA_LINE_INDENT_LENGTH
@@ -99,12 +98,14 @@ def get_parsable_display_dict_for_resource(
   """
   # Avoid printing all the attributes of StorageUrl.
   result = {'storage_url': resource.storage_url.url_string}
-  result.update(
-      {
-          field: convert_to_json_parsable_type(getattr(resource, field, None))
-          for field in display_titles_and_defaults._fields
-      }
-  )
+
+  formatted_acl_dict = resource.get_formatted_acl()
+  for field in display_titles_and_defaults._fields:
+    if field in formatted_acl_dict:
+      value = formatted_acl_dict.get(field)
+    else:
+      value = getattr(resource, field, None)
+    result[field] = convert_to_json_parsable_type(value)
   return result
 
 

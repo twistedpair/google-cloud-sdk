@@ -72,6 +72,31 @@ def cached_read_yaml_json_file(file_path):
   return read_yaml_json_from_string(contents, source_path=file_path)
 
 
+def has_updated_custom_fields(
+    resource_args,
+    preserve_posix,
+    preserve_symlinks,
+    attributes_resource=None,
+    known_posix=None,
+):
+  """Checks for the storage provider's custom metadata field."""
+  file_resource = isinstance(
+      attributes_resource, resource_reference.FileObjectResource
+  )
+
+  should_parse_file_posix = preserve_posix and file_resource
+  should_parse_symlinks = preserve_symlinks and file_resource
+
+  return bool(
+      should_parse_file_posix
+      or known_posix
+      or should_parse_symlinks
+      or resource_args.custom_fields_to_set
+      or resource_args.custom_fields_to_remove
+      or resource_args.custom_fields_to_update
+  )
+
+
 def get_updated_custom_fields(
     existing_custom_fields,
     request_config,
@@ -107,11 +132,12 @@ def get_updated_custom_fields(
   resource_args = request_config.resource_args
   if not resource_args:
     return
-  if isinstance(attributes_resource, resource_reference.FileObjectResource):
-    file_resource = attributes_resource
-  else:
-    file_resource = None
 
+  file_resource = (
+      attributes_resource
+      if isinstance(attributes_resource, resource_reference.FileObjectResource)
+      else None
+  )
   if existing_custom_fields and file_resource:
     # existing_custom_fields is typically metadata from cloud objects, so it's
     # not expected to be present for a local file system object.
@@ -120,18 +146,17 @@ def get_updated_custom_fields(
         ' using local source.'
     )
 
-  should_parse_file_posix = request_config.preserve_posix and file_resource
-  should_parse_symlinks = request_config.preserve_symlinks and file_resource
-
-  if (
-      not should_parse_file_posix
-      and not known_posix
-      and not should_parse_symlinks
-      and not resource_args.custom_fields_to_set
-      and not resource_args.custom_fields_to_remove
-      and not resource_args.custom_fields_to_update
+  if not has_updated_custom_fields(
+      resource_args,
+      request_config.preserve_posix,
+      request_config.preserve_symlinks,
+      attributes_resource=attributes_resource,
+      known_posix=known_posix,
   ):
     return
+
+  should_parse_file_posix = request_config.preserve_posix and file_resource
+  should_parse_symlinks = request_config.preserve_symlinks and file_resource
 
   posix_metadata = {}
   if known_posix or should_parse_file_posix:

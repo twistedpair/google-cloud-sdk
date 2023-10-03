@@ -245,6 +245,116 @@ def ProcessingUnits(required=False):
       help='Number of processing units for the instance.')
 
 
+def AutoscalingMaxNodes(required=False):
+  return base.Argument(
+      '--autoscaling-max-nodes',
+      required=required,
+      type=int,
+      help='Maximum number of nodes for the autoscaled instance.',
+  )
+
+
+def AutoscalingMinNodes(required=False):
+  return base.Argument(
+      '--autoscaling-min-nodes',
+      required=required,
+      type=int,
+      help='Minimum number of nodes for the autoscaled instance.',
+  )
+
+
+def AutoscalingMaxProcessingUnits(required=False):
+  return base.Argument(
+      '--autoscaling-max-processing-units',
+      required=required,
+      type=int,
+      help='Maximum number of processing units for the autoscaled instance.',
+  )
+
+
+def AutoscalingMinProcessingUnits(required=False):
+  return base.Argument(
+      '--autoscaling-min-processing-units',
+      required=required,
+      type=int,
+      help='Minimum number of processing units for the autoscaled instance.',
+  )
+
+
+def AutoscalingHighPriorityCpuTarget(required=False):
+  return base.Argument(
+      '--autoscaling-high-priority-cpu-target',
+      required=required,
+      type=int,
+      help=(
+          'High priority CPU utilization target percentage for the autoscaled'
+          ' instance.'
+      ),
+  )
+
+
+def AutoscalingStorageTarget(required=False):
+  return base.Argument(
+      '--autoscaling-storage-target',
+      required=required,
+      type=int,
+      help='Storage utilization target percentage for the autoscaled instance.',
+  )
+
+
+def AddCapacityArgsForInstance(require_all_autoscaling_args, parser):
+  """Parse the instance capacity arguments, including manual and autoscaling.
+
+  Args:
+    require_all_autoscaling_args: bool. If True, a complete autoscaling config
+      is required.
+    parser: the argparse parser for the command.
+  """
+  capacity_parser = parser.add_argument_group(mutex=True, required=False)
+
+  # Manual scaling.
+  Nodes().AddToParser(capacity_parser)
+  ProcessingUnits().AddToParser(capacity_parser)
+
+  # Autoscaling.
+  autoscaling_config_group_parser = capacity_parser.add_argument_group(
+      hidden=True, help='Autoscaling'
+  )
+  AutoscalingHighPriorityCpuTarget(
+      required=require_all_autoscaling_args
+  ).AddToParser(autoscaling_config_group_parser)
+  AutoscalingStorageTarget(required=require_all_autoscaling_args).AddToParser(
+      autoscaling_config_group_parser
+  )
+  autoscaling_limits_group_parser = (
+      autoscaling_config_group_parser.add_argument_group(
+          mutex=True, required=require_all_autoscaling_args
+      )
+  )
+  autoscaling_node_limits_group_parser = (
+      autoscaling_limits_group_parser.add_argument_group(
+          help='Autoscaling limits in nodes'
+      )
+  )
+  AutoscalingMinNodes(required=require_all_autoscaling_args).AddToParser(
+      autoscaling_node_limits_group_parser
+  )
+  AutoscalingMaxNodes(required=require_all_autoscaling_args).AddToParser(
+      autoscaling_node_limits_group_parser
+  )
+  autoscaling_pu_limits_group_parser = (
+      autoscaling_limits_group_parser.add_argument_group(
+          help='Autoscaling limits in processing units'
+      )
+  )
+  AutoscalingMinProcessingUnits(
+      required=require_all_autoscaling_args
+  ).AddToParser(autoscaling_pu_limits_group_parser)
+  AutoscalingMaxProcessingUnits(
+      required=require_all_autoscaling_args
+  ).AddToParser(autoscaling_pu_limits_group_parser)
+
+
 def EnableDropProtection(required=False):
   return base.Argument(
       '--enable-drop-protection',

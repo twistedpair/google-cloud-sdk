@@ -856,7 +856,7 @@ class DatastreamV1(base_api.BaseApiClient):
         method_id='datastream.projects.locations.streams.patch',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['cdcStrategy_specificStartPosition_mysqlLogPosition_logFile', 'cdcStrategy_specificStartPosition_mysqlLogPosition_logPosition', 'force', 'requestId', 'updateMask', 'validateOnly'],
+        query_params=['force', 'requestId', 'updateMask', 'validateOnly'],
         relative_path='v1/{+name}',
         request_field='stream',
         request_type_name='DatastreamProjectsLocationsStreamsPatchRequest',

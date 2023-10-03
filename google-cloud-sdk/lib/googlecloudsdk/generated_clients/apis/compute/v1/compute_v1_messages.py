@@ -3887,12 +3887,12 @@ class BackendService(_messages.Message):
       either: - A regional backend service with the service_protocol set to
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
       INTERNAL_MANAGED. - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED. If sessionAffinity
-      is not NONE, and this field is not set to MAGLEV or RING_HASH, session
-      affinity settings will not take effect. Only ROUND_ROBIN and RING_HASH
-      are supported when the backend service is referenced by a URL map that
-      is bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or
+      EXTERNAL_MANAGED. If sessionAffinity is not NONE, and this field is not
+      set to MAGLEV or RING_HASH, session affinity settings will not take
+      effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends. Possible values are HTTP, HTTPS, HTTP2, TCP,
       SSL, UDP or GRPC. depending on the chosen load balancer or Traffic
@@ -4015,12 +4015,12 @@ class BackendService(_messages.Message):
       either: - A regional backend service with the service_protocol set to
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
       INTERNAL_MANAGED. - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED. If sessionAffinity
-      is not NONE, and this field is not set to MAGLEV or RING_HASH, session
-      affinity settings will not take effect. Only ROUND_ROBIN and RING_HASH
-      are supported when the backend service is referenced by a URL map that
-      is bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or
+      EXTERNAL_MANAGED. If sessionAffinity is not NONE, and this field is not
+      set to MAGLEV or RING_HASH, session affinity settings will not take
+      effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
     logConfig: This field denotes the logging options for the load balancer
       traffic served by this backend service. If logging is enabled, logs will
       be exported to Stackdriver.
@@ -4114,6 +4114,7 @@ class BackendService(_messages.Message):
       references this backend service. Not supported when the backend service
       is referenced by a URL map that is bound to target gRPC proxy that has
       validateForProxyless field set to true. Instead, use maxStreamDuration.
+    usedBy: A BackendServiceUsedBy attribute.
   """
 
   class CompressionModeValueValuesEnum(_messages.Enum):
@@ -4175,11 +4176,12 @@ class BackendService(_messages.Message):
     either: - A regional backend service with the service_protocol set to
     HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.
     - A global backend service with the load_balancing_scheme set to
-    INTERNAL_SELF_MANAGED. If sessionAffinity is not NONE, and this field is
-    not set to MAGLEV or RING_HASH, session affinity settings will not take
-    effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
-    service is referenced by a URL map that is bound to target gRPC proxy that
-    has validateForProxyless field set to true.
+    INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or EXTERNAL_MANAGED. If
+    sessionAffinity is not NONE, and this field is not set to MAGLEV or
+    RING_HASH, session affinity settings will not take effect. Only
+    ROUND_ROBIN and RING_HASH are supported when the backend service is
+    referenced by a URL map that is bound to target gRPC proxy that has
+    validateForProxyless field set to true.
 
     Values:
       INVALID_LB_POLICY: <no description>
@@ -4358,6 +4360,7 @@ class BackendService(_messages.Message):
   sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 38)
   subsetting = _messages.MessageField('Subsetting', 39)
   timeoutSec = _messages.IntegerField(40, variant=_messages.Variant.INT32)
+  usedBy = _messages.MessageField('BackendServiceUsedBy', 41, repeated=True)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -5147,6 +5150,169 @@ class BackendServiceList(_messages.Message):
   warning = _messages.MessageField('WarningValue', 6)
 
 
+class BackendServiceListUsable(_messages.Message):
+  r"""Contains a list of usable BackendService resources.
+
+  Messages:
+    WarningValue: [Output Only] Informational warning message.
+
+  Fields:
+    id: [Output Only] Unique identifier for the resource; defined by the
+      server.
+    items: A list of BackendService resources.
+    kind: [Output Only] Type of resource. Always
+      compute#usableBackendServiceList for lists of usable backend services.
+    nextPageToken: [Output Only] This token allows you to get the next page of
+      results for list requests. If the number of results is larger than
+      maxResults, use the nextPageToken as a value for the query parameter
+      pageToken in the next list request. Subsequent list requests will have
+      their own nextPageToken to continue paging through the results.
+    selfLink: [Output Only] Server-defined URL for this resource.
+    warning: [Output Only] Informational warning message.
+  """
+
+  class WarningValue(_messages.Message):
+    r"""[Output Only] Informational warning message.
+
+    Enums:
+      CodeValueValuesEnum: [Output Only] A warning code, if applicable. For
+        example, Compute Engine returns NO_RESULTS_ON_PAGE if there are no
+        results in the response.
+
+    Messages:
+      DataValueListEntry: A DataValueListEntry object.
+
+    Fields:
+      code: [Output Only] A warning code, if applicable. For example, Compute
+        Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+        response.
+      data: [Output Only] Metadata about this warning in key: value format.
+        For example: "data": [ { "key": "scope", "value": "zones/us-east1-d" }
+      message: [Output Only] A human-readable description of the warning code.
+    """
+
+    class CodeValueValuesEnum(_messages.Enum):
+      r"""[Output Only] A warning code, if applicable. For example, Compute
+      Engine returns NO_RESULTS_ON_PAGE if there are no results in the
+      response.
+
+      Values:
+        CLEANUP_FAILED: Warning about failed cleanup of transient changes made
+          by a failed operation.
+        DEPRECATED_RESOURCE_USED: A link to a deprecated resource was created.
+        DEPRECATED_TYPE_USED: When deploying and at least one of the resources
+          has a type marked as deprecated
+        DISK_SIZE_LARGER_THAN_IMAGE_SIZE: The user created a boot disk that is
+          larger than image size.
+        EXPERIMENTAL_TYPE_USED: When deploying and at least one of the
+          resources has a type marked as experimental
+        EXTERNAL_API_WARNING: Warning that is present in an external api call
+        FIELD_VALUE_OVERRIDEN: Warning that value of a field has been
+          overridden. Deprecated unused field.
+        INJECTED_KERNELS_DEPRECATED: The operation involved use of an injected
+          kernel, which is deprecated.
+        INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB: A WEIGHTED_MAGLEV
+          backend service is associated with a health check that is not of
+          type HTTP/HTTPS/HTTP2.
+        LARGE_DEPLOYMENT_WARNING: When deploying a deployment with a
+          exceedingly large number of resources
+        LIST_OVERHEAD_QUOTA_EXCEED: Resource can't be retrieved due to list
+          overhead quota exceed which captures the amount of resources
+          filtered out by user-defined list filter.
+        MISSING_TYPE_DEPENDENCY: A resource depends on a missing type
+        NEXT_HOP_ADDRESS_NOT_ASSIGNED: The route's nextHopIp address is not
+          assigned to an instance on the network.
+        NEXT_HOP_CANNOT_IP_FORWARD: The route's next hop instance cannot ip
+          forward.
+        NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE: The route's nextHopInstance
+          URL refers to an instance that does not have an ipv6 interface on
+          the same network as the route.
+        NEXT_HOP_INSTANCE_NOT_FOUND: The route's nextHopInstance URL refers to
+          an instance that does not exist.
+        NEXT_HOP_INSTANCE_NOT_ON_NETWORK: The route's nextHopInstance URL
+          refers to an instance that is not on the same network as the route.
+        NEXT_HOP_NOT_RUNNING: The route's next hop instance does not have a
+          status of RUNNING.
+        NOT_CRITICAL_ERROR: Error which is not critical. We decided to
+          continue the process despite the mentioned error.
+        NO_RESULTS_ON_PAGE: No results are present on a particular list page.
+        PARTIAL_SUCCESS: Success is reported, but some results may be missing
+          due to errors
+        REQUIRED_TOS_AGREEMENT: The user attempted to use a resource that
+          requires a TOS they have not accepted.
+        RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING: Warning that a resource is
+          in use.
+        RESOURCE_NOT_DELETED: One or more of the resources set to auto-delete
+          could not be deleted because they were in use.
+        SCHEMA_VALIDATION_IGNORED: When a resource schema validation is
+          ignored.
+        SINGLE_INSTANCE_PROPERTY_TEMPLATE: Instance template used in instance
+          group manager is valid as such, but its application does not make a
+          lot of sense, because it allows only single instance in instance
+          group.
+        UNDECLARED_PROPERTIES: When undeclared properties in the schema are
+          present
+        UNREACHABLE: A given scope cannot be reached.
+      """
+      CLEANUP_FAILED = 0
+      DEPRECATED_RESOURCE_USED = 1
+      DEPRECATED_TYPE_USED = 2
+      DISK_SIZE_LARGER_THAN_IMAGE_SIZE = 3
+      EXPERIMENTAL_TYPE_USED = 4
+      EXTERNAL_API_WARNING = 5
+      FIELD_VALUE_OVERRIDEN = 6
+      INJECTED_KERNELS_DEPRECATED = 7
+      INVALID_HEALTH_CHECK_FOR_DYNAMIC_WIEGHTED_LB = 8
+      LARGE_DEPLOYMENT_WARNING = 9
+      LIST_OVERHEAD_QUOTA_EXCEED = 10
+      MISSING_TYPE_DEPENDENCY = 11
+      NEXT_HOP_ADDRESS_NOT_ASSIGNED = 12
+      NEXT_HOP_CANNOT_IP_FORWARD = 13
+      NEXT_HOP_INSTANCE_HAS_NO_IPV6_INTERFACE = 14
+      NEXT_HOP_INSTANCE_NOT_FOUND = 15
+      NEXT_HOP_INSTANCE_NOT_ON_NETWORK = 16
+      NEXT_HOP_NOT_RUNNING = 17
+      NOT_CRITICAL_ERROR = 18
+      NO_RESULTS_ON_PAGE = 19
+      PARTIAL_SUCCESS = 20
+      REQUIRED_TOS_AGREEMENT = 21
+      RESOURCE_IN_USE_BY_OTHER_RESOURCE_WARNING = 22
+      RESOURCE_NOT_DELETED = 23
+      SCHEMA_VALIDATION_IGNORED = 24
+      SINGLE_INSTANCE_PROPERTY_TEMPLATE = 25
+      UNDECLARED_PROPERTIES = 26
+      UNREACHABLE = 27
+
+    class DataValueListEntry(_messages.Message):
+      r"""A DataValueListEntry object.
+
+      Fields:
+        key: [Output Only] A key that provides more detail on the warning
+          being returned. For example, for warnings where there are no results
+          in a list request for a particular zone, this key might be scope and
+          the key value might be the zone name. Other examples might be a key
+          indicating a deprecated resource and a suggested replacement, or a
+          warning about invalid network settings (for example, if an instance
+          attempts to perform IP forwarding but is not enabled for IP
+          forwarding).
+        value: [Output Only] A warning data value corresponding to the key.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    code = _messages.EnumField('CodeValueValuesEnum', 1)
+    data = _messages.MessageField('DataValueListEntry', 2, repeated=True)
+    message = _messages.StringField(3)
+
+  id = _messages.StringField(1)
+  items = _messages.MessageField('BackendService', 2, repeated=True)
+  kind = _messages.StringField(3, default='compute#usableBackendServiceList')
+  nextPageToken = _messages.StringField(4)
+  selfLink = _messages.StringField(5)
+  warning = _messages.MessageField('WarningValue', 6)
+
+
 class BackendServiceLocalityLoadBalancingPolicyConfig(_messages.Message):
   r"""Container for either a built-in LB policy supported by gRPC or Envoy or
   a custom one implemented by the end user.
@@ -5309,6 +5475,16 @@ class BackendServiceReference(_messages.Message):
   """
 
   backendService = _messages.StringField(1)
+
+
+class BackendServiceUsedBy(_messages.Message):
+  r"""A BackendServiceUsedBy object.
+
+  Fields:
+    reference: A string attribute.
+  """
+
+  reference = _messages.StringField(1)
 
 
 class BackendServicesScopedList(_messages.Message):
@@ -7876,6 +8052,72 @@ class ComputeBackendServicesInsertRequest(_messages.Message):
 
 class ComputeBackendServicesListRequest(_messages.Message):
   r"""A ComputeBackendServicesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  returnPartialSuccess = _messages.BooleanField(6)
+
+
+class ComputeBackendServicesListUsableRequest(_messages.Message):
+  r"""A ComputeBackendServicesListUsableRequest object.
 
   Fields:
     filter: A filter expression that filters resources listed in the response.
@@ -14932,6 +15174,18 @@ class ComputeInterconnectsGetDiagnosticsRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
 
 
+class ComputeInterconnectsGetMacsecConfigRequest(_messages.Message):
+  r"""A ComputeInterconnectsGetMacsecConfigRequest object.
+
+  Fields:
+    interconnect: Name of the interconnect resource to query.
+    project: Project ID for this request.
+  """
+
+  interconnect = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
 class ComputeInterconnectsGetRequest(_messages.Message):
   r"""A ComputeInterconnectsGetRequest object.
 
@@ -15823,6 +16077,35 @@ class ComputeNetworkAttachmentsListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
   region = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
+
+
+class ComputeNetworkAttachmentsPatchRequest(_messages.Message):
+  r"""A ComputeNetworkAttachmentsPatchRequest object.
+
+  Fields:
+    networkAttachment: Name of the NetworkAttachment resource to patch.
+    networkAttachmentResource: A NetworkAttachment resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    region: Name of the region for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000). end_interface:
+      MixerMutationRequestBuilder
+  """
+
+  networkAttachment = _messages.StringField(1, required=True)
+  networkAttachmentResource = _messages.MessageField('NetworkAttachment', 2)
+  project = _messages.StringField(3, required=True)
+  region = _messages.StringField(4, required=True)
+  requestId = _messages.StringField(5)
 
 
 class ComputeNetworkAttachmentsSetIamPolicyRequest(_messages.Message):
@@ -19408,6 +19691,75 @@ class ComputeRegionBackendServicesListRequest(_messages.Message):
   returnPartialSuccess = _messages.BooleanField(7)
 
 
+class ComputeRegionBackendServicesListUsableRequest(_messages.Message):
+  r"""A ComputeRegionBackendServicesListUsableRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Name of the region scoping this request. It must be a string that
+      meets the requirements in RFC1035.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
 class ComputeRegionBackendServicesPatchRequest(_messages.Message):
   r"""A ComputeRegionBackendServicesPatchRequest object.
 
@@ -22621,6 +22973,25 @@ class ComputeRegionOperationsWaitRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
 
 
+class ComputeRegionSecurityPoliciesAddRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesAddRuleRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+    validateOnly: If true, the request will not be committed.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  securityPolicy = _messages.StringField(3, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
+  validateOnly = _messages.BooleanField(5)
+
+
 class ComputeRegionSecurityPoliciesDeleteRequest(_messages.Message):
   r"""A ComputeRegionSecurityPoliciesDeleteRequest object.
 
@@ -22658,6 +23029,23 @@ class ComputeRegionSecurityPoliciesGetRequest(_messages.Message):
   project = _messages.StringField(1, required=True)
   region = _messages.StringField(2, required=True)
   securityPolicy = _messages.StringField(3, required=True)
+
+
+class ComputeRegionSecurityPoliciesGetRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesGetRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to get from the security policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to which the queried rule
+      belongs.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  securityPolicy = _messages.StringField(4, required=True)
 
 
 class ComputeRegionSecurityPoliciesInsertRequest(_messages.Message):
@@ -22775,6 +23163,7 @@ class ComputeRegionSecurityPoliciesPatchRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyResource: A SecurityPolicy resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
   """
 
   project = _messages.StringField(1, required=True)
@@ -22782,6 +23171,46 @@ class ComputeRegionSecurityPoliciesPatchRequest(_messages.Message):
   requestId = _messages.StringField(3)
   securityPolicy = _messages.StringField(4, required=True)
   securityPolicyResource = _messages.MessageField('SecurityPolicy', 5)
+  updateMask = _messages.StringField(6)
+
+
+class ComputeRegionSecurityPoliciesPatchRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesPatchRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to patch.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+    securityPolicyRule: A SecurityPolicyRule resource to be passed as the
+      request body.
+    updateMask: Indicates fields to be cleared as part of this request.
+    validateOnly: If true, the request will not be committed.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  securityPolicy = _messages.StringField(4, required=True)
+  securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 5)
+  updateMask = _messages.StringField(6)
+  validateOnly = _messages.BooleanField(7)
+
+
+class ComputeRegionSecurityPoliciesRemoveRuleRequest(_messages.Message):
+  r"""A ComputeRegionSecurityPoliciesRemoveRuleRequest object.
+
+  Fields:
+    priority: The priority of the rule to remove from the security policy.
+    project: Project ID for this request.
+    region: Name of the region scoping this request.
+    securityPolicy: Name of the security policy to update.
+  """
+
+  priority = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  securityPolicy = _messages.StringField(4, required=True)
 
 
 class ComputeRegionSslCertificatesDeleteRequest(_messages.Message):
@@ -25347,12 +25776,14 @@ class ComputeSecurityPoliciesPatchRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyResource: A SecurityPolicy resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
   """
 
   project = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   securityPolicy = _messages.StringField(3, required=True)
   securityPolicyResource = _messages.MessageField('SecurityPolicy', 4)
+  updateMask = _messages.StringField(5)
 
 
 class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
@@ -25364,6 +25795,7 @@ class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
     securityPolicy: Name of the security policy to update.
     securityPolicyRule: A SecurityPolicyRule resource to be passed as the
       request body.
+    updateMask: Indicates fields to be cleared as part of this request.
     validateOnly: If true, the request will not be committed.
   """
 
@@ -25371,7 +25803,8 @@ class ComputeSecurityPoliciesPatchRuleRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   securityPolicy = _messages.StringField(3, required=True)
   securityPolicyRule = _messages.MessageField('SecurityPolicyRule', 4)
-  validateOnly = _messages.BooleanField(5)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class ComputeSecurityPoliciesRemoveRuleRequest(_messages.Message):
@@ -34809,6 +35242,7 @@ class GuestOsFeature(_messages.Message):
       SECURE_BOOT: <no description>
       SEV_CAPABLE: <no description>
       SEV_LIVE_MIGRATABLE: <no description>
+      SEV_LIVE_MIGRATABLE_V2: <no description>
       SEV_SNP_CAPABLE: <no description>
       UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
@@ -34820,10 +35254,11 @@ class GuestOsFeature(_messages.Message):
     SECURE_BOOT = 3
     SEV_CAPABLE = 4
     SEV_LIVE_MIGRATABLE = 5
-    SEV_SNP_CAPABLE = 6
-    UEFI_COMPATIBLE = 7
-    VIRTIO_SCSI_MULTIQUEUE = 8
-    WINDOWS = 9
+    SEV_LIVE_MIGRATABLE_V2 = 6
+    SEV_SNP_CAPABLE = 7
+    UEFI_COMPATIBLE = 8
+    VIRTIO_SCSI_MULTIQUEUE = 9
+    WINDOWS = 10
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -35205,20 +35640,23 @@ class HTTPSHealthCheck(_messages.Message):
 
 
 class HealthCheck(_messages.Message):
-  r"""Represents a Health Check resource. Google Compute Engine has two Health
-  Check resources: * [Global](/compute/docs/reference/rest/v1/healthChecks) *
-  [Regional](/compute/docs/reference/rest/v1/regionHealthChecks) Internal
-  HTTP(S) load balancers must use regional health checks
-  (`compute.v1.regionHealthChecks`). Traffic Director must use global health
-  checks (`compute.v1.healthChecks`). Internal TCP/UDP load balancers can use
-  either regional or global health checks (`compute.v1.regionHealthChecks` or
-  `compute.v1.healthChecks`). External HTTP(S), TCP proxy, and SSL proxy load
-  balancers as well as managed instance group auto-healing must use global
-  health checks (`compute.v1.healthChecks`). Backend service-based network
-  load balancers must use regional health checks
-  (`compute.v1.regionHealthChecks`). Target pool-based network load balancers
-  must use legacy HTTP health checks (`compute.v1.httpHealthChecks`). For more
-  information, see Health checks overview.
+  r"""Represents a health check resource. Google Compute Engine has two health
+  check resources: *
+  [Regional](/compute/docs/reference/rest/v1/regionHealthChecks) *
+  [Global](/compute/docs/reference/rest/v1/healthChecks) These health check
+  resources can be used for load balancing and for autohealing VMs in a
+  managed instance group (MIG). **Load balancing** The following load balancer
+  can use either regional or global health check: * Internal TCP/UDP load
+  balancer The following load balancers require regional health check: *
+  Internal HTTP(S) load balancer * Backend service-based network load balancer
+  Traffic Director and the following load balancers require global health
+  check: * External HTTP(S) load balancer * TCP proxy load balancer * SSL
+  proxy load balancer The following load balancer require [legacy HTTP health
+  checks](/compute/docs/reference/rest/v1/httpHealthChecks): * Target pool-
+  based network load balancer **Autohealing in MIGs** The health checks that
+  you use for autohealing VMs in a MIG can be either regional or global. For
+  more information, see Set up an application health check and autohealing.
+  For more information, see Health checks overview.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -42192,6 +42630,7 @@ class Interconnect(_messages.Message):
   network. For more information, read the Dedicated Interconnect Overview.
 
   Enums:
+    AvailableFeaturesValueListEntryValuesEnum:
     InterconnectTypeValueValuesEnum: Type of interconnect, which can take one
       of the following values: - PARTNER: A partner-managed interconnection
       shared between customers though a partner. - DEDICATED: A dedicated
@@ -42211,6 +42650,7 @@ class Interconnect(_messages.Message):
       OS_UNDER_MAINTENANCE: An Interconnect that is undergoing internal
       maintenance. No attachments may be provisioned or updated on this
       Interconnect.
+    RequestedFeaturesValueListEntryValuesEnum:
     StateValueValuesEnum: [Output Only] The current state of Interconnect
       functionality, which can take one of the following values: - ACTIVE: The
       Interconnect is valid, turned up and ready to use. Attachments may be
@@ -42230,6 +42670,12 @@ class Interconnect(_messages.Message):
       to true, the Interconnect is functional and can carry traffic. When set
       to false, no packets can be carried over the interconnect and no BGP
       routes are exchanged over it. By default, the status is set to true.
+    availableFeatures: [Output only] List of features available for this
+      Interconnect connection, which can take one of the following values: -
+      MACSEC If present then the Interconnect connection is provisioned on
+      MACsec capable hardware ports. If not present then the Interconnect
+      connection is provisioned on non-MACsec capable ports and MACsec isn't
+      supported and enabling MACsec fails.
     circuitInfos: [Output Only] A list of CircuitInfo objects, that describe
       the individual circuits in this LAG.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -42274,6 +42720,11 @@ class Interconnect(_messages.Message):
       the speed of the entire bundle.
     location: URL of the InterconnectLocation object that represents where
       this connection is to be provisioned.
+    macsec: Configuration that enables Media Access Control security (MACsec)
+      on the Cloud Interconnect connection between Google and your on-premises
+      router.
+    macsecEnabled: Enable or disable MACsec on this Interconnect connection.
+      MACsec enablement fails if the MACsec object is not specified.
     name: Name of the resource. Provided by the client when the resource is
       created. The name must be 1-63 characters long, and comply with RFC1035.
       Specifically, the name must be 1-63 characters long and match the
@@ -42304,6 +42755,13 @@ class Interconnect(_messages.Message):
     remoteLocation: Indicates that this is a Cross-Cloud Interconnect. This
       field specifies the location outside of Google's network that the
       interconnect is connected to.
+    requestedFeatures: Optional. List of features requested for this
+      Interconnect connection, which can take one of the following values: -
+      MACSEC If specified then the connection is created on MACsec capable
+      hardware ports. If not specified, the default value is false, which
+      allocates non-MACsec capable ports first if available. This parameter
+      can be provided only with Interconnect INSERT. It isn't valid for
+      Interconnect PATCH.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
     satisfiesPzs: [Output Only] Reserved for future use.
@@ -42316,6 +42774,14 @@ class Interconnect(_messages.Message):
       UNDER_MAINTENANCE: The Interconnect is undergoing internal maintenance.
       No attachments may be provisioned or updated on this Interconnect.
   """
+
+  class AvailableFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
 
   class InterconnectTypeValueValuesEnum(_messages.Enum):
     r"""Type of interconnect, which can take one of the following values: -
@@ -42369,6 +42835,14 @@ class Interconnect(_messages.Message):
     OS_ACTIVE = 0
     OS_UNPROVISIONED = 1
 
+  class RequestedFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""RequestedFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
+
   class StateValueValuesEnum(_messages.Enum):
     r"""[Output Only] The current state of Interconnect functionality, which
     can take one of the following values: - ACTIVE: The Interconnect is valid,
@@ -42414,31 +42888,35 @@ class Interconnect(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   adminEnabled = _messages.BooleanField(1)
-  circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 2, repeated=True)
-  creationTimestamp = _messages.StringField(3)
-  customerName = _messages.StringField(4)
-  description = _messages.StringField(5)
-  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 6, repeated=True)
-  googleIpAddress = _messages.StringField(7)
-  googleReferenceId = _messages.StringField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  interconnectAttachments = _messages.StringField(10, repeated=True)
-  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 11)
-  kind = _messages.StringField(12, default='compute#interconnect')
-  labelFingerprint = _messages.BytesField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 15)
-  location = _messages.StringField(16)
-  name = _messages.StringField(17)
-  nocContactEmail = _messages.StringField(18)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 19)
-  peerIpAddress = _messages.StringField(20)
-  provisionedLinkCount = _messages.IntegerField(21, variant=_messages.Variant.INT32)
-  remoteLocation = _messages.StringField(22)
-  requestedLinkCount = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  satisfiesPzs = _messages.BooleanField(24)
-  selfLink = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
+  availableFeatures = _messages.EnumField('AvailableFeaturesValueListEntryValuesEnum', 2, repeated=True)
+  circuitInfos = _messages.MessageField('InterconnectCircuitInfo', 3, repeated=True)
+  creationTimestamp = _messages.StringField(4)
+  customerName = _messages.StringField(5)
+  description = _messages.StringField(6)
+  expectedOutages = _messages.MessageField('InterconnectOutageNotification', 7, repeated=True)
+  googleIpAddress = _messages.StringField(8)
+  googleReferenceId = _messages.StringField(9)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  interconnectAttachments = _messages.StringField(11, repeated=True)
+  interconnectType = _messages.EnumField('InterconnectTypeValueValuesEnum', 12)
+  kind = _messages.StringField(13, default='compute#interconnect')
+  labelFingerprint = _messages.BytesField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 16)
+  location = _messages.StringField(17)
+  macsec = _messages.MessageField('InterconnectMacsec', 18)
+  macsecEnabled = _messages.BooleanField(19)
+  name = _messages.StringField(20)
+  nocContactEmail = _messages.StringField(21)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 22)
+  peerIpAddress = _messages.StringField(23)
+  provisionedLinkCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  remoteLocation = _messages.StringField(25)
+  requestedFeatures = _messages.EnumField('RequestedFeaturesValueListEntryValuesEnum', 26, repeated=True)
+  requestedLinkCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
+  satisfiesPzs = _messages.BooleanField(28)
+  selfLink = _messages.StringField(29)
+  state = _messages.EnumField('StateValueValuesEnum', 30)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -43744,6 +44222,7 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
     googleDemarc: The Demarc address assigned by Google and provided in the
       LoA.
     lacpStatus: A InterconnectDiagnosticsLinkLACPStatus attribute.
+    macsec: Describes the status of MACsec encryption on this link.
     operationalStatus: The operational status of the link.
     receivingOpticalPower: An InterconnectDiagnostics.LinkOpticalPower object,
       describing the current value and status of the received light level.
@@ -43768,9 +44247,23 @@ class InterconnectDiagnosticsLinkStatus(_messages.Message):
   circuitId = _messages.StringField(2)
   googleDemarc = _messages.StringField(3)
   lacpStatus = _messages.MessageField('InterconnectDiagnosticsLinkLACPStatus', 4)
-  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 5)
-  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 6)
-  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 7)
+  macsec = _messages.MessageField('InterconnectDiagnosticsMacsecStatus', 5)
+  operationalStatus = _messages.EnumField('OperationalStatusValueValuesEnum', 6)
+  receivingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 7)
+  transmittingOpticalPower = _messages.MessageField('InterconnectDiagnosticsLinkOpticalPower', 8)
+
+
+class InterconnectDiagnosticsMacsecStatus(_messages.Message):
+  r"""Describes the status of MACsec encryption on the link.
+
+  Fields:
+    ckn: Indicates the Connectivity Association Key Name (CKN) currently being
+      used if MACsec is operational.
+    operational: Indicates whether or not MACsec is operational on this link.
+  """
+
+  ckn = _messages.StringField(1)
+  operational = _messages.BooleanField(2)
 
 
 class InterconnectList(_messages.Message):
@@ -43943,6 +44436,8 @@ class InterconnectLocation(_messages.Message):
   VLAN Attachments.
 
   Enums:
+    AvailableFeaturesValueListEntryValuesEnum:
+    AvailableLinkTypesValueListEntryValuesEnum:
     ContinentValueValuesEnum: [Output Only] Continent for this location, which
       can take one of the following values: - AFRICA - ASIA_PAC - EUROPE -
       NORTH_AMERICA - SOUTH_AMERICA
@@ -43959,6 +44454,12 @@ class InterconnectLocation(_messages.Message):
       InterconnectLocation. Within a metropolitan area (metro), maintenance
       will not be simultaneously scheduled in more than one availability zone.
       Example: "zone1" or "zone2".
+    availableFeatures: [Output only] List of features available at this
+      InterconnectLocation, which can take one of the following values: -
+      MACSEC
+    availableLinkTypes: [Output only] List of link types available at this
+      InterconnectLocation, which can take one of the following values: -
+      LINK_TYPE_ETHERNET_10G_LR - LINK_TYPE_ETHERNET_100G_LR
     city: [Output Only] Metropolitan area designator that indicates which city
       an interconnect is located. For example: "Chicago, IL", "Amsterdam,
       Netherlands".
@@ -43990,6 +44491,25 @@ class InterconnectLocation(_messages.Message):
       Interconnects.
     supportsPzs: [Output Only] Reserved for future use.
   """
+
+  class AvailableFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      IF_MACSEC: Media Access Control security (MACsec)
+    """
+    IF_MACSEC = 0
+
+  class AvailableLinkTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""AvailableLinkTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      LINK_TYPE_ETHERNET_100G_LR: 100G Ethernet, LR Optics.
+      LINK_TYPE_ETHERNET_10G_LR: 10G Ethernet, LR Optics. [(rate_bps) =
+        10000000000];
+    """
+    LINK_TYPE_ETHERNET_100G_LR = 0
+    LINK_TYPE_ETHERNET_10G_LR = 1
 
   class ContinentValueValuesEnum(_messages.Enum):
     r"""[Output Only] Continent for this location, which can take one of the
@@ -44036,20 +44556,22 @@ class InterconnectLocation(_messages.Message):
 
   address = _messages.StringField(1)
   availabilityZone = _messages.StringField(2)
-  city = _messages.StringField(3)
-  continent = _messages.EnumField('ContinentValueValuesEnum', 4)
-  creationTimestamp = _messages.StringField(5)
-  description = _messages.StringField(6)
-  facilityProvider = _messages.StringField(7)
-  facilityProviderFacilityId = _messages.StringField(8)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(10, default='compute#interconnectLocation')
-  name = _messages.StringField(11)
-  peeringdbFacilityId = _messages.StringField(12)
-  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 13, repeated=True)
-  selfLink = _messages.StringField(14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  supportsPzs = _messages.BooleanField(16)
+  availableFeatures = _messages.EnumField('AvailableFeaturesValueListEntryValuesEnum', 3, repeated=True)
+  availableLinkTypes = _messages.EnumField('AvailableLinkTypesValueListEntryValuesEnum', 4, repeated=True)
+  city = _messages.StringField(5)
+  continent = _messages.EnumField('ContinentValueValuesEnum', 6)
+  creationTimestamp = _messages.StringField(7)
+  description = _messages.StringField(8)
+  facilityProvider = _messages.StringField(9)
+  facilityProviderFacilityId = _messages.StringField(10)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(12, default='compute#interconnectLocation')
+  name = _messages.StringField(13)
+  peeringdbFacilityId = _messages.StringField(14)
+  regionInfos = _messages.MessageField('InterconnectLocationRegionInfo', 15, repeated=True)
+  selfLink = _messages.StringField(16)
+  status = _messages.EnumField('StatusValueValuesEnum', 17)
+  supportsPzs = _messages.BooleanField(18)
 
 
 class InterconnectLocationList(_messages.Message):
@@ -44253,6 +44775,86 @@ class InterconnectLocationRegionInfo(_messages.Message):
   expectedRttMs = _messages.IntegerField(1)
   locationPresence = _messages.EnumField('LocationPresenceValueValuesEnum', 2)
   region = _messages.StringField(3)
+
+
+class InterconnectMacsec(_messages.Message):
+  r"""Configuration information for enabling Media Access Control security
+  (MACsec) on this Cloud Interconnect connection between Google and your on-
+  premises router.
+
+  Fields:
+    failOpen: If set to true, the Interconnect connection is configured with a
+      should-secure MACsec security policy, that allows the Google router to
+      fallback to cleartext traffic if the MKA session cannot be established.
+      By default, the Interconnect connection is configured with a must-secure
+      security policy that drops all traffic if the MKA session cannot be
+      established with your router.
+    preSharedKeys: Required. A keychain placeholder describing a set of named
+      key objects along with their start times. A MACsec CKN/CAK is generated
+      for each key in the key chain. Google router automatically picks the key
+      with the most recent startTime when establishing or re-establishing a
+      MACsec secure link.
+  """
+
+  failOpen = _messages.BooleanField(1)
+  preSharedKeys = _messages.MessageField('InterconnectMacsecPreSharedKey', 2, repeated=True)
+
+
+class InterconnectMacsecConfig(_messages.Message):
+  r"""MACsec configuration information for the Interconnect connection.
+  Contains the generated Connectivity Association Key Name (CKN) and the key
+  (CAK) for this Interconnect connection.
+
+  Fields:
+    preSharedKeys: A keychain placeholder describing a set of named key
+      objects along with their start times. A MACsec CKN/CAK is generated for
+      each key in the key chain. Google router automatically picks the key
+      with the most recent startTime when establishing or re-establishing a
+      MACsec secure link.
+  """
+
+  preSharedKeys = _messages.MessageField('InterconnectMacsecConfigPreSharedKey', 1, repeated=True)
+
+
+class InterconnectMacsecConfigPreSharedKey(_messages.Message):
+  r"""Describes a pre-shared key used to setup MACsec in static connectivity
+  association key (CAK) mode.
+
+  Fields:
+    cak: An auto-generated Connectivity Association Key (CAK) for this key.
+    ckn: An auto-generated Connectivity Association Key Name (CKN) for this
+      key.
+    name: User provided name for this pre-shared key.
+    startTime: User provided timestamp on or after which this key is valid.
+  """
+
+  cak = _messages.StringField(1)
+  ckn = _messages.StringField(2)
+  name = _messages.StringField(3)
+  startTime = _messages.StringField(4)
+
+
+class InterconnectMacsecPreSharedKey(_messages.Message):
+  r"""Describes a pre-shared key used to setup MACsec in static connectivity
+  association key (CAK) mode.
+
+  Fields:
+    name: Required. A name for this pre-shared key. The name must be 1-63
+      characters long, and comply with RFC1035. Specifically, the name must be
+      1-63 characters long and match the regular expression
+      `[a-z]([-a-z0-9]*[a-z0-9])?` which means the first character must be a
+      lowercase letter, and all following characters must be a dash, lowercase
+      letter, or digit, except the last character, which cannot be a dash.
+    startTime: A RFC3339 timestamp on or after which the key is valid.
+      startTime can be in the future. If the keychain has a single key,
+      startTime can be omitted. If the keychain has multiple keys, startTime
+      is mandatory for each key. The start times of keys must be in increasing
+      order. The start times of two consecutive keys must be at least 6 hours
+      apart.
+  """
+
+  name = _messages.StringField(1)
+  startTime = _messages.StringField(2)
 
 
 class InterconnectOutageNotification(_messages.Message):
@@ -44808,6 +45410,18 @@ class InterconnectsGetDiagnosticsResponse(_messages.Message):
   """
 
   result = _messages.MessageField('InterconnectDiagnostics', 1)
+
+
+class InterconnectsGetMacsecConfigResponse(_messages.Message):
+  r"""Response for the InterconnectsGetMacsecConfigRequest.
+
+  Fields:
+    etag: end_interface: MixerGetResponseWithEtagBuilder
+    result: A InterconnectMacsecConfig attribute.
+  """
+
+  etag = _messages.StringField(1)
+  result = _messages.MessageField('InterconnectMacsecConfig', 2)
 
 
 class License(_messages.Message):
@@ -47060,12 +47674,17 @@ class NetworkAttachmentConnectedEndpoint(_messages.Message):
   Fields:
     ipAddress: The IPv4 address assigned to the producer instance network
       interface. This value will be a range in case of Serverless.
+    ipv6Address: The IPv6 address assigned to the producer instance network
+      interface. This is only assigned when the stack types of both the
+      instance network interface and the consumer subnet are IPv4_IPv6.
     projectIdOrNum: The project id or number of the interface to which the IP
       was assigned.
     secondaryIpCidrRanges: Alias IP ranges from the same subnetwork.
     status: The status of a connected endpoint to this network attachment.
     subnetwork: The subnetwork used to assign the IP to the producer instance
       network interface.
+    subnetworkCidrRange: [Output Only] The CIDR range of the subnet from which
+      the IPv4 internal IP was allocated from.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -47091,10 +47710,12 @@ class NetworkAttachmentConnectedEndpoint(_messages.Message):
     STATUS_UNSPECIFIED = 5
 
   ipAddress = _messages.StringField(1)
-  projectIdOrNum = _messages.StringField(2)
-  secondaryIpCidrRanges = _messages.StringField(3, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
-  subnetwork = _messages.StringField(5)
+  ipv6Address = _messages.StringField(2)
+  projectIdOrNum = _messages.StringField(3)
+  secondaryIpCidrRanges = _messages.StringField(4, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
+  subnetwork = _messages.StringField(6)
+  subnetworkCidrRange = _messages.StringField(7)
 
 
 class NetworkAttachmentList(_messages.Message):
@@ -67526,14 +68147,14 @@ class TargetHttpProxy(_messages.Message):
   Target HTTP Proxy resources: *
   [Global](/compute/docs/reference/rest/v1/targetHttpProxies) *
   [Regional](/compute/docs/reference/rest/v1/regionTargetHttpProxies) A target
-  HTTP proxy is a component of GCP HTTP load balancers. * targetHttpProxies
-  are used by global external Application Load Balancers, classic Application
-  Load Balancers, cross-region internal Application Load Balancers, and
-  Traffic Director. * regionTargetHttpProxies are used by regional internal
-  Application Load Balancers and regional external Application Load Balancers.
-  Forwarding rules reference a target HTTP proxy, and the target proxy then
-  references a URL map. For more information, read Using Target Proxies and
-  Forwarding rule concepts.
+  HTTP proxy is a component of Google Cloud HTTP load balancers. *
+  targetHttpProxies are used by global external Application Load Balancers,
+  classic Application Load Balancers, cross-region internal Application Load
+  Balancers, and Traffic Director. * regionTargetHttpProxies are used by
+  regional internal Application Load Balancers and regional external
+  Application Load Balancers. Forwarding rules reference a target HTTP proxy,
+  and the target proxy then references a URL map. For more information, read
+  Using Target Proxies and Forwarding rule concepts.
 
   Fields:
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text

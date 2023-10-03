@@ -18,12 +18,14 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from typing import Generator, Optional
+
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.functions.v1 import util as util_v1
+from googlecloudsdk.api_lib.functions.v2 import types
 from googlecloudsdk.api_lib.functions.v2 import util
 from googlecloudsdk.core import properties
-
 import six
 
 
@@ -34,7 +36,7 @@ class FunctionsClient(object):
     self.client = util.GetClientInstance(release_track)
     self.messages = util.GetMessagesModule(release_track)
 
-  def ListRegions(self):
+  def ListRegions(self) -> Generator[types.Location, None, None]:
     """Lists GCF gen2 regions.
 
     Returns:
@@ -52,7 +54,7 @@ class FunctionsClient(object):
         batch_size_attribute='pageSize',
     )
 
-  def ListRuntimes(self, region, query_filter=None):
+  def ListRuntimes(self, region: str, query_filter: Optional[str] = None):
     """Lists available GCF Gen 2 Runtimes in a region.
 
     Args:
@@ -75,8 +77,9 @@ class FunctionsClient(object):
     return self.client.projects_locations_runtimes.List(request)
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
-  def GetFunction(self, name, raise_if_not_found=False):
-    # type: (str, bool) -> cloudfunctions_v2_messages.Function | None
+  def GetFunction(
+      self, name: str, raise_if_not_found: bool = False
+  ) -> Optional[types.Function]:
     """Gets the function with the given name or None if not found.
 
     Args:
@@ -102,8 +105,7 @@ class FunctionsClient(object):
       return None
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
-  def AbortFunctionUpgrade(self, name):
-    # type: (str) -> cloudfunctions_v2_messages.Operation
+  def AbortFunctionUpgrade(self, name: str) -> types.Operation:
     """Aborts the function upgrade for the given function.
 
     Args:
@@ -119,8 +121,7 @@ class FunctionsClient(object):
     )
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
-  def CommitFunctionUpgrade(self, name):
-    # type: (str) -> cloudfunctions_v2_messages.Operation
+  def CommitFunctionUpgrade(self, name: str) -> types.Operation:
     """Commits the function upgrade for the given function.
 
     Args:
@@ -136,8 +137,7 @@ class FunctionsClient(object):
     )
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
-  def RedirectFunctionUpgradeTraffic(self, name):
-    # type: (str) -> cloudfunctions_v2_messages.Operation
+  def RedirectFunctionUpgradeTraffic(self, name: str) -> types.Operation:
     """Redirects function upgrade traffic for the given function.
 
     Args:
@@ -153,8 +153,7 @@ class FunctionsClient(object):
     )
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
-  def RollbackFunctionUpgradeTraffic(self, name):
-    # type: (str) -> cloudfunctions_v2_messages.Operation
+  def RollbackFunctionUpgradeTraffic(self, name: str) -> types.Operation:
     """Rolls back function upgrade traffic for the given function.
 
     Args:
@@ -170,8 +169,7 @@ class FunctionsClient(object):
     )
 
   @util_v1.CatchHTTPErrorRaiseHTTPException
-  def SetupFunctionUpgradeConfig(self, name):
-    # type: (str) -> cloudfunctions_v2_messages.Operation
+  def SetupFunctionUpgradeConfig(self, name: str) -> types.Operation:
     """Sets up the function upgrade config for the given function.
 
     Args:

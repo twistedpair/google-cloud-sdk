@@ -231,6 +231,18 @@ class BucketResource(CloudResource):
   def is_container(self):
     return True
 
+  def get_formatted_acl(self):
+    """Returns provider specific formatting for the acl fields.
+
+    Provider specific resource classses can override this method to return
+    provider specific formatting for acl fields. If not overriden, acl values
+    are displayed as it is.
+
+    Returns:
+      Dictionary with acl fields as key and corresponding formatted values.
+    """
+    return {}
+
 
 class ObjectResource(CloudResource):
   """Class representing a cloud object confirmed to exist.
@@ -392,6 +404,18 @@ class ObjectResource(CloudResource):
 
   def is_encrypted(self):
     raise NotImplementedError
+
+  def get_formatted_acl(self):
+    """Returns provider specific formatting for the acl fields.
+
+    Provider specific resource classses can override this method to return
+    provider specific formatting for acl fields. If not overriden, acl values
+    are displayed as it is.
+
+    Returns:
+      Dictionary with acl fields as key and corresponding formatted values.
+    """
+    return {}
 
 
 class PrefixResource(Resource):

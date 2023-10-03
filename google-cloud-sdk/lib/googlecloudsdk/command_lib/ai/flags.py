@@ -380,6 +380,16 @@ on. If specified, the value must be equal to or larger than 1.
             'always deployed on.'.format(resource_type))).AddToParser(parser)
 
 
+def AddReservedIpRangesArgs(parser, resource_type):
+  """Add arguments for the reserved IP ranges."""
+  base.Argument(
+      '--reserved-ip-ranges',
+      metavar='RESERVED_IP_RANGES',
+      type=arg_parsers.ArgList(),
+      help=('List of reserved IP ranges {} will be deployed to.'.format(
+          resource_type))).AddToParser(parser)
+
+
 def GetEnableAccessLoggingArg():
   return base.Argument(
       '--enable-access-logging',

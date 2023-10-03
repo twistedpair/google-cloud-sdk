@@ -13,12 +13,12 @@ from apitools.base.py import extra_types
 package = 'apphub'
 
 
-class ApphubProjectsLocationsDirectoriesCreateRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesCreateRequest object.
+class ApphubProjectsLocationsApplicationsCreateRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsCreateRequest object.
 
   Fields:
-    directory: A Directory resource to be passed as the request body.
-    directoryId: Required. The directory identifier
+    application: A Application resource to be passed as the request body.
+    applicationId: Required. The application identifier
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -33,17 +33,17 @@ class ApphubProjectsLocationsDirectoriesCreateRequest(_messages.Message):
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  directory = _messages.MessageField('Directory', 1)
-  directoryId = _messages.StringField(2)
+  application = _messages.MessageField('Application', 1)
+  applicationId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
 
 
-class ApphubProjectsLocationsDirectoriesDeleteRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesDeleteRequest object.
+class ApphubProjectsLocationsApplicationsDeleteRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsDeleteRequest object.
 
   Fields:
-    force: Optional. Directory is a parent resource and requires an optional
+    force: Optional. Application is a parent resource and requires an optional
       force field per https://linter.aip.dev/135/force-field.
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
@@ -64,8 +64,8 @@ class ApphubProjectsLocationsDirectoriesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(3)
 
 
-class ApphubProjectsLocationsDirectoriesGetRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesGetRequest object.
+class ApphubProjectsLocationsApplicationsGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsGetRequest object.
 
   Fields:
     name: Required. Name of the resource
@@ -74,8 +74,8 @@ class ApphubProjectsLocationsDirectoriesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class ApphubProjectsLocationsDirectoriesListRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesListRequest object.
+class ApphubProjectsLocationsApplicationsListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsListRequest object.
 
   Fields:
     filter: Optional. Filtering results
@@ -84,7 +84,7 @@ class ApphubProjectsLocationsDirectoriesListRequest(_messages.Message):
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListDirectoriesRequest
+    parent: Required. Parent value for ListApplicationsRequest
   """
 
   filter = _messages.StringField(1)
@@ -94,13 +94,13 @@ class ApphubProjectsLocationsDirectoriesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
-class ApphubProjectsLocationsDirectoriesPatchRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesPatchRequest object.
+class ApphubProjectsLocationsApplicationsPatchRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsPatchRequest object.
 
   Fields:
-    directory: A Directory resource to be passed as the request body.
-    name: Full resource identifier of a Directory in the format of
-      projects//locations/global/directories /
+    application: A Application resource to be passed as the request body.
+    name: Optional. The resource name of an Application.
+      projects//locations//applications/
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -113,20 +113,20 @@ class ApphubProjectsLocationsDirectoriesPatchRequest(_messages.Message):
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Optional. Field mask is used to specify the fields to be
-      overwritten in the Directory resource by the update. The fields
+      overwritten in the Application resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then all fields will be overwritten.
   """
 
-  directory = _messages.MessageField('Directory', 1)
+  application = _messages.MessageField('Application', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
 
 
-class ApphubProjectsLocationsDirectoriesServicesCreateRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesServicesCreateRequest object.
+class ApphubProjectsLocationsApplicationsServicesCreateRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsServicesCreateRequest object.
 
   Fields:
     parent: Required. Value for parent.
@@ -151,8 +151,8 @@ class ApphubProjectsLocationsDirectoriesServicesCreateRequest(_messages.Message)
   serviceId = _messages.StringField(4)
 
 
-class ApphubProjectsLocationsDirectoriesServicesDeleteRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesServicesDeleteRequest object.
+class ApphubProjectsLocationsApplicationsServicesDeleteRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsServicesDeleteRequest object.
 
   Fields:
     name: Required. Name of the resource
@@ -173,8 +173,8 @@ class ApphubProjectsLocationsDirectoriesServicesDeleteRequest(_messages.Message)
   requestId = _messages.StringField(2)
 
 
-class ApphubProjectsLocationsDirectoriesServicesGetRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesServicesGetRequest object.
+class ApphubProjectsLocationsApplicationsServicesGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsServicesGetRequest object.
 
   Fields:
     name: Required. Name of the resource
@@ -183,8 +183,8 @@ class ApphubProjectsLocationsDirectoriesServicesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class ApphubProjectsLocationsDirectoriesServicesListRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesServicesListRequest object.
+class ApphubProjectsLocationsApplicationsServicesListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsServicesListRequest object.
 
   Fields:
     filter: Optional. Filtering results
@@ -203,8 +203,8 @@ class ApphubProjectsLocationsDirectoriesServicesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
-class ApphubProjectsLocationsDirectoriesServicesPatchRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesServicesPatchRequest object.
+class ApphubProjectsLocationsApplicationsServicesPatchRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsServicesPatchRequest object.
 
   Fields:
     name: Full resource identifier of a Service. 1. Registered service format:
@@ -236,8 +236,8 @@ class ApphubProjectsLocationsDirectoriesServicesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
-class ApphubProjectsLocationsDirectoriesWorkloadsCreateRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesWorkloadsCreateRequest object.
+class ApphubProjectsLocationsApplicationsWorkloadsCreateRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsWorkloadsCreateRequest object.
 
   Fields:
     parent: Required. Value for parent.
@@ -262,8 +262,8 @@ class ApphubProjectsLocationsDirectoriesWorkloadsCreateRequest(_messages.Message
   workloadId = _messages.StringField(4)
 
 
-class ApphubProjectsLocationsDirectoriesWorkloadsDeleteRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesWorkloadsDeleteRequest object.
+class ApphubProjectsLocationsApplicationsWorkloadsDeleteRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsWorkloadsDeleteRequest object.
 
   Fields:
     name: Required. Name of the resource
@@ -284,8 +284,8 @@ class ApphubProjectsLocationsDirectoriesWorkloadsDeleteRequest(_messages.Message
   requestId = _messages.StringField(2)
 
 
-class ApphubProjectsLocationsDirectoriesWorkloadsGetRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesWorkloadsGetRequest object.
+class ApphubProjectsLocationsApplicationsWorkloadsGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsWorkloadsGetRequest object.
 
   Fields:
     name: Required. Name of the resource
@@ -294,8 +294,8 @@ class ApphubProjectsLocationsDirectoriesWorkloadsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class ApphubProjectsLocationsDirectoriesWorkloadsListRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesWorkloadsListRequest object.
+class ApphubProjectsLocationsApplicationsWorkloadsListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsWorkloadsListRequest object.
 
   Fields:
     filter: Optional. Filtering results
@@ -314,8 +314,8 @@ class ApphubProjectsLocationsDirectoriesWorkloadsListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
-class ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsDirectoriesWorkloadsPatchRequest object.
+class ApphubProjectsLocationsApplicationsWorkloadsPatchRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsApplicationsWorkloadsPatchRequest object.
 
   Fields:
     name: Full resource identifier of a Workload 1. Registered workload
@@ -409,13 +409,11 @@ class ApphubProjectsLocationsGlobalServiceProjectAttachmentsCreateRequest(_messa
       not supported (00000000-0000-0000-0000-000000000000).
     serviceProjectAttachment: A ServiceProjectAttachment resource to be passed
       as the request body.
-    serviceProjectAttachmentId: Required. The service project attachment id.
   """
 
   parent = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
   serviceProjectAttachment = _messages.MessageField('ServiceProjectAttachment', 3)
-  serviceProjectAttachmentId = _messages.StringField(4)
 
 
 class ApphubProjectsLocationsGlobalServiceProjectAttachmentsDeleteRequest(_messages.Message):
@@ -574,6 +572,46 @@ class ApphubProjectsLocationsUpdateTopologyRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class Application(_messages.Message):
+  r"""Application defines the governance boundary for App Hub Entities that
+  perform a logical end-to-end business function. We support Application level
+  IAM permission to align with governance requirements.
+
+  Fields:
+    attributes: Optional. Consumer Attributes that are configured by
+      customers.
+    createTime: Output only. Application creation time.
+    description: Optional. User-provided description of an application.
+    displayName: Optional. Human-friendly display name.
+    name: Optional. The resource name of an Application.
+      projects//locations//applications/
+    scope: Defines which data can be included into this application. Limits
+      which services and workloads can be registered.
+    serviceAttachments: Collection of services owned by application (whether
+      backed by workloads or opaque such as SaaS or CloudRun/GCF). Updated
+      whenever new services are registered/unregistered under the application.
+      Application can contain services from the same region. ex1. A us-
+      central1 application can contain services from us-central1. ex2. A
+      global application can contain services from global region.
+    updateTime: Output only. Application update time.
+    workloadAttachments: Collection of workloads owned by application Updated
+      whenever new workloads are registered/unregistered under the
+      application. Application can contain workloads from the same region.
+      ex1. A us-central1 application can contain workloads from us-central1.
+      ex2. A global application can contain workloads from global region.
+  """
+
+  attributes = _messages.MessageField('Attributes', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  name = _messages.StringField(5)
+  scope = _messages.MessageField('Scope', 6)
+  serviceAttachments = _messages.MessageField('ServiceAttachment', 7, repeated=True)
+  updateTime = _messages.StringField(8)
+  workloadAttachments = _messages.MessageField('WorkloadAttachment', 9, repeated=True)
+
+
 class Attributes(_messages.Message):
   r"""Consumer provided attributes.
 
@@ -635,25 +673,6 @@ class Criticality(_messages.Message):
   missionCritical = _messages.BooleanField(2)
 
 
-class Directory(_messages.Message):
-  r"""Directory manages ownership and access to services and workloads.
-
-  Fields:
-    createTime: Output only. Directory creation time.
-    description: Optional. User-provided description of a directory.
-    displayName: Optional. Human-friendly display name.
-    name: Full resource identifier of a Directory in the format of
-      projects//locations/global/directories /
-    updateTime: Output only. Directory update time.
-  """
-
-  createTime = _messages.StringField(1)
-  description = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  name = _messages.StringField(4)
-  updateTime = _messages.StringField(5)
-
-
 class Empty(_messages.Message):
   r"""A generic empty message that you can re-use to avoid defining duplicated
   empty messages in your APIs. A typical example is to use it as the request
@@ -687,17 +706,17 @@ class HostProject(_messages.Message):
   name = _messages.StringField(2)
 
 
-class ListDirectoriesResponse(_messages.Message):
-  r"""Message for response to listing Directories.
+class ListApplicationsResponse(_messages.Message):
+  r"""Message for response to listing Applications.
 
   Fields:
-    directories: The list of Directories
+    applications: The list of Applications
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
   """
 
-  directories = _messages.MessageField('Directory', 1, repeated=True)
+  applications = _messages.MessageField('Application', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 
@@ -988,6 +1007,29 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class Scope(_messages.Message):
+  r"""The scope of the Application
+
+  Enums:
+    TypeValueValuesEnum: Scope Type
+
+  Fields:
+    type: Scope Type
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Scope Type
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified type
+      REGIONAL: Regional application
+    """
+    TYPE_UNSPECIFIED = 0
+    REGIONAL = 1
+
+  type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
 class Service(_messages.Message):
   r"""Message represents a service.
 
@@ -995,9 +1037,9 @@ class Service(_messages.Message):
     attributes: Optional. Customer Attributes.
     createTime: Output only. Service create time.
     description: Optional. User-provided description of a service.
-    discoveredService: Output only. Resource name of the service before
-      registration. Registered resource name of a Service is different from
-      its discovered name. This field always contains discovered resource
+    discoveredService: Required. Immutable. Resource name of the service
+      before registration. Registered resource name of a Service is different
+      from its discovered name. This field always contains discovered resource
       name, enabling IaC tools like Terraform to unambiguously map the two
       representations. projects//locations//services/
     displayName: Optional. Human-friendly display name
@@ -1020,6 +1062,18 @@ class Service(_messages.Message):
   serviceProperties = _messages.MessageField('ServiceProperties', 7)
   serviceReference = _messages.MessageField('ServiceReference', 8)
   updateTime = _messages.StringField(9)
+
+
+class ServiceAttachment(_messages.Message):
+  r"""Collection of services owned by application (whether backed by workloads
+  or opaque such as SaaS or CloudRun/GCF).
+
+  Fields:
+    service: Output only. Resource name of the registered service:
+      projects//locations//applications//services/
+  """
+
+  service = _messages.StringField(1)
 
 
 class ServiceProjectAttachment(_messages.Message):
@@ -1225,9 +1279,9 @@ class Workload(_messages.Message):
     attributes: Optional. Consumer Attributes.
     createTime: Output only. Workload create time.
     description: Optional. User-provided description of a workload.
-    discoveredWorkload: Required. Resource name of the workload before
-      registration. Registered resource name of a Workload is different from
-      its discovered name. This field always contains discovered resource
+    discoveredWorkload: Required. Immutable. Resource name of the workload
+      before registration. Registered resource name of a Workload is different
+      from its discovered name. This field always contains discovered resource
       name, enabling IaC tools like Terraform to unambiguously map the two
       representations. projects//locations//workloads/
     displayName: Optional. Human-friendly display name
@@ -1250,6 +1304,18 @@ class Workload(_messages.Message):
   updateTime = _messages.StringField(7)
   workloadProperties = _messages.MessageField('WorkloadProperties', 8)
   workloadReference = _messages.MessageField('WorkloadReference', 9)
+
+
+class WorkloadAttachment(_messages.Message):
+  r"""Collection of workloads owned by application Updated whenever new
+  workloads are registered/unregistered under the application.
+
+  Fields:
+    workload: Output only. Resource name of the registered workload:
+      projects//locations//applications//workloads/
+  """
+
+  workload = _messages.StringField(1)
 
 
 class WorkloadProperties(_messages.Message):

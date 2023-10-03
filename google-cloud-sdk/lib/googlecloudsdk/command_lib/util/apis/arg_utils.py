@@ -181,6 +181,27 @@ def SetFieldInMessage(message, field_path, value):
   setattr(message, fields[-1], value)
 
 
+def ResetFieldInMessage(message, field_path):
+  """Resets the given field in the message object.
+
+  Args:
+    message: A constructed apitools message object to inject the value into.
+    field_path: str, The dotted path of attributes and sub-attributes.
+  """
+  if not message:
+    return
+
+  sub_message = message
+  fields = field_path.split('.')
+
+  for f in fields[:-1]:
+    sub_message = getattr(sub_message, f, None)
+    if not sub_message:
+      break
+  else:
+    sub_message.reset(fields[-1])
+
+
 def _GetField(message, field_name):
   try:
     return message.field_by_name(field_name)
@@ -578,6 +599,148 @@ def GetAttributeFlags(arg_data, arg_name, method, shared_resource_args):
   resource_arg = arg_data.GenerateResourceArg(
       method, name, shared_resource_args).GetInfo(name)
   return resource_arg.GetAttributeArgs()[:-1]
+
+
+def _GetCommonPrefix(longest_arr, arr):
+  """Gets the long common sub list between two lists."""
+  new_arr = []
+  for i, longest_substr_seg in enumerate(longest_arr):
+    if i >= len(arr) or arr[i] != longest_substr_seg:
+      break
+    new_arr.append(arr[i])
+
+  return new_arr
+
+
+def _GetSharedParent(api_fields):
+  """Gets shared parent of api_fields.
+
+  For a list of fields, find the common parent between them or None.
+  For example, ['a.b.c', 'a.b.d'] would return 'a.b'
+
+  Args:
+    api_fields: [list], list of api fields that we need to find parent
+
+  Returns:
+    str | None, shared common parent or None if one is not found
+  """
+  if not api_fields:
+    return None
+  longest_parent = api_fields[0].split('.')
+  for field in api_fields:
+    substr = field.split('.')
+    longest_parent = _GetCommonPrefix(longest_parent, substr)
+
+  return '.'.join(longest_parent) or None
+
+
+def _GetFirstChildFields(api_fields, shared_parent=None):
+  """Gets first child for api_fields.
+
+  For a list of fields, supply the full api_field up through the first child.
+  For example:
+      ['a.b.c', 'a.b.d.e.f'] with shared parent 'a.b'
+      returns children ['a.b.c', 'a.b.d']
+
+  Args:
+    api_fields: [str], list of api fields to get children from
+    shared_parent: str | None, the shared parent between all api fields
+
+  Returns:
+    [str], list of the children api_fields
+  """
+  # start index is the length of the shared parent plus the '.' at the end
+  start_index = len(shared_parent) + 1 if shared_parent else 0
+
+  child_fields = []
+  for api_field in api_fields:
+    if shared_parent and not api_field.startswith(shared_parent):
+      raise ValueError('Invalid parent: {} does not start with {}.'.format(
+          api_field, shared_parent))
+
+    children = api_field[start_index:].split('.')
+    first_child = children and children[0]
+
+    if shared_parent and first_child:
+      field = '.'.join((shared_parent, first_child))
+    else:
+      field = shared_parent or first_child
+
+    if field:
+      child_fields.append(field)
+
+  return child_fields
+
+
+def _IsMessageFieldSpecified(specified_fields, message_field):
+  """Get api fields of arguments when at least one is specified.
+
+  Args:
+    specified_fields: List[str], list of api fields that have been specified.
+    message_field: str, message field we are determining if specified
+
+  Returns:
+    bool, whether the message field is specified.
+  """
+  for specified_field in specified_fields:
+    if specified_field.startswith(message_field):
+      return True
+  else:
+    return False
+
+
+def _GetSpecifiedApiFieldsInGroup(arguments, namespace):
+  """Get api fields of arguments when at least arg is specified in namespace.
+
+  Args:
+    arguments: List[yaml_arg_schema.YAMLArgument], list of arguments we want
+      to see if they are specified.
+    namespace: The parsed command line argument namespace.
+
+  Returns:
+    List[str] of api_fields that are specified in the namespace.
+  """
+  specified_fields = []
+  for arg in arguments:
+    if arg.IsApiFieldSpecified(namespace):
+      specified_fields.extend(arg.api_fields)
+  return specified_fields
+
+
+def ClearUnspecifiedMutexFields(message, namespace, arg_group):
+  """Clears message fields associated with this mutex ArgGroup.
+
+  Clearing fields is necessary when using read_modify_update. This prevents
+  more than one field in a mutex group from being sent in a request message.
+  Apitools does not contain information on which fields are mutually exclusive.
+  Therefore, we use the api_fields in the argument group to determine which
+  fields should be mutually exclusive.
+
+  Args:
+    message: The api message that needs to have fields cleared
+    namespace: The parsed command line argument namespace.
+    arg_group: yaml_arg_schema.ArgGroup, arg
+  """
+  # No need to clear fields if no other fields are specified in namespace
+  if not arg_group.mutex or not arg_group.IsApiFieldSpecified(namespace):
+    return
+
+  # Find api fields that are associated with the root of the oneof.
+  # This ensures everything is cleared within the oneof and not just nested
+  # fields associated with flags.
+  arg_api_fields = arg_group.api_fields
+  arg_group_api_field = _GetSharedParent(arg_api_fields)
+  first_child_fields = _GetFirstChildFields(
+      arg_api_fields, shared_parent=arg_group_api_field)
+
+  specified_fields = _GetSpecifiedApiFieldsInGroup(
+      arg_group.arguments, namespace)
+
+  for api_field in first_child_fields:
+    # Do not unnecessarily clear specified fields. This could prematurely
+    # clear out some previously specified fields that are not conflicting
+    if not _IsMessageFieldSpecified(specified_fields, api_field):
+      ResetFieldInMessage(message, api_field)
 
 
 def _MapChoice(choices, value):

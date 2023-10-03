@@ -1505,6 +1505,11 @@ class ListObjectsRequest(proto.Message):
             lexicographic_start is also set, the objects listed have
             names between lexicographic_start (inclusive) and
             lexicographic_end (exclusive).
+        match_glob (str):
+            Optional. Filter results to objects and prefixes that match
+            this glob pattern. See `List Objects Using
+            Glob <https://cloud.google.com/storage/docs/json_api/v1/objects/list#list-objects-and-prefixes-using-glob>`__
+            for the full syntax.
     """
 
     parent: str = proto.Field(
@@ -1548,6 +1553,10 @@ class ListObjectsRequest(proto.Message):
     lexicographic_end: str = proto.Field(
         proto.STRING,
         number=11,
+    )
+    match_glob: str = proto.Field(
+        proto.STRING,
+        number=14,
     )
 
 

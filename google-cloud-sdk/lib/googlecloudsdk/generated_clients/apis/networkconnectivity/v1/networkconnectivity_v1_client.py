@@ -420,7 +420,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
           }
 
     def AcceptSpoke(self, request, global_params=None):
-      r"""Accepts a proposal to attach a Network Connectivity Center spoke to the hub.
+      r"""Accepts a proposal to attach a Network Connectivity Center spoke to a hub.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest) input message
@@ -636,7 +636,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def RejectSpoke(self, request, global_params=None):
-      r"""Rejects a Network Connectivity Center spoke from being attached to the hub. If the spoke was previously in the `ACTIVE` state, it transitions to the `INACTIVE` state and is no longer able to connect to other spokes that are attached to the hub.
+      r"""Rejects a Network Connectivity Center spoke from being attached to a hub. If the spoke was previously in the `ACTIVE` state, it transitions to the `INACTIVE` state and is no longer able to connect to other spokes that are attached to the hub.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest) input message

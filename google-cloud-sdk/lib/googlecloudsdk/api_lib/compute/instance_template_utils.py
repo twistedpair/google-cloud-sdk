@@ -327,7 +327,9 @@ def CreateDiskMessages(
             image_uri=image_uri,
             kms_args=args,
             support_kms=support_kms,
-            disk_provisioned_iops=args.boot_disk_provisioned_iops)
+            disk_provisioned_iops=args.boot_disk_provisioned_iops,
+            disk_provisioned_throughput=args.boot_disk_provisioned_throughput,
+        )
     ]
   elif persistent_create_disks and persistent_create_disks[0].boot:
     boot_disk_list = [persistent_create_disks.pop(0)]
@@ -547,15 +549,18 @@ def CreatePersistentCreateDiskMessages(
   return disks_messages
 
 
-def CreateDefaultBootAttachedDiskMessage(messages,
-                                         disk_type,
-                                         disk_device_name,
-                                         disk_auto_delete,
-                                         disk_size_gb,
-                                         image_uri,
-                                         kms_args=None,
-                                         support_kms=False,
-                                         disk_provisioned_iops=None):
+def CreateDefaultBootAttachedDiskMessage(
+    messages,
+    disk_type,
+    disk_device_name,
+    disk_auto_delete,
+    disk_size_gb,
+    image_uri,
+    kms_args=None,
+    support_kms=False,
+    disk_provisioned_iops=None,
+    disk_provisioned_throughput=None,
+):
   """Returns an AttachedDisk message for creating a new boot disk."""
   disk_key = None
 
@@ -568,6 +573,8 @@ def CreateDefaultBootAttachedDiskMessage(messages,
 
   if disk_provisioned_iops is not None:
     initialize_params.provisionedIops = disk_provisioned_iops
+  if disk_provisioned_throughput is not None:
+    initialize_params.provisionedThroughput = disk_provisioned_throughput
 
   return messages.AttachedDisk(
       autoDelete=disk_auto_delete,

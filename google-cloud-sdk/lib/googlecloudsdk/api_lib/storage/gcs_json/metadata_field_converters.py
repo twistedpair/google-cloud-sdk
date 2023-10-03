@@ -32,23 +32,6 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import iso_duration
 
 
-# TODO(b/264528234): Delete once integrated into resource formatters.
-def remove_excess_acl_fields(acl_object):
-  """Takes Apitools ACL object and removes metadata clutter."""
-  if not acl_object:
-    return acl_object
-  for acl_entry in acl_object:
-    if acl_entry.kind == 'storage#objectAccessControl':
-      acl_entry.object = None
-      acl_entry.generation = None
-    acl_entry.kind = None
-    acl_entry.bucket = None
-    acl_entry.id = None
-    acl_entry.selfLink = None
-    acl_entry.etag = None
-  return acl_object
-
-
 def get_bucket_or_object_acl_class(is_bucket=False):
   messages = apis.GetMessagesModule('storage', 'v1')
   if is_bucket:
@@ -68,10 +51,12 @@ def process_acl_file(file_path, is_bucket=False):
   return acl_messages
 
 
-def process_autoclass(enabled_boolean):
-  """Converts autoclass boolean to Apitools object."""
+def process_autoclass(enabled_boolean=None, terminal_storage_class=None):
+  """Converts Autoclass boolean to Apitools object."""
   messages = apis.GetMessagesModule('storage', 'v1')
-  return messages.Bucket.AutoclassValue(enabled=enabled_boolean)
+  return messages.Bucket.AutoclassValue(
+      enabled=enabled_boolean,
+      terminalStorageClass=terminal_storage_class)
 
 
 def process_cors(file_path):

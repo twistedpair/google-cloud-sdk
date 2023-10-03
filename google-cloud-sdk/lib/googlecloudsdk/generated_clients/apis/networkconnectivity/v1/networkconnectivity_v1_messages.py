@@ -19,8 +19,8 @@ class AcceptHubSpokeRequest(_messages.Message):
 
   Fields:
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -52,8 +52,8 @@ class AcceptSpokeRequest(_messages.Message):
 
   Fields:
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -73,8 +73,8 @@ class ActivateSpokeRequest(_messages.Message):
 
   Fields:
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -358,8 +358,8 @@ class DeactivateSpokeRequest(_messages.Message):
 
   Fields:
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -1555,7 +1555,7 @@ class NetworkconnectivityProjectsLocationsGlobalHubsAcceptSpokeRequest(_messages
   Fields:
     acceptHubSpokeRequest: A AcceptHubSpokeRequest resource to be passed as
       the request body.
-    name: Required. The name of the hub.
+    name: Required. The name of the hub into which to accept the spoke.
   """
 
   acceptHubSpokeRequest = _messages.MessageField('AcceptHubSpokeRequest', 1)
@@ -1570,8 +1570,8 @@ class NetworkconnectivityProjectsLocationsGlobalHubsCreateRequest(_messages.Mess
     hubId: Required. A unique identifier for the hub.
     parent: Required. The parent resource.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -1595,8 +1595,8 @@ class NetworkconnectivityProjectsLocationsGlobalHubsDeleteRequest(_messages.Mess
   Fields:
     name: Required. The name of the hub to delete.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -1658,8 +1658,8 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGroupsCreateRequest(_message
     groupId: Required. A unique identifier for the group
     parent: Required. The parent resource.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -1684,8 +1684,8 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGroupsDeleteRequest(_message
   Fields:
     name: Required. The name of the group to delete.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -1768,8 +1768,8 @@ class NetworkconnectivityProjectsLocationsGlobalHubsGroupsPatchRequest(_messages
       use the following form: `projects/{project_number}/locations/global/hubs
       /{hub}/groups/{group_id}`
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -1905,8 +1905,8 @@ class NetworkconnectivityProjectsLocationsGlobalHubsPatchRequest(_messages.Messa
       the following form:
       `projects/{project_number}/locations/global/hubs/{hub_id}`
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -1934,7 +1934,7 @@ class NetworkconnectivityProjectsLocationsGlobalHubsRejectSpokeRequest(_messages
   object.
 
   Fields:
-    name: Required. The name of the hub.
+    name: Required. The name of the hub from which to reject the spoke.
     rejectHubSpokeRequest: A RejectHubSpokeRequest resource to be passed as
       the request body.
   """
@@ -3055,8 +3055,8 @@ class NetworkconnectivityProjectsLocationsSpokesCreateRequest(_messages.Message)
   Fields:
     parent: Required. The parent resource.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -3095,8 +3095,8 @@ class NetworkconnectivityProjectsLocationsSpokesDeleteRequest(_messages.Message)
   Fields:
     name: Required. The name of the spoke to delete.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -3174,8 +3174,8 @@ class NetworkconnectivityProjectsLocationsSpokesPatchRequest(_messages.Message):
       use the following form:
       `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -3564,8 +3564,8 @@ class RejectHubSpokeRequest(_messages.Message):
     details: Optional. Additional information provided by the hub
       administrator.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make
@@ -3600,8 +3600,8 @@ class RejectSpokeRequest(_messages.Message):
     details: Optional. Additional information provided by the hub
       administrator in the `RejectSpoke` call.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
       guarantees that a request doesn't result in creation of duplicate
       commitments for at least 60 minutes. For example, consider a situation
       where you make an initial request and the request times out. If you make

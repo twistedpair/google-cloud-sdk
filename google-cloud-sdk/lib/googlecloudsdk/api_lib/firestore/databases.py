@@ -80,14 +80,13 @@ def CreateDatabase(
   )
 
 
-def DeleteDatabase(project, database, etag, allow_missing):
+def DeleteDatabase(project, database, etag):
   """Performs a Firestore Admin v1 Database Deletion.
 
   Args:
     project: the project of the database to delete, a string.
     database: the database id to delete, a string.
     etag: the current etag of the Database, a string.
-    allow_missing: delete will success on non-existing database if true, a bool.
 
   Returns:
     an Operation.
@@ -97,7 +96,6 @@ def DeleteDatabase(project, database, etag, allow_missing):
       messages.FirestoreProjectsDatabasesDeleteRequest(
           name='projects/{}/databases/{}'.format(project, database),
           etag=etag,
-          allowMissing=allow_missing,
       )
   )
 

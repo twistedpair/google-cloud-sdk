@@ -261,6 +261,8 @@ class ArgumentGroup(YAMLArgument):
       namespace: The parsed command line argument namespace.
       group_required: bool, if true, then parent argument group is required
     """
+    arg_utils.ClearUnspecifiedMutexFields(message, namespace, self)
+
     for arg in self.arguments:
       arg.Parse(method, message, namespace, group_required and self.required)
 

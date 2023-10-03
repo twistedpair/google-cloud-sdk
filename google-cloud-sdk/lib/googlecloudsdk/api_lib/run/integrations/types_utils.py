@@ -309,6 +309,23 @@ def GetIntegrationType(
   return type_def.integration_type
 
 
+def GetIntegrationTypeGeneric(
+    resource: runapps_v1alpha1_messages.Resource,
+) -> str:
+  """Returns the name of the integration type associated to the given resource.
+
+  Args:
+    resource: The resource object.
+
+  Returns:
+    The name of the integration type.
+  """
+  metadata = GetTypeMetadataFromResource(resource)
+  if metadata:
+    return metadata.integration_type
+  return resource.id.type
+
+
 def CheckValidIntegrationType(integration_type: str) -> None:
   """Checks if IntegrationType is supported.
 

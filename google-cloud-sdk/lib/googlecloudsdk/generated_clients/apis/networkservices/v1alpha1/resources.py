@@ -140,17 +140,6 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_LBSERVICESTEERINGEXTENSIONS = (
-      'projects.locations.lbServiceSteeringExtensions',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'lbServiceSteeringExtensions/{lbServiceSteeringExtensionsId}',
-      },
-      ['name'],
-      True
-  )
   PROJECTS_LOCATIONS_LBTRAFFICEXTENSIONS = (
       'projects.locations.lbTrafficExtensions',
       '{+name}',

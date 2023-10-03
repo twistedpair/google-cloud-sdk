@@ -20,7 +20,13 @@ from __future__ import unicode_literals
 
 import enum
 import json
+import sys
+
 from googlecloudsdk.core.resource import resource_property
+
+_StrEnum = (
+    (enum.StrEnum,) if sys.version_info[:2] >= (3, 11) else (str, enum.Enum)
+)
 
 
 class OpsAgentPolicy(object):
@@ -29,16 +35,16 @@ class OpsAgentPolicy(object):
   class AgentRule(object):
     """An Ops agent rule contains agent type, version, enable_autoupgrade."""
 
-    class Type(str, enum.Enum):
+    class Type(*_StrEnum):
       LOGGING = 'logging'
       METRICS = 'metrics'
       OPS_AGENT = 'ops-agent'
 
-    class PackageState(str, enum.Enum):
+    class PackageState(*_StrEnum):
       INSTALLED = 'installed'
       REMOVED = 'removed'
 
-    class Version(str, enum.Enum):
+    class Version(*_StrEnum):
       LATEST_OF_ALL = 'latest'
       CURRENT_MAJOR = 'current-major'
 
@@ -79,7 +85,7 @@ class OpsAgentPolicy(object):
     class OsType(object):
       """The criteria for selecting VM Instances by OS type."""
 
-      class OsShortName(str, enum.Enum):
+      class OsShortName(*_StrEnum):
         CENTOS = 'centos'
         DEBIAN = 'debian'
         WINDOWS = 'windows'

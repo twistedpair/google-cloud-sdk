@@ -2048,7 +2048,7 @@ def AddResourceManagerTagsFlag(parser, help_text):
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help=help_text,
-      hidden=True,
+      hidden=False,
   )
 
 
@@ -2123,7 +2123,7 @@ def AddAutoprovisioningResourceManagerTagsFlag(parser, help_text):
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help=help_text,
-      hidden=True,
+      hidden=False,
   )
 
 

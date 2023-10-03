@@ -1992,7 +1992,7 @@ class IpConfiguration(_messages.Message):
 
 
 class IpMapping(_messages.Message):
-  r"""Database instance IP Mapping.
+  r"""Database instance IP mapping
 
   Enums:
     TypeValueValuesEnum: The type of this IP address. A `PRIMARY` address is a
@@ -2500,8 +2500,8 @@ class PscConfig(_messages.Message):
   r"""PSC settings for a Cloud SQL instance.
 
   Fields:
-    allowedConsumerProjects: The list of consumer projects that are allow-
-      listed for PSC connections to this instance. This instance can be
+    allowedConsumerProjects: Optional. The list of consumer projects that are
+      allow-listed for PSC connections to this instance. This instance can be
       connected to with PSC from any network in these projects. Each consumer
       project in this list may be represented by a project number (numeric) or
       by a project id (alphanumeric).

@@ -40,6 +40,9 @@ S3_REQUEST_ERROR_FIELDS = {
     'gzip_settings': 'Gzip Transforms',
 }
 S3_RESOURCE_ERROR_FIELDS = {
+    'autoclass_terminal_storage_class': (
+        'Setting Autoclass Terminal Storage Class'
+    ),
     'default_object_acl_file': 'Setting Default Object ACL',
     'enable_autoclass': 'Enabling Autoclass',
     'predefined_default_object_acl': 'Setting Predefined Default ACL',
@@ -171,6 +174,9 @@ class _GcsBucketConfig(_BucketConfig):
   See superclass for remaining attributes.
 
   Subclass Attributes:
+    autoclass_terminal_storage_class (str|None): The storage class that
+      objects in the bucket eventually transition to if they are not '
+      read for a certain length of time.
     default_encryption_key (str|None): A key used to encrypt objects
       added to the bucket.
     default_event_based_hold (bool|None): Determines if event-based holds will
@@ -205,6 +211,7 @@ class _GcsBucketConfig(_BucketConfig):
       acl_file_path=None,
       acl_grants_to_add=None,
       acl_grants_to_remove=None,
+      autoclass_terminal_storage_class=None,
       cors_file_path=None,
       default_encryption_key=None,
       default_event_based_hold=None,
@@ -238,15 +245,18 @@ class _GcsBucketConfig(_BucketConfig):
                          labels_to_remove, lifecycle_file_path, location,
                          log_bucket, log_object_prefix, requester_pays,
                          versioning, web_error_page, web_main_page_suffix)
-    self.public_access_prevention = public_access_prevention
+    self.autoclass_terminal_storage_class = autoclass_terminal_storage_class
     self.default_encryption_key = default_encryption_key
     self.default_event_based_hold = default_event_based_hold
     self.default_object_acl_file_path = default_object_acl_file_path
     self.default_object_acl_grants_to_add = default_object_acl_grants_to_add
-    self.default_object_acl_grants_to_remove = default_object_acl_grants_to_remove
+    self.default_object_acl_grants_to_remove = (
+        default_object_acl_grants_to_remove
+    )
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
     self.placement = placement
+    self.public_access_prevention = public_access_prevention
     self.recovery_point_objective = recovery_point_objective
     self.requester_pays = requester_pays
     self.retention_period = retention_period
@@ -259,7 +269,8 @@ class _GcsBucketConfig(_BucketConfig):
       return NotImplemented
     return (
         super(_GcsBucketConfig, self).__eq__(other)
-        and self.public_access_prevention == other.public_access_prevention
+        and self.autoclass_terminal_storage_class
+        == other.autoclass_terminal_storage_class
         and self.default_encryption_key == other.default_encryption_key
         and self.default_event_based_hold == other.default_event_based_hold
         and self.default_object_acl_grants_to_add
@@ -269,6 +280,7 @@ class _GcsBucketConfig(_BucketConfig):
         and self.default_storage_class == other.default_storage_class
         and self.enable_autoclass == other.enable_autoclass
         and self.placement == other.placement
+        and self.public_access_prevention == other.public_access_prevention
         and self.recovery_point_objective == other.recovery_point_objective
         and self.requester_pays == other.requester_pays
         and self.retention_period == other.retention_period
@@ -594,6 +606,8 @@ def _get_request_config_resource_args(url,
       if url.scheme == storage_url.ProviderPrefix.GCS:
         new_resource_args = _GcsBucketConfig()
         if user_resource_args:
+          new_resource_args.autoclass_terminal_storage_class = (
+              user_resource_args.autoclass_terminal_storage_class)
           new_resource_args.default_encryption_key = (
               user_resource_args.default_encryption_key)
           new_resource_args.default_event_based_hold = (

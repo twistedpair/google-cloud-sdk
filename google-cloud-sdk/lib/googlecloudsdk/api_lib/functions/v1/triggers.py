@@ -25,15 +25,14 @@ import enum
 UNADVERTISED_PROVIDER_LABEL = 'unadvertised'
 
 
+class Resource(object):
+  def __init__(self, name, collection_id):
+    self.name = name
+    self.collection_id = collection_id
+
+
 @enum.unique
 class Resources(enum.Enum):
-
-  class Resource(object):
-
-    def __init__(self, name, collection_id):
-      self.name = name
-      self.collection_id = collection_id
-
   TOPIC = Resource('topic', 'pubsub.projects.topics')
   BUCKET = Resource('bucket', 'cloudfunctions.projects.buckets')
   FIREBASE_DB = Resource('firebase database', 'google.firebase.database.ref')

@@ -1678,6 +1678,33 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetDICOMStoreMetrics(self, request, global_params=None):
+      r"""Gets metrics associated with the DICOM store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsDicomStoresGetDICOMStoreMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DicomStoreMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetDICOMStoreMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetDICOMStoreMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}:getDICOMStoreMetrics',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.dicomStores.getDICOMStoreMetrics',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:getDICOMStoreMetrics',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresGetDICOMStoreMetricsRequest',
+        response_type_name='DicomStoreMetrics',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 
@@ -2326,6 +2353,33 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         request_field='',
         request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest',
         response_type_name='Hl7V2Store',
+        supports_download=False,
+    )
+
+    def GetHL7v2StoreMetrics(self, request, global_params=None):
+      r"""Gets metrics asssociated with the HL7v2 store.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Hl7V2StoreMetrics) The response message.
+      """
+      config = self.GetMethodConfig('GetHL7v2StoreMetrics')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetHL7v2StoreMetrics.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/hl7V2Stores/{hl7V2StoresId}:getHL7v2StoreMetrics',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.hl7V2Stores.getHL7v2StoreMetrics',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha2/{+name}:getHL7v2StoreMetrics',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest',
+        response_type_name='Hl7V2StoreMetrics',
         supports_download=False,
     )
 

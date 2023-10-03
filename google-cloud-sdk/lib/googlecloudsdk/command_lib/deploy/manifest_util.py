@@ -453,8 +453,10 @@ def SetCustomTarget(target, custom_target, project, region):
     region: str, ID of the location.
   """
   custom_target_type = custom_target.get('customTargetType')
-  # If field contains '/' then we assume it's the name instead of the ID.
+  # If field contains '/' then we assume it's the name instead of the ID. No
+  # adjustments required.
   if '/' in custom_target_type:
+    target.customTarget = custom_target
     return
 
   custom_target_type_resource_ref = resources.REGISTRY.Parse(

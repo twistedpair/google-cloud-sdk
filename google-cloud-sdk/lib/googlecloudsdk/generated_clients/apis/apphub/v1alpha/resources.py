@@ -41,35 +41,35 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_DIRECTORIES = (
-      'projects.locations.directories',
+  PROJECTS_LOCATIONS_APPLICATIONS = (
+      'projects.locations.applications',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/directories/'
-              '{directoriesId}',
+              'projects/{projectsId}/locations/{locationsId}/applications/'
+              '{applicationsId}',
       },
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_DIRECTORIES_SERVICES = (
-      'projects.locations.directories.services',
+  PROJECTS_LOCATIONS_APPLICATIONS_SERVICES = (
+      'projects.locations.applications.services',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/directories/'
-              '{directoriesId}/services/{servicesId}',
+              'projects/{projectsId}/locations/{locationsId}/applications/'
+              '{applicationsId}/services/{servicesId}',
       },
       ['name'],
       True
   )
-  PROJECTS_LOCATIONS_DIRECTORIES_WORKLOADS = (
-      'projects.locations.directories.workloads',
+  PROJECTS_LOCATIONS_APPLICATIONS_WORKLOADS = (
+      'projects.locations.applications.workloads',
       '{+name}',
       {
           '':
-              'projects/{projectsId}/locations/{locationsId}/directories/'
-              '{directoriesId}/workloads/{workloadsId}',
+              'projects/{projectsId}/locations/{locationsId}/applications/'
+              '{applicationsId}/workloads/{workloadsId}',
       },
       ['name'],
       True

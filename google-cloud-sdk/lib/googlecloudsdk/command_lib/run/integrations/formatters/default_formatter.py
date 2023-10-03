@@ -21,15 +21,15 @@ from __future__ import unicode_literals
 
 import io
 
-from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from googlecloudsdk.command_lib.run.integrations.formatters import base
 from googlecloudsdk.core.resource import custom_printer_base as cp
 from googlecloudsdk.core.resource import yaml_printer as yp
 
 
-class DefaultFormatter(base_formatter.BaseFormatter):
+class DefaultFormatter(base.BaseFormatter):
   """Format logics when no integration specific formatter is matched."""
 
-  def TransformConfig(self, record):
+  def TransformConfig(self, record: base.Record) -> cp._Marker:
     """Print the config of the integration.
 
     Args:
@@ -38,9 +38,9 @@ class DefaultFormatter(base_formatter.BaseFormatter):
     Returns:
       The printed output.
     """
-    return self._PrintAsYaml(record.config)
+    return cp.Lines([self._PrintAsYaml({'config': record.resource.config})])
 
-  def TransformComponentStatus(self, record):
+  def TransformComponentStatus(self, record: base.Record) -> cp._Marker:
     """Print the component status of the integration.
 
     Args:
@@ -52,13 +52,25 @@ class DefaultFormatter(base_formatter.BaseFormatter):
     component_status = record.status.get('resourceComponentStatuses', {})
     components = []
     for r in component_status:
-      components.append((self.PrintType(r.get('type')), '{} {}'.format(
-          self.StatusSymbolAndColor(r.get('state')), r.get('name'))))
+      comp_type = self.PrintType(r.get('type'))
+      comp_name = r.get('name')
+      console_link = r.get('consoleLink', 'n/a')
+      state_name = r.get('state', 'n/a').upper()
+      state_symbol = self.StatusSymbolAndColor(state_name)
+      components.append(
+          cp.Lines([
+              '{} ({})'.format(comp_type, comp_name),
+              cp.Labeled([
+                  ('Console link', console_link),
+                  ('Resource Status', state_symbol + ' ' + state_name),
+              ]),
+          ])
+      )
     return cp.Labeled(components)
 
-  def _PrintAsYaml(self, record):
+  def _PrintAsYaml(self, content: any) -> str:
     buffer = io.StringIO()
     printer = yp.YamlPrinter(buffer)
-    printer.Print(record)
+    printer.Print(content)
     return buffer.getvalue()
 

@@ -103,6 +103,8 @@ def CreateNodeSpec(ref, args, request):
     node_spec.node.shieldedInstanceConfig = tpu_messages.ShieldedInstanceConfig(
         enableSecureBoot=True
     )
+  if args.autocheckpoint_enabled:
+    node_spec.node.autocheckpointEnabled = True
 
   node_spec.node.networkConfig = tpu_messages.NetworkConfig()
   node_spec.node.serviceAccount = tpu_messages.ServiceAccount()

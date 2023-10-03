@@ -33,17 +33,35 @@ from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import s3_resource_reference
 from googlecloudsdk.core import log
 
-_COMMON_S3_METADATA_FIELDS = frozenset([
-    'ACL',
-    'AccessControlPolicy',
+_USER_METADATA_FIELDS = frozenset([
     'CacheControl',
     'ContentDisposition',
     'ContentEncoding',
     'ContentLanguage',
     'ContentType',
     'Metadata',
+])
+
+_NON_USER_METADATA_FIELDS = frozenset([
+    'ACL',
+    'AccessControlPolicy',
     'StorageClass',
 ])
+
+_COMMON_S3_METADATA_FIELDS = frozenset().union(
+    *[_USER_METADATA_FIELDS, _NON_USER_METADATA_FIELDS]
+)
+
+_S3_TO_GENERIC_FIELD_NAMES_ = {
+    'CacheControl': 'cache_control',
+    'ContentDisposition': 'content_disposition',
+    'ContentEncoding': 'content_encoding',
+    'ContentLanguage': 'content_language',
+    'ContentType': 'content_type',
+    'ContentMD5': 'md5_hash',
+    'StorageClass': 'storage_class',
+}
+
 _GCS_TO_S3_PREDEFINED_ACL_TRANSLATION_DICT = {
     'authenticatedRead': 'authenticated-read',
     'bucketOwnerFullControl': 'bucket-owner-full-control',
@@ -117,16 +135,34 @@ def get_acl_policy_with_added_and_removed_grants(acl_dict, request_config):
   return acl_dict_copy
 
 
-def copy_object_metadata(source_metadata_dict, destination_metadata_dict):
-  """Copies common S3 fields from one metadata dict to another."""
+def _copy_metadata(source_metadata_dict, destination_metadata_dict, fields):
+  """Copy fields(provided in arguments) from one metadata dict to another."""
   if not destination_metadata_dict:
     destination_metadata_dict = {}
   if not source_metadata_dict:
     return destination_metadata_dict
-  for field in _COMMON_S3_METADATA_FIELDS:
+  for field in fields:
     if field in source_metadata_dict:
       destination_metadata_dict[field] = source_metadata_dict[field]
   return destination_metadata_dict
+
+
+def copy_object_metadata(source_metadata_dict, destination_metadata_dict):
+  """Copies common S3 fields from one metadata dict to another."""
+  return _copy_metadata(
+      source_metadata_dict,
+      destination_metadata_dict,
+      _COMMON_S3_METADATA_FIELDS,
+  )
+
+
+def copy_user_metadata_fields(source_metadata_dict, destination_metadata_dict):
+  """Copies user_metadata fields from one metadata dict to another."""
+  return _copy_metadata(
+      source_metadata_dict,
+      destination_metadata_dict,
+      _USER_METADATA_FIELDS,
+  )
 
 
 def translate_predefined_acl_string_to_s3(predefined_acl_string):
@@ -386,6 +422,32 @@ def _process_value_or_clear_flag(metadata, key, value):
     metadata[key] = value
 
 
+def is_user_metadata_field_present_in_request_config(
+    request_config,
+    attributes_resource=None,
+    known_posix=None,
+):
+  """Checks the presence of user_metadata fields in request_config."""
+  resource_args = request_config.resource_args
+  if resource_args is None:
+    return False
+
+  if request_config.predefined_acl_string is not None:
+    return True
+
+  for value in _S3_TO_GENERIC_FIELD_NAMES_.values():
+    if getattr(resource_args, value, None):
+      return True
+
+  return metadata_util.has_updated_custom_fields(
+      resource_args,
+      request_config.preserve_posix,
+      request_config.preserve_symlinks,
+      attributes_resource=attributes_resource,
+      known_posix=known_posix,
+  )
+
+
 def update_object_metadata_dict_from_request_config(
     object_metadata,
     request_config,
@@ -403,8 +465,6 @@ def update_object_metadata_dict_from_request_config(
       of FileObjectResource.
     posix_to_set (PosixAttributes|None): Set as custom metadata on target.
 
-  Returns:
-    dict: Metadata for API request.
   """
   if request_config.predefined_acl_string is not None:
     object_metadata['ACL'] = translate_predefined_acl_string_to_s3(
@@ -424,17 +484,13 @@ def update_object_metadata_dict_from_request_config(
     object_metadata['Metadata'] = custom_fields_dict
 
   if resource_args:
-    _process_value_or_clear_flag(object_metadata, 'CacheControl',
-                                 resource_args.cache_control)
-    _process_value_or_clear_flag(object_metadata, 'ContentDisposition',
-                                 resource_args.content_disposition)
-    _process_value_or_clear_flag(object_metadata, 'ContentEncoding',
-                                 resource_args.content_encoding)
-    _process_value_or_clear_flag(object_metadata, 'ContentLanguage',
-                                 resource_args.content_language)
-    _process_value_or_clear_flag(object_metadata, 'ContentType',
-                                 resource_args.content_type)
-    _process_value_or_clear_flag(object_metadata, 'ContentMD5',
-                                 resource_args.md5_hash)
-    _process_value_or_clear_flag(object_metadata, 'StorageClass',
-                                 resource_args.storage_class)
+    for field, value in _S3_TO_GENERIC_FIELD_NAMES_.items():
+      _process_value_or_clear_flag(
+          object_metadata,
+          field,
+          getattr(
+              resource_args,
+              value,
+              None,
+          ),
+      )

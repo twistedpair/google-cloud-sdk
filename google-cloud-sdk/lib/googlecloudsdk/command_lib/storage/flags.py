@@ -56,6 +56,22 @@ def add_additional_headers_flag(parser):
       ' `header1=value1,header2=value2`.')
 
 
+def add_autoclass_flags(parser):
+  """Adds flags required for modifying Autoclass feature."""
+  autoclass_group = parser.add_group(category='AUTOCLASS')
+  autoclass_group.add_argument(
+      '--enable-autoclass',
+      action=arg_parsers.StoreTrueFalseAction,
+      help='The Autoclass feature automatically selects the best storage class'
+      ' for objects based on access patterns.')
+  autoclass_group.add_argument(
+      '--autoclass-terminal-storage-class',
+      hidden=True,
+      help='The storage class that objects in the bucket eventually'
+      ' transition to if they are not read for a certain length of time.'
+      ' Only valid if Autoclass is enabled.')
+
+
 def add_fetch_encrypted_object_hashes_flag(parser, is_list=True):
   """Adds flag to commands that need object hashes."""
   if is_list:
@@ -490,8 +506,8 @@ def add_soft_delete_flags(parser):
       action='store_true',
       hidden=True,
       help=(
-          'Displays soft-deleted objects only. Excludes displaying live,'
-          ' versioned, and other objects.'
+          'Displays soft-deleted objects only. Excludes live and noncurrent'
+          ' objects.'
       ),
   )
 

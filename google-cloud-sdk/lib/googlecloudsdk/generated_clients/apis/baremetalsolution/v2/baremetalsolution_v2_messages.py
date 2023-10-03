@@ -498,6 +498,16 @@ class BaremetalsolutionProjectsLocationsOperationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class BaremetalsolutionProjectsLocationsOsImagesGetRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsOsImagesGetRequest object.
+
+  Fields:
+    name: Required. Name of the OS image.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class BaremetalsolutionProjectsLocationsOsImagesListRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsOsImagesListRequest object.
 
@@ -507,7 +517,7 @@ class BaremetalsolutionProjectsLocationsOsImagesListRequest(_messages.Message):
       Notice that page_size field is not supported and won't be respected in
       the API request for now, will be updated when pagination is supported.
     pageToken: A token identifying a page of results from the server.
-    parent: Required. Parent value for ListProvisioningQuotasRequest.
+    parent: Required. Parent value for ListOSImagesRequest.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

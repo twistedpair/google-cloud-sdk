@@ -107,20 +107,18 @@ def _UploadSourceToGCS(
   """
   gcs_client = storage_api.StorageClient()
 
-  # The object name to use for our GCS storage. This is supposed to be
-  # identifiable as infra-manager generated, which will assist with cleanup.
-  gcs_object_name = 'im_source_staging'
-
   if stage_bucket is None:
     used_default_bucket_name = True
-    gcs_source_bucket_name = staging_bucket_util.GetDefaultStagingBucket()
-    gcs_source_staging_dir = 'gs://{0}/{1}/{2}/{3}'.format(
-        gcs_source_bucket_name, gcs_object_name, location, deployment_short_name
+    gcs_source_staging_dir = staging_bucket_util.DefaultGCSStagingDir(
+        deployment_short_name, location
     )
   else:
     used_default_bucket_name = False
     gcs_source_staging_dir = '{0}{1}/{2}/{3}'.format(
-        stage_bucket, gcs_object_name, location, deployment_short_name
+        stage_bucket,
+        staging_bucket_util.STAGING_DIR,
+        location,
+        deployment_short_name,
     )
 
   # By calling REGISTRY.Parse on "gs://my-bucket/foo", the result's "bucket"
@@ -183,6 +181,29 @@ def UpdateDeploymentDeleteRequestWithForce(unused_ref, unused_args, request):
 
   request.force = True
   return request
+
+
+def DeploymentDeleteCleanupStagedObjects(response, unused_args):
+  """DeploymentDeleteCleanupStagedObjects deletes staging gcs objects created as part of deployment apply command."""
+
+  # do not delete staged objects if delete results in error
+  if response.error is not None:
+    return
+
+  if response.metadata is not None:
+    md = encoding.MessageToPyValue(response.metadata)
+    deployment_full_name = md['target']
+    deployment_id = deployment_full_name.split('/')[5]
+    location = deployment_full_name.split('/')[3]
+    staging_gcs_directory = staging_bucket_util.DefaultGCSStagingDir(
+        deployment_id, location
+    )
+    gcs_client = storage_api.StorageClient()
+    staging_bucket_util.DeleteStagingGCSFolder(
+        gcs_client, staging_gcs_directory
+    )
+
+  return response
 
 
 def _CreateTFBlueprint(

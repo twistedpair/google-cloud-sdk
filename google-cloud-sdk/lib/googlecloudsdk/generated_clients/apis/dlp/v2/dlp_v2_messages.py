@@ -4309,7 +4309,8 @@ class GooglePrivacyDlpV2Error(_messages.Message):
 
   Fields:
     details: Detailed error codes and messages.
-    timestamps: The times the error occurred.
+    timestamps: The times the error occurred. List includes the oldest
+      timestamp, and the last 9 ones.
   """
 
   details = _messages.MessageField('GoogleRpcStatus', 1)

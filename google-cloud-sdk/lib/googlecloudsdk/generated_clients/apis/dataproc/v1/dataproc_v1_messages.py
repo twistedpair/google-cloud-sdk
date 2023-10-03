@@ -4786,11 +4786,15 @@ class ManagedGroupConfig(_messages.Message):
       central1/instanceGroupManagers/my-igm.
     instanceTemplateName: Output only. The name of the Instance Template used
       for the Managed Instance Group.
+    instanceTemplateUri: Optional. Output only. Partial URI of the Instance
+      Template. Example:
+      projects/project_id/regions/region/instanceTemplates/template-id
   """
 
   instanceGroupManagerName = _messages.StringField(1)
   instanceGroupManagerUri = _messages.StringField(2)
   instanceTemplateName = _messages.StringField(3)
+  instanceTemplateUri = _messages.StringField(4)
 
 
 class MasterDriverRunner(_messages.Message):

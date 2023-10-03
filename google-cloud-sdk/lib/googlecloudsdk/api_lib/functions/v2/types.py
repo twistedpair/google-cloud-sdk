@@ -30,6 +30,15 @@ EventTrigger = Union[
     v2alpha_messages.EventTrigger,
     v2beta_messages.EventTrigger,
 ]
+Function = Union[
+    v2_messages.Function, v2alpha_messages.Function, v2beta_messages.Function
+]
+Location = Union[
+    v2_messages.Location, v2alpha_messages.Location, v2beta_messages.Location
+]
+Operation = Union[
+    v2_messages.Operation, v2alpha_messages.Operation, v2beta_messages.Operation
+]
 ServiceConfig = Union[
     v2_messages.ServiceConfig,
     v2alpha_messages.ServiceConfig,
@@ -37,9 +46,6 @@ ServiceConfig = Union[
 ]
 Source = Union[
     v2_messages.Source, v2alpha_messages.Source, v2beta_messages.Source
-]
-Function = Union[
-    v2_messages.Function, v2alpha_messages.Function, v2beta_messages.Function
 ]
 
 

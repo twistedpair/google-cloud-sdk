@@ -262,3 +262,12 @@ enable_secure_boot:
   help_text: |
     Specifies that the TPU instances are created with secure boot enabled. This implicitly makes
     them Shielded VM instances.
+
+autocheckpoint_enabled:
+  arg_name: autocheckpoint-enabled
+  api_field: queuedResource.tpu.nodeSpec.node.autocheckpointEnabled
+  type: bool
+  default: false
+  required: false
+  help_text: |
+    Specifies that the TPU node(s) are created with the Autocheckpoint feature enabled.

@@ -4070,6 +4070,25 @@ class BackendService(_messages.Message):
   Enums:
     CompressionModeValueValuesEnum: Compress text responses using Brotli or
       gzip compression, based on the client's Accept-Encoding header.
+    IpAddressSelectionPolicyValueValuesEnum: Specifies preference of traffic
+      to the backend (from the proxy and from the client for proxyless gRPC).
+      The possible values are: - IPV4_ONLY: Only send IPv4 traffic to the
+      backends of the Backend Service (Instance Group, Managed Instance Group,
+      Network Endpoint Group) regardless of traffic from the client to the
+      proxy. Only IPv4 health-checks are used to check the health of the
+      backends. This is the default setting. - PREFER_IPV6: Prioritize the
+      connection to the endpoints IPv6 address over its IPv4 address (provided
+      there is a healthy IPv6 address). - IPV6_ONLY: Only send IPv6 traffic to
+      the backends of the Backend Service (Instance Group, Managed Instance
+      Group, Network Endpoint Group) regardless of traffic from the client to
+      the proxy. Only IPv6 health-checks are used to check the health of the
+      backends. This field is applicable to either: - Advanced Global External
+      HTTPS Load Balancing (load balancing scheme EXTERNAL_MANAGED), -
+      Regional External HTTPS Load Balancing, - Internal TCP Proxy (load
+      balancing scheme INTERNAL_MANAGED), - Regional Internal HTTPS Load
+      Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic Director
+      with Envoy proxies and proxyless gRPC (load balancing scheme
+      INTERNAL_SELF_MANAGED).
     LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type. A
       backend service created for one type of load balancer cannot be used
       with another. For more information, refer to Choosing a load balancer.
@@ -4093,12 +4112,12 @@ class BackendService(_messages.Message):
       either: - A regional backend service with the service_protocol set to
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
       INTERNAL_MANAGED. - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED. If sessionAffinity
-      is not NONE, and this field is not set to MAGLEV or RING_HASH, session
-      affinity settings will not take effect. Only ROUND_ROBIN and RING_HASH
-      are supported when the backend service is referenced by a URL map that
-      is bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or
+      EXTERNAL_MANAGED. If sessionAffinity is not NONE, and this field is not
+      set to MAGLEV or RING_HASH, session affinity settings will not take
+      effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
     ProtocolValueValuesEnum: The protocol this BackendService uses to
       communicate with backends. Possible values are HTTP, HTTPS, HTTP2, TCP,
       SSL, UDP or GRPC. depending on the chosen load balancer or Traffic
@@ -4187,6 +4206,25 @@ class BackendService(_messages.Message):
       Balancing.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
+    ipAddressSelectionPolicy: Specifies preference of traffic to the backend
+      (from the proxy and from the client for proxyless gRPC). The possible
+      values are: - IPV4_ONLY: Only send IPv4 traffic to the backends of the
+      Backend Service (Instance Group, Managed Instance Group, Network
+      Endpoint Group) regardless of traffic from the client to the proxy. Only
+      IPv4 health-checks are used to check the health of the backends. This is
+      the default setting. - PREFER_IPV6: Prioritize the connection to the
+      endpoints IPv6 address over its IPv4 address (provided there is a
+      healthy IPv6 address). - IPV6_ONLY: Only send IPv6 traffic to the
+      backends of the Backend Service (Instance Group, Managed Instance Group,
+      Network Endpoint Group) regardless of traffic from the client to the
+      proxy. Only IPv6 health-checks are used to check the health of the
+      backends. This field is applicable to either: - Advanced Global External
+      HTTPS Load Balancing (load balancing scheme EXTERNAL_MANAGED), -
+      Regional External HTTPS Load Balancing, - Internal TCP Proxy (load
+      balancing scheme INTERNAL_MANAGED), - Regional Internal HTTPS Load
+      Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic Director
+      with Envoy proxies and proxyless gRPC (load balancing scheme
+      INTERNAL_SELF_MANAGED).
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
     loadBalancingScheme: Specifies the load balancer type. A backend service
@@ -4221,12 +4259,12 @@ class BackendService(_messages.Message):
       either: - A regional backend service with the service_protocol set to
       HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to
       INTERNAL_MANAGED. - A global backend service with the
-      load_balancing_scheme set to INTERNAL_SELF_MANAGED. If sessionAffinity
-      is not NONE, and this field is not set to MAGLEV or RING_HASH, session
-      affinity settings will not take effect. Only ROUND_ROBIN and RING_HASH
-      are supported when the backend service is referenced by a URL map that
-      is bound to target gRPC proxy that has validateForProxyless field set to
-      true.
+      load_balancing_scheme set to INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or
+      EXTERNAL_MANAGED. If sessionAffinity is not NONE, and this field is not
+      set to MAGLEV or RING_HASH, session affinity settings will not take
+      effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
+      service is referenced by a URL map that is bound to target gRPC proxy
+      that has validateForProxyless field set to true.
     logConfig: This field denotes the logging options for the load balancer
       traffic served by this backend service. If logging is enabled, logs will
       be exported to Stackdriver.
@@ -4339,6 +4377,46 @@ class BackendService(_messages.Message):
     AUTOMATIC = 0
     DISABLED = 1
 
+  class IpAddressSelectionPolicyValueValuesEnum(_messages.Enum):
+    r"""Specifies preference of traffic to the backend (from the proxy and
+    from the client for proxyless gRPC). The possible values are: - IPV4_ONLY:
+    Only send IPv4 traffic to the backends of the Backend Service (Instance
+    Group, Managed Instance Group, Network Endpoint Group) regardless of
+    traffic from the client to the proxy. Only IPv4 health-checks are used to
+    check the health of the backends. This is the default setting. -
+    PREFER_IPV6: Prioritize the connection to the endpoints IPv6 address over
+    its IPv4 address (provided there is a healthy IPv6 address). - IPV6_ONLY:
+    Only send IPv6 traffic to the backends of the Backend Service (Instance
+    Group, Managed Instance Group, Network Endpoint Group) regardless of
+    traffic from the client to the proxy. Only IPv6 health-checks are used to
+    check the health of the backends. This field is applicable to either: -
+    Advanced Global External HTTPS Load Balancing (load balancing scheme
+    EXTERNAL_MANAGED), - Regional External HTTPS Load Balancing, - Internal
+    TCP Proxy (load balancing scheme INTERNAL_MANAGED), - Regional Internal
+    HTTPS Load Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic
+    Director with Envoy proxies and proxyless gRPC (load balancing scheme
+    INTERNAL_SELF_MANAGED).
+
+    Values:
+      IPV4_ONLY: Only send IPv4 traffic to the backends of the Backend Service
+        (Instance Group, Managed Instance Group, Network Endpoint Group)
+        regardless of traffic from the client to the proxy. Only IPv4 health-
+        checks are used to check the health of the backends. This is the
+        default setting.
+      IPV6_ONLY: Only send IPv6 traffic to the backends of the Backend Service
+        (Instance Group, Managed Instance Group, Network Endpoint Group)
+        regardless of traffic from the client to the proxy. Only IPv6 health-
+        checks are used to check the health of the backends.
+      IP_ADDRESS_SELECTION_POLICY_UNSPECIFIED: Unspecified IP address
+        selection policy.
+      PREFER_IPV6: Prioritize the connection to the endpoints IPv6 address
+        over its IPv4 address (provided there is a healthy IPv6 address).
+    """
+    IPV4_ONLY = 0
+    IPV6_ONLY = 1
+    IP_ADDRESS_SELECTION_POLICY_UNSPECIFIED = 2
+    PREFER_IPV6 = 3
+
   class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
     r"""Specifies the load balancer type. A backend service created for one
     type of load balancer cannot be used with another. For more information,
@@ -4385,11 +4463,12 @@ class BackendService(_messages.Message):
     either: - A regional backend service with the service_protocol set to
     HTTP, HTTPS, or HTTP2, and load_balancing_scheme set to INTERNAL_MANAGED.
     - A global backend service with the load_balancing_scheme set to
-    INTERNAL_SELF_MANAGED. If sessionAffinity is not NONE, and this field is
-    not set to MAGLEV or RING_HASH, session affinity settings will not take
-    effect. Only ROUND_ROBIN and RING_HASH are supported when the backend
-    service is referenced by a URL map that is bound to target gRPC proxy that
-    has validateForProxyless field set to true.
+    INTERNAL_SELF_MANAGED, INTERNAL_MANAGED, or EXTERNAL_MANAGED. If
+    sessionAffinity is not NONE, and this field is not set to MAGLEV or
+    RING_HASH, session affinity settings will not take effect. Only
+    ROUND_ROBIN and RING_HASH are supported when the backend service is
+    referenced by a URL map that is bound to target gRPC proxy that has
+    validateForProxyless field set to true.
 
     Values:
       INVALID_LB_POLICY: <no description>
@@ -4547,29 +4626,30 @@ class BackendService(_messages.Message):
   healthChecks = _messages.StringField(17, repeated=True)
   iap = _messages.MessageField('BackendServiceIAP', 18)
   id = _messages.IntegerField(19, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(20, default='compute#backendService')
-  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 21)
-  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 22, repeated=True)
-  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 23)
-  logConfig = _messages.MessageField('BackendServiceLogConfig', 24)
-  maxStreamDuration = _messages.MessageField('Duration', 25)
-  metadatas = _messages.MessageField('MetadatasValue', 26)
-  name = _messages.StringField(27)
-  network = _messages.StringField(28)
-  outlierDetection = _messages.MessageField('OutlierDetection', 29)
-  port = _messages.IntegerField(30, variant=_messages.Variant.INT32)
-  portName = _messages.StringField(31)
-  protocol = _messages.EnumField('ProtocolValueValuesEnum', 32)
-  region = _messages.StringField(33)
-  securityPolicy = _messages.StringField(34)
-  securitySettings = _messages.MessageField('SecuritySettings', 35)
-  selfLink = _messages.StringField(36)
-  serviceBindings = _messages.StringField(37, repeated=True)
-  serviceLbPolicy = _messages.StringField(38)
-  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 39)
-  subsetting = _messages.MessageField('Subsetting', 40)
-  timeoutSec = _messages.IntegerField(41, variant=_messages.Variant.INT32)
-  usedBy = _messages.MessageField('BackendServiceUsedBy', 42, repeated=True)
+  ipAddressSelectionPolicy = _messages.EnumField('IpAddressSelectionPolicyValueValuesEnum', 20)
+  kind = _messages.StringField(21, default='compute#backendService')
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 22)
+  localityLbPolicies = _messages.MessageField('BackendServiceLocalityLoadBalancingPolicyConfig', 23, repeated=True)
+  localityLbPolicy = _messages.EnumField('LocalityLbPolicyValueValuesEnum', 24)
+  logConfig = _messages.MessageField('BackendServiceLogConfig', 25)
+  maxStreamDuration = _messages.MessageField('Duration', 26)
+  metadatas = _messages.MessageField('MetadatasValue', 27)
+  name = _messages.StringField(28)
+  network = _messages.StringField(29)
+  outlierDetection = _messages.MessageField('OutlierDetection', 30)
+  port = _messages.IntegerField(31, variant=_messages.Variant.INT32)
+  portName = _messages.StringField(32)
+  protocol = _messages.EnumField('ProtocolValueValuesEnum', 33)
+  region = _messages.StringField(34)
+  securityPolicy = _messages.StringField(35)
+  securitySettings = _messages.MessageField('SecuritySettings', 36)
+  selfLink = _messages.StringField(37)
+  serviceBindings = _messages.StringField(38, repeated=True)
+  serviceLbPolicy = _messages.StringField(39)
+  sessionAffinity = _messages.EnumField('SessionAffinityValueValuesEnum', 40)
+  subsetting = _messages.MessageField('Subsetting', 41)
+  timeoutSec = _messages.IntegerField(42, variant=_messages.Variant.INT32)
+  usedBy = _messages.MessageField('BackendServiceUsedBy', 43, repeated=True)
 
 
 class BackendServiceAggregatedList(_messages.Message):
@@ -39272,6 +39352,7 @@ class GuestOsFeature(_messages.Message):
       SECURE_BOOT: <no description>
       SEV_CAPABLE: <no description>
       SEV_LIVE_MIGRATABLE: <no description>
+      SEV_LIVE_MIGRATABLE_V2: <no description>
       SEV_SNP_CAPABLE: <no description>
       UEFI_COMPATIBLE: <no description>
       VIRTIO_SCSI_MULTIQUEUE: <no description>
@@ -39283,10 +39364,11 @@ class GuestOsFeature(_messages.Message):
     SECURE_BOOT = 3
     SEV_CAPABLE = 4
     SEV_LIVE_MIGRATABLE = 5
-    SEV_SNP_CAPABLE = 6
-    UEFI_COMPATIBLE = 7
-    VIRTIO_SCSI_MULTIQUEUE = 8
-    WINDOWS = 9
+    SEV_LIVE_MIGRATABLE_V2 = 6
+    SEV_SNP_CAPABLE = 7
+    UEFI_COMPATIBLE = 8
+    VIRTIO_SCSI_MULTIQUEUE = 9
+    WINDOWS = 10
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -39668,20 +39750,23 @@ class HTTPSHealthCheck(_messages.Message):
 
 
 class HealthCheck(_messages.Message):
-  r"""Represents a Health Check resource. Google Compute Engine has two Health
-  Check resources: * [Global](/compute/docs/reference/rest/beta/healthChecks)
-  * [Regional](/compute/docs/reference/rest/beta/regionHealthChecks) Internal
-  HTTP(S) load balancers must use regional health checks
-  (`compute.v1.regionHealthChecks`). Traffic Director must use global health
-  checks (`compute.v1.healthChecks`). Internal TCP/UDP load balancers can use
-  either regional or global health checks (`compute.v1.regionHealthChecks` or
-  `compute.v1.healthChecks`). External HTTP(S), TCP proxy, and SSL proxy load
-  balancers as well as managed instance group auto-healing must use global
-  health checks (`compute.v1.healthChecks`). Backend service-based network
-  load balancers must use regional health checks
-  (`compute.v1.regionHealthChecks`). Target pool-based network load balancers
-  must use legacy HTTP health checks (`compute.v1.httpHealthChecks`). For more
-  information, see Health checks overview.
+  r"""Represents a health check resource. Google Compute Engine has two health
+  check resources: *
+  [Regional](/compute/docs/reference/rest/beta/regionHealthChecks) *
+  [Global](/compute/docs/reference/rest/beta/healthChecks) These health check
+  resources can be used for load balancing and for autohealing VMs in a
+  managed instance group (MIG). **Load balancing** The following load balancer
+  can use either regional or global health check: * Internal TCP/UDP load
+  balancer The following load balancers require regional health check: *
+  Internal HTTP(S) load balancer * Backend service-based network load balancer
+  Traffic Director and the following load balancers require global health
+  check: * External HTTP(S) load balancer * TCP proxy load balancer * SSL
+  proxy load balancer The following load balancer require [legacy HTTP health
+  checks](/compute/docs/reference/rest/v1/httpHealthChecks): * Target pool-
+  based network load balancer **Autohealing in MIGs** The health checks that
+  you use for autohealing VMs in a MIG can be either regional or global. For
+  more information, see Set up an application health check and autohealing.
+  For more information, see Health checks overview.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -48340,9 +48425,10 @@ class Interconnect(_messages.Message):
       routes are exchanged over it. By default, the status is set to true.
     availableFeatures: [Output only] List of features available for this
       Interconnect connection, which can take one of the following values: -
-      MACSEC If present then the interconnect was created on MACsec capable
-      hardware ports. If not present then the interconnect is provisioned on
-      non-MACsec capable ports and MACsec enablement will fail.
+      MACSEC If present then the Interconnect connection is provisioned on
+      MACsec capable hardware ports. If not present then the Interconnect
+      connection is provisioned on non-MACsec capable ports and MACsec isn't
+      supported and enabling MACsec fails.
     circuitInfos: [Output Only] A list of CircuitInfo objects, that describe
       the individual circuits in this LAG.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
@@ -48387,8 +48473,9 @@ class Interconnect(_messages.Message):
       the speed of the entire bundle.
     location: URL of the InterconnectLocation object that represents where
       this connection is to be provisioned.
-    macsec: Configuration to enable Media Access Control security (MACsec) on
-      the Interconnect connection between Google and your on-premises router.
+    macsec: Configuration that enables Media Access Control security (MACsec)
+      on the Cloud Interconnect connection between Google and your on-premises
+      router.
     macsecEnabled: Enable or disable MACsec on this Interconnect connection.
       MACsec enablement fails if the MACsec object is not specified.
     name: Name of the resource. Provided by the client when the resource is
@@ -48423,11 +48510,11 @@ class Interconnect(_messages.Message):
       interconnect is connected to.
     requestedFeatures: Optional. List of features requested for this
       Interconnect connection, which can take one of the following values: -
-      MACSEC If specified then the interconnect will be created on MACsec
-      capable hardware ports. If not specified, the default value is false,
-      which will allocate non-MACsec capable ports first if available. This
-      parameter can only be provided during interconnect INSERT and cannot be
-      changed using interconnect PATCH.
+      MACSEC If specified then the connection is created on MACsec capable
+      hardware ports. If not specified, the default value is false, which
+      allocates non-MACsec capable ports first if available. This parameter
+      can be provided only with Interconnect INSERT. It isn't valid for
+      Interconnect PATCH.
     requestedLinkCount: Target number of physical links in the link bundle, as
       requested by the customer.
     satisfiesPzs: [Output Only] Reserved for future use.
@@ -50445,8 +50532,8 @@ class InterconnectLocationRegionInfo(_messages.Message):
 
 class InterconnectMacsec(_messages.Message):
   r"""Configuration information for enabling Media Access Control security
-  (MACsec) on this Interconnect connection between Google and your on-premises
-  router.
+  (MACsec) on this Cloud Interconnect connection between Google and your on-
+  premises router.
 
   Fields:
     failOpen: If set to true, the Interconnect connection is configured with a
@@ -50456,10 +50543,10 @@ class InterconnectMacsec(_messages.Message):
       security policy that drops all traffic if the MKA session cannot be
       established with your router.
     preSharedKeys: Required. A keychain placeholder describing a set of named
-      key objects along with their start times. A MACsec CKN/CAK will be
-      generated for each key in the key chain. Google router will
-      automatically pick the key with the most recent startTime when
-      establishing or re-establishing a MACsec secure link.
+      key objects along with their start times. A MACsec CKN/CAK is generated
+      for each key in the key chain. Google router automatically picks the key
+      with the most recent startTime when establishing or re-establishing a
+      MACsec secure link.
   """
 
   failOpen = _messages.BooleanField(1)
@@ -53357,12 +53444,17 @@ class NetworkAttachmentConnectedEndpoint(_messages.Message):
   Fields:
     ipAddress: The IPv4 address assigned to the producer instance network
       interface. This value will be a range in case of Serverless.
+    ipv6Address: The IPv6 address assigned to the producer instance network
+      interface. This is only assigned when the stack types of both the
+      instance network interface and the consumer subnet are IPv4_IPv6.
     projectIdOrNum: The project id or number of the interface to which the IP
       was assigned.
     secondaryIpCidrRanges: Alias IP ranges from the same subnetwork.
     status: The status of a connected endpoint to this network attachment.
     subnetwork: The subnetwork used to assign the IP to the producer instance
       network interface.
+    subnetworkCidrRange: [Output Only] The CIDR range of the subnet from which
+      the IPv4 internal IP was allocated from.
   """
 
   class StatusValueValuesEnum(_messages.Enum):
@@ -53388,10 +53480,12 @@ class NetworkAttachmentConnectedEndpoint(_messages.Message):
     STATUS_UNSPECIFIED = 5
 
   ipAddress = _messages.StringField(1)
-  projectIdOrNum = _messages.StringField(2)
-  secondaryIpCidrRanges = _messages.StringField(3, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 4)
-  subnetwork = _messages.StringField(5)
+  ipv6Address = _messages.StringField(2)
+  projectIdOrNum = _messages.StringField(3)
+  secondaryIpCidrRanges = _messages.StringField(4, repeated=True)
+  status = _messages.EnumField('StatusValueValuesEnum', 5)
+  subnetwork = _messages.StringField(6)
+  subnetworkCidrRange = _messages.StringField(7)
 
 
 class NetworkAttachmentList(_messages.Message):
@@ -74806,7 +74900,7 @@ class TargetHttpProxy(_messages.Message):
   Target HTTP Proxy resources: *
   [Global](/compute/docs/reference/rest/beta/targetHttpProxies) *
   [Regional](/compute/docs/reference/rest/beta/regionTargetHttpProxies) A
-  target HTTP proxy is a component of GCP HTTP load balancers. *
+  target HTTP proxy is a component of Google Cloud HTTP load balancers. *
   targetHttpProxies are used by global external Application Load Balancers,
   classic Application Load Balancers, cross-region internal Application Load
   Balancers, and Traffic Director. * regionTargetHttpProxies are used by

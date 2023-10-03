@@ -19,50 +19,13 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from googlecloudsdk.command_lib.run.integrations.formatters import base_formatter
+from apitools.base.py import encoding
+from googlecloudsdk.command_lib.run.integrations.formatters import default_formatter as default
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.resource import custom_printer_base as cp
 
 
-class FirebaseHostingFormatter(base_formatter.BaseFormatter):
+class FirebaseHostingFormatter(default.DefaultFormatter):
   """Formatter for firebase-hosting integration."""
-
-  def TransformConfig(self, record):
-    """Print the config of the integration.
-
-    Args:
-      record: integration_printer.Record class that just holds data.
-
-    Returns:
-      The printed output.
-    """
-    res_config = record.config.get('firebase-hosting', {})
-    fbh_config = res_config.get('config', {})
-    site_id = ('Subdomain (Site ID)', fbh_config.get('site-id', ''))
-
-    labeled = [site_id]
-    return cp.Labeled(labeled)
-
-  def TransformComponentStatus(self, record):
-    """Print the component status of the integration.
-
-    Args:
-      record: dict, the integration.
-
-    Returns:
-      The printed output.
-    """
-    resources = record.status.get('resourceComponentStatuses', {})
-    site = self._SiteFromResources(resources)
-
-    return cp.Labeled([
-        cp.Lines([
-            ('Hosting Site ({})'.format(site.get('name', ''))),
-            cp.Labeled([
-                ('Resource Status', site.get('state', 'n/a')),
-            ]),
-        ])
-    ])
 
   def CallToAction(self, record):
     """Call to action to add domains and ingress.
@@ -74,9 +37,8 @@ class FirebaseHostingFormatter(base_formatter.BaseFormatter):
       A formatted string of the call to action message,
       or None if no call to action is required.
     """
-    res_config = record.config.get('firebase-hosting', {})
-    fbh_config = res_config.get('config', {})
-    site_id = fbh_config.get('site-id', '')
+    fbh_config = encoding.MessageToDict(record.resource.config)
+    site_id = fbh_config.get('siteId')
 
     project = properties.VALUES.core.project.Get(required=True)
     return (
@@ -89,10 +51,3 @@ class FirebaseHostingFormatter(base_formatter.BaseFormatter):
             project, site_id
         )
     )
-
-  def _SiteFromResources(self, resources):
-    for res in resources:
-      if res.get('type', None) == 'google_firebase_hosting_site':
-        return res
-
-    return {}
