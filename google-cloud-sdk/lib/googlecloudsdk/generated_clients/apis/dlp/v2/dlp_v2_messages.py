@@ -2459,7 +2459,7 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
     excludedFields: References to fields excluded from scanning. This allows
       you to skip inspection of entire columns which you know have no
       findings. When inspecting a table, we recommend that you inspect all
-      columns. Otherwise, findings might be impacted because hints from
+      columns. Otherwise, findings might be affected because hints from
       excluded columns will not be used.
     identifyingFields: Table fields that may uniquely identify a row within
       the table. When `actions.saveFindings.outputConfig.table` is specified,
@@ -2468,7 +2468,7 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
       Nested fields such as `person.birthdate.year` are allowed.
     includedFields: Limit scanning only to these fields. When inspecting a
       table, we recommend that you inspect all columns. Otherwise, findings
-      might be impacted because hints from excluded columns will not be used.
+      might be affected because hints from excluded columns will not be used.
     rowsLimit: Max number of rows to scan. If the table has more rows than
       this value, the rest of the rows are omitted. If not set, or if set to
       0, all rows will be scanned. Only one of rows_limit and
@@ -4220,6 +4220,7 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
     inspectDetails: Results from inspecting a data source.
     jobTriggerName: If created by a job trigger, the resource name of the
       trigger that instantiated the job.
+    lastModified: Time when the job was last modified by the system.
     name: The server-assigned name.
     riskDetails: Results from analyzing risk of a data source.
     startTime: Time when the job started.
@@ -4270,11 +4271,12 @@ class GooglePrivacyDlpV2DlpJob(_messages.Message):
   errors = _messages.MessageField('GooglePrivacyDlpV2Error', 4, repeated=True)
   inspectDetails = _messages.MessageField('GooglePrivacyDlpV2InspectDataSourceDetails', 5)
   jobTriggerName = _messages.StringField(6)
-  name = _messages.StringField(7)
-  riskDetails = _messages.MessageField('GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails', 8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
+  lastModified = _messages.StringField(7)
+  name = _messages.StringField(8)
+  riskDetails = _messages.MessageField('GooglePrivacyDlpV2AnalyzeDataSourceRiskDetails', 9)
+  startTime = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
 
 
 class GooglePrivacyDlpV2DocumentLocation(_messages.Message):
@@ -4310,7 +4312,7 @@ class GooglePrivacyDlpV2Error(_messages.Message):
   Fields:
     details: Detailed error codes and messages.
     timestamps: The times the error occurred. List includes the oldest
-      timestamp, and the last 9 ones.
+      timestamp and the last 9 timestamps.
   """
 
   details = _messages.MessageField('GoogleRpcStatus', 1)
@@ -5058,8 +5060,8 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       JAPAN: The infoType is typically used in Japan.
       KOREA: The infoType is typically used in Korea.
       MEXICO: The infoType is typically used in Mexico.
-      NEW_ZEALAND: The infoType is typically used in New Zealand.
       THE_NETHERLANDS: The infoType is typically used in the Netherlands.
+      NEW_ZEALAND: The infoType is typically used in New Zealand.
       NORWAY: The infoType is typically used in Norway.
       PARAGUAY: The infoType is typically used in Paraguay.
       PERU: The infoType is typically used in Peru.
@@ -5069,6 +5071,7 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
       SOUTH_AFRICA: The infoType is typically used in South Africa.
       SPAIN: The infoType is typically used in Spain.
       SWEDEN: The infoType is typically used in Sweden.
+      SWITZERLAND: The infoType is typically used in Switzerland.
       TAIWAN: The infoType is typically used in Taiwan.
       THAILAND: The infoType is typically used in Thailand.
       TURKEY: The infoType is typically used in Turkey.
@@ -5102,8 +5105,8 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     JAPAN = 21
     KOREA = 22
     MEXICO = 23
-    NEW_ZEALAND = 24
-    THE_NETHERLANDS = 25
+    THE_NETHERLANDS = 24
+    NEW_ZEALAND = 25
     NORWAY = 26
     PARAGUAY = 27
     PERU = 28
@@ -5113,14 +5116,15 @@ class GooglePrivacyDlpV2InfoTypeCategory(_messages.Message):
     SOUTH_AFRICA = 32
     SPAIN = 33
     SWEDEN = 34
-    TAIWAN = 35
-    THAILAND = 36
-    TURKEY = 37
-    UNITED_KINGDOM = 38
-    UNITED_STATES = 39
-    URUGUAY = 40
-    VENEZUELA = 41
-    INTERNAL = 42
+    SWITZERLAND = 35
+    TAIWAN = 36
+    THAILAND = 37
+    TURKEY = 38
+    UNITED_KINGDOM = 39
+    UNITED_STATES = 40
+    URUGUAY = 41
+    VENEZUELA = 42
+    INTERNAL = 43
 
   class TypeCategoryValueValuesEnum(_messages.Enum):
     r"""The class of identifiers where this infoType belongs
@@ -5193,25 +5197,26 @@ class GooglePrivacyDlpV2InfoTypeDescription(_messages.Message):
 
 
 class GooglePrivacyDlpV2InfoTypeLikelihood(_messages.Message):
-  r"""Configuration to control custom minimum likelihoods per infotype. Used
-  when certain infotypes need to return with higher or lower precision than
-  the baseline, i.e. when wanting PERSON_NAME to return all possible names
-  without lowering the precision of other infotypes.
+  r"""Configuration for setting a minimum likelihood per infotype. Used to
+  customize the minimum likelihood level for specific infotypes in the
+  request. For example, use this if you want to lower the precision for
+  PERSON_NAME without lowering the precision for the other infotypes in the
+  request.
 
   Enums:
-    MinLikelihoodValueValuesEnum: Only returns findings equal or above this
+    MinLikelihoodValueValuesEnum: Only returns findings equal to or above this
       threshold. This field is required or else the configuration fails.
 
   Fields:
     infoType: Type of information the likelihood threshold applies to. Only
       one likelihood per info_type should be provided. If InfoTypeLikelihood
       does not have an info_type, the configuration fails.
-    minLikelihood: Only returns findings equal or above this threshold. This
-      field is required or else the configuration fails.
+    minLikelihood: Only returns findings equal to or above this threshold.
+      This field is required or else the configuration fails.
   """
 
   class MinLikelihoodValueValuesEnum(_messages.Enum):
-    r"""Only returns findings equal or above this threshold. This field is
+    r"""Only returns findings equal to or above this threshold. This field is
     required or else the configuration fails.
 
     Values:
@@ -5309,9 +5314,11 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
 
   Enums:
     ContentOptionsValueListEntryValuesEnum:
-    MinLikelihoodValueValuesEnum: Only returns findings equal or above this
-      threshold. The default is POSSIBLE. See
-      https://cloud.google.com/dlp/docs/likelihood to learn more.
+    MinLikelihoodValueValuesEnum: Only returns findings equal to or above this
+      threshold. The default is POSSIBLE. In general, the highest likelihood
+      setting yields the fewest findings in results and the lowest chance of a
+      false positive. For more information, see [Match
+      likelihood](https://cloud.google.com/dlp/docs/likelihood).
 
   Fields:
     contentOptions: Deprecated and unused.
@@ -5342,13 +5349,15 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       gradually, not abruptly. Therefore, the actual number of findings that
       Cloud DLP returns can be multiple times higher than these maximum
       values.
-    minLikelihood: Only returns findings equal or above this threshold. The
-      default is POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to
-      learn more.
-    minLikelihoodPerInfoType: Per infotype likelihoods. For each infotype, a
-      user can specify a minimum likelihood, and only return that infotype if
-      it is above that threshold. If an infotype is not included, it uses the
-      InspectConfig min_likelihood.
+    minLikelihood: Only returns findings equal to or above this threshold. The
+      default is POSSIBLE. In general, the highest likelihood setting yields
+      the fewest findings in results and the lowest chance of a false
+      positive. For more information, see [Match
+      likelihood](https://cloud.google.com/dlp/docs/likelihood).
+    minLikelihoodPerInfoType: Minimum likelihood per infotype. For each
+      infotype, a user can specify a minimum likelihood. The system only
+      returns a finding if its likelihood is above this threshold. If this
+      field is not set, the system uses the InspectConfig min_likelihood.
     ruleSet: Set of rules to apply to the findings for this InspectConfig.
       Exclusion rules, contained in the set are executed in the end, other
       rules are executed in the order they are specified for each info type.
@@ -5367,8 +5376,11 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
     CONTENT_IMAGE = 2
 
   class MinLikelihoodValueValuesEnum(_messages.Enum):
-    r"""Only returns findings equal or above this threshold. The default is
-    POSSIBLE. See https://cloud.google.com/dlp/docs/likelihood to learn more.
+    r"""Only returns findings equal to or above this threshold. The default is
+    POSSIBLE. In general, the highest likelihood setting yields the fewest
+    findings in results and the lowest chance of a false positive. For more
+    information, see [Match
+    likelihood](https://cloud.google.com/dlp/docs/likelihood).
 
     Values:
       LIKELIHOOD_UNSPECIFIED: Default value; same as POSSIBLE.

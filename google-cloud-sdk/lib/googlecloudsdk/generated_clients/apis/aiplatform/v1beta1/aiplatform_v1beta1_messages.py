@@ -1880,12 +1880,10 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesCreateRequest(_messages.Me
       final component of the Feature's resource name. This value may be up to
       128 characters, and valid characters are `[a-z0-9_]`. The first
       character cannot be a number. The value must be unique within an
-      EntityType .
+      EntityType/FeatureGroup.
     googleCloudAiplatformV1beta1Feature: A GoogleCloudAiplatformV1beta1Feature
       resource to be passed as the request body.
-    parent: Required. The resource name of the EntityType to create a Feature.
-      Format: `projects/{project}/locations/{location}/featurestores/{features
-      tore}/entityTypes/{entity_type}`
+    parent: A string attribute.
   """
 
   featureId = _messages.StringField(1)
@@ -1899,7 +1897,8 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesDeleteRequest(_messages.Me
   Fields:
     name: Required. The name of the Features to be deleted. Format: `projects/
       {project}/locations/{location}/featurestores/{featurestore}/entityTypes/
-      {entity_type}/features/{feature}`
+      {entity_type}/features/{feature}` `projects/{project}/locations/{locatio
+      n}/featureGroups/{feature_group}/features/{feature}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1909,9 +1908,10 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesGetRequest(_messages.Messa
   r"""A AiplatformProjectsLocationsFeatureGroupsFeaturesGetRequest object.
 
   Fields:
-    name: Required. The name of the Feature resource. Format: `projects/{proje
-      ct}/locations/{location}/featurestores/{featurestore}/entityTypes/{entit
-      y_type}`
+    name: Required. The name of the Feature resource. Format for entity_type
+      as parent: `projects/{project}/locations/{location}/featurestores/{featu
+      restore}/entityTypes/{entity_type}` Format for feature_group as parent:
+      `projects/{project}/locations/{location}/featureGroups/{feature_group}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1951,8 +1951,10 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesListRequest(_messages.Mess
       FeaturestoreService.ListFeatures must match the call that provided the
       page token.
     parent: Required. The resource name of the Location to list Features.
-      Format: `projects/{project}/locations/{location}/featurestores/{features
-      tore}/entityTypes/{entity_type}`
+      Format for entity_type as parent: `projects/{project}/locations/{locatio
+      n}/featurestores/{featurestore}/entityTypes/{entity_type}` Format for
+      feature_group as parent:
+      `projects/{project}/locations/{location}/featureGroups/{feature_group}`
     readMask: Mask specifying which fields to read.
   """
 
@@ -2758,12 +2760,10 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesCreateRequest(_
       final component of the Feature's resource name. This value may be up to
       128 characters, and valid characters are `[a-z0-9_]`. The first
       character cannot be a number. The value must be unique within an
-      EntityType .
+      EntityType/FeatureGroup.
     googleCloudAiplatformV1beta1Feature: A GoogleCloudAiplatformV1beta1Feature
       resource to be passed as the request body.
-    parent: Required. The resource name of the EntityType to create a Feature.
-      Format: `projects/{project}/locations/{location}/featurestores/{features
-      tore}/entityTypes/{entity_type}`
+    parent: A string attribute.
   """
 
   featureId = _messages.StringField(1)
@@ -2779,7 +2779,8 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesDeleteRequest(_
   Fields:
     name: Required. The name of the Features to be deleted. Format: `projects/
       {project}/locations/{location}/featurestores/{featurestore}/entityTypes/
-      {entity_type}/features/{feature}`
+      {entity_type}/features/{feature}` `projects/{project}/locations/{locatio
+      n}/featureGroups/{feature_group}/features/{feature}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2790,9 +2791,10 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesGetRequest(_mes
   object.
 
   Fields:
-    name: Required. The name of the Feature resource. Format: `projects/{proje
-      ct}/locations/{location}/featurestores/{featurestore}/entityTypes/{entit
-      y_type}`
+    name: Required. The name of the Feature resource. Format for entity_type
+      as parent: `projects/{project}/locations/{location}/featurestores/{featu
+      restore}/entityTypes/{entity_type}` Format for feature_group as parent:
+      `projects/{project}/locations/{location}/featureGroups/{feature_group}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -2833,8 +2835,10 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesListRequest(_me
       FeaturestoreService.ListFeatures must match the call that provided the
       page token.
     parent: Required. The resource name of the Location to list Features.
-      Format: `projects/{project}/locations/{location}/featurestores/{features
-      tore}/entityTypes/{entity_type}`
+      Format for entity_type as parent: `projects/{project}/locations/{locatio
+      n}/featurestores/{featurestore}/entityTypes/{entity_type}` Format for
+      feature_group as parent:
+      `projects/{project}/locations/{location}/featureGroups/{feature_group}`
     readMask: Mask specifying which fields to read.
   """
 
@@ -8229,6 +8233,55 @@ class AiplatformPublishersModelsGetRequest(_messages.Message):
   view = _messages.EnumField('ViewValueValuesEnum', 3)
 
 
+class AiplatformPublishersModelsListRequest(_messages.Message):
+  r"""A AiplatformPublishersModelsListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. PublisherModel view specifying which fields
+      to read.
+
+  Fields:
+    filter: Optional. The standard list filter.
+    languageCode: Optional. The IETF BCP-47 language code representing the
+      language in which the publisher models' text information should be
+      written in (see go/bcp47). If not set, by default English (en).
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending.
+    pageSize: Optional. The standard list page size.
+    pageToken: Optional. The standard list page token. Typically obtained via
+      ListPublisherModelsResponse.next_page_token of the previous
+      ModelGardenService.ListPublisherModels call.
+    parent: Required. The name of the Publisher from which to list the
+      PublisherModels. Format: `publishers/{publisher}`
+    view: Optional. PublisherModel view specifying which fields to read.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. PublisherModel view specifying which fields to read.
+
+    Values:
+      PUBLISHER_MODEL_VIEW_UNSPECIFIED: The default / unset value. The API
+        will default to the BASIC view.
+      PUBLISHER_MODEL_VIEW_BASIC: Include basic metadata about the publisher
+        model, but not the full contents.
+      PUBLISHER_MODEL_VIEW_FULL: Include everything.
+      PUBLISHER_MODEL_VERSION_VIEW_BASIC: Include: VersionId,
+        ModelVersionExternalName, and SupportedActions.
+    """
+    PUBLISHER_MODEL_VIEW_UNSPECIFIED = 0
+    PUBLISHER_MODEL_VIEW_BASIC = 1
+    PUBLISHER_MODEL_VIEW_FULL = 2
+    PUBLISHER_MODEL_VERSION_VIEW_BASIC = 3
+
+  filter = _messages.StringField(1)
+  languageCode = _messages.StringField(2)
+  orderBy = _messages.StringField(3)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
+  parent = _messages.StringField(6, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 7)
+
+
 class GoogleApiHttpBody(_messages.Message):
   r"""Message that represents an arbitrary HTTP body. It should only be used
   for payload formats that can't be represented as JSON, such as raw binary or
@@ -9930,7 +9983,8 @@ class GoogleCloudAiplatformV1beta1CreateFeatureOperationMetadata(_messages.Messa
 
 
 class GoogleCloudAiplatformV1beta1CreateFeatureRequest(_messages.Message):
-  r"""Request message for FeaturestoreService.CreateFeature.
+  r"""Request message for FeaturestoreService.CreateFeature. Request message
+  for FeatureRegistryService.CreateFeature.
 
   Fields:
     feature: Required. The Feature to create.
@@ -9938,10 +9992,8 @@ class GoogleCloudAiplatformV1beta1CreateFeatureRequest(_messages.Message):
       final component of the Feature's resource name. This value may be up to
       128 characters, and valid characters are `[a-z0-9_]`. The first
       character cannot be a number. The value must be unique within an
-      EntityType .
-    parent: Required. The resource name of the EntityType to create a Feature.
-      Format: `projects/{project}/locations/{location}/featurestores/{features
-      tore}/entityTypes/{entity_type}`
+      EntityType/FeatureGroup.
+    parent: A string attribute.
   """
 
   feature = _messages.MessageField('GoogleCloudAiplatformV1beta1Feature', 1)
@@ -12784,7 +12836,6 @@ class GoogleCloudAiplatformV1beta1ExportDataConfig(_messages.Message):
     annotationsFilter: An expression for filtering what part of the Dataset is
       to be exported. Only Annotations that match this filter will be
       exported. The filter syntax is the same as in ListAnnotations.
-    filterSplit: Split based on the provided filters for each set.
     fractionSplit: Split based on fractions defining the size of each set.
     gcsDestination: The Google Cloud Storage location where the output is to
       be written to. In the given directory a new directory will be created
@@ -12797,9 +12848,8 @@ class GoogleCloudAiplatformV1beta1ExportDataConfig(_messages.Message):
   """
 
   annotationsFilter = _messages.StringField(1)
-  filterSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportFilterSplit', 2)
-  fractionSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportFractionSplit', 3)
-  gcsDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 4)
+  fractionSplit = _messages.MessageField('GoogleCloudAiplatformV1beta1ExportFractionSplit', 2)
+  gcsDestination = _messages.MessageField('GoogleCloudAiplatformV1beta1GcsDestination', 3)
 
 
 class GoogleCloudAiplatformV1beta1ExportDataOperationMetadata(_messages.Message):
@@ -12937,39 +12987,6 @@ class GoogleCloudAiplatformV1beta1ExportFeatureValuesRequestSnapshotExport(_mess
 
 class GoogleCloudAiplatformV1beta1ExportFeatureValuesResponse(_messages.Message):
   r"""Response message for FeaturestoreService.ExportFeatureValues."""
-
-
-class GoogleCloudAiplatformV1beta1ExportFilterSplit(_messages.Message):
-  r"""Assigns input data to training, validation, and test sets based on the
-  given filters, data pieces not matched by any filter are ignored. Currently
-  only supported for Datasets containing DataItems. If any of the filters in
-  this message are to match nothing, then they can be set as '-' (the minus
-  sign). Supported only for unstructured Datasets.
-
-  Fields:
-    testFilter: Required. A filter on DataItems of the Dataset. DataItems that
-      match this filter are used to test the Model. A filter with same syntax
-      as the one used in DatasetService.ListDataItems may be used. If a single
-      DataItem is matched by more than one of the FilterSplit filters, then it
-      is assigned to the first set that applies to it in the training,
-      validation, test order.
-    trainingFilter: Required. A filter on DataItems of the Dataset. DataItems
-      that match this filter are used to train the Model. A filter with same
-      syntax as the one used in DatasetService.ListDataItems may be used. If a
-      single DataItem is matched by more than one of the FilterSplit filters,
-      then it is assigned to the first set that applies to it in the training,
-      validation, test order.
-    validationFilter: Required. A filter on DataItems of the Dataset.
-      DataItems that match this filter are used to validate the Model. A
-      filter with same syntax as the one used in DatasetService.ListDataItems
-      may be used. If a single DataItem is matched by more than one of the
-      FilterSplit filters, then it is assigned to the first set that applies
-      to it in the training, validation, test order.
-  """
-
-  testFilter = _messages.StringField(1)
-  trainingFilter = _messages.StringField(2)
-  validationFilter = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1ExportFractionSplit(_messages.Message):
@@ -13246,7 +13263,10 @@ class GoogleCloudAiplatformV1beta1FeatureGroup(_messages.Message):
       are prefixed with "aiplatform.googleapis.com/" and are immutable.
 
   Fields:
-    bigQuery: Indicates that features for this group come from BigQuery.
+    bigQuery: Indicates that features for this group come from BigQuery
+      Table/View. By default treats the source as a sparse time series source,
+      which is required to have an entity_id and a feature_timestamp column in
+      the source.
     createTime: Output only. Timestamp when this FeatureGroup was created.
     description: Optional. Description of the FeatureGroup.
     etag: Optional. Used to perform consistent read-modify-write updates. If
@@ -13403,6 +13423,9 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStore(_messages.Message):
       FeatureOnlineStore.
     createTime: Output only. Timestamp when this FeatureOnlineStore was
       created.
+    dedicatedServingEndpoint: Optional. The dedicated serving endpoint for
+      this FeatureOnlineStore, which is different from common Vertex service
+      endpoint.
     embeddingManagement: Optional. The settings for embedding management in
       FeatureOnlineStore.
     etag: Optional. Used to perform consistent read-modify-write updates. If
@@ -13473,12 +13496,13 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStore(_messages.Message):
 
   bigtable = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtable', 1)
   createTime = _messages.StringField(2)
-  embeddingManagement = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureOnlineStoreEmbeddingManagement', 3)
-  etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  dedicatedServingEndpoint = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureOnlineStoreDedicatedServingEndpoint', 3)
+  embeddingManagement = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureOnlineStoreEmbeddingManagement', 4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtable(_messages.Message):
@@ -13511,6 +13535,17 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtableAutoScaling(_message
   cpuUtilizationTarget = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   minNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1FeatureOnlineStoreDedicatedServingEndpoint(_messages.Message):
+  r"""The dedicated serving endpoint for this FeatureOnlineStore.
+
+  Fields:
+    publicEndpointDomainName: Output only. This field will be populated with
+      the domain name to use for this FeatureOnlineStore
+  """
+
+  publicEndpointDomainName = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1beta1FeatureOnlineStoreEmbeddingManagement(_messages.Message):
@@ -13758,7 +13793,7 @@ class GoogleCloudAiplatformV1beta1FeatureViewBigQuerySource(_messages.Message):
   Fields:
     entityIdColumns: Required. Columns to construct entity_id / row keys.
       Start by supporting 1 only.
-    uri: Required. The Bigquery View URI that will be materialized on each
+    uri: Required. The BigQuery view URI that will be materialized on each
       sync trigger based on FeatureView.SyncConfig.
   """
 
@@ -15648,7 +15683,8 @@ class GoogleCloudAiplatformV1beta1ListFeatureViewsResponse(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1ListFeaturesResponse(_messages.Message):
-  r"""Response message for FeaturestoreService.ListFeatures.
+  r"""Response message for FeaturestoreService.ListFeatures. Response message
+  for FeatureRegistryService.ListFeatures.
 
   Fields:
     features: The Features matching the request.
@@ -15908,6 +15944,19 @@ class GoogleCloudAiplatformV1beta1ListPipelineJobsResponse(_messages.Message):
   pipelineJobs = _messages.MessageField('GoogleCloudAiplatformV1beta1PipelineJob', 2, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1ListPublisherModelsResponse(_messages.Message):
+  r"""Response message for ModelGardenService.ListPublisherModels.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass to
+      ListPublisherModels.page_token to obtain that page.
+    publisherModels: List of PublisherModels in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  publisherModels = _messages.MessageField('GoogleCloudAiplatformV1beta1PublisherModel', 2, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1ListSavedQueriesResponse(_messages.Message):
   r"""Response message for DatasetService.ListSavedQueries.
 
@@ -16073,6 +16122,8 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
       compute#machine-types). For DeployedModel this field is optional, and
       the default value is `n1-standard-2`. For BatchPredictionJob or as part
       of WorkerPoolSpec this field is required.
+    tpuTopology: Immutable. The topology of the TPUs. Corresponds to the TPU
+      topologies available from GKE. (Example: tpu_topology: "2x2x1").
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -16114,6 +16165,7 @@ class GoogleCloudAiplatformV1beta1MachineSpec(_messages.Message):
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
   machineType = _messages.StringField(3)
+  tpuTopology = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1ManualBatchTuningParameters(_messages.Message):

@@ -1948,6 +1948,33 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets IAM policies for one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:getIamPolicy',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all non-deleted WorkloadIdentityPoolManagedIdentitys in a namespace. If `show_deleted` is set to `true`, then deleted managed identites are also listed.
 
@@ -1999,6 +2026,60 @@ class IamV1(base_api.BaseApiClient):
         request_field='workloadIdentityPoolManagedIdentity',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets IAM policies on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:setIamPolicy',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the caller's permissions on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}/managedIdentities/{managedIdentitiesId}:testIamPermissions',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.managedIdentities.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -2339,6 +2420,33 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets IAM policies for one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}:getIamPolicy',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all non-deleted WorkloadIdentityPoolNamespaces in a workload identity pool. If `show_deleted` is set to `true`, then deleted namespaces are also listed.
 
@@ -2390,6 +2498,60 @@ class IamV1(base_api.BaseApiClient):
         request_field='workloadIdentityPoolNamespace',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets IAM policies on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}:setIamPolicy',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the caller's permissions on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsNamespacesTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}/namespaces/{namespacesId}:testIamPermissions',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.namespaces.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsNamespacesTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -2939,6 +3101,33 @@ class IamV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets IAM policies for one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}:getIamPolicy',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='getIamPolicyRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsGetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all non-deleted WorkloadIdentityPools in a project. If `show_deleted` is set to `true`, then deleted pools are also listed.
 
@@ -2990,6 +3179,60 @@ class IamV1(base_api.BaseApiClient):
         request_field='workloadIdentityPool',
         request_type_name='IamProjectsLocationsWorkloadIdentityPoolsPatchRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets IAM policies on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}:setIamPolicy',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsSetIamPolicyRequest',
+        response_type_name='Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns the caller's permissions on one of WorkloadIdentityPool WorkloadIdentityPoolNamespace WorkloadIdentityPoolManagedIdentity.
+
+      Args:
+        request: (IamProjectsLocationsWorkloadIdentityPoolsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workloadIdentityPools/{workloadIdentityPoolsId}:testIamPermissions',
+        http_method='POST',
+        method_id='iam.projects.locations.workloadIdentityPools.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='IamProjectsLocationsWorkloadIdentityPoolsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 

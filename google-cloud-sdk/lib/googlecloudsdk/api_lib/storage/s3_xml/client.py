@@ -626,12 +626,11 @@ class S3XmlClient(cloud_api.CloudApi):
       bucket_name,
       prefix=None,
       delimiter=None,
-      all_versions=False,
       fields_scope=None,
       halt_on_empty_response=True,
       include_folders_as_prefixes=False,
       next_page_token=None,
-      soft_deleted_only=False,
+      object_state=cloud_api.ObjectState.LIVE,
   ):
     """See super class."""
     del (
@@ -639,7 +638,7 @@ class S3XmlClient(cloud_api.CloudApi):
         include_folders_as_prefixes,
         next_page_token,
     )  # Only used by GCS.
-    if all_versions:
+    if object_state == cloud_api.ObjectState.LIVE_AND_NONCURRENT:
       api_method_name = 'list_object_versions'
       objects_key = 'Versions'
     else:

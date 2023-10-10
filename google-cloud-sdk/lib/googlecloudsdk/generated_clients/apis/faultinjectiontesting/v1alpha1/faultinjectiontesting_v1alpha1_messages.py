@@ -241,11 +241,12 @@ class FaultinjectiontestingProjectsLocationsExperimentsListRequest(_messages.Mes
   r"""A FaultinjectiontestingProjectsLocationsExperimentsListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
     parent: Required. Parent value for ListExperimentsRequest
   """
 
@@ -350,11 +351,12 @@ class FaultinjectiontestingProjectsLocationsFaultsListRequest(_messages.Message)
   r"""A FaultinjectiontestingProjectsLocationsFaultsListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
     parent: Required. Parent value for ListFaultsRequest
   """
 
@@ -472,11 +474,12 @@ class FaultinjectiontestingProjectsLocationsJobsListRequest(_messages.Message):
   r"""A FaultinjectiontestingProjectsLocationsJobsListRequest object.
 
   Fields:
-    filter: Filtering results
-    orderBy: Hint for how to order the results
-    pageSize: Requested page size. Server may return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results the server should return.
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
     parent: Required. Parent value for ListJobsRequest
   """
 

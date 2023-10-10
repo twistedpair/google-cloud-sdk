@@ -196,8 +196,6 @@ class AppengineClient(object):
       return self.UpdateCron(parsed_yaml)
     if config_name == yaml_parsing.ConfigYamlInfo.DISPATCH:
       return self.UpdateDispatch(parsed_yaml)
-    if config_name == yaml_parsing.ConfigYamlInfo.DOS:
-      return self.UpdateDos(parsed_yaml)
     if config_name == yaml_parsing.ConfigYamlInfo.QUEUE:
       return self.UpdateQueues(parsed_yaml)
     raise UnknownConfigType(
@@ -221,19 +219,6 @@ class AppengineClient(object):
     self._GetRpcServer().Send('/api/dispatch/update',
                               app_id=self.project,
                               payload=dispatch_yaml.ToYAML())
-
-  def UpdateDos(self, dos_yaml):
-    """Updates any new or changed dos definitions.
-
-    Args:
-      dos_yaml: The parsed yaml file with dos data.
-    """
-    log.warning(
-        '`gcloud app deploy dos.yaml` is deprecated and will be removed '
-        'in an upcoming release. Please use `gcloud app firewall-rules` '
-        'instead.')
-    self._GetRpcServer().Send('/api/dos/update',
-                              app_id=self.project, payload=dos_yaml.ToYAML())
 
   def UpdateQueues(self, queue_yaml):
     """Updates any new or changed task queue definitions.

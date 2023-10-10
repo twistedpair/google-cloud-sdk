@@ -20,7 +20,16 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+import re
+
+from apitools.base.py import encoding
+from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.command_lib.scc import errors
+from googlecloudsdk.command_lib.util.args import resource_args
+from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 COMPARE_DURATION_FLAG = base.Argument(
     '--compare-duration',
@@ -56,14 +65,17 @@ COMPARE_DURATION_FLAG = base.Argument(
 )
 
 
-EVENT_TIME_FLAG = base.Argument(
-    '--event-time',
-    help="""Time at which the event took place. For example, if the finding
-  represents an open firewall it would capture the time the open firewall
-  was detected. If event-time is not provided, it will default to UTC
-  version of NOW. See `$ gcloud topic datetimes` for information on
-  supported time formats.""",
-)
+def CreateEventTimeFlag(required=False):
+  event_time_flag = base.Argument(
+      '--event-time',
+      help="""Time at which the event took place. For example, if the finding
+    represents an open firewall it would capture the time the open firewall
+    was detected. If event-time is not provided, it will default to UTC
+    version of NOW. See `$ gcloud topic datetimes` for information on
+    supported time formats.""",
+      required=required,
+  )
+  return event_time_flag
 
 
 EXTERNAL_URI_FLAG = base.Argument(
@@ -85,9 +97,86 @@ SOURCE_PROPERTIES_FLAG = base.Argument(
       source that writes the finding. The key names in the source_properties map
       must be between 1 and 255 characters, and must start with a letter and
       contain alphanumeric characters or underscores only. For example
-      "key1=val1,key2=val2".""",
+      "key1=val1,key2=val2" """,
+    metavar='KEY=VALUE',
+    type=arg_parsers.ArgDict(),
 )
 
-STATE_FLAG = base.Argument(
-    '--state', help='State is one of: [ACTIVE, INACTIVE].'
-)
+default_state_help = 'State is one of: [ACTIVE, INACTIVE].'
+
+
+def CreateStateFlag(help_text=default_state_help):
+  state_flag = base.Argument('--state', help=help_text)
+  return state_flag
+
+
+def CreateFindingArg():
+  """Create finding as positional resource."""
+  finding_spec_data = {
+      'name': 'finding',
+      'collection': 'securitycenter.organizations.sources.findings',
+      'attributes': [
+          {
+              'parameter_name': 'organizationsId',
+              'attribute_name': 'organization',
+              'help': """(Optional) If the full resource name isn't provided e.g. organizations/123, then provide the
+              organization id which is the suffix of the organization. Example: organizations/123, the id is
+              123.""",
+              'fallthroughs': [{
+                  'hook': 'googlecloudsdk.command_lib.scc.findings.flags:GetDefaultOrganization',
+                  'hint': """Set the organization property in configuration using `gcloud config set scc/organization`
+                  if it is not specified in command line.""",
+              }],
+          },
+          {
+              'parameter_name': 'sourcesId',
+              'attribute_name': 'source',
+              'help': """(Optional) If the full resource name isn't provided e.g. organizations/123/sources/456, then
+              provide the source id which is the suffix of the source.
+              Example: organizations/123/sources/456, the id is 456.""",
+          },
+          {
+              'parameter_name': 'findingId',
+              'attribute_name': 'finding',
+              'help': """Optional) If the full resource name isn't provided e.g.
+              organizations/123/sources/456/findings/789, then provide the finding id which is the suffix of
+              the finding. Example: organizations/123/sources/456/findings/789, the id is 789.""",
+          },
+      ],
+      'disable_auto_completers': 'false',
+  }
+  arg_specs = [
+      resource_args.GetResourcePresentationSpec(
+          verb='to be used for the SCC (Security Command Center) command',
+          name='finding',
+          required=True,
+          prefixes=False,
+          positional=True,
+          resource_data=finding_spec_data,
+      ),
+  ]
+  return concept_parsers.ConceptParser(arg_specs, [])
+
+
+def GetDefaultOrganization():
+  """Prepend organizations/ to org if necessary."""
+  resource_pattern = re.compile('organizations/[0-9]+')
+  id_pattern = re.compile('[0-9]+')
+  organization = properties.VALUES.scc.organization.Get()
+  if not resource_pattern.match(organization) and not id_pattern.match(
+      organization
+  ):
+    raise errors.InvalidSCCInputError(
+        'Organization must match either organizations/[0-9]+ or [0-9]+.'
+    )
+  if resource_pattern.match(organization):
+    return organization
+  return 'organizations/' + organization
+
+
+def ConvertSourceProperties(source_properties_dict):
+  """Hook to capture "key1=val1,key2=val2" as SourceProperties object."""
+  messages = sc_client.GetMessages()
+  return encoding.DictToMessage(
+      source_properties_dict, messages.Finding.SourcePropertiesValue
+  )

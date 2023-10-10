@@ -1184,13 +1184,6 @@ class HttpEndpoint(_messages.Message):
   r"""Represents a HTTP endpoint destination.
 
   Fields:
-    forwardDnsRequests: Optional. Forwards DNS requests to the VPC specified
-      by network config to resolve the HTTP endpoint. Default to false. If set
-      to true, Eventarc will create a peering zone to the consumer VPC and
-      forward DNS requests. See:
-      https://cloud.google.com/dns/docs/zones/zones-overview#peering_zones
-      Enable this if the URI uses an internal DNS name or a private Cloud DNS
-      zone.
     uri: Required. The URI of the HTTP enpdoint. The value must be a RFC2396
       URI string. Examples: `http://10.10.10.8:80/route`, `http://svc.us-
       central1.p.local:8080/`. Only HTTP and HTTPS protocols are supported.
@@ -1199,8 +1192,7 @@ class HttpEndpoint(_messages.Message):
       resolvable via Cloud DNS.
   """
 
-  forwardDnsRequests = _messages.BooleanField(1)
-  uri = _messages.StringField(2)
+  uri = _messages.StringField(1)
 
 
 class ListChannelConnectionsResponse(_messages.Message):

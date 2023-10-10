@@ -201,6 +201,37 @@ class AuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
+class BinaryAuthorizationConfig(_messages.Message):
+  r"""BinaryAuthorizationConfig defines the fleet level configuration of
+  binary authorization feature.
+
+  Enums:
+    EvaluationModeValueValuesEnum: Optional. Mode of operation for binauthz
+      policy evaluation.
+
+  Fields:
+    evaluationMode: Optional. Mode of operation for binauthz policy
+      evaluation.
+    policyBindings: Optional. Binauthz policies that apply to this cluster.
+  """
+
+  class EvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Mode of operation for binauthz policy evaluation.
+
+    Values:
+      EVALUATION_MODE_UNSPECIFIED: Default value
+      DISABLED: Disable BinaryAuthorization
+      POLICY_BINDINGS: Use Binary Authorization with the policies specified in
+        policy_bindings.
+    """
+    EVALUATION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    POLICY_BINDINGS = 2
+
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 1)
+  policyBindings = _messages.MessageField('PolicyBinding', 2, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -1939,11 +1970,14 @@ class DefaultClusterConfig(_messages.Message):
   applied to all clusters born-in-fleet.
 
   Fields:
-    securityPostureConfig: Enable/Disable Security Posture API features for
-      the cluster.
+    binaryAuthorizationConfig: Enable/Disable binary authorization features
+      for the cluster.
+    securityPostureConfig: Enable/Disable Security Posture features for the
+      cluster.
   """
 
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 1)
+  binaryAuthorizationConfig = _messages.MessageField('BinaryAuthorizationConfig', 1)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 2)
 
 
 class DeleteReferenceRequest(_messages.Message):
@@ -3657,6 +3691,55 @@ class GkehubProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class GkehubProjectsLocationsRolloutsCreateRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsRolloutsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource where this rollout will be created.
+      projects/{project}/locations/{location}
+    rollout: A Rollout resource to be passed as the request body.
+    rolloutId: Required. User provided identifier that is used as part of the
+      resource name; must conform to RFC-1034 and additionally restrict to
+      lower-cased letters. This comes out roughly to: /^a-z+[a-z0-9]$/
+  """
+
+  parent = _messages.StringField(1, required=True)
+  rollout = _messages.MessageField('Rollout', 2)
+  rolloutId = _messages.StringField(3)
+
+
+class GkehubProjectsLocationsRolloutsGetRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsRolloutsGetRequest object.
+
+  Fields:
+    name: Required. The name of the rollout to retrieve.
+      projects/{project}/locations/{location}/rollouts/{rollout}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsRolloutsListRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsRolloutsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of rollout to return. The service may return
+      fewer than this value. If unspecified, at most 50 rollouts will be
+      returned. The maximum value is 1000; values above 1000 will be coerced
+      to 1000.
+    pageToken: A page token, received from a previous `ListRollouts` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListRollouts` must match the call that provided
+      the page token.
+    parent: Required. The parent, which owns this collection of rollout.
+      Format: projects/{project}/locations/{location}
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class GkehubProjectsLocationsScopesCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesCreateRequest object.
 
@@ -4854,6 +4937,19 @@ class ListResourceQuotasResponse(_messages.Message):
   resourceQuotas = _messages.MessageField('ResourceQuota', 2, repeated=True)
 
 
+class ListRolloutsResponse(_messages.Message):
+  r"""Response message for listing rollouts.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    rollouts: The rollouts from the specified parent resource.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  rollouts = _messages.MessageField('Rollout', 2, repeated=True)
+
+
 class ListScopeNamespacesResponse(_messages.Message):
   r"""List of fleet namespaces.
 
@@ -5907,6 +6003,18 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class PolicyBinding(_messages.Message):
+  r"""Binauthz policy that applies to this cluster.
+
+  Fields:
+    name: The relative resource name of the binauthz platform policy to audit.
+      GKE platform policies have the following format:
+      `projects/{project_number}/platforms/gke/policies/{policy_id}`.
+  """
+
+  name = _messages.StringField(1)
+
+
 class PolicyControllerBundleInstallSpec(_messages.Message):
   r"""BundleInstallSpec is the specification configuration for a single
   managed bundle.
@@ -6778,6 +6886,78 @@ class Role(_messages.Message):
     ANTHOS_SUPPORT = 4
 
   predefinedRole = _messages.EnumField('PredefinedRoleValueValuesEnum', 1)
+
+
+class Rollout(_messages.Message):
+  r"""Rollout contains the rollout metadata and configuration.
+
+  Enums:
+    StateValueValuesEnum: Output only. State specifies various states of the
+      Rollout.
+
+  Messages:
+    LabelsValue: Optional. Labels for this Rollout.
+
+  Fields:
+    completeTime: Output only. The timestamp at which the Rollout was
+      completed.
+    createTime: Output only. The timestamp at which the Rollout was created.
+    deleteTime: Output only. The timestamp at the Rollout was deleted.
+    displayName: Optional. Human readable display name of the Rollout.
+    etag: Output only. etag of the Rollout Ex. abc1234
+    labels: Optional. Labels for this Rollout.
+    name: Identifier. The full, unique resource name of this rollout in the
+      format of `projects/{project}/locations/global/rollouts/{rollout}`.
+    state: Output only. State specifies various states of the Rollout.
+    uid: Output only. Google-generated UUID for this resource. This is unique
+      across all Rollout resources. If a Rollout resource is deleted and
+      another resource with the same name is created, it gets a different uid.
+    updateTime: Output only. The timestamp at which the Rollout was last
+      updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. State specifies various states of the Rollout.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+    """
+    STATE_UNSPECIFIED = 0
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels for this Rollout.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  completeTime = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class Rule(_messages.Message):

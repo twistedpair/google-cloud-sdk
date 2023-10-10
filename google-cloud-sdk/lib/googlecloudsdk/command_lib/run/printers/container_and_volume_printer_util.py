@@ -21,7 +21,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import collections
-from typing import Mapping
+from typing import Mapping, Sequence
 
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.command_lib.run.printers import k8s_object_printer_util as k8s_util
@@ -53,6 +53,7 @@ def _FormatConfigMapVolumeSource(v):
 def GetContainer(
     container: container_resource.Container,
     labels: Mapping[str, str],
+    dependencies: Sequence[str],
     is_primary: bool,
 ) -> cp.Table:
   limits = GetLimits(container)
@@ -78,16 +79,22 @@ def GetContainer(
           k8s_util.GetStartupProbe(container, labels, is_primary),
       ),
       ('Liveness Probe', k8s_util.GetLivenessProbe(container)),
+      ('Container Dependencies', ', '.join(dependencies)),
   ])
 
 
 def GetContainers(record: container_resource.ContainerResource) -> cp.Table:
+  """Returns a formatted table of a resource's containers."""
+
+  dependencies = collections.defaultdict(list, record.dependencies)
+
   def Containers():
     for name, container in k8s_util.OrderByKey(record.containers):
       key = 'Container {name}'.format(name=name)
       value = GetContainer(
           container,
           record.labels,
+          dependencies[name],
           len(record.containers) == 1 or container.ports,
       )
       yield (key, value)

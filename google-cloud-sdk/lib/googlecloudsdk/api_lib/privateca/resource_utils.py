@@ -27,7 +27,7 @@ def MakeGetUriFunc(collection):
 
   def _GetUri(resource):
     registry = resources.REGISTRY.Clone()
-    registry.RegisterApiByName('privateca', privateca_base.DEFAULT_API_VERSION)
+    registry.RegisterApiByName('privateca', privateca_base.V1_API_VERSION)
     parsed = registry.Parse(resource.name, collection=collection)
     return parsed.SelfLink()
 

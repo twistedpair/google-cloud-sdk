@@ -46864,6 +46864,8 @@ class ManagedInstance(_messages.Message):
       empty when the instance does not exist.
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
+    name: [Output Only] The name of the instance. The name always exists even
+      if the instance has not yet been created.
     preservedStateFromConfig: [Output Only] Preserved state applied from per-
       instance config for this instance.
     preservedStateFromPolicy: [Output Only] Preserved state generated based on
@@ -46976,9 +46978,10 @@ class ManagedInstance(_messages.Message):
   instanceHealth = _messages.MessageField('ManagedInstanceInstanceHealth', 4, repeated=True)
   instanceStatus = _messages.EnumField('InstanceStatusValueValuesEnum', 5)
   lastAttempt = _messages.MessageField('ManagedInstanceLastAttempt', 6)
-  preservedStateFromConfig = _messages.MessageField('PreservedState', 7)
-  preservedStateFromPolicy = _messages.MessageField('PreservedState', 8)
-  version = _messages.MessageField('ManagedInstanceVersion', 9)
+  name = _messages.StringField(7)
+  preservedStateFromConfig = _messages.MessageField('PreservedState', 8)
+  preservedStateFromPolicy = _messages.MessageField('PreservedState', 9)
+  version = _messages.MessageField('ManagedInstanceVersion', 10)
 
 
 class ManagedInstanceInstanceHealth(_messages.Message):

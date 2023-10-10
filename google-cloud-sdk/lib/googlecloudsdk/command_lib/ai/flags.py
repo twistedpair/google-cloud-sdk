@@ -379,6 +379,31 @@ on. If specified, the value must be equal to or larger than 1.
       help=('Maximum number of machine replicas the {} will be '
             'always deployed on.'.format(resource_type))).AddToParser(parser)
 
+  base.Argument(
+      '--machine-type',
+      help=("""\
+The machine resources to be used for each node of this deployment.
+For available machine types, see
+https://cloud.google.com/ai-platform-unified/docs/predictions/machine-types.
+""")).AddToParser(parser)
+
+
+def AddMutateDeploymentResourcesArgs(parser, resource_type):
+  """Add arguments for the deployment resources."""
+  base.Argument(
+      '--min-replica-count',
+      type=arg_parsers.BoundedInt(1, sys.maxsize, unlimited=True),
+      help=("""\
+Minimum number of machine replicas the {} will be always deployed
+on. If specified, the value must be equal to or larger than 1.
+""".format(resource_type))).AddToParser(parser)
+
+  base.Argument(
+      '--max-replica-count',
+      type=int,
+      help=('Maximum number of machine replicas the {} will be '
+            'always deployed on.'.format(resource_type))).AddToParser(parser)
+
 
 def AddReservedIpRangesArgs(parser, resource_type):
   """Add arguments for the reserved IP ranges."""
@@ -890,7 +915,9 @@ def GetIndexResourceSpec(resource_name='index'):
       constants.INDEXES_COLLECTION,
       resource_name=resource_name,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=RegionAttributeConfig(),
+      locationsId=RegionAttributeConfig(
+          prompt_func=region_util.GetPromptForRegionFunc(
+              constants.SUPPORTED_OP_REGIONS)),
       disable_auto_completers=False)
 
 
@@ -1019,8 +1046,11 @@ def GetIndexEndpointResourceSpec(resource_name='index_endpoint'):
       constants.INDEX_ENDPOINTS_COLLECTION,
       resource_name=resource_name,
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      locationsId=RegionAttributeConfig(),
-      disable_auto_completers=False)
+      locationsId=RegionAttributeConfig(
+          prompt_func=region_util.GetPromptForRegionFunc(
+              constants.SUPPORTED_OP_REGIONS)),
+      disable_auto_completers=False,
+  )
 
 
 # TODO(b/357812579): Consider switch to use resource arg.

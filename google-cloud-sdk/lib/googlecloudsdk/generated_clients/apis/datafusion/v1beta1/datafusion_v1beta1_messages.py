@@ -799,6 +799,7 @@ class Instance(_messages.Message):
       Fusion instance.
     p4ServiceAccount: Output only. P4 service account for the customer
       project.
+    platformVersion: Optional. Current version of Data Fusion platform.
     privateInstance: Specifies whether the Data Fusion instance should be
       private. If set to true, all Data Fusion nodes will have private IP
       addresses and will not be able to access the public internet.
@@ -952,18 +953,19 @@ class Instance(_messages.Message):
   networkConfig = _messages.MessageField('NetworkConfig', 18)
   options = _messages.MessageField('OptionsValue', 19)
   p4ServiceAccount = _messages.StringField(20)
-  privateInstance = _messages.BooleanField(21)
-  satisfiesPzs = _messages.BooleanField(22)
-  serviceAccount = _messages.StringField(23)
-  serviceEndpoint = _messages.StringField(24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  stateMessage = _messages.StringField(26)
-  tenantProjectId = _messages.StringField(27)
-  type = _messages.EnumField('TypeValueValuesEnum', 28)
-  updateTime = _messages.StringField(29)
-  version = _messages.StringField(30)
-  workforceIdentityServiceEndpoint = _messages.StringField(31)
-  zone = _messages.StringField(32)
+  platformVersion = _messages.StringField(21)
+  privateInstance = _messages.BooleanField(22)
+  satisfiesPzs = _messages.BooleanField(23)
+  serviceAccount = _messages.StringField(24)
+  serviceEndpoint = _messages.StringField(25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  stateMessage = _messages.StringField(27)
+  tenantProjectId = _messages.StringField(28)
+  type = _messages.EnumField('TypeValueValuesEnum', 29)
+  updateTime = _messages.StringField(30)
+  version = _messages.StringField(31)
+  workforceIdentityServiceEndpoint = _messages.StringField(32)
+  zone = _messages.StringField(33)
 
 
 class ListAvailableVersionsResponse(_messages.Message):

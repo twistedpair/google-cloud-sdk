@@ -564,6 +564,26 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
       return cls._cli_generator.Generate
     return None
 
+  @classmethod
+  def EnableSelfSignedJwtForTracks(cls, tracks):
+    """Enable self signed jwt feature for the given tracks.
+
+    The feature can be disabled manually by running
+    `gcloud config set auth/service_account_use_self_signed_jwt false`.
+
+    Args:
+      tracks: [base.ReleaseTrack], A list of release tracks where self signed
+        jwt feature is enabled.
+    """
+    # If the users disabled the feature explicitly, we don't do anything.
+    if (
+        properties.VALUES.auth.service_account_use_self_signed_jwt.IsExplicitlySet()
+    ):
+      return
+
+    if cls.ReleaseTrack() and cls.ReleaseTrack() in tracks:
+      properties.VALUES.auth.service_account_use_self_signed_jwt.Set(True)
+
 
 class Group(_Common):
   """Group is a base class for groups to implement."""

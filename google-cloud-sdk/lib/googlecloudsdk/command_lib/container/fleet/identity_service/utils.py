@@ -65,6 +65,7 @@ def parse_config(loaded_config, msg):
       'google': provision_google_config,
       'azureAD': provision_azuread_config,
       'saml': provision_saml_config,
+      'ldap': provision_ldap_config,
   }
   for auth_provider in auth_providers:
     for provider_name in providers:
@@ -93,6 +94,205 @@ def validate_clientconfig_meta(clientconfig):
 
   if 'spec' not in clientconfig:
     raise exceptions.Error('Missing required field .spec')
+
+
+def provision_ldap_server_config(ldap_server_config, msg):
+  """Provision FeatureSpec LdapConfig Server from the parsed yaml file.
+
+  Args:
+    ldap_server_config: YamlConfigFile, The ldap server data loaded from the
+      yaml file given by the user. YamlConfigFile is from
+      googlecloudsdk.command_lib.anthos.common.file_parsers.
+    msg: The gkehub messages package.
+
+  Returns:
+    member_config: A MemberConfig configuration containing server details of a
+    single LDAP auth method for the IdentityServiceFeatureSpec.
+  """
+  server = msg.IdentityServiceServerConfig()
+
+  # Required LDAP Server Config fields.
+  if 'host' not in ldap_server_config:
+    raise exceptions.Error(
+        'LDAP Authentication method must contain server host.'
+    )
+
+  server.host = ldap_server_config['host']
+
+  # Optional LDAP Server Config fields.
+  if 'connectionType' in ldap_server_config:
+    server.connectionType = ldap_server_config['connectionType']
+  if 'certificateAuthorityData' in ldap_server_config:
+    server.certificateAuthorityData = bytes(
+        ldap_server_config['certificateAuthorityData'], 'utf-8'
+    )
+  return server
+
+
+def provision_ldap_service_account_config(ldap_service_account_config, msg):
+  """Provision FeatureSpec LdapConfig ServiceAccount from the parsed yaml file.
+
+  Args:
+    ldap_service_account_config: YamlConfigFile, The ldap service account data
+      loaded from the yaml file given by the user. YamlConfigFile is from
+      googlecloudsdk.command_lib.anthos.common.file_parsers.
+    msg: The gkehub messages package.
+
+  Returns:
+    member_config: A MemberConfig configuration containing the service account
+     details of a single LDAP auth method for the IdentityServiceFeatureSpec.
+  """
+  if ldap_service_account_config is None:
+    raise exceptions.Error(
+        'LDAP Authentication method must contain Service Account details.'
+    )
+  service_account = msg.IdentityServiceServiceAccountConfig()
+
+  # LDAP ServiceAccount Config fields.
+  if 'simpleBindCredentials' in ldap_service_account_config:
+    service_account.simpleBindCredentials = (
+        msg.IdentityServiceSimpleBindCredentials()
+    )
+    ldap_simple_bind_credentials = ldap_service_account_config[
+        'simpleBindCredentials'
+    ]
+    if (
+        not ldap_simple_bind_credentials['dn']
+        or not ldap_simple_bind_credentials['password']
+    ):
+      raise exceptions.Error(
+          'LDAP Authentication method must contain non-empty Service Account'
+          ' credentials.'
+      )
+    service_account.simpleBindCredentials.dn = ldap_simple_bind_credentials[
+        'dn'
+    ]
+    service_account.simpleBindCredentials.password = (
+        ldap_simple_bind_credentials['password']
+    )
+    return service_account
+  raise exceptions.Error(
+      'Unknown service account type. Supported types are: simpleBindCredentials'
+  )
+
+
+def provision_ldap_user_config(ldap_user_config, msg):
+  """Provision FeatureSpec LdapConfig User from the parsed yaml file.
+
+  Args:
+    ldap_user_config: YamlConfigFile, The ldap user data loaded from the yaml
+      file given by the user. YamlConfigFile is from
+      googlecloudsdk.command_lib.anthos.common.file_parsers.
+    msg: The gkehub messages package.
+
+  Returns:
+    member_config: A MemberConfig configuration containing the user details of a
+    single LDAP auth method for the IdentityServiceFeatureSpec.
+  """
+
+  user = msg.IdentityServiceUserConfig()
+
+  # Required LDAP User Config fields.
+  if 'baseDn' not in ldap_user_config:
+    raise exceptions.Error(
+        'LDAP Authentication method must contain user baseDn.'
+    )
+
+  user.baseDn = ldap_user_config['baseDn']
+
+  # Optional LDAP User Config fields.
+  if 'loginAttribute' in ldap_user_config:
+    user.loginAttribute = ldap_user_config['loginAttribute']
+  if 'idAttribute' in ldap_user_config:
+    user.idAttribute = ldap_user_config['idAttribute']
+  if 'filter' in ldap_user_config:
+    user.filter = ldap_user_config['filter']
+  return user
+
+
+def provision_ldap_group_config(ldap_group_config, msg):
+  """Provision FeatureSpec LdapConfig Group from the parsed yaml file.
+
+  Args:
+    ldap_group_config: YamlConfigFile, The ldap group data loaded from the yaml
+      file given by the user. YamlConfigFile is from
+      googlecloudsdk.command_lib.anthos.common.file_parsers.
+    msg: The gkehub messages package.
+
+  Returns:
+    member_config: A MemberConfig configuration containing the group details of
+    a single LDAP auth method for the IdentityServiceFeatureSpec.
+  """
+
+  group = msg.IdentityServiceGroupConfig()
+
+  # Required LDAP Group Config fields.
+  if 'baseDn' not in ldap_group_config:
+    raise exceptions.Error(
+        'LDAP Authentication method must contain group baseDn.'
+    )
+
+  group.baseDn = ldap_group_config['baseDn']
+
+  # Optional LDAP Group Config fields.
+  if 'idAttribute' in ldap_group_config:
+    group.idAttribute = ldap_group_config['idAttribute']
+  if 'filter' in ldap_group_config:
+    group.filter = ldap_group_config['filter']
+  return group
+
+
+def provision_ldap_config(auth_method, msg):
+  """Provision FeatureSpec LdapConfig from the parsed yaml file.
+
+  Args:
+    auth_method: YamlConfigFile, The data loaded from the yaml file given by the
+      user. YamlConfigFile is from
+      googlecloudsdk.command_lib.anthos.common.file_parsers.
+    msg: The gkehub messages package.
+
+  Returns:
+    member_config: A MemberConfig configuration containing a single
+    LDAP auth method for the IdentityServiceFeatureSpec.
+  """
+
+  auth_method_proto = msg.IdentityServiceAuthMethod()
+  auth_method_proto.name = auth_method['name']
+  # Optional Auth Method Fields.
+  if 'proxy' in auth_method:
+    auth_method_proto.proxy = auth_method['proxy']
+
+  ldap_config = auth_method['ldap']
+
+  # Required LDAP Config fields.
+  if (
+      'server' not in ldap_config
+      or 'user' not in ldap_config
+      or 'serviceAccount' not in ldap_config
+  ):
+    err_msg = (
+        'Authentication method [{}] must contain '
+        'server, user and serviceAccount details.'
+    ).format(auth_method['name'])
+    raise exceptions.Error(err_msg)
+  auth_method_proto.ldapConfig = msg.IdentityServiceLdapConfig()
+  auth_method_proto.ldapConfig.server = provision_ldap_server_config(
+      ldap_config['server'], msg
+  )
+  auth_method_proto.ldapConfig.serviceAccount = (
+      provision_ldap_service_account_config(ldap_config['serviceAccount'], msg)
+  )
+  auth_method_proto.ldapConfig.user = provision_ldap_user_config(
+      ldap_config['user'], msg
+  )
+
+  # Optional LDAP Config fields.
+  if 'group' in ldap_config:
+    auth_method_proto.ldapConfig.group = provision_ldap_group_config(
+        ldap_config['group'], msg
+    )
+
+  return auth_method_proto
 
 
 def provision_oidc_config(auth_method, msg):

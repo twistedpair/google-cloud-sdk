@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://config.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/'
+DOCS_URL = 'https://cloud.google.com/infrastructure-manager/docs'
 
 
 class Collections(enum.Enum):

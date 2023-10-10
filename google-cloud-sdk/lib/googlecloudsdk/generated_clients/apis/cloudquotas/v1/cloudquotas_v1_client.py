@@ -93,7 +93,7 @@ class CloudquotasV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get method for the folders_locations_quotaPreferences service.
+      r"""Gets details of a single QuotaPreference.
 
       Args:
         request: (CloudquotasFoldersLocationsQuotaPreferencesGetRequest) input message
@@ -305,7 +305,7 @@ class CloudquotasV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get method for the organizations_locations_quotaPreferences service.
+      r"""Gets details of a single QuotaPreference.
 
       Args:
         request: (CloudquotasOrganizationsLocationsQuotaPreferencesGetRequest) input message
@@ -517,7 +517,7 @@ class CloudquotasV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get method for the projects_locations_quotaPreferences service.
+      r"""Gets details of a single QuotaPreference.
 
       Args:
         request: (CloudquotasProjectsLocationsQuotaPreferencesGetRequest) input message

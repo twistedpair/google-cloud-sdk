@@ -105,6 +105,18 @@ class CloudResource(Resource):
     # TODO(b/168690302): Stop using string scheme in storage_url.py.
     return self.storage_url.scheme
 
+  def get_formatted_acl(self):
+    """Returns provider specific formatting for the acl fields.
+
+    Provider specific resource classses can override this method to return
+    provider specific formatting for acl fields. If not overriden, acl values
+    are displayed as-is if present.
+
+    Returns:
+      Dictionary with acl fields as key and corresponding formatted values.
+    """
+    return {}
+
 
 class BucketResource(CloudResource):
   """Class representing a bucket.
@@ -230,18 +242,6 @@ class BucketResource(CloudResource):
 
   def is_container(self):
     return True
-
-  def get_formatted_acl(self):
-    """Returns provider specific formatting for the acl fields.
-
-    Provider specific resource classses can override this method to return
-    provider specific formatting for acl fields. If not overriden, acl values
-    are displayed as it is.
-
-    Returns:
-      Dictionary with acl fields as key and corresponding formatted values.
-    """
-    return {}
 
 
 class ObjectResource(CloudResource):
@@ -405,20 +405,8 @@ class ObjectResource(CloudResource):
   def is_encrypted(self):
     raise NotImplementedError
 
-  def get_formatted_acl(self):
-    """Returns provider specific formatting for the acl fields.
 
-    Provider specific resource classses can override this method to return
-    provider specific formatting for acl fields. If not overriden, acl values
-    are displayed as it is.
-
-    Returns:
-      Dictionary with acl fields as key and corresponding formatted values.
-    """
-    return {}
-
-
-class PrefixResource(Resource):
+class PrefixResource(CloudResource):
   """Class representing a  cloud object.
 
   Attributes:
@@ -451,14 +439,16 @@ class ManagedFolderResource(PrefixResource):
   def __init__(
       self,
       storage_url_object,
-      creation_time=None,
+      create_time=None,
+      metadata=None,
       metageneration=None,
       update_time=None,
   ):
     super(ManagedFolderResource, self).__init__(
         storage_url_object, storage_url_object.object_name
     )
-    self.creation_time = creation_time
+    self.create_time = create_time
+    self.metadata = metadata
     self.metageneration = metageneration
     self.update_time = update_time
 
@@ -474,7 +464,8 @@ class ManagedFolderResource(PrefixResource):
     return (
         super(ManagedFolderResource, self).__eq__(other)
         and self.storage_url == other.storage_url
-        and self.creation_time == other.creation_time
+        and self.create_time == other.create_time
+        and self.metadata == other.metadata
         and self.metageneration == other.metageneration
         and self.update_time == other.update_time
     )

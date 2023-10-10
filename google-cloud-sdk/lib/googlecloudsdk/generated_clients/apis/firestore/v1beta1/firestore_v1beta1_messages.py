@@ -28,11 +28,15 @@ class Aggregation(_messages.Message):
       count_up_to_3, COUNT(*) AS field_2 OVER ( ... ); ``` Requires: * Must be
       unique across all aggregation aliases. * Conform to document field name
       limitations.
+    avg: Average aggregator.
     count: Count aggregator.
+    sum: Sum aggregator.
   """
 
   alias = _messages.StringField(1)
-  count = _messages.MessageField('Count', 2)
+  avg = _messages.MessageField('Avg', 2)
+  count = _messages.MessageField('Count', 3)
+  sum = _messages.MessageField('Sum', 4)
 
 
 class AggregationResult(_messages.Message):
@@ -94,6 +98,20 @@ class ArrayValue(_messages.Message):
   values = _messages.MessageField('Value', 1, repeated=True)
 
 
+class Avg(_messages.Message):
+  r"""Average of the values of the requested field. * Only numeric values will
+  be aggregated. All non-numeric values including `NULL` are skipped. * If the
+  aggregated values contain `NaN`, returns `NaN`. Infinity math follows
+  IEEE-754 standards. * If the aggregated value set is empty, returns `NULL`.
+  * Always returns the result as a double.
+
+  Fields:
+    field: The field to aggregate on.
+  """
+
+  field = _messages.MessageField('FieldReference', 1)
+
+
 class BatchGetDocumentsRequest(_messages.Message):
   r"""The request for Firestore.BatchGetDocuments.
 
@@ -108,8 +126,10 @@ class BatchGetDocumentsRequest(_messages.Message):
     newTransaction: Starts a new transaction and reads the documents. Defaults
       to a read-only transaction. The new transaction ID will be returned as
       the first response in the stream.
-    readTime: Reads documents as they were at the given time. This may not be
-      older than 270 seconds.
+    readTime: Reads documents as they were at the given time. This must be a
+      microsecond precision timestamp within the past one hour, or if Point-
+      in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
     transaction: Reads documents in a transaction.
   """
 
@@ -369,44 +389,14 @@ class Document(_messages.Message):
   r"""A Firestore document. Must not exceed 1 MiB - 4 bytes.
 
   Messages:
-    FieldsValue: The document's fields. The map keys represent field names. A
-      simple field name contains only characters `a` to `z`, `A` to `Z`, `0`
-      to `9`, or `_`, and must not start with `0` to `9`. For example,
-      `foo_bar_17`. Field names matching the regular expression `__.*__` are
-      reserved. Reserved field names are forbidden except in certain
-      documented contexts. The map keys, represented as UTF-8, must not exceed
-      1,500 bytes and cannot be empty. Field paths may be used in other
-      contexts to refer to structured fields defined here. For `map_value`,
-      the field path is represented by the simple or quoted field names of the
-      containing fields, delimited by `.`. For example, the structured field
-      `"foo" : { map_value: { "x&y" : { string_value: "hello" }}}` would be
-      represented by the field path `foo.x&y`. Within a field path, a quoted
-      field name starts and ends with `` ` `` and may contain any character.
-      Some characters, including `` ` ``, must be escaped using a `\`. For
-      example, `` `x&y` `` represents `x&y` and `` `bak\`tik` `` represents ``
-      bak`tik ``.
+    FieldsValue: A FieldsValue object.
 
   Fields:
     createTime: Output only. The time at which the document was created. This
       value increases monotonically when a document is deleted then recreated.
       It can also be compared to values from other documents and the
       `read_time` of a query.
-    fields: The document's fields. The map keys represent field names. A
-      simple field name contains only characters `a` to `z`, `A` to `Z`, `0`
-      to `9`, or `_`, and must not start with `0` to `9`. For example,
-      `foo_bar_17`. Field names matching the regular expression `__.*__` are
-      reserved. Reserved field names are forbidden except in certain
-      documented contexts. The map keys, represented as UTF-8, must not exceed
-      1,500 bytes and cannot be empty. Field paths may be used in other
-      contexts to refer to structured fields defined here. For `map_value`,
-      the field path is represented by the simple or quoted field names of the
-      containing fields, delimited by `.`. For example, the structured field
-      `"foo" : { map_value: { "x&y" : { string_value: "hello" }}}` would be
-      represented by the field path `foo.x&y`. Within a field path, a quoted
-      field name starts and ends with `` ` `` and may contain any character.
-      Some characters, including `` ` ``, must be escaped using a `\`. For
-      example, `` `x&y` `` represents `x&y` and `` `bak\`tik` `` represents ``
-      bak`tik ``.
+    fields: A FieldsValue attribute.
     name: The resource name of the document, for example
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `.
@@ -418,21 +408,7 @@ class Document(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class FieldsValue(_messages.Message):
-    r"""The document's fields. The map keys represent field names. A simple
-    field name contains only characters `a` to `z`, `A` to `Z`, `0` to `9`, or
-    `_`, and must not start with `0` to `9`. For example, `foo_bar_17`. Field
-    names matching the regular expression `__.*__` are reserved. Reserved
-    field names are forbidden except in certain documented contexts. The map
-    keys, represented as UTF-8, must not exceed 1,500 bytes and cannot be
-    empty. Field paths may be used in other contexts to refer to structured
-    fields defined here. For `map_value`, the field path is represented by the
-    simple or quoted field names of the containing fields, delimited by `.`.
-    For example, the structured field `"foo" : { map_value: { "x&y" : {
-    string_value: "hello" }}}` would be represented by the field path
-    `foo.x&y`. Within a field path, a quoted field name starts and ends with
-    `` ` `` and may contain any character. Some characters, including `` ` ``,
-    must be escaped using a `\`. For example, `` `x&y` `` represents `x&y` and
-    `` `bak\`tik` `` represents `` bak`tik ``.
+    r"""A FieldsValue object.
 
     Messages:
       AdditionalProperty: An additional property for a FieldsValue object.
@@ -576,19 +552,20 @@ class ExistenceFilter(_messages.Message):
       from the count of documents in the client that match, the client must
       manually determine which documents no longer match the target. The
       client can use the `unchanged_names` bloom filter to assist with this
-      determination.
+      determination by testing ALL the document names against the filter; if
+      the document name is NOT in the filter, it means the document no longer
+      matches the target.
     targetId: The target ID to which this filter applies.
-    unchangedNames: A bloom filter that contains the UTF-8 byte encodings of
-      the resource names of the documents that match target_id, in the form `p
-      rojects/{project_id}/databases/{database_id}/documents/{document_path}`
-      that have NOT changed since the query results indicated by the resume
-      token or timestamp given in `Target.resume_type`. This bloom filter may
-      be omitted at the server's discretion, such as if it is deemed that the
-      client will not make use of it or if it is too computationally expensive
-      to calculate or transmit. Clients must gracefully handle this field
-      being absent by falling back to the logic used before this field
-      existed; that is, re-add the target without a resume token to figure out
-      which documents in the client's cache are out of sync.
+    unchangedNames: A bloom filter that, despite its name, contains the UTF-8
+      byte encodings of the resource names of ALL the documents that match
+      target_id, in the form `projects/{project_id}/databases/{database_id}/do
+      cuments/{document_path}`. This bloom filter may be omitted at the
+      server's discretion, such as if it is deemed that the client will not
+      make use of it or if it is too computationally expensive to calculate or
+      transmit. Clients must gracefully handle this field being absent by
+      falling back to the logic used before this field existed; that is, re-
+      add the target without a resume token to figure out which documents in
+      the client's cache are out of sync.
   """
 
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -662,8 +639,9 @@ class FieldReference(_messages.Message):
   r"""A reference to a field in a document, ex: `stats.operations`.
 
   Fields:
-    fieldPath: The relative path of the document being referenced. Requires: *
-      Conform to document field name limitations.
+    fieldPath: A reference to a field in a document. Requires: * MUST be a
+      dot-delimited (`.`) string of segments, where each segment conforms to
+      document field name limitations.
   """
 
   fieldPath = _messages.StringField(1)
@@ -866,8 +844,10 @@ class FirestoreProjectsDatabasesDocumentsGetRequest(_messages.Message):
     name: Required. The resource name of the Document to get. In the format:
       `projects/{project_id}/databases/{database_id}/documents/{document_path}
       `.
-    readTime: Reads the version of the document at the given time. This may
-      not be older than 270 seconds.
+    readTime: Reads the version of the document at the given time. This must
+      be a microsecond precision timestamp within the past one hour, or if
+      Point-in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
     transaction: Reads the document in a transaction.
   """
 
@@ -920,8 +900,10 @@ class FirestoreProjectsDatabasesDocumentsListDocumentsRequest(_messages.Message)
       example: `projects/my-project/databases/my-database/documents` or
       `projects/my-project/databases/my-database/documents/chatrooms/my-
       chatroom`
-    readTime: Perform the read at the provided time. This may not be older
-      than 270 seconds.
+    readTime: Perform the read at the provided time. This must be a
+      microsecond precision timestamp within the past one hour, or if Point-
+      in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
     showMissing: If the list should show missing documents. A document is
       missing if it does not exist, but there are sub-documents nested
       underneath it. When true, such missing documents will be returned with a
@@ -968,8 +950,10 @@ class FirestoreProjectsDatabasesDocumentsListRequest(_messages.Message):
       example: `projects/my-project/databases/my-database/documents` or
       `projects/my-project/databases/my-database/documents/chatrooms/my-
       chatroom`
-    readTime: Perform the read at the provided time. This may not be older
-      than 270 seconds.
+    readTime: Perform the read at the provided time. This must be a
+      microsecond precision timestamp within the past one hour, or if Point-
+      in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
     showMissing: If the list should show missing documents. A document is
       missing if it does not exist, but there are sub-documents nested
       underneath it. When true, such missing documents will be returned with a
@@ -1192,6 +1176,27 @@ class FirestoreProjectsDatabasesIndexesListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
+  r"""Metadata related to the create database operation."""
+
+
+class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
+  r"""Metadata related to the delete database operation."""
+
+
+class GoogleFirestoreAdminV1Progress(_messages.Message):
+  r"""Describes the progress of the operation. Unit of work is generic and
+  must be interpreted based on where Progress is used.
+
+  Fields:
+    completedWork: The amount of work completed.
+    estimatedWork: The amount of work estimated.
+  """
+
+  completedWork = _messages.IntegerField(1)
+  estimatedWork = _messages.IntegerField(2)
+
+
 class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
   r"""Metadata for the long-running operation from the RestoreDatabase
   request.
@@ -1204,6 +1209,8 @@ class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
     database: The name of the database being restored to.
     endTime: The time the restore finished, unset for ongoing restores.
     operationState: The operation state of the restore.
+    progressPercentage: How far along the restore is as an estimated
+      percentage of remaining time.
     startTime: The time the restore was started.
   """
 
@@ -1235,7 +1242,8 @@ class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
   database = _messages.StringField(2)
   endTime = _messages.StringField(3)
   operationState = _messages.EnumField('OperationStateValueValuesEnum', 4)
-  startTime = _messages.StringField(5)
+  progressPercentage = _messages.MessageField('GoogleFirestoreAdminV1Progress', 5)
+  startTime = _messages.StringField(6)
 
 
 class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
@@ -1545,8 +1553,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -1568,7 +1576,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -1607,9 +1615,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is
@@ -1665,8 +1673,10 @@ class ListCollectionIdsRequest(_messages.Message):
   Fields:
     pageSize: The maximum number of results to return.
     pageToken: A page token. Must be a value from ListCollectionIdsResponse.
-    readTime: Reads documents as they were at the given time. This may not be
-      older than 270 seconds.
+    readTime: Reads documents as they were at the given time. This must be a
+      microsecond precision timestamp within the past one hour, or if Point-
+      in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1861,8 +1871,10 @@ class PartitionQueryRequest(_messages.Message):
       For example, this may be set to one fewer than the number of parallel
       queries to be run, or in running a data pipeline job, one fewer than the
       number of workers or compute instances available.
-    readTime: Reads documents as they were at the given time. This may not be
-      older than 270 seconds.
+    readTime: Reads documents as they were at the given time. This must be a
+      microsecond precision timestamp within the past one hour, or if Point-
+      in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
     structuredQuery: A structured query. Query must specify collection with
       all descendants and be ordered by name ascending. Other filters, order
       bys, limits, offsets, and start/end cursors are not supported.
@@ -1891,7 +1903,8 @@ class PartitionQueryResponse(_messages.Message):
       B, running the following three queries will return the entire result set
       of the original query: * query, end_at A * query, start_at A, end_at B *
       query, start_at B An empty result may indicate that the query has too
-      few results to be partitioned.
+      few results to be partitioned, or that the query is not yet supported
+      for partitioning.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1944,8 +1957,10 @@ class ReadOnly(_messages.Message):
   r"""Options for a transaction that can only be used to read documents.
 
   Fields:
-    readTime: Reads documents at the given time. This may not be older than 60
-      seconds.
+    readTime: Reads documents at the given time. This must be a microsecond
+      precision timestamp within the past one hour, or if Point-in-Time
+      Recovery is enabled, can additionally be a whole minute timestamp within
+      the past 7 days.
   """
 
   readTime = _messages.StringField(1)
@@ -1980,8 +1995,10 @@ class RunAggregationQueryRequest(_messages.Message):
     newTransaction: Starts a new transaction as part of the query, defaulting
       to read-only. The new transaction ID will be returned as the first
       response in the stream.
-    readTime: Executes the query at the given timestamp. Requires: * Cannot be
-      more than 270 seconds in the past.
+    readTime: Executes the query at the given timestamp. This must be a
+      microsecond precision timestamp within the past one hour, or if Point-
+      in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
     structuredAggregationQuery: An aggregation query.
     transaction: Run the aggregation within an already active transaction. The
       value here is the opaque transaction ID to execute the query in.
@@ -2022,8 +2039,10 @@ class RunQueryRequest(_messages.Message):
     newTransaction: Starts a new transaction and reads the documents. Defaults
       to a read-only transaction. The new transaction ID will be returned as
       the first response in the stream.
-    readTime: Reads documents as they were at the given time. This may not be
-      older than 270 seconds.
+    readTime: Reads documents as they were at the given time. This must be a
+      microsecond precision timestamp within the past one hour, or if Point-
+      in-Time Recovery is enabled, can additionally be a whole minute
+      timestamp within the past 7 days.
     structuredQuery: A structured query.
     transaction: Run the query within an already active transaction. The value
       here is the opaque transaction ID to execute the query in.
@@ -2254,6 +2273,28 @@ class StructuredQuery(_messages.Message):
   where = _messages.MessageField('Filter', 8)
 
 
+class Sum(_messages.Message):
+  r"""Sum of the values of the requested field. * Only numeric values will be
+  aggregated. All non-numeric values including `NULL` are skipped. * If the
+  aggregated values contain `NaN`, returns `NaN`. Infinity math follows
+  IEEE-754 standards. * If the aggregated value set is empty, returns 0. *
+  Returns a 64-bit integer if all aggregated numbers are integers and the sum
+  result does not overflow. Otherwise, the result is returned as a double.
+  Note that even if all the aggregated values are integers, the result is
+  returned as a double if it cannot fit within a 64-bit signed integer. When
+  this occurs, the returned value will lose precision. * When underflow
+  occurs, floating-point aggregation is non-deterministic. This means that
+  running the same query repeatedly without any changes to the underlying
+  values could produce slightly different results each time. In those cases,
+  values should be stored as integers over floating-point numbers.
+
+  Fields:
+    field: The field to aggregate on.
+  """
+
+  field = _messages.MessageField('FieldReference', 1)
+
+
 class Target(_messages.Message):
   r"""A specification of a set of documents to listen to.
 
@@ -2272,7 +2313,18 @@ class Target(_messages.Message):
       target. Using a resume token with a different target is unsupported and
       may fail.
     targetId: The target ID that identifies the target on the stream. Must be
-      a positive number and non-zero.
+      a positive number and non-zero. If `target_id` is 0 (or unspecified),
+      the server will assign an ID for this target and return that in a
+      `TargetChange::ADD` event. Once a target with `target_id=0` is added,
+      all subsequent targets must also have `target_id=0`. If an `AddTarget`
+      request with `target_id != 0` is sent to the server after a target with
+      `target_id=0` is added, the server will immediately send a response with
+      a `TargetChange::Remove` event. Note that if the client sends multiple
+      `AddTarget` requests without an ID, the order of IDs returned in
+      `TargetChage.target_ids` are undefined. Therefore, clients should
+      provide a target ID instead of relying on the server to assign one. If
+      `target_id` is non-zero, there must not be an existing active target on
+      this stream with the same ID.
   """
 
   documents = _messages.MessageField('DocumentsTarget', 1)

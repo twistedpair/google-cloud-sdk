@@ -343,6 +343,17 @@ def ParseUpdateOptionsBase(args, locations):
           'PersistentVolumes will also fail to start.',
           cancel_on_no=True)
 
+  if (args.disable_addons and
+      api_adapter.STATEFULHA in args.disable_addons):
+    statefulha_disabled = args.disable_addons[
+        api_adapter.STATEFULHA]
+    if statefulha_disabled:
+      console_io.PromptContinue(
+          message='If the StatefulHA Addon is disabled, then any applications '
+          'currently protected will no longer be updated for high availability '
+          'configuration.',
+          cancel_on_no=True)
+
   flags.WarnForLocationPolicyDefault(args)
 
   return opts

@@ -2176,46 +2176,45 @@ class ExportMessagesRequest(_messages.Message):
       the range `start_time` (inclusive) to `end_time` (exclusive) are
       exported.
     filter: Restricts messages exported to those matching a filter, only
-      applicable to PubsubDestination and GcsDestination. The following syntax
-      is available: * A string field value can be written as text inside
-      quotation marks, for example `"query text"`. The only valid relational
-      operation for text fields is equality (`=`), where text is searched
-      within the field, rather than having the field be equal to the text. For
-      example, `"Comment = great"` returns messages with `great` in the
-      comment field. * A number field value can be written as an integer, a
-      decimal, or an exponential. The valid relational operators for number
-      fields are the equality operator (`=`), along with the less than/greater
-      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
-      (`!=`) operator. You can prepend the `NOT` operator to an expression to
-      negate it. * A date field value must be written in the `yyyy-mm-dd`
-      format. Fields with date and time use the RFC3339 time format. Leading
-      zeros are required for one-digit months and days. The valid relational
-      operators for date fields are the equality operator (`=`) , along with
-      the less than/greater than operators (`<`, `<=`, `>`, `>=`). Note that
-      there is no inequality (`!=`) operator. You can prepend the `NOT`
-      operator to an expression to negate it. * Multiple field query
-      expressions can be combined in one query by adding `AND` or `OR`
-      operators between the expressions. If a boolean operator appears within
-      a quoted string, it is not treated as special, and is just another part
-      of the character string to be matched. You can prepend the `NOT`
-      operator to an expression to negate it. The following fields and
-      functions are available for filtering: * `message_type`, from the
-      MSH-9.1 field. For example, `NOT message_type = "ADT"`. * `send_date` or
-      `sendDate`, the YYYY-MM-DD date the message was sent in the dataset's
-      time_zone, from the MSH-7 segment. For example, `send_date <
-      "2017-01-02"`. * `send_time`, the timestamp when the message was sent,
-      using the RFC3339 time format for comparisons, from the MSH-7 segment.
-      For example, `send_time < "2017-01-02T00:00:00-05:00"`. * `create_time`,
-      the timestamp when the message was created in the HL7v2 store. Use the
-      RFC3339 time format for comparisons. For example, `create_time <
-      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
-      the message came from, from the MSH-4 segment. For example,
-      `send_facility = "ABC"`. Note: The filter will be applied to every
-      message in the HL7v2 store whose `send_time` lies in the range defined
-      by the `start_time` and the `end_time`. Even if the filter only matches
-      a small set of messages, the export operation can still take a long time
-      to finish when a lot of messages are between the specified `start_time`
-      and `end_time` range.
+      applicable to PubsubDestination. The following syntax is available: * A
+      string field value can be written as text inside quotation marks, for
+      example `"query text"`. The only valid relational operation for text
+      fields is equality (`=`), where text is searched within the field,
+      rather than having the field be equal to the text. For example,
+      `"Comment = great"` returns messages with `great` in the comment field.
+      * A number field value can be written as an integer, a decimal, or an
+      exponential. The valid relational operators for number fields are the
+      equality operator (`=`), along with the less than/greater than operators
+      (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`)
+      operator. You can prepend the `NOT` operator to an expression to negate
+      it. * A date field value must be written in the `yyyy-mm-dd` format.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, and is just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. The following fields and functions are available for
+      filtering: * `message_type`, from the MSH-9.1 field. For example, `NOT
+      message_type = "ADT"`. * `send_date` or `sendDate`, the YYYY-MM-DD date
+      the message was sent in the dataset's time_zone, from the MSH-7 segment.
+      For example, `send_date < "2017-01-02"`. * `send_time`, the timestamp
+      when the message was sent, using the RFC3339 time format for
+      comparisons, from the MSH-7 segment. For example, `send_time <
+      "2017-01-02T00:00:00-05:00"`. * `create_time`, the timestamp when the
+      message was created in the HL7v2 store. Use the RFC3339 time format for
+      comparisons. For example, `create_time < "2017-01-02T00:00:00-05:00"`. *
+      `send_facility`, the care center that the message came from, from the
+      MSH-4 segment. For example, `send_facility = "ABC"`. Note: The filter
+      will be applied to every message in the HL7v2 store whose `send_time`
+      lies in the range defined by the `start_time` and the `end_time`. Even
+      if the filter only matches a small set of messages, the export operation
+      can still take a long time to finish when a lot of messages are between
+      the specified `start_time` and `end_time` range.
     gcsDestination: Export to a Cloud Storage destination.
     pubsubDestination: Export messages to a Pub/Sub topic.
     startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
@@ -5668,6 +5667,21 @@ class HealthcareProjectsLocationsDatasetsFhirStoresPatchRequest(_messages.Messag
   updateMask = _messages.StringField(3)
 
 
+class HealthcareProjectsLocationsDatasetsFhirStoresRollbackRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsFhirStoresRollbackRequest object.
+
+  Fields:
+    name: Required. The name of the FHIR store to rollback, in the format of
+      "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
+      /fhirStores/{fhir_store_id}".
+    rollbackFhirResourcesRequest: A RollbackFhirResourcesRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  rollbackFhirResourcesRequest = _messages.MessageField('RollbackFhirResourcesRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsFhirStoresSetIamPolicyRequest
   object.
@@ -7980,6 +7994,87 @@ class RevokeConsentRequest(_messages.Message):
   """
 
   consentArtifact = _messages.StringField(1)
+
+
+class RollbackFhirResourceFilteringFields(_messages.Message):
+  r"""Filters to select resources that need to be rolled back.
+
+  Fields:
+    metadataFilter: Optional. A string to use for filtering resource metadata.
+      Complies with AIP-160 except without the has operator. Additionally,
+      supports 2 functions: hastag("system") = "code" for tag filtering and
+      extension_ts_value("uri") = timestamp for filtering extensions with
+      timestamp, which is given as a unix timestamp. extension_ts_url can be
+      used with >, <, <=, >=, != comparisons as well.
+    operationIds: Optional. A list of operation IDs to roll back. Only changes
+      made by these operations will be rolled back.
+  """
+
+  metadataFilter = _messages.StringField(1)
+  operationIds = _messages.IntegerField(2, repeated=True, variant=_messages.Variant.UINT64)
+
+
+class RollbackFhirResourcesRequest(_messages.Message):
+  r"""Request to roll back resources.
+
+  Enums:
+    ChangeTypeValueValuesEnum: Optional. CREATE/UPDATE/DELETE/ALL for
+      reverting all txns of a certain type.
+
+  Fields:
+    changeType: Optional. CREATE/UPDATE/DELETE/ALL for reverting all txns of a
+      certain type.
+    excludeRollbacks: Optional. Specifies whether to exclude earlier
+      rollbacks.
+    filteringFields: Optional. Tag represents fields that HDE needs to
+      identify resources that will be reverted. Parameters for filtering
+      resources
+    force: Optional. When enabled, changes will be reverted without explicit
+      confirmation
+    inputGcsObject: Optional. Cloud Storage object containing list of
+      {resourceType}/{resourceId} lines, identifying resources to be reverted
+    resultGcsBucket: Required. Bucket to deposit result
+    rollbackTime: Required. Time point to rollback to.
+    type: Optional. If specified, revert only resources of these types
+  """
+
+  class ChangeTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. CREATE/UPDATE/DELETE/ALL for reverting all txns of a certain
+    type.
+
+    Values:
+      CHANGE_TYPE_UNSPECIFIED: When unspecified, revert all transactions
+      ALL: All transactions
+      CREATE: Revert only CREATE transactions
+      UPDATE: Revert only Update transactions
+      DELETE: Revert only Delete transactions
+    """
+    CHANGE_TYPE_UNSPECIFIED = 0
+    ALL = 1
+    CREATE = 2
+    UPDATE = 3
+    DELETE = 4
+
+  changeType = _messages.EnumField('ChangeTypeValueValuesEnum', 1)
+  excludeRollbacks = _messages.BooleanField(2)
+  filteringFields = _messages.MessageField('RollbackFhirResourceFilteringFields', 3)
+  force = _messages.BooleanField(4)
+  inputGcsObject = _messages.StringField(5)
+  resultGcsBucket = _messages.StringField(6)
+  rollbackTime = _messages.StringField(7)
+  type = _messages.StringField(8, repeated=True)
+
+
+class RollbackFhirResourcesResponse(_messages.Message):
+  r"""Final response of rollback FIHR resources request.
+
+  Fields:
+    fhirStore: The name of the FHIR store to rollback, in the format of
+      "projects/{project_id}/locations/{location_id}/datasets/{dataset_id}
+      /fhirStores/{fhir_store_id}".
+  """
+
+  fhirStore = _messages.StringField(1)
 
 
 class SchemaConfig(_messages.Message):

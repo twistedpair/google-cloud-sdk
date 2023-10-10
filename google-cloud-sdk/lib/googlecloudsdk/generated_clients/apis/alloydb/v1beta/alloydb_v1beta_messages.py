@@ -1905,7 +1905,8 @@ class Instance(_messages.Message):
       This is available ONLY when enable_public_ip is set. This is the
       connection endpoint for an end-user application.
     queryInsightsConfig: Configuration for query insights.
-    readPoolConfig: Read pool specific config.
+    readPoolConfig: Read pool instance configuration. This is required if the
+      value of instanceType is READ_POOL.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of Instance does not match the user's intended state, and the
@@ -2198,6 +2199,16 @@ class ListUsersResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   unreachable = _messages.StringField(2, repeated=True)
   users = _messages.MessageField('User', 3, repeated=True)
+
+
+class LocationMetadata(_messages.Message):
+  r"""The metadata message associated with a particular location.
+
+  Fields:
+    supportsPzs: Output only. Reserved for future use.
+  """
+
+  supportsPzs = _messages.BooleanField(1)
 
 
 class MachineConfig(_messages.Message):
@@ -2919,6 +2930,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       GCP/AWS/Azure/OnPrem/SelfManaged
     SignalClassValueValuesEnum: The class of the signal, such as if it's a
       THREAT or VULNERABILITY.
+    SignalTypeValueValuesEnum: Type of signal, for example,
+      `AVAILABLE_IN_MULTIPLE_ZONES`, `LOGGING_MOST_ERRORS`, etc.
     StateValueValuesEnum:
 
   Messages:
@@ -2952,6 +2965,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       VULNERABILITY.
     signalId: Unique identifier for the signal. This is an unique id which
       would be mainatined by partner to identify a signal.
+    signalType: Type of signal, for example, `AVAILABLE_IN_MULTIPLE_ZONES`,
+      `LOGGING_MOST_ERRORS`, etc.
     state: A StateValueValuesEnum attribute.
   """
 
@@ -3000,6 +3015,174 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     MISCONFIGURATION = 3
     OBSERVATION = 4
     ERROR = 5
+
+  class SignalTypeValueValuesEnum(_messages.Enum):
+    r"""Type of signal, for example, `AVAILABLE_IN_MULTIPLE_ZONES`,
+    `LOGGING_MOST_ERRORS`, etc.
+
+    Values:
+      SIGNAL_TYPE_UNSPECIFIED: Unspecified.
+      SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES: Represents if the resource
+        is available in multiple zones or not.
+      SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS: Represents if a resource
+        is available in multiple regions.
+      SIGNAL_TYPE_NO_PROMOTABLE_REPLICA: Represents if a resource has a
+        promotable replica.
+      SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY: Represents if a resource has an
+        automated backup policy.
+      SIGNAL_TYPE_SHORT_BACKUP_RETENTION: Represents if a resources has a
+        short backup retention period.
+      SIGNAL_TYPE_LAST_BACKUP_FAILED: Represents if the last backup of a
+        resource failed.
+      SIGNAL_TYPE_LAST_BACKUP_OLD: Represents if the last backup of a resource
+        is older than some threshold value.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3: Represents if a resource
+        violates CIS GCP Foundation 1.3.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2: Represents if a resource
+        violates CIS GCP Foundation 1.2.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1: Represents if a resource
+        violates CIS GCP Foundation 1.1.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0: Represents if a resource
+        violates CIS GCP Foundation 1.0.
+      SIGNAL_TYPE_VIOLATES_NIST_800_53: Represents if a resource violates NIST
+        800-53.
+      SIGNAL_TYPE_VIOLATES_ISO_27001: Represents if a resource violates
+        ISO-27001.
+      SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1: Represents if a resource violates
+        PCI-DSS v3.2.1.
+      SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING: Represents if
+        log_checkpoints database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED: Represents if the log_duration
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        on.
+      SIGNAL_TYPE_VERBOSE_ERROR_LOGGING: Represents if the log_error_verbosity
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        default or stricter (default or terse).
+      SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED: Represents if the
+        log_lock_waits database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_LOGGING_MOST_ERRORS: Represents if the
+        log_min_error_statement database flag for a Cloud SQL for PostgreSQL
+        instance is not set appropriately.
+      SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS: Represents if the
+        log_min_error_statement database flag for a Cloud SQL for PostgreSQL
+        instance does not have an appropriate severity level.
+      SIGNAL_TYPE_MINIMAL_ERROR_LOGGING: Represents if the log_min_messages
+        database flag for a Cloud SQL for PostgreSQL instance is not set to
+        warning or another recommended value.
+      SIGNAL_TYPE_QUERY_STATISTICS_LOGGED: Represents if the databaseFlags
+        property of instance metadata for the log_executor_status field is set
+        to on.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME: Represents if the
+        log_hostname database flag for a Cloud SQL for PostgreSQL instance is
+        not set to off.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS: Represents if the
+        log_parser_stats database flag for a Cloud SQL for PostgreSQL instance
+        is not set to off.
+      SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS: Represents if the
+        log_planner_stats database flag for a Cloud SQL for PostgreSQL
+        instance is not set to off.
+      SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS: Represents if the
+        log_statement database flag for a Cloud SQL for PostgreSQL instance is
+        not set to DDL (all data definition statements).
+      SIGNAL_TYPE_LOGGING_QUERY_STATISTICS: Represents if the
+        log_statement_stats database flag for a Cloud SQL for PostgreSQL
+        instance is not set to off.
+      SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES: Represents if the
+        log_temp_files database flag for a Cloud SQL for PostgreSQL instance
+        is not set to "0". (NOTE: 0 = ON)
+      SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED: Represents if the user
+        connections database flag for a Cloud SQL for SQL Server instance is
+        configured.
+      SIGNAL_TYPE_USER_OPTIONS_CONFIGURED: Represents if the user options
+        database flag for Cloud SQL SQL Server instance is configured or not.
+      SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS: Represents if a resource is
+        exposed to public access.
+      SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS: Represents if a resources requires
+        all incoming connections to use SSL or not.
+      SIGNAL_TYPE_NO_ROOT_PASSWORD: Represents if a Cloud SQL database has a
+        password configured for the root account or not.
+      SIGNAL_TYPE_WEAK_ROOT_PASSWORD: Represents if a Cloud SQL database has a
+        weak password configured for the root account.
+      SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED: Represents if a SQL
+        database instance is not encrypted with customer-managed encryption
+        keys (CMEK).
+      SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED: Represents if The
+        contained database authentication database flag for a Cloud SQL for
+        SQL Server instance is not set to off.
+      SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING: Represents if the
+        cross_db_ownership_chaining database flag for a Cloud SQL for SQL
+        Server instance is not set to off.
+      SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS: Represents if he external
+        scripts enabled database flag for a Cloud SQL for SQL Server instance
+        is not set to off.
+      SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS: Represents if the local_infile
+        database flag for a Cloud SQL for MySQL instance is not set to off.
+      SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED: Represents if the
+        log_connections database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
+      SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED: Represents if the
+        log_disconnections database flag for a Cloud SQL for PostgreSQL
+        instance is not set to on.
+      SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO: Represents if the
+        log_min_duration_statement database flag for a Cloud SQL for
+        PostgreSQL instance is not set to -1.
+      SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS: Represents if the remote access
+        database flag for a Cloud SQL for SQL Server instance is not set to
+        off.
+      SIGNAL_TYPE_DATABASE_NAMES_EXPOSED: Represents if the skip_show_database
+        database flag for a Cloud SQL for MySQL instance is not set to on.
+      SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED: Represents if the 3625
+        (trace flag) database flag for a Cloud SQL for SQL Server instance is
+        not set to on.
+    """
+    SIGNAL_TYPE_UNSPECIFIED = 0
+    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES = 1
+    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS = 2
+    SIGNAL_TYPE_NO_PROMOTABLE_REPLICA = 3
+    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 4
+    SIGNAL_TYPE_SHORT_BACKUP_RETENTION = 5
+    SIGNAL_TYPE_LAST_BACKUP_FAILED = 6
+    SIGNAL_TYPE_LAST_BACKUP_OLD = 7
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3 = 8
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2 = 9
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1 = 10
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0 = 11
+    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 12
+    SIGNAL_TYPE_VIOLATES_ISO_27001 = 13
+    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 14
+    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 15
+    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 16
+    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 17
+    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 18
+    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 19
+    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 20
+    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 21
+    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 22
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 23
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 24
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 25
+    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 26
+    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 27
+    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 28
+    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 29
+    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 30
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 31
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 32
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 33
+    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 34
+    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 35
+    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 36
+    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 37
+    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 38
+    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 39
+    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 40
+    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 41
+    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 42
+    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 43
+    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 44
+    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 45
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -3052,7 +3235,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
   resourceName = _messages.StringField(9)
   signalClass = _messages.EnumField('SignalClassValueValuesEnum', 10)
   signalId = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
+  signalType = _messages.EnumField('SignalTypeValueValuesEnum', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
 
 
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceId(_messages.Message):

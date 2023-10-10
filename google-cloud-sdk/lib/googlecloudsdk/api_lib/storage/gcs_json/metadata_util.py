@@ -149,6 +149,7 @@ def get_bucket_resource_from_metadata(metadata):
   return gcs_resource_reference.GcsBucketResource(
       url,
       acl=_message_to_dict(metadata.acl),
+      autoclass=_message_to_dict(metadata.autoclass),
       autoclass_enabled_time=autoclass_enabled_time,
       cors_config=_message_to_dict(metadata.cors),
       creation_time=metadata.timeCreated,

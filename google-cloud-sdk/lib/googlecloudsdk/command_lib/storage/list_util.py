@@ -90,40 +90,40 @@ class BaseFormatWrapper(six.with_metaclass(abc.ABCMeta)):
   def __init__(
       self,
       resource,
-      all_versions=False,
       display_detail=DisplayDetail.SHORT,
       full_formatter=None,
       include_etag=None,
+      object_state=None,
       readable_sizes=False,
-      soft_deleted=False,
       use_gsutil_style=False,
   ):
     """Initializes wrapper instance.
 
     Args:
       resource (resource_reference.Resource): Item to be formatted for printing.
-      all_versions (bool): Determine whether or not to return all versions of
-        listed objects.
       display_detail (DisplayDetail): Level of metadata detail for printing.
       full_formatter (base.FullResourceFormatter): Printing formatter used witch
         FULL DisplayDetail.
       include_etag (bool): Display etag string of resource.
+      object_state (cloud_api.ObjectState): What versions of an object to query.
       readable_sizes (bool): Convert bytes to a more human readable format for
         long lising. For example, print 1024B as 1KiB.
-      soft_deleted (bool): Printing a soft deleted object.
       use_gsutil_style (bool): Outputs closer to the style of the gsutil CLI.
     """
     self.resource = resource
-    self._all_versions = all_versions
     self._display_detail = display_detail
     self._full_formatter = full_formatter
     self._include_etag = include_etag
+    self._object_state = object_state
     self._readable_sizes = readable_sizes
-    self._soft_deleted = soft_deleted
     self._use_gsutil_style = use_gsutil_style
 
-  def _check_and_handles_all_versions(self):
-    if self._all_versions:
+  def _check_and_handles_versions(self):
+    show_version_in_url = self._object_state in (
+        cloud_api.ObjectState.LIVE_AND_NONCURRENT,
+        cloud_api.ObjectState.SOFT_DELETED,
+    )
+    if show_version_in_url:
       url_string = self.resource.storage_url.url_string
       metageneration_string = '  metageneration={}'.format(
           six.text_type(self.resource.metageneration)
@@ -140,24 +140,22 @@ class NullFormatWrapper(BaseFormatWrapper):
   def __init__(
       self,
       resource,
-      all_versions=None,
       container_size=None,
       display_detail=None,
       full_formatter=None,
       include_etag=None,
+      object_state=None,
       readable_sizes=None,
-      soft_deleted=None,
       use_gsutil_style=None,
   ):
     super(NullFormatWrapper, self).__init__(resource)
     del (
-        all_versions,
         container_size,
         display_detail,
         full_formatter,
         include_etag,
+        object_state,
         readable_sizes,
-        soft_deleted,
         use_gsutil_style,
     )  # Unused.
 
@@ -171,7 +169,6 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
   def __init__(
       self,
       cloud_urls,
-      all_versions=False,
       buckets_flag=False,
       display_detail=DisplayDetail.SHORT,
       exclude_patterns=None,
@@ -179,9 +176,9 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
       halt_on_empty_response=True,
       include_etag=False,
       next_page_token=None,
+      object_state=None,
       readable_sizes=False,
       recursion_flag=False,
-      soft_deleted_only=False,
       total=False,
       use_gsutil_style=False,
       zero_terminator=False,
@@ -190,8 +187,6 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
 
     Args:
       cloud_urls ([storage_url.CloudUrl]): List of non-local filesystem URLs.
-      all_versions (bool): Determine whether or not to return all versions of
-        listed objects.
       buckets_flag (bool): If given a bucket URL, only return matching buckets
         ignoring normal recursion rules.
       display_detail (DisplayDetail): Determines level of metadata printed.
@@ -204,19 +199,17 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
       include_etag (bool): Print etag string of resource, depending on other
         settings.
       next_page_token (str|None): Used to resume LIST calls.
+      object_state (cloud_api.ObjectState): Versions of objects to query.
       readable_sizes (bool): Convert bytes to a more human readable format for
         long lising. For example, print 1024B as 1KiB.
       recursion_flag (bool): Recurse through all containers and format all
         container headers.
-      soft_deleted_only (bool): Returns soft-deleted objects and not live,
-        past-version, or other lifecycle-status objects.
       total (bool): Add up the total size of all input sources.
       use_gsutil_style (bool): Outputs closer to the style of the gsutil CLI.
       zero_terminator (bool): Use null byte instead of newline as line
         terminator.
     """
     self._cloud_urls = cloud_urls
-    self._all_versions = all_versions
     self._buckets_flag = buckets_flag
     self._display_detail = display_detail
     self._exclude_patterns = exclude_patterns
@@ -224,9 +217,9 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
     self._halt_on_empty_response = halt_on_empty_response
     self._include_etag = include_etag
     self._next_page_token = next_page_token
+    self._object_state = object_state
     self._readable_sizes = readable_sizes
     self._recursion_flag = recursion_flag
-    self._soft_deleted_only = soft_deleted_only
     self._total = total
     self._use_gsutil_style = use_gsutil_style
     self._zero_terminator = zero_terminator
@@ -255,14 +248,13 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
     )
     iterator = wildcard_iterator.CloudWildcardIterator(
         new_cloud_url,
-        all_versions=self._all_versions,
         error_on_missing_key=False,
         exclude_patterns=self._exclude_patterns,
         fetch_encrypted_object_hashes=self._fetch_encrypted_object_hashes,
         fields_scope=fields_scope,
         halt_on_empty_response=self._halt_on_empty_response,
         next_page_token=self._next_page_token,
-        soft_deleted_only=self._soft_deleted_only,
+        object_state=self._object_state,
     )
     return self._recursion_helper(iterator, recursion_level)
 
@@ -292,9 +284,9 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         if self._header_wrapper != NullFormatWrapper:
           yield self._header_wrapper(
               resource,
-              all_versions=self._all_versions,
               display_detail=self._display_detail,
               include_etag=self._include_etag,
+              object_state=self._object_state,
               readable_sizes=self._readable_sizes,
               full_formatter=self._full_formatter,
               use_gsutil_style=self._use_gsutil_style,
@@ -319,8 +311,8 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         ):
           yield self._container_summary_wrapper(
               resource=resource,
-              all_versions=self._all_versions,
               container_size=container_size,
+              object_state=self._object_state,
               readable_sizes=self._readable_sizes,
           )
 
@@ -328,12 +320,11 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         # Resource wasn't a container we can recurse into, so just yield it.
         yield self._object_wrapper(
             resource,
-            all_versions=self._all_versions,
             display_detail=self._display_detail,
             full_formatter=self._full_formatter,
             include_etag=self._include_etag,
+            object_state=self._object_state,
             readable_sizes=self._readable_sizes,
-            soft_deleted=self._soft_deleted_only,
             use_gsutil_style=self._use_gsutil_style,
         )
 
@@ -390,7 +381,6 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
     resources = plurality_checkable_iterator.PluralityCheckableIterator(
         wildcard_iterator.CloudWildcardIterator(
             raw_cloud_url,
-            all_versions=self._all_versions,
             error_on_missing_key=False,
             exclude_patterns=self._exclude_patterns,
             fetch_encrypted_object_hashes=self._fetch_encrypted_object_hashes,
@@ -398,7 +388,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
             get_bucket_metadata=self._buckets_flag,
             halt_on_empty_response=self._halt_on_empty_response,
             next_page_token=self._next_page_token,
-            soft_deleted_only=self._soft_deleted_only,
+            object_state=self._object_state,
         )
     )
 

@@ -30,7 +30,6 @@ from googlecloudsdk.third_party.appengine.api import appinfo_errors
 from googlecloudsdk.third_party.appengine.api import appinfo_includes
 from googlecloudsdk.third_party.appengine.api import croninfo
 from googlecloudsdk.third_party.appengine.api import dispatchinfo
-from googlecloudsdk.third_party.appengine.api import dosinfo
 from googlecloudsdk.third_party.appengine.api import queueinfo
 from googlecloudsdk.third_party.appengine.api import validation
 from googlecloudsdk.third_party.appengine.api import yaml_errors
@@ -164,14 +163,12 @@ class ConfigYamlInfo(_YamlInfo):
 
   CRON = 'cron'
   DISPATCH = 'dispatch'
-  DOS = 'dos'
   INDEX = 'index'
   QUEUE = 'queue'
 
   CONFIG_YAML_PARSERS = {
       CRON: croninfo.LoadSingleCron,
       DISPATCH: dispatchinfo.LoadSingleDispatch,
-      DOS: dosinfo.LoadSingleDos,
       INDEX: datastore_index.ParseIndexDefinitions,
       QUEUE: queueinfo.LoadSingleQueue,
   }
@@ -201,12 +198,18 @@ class ConfigYamlInfo(_YamlInfo):
       file_path: str, The full path to the config file.
 
     Raises:
+      Error: If a user tries to parse a dos.yaml file.
       YamlParseError: If the file is not valid.
 
     Returns:
       A ConfigYamlInfo object for the parsed file.
     """
     base, ext = os.path.splitext(os.path.basename(file_path))
+    if base == 'dos':
+      raise Error(
+          '`gcloud app deploy dos.yaml` is no longer supported. Please use'
+          ' `gcloud app firewall-rules` instead.'
+      )
     parser = (ConfigYamlInfo.CONFIG_YAML_PARSERS.get(base)
               if os.path.isfile(file_path) and ext.lower() in ['.yaml', '.yml']
               else None)

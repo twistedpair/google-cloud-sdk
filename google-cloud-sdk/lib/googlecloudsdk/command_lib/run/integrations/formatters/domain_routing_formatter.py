@@ -19,7 +19,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from typing import Optional
+from typing import List, Optional
+
 from apitools.base.py import encoding
 from googlecloudsdk.command_lib.run.integrations.formatters import base
 from googlecloudsdk.command_lib.run.integrations.formatters import states
@@ -60,12 +61,14 @@ class DomainRoutingFormatter(base.BaseFormatter):
     Returns:
       The printed output.
     """
-    resource_status = record.status
-    resource_components = resource_status.get('resourceComponentStatuses', {})
-    details = resource_status.get('routerDetails', {})
+    status = record.status
+    resource_components = status.resourceComponentStatuses
+    details = {}
+    if status.extraDetails:
+      details = encoding.MessageToDict(status.extraDetails)
     components = [
-        ('Console link', resource_status.get('consoleLink', 'n/a')),
-        ('Frontend', details.get('ipAddress', 'n/a')),
+        ('Console link', status.consoleLink if status.consoleLink else 'n/a'),
+        ('Frontend', details.get('ip_address', 'n/a')),
     ]
     for component in self._GetSSLStatuses(resource_components, record.resource):
       name, status = component
@@ -89,10 +92,11 @@ class DomainRoutingFormatter(base.BaseFormatter):
       A formatted string of the call to action message,
       or None if no call to action is required.
     """
-    resource_status = record.status
-
-    resource_components = resource_status.get('resourceComponentStatuses', {})
-    ip = resource_status.get('routerDetails', {}).get('ipAddress')
+    status = record.status
+    resource_components = status.resourceComponentStatuses
+    if not status.extraDetails:
+      return None
+    ip = encoding.MessageToDict(status.extraDetails).get('ip_address')
     if not ip:
       return None
 
@@ -130,28 +134,33 @@ class DomainRoutingFormatter(base.BaseFormatter):
     return ref
 
   def _GetGCLBName(self, resource_components):
-    url_map = self._FindResourceByType(resource_components,
-                                       'google_compute_url_map')
-    if url_map:
-      return url_map.get('name', 'n/a')
+    url_map = self._FindComponentByType(
+        resource_components, 'google_compute_url_map'
+    )
+    if url_map and url_map.name:
+      return url_map.name
     return 'n/a'
 
-  def _FindResourceByType(self, resources, rtype):
-    if not resources:
+  def _FindComponentByType(
+      self, components: List[runapps.ResourceComponentStatus], rtype: str
+  ) -> List[runapps.ResourceComponentStatus]:
+    if not components:
       return None
-    for resource in resources:
-      if resource.get('type') == rtype:
-        return resource
+    for comp in components:
+      if comp.type == rtype:
+        return comp
 
-  def _GetSSLStatuses(self, resource_components, resource: runapps.Resource):
-    ssl_cert_components = self._FindAllResourceByType(
+  def _GetSSLStatuses(
+      self,
+      resource_components: List[runapps.ResourceComponentStatus],
+      resource: runapps.Resource,
+  ):
+    ssl_cert_components = self._FindAllComponentsByType(
         resource_components, 'google_compute_managed_ssl_certificate'
     )
     statuses = []
     for component in ssl_cert_components:
-      gussed_domain = self._GuessDomainFromSSLComponentName(
-          component.get('name')
-      )
+      gussed_domain = self._GuessDomainFromSSLComponentName(component.name)
       matched_domain = None
       for domain_config in resource.subresources:
         res_domain = encoding.MessageToDict(domain_config.config).get(
@@ -163,16 +172,19 @@ class DomainRoutingFormatter(base.BaseFormatter):
           matched_domain = res_domain
       if matched_domain is None:
         matched_domain = gussed_domain
-      statuses.append((matched_domain, component.get('state', states.UNKNOWN)))
+      comp_state = str(component.state) if component.state else states.UNKNOWN
+      statuses.append((matched_domain, comp_state))
     return statuses
 
-  def _FindAllResourceByType(self, resources, rtype):
+  def _FindAllComponentsByType(
+      self, components: List[runapps.ResourceComponentStatus], rtype: str
+  ) -> List[runapps.ResourceComponentStatus]:
     found = []
-    if not resources:
+    if not components:
       return found
-    for resource in resources:
-      if resource.get('type') == rtype:
-        found.append(resource)
+    for comp in components:
+      if comp.type == rtype:
+        found.append(comp)
     return found
 
   def _GuessDomainFromSSLComponentName(self, name):

@@ -39,7 +39,7 @@ class CloudSQLFormatter(default.DefaultFormatter):
       A formatted string of the call to action message,
       or None if no call to action is required.
     """
-    state = record.status.get('state', '')
+    state = str(record.status.state)
     if state != states.ACTIVE:
       return None
 

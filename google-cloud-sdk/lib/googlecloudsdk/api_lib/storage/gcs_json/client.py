@@ -882,17 +882,38 @@ class JsonClient(cloud_api.CloudApi):
     decryption_key = getattr(
         getattr(request_config, 'resource_args', None), 'decryption_key', None)
     with self._encryption_headers_context(decryption_key):
-      object_metadata = self.client.objects.Get(
-          self.messages.StorageObjectsGetRequest(
-              bucket=bucket_name,
-              object=object_name,
-              generation=generation,
-              projection=projection,
-              # Avoid needlessly appending "&softDeleted=False" to URL.
-              softDeleted=True if soft_deleted else None,
-          ),
-          global_params=global_params,
-      )
+      try:
+        object_metadata = self.client.objects.Get(
+            self.messages.StorageObjectsGetRequest(
+                bucket=bucket_name,
+                object=object_name,
+                generation=generation,
+                projection=projection,
+                # Avoid needlessly appending "&softDeleted=False" to URL.
+                softDeleted=True if soft_deleted else None,
+            ),
+            global_params=global_params,
+        )
+      except apitools_exceptions.HttpError as e:
+        translated_error = cloud_errors.translate_error(
+            e, error_util.ERROR_TRANSLATION
+        )
+        if (
+            translated_error.message
+            == 'HTTPError 400: You must specify a generation.'
+            and soft_deleted
+        ):
+          core_exceptions.reraise(
+              cloud_errors.translate_error(
+                  e,
+                  error_util.ERROR_TRANSLATION,
+                  format_str=(
+                      'HTTPError 400: You must specify a generation or'
+                      ' wildcard.'
+                  ),
+              )
+          )
+        core_exceptions.reraise(translated_error)
     return metadata_util.get_object_resource_from_metadata(object_metadata)
 
   def list_objects(
@@ -900,12 +921,11 @@ class JsonClient(cloud_api.CloudApi):
       bucket_name,
       prefix=None,
       delimiter=None,
-      all_versions=None,
       fields_scope=cloud_api.FieldsScope.NO_ACL,
       halt_on_empty_response=True,
       include_folders_as_prefixes=False,
       next_page_token=None,
-      soft_deleted_only=False,
+      object_state=cloud_api.ObjectState.LIVE,
   ):
     """See super class."""
     del include_folders_as_prefixes  # Unused until API support is available.
@@ -933,13 +953,20 @@ class JsonClient(cloud_api.CloudApi):
       )
 
     list_result = None
-    soft_deleted = True if soft_deleted_only else None
+    live_and_noncurrent = (
+        True
+        if object_state is cloud_api.ObjectState.LIVE_AND_NONCURRENT
+        else None
+    )
+    soft_deleted = (
+        True if object_state is cloud_api.ObjectState.SOFT_DELETED else None
+    )
     while True:
       apitools_request = self.messages.StorageObjectsListRequest(
           bucket=bucket_name,
           prefix=prefix,
           delimiter=delimiter,
-          versions=all_versions,
+          versions=live_and_noncurrent,
           projection=projection,
           pageToken=next_page_token,
           maxResults=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
@@ -1252,10 +1279,11 @@ class JsonClient(cloud_api.CloudApi):
         )
     )
 
-  def list_operations(self, bucket_name):
+  def list_operations(self, bucket_name, server_side_filter=None):
     """See CloudApi class."""
     request = self.messages.StorageBucketsOperationsListRequest(
-        bucket=bucket_name
+        bucket=bucket_name,
+        filter=server_side_filter,
     )
     operation_iterator = list_pager.YieldFromList(
         self.client.operations,
@@ -1296,7 +1324,8 @@ class JsonClient(cloud_api.CloudApi):
   @error_util.catch_http_error_raise_gcs_api_error()
   def bulk_restore_objects(
       self,
-      url,
+      bucket_url,
+      object_globs,
       request_config,
       allow_overwrite=False,
       deleted_after_time=None,
@@ -1310,11 +1339,11 @@ class JsonClient(cloud_api.CloudApi):
 
     operation = self.client.objects.BulkRestore(
         self.messages.StorageObjectsBulkRestoreRequest(
-            bucket=url.bucket_name,
+            bucket=bucket_url.bucket_name,
             bulkRestoreObjectsRequest=self.messages.BulkRestoreObjectsRequest(
                 allowOverwrite=allow_overwrite,
                 copySourceAcl=preserve_acl,
-                matchGlobs=[url.object_name],
+                matchGlobs=object_globs,
                 softDeletedAfterTime=deleted_after_time,
                 softDeletedBeforeTime=deleted_before_time,
             ),

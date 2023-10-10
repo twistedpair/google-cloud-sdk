@@ -1145,6 +1145,10 @@ class Instance(_messages.Message):
     interactiveSerialConsoleEnabled: Output only. True if the interactive
       serial console feature is enabled for the instance, false otherwise. The
       default value is false.
+    kmsKeyVersion: Optional. Name of the KMS crypto key version used to
+      encrypt the initial passwords. The key has to have ASYMMETRIC_DECRYPT
+      purpose. Format is `projects/{project}/locations/{location}/keyRings/{ke
+      yring}/cryptoKeys/{key}/cryptoKeyVersions/{version}`.
     labels: Labels as key value pairs.
     logicalInterfaces: List of logical interfaces for the instance. The number
       of logical interfaces will be the same as number of hardware bond/nic on
@@ -1171,6 +1175,7 @@ class Instance(_messages.Message):
     pod: Immutable. Pod name. Pod is an independent part of infrastructure.
       Instance can only be connected to the assets (networks, volumes)
       allocated in the same pod.
+    sshKeys: Optional. List of SSH Keys used during instance provisioning.
     state: Output only. The state of the server.
     updateTime: Output only. Update a time stamp.
     volumes: Input only. List of Volumes to attach to this Instance on
@@ -1242,20 +1247,22 @@ class Instance(_messages.Message):
   hyperthreadingEnabled = _messages.BooleanField(3)
   id = _messages.StringField(4)
   interactiveSerialConsoleEnabled = _messages.BooleanField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  logicalInterfaces = _messages.MessageField('GoogleCloudBaremetalsolutionV2LogicalInterface', 7, repeated=True)
-  loginInfo = _messages.StringField(8)
-  luns = _messages.MessageField('Lun', 9, repeated=True)
-  machineType = _messages.StringField(10)
-  name = _messages.StringField(11)
-  networkTemplate = _messages.StringField(12)
-  networks = _messages.MessageField('Network', 13, repeated=True)
-  osImage = _messages.StringField(14)
-  pod = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  updateTime = _messages.StringField(17)
-  volumes = _messages.MessageField('Volume', 18, repeated=True)
-  workloadProfile = _messages.EnumField('WorkloadProfileValueValuesEnum', 19)
+  kmsKeyVersion = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  logicalInterfaces = _messages.MessageField('GoogleCloudBaremetalsolutionV2LogicalInterface', 8, repeated=True)
+  loginInfo = _messages.StringField(9)
+  luns = _messages.MessageField('Lun', 10, repeated=True)
+  machineType = _messages.StringField(11)
+  name = _messages.StringField(12)
+  networkTemplate = _messages.StringField(13)
+  networks = _messages.MessageField('Network', 14, repeated=True)
+  osImage = _messages.StringField(15)
+  pod = _messages.StringField(16)
+  sshKeys = _messages.StringField(17, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
+  volumes = _messages.MessageField('Volume', 20, repeated=True)
+  workloadProfile = _messages.EnumField('WorkloadProfileValueValuesEnum', 21)
 
 
 class InstanceConfig(_messages.Message):

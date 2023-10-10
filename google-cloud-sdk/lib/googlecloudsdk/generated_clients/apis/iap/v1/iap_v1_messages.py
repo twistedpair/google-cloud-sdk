@@ -8,6 +8,7 @@ from __future__ import absolute_import
 
 from apitools.base.protorpclite import messages as _messages
 from apitools.base.py import encoding
+from apitools.base.py import extra_types
 
 
 package = 'iap'
@@ -900,6 +901,18 @@ class Resource(_messages.Message):
   r"""A Resource object.
 
   Messages:
+    ExpectedNextStateValue: The proto or JSON formatted expected next state of
+      the resource, wrapped in a google.protobuf.Any proto, against which the
+      policy rules are evaluated. Services not integrated with custom org
+      policy can omit this field. Services integrated with custom org policy
+      must populate this field for all requests where the API call changes the
+      state of the resource. Custom org policy backend uses these attributes
+      to enforce custom org policies. When a proto is wrapped, it is generally
+      the One Platform API proto. When a JSON string is wrapped, use
+      `google.protobuf.StringValue` for the inner value. It is sufficient to
+      pass just the max set of attributes that are allowed for use in custom
+      constraints; other attributes can be omitted. See go/custom-constraints-
+      org-policy-integration-guide for additional details.
     LabelsValue: The service defined labels of the resource on which the
       conditions will be evaluated. The semantics - including the key names -
       are vague to IAM. If the effective condition has a reference to a
@@ -914,6 +927,18 @@ class Resource(_messages.Message):
       Talk to iam-conditions-eng@ about your use case.
 
   Fields:
+    expectedNextState: The proto or JSON formatted expected next state of the
+      resource, wrapped in a google.protobuf.Any proto, against which the
+      policy rules are evaluated. Services not integrated with custom org
+      policy can omit this field. Services integrated with custom org policy
+      must populate this field for all requests where the API call changes the
+      state of the resource. Custom org policy backend uses these attributes
+      to enforce custom org policies. When a proto is wrapped, it is generally
+      the One Platform API proto. When a JSON string is wrapped, use
+      `google.protobuf.StringValue` for the inner value. It is sufficient to
+      pass just the max set of attributes that are allowed for use in custom
+      constraints; other attributes can be omitted. See go/custom-constraints-
+      org-policy-integration-guide for additional details.
     labels: The service defined labels of the resource on which the conditions
       will be evaluated. The semantics - including the key names - are vague
       to IAM. If the effective condition has a reference to a
@@ -952,6 +977,43 @@ class Resource(_messages.Message):
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class ExpectedNextStateValue(_messages.Message):
+    r"""The proto or JSON formatted expected next state of the resource,
+    wrapped in a google.protobuf.Any proto, against which the policy rules are
+    evaluated. Services not integrated with custom org policy can omit this
+    field. Services integrated with custom org policy must populate this field
+    for all requests where the API call changes the state of the resource.
+    Custom org policy backend uses these attributes to enforce custom org
+    policies. When a proto is wrapped, it is generally the One Platform API
+    proto. When a JSON string is wrapped, use `google.protobuf.StringValue`
+    for the inner value. It is sufficient to pass just the max set of
+    attributes that are allowed for use in custom constraints; other
+    attributes can be omitted. See go/custom-constraints-org-policy-
+    integration-guide for additional details.
+
+    Messages:
+      AdditionalProperty: An additional property for a ExpectedNextStateValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ExpectedNextStateValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""The service defined labels of the resource on which the conditions
     will be evaluated. The semantics - including the key names - are vague to
@@ -986,10 +1048,11 @@ class Resource(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  labels = _messages.MessageField('LabelsValue', 1)
-  name = _messages.StringField(2)
-  service = _messages.StringField(3)
-  type = _messages.StringField(4)
+  expectedNextState = _messages.MessageField('ExpectedNextStateValue', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  service = _messages.StringField(4)
+  type = _messages.StringField(5)
 
 
 class SetIamPolicyRequest(_messages.Message):

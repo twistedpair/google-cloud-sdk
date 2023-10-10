@@ -20,9 +20,11 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.dataproc.shared_messages import (
-    environment_config_factory as ecf)
+    environment_config_factory as ecf,
+)
 from googlecloudsdk.command_lib.dataproc.shared_messages import (
-    runtime_config_factory as rcf)
+    runtime_config_factory as rcf,
+)
 from googlecloudsdk.command_lib.util.args import labels_util
 
 
@@ -36,8 +38,12 @@ class BatchMessageFactory(object):
   INVALID_BATCH_TYPE_ERR_MSG = 'Invalid batch job type: {}.'
   MISSING_BATCH_ERR_MSG = 'Missing batch job.'
 
-  def __init__(self, dataproc, runtime_config_factory_override=None,
-               environment_config_factory_override=None):
+  def __init__(
+      self,
+      dataproc,
+      runtime_config_factory_override=None,
+      environment_config_factory_override=None,
+  ):
     """Builder class for Batch message.
 
     Batch message factory. Only the flags added in AddArguments are handled.
@@ -46,10 +52,10 @@ class BatchMessageFactory(object):
 
     Args:
       dataproc: A api_lib.dataproc.Dataproc instance.
-      runtime_config_factory_override: Override the default
-      RuntimeConfigFactory instance.
+      runtime_config_factory_override: Override the default RuntimeConfigFactory
+        instance.
       environment_config_factory_override: Override the default
-      EnvironmentConfigFactory instance.
+        EnvironmentConfigFactory instance.
     """
     self.dataproc = dataproc
 
@@ -58,17 +64,20 @@ class BatchMessageFactory(object):
         self.dataproc.messages.SparkBatch: 'sparkBatch',
         self.dataproc.messages.SparkRBatch: 'sparkRBatch',
         self.dataproc.messages.SparkSqlBatch: 'sparkSqlBatch',
-        self.dataproc.messages.PySparkBatch: 'pysparkBatch'
-        }
+        self.dataproc.messages.PySparkBatch: 'pysparkBatch',
+    }
 
     self.runtime_config_factory = runtime_config_factory_override
     if not self.runtime_config_factory:
-      self.runtime_config_factory = rcf.RuntimeConfigFactory(self.dataproc)
+      self.runtime_config_factory = rcf.RuntimeConfigFactory(
+          self.dataproc, include_autotuning=True
+      )
 
     self.environment_config_factory = environment_config_factory_override
     if not self.environment_config_factory:
-      self.environment_config_factory = (
-          ecf.EnvironmentConfigFactory(self.dataproc))
+      self.environment_config_factory = ecf.EnvironmentConfigFactory(
+          self.dataproc
+      )
 
   def GetMessage(self, args, batch_job):
     """Creates a Batch message from given args.
@@ -92,8 +101,8 @@ class BatchMessageFactory(object):
 
     if not isinstance(batch_job, tuple(self._batch2key.keys())):
       raise AttributeError(
-          BatchMessageFactory.INVALID_BATCH_TYPE_ERR_MSG.format(
-              type(batch_job)))
+          BatchMessageFactory.INVALID_BATCH_TYPE_ERR_MSG.format(type(batch_job))
+      )
 
     kwargs = {}
 
@@ -101,7 +110,8 @@ class BatchMessageFactory(object):
 
     if args.labels:
       kwargs['labels'] = labels_util.ParseCreateArgs(
-          args, self.dataproc.messages.Batch.LabelsValue)
+          args, self.dataproc.messages.Batch.LabelsValue
+      )
 
     runtime_config = self.runtime_config_factory.GetMessage(args)
     if runtime_config:

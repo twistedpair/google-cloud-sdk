@@ -6569,7 +6569,7 @@ class GoogleCloudApigeeV1DeleteResponse(_messages.Message):
 
   Fields:
     errorCode: ID that can be used to find errors in the log files.
-    gcpResource: GCP name of deleted resource.
+    gcpResource: Google Cloud name of deleted resource.
     message: Description of the operation.
     requestId: ID that can be used to find request details in the log files.
     status: Status of the operation.

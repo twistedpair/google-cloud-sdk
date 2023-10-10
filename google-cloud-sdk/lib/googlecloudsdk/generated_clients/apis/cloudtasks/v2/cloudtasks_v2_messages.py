@@ -361,6 +361,17 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CloudtasksProjectsLocationsGetCmekConfigRequest(_messages.Message):
+  r"""A CloudtasksProjectsLocationsGetCmekConfigRequest object.
+
+  Fields:
+    name: Required. The config. For example:
+      projects/PROJECT_ID/locations/LOCATION_ID/CmekConfig`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class CloudtasksProjectsLocationsGetRequest(_messages.Message):
   r"""A CloudtasksProjectsLocationsGetRequest object.
 
@@ -730,6 +741,40 @@ class CloudtasksProjectsLocationsQueuesTestIamPermissionsRequest(_messages.Messa
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class CloudtasksProjectsLocationsUpdateCmekConfigRequest(_messages.Message):
+  r"""A CloudtasksProjectsLocationsUpdateCmekConfigRequest object.
+
+  Fields:
+    cmekConfig: A CmekConfig resource to be passed as the request body.
+    name: Output only. The config resource name which includes the project and
+      location and must end in 'cmekConfig', in the format
+      projects/PROJECT_ID/locations/LOCATION_ID/cmekConfig`
+    updateMask: List of fields to be updated in this request.
+  """
+
+  cmekConfig = _messages.MessageField('CmekConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class CmekConfig(_messages.Message):
+  r"""CMEK, or Customer Managed Encryption Keys, enables GCP products to put
+  control over encryption and key management in their customer's hands.
+
+  Fields:
+    kmsKey: Resource name of the Cloud KMS key, of the form `projects/PROJECT_
+      ID/locations/LOCATION_ID/keyRings/KEY_RING_ID/cryptoKeys/KEY_ID`, that
+      will be used to encrypt the Queues & Tasks in the region. Setting this
+      as blank will turn off CMEK encryption.
+    name: Output only. The config resource name which includes the project and
+      location and must end in 'cmekConfig', in the format
+      projects/PROJECT_ID/locations/LOCATION_ID/cmekConfig`
+  """
+
+  kmsKey = _messages.StringField(1)
+  name = _messages.StringField(2)
 
 
 class CreateTaskRequest(_messages.Message):

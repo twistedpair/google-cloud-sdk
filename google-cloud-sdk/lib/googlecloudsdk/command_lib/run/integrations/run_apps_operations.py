@@ -333,27 +333,6 @@ class RunAppsOperations(object):
         tracker.CompleteStage(resource)
     tracker.Tick()
 
-  def GetIntegration(self, name):
-    """Get an integration.
-
-    Args:
-      name: str, the name of the resource.
-
-    Raises:
-      IntegrationNotFoundError: If the integration is not found.
-
-    Returns:
-      The integration config.
-    """
-    try:
-      return self._GetDefaultAppDict()[api_utils.APP_DICT_CONFIG_KEY][
-          api_utils.APP_CONFIG_DICT_RESOURCES_KEY
-      ][name]
-    except KeyError:
-      raise exceptions.IntegrationNotFoundError(
-          'Integration [{}] cannot be found'.format(name)
-      )
-
   def GetIntegrationGeneric(
       self,
       name: str,
@@ -379,25 +358,25 @@ class RunAppsOperations(object):
         'Integration [{}] cannot be found'.format(name)
     )
 
-  def GetIntegrationStatus(self, name):
+  def GetIntegrationStatus(
+      self, res_id: runapps_v1alpha1_messages.ResourceID
+  ) -> Optional[runapps_v1alpha1_messages.ResourceStatus]:
     """Get status of an integration.
 
     Args:
-      name: str, the name of the resource.
+      res_id: ResourceID of the resource.
 
     Returns:
       The ResourceStatus of the integration, or None if not found
     """
     try:
-      application_status = api_utils.GetApplicationStatus(
-          self._client, self.GetAppRef(_DEFAULT_APP_NAME), name
+      app_status = api_utils.GetApplicationStatus(
+          self._client, self.GetAppRef(_DEFAULT_APP_NAME), [res_id]
       )
-      app_status_dict = encoding.MessageToDict(application_status)
-      integration_status = app_status_dict.get('resources', {}).get(name)
-      if integration_status:
-        return integration_status
-      return None
-    except KeyError:
+      if app_status:
+        for s in app_status.resourceStatuses:
+          if s.id == res_id:
+            return s
       return None
     except api_exceptions.HttpError:
       return None

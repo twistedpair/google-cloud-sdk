@@ -56,3 +56,7 @@ class SafetyError(exceptions.Error):
   argparse argument should never be None - argparse should throw an error if it
   is not passed - but safety requires we rule out the None value in later code.
   """
+
+
+class InvalidConfigYaml(exceptions.Error):
+  """For when a membership configuration is invalid or could not be parsed."""

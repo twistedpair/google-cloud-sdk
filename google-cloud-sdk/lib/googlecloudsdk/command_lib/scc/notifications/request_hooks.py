@@ -39,17 +39,6 @@ def ListNotificationReqHook(ref, args, req):
   return req
 
 
-def DescribeNotificationReqHook(ref, args, req):
-  """Generate a notification config using organization and config id."""
-  del ref
-
-  parent = GetParentFromNamedArguments(args)
-  _ValidateMutexOnConfigIdAndParent(args, parent)
-  req.name = _GetNotificationConfigName(args)
-
-  return req
-
-
 def CreateNotificationReqHook(ref, args, req):
   """Generate a notification config using organization and config id."""
   del ref

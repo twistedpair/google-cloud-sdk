@@ -168,17 +168,17 @@ def Create(
         clusterId=cluster, allowTransactionalWrites=transactional_writes
     )
 
-  # Default priority to PRIORITY_UNSPECIFIED.
-  priority_enum = msgs.AppProfile.PriorityValueValuesEnum(
-      priority or 'PRIORITY_UNSPECIFIED'
-  )
+  standard_isolation = None
+  if priority:
+    priority_enum = msgs.StandardIsolation.PriorityValueValuesEnum(priority)
+    standard_isolation = msgs.StandardIsolation(priority=priority_enum)
 
   msg = msgs.BigtableadminProjectsInstancesAppProfilesCreateRequest(
       appProfile=msgs.AppProfile(
           description=description,
           multiClusterRoutingUseAny=multi_cluster_routing,
           singleClusterRouting=single_cluster_routing,
-          priority=priority_enum,
+          standardIsolation=standard_isolation,
       ),
       appProfileId=app_profile_ref.Name(),
       parent=instance_ref.RelativeName(),
@@ -301,9 +301,11 @@ def Update(
     app_profile.description = description
 
   if priority:
-    priority_enum = msgs.AppProfile.PriorityValueValuesEnum(priority)
-    changed_fields.append('priority')
-    app_profile.priority = priority_enum
+    priority_enum = msgs.StandardIsolation.PriorityValueValuesEnum(priority)
+    changed_fields.append('standardIsolation.priority')
+    app_profile.standardIsolation = msgs.StandardIsolation(
+        priority=priority_enum
+    )
 
   msg = msgs.BigtableadminProjectsInstancesAppProfilesPatchRequest(
       appProfile=app_profile,

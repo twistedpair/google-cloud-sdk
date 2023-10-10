@@ -1411,6 +1411,11 @@ class Runnable(_messages.Message):
       tools like SSH servers).
     barrier: Barrier runnable.
     container: Container runnable.
+    displayName: Optional. DisplayName is an optional field that can be
+      provided by the caller. If provided, it will be used in logs and other
+      outputs to identify the script, making it easier for users to understand
+      the logs. If not provided the index of the runnable will be used for
+      outputs.
     environment: Environment variables for this Runnable (overrides variables
       set for the whole Task or TaskGroup).
     ignoreExitStatus: Normally, a non-zero exit status causes the Task to
@@ -1448,11 +1453,12 @@ class Runnable(_messages.Message):
   background = _messages.BooleanField(2)
   barrier = _messages.MessageField('Barrier', 3)
   container = _messages.MessageField('Container', 4)
-  environment = _messages.MessageField('Environment', 5)
-  ignoreExitStatus = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  script = _messages.MessageField('Script', 8)
-  timeout = _messages.StringField(9)
+  displayName = _messages.StringField(5)
+  environment = _messages.MessageField('Environment', 6)
+  ignoreExitStatus = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  script = _messages.MessageField('Script', 9)
+  timeout = _messages.StringField(10)
 
 
 class Script(_messages.Message):

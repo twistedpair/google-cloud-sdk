@@ -45,14 +45,14 @@ def GetProjectIDNumberFlag(verb):
 def GetRecommendFlag(action):
   return base.Argument(
       '--recommend',
-      metavar='RECOMMEND',
+      metavar='BOOLEAN_VALUE',
       type=arg_parsers.ArgBoolean(),
       default=False,
-      hidden=True,
       required=False,
       help=(
-          'Shows warning if {} is HIGH-RISK based on '
-          'Active Assist recommendations. Disabled by default.'
+          'If true, checks Active Assist recommendation for the risk level of '
+          '{}, and issues a warning in the prompt. Optional flag is set to '
+          'false/no by default.'
       ).format(action),
   )
 

@@ -44,14 +44,14 @@ def GetSuccessMessage(integration_type, integration_name, action='deployed'):
 def GetCallToAction(
     metadata: Optional[types_utils.TypeMetadata],
     resource: runapps.Resource,
-    resource_status,
+    resource_status: Optional[runapps.ResourceStatus] = None,
 ):
   """Print the call to action message for the given integration.
 
   Args:
     metadata: the type metadata
     resource: the integration resource object
-    resource_status: dict, status of the integration
+    resource_status: status of the integration
 
   Returns:
     A formatted string of the call to action message.

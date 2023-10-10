@@ -1509,16 +1509,7 @@ class ContainerDependenciesChange(ConfigChanger):
       self, resource: k8s_object.KubernetesObject
   ) -> k8s_object.KubernetesObject:
     containers = frozenset(resource.template.containers.keys())
-    dependencies = {}
-    if (
-        k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
-        in resource.template.annotations
-    ):
-      dependencies = json.loads(
-          resource.template.annotations[
-              k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
-          ]
-      )
+    dependencies = resource.template.dependencies
     # Filter removed containers from existing container dependencies.
     dependencies = {
         container_name: [c for c in depends_on if c in containers]
@@ -1542,18 +1533,7 @@ class ContainerDependenciesChange(ConfigChanger):
       else:
         del dependencies[container]
 
-    if dependencies:
-      resource.template.annotations[
-          k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
-      ] = json.dumps(dependencies)
-    elif (
-        k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
-        in resource.template.annotations
-    ):
-      del resource.template.annotations[
-          k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION
-      ]
-
+    resource.template.dependencies = dependencies
     return resource
 
 

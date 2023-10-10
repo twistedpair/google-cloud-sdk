@@ -29,6 +29,7 @@ from googlecloudsdk.api_lib.container import kubeconfig as kconfig
 from googlecloudsdk.api_lib.container import util as c_util
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
+from googlecloudsdk.command_lib.container.fleet import format_util
 from googlecloudsdk.command_lib.container.fleet.memberships import gke_util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
@@ -46,9 +47,6 @@ NAMESPACE_DELETION_INITIAL_WAIT_MS = 0
 NAMESPACE_DELETION_TIMEOUT_MS = 1000 * 60 * 2
 NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS = 1000 * 15
 NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS = 1000 * 5
-RBAC_IMPERSONATE_POLICY_NAME = 'gateway-impersonate-{metadata}'
-RBAC_PERMISSION_POLICY_NAME = 'gateway-permission-{metadata}'
-RBAC_ANTHOS_SUPPORT_POLICY_NAME = 'gateway-anthos-support-permission-{metadata}'
 
 
 class RBACError(exceptions.Error):
@@ -112,17 +110,21 @@ def DeleteNamespace(kube_client, namespace):
           pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
           max_wait_ms=NAMESPACE_DELETION_TIMEOUT_MS,
           wait_ceiling_ms=NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS,
-          sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS)
+          sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS,
+      )
     except waiter.TimeoutError:
       # waiter.TimeoutError assumes that the operation is a Google API
       # operation, and prints a debugging string to that effect.
       raise exceptions.Error(
-          'Could not delete namespace [{}] from cluster.'.format(namespace))
+          'Could not delete namespace [{}] from cluster.'.format(namespace)
+      )
 
     if not succeeded:
       raise exceptions.Error(
           'Could not delete namespace [{}] from cluster. Error: {}'.format(
-              namespace, error))
+              namespace, error
+          )
+      )
 
 
 class MembershipCRDCreationOperation(object):
@@ -144,7 +146,8 @@ class MembershipCRDCreationOperation(object):
   def Update(self):
     """Updates this operation with the latest membership creation status."""
     out, err = self.kube_client.CreateMembershipCRD(
-        self.membership_crd_manifest)
+        self.membership_crd_manifest
+    )
     if err:
       self.done = True
       self.error = err
@@ -159,14 +162,23 @@ class MembershipCRDCreationOperation(object):
 class KubeconfigProcessor(object):
   """A helper class that processes kubeconfig and context arguments."""
 
-  def __init__(self, api_adapter, gke_uri, gke_cluster, kubeconfig, internal_ip,
-               cross_connect_subnetwork, private_endpoint_fqdn, context):
+  def __init__(
+      self,
+      api_adapter,
+      gke_uri,
+      gke_cluster,
+      kubeconfig,
+      internal_ip,
+      cross_connect_subnetwork,
+      private_endpoint_fqdn,
+      context,
+  ):
     """Constructor for KubeconfigProcessor.
 
     Args:
       api_adapter: the GKE api adapter used for running kubernetes commands
       gke_uri: the URI of the GKE cluster; for example,
-               'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
+        'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
       gke_cluster: the "location/name" of the GKE cluster. The location can be a
         zone or a region for e.g `us-central1-a/my-cluster`
       kubeconfig: the kubeconfig path
@@ -219,33 +231,50 @@ class KubeconfigProcessor(object):
         cluster_project = properties.VALUES.core.project.GetOrFail()
         location, name = gke_util.ParseGKECluster(self.gke_cluster)
 
-      self.gke_cluster_self_link, self.gke_cluster_uri = gke_util.ConstructGKEClusterResoureLinkAndURI(
-          cluster_project, location, name)
-      return _GetGKEKubeconfig(self.api_adapter, cluster_project, location,
-                               name, temp_kubeconfig_dir, self.internal_ip,
-                               self.cross_connect_subnetwork,
-                               self.private_endpoint_fqdn), None
+      self.gke_cluster_self_link, self.gke_cluster_uri = (
+          gke_util.ConstructGKEClusterResourceLinkAndURI(
+              cluster_project, location, name
+          )
+      )
+      return (
+          _GetGKEKubeconfig(
+              self.api_adapter,
+              cluster_project,
+              location,
+              name,
+              temp_kubeconfig_dir,
+              self.internal_ip,
+              self.cross_connect_subnetwork,
+              self.private_endpoint_fqdn,
+          ),
+          None,
+      )
 
     # We need to support in-cluster configuration so that gcloud can run from
     # a container on the Cluster we are registering. KUBERNETES_SERICE_PORT
     # and KUBERNETES_SERVICE_HOST environment variables are set in a kubernetes
     # cluster automatically, which can be used by kubectl to talk to
     # the API server.
-    if not self.kubeconfig and encoding.GetEncodedValue(
-        os.environ, 'KUBERNETES_SERVICE_PORT') and encoding.GetEncodedValue(
-            os.environ, 'KUBERNETES_SERVICE_HOST'):
+    if (
+        not self.kubeconfig
+        and encoding.GetEncodedValue(os.environ, 'KUBERNETES_SERVICE_PORT')
+        and encoding.GetEncodedValue(os.environ, 'KUBERNETES_SERVICE_HOST')
+    ):
       return None, None
 
     kubeconfig_file = (
-        self.kubeconfig or encoding.GetEncodedValue(os.environ, 'KUBECONFIG') or
-        '~/.kube/config')
+        self.kubeconfig
+        or encoding.GetEncodedValue(os.environ, 'KUBECONFIG')
+        or '~/.kube/config'
+    )
 
     kubeconfig = files.ExpandHomeDir(kubeconfig_file)
     if not kubeconfig:
       raise calliope_exceptions.MinimumArgumentException(
           ['--kubeconfig'],
           'Please specify --kubeconfig, set the $KUBECONFIG environment '
-          'variable, or ensure that $HOME/.kube/config exists')
+          'variable, or ensure that $HOME/.kube/config exists',
+      )
     kc = kconfig.Kubeconfig.LoadFromFile(kubeconfig)
 
     context_name = self.context
@@ -253,7 +282,9 @@ class KubeconfigProcessor(object):
     if context_name not in kc.contexts:
       raise exceptions.Error(
           'context [{}] does not exist in kubeconfig [{}]'.format(
-              context_name, kubeconfig))
+              context_name, kubeconfig
+          )
+      )
 
     return kubeconfig, context_name
 
@@ -272,7 +303,8 @@ class KubeconfigProcessor(object):
     # the first return value is the path to the kubeconfig file.
     if kubeconfig is not None:
       kube_client_config.load_kube_config(
-          config_file=kubeconfig, context=context)
+          config_file=kubeconfig, context=context
+      )
       return kube_client_lib.ApiClient()
     else:
       kube_client_config.load_incluster_config()
@@ -296,23 +328,25 @@ class KubernetesPoller(waiter.OperationPoller):
 class KubernetesClient(object):
   """A client for accessing a subset of the Kubernetes API."""
 
-  def __init__(self,
-               api_adapter=None,
-               gke_uri=None,
-               gke_cluster=None,
-               kubeconfig=None,
-               internal_ip=False,
-               cross_connect_subnetwork=None,
-               private_endpoint_fqdn=None,
-               context=None,
-               public_issuer_url=None,
-               enable_workload_identity=False):
+  def __init__(
+      self,
+      api_adapter=None,
+      gke_uri=None,
+      gke_cluster=None,
+      kubeconfig=None,
+      internal_ip=False,
+      cross_connect_subnetwork=None,
+      private_endpoint_fqdn=None,
+      context=None,
+      public_issuer_url=None,
+      enable_workload_identity=False,
+  ):
     """Constructor for KubernetesClient.
 
     Args:
       api_adapter: the GKE api adapter used for running kubernetes commands
       gke_uri: the URI of the GKE cluster; for example,
-               'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
+        'https://container.googleapis.com/v1/projects/my-project/locations/us-central1-a/clusters/my-cluster'
       gke_cluster: the "location/name" of the GKE cluster. The location can be a
         zone or a region for e.g `us-central1-a/my-cluster`
       kubeconfig: the kubeconfig path
@@ -346,9 +380,11 @@ class KubernetesClient(object):
         internal_ip=internal_ip,
         cross_connect_subnetwork=cross_connect_subnetwork,
         private_endpoint_fqdn=private_endpoint_fqdn,
-        context=context)
+        context=context,
+    )
     self.kubeconfig, self.context = self.processor.GetKubeconfigAndContext(
-        self.temp_kubeconfig_dir)
+        self.temp_kubeconfig_dir
+    )
 
     # This previously fixed b/152465794. It is probably unnecessary now that
     # we use the official K8s client, but it's also still true that we don't
@@ -356,13 +392,15 @@ class KubernetesClient(object):
     # this check later if we need the K8s client in other scenarios. For now,
     # the impact of switching to the official client can be minimized to only
     # scenarios where we actually need it.
-    if public_issuer_url or (enable_workload_identity and
-                             self.processor.gke_cluster_uri):
+    if public_issuer_url or (
+        enable_workload_identity and self.processor.gke_cluster_uri
+    ):
       return
 
     if enable_workload_identity:
-      self.kube_client = self.processor.GetKubeClient(self.kubeconfig,
-                                                      self.context)
+      self.kube_client = self.processor.GetKubeClient(
+          self.kubeconfig, self.context
+      )
 
   def __enter__(self):
     return self
@@ -379,11 +417,13 @@ class KubernetesClient(object):
       KubectlError: if failing to get check for cluster-admin permissions.
       RBACError: if cluster-admin permissions are not found.
     """
-    out, err = self._RunKubectl(['auth', 'can-i', '*', '*', '--all-namespaces'],
-                                None)
+    out, err = self._RunKubectl(
+        ['auth', 'can-i', '*', '*', '--all-namespaces'], None
+    )
     if err:
       raise KubectlError(
-          'Failed to check if the user is a cluster-admin: {}'.format(err))
+          'Failed to check if the user is a cluster-admin: {}'.format(err)
+      )
 
     if 'yes' not in out:
       raise RBACError(
@@ -393,15 +433,18 @@ class KubernetesClient(object):
           'ClusterRoleBinding resource in the cluster, run the following '
           'command:\n\n'
           'kubectl create clusterrolebinding [BINDING_NAME]  --clusterrole '
-          'cluster-admin --user [USER]')
+          'cluster-admin --user [USER]'
+      )
 
   def GetNamespaceUID(self, namespace):
     out, err = self._RunKubectl(
-        ['get', 'namespace', namespace, '-o', 'jsonpath=\'{.metadata.uid}\''],
-        None)
+        ['get', 'namespace', namespace, '-o', "jsonpath='{.metadata.uid}'"],
+        None,
+    )
     if err:
       raise exceptions.Error(
-          'Failed to get the UID of the cluster: {}'.format(err))
+          'Failed to get the UID of the cluster: {}'.format(err)
+      )
     return out.replace("'", '')
 
   def GetServerVersion(self):
@@ -416,20 +459,28 @@ class KubernetesClient(object):
     out, err = self._RunKubectl(['version', '-o', 'json'], None)
     if err:
       raise exceptions.Error(
-          'Failed to get the server version of the cluster: {}'.format(err))
+          'Failed to get the server version of the cluster: {}'.format(err)
+      )
 
     # kubectl version operation does not support jsonpath to retrieve the
     # details of the individual fields, so this is a workaround for now.
     out = json.loads(out)
-    version_str = out['serverVersion']['major'] + '.' + out['serverVersion'][
-        'minor']
+    version_str = (
+        out['serverVersion']['major'] + '.' + out['serverVersion']['minor']
+    )
     return version_str
 
   def GetEvents(self, namespace):
-    out, err = self._RunKubectl([
-        'get', 'events', '--namespace=' + namespace,
-        "--sort-by='{.lastTimestamp}'"
-    ], None)
+    """Get k8s events for the namespace."""
+    out, err = self._RunKubectl(
+        [
+            'get',
+            'events',
+            '--namespace=' + namespace,
+            "--sort-by='{.lastTimestamp}'",
+        ],
+        None,
+    )
     if err:
       raise exceptions.Error()
     return out
@@ -449,96 +500,71 @@ class KubernetesClient(object):
     # Check if any namespace with label exists.
     out, err = self._RunKubectl(
         ['get', 'namespaces', '--selector', label, '-o', 'jsonpath={.items}'],
-        None)
+        None,
+    )
     if err:
       raise exceptions.Error(
-          'Failed to list namespaces in the cluster: {}'.format(err))
+          'Failed to list namespaces in the cluster: {}'.format(err)
+      )
     if out == '[]':
       return []
-    out, err = self._RunKubectl([
-        'get', 'namespaces', '--selector', label, '-o',
-        'jsonpath={.items[0].metadata.name}'
-    ], None)
+    out, err = self._RunKubectl(
+        [
+            'get',
+            'namespaces',
+            '--selector',
+            label,
+            '-o',
+            'jsonpath={.items[0].metadata.name}',
+        ],
+        None,
+    )
     if err:
       raise exceptions.Error(
-          'Failed to list namespaces in the cluster: {}'.format(err))
+          'Failed to list namespaces in the cluster: {}'.format(err)
+      )
     return out.strip().split(' ') if out else []
 
   def DeleteMembership(self):
     _, err = self._RunKubectl(['delete', 'membership', 'membership'])
     return err
 
-  def RbacPolicyName(self, policy_name, project_id, membership, user):
-    """Generate RBAC policy name."""
-    user_name = user.split('@')[0]
-    metadata_name = project_id + '_' + user_name + '_' + membership
-    if policy_name == 'impersonate':
-      return RBAC_IMPERSONATE_POLICY_NAME.format(metadata=metadata_name)
-    if policy_name == 'permission':
-      return RBAC_PERMISSION_POLICY_NAME.format(metadata=metadata_name)
-    if policy_name == 'anthos':
-      return RBAC_ANTHOS_SUPPORT_POLICY_NAME.format(metadata=metadata_name)
-
   # Get the clusterrolebinding/rolebinding from the RBAC permission policy.
   def GetRbacPermissionPolicy(self, rbac_policy_name, role):
     """Get the RBAC cluster role binding policy."""
-    # TODO(b/200192930): Remove the regex in next change.
     cluster_pattern = re.compile('^clusterrole/')
     namespace_pattern = re.compile('^role/')
 
     if cluster_pattern.match(role.lower()):
       out, error = self._RunKubectl(
-          ['get', 'clusterrolebinding', rbac_policy_name, '-o', 'yaml'])
+          ['get', 'clusterrolebinding', rbac_policy_name, '-o', 'yaml']
+      )
       if error:
         raise exceptions.Error(
-            'Error retrieving RBAC policy: {}'.format(rbac_policy_name))
+            'Error retrieving RBAC policy: {}'.format(rbac_policy_name)
+        )
       return out
     if namespace_pattern.match(role.lower()):
       out, error = self._RunKubectl(
-          ['get', 'rolebinding', rbac_policy_name, '-o', 'yaml'])
+          ['get', 'rolebinding', rbac_policy_name, '-o', 'yaml']
+      )
       if error:
         raise exceptions.Error(
-            'Error retrieving RBAC policy: {}'.format(rbac_policy_name))
+            'Error retrieving RBAC policy: {}'.format(rbac_policy_name)
+        )
       return out
 
-  def CleanUpRbacPolicy(self, membership, role, project_id, user,
-                        anthos_support):
-    """Get the RBAC cluster role binding policy."""
-    # TODO(b/200192930): Remove the regex in next change.
-    cluster_pattern = re.compile('^clusterrole/')
-    namespace_pattern = re.compile('^role/')
-
-    rbac_to_check = [('clusterrole',
-                      self.RbacPolicyName('impersonate', project_id, membership,
-                                          user)),
-                     ('clusterrolebinding',
-                      self.RbacPolicyName('impersonate', project_id, membership,
-                                          user))]
-    # Check anthos-support permission policy when '--anthos-support' specified.
-    if anthos_support:
-      rbac_to_check.append(('clusterrolebinding',
-                            self.RbacPolicyName('anthos', project_id,
-                                                membership, user)))
-    # Check namespace permission policy when role is specified as
-    # 'role/namespace/namespace-permission'.
-    elif cluster_pattern.match(role.lower()):
-      rbac_to_check.append(('clusterrolebinding',
-                            self.RbacPolicyName('permission', project_id,
-                                                membership, user)))
-    # Check RBAC permission policy for general clusterrole.
-    elif namespace_pattern.match(role.lower()):
-      rbac_to_check.append(('rolebinding',
-                            self.RbacPolicyName('permission', project_id,
-                                                membership, user)))
-
+  def CleanUpRbacPolicy(self, rbac_to_check):
+    """Clean up the RBAC cluster role binding policy."""
     for rbac_policy_pair in rbac_to_check:
       rbac_type = rbac_policy_pair[0]
       rbac_name = rbac_policy_pair[1]
       out, err = self._RunKubectl(['delete', rbac_type, rbac_name], None)
       if err:
         if 'NotFound' in err:
-          log.status.Print('{} for RBAC policy: {} not exist.'.format(
-              rbac_type, rbac_name))
+          log.status.Print(
+              '{} for RBAC policy: {} not exist.'.format(rbac_type, rbac_name)
+          )
           continue
         else:
           raise exceptions.Error('Error deleting RBAC policy: {}'.format(err))
@@ -547,42 +573,14 @@ class KubernetesClient(object):
     return True
 
   def GetRbacPolicyDiff(self, rbac_policy_file):
-
     out, err = self._RunKubectlDiff(['diff', '-f', rbac_policy_file], None)
     return out, err
 
   # Check the existing RBAC policy for specified cluster. Return false if there
   # are existing one.
-  def GetRbacPolicy(self, membership, role, project_id, user, anthos_support):
+  def GetRbacPolicy(self, rbac_to_check):
     """Get the RBAC cluster role binding policy."""
     not_found = False
-    # TODO(b/200192930): Remove the regex in next change.
-    cluster_pattern = re.compile('^clusterrole/')
-    namespace_pattern = re.compile('^role/')
-
-    rbac_to_check = [('clusterrole',
-                      self.RbacPolicyName('impersonate', project_id, membership,
-                                          user)),
-                     ('clusterrolebinding',
-                      self.RbacPolicyName('impersonate', project_id, membership,
-                                          user))]
-    # Check anthos-support permission policy when '--anthos-support' specified.
-    if anthos_support:
-      rbac_to_check.append(('clusterrolebinding',
-                            self.RbacPolicyName('anthos', project_id,
-                                                membership, user)))
-    # Check namespace permission policy when role is specified as
-    # 'role/namespace/namespace-permission'.
-    elif cluster_pattern.match(role.lower()):
-      rbac_to_check.append(('clusterrolebinding',
-                            self.RbacPolicyName('permission', project_id,
-                                                membership, user)))
-    # Check RBAC permission policy for general clusterrole.
-    elif namespace_pattern.match(role.lower()):
-      rbac_to_check.append(('rolebinding',
-                            self.RbacPolicyName('permission', project_id,
-                                                membership, user)))
-
     for rbac_policy_pair in rbac_to_check:
       rbac_type = rbac_policy_pair[0]
       rbac_name = rbac_policy_pair[1]
@@ -597,11 +595,66 @@ class KubernetesClient(object):
     if not_found:
       return True
 
+  def GetRBACForOperations(
+      self, membership, role, project_id, identity, is_user, anthos_support
+  ):
+    """Get the formatted RBAC policy names."""
+    cluster_pattern = re.compile('^clusterrole/')
+    namespace_pattern = re.compile('^role/')
+    rbac_to_check = []
+
+    if is_user:
+      rbac_to_check.extend([
+          (
+              'clusterrole',
+              format_util.RbacPolicyName(
+                  'impersonate', project_id, membership, identity, is_user
+              ),
+          ),
+          (
+              'clusterrolebinding',
+              format_util.RbacPolicyName(
+                  'impersonate', project_id, membership, identity, is_user
+              ),
+          ),
+      ])
+    # Check anthos-support permission policy when '--anthos-support' specified.
+    if anthos_support:
+      rbac_to_check.append((
+          'clusterrolebinding',
+          format_util.RbacPolicyName(
+              'anthos', project_id, membership, identity, is_user
+          ),
+      ))
+    # Check namespace permission policy when role is specified as
+    # 'role/namespace/namespace-permission'.
+    elif cluster_pattern.match(role.lower()):
+      rbac_to_check.append((
+          'clusterrolebinding',
+          format_util.RbacPolicyName(
+              'permission', project_id, membership, identity, is_user
+          ),
+      ))
+    # Check RBAC permission policy for general clusterrole.
+    elif namespace_pattern.match(role.lower()):
+      rbac_to_check.append((
+          'rolebinding',
+          format_util.RbacPolicyName(
+              'permission', project_id, membership, identity, is_user
+          ),
+      ))
+    return rbac_to_check
+
   def MembershipCRDExists(self):
-    _, err = self._RunKubectl([
-        'get', 'customresourcedefinitions.apiextensions.k8s.io',
-        'memberships.hub.gke.io'
-    ], None)
+    """Returns a boolean indicating if the Membership CRD exists."""
+    _, err = self._RunKubectl(
+        [
+            'get',
+            'customresourcedefinitions.apiextensions.k8s.io',
+            'memberships.hub.gke.io',
+        ],
+        None,
+    )
     if err:
       if 'NotFound' in err:
         return False
@@ -611,7 +664,8 @@ class KubernetesClient(object):
   def GetMembershipCR(self):
     """Get the YAML representation of the Membership CR."""
     out, err = self._RunKubectl(
-        ['get', 'membership', 'membership', '-o', 'yaml'], None)
+        ['get', 'membership', 'membership', '-o', 'yaml'], None
+    )
     if err:
       if 'NotFound' in err:
         return ''
@@ -620,10 +674,16 @@ class KubernetesClient(object):
 
   def GetMembershipCRD(self):
     """Get the YAML representation of the Membership CRD."""
-    out, err = self._RunKubectl([
-        'get', 'customresourcedefinitions.apiextensions.k8s.io',
-        'memberships.hub.gke.io', '-o', 'yaml'
-    ], None)
+    out, err = self._RunKubectl(
+        [
+            'get',
+            'customresourcedefinitions.apiextensions.k8s.io',
+            'memberships.hub.gke.io',
+            '-o',
+            'yaml',
+        ],
+        None,
+    )
     if err:
       if 'NotFound' in err:
         return ''
@@ -637,7 +697,8 @@ class KubernetesClient(object):
 
     out, err = self._RunKubectl(
         ['get', 'membership', 'membership', '-o', 'jsonpath={.spec.owner.id}'],
-        None)
+        None,
+    )
     if err:
       if 'NotFound' in err:
         return None
@@ -656,30 +717,35 @@ class KubernetesClient(object):
           pre_start_sleep_ms=NAMESPACE_DELETION_INITIAL_WAIT_MS,
           max_wait_ms=NAMESPACE_DELETION_TIMEOUT_MS,
           wait_ceiling_ms=NAMESPACE_DELETION_MAX_POLL_INTERVAL_MS,
-          sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS)
+          sleep_ms=NAMESPACE_DELETION_INITIAL_POLL_INTERVAL_MS,
+      )
       if error:
         raise exceptions.Error(
-            'Membership CRD creation failed to complete: {}'.format(error))
+            'Membership CRD creation failed to complete: {}'.format(error)
+        )
     if membership_cr_manifest:
       _, err = self.Apply(membership_cr_manifest)
       if err:
         raise exceptions.Error(
-            'Failed to apply Membership CR to cluster: {}'.format(err))
+            'Failed to apply Membership CR to cluster: {}'.format(err)
+        )
 
   def ApplyRbacPolicy(self, rbac_policy_file):
     """Applying RBAC policy to Cluster."""
     _, err = self.ApplyRbac(rbac_policy_file)
     if err:
       raise exceptions.Error(
-          'Failed to apply rbac policy file to cluster: {}'.format(err))
+          'Failed to apply rbac policy file to cluster: {}'.format(err)
+      )
 
   def NamespaceExists(self, namespace):
     _, err = self._RunKubectl(['get', 'namespace', namespace])
     return err is None
 
   def DeleteNamespace(self, namespace):
-    _, err = self._RunKubectl(['delete', 'namespace', namespace],
-                              timeout_flag='--timeout')
+    _, err = self._RunKubectl(
+        ['delete', 'namespace', namespace], timeout_flag='--timeout'
+    )
     return err
 
   def GetResourceField(self, namespace, resource, json_path):
@@ -768,7 +834,8 @@ class KubernetesClient(object):
     # used instead, there is no token value, and the client skips modifying
     # the headers.
     self.kube_client.update_params_for_auth(
-        headers=headers, querys=None, auth_settings=['BearerToken'])
+        headers=headers, querys=None, auth_settings=['BearerToken']
+    )
 
     # The official client takes care of raising ApiException on bad HTTP codes,
     # and also takes care of decoding the data from bytes to UTF-8 in PY3.
@@ -801,8 +868,11 @@ class KubernetesClient(object):
         url = '/.well-known/openid-configuration'
         return self._ClusterRequest('GET', url, headers=headers)
     except Exception as e:  # pylint: disable=broad-except
-      raise exceptions.Error('Failed to get OpenID Provider Configuration '
-                             'from {}: {}'.format(url, e))
+      raise exceptions.Error(
+          'Failed to get OpenID Provider Configuration from {}: {}'.format(
+              url, e
+          )
+      )
 
   def GetOpenIDKeyset(self, jwks_uri=None):
     """Get the JSON Web Key Set for the K8s API server.
@@ -829,8 +899,9 @@ class KubernetesClient(object):
         url = '/openid/v1/jwks'
         return self._ClusterRequest('GET', url, headers=headers)
     except Exception as e:  # pylint: disable=broad-except
-      raise exceptions.Error('Failed to get JSON Web Key Set '
-                             'from {}: {}'.format(url, e))
+      raise exceptions.Error(
+          'Failed to get JSON Web Key Set from {}: {}'.format(url, e)
+      )
 
   def _RunKubectl(self, args, stdin=None, timeout_flag='--request-timeout'):
     """Runs a kubectl command with the cluster referenced by this client.
@@ -856,13 +927,16 @@ class KubernetesClient(object):
     out = io.StringIO()
     err = io.StringIO()
     returncode = execution_utils.Exec(
-        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin)
+        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin
+    )
 
     if returncode != 0 and not err.getvalue():
       err.write('kubectl exited with return code {}'.format(returncode))
 
-    return out.getvalue() if returncode == 0 else None, err.getvalue(
-    ) if returncode != 0 else None
+    return (
+        out.getvalue() if returncode == 0 else None,
+        err.getvalue() if returncode != 0 else None,
+    )
 
   def _RunKubectlDiff(self, args, stdin=None):
     """Runs a kubectl diff command with the specified args.
@@ -887,12 +961,15 @@ class KubernetesClient(object):
     out = io.StringIO()
     err = io.StringIO()
     returncode = execution_utils.Exec(
-        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin)
+        cmd, no_exit=True, out_func=out.write, err_func=err.write, in_str=stdin
+    )
     # kubectl diff return is different with other CLI.
     # Exit status: 0 No differences were found. 1 Differences were found.
     # >1 Kubectl or diff failed with an error.
-    return out.getvalue() if returncode == 1 else None, err.getvalue(
-    ) if returncode > 1 else None
+    return (
+        out.getvalue() if returncode == 1 else None,
+        err.getvalue() if returncode > 1 else None,
+    )
 
 
 class DeploymentPodsAvailableOperation(object):
@@ -908,8 +985,9 @@ class DeploymentPodsAvailableOperation(object):
     self.error = None
 
   def __str__(self):
-    return '<Pod availability for {}/{}>'.format(self.namespace,
-                                                 self.deployment_name)
+    return '<Pod availability for {}/{}>'.format(
+        self.namespace, self.deployment_name
+    )
 
   def Update(self):
     """Updates this operation with the latest Deployment availability status."""
@@ -929,8 +1007,10 @@ class DeploymentPodsAvailableOperation(object):
     # Ensure that the Deployment has the correct image, so that this operation
     # is tracking the status of a new rollout, not the pre-rollout steady state.
     deployment_image, err = self.kube_client.GetResourceField(
-        self.namespace, deployment_resource,
-        '.spec.template.spec.containers[0].image')
+        self.namespace,
+        deployment_resource,
+        '.spec.template.spec.containers[0].image',
+    )
     if err:
       _HandleErr(err)
       return
@@ -938,25 +1018,29 @@ class DeploymentPodsAvailableOperation(object):
       return
 
     spec_replicas, err = self.kube_client.GetResourceField(
-        self.namespace, deployment_resource, '.spec.replicas')
+        self.namespace, deployment_resource, '.spec.replicas'
+    )
     if err:
       _HandleErr(err)
       return
 
     status_replicas, err = self.kube_client.GetResourceField(
-        self.namespace, deployment_resource, '.status.replicas')
+        self.namespace, deployment_resource, '.status.replicas'
+    )
     if err:
       _HandleErr(err)
       return
 
     available_replicas, err = self.kube_client.GetResourceField(
-        self.namespace, deployment_resource, '.status.availableReplicas')
+        self.namespace, deployment_resource, '.status.availableReplicas'
+    )
     if err:
       _HandleErr(err)
       return
 
     updated_replicas, err = self.kube_client.GetResourceField(
-        self.namespace, deployment_resource, '.status.updatedReplicas')
+        self.namespace, deployment_resource, '.status.updatedReplicas'
+    )
     if err:
       _HandleErr(err)
       return
@@ -1007,9 +1091,16 @@ class NamespaceDeleteOperation(object):
       self.error = err
 
 
-def _GetGKEKubeconfig(api_adapter, project, location_id, cluster_id,
-                      temp_kubeconfig_dir, internal_ip,
-                      cross_connect_subnetwork, private_endpoint_fqdn):
+def _GetGKEKubeconfig(
+    api_adapter,
+    project,
+    location_id,
+    cluster_id,
+    temp_kubeconfig_dir,
+    internal_ip,
+    cross_connect_subnetwork,
+    private_endpoint_fqdn,
+):
   """The kubeconfig of GKE Cluster is fetched using the GKE APIs.
 
   The 'KUBECONFIG' value in `os.environ` will be temporarily updated with
@@ -1054,10 +1145,15 @@ def _GetGKEKubeconfig(api_adapter, project, location_id, cluster_id,
     if not valid_creds and not c_util.ClusterConfig.UseGCPAuthProvider():
       raise c_util.Error(
           'Unable to get cluster credentials. User must have edit '
-          'permission on {}'.format(cluster_ref.projectId))
-    c_util.ClusterConfig.Persist(cluster, cluster_ref.projectId, internal_ip,
-                                 cross_connect_subnetwork,
-                                 private_endpoint_fqdn)
+          'permission on {}'.format(cluster_ref.projectId)
+      )
+    c_util.ClusterConfig.Persist(
+        cluster,
+        cluster_ref.projectId,
+        internal_ip,
+        cross_connect_subnetwork,
+        private_endpoint_fqdn,
+    )
   finally:
     if old_kubeconfig:
       encoding.SetEncodedValue(os.environ, 'KUBECONFIG', old_kubeconfig)
@@ -1086,16 +1182,20 @@ def ValidateClusterIdentifierFlags(kube_client, args):
   is_gke_cluster = IsGKECluster(kube_client)
   if args.context and is_gke_cluster:
     raise calliope_exceptions.InvalidArgumentException(
-        '--context', '--context cannot be used for GKE clusters. '
-        'Either --gke-uri | --gke-cluster must be specified')
+        '--context',
+        '--context cannot be used for GKE clusters. '
+        'Either --gke-uri | --gke-cluster must be specified',
+    )
 
   if args.gke_uri and not is_gke_cluster:
     raise calliope_exceptions.InvalidArgumentException(
-        '--gke-uri', 'use --context for non GKE clusters.')
+        '--gke-uri', 'use --context for non GKE clusters.'
+    )
 
   if args.gke_cluster and not is_gke_cluster:
     raise calliope_exceptions.InvalidArgumentException(
-        '--gke-cluster', 'use --context for non GKE clusters.')
+        '--gke-cluster', 'use --context for non GKE clusters.'
+    )
 
 
 def IsGKECluster(kube_client):
@@ -1124,12 +1224,15 @@ def IsGKECluster(kube_client):
     return True
 
   vm_instance_id, err = kube_client.GetResourceField(
-      None, 'nodes',
-      '.items[*].metadata.annotations.container\\.googleapis\\.com/instance_id')
+      None,
+      'nodes',
+      '.items[*].metadata.annotations.container\\.googleapis\\.com/instance_id',
+  )
 
   if err:
     raise exceptions.Error(
-        'kubectl returned non-zero status code: {}'.format(err))
+        'kubectl returned non-zero status code: {}'.format(err)
+    )
 
   if not vm_instance_id:
     return False

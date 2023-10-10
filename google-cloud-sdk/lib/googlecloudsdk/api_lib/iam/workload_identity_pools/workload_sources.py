@@ -25,6 +25,7 @@ from googlecloudsdk.command_lib.iam import identity_pool_waiter
 from googlecloudsdk.core import resources as sdkresources
 
 
+# TODO(b/301983349): Delete this once other CLs have been submitted.
 def CreateGcpWorkloadSource(
     client,
     messages,

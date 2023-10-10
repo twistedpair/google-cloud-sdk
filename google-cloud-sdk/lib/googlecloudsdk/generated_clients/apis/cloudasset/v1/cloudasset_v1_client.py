@@ -40,6 +40,7 @@ class CloudassetV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.assets = self.AssetsService(self)
+    self.effectiveIamDenyPolicies = self.EffectiveIamDenyPoliciesService(self)
     self.effectiveIamPolicies = self.EffectiveIamPoliciesService(self)
     self.feeds = self.FeedsService(self)
     self.operations = self.OperationsService(self)
@@ -80,6 +81,43 @@ class CloudassetV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='CloudassetAssetsListRequest',
         response_type_name='ListAssetsResponse',
+        supports_download=False,
+    )
+
+  class EffectiveIamDenyPoliciesService(base_api.BaseApiService):
+    """Service class for the effectiveIamDenyPolicies resource."""
+
+    _NAME = 'effectiveIamDenyPolicies'
+
+    def __init__(self, client):
+      super(CloudassetV1.EffectiveIamDenyPoliciesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the effective IAM deny policies for a project, folder or organization.
+
+      Args:
+        request: (CloudassetEffectiveIamDenyPoliciesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListEffectiveIamDenyPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/{v1Id}/effectiveIamDenyPolicies',
+        http_method='GET',
+        method_id='cloudasset.effectiveIamDenyPolicies.list',
+        ordered_params=['fullResourceName'],
+        path_params=['fullResourceName'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+fullResourceName}/effectiveIamDenyPolicies',
+        request_field='',
+        request_type_name='CloudassetEffectiveIamDenyPoliciesListRequest',
+        response_type_name='ListEffectiveIamDenyPoliciesResponse',
         supports_download=False,
     )
 
@@ -476,7 +514,7 @@ class CloudassetV1(base_api.BaseApiClient):
         method_id='cloudasset.analyzeIamPolicy',
         ordered_params=['scope'],
         path_params=['scope'],
-        query_params=['analysisQuery_accessSelector_permissions', 'analysisQuery_accessSelector_roles', 'analysisQuery_conditionContext_accessTime', 'analysisQuery_identitySelector_identity', 'analysisQuery_options_analyzeServiceAccountImpersonation', 'analysisQuery_options_expandGroups', 'analysisQuery_options_expandResources', 'analysisQuery_options_expandRoles', 'analysisQuery_options_outputGroupEdges', 'analysisQuery_options_outputResourceEdges', 'analysisQuery_resourceSelector_fullResourceName', 'executionTimeout', 'savedAnalysisQuery'],
+        query_params=['analysisQuery_accessSelector_permissions', 'analysisQuery_accessSelector_roles', 'analysisQuery_conditionContext_accessTime', 'analysisQuery_identitySelector_identity', 'analysisQuery_options_analyzeServiceAccountImpersonation', 'analysisQuery_options_expandGroups', 'analysisQuery_options_expandResources', 'analysisQuery_options_expandRoles', 'analysisQuery_options_includeDenyPolicyAnalysis', 'analysisQuery_options_outputGroupEdges', 'analysisQuery_options_outputResourceEdges', 'analysisQuery_resourceSelector_fullResourceName', 'executionTimeout', 'savedAnalysisQuery'],
         relative_path='v1/{+scope}:analyzeIamPolicy',
         request_field='',
         request_type_name='CloudassetAnalyzeIamPolicyRequest',

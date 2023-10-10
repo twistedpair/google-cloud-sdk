@@ -574,9 +574,10 @@ class GkemulticloudProjectsLocationsAzureClustersAzureNodePoolsCreateRequest(_me
       GoogleCloudGkemulticloudV1AzureNodePool resource to be passed as the
       request body.
     parent: Required. The AzureCluster resource where this node pool will be
-      created. Location names are formatted as `projects//locations/`. See
-      [Resource Names](https://cloud.google.com/apis/design/resource_names)
-      for more details on Google Cloud resource names.
+      created. `AzureCluster` names are formatted as
+      `projects//locations//azureClusters/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
     validateOnly: If set, only validate the request, but do not actually
       create the node pool.
   """
@@ -742,7 +743,7 @@ class GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest
   Fields:
     azureCluster: Required. The name of the AzureCluster resource to
       authenticate to. `AzureCluster` names are formatted as
-      `projects//locations//AzureClusters/`. See [Resource
+      `projects//locations//azureClusters/`. See [Resource
       Names](https://cloud.google.com/apis/design/resource_names) for more
       details on Google Cloud resource names.
   """

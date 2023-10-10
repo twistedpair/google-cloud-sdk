@@ -151,3 +151,15 @@ group:
     parameter_name: groupsId
     attribute_name: group
     help: Id of the group.
+
+regionalEndpoint:
+  name: regionalEndpoint
+  collection: networkconnectivity.projects.locations.regionalEndpoints
+  request_id_field: regionalEndpointId
+  attributes:
+  - *project
+  - *region
+  - &regionalEndpoint
+    parameter_name: regionalEndpointsId
+    attribute_name: regional_endpoint
+    help: Id of the regionalEndpoint.

@@ -977,14 +977,13 @@ def _ConstructAutoscalingPatch(scheduler_cpu, worker_cpu, web_server_cpu,
           storageGb=worker_storage_gb,
           minCount=worker_min_count,
           maxCount=worker_max_count))
+  if (triggerer_count is not None or
+      triggerer_cpu or
+      triggerer_memory_gb):
+    workload_resources['triggerer'] = messages.TriggererResource(
+        cpu=triggerer_cpu, memoryGb=triggerer_memory_gb, count=triggerer_count
+    )
   if release_track != base.ReleaseTrack.GA:
-    if (triggerer_count is not None or
-        triggerer_cpu or
-        triggerer_memory_gb):
-      workload_resources['triggerer'] = messages.TriggererResource(
-          cpu=triggerer_cpu, memoryGb=triggerer_memory_gb, count=triggerer_count
-      )
-
     if dag_processor_count is not None:
       workload_resources['dagProcessor'] = messages.DagProcessorResource(
           cpu=dag_processor_cpu,

@@ -52608,8 +52608,8 @@ class ManagedInstance(_messages.Message):
       empty when the instance does not exist.
     lastAttempt: [Output Only] Information about the last attempt to create or
       delete the instance.
-    name: [Output Only] The name of the instance. The name will always exist
-      even if the instance has not yet been created.
+    name: [Output Only] The name of the instance. The name always exists even
+      if the instance has not yet been created.
     preservedStateFromConfig: [Output Only] Preserved state applied from per-
       instance config for this instance.
     preservedStateFromPolicy: [Output Only] Preserved state generated based on

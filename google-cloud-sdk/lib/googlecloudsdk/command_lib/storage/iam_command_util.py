@@ -24,7 +24,6 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
-from googlecloudsdk.command_lib.storage.tasks import set_iam_policy_task
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_executor
 from googlecloudsdk.command_lib.storage.tasks import task_graph_executor
@@ -53,7 +52,8 @@ def execute_set_iam_task_iterator(iterator, continue_on_error):
   """Executes single or multiple set-IAM tasks with different handling.
 
   Args:
-    iterator (iter[SetIamPolicyTask]): Contains set IAM task(s) to execute.
+    iterator (iter[set_iam_policy_task._SetIamPolicyTask]): Contains set IAM
+      task(s) to execute.
     continue_on_error (bool): If multiple tasks in iterator, determines whether
       to continue executing after an error.
 
@@ -84,7 +84,7 @@ def execute_set_iam_task_iterator(iterator, continue_on_error):
   return exit_code, None
 
 
-def add_iam_binding_to_resource(args, url, messages, policy):
+def add_iam_binding_to_resource(args, url, messages, policy, task_type):
   """Extracts new binding from args and applies to existing policy.
 
   Args:
@@ -92,6 +92,8 @@ def add_iam_binding_to_resource(args, url, messages, policy):
     url (CloudUrl): URL of target resource, already validated for type.
     messages (object): Must contain IAM data types needed to create new policy.
     policy (object): Existing IAM policy on target to update.
+    task_type (set_iam_policy_task._SetIamPolicyTask): The task instance to use
+      to execute the iam binding change.
 
   Returns:
     object: The updated IAM policy set in the cloud.
@@ -101,18 +103,20 @@ def add_iam_binding_to_resource(args, url, messages, policy):
       messages.Policy.BindingsValueListEntry, messages.Expr, policy,
       args.member, args.role, condition)
 
-  task_output = set_iam_policy_task.SetIamPolicyTask(url, policy).execute()
+  task_output = task_type(url, policy).execute()
   return task_util.get_first_matching_message_payload(task_output.messages,
                                                       task.Topic.SET_IAM_POLICY)
 
 
-def remove_iam_binding_from_resource(args, url, policy):
+def remove_iam_binding_from_resource(args, url, policy, task_type):
   """Extracts binding from args and removes it from existing policy.
 
   Args:
     args (argparse Args): Contains flags user ran command with.
     url (CloudUrl): URL of target resource, already validated for type.
     policy (object): Existing IAM policy on target to update.
+    task_type (set_iam_policy_task._SetIamPolicyTask): The task instance to use
+      to execute the iam binding change.
 
   Returns:
     object: The updated IAM policy set in the cloud.
@@ -122,6 +126,6 @@ def remove_iam_binding_from_resource(args, url, policy):
                                                    args.role, condition,
                                                    args.all)
 
-  task_output = set_iam_policy_task.SetIamPolicyTask(url, policy).execute()
+  task_output = task_type(url, policy).execute()
   return task_util.get_first_matching_message_payload(task_output.messages,
                                                       task.Topic.SET_IAM_POLICY)

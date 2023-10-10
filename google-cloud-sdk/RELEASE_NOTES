@@ -5,6 +5,109 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 450.0.0 (2023-10-10)
+
+### AI
+
+* Promoted `gcloud ai indexes upsert-datapoints` and `gcloud ai indexes remove-datapoints`to GA.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.20 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.20>.
+
+### Cloud Bigtable
+
+* Rebuilt cbt cli with go version 1.21.1 which fixed CVE-2023-39319.
+
+### Cloud Bigtable Emulator
+
+* Rebuilding cbt emulator with go version 1.21.1 which fixed CVE-2023-29409.
+
+### Cloud Composer
+
+* Added  `--triggerer-count` to `gcloud composer environments create/update` to specify number of Airflow triggerers.
+* Added  `--triggerer-cpu` to `gcloud composer environments create/update` to specify CPU allocated to Airflow triggerer.
+* Added  `--triggerer-memory` to `gcloud composer environments create/update` to specify memory allocated to Airflow triggerer.
+
+### Cloud Firestore
+
+* Promoted Cloud Firestore PiTR `gcloud` CLI changes to beta and GA.
+* Promoted `--enable-pitr` and `--no-enable-pitr` flag of `gcloud firestore databases create` command to GA.
+* Promoted `--enable-pitr` and `--no-enable-pitr` flag of `gcloud firestore databases create` command to beta.
+* Promoted `--enable-pitr` and `--no-enable-pitr` flag of `gcloud firestore databases update` command to GA.
+* Promoted `--enable-pitr` and `--no-enable-pitr` flag of `gcloud firestore databases update` command to beta.
+
+### Cloud Run
+
+* Show container dependencies in `gcloud run services describe` and `gcloud run revisions describe`.
+
+### Cloud Storage
+
+* Added option to read from stdin to `ls` command.
+
+### Compute Engine
+
+* Promoted `--requested-features` flag of `gcloud compute interconnects create` to GA.
+* Promoted `gcloud compute interconnects macsec get-config` to GA.
+* Promoted `gcloud compute interconnects macsec update` to GA.
+* Promoted `gcloud compute interconnects macsec add-key` to GA.
+* Promoted `gcloud compute interconnects macsec remove-key` to GA.
+* Promoted `gcloud compute interconnects macsec update-key` to GA.
+* Promoted the following flags of `gcloud compute instance-groups managed create`, `gcloud compute instance-groups managed create-instance`, and `gcloud compute instance-groups managed instance-configs create` to GA:
+    - `--stateful-internal-ip`,
+    - `--stateful-external-ip`.
+* Promoted the following flags of `gcloud compute instance-groups managed update` and `gcloud compute instance-groups managed instance-configs update` to GA:
+    - `--stateful-internal-ip`,
+    - `--remove-stateful-internal-ips`,
+    - `--stateful-external-ip`,
+    - `--remove-stateful-external-ips`.
+* Promoted `--maintenance-interval` flag for `gcloud compute sole-tenancy node-groups create` to beta.
+* Promoted `gcloud compute sole-tenancy node-groups perform-maintenance` to beta.
+* Promoted `--delete-at-time` and `--delete-after-duration`` flags for `gcloud compute reservations create|update` surfaces to beta.
+
+### Database Migration
+
+* Added the ability to specify an empty password when creating MySQL connection
+  profiles using `gcloud database-migration connection-profiles create mysql` command.
+
+### Dataproc Metastore
+
+*   Added `--endpoint-protocol` flag to `gcloud metastore services update`
+    to specify the Customer-managed KMS key name to use for encrypting the
+    Dataproc Metastore service.
+
+### Distributed Cloud Edge
+
+* Added `--lro-timeout` flag for `gcloud edge-cloud container clusters node-pools create` and `gcloud edge-cloud container clusters node-pools create` to allow specifying a custom duration for the `gcloud` CLI to wait on LROs.
+
+### GKE Hub
+
+* Fixed the issue of applying generated RBAC policies for third-party identities using the command `gcloud container fleet memberships generate-gateway-rbac`.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.44 to v1.0.0-beta.45. See <https://github.com/GoogleContainerTools/kpt/releases/tag/v1.0.0-beta.45> for more details.
+
+### Kubernetes Engine
+
+* Modified local ssd count value of `--ephemeral-storage-local-ssd`,
+`--ephemeral-storage`, and `--local-nvme-ssd-block` flags from `gcloud container
+cluster create/update` to be optional to support third generation machine types,
+which specifiy a static count. Pre-Gen3 behavior is unchanged.
+
+### Network Services
+
+* Updated `gcloud network-services gateways` to show a new `ipVersion` field for alpha version.
+
+### Workbench
+
+* Fixed issues with `boot-disk-kms-key` and `data-disk-kms-key` flags from `gcloud workbench instances create` command not working properly.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 449.0.0 (2023-10-03)
 
 ### Breaking Changes

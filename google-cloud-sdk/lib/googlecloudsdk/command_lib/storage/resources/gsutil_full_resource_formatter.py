@@ -82,6 +82,7 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
         title='Public access prevention', default=None
     ),
     rpo=base.FieldDisplayTitleAndDefault(title='RPO', default=None),
+    autoclass=None,
     autoclass_enabled_time=base.FieldDisplayTitleAndDefault(
         title='Autoclass', default=None
     ),

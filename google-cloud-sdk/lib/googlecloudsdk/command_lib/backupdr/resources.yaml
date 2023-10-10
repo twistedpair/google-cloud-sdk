@@ -9,7 +9,6 @@ project:
       The project name.
     property: core/project
 
-
 location:
   name: location
   collection: backupdr.projects.locations
@@ -36,3 +35,29 @@ locationDefaultGlobal:
     - hook: googlecloudsdk.command_lib.backupdr.util:SetGlobalLocation
       hint: |
         use default global location
+
+operation:
+  name: operation
+  collection: backupdr.projects.locations.operations
+  attributes:
+  - *project
+  - *location
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: |
+      ID of the operation.
+  disable_auto_completers: false
+
+managementServer:
+  name: managementServer
+  collection: backupdr.projects.locations.managementServers
+  request_id_field: managementServerId
+  attributes:
+  - *project
+  - *location
+  - &managementServerId
+    parameter_name: managementServersId
+    attribute_name: management_server
+    help: The ID of the Managment Server.
+  disable_auto_completers: false

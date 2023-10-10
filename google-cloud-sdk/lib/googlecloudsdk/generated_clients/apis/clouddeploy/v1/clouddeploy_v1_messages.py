@@ -433,10 +433,13 @@ class AutomationRule(_messages.Message):
       advance a successful Rollout.
     promoteReleaseRule: Optional. `PromoteReleaseRule` will automatically
       promote a release from the current target to a specified target.
+    repairRolloutRule: Optional. The `RepairRolloutRule` will automatically
+      repair a failed rollout.
   """
 
   advanceRolloutRule = _messages.MessageField('AdvanceRolloutRule', 1)
   promoteReleaseRule = _messages.MessageField('PromoteReleaseRule', 2)
+  repairRolloutRule = _messages.MessageField('RepairRolloutRule', 3)
 
 
 class AutomationRuleCondition(_messages.Message):
@@ -479,7 +482,8 @@ class AutomationRun(_messages.Message):
     policyViolation: Output only. Contains information about what policies
       prevented the `AutomationRun` to proceed.
     promoteReleaseOperation: Output only. Promotes a release to a specified
-      target.
+      'Target'.
+    repairRolloutOperation: Output only. Repairs a failed 'Rollout'.
     ruleId: Output only. The ID of the automation rule that initiated the
       operation.
     serviceAccount: Output only. Email address of the user-managed IAM service
@@ -522,13 +526,14 @@ class AutomationRun(_messages.Message):
   name = _messages.StringField(7)
   policyViolation = _messages.MessageField('PolicyViolation', 8)
   promoteReleaseOperation = _messages.MessageField('PromoteReleaseOperation', 9)
-  ruleId = _messages.StringField(10)
-  serviceAccount = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  stateDescription = _messages.StringField(13)
-  targetId = _messages.StringField(14)
-  updateTime = _messages.StringField(15)
-  waitUntilTime = _messages.StringField(16)
+  repairRolloutOperation = _messages.MessageField('RepairRolloutOperation', 10)
+  ruleId = _messages.StringField(11)
+  serviceAccount = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  stateDescription = _messages.StringField(14)
+  targetId = _messages.StringField(15)
+  updateTime = _messages.StringField(16)
+  waitUntilTime = _messages.StringField(17)
 
 
 class AutomationRunEvent(_messages.Message):
@@ -4504,6 +4509,103 @@ class RenderMetadata(_messages.Message):
   cloudRun = _messages.MessageField('CloudRunRenderMetadata', 1)
 
 
+class RepairMode(_messages.Message):
+  r"""Configuration of the repair action.
+
+  Fields:
+    retry: Optional. Retries a failed job.
+    rollback: Optional. Rolls back a `Rollout`.
+  """
+
+  retry = _messages.MessageField('Retry', 1)
+  rollback = _messages.MessageField('Rollback', 2)
+
+
+class RepairPhase(_messages.Message):
+  r"""RepairPhase tracks the repair attempts that have been made for each
+  `RepairMode` specified in the `Automation` resource.
+
+  Fields:
+    retry: Output only. Records of the retry attempts for retry repair mode.
+    rollback: Output only. Rollback attempt for rollback repair mode .
+  """
+
+  retry = _messages.MessageField('RetryPhase', 1)
+  rollback = _messages.MessageField('RollbackAttempt', 2)
+
+
+class RepairRolloutOperation(_messages.Message):
+  r"""Contains the information for an automated `repair rollout` operation.
+
+  Fields:
+    currentRepairModeIndex: Output only. The index of the current repair
+      action in the repair sequence.
+    repairPhases: Output only. Records of the repair attempts. Each repair
+      phase may have multiple retry attempts or single rollback attempt.
+    rollout: Output only. The name of the rollout that initiates the
+      `AutomationRun`.
+  """
+
+  currentRepairModeIndex = _messages.IntegerField(1)
+  repairPhases = _messages.MessageField('RepairPhase', 2, repeated=True)
+  rollout = _messages.StringField(3)
+
+
+class RepairRolloutRule(_messages.Message):
+  r"""The `RepairRolloutRule` automation rule will automatically repair a
+  failed `Rollout`.
+
+  Enums:
+    WaitPolicyValueValuesEnum: Optional. WaitForDeployPolicy delays a
+      `Rollout` repair when a deploy policy violation is encountered.
+
+  Fields:
+    condition: Output only. Information around the state of the 'Automation'
+      rule.
+    id: Required. ID of the rule. This id must be unique in the `Automation`
+      resource to which this rule belongs. The format is a-z{0,62}.
+    jobs: Optional. Jobs to repair. Proceeds only after job name matched any
+      one in the list, or for all jobs if unspecified or empty. The phase that
+      includes the job must match the phase ID specified in `source_phase`.
+      This value must consist of lower-case letters, numbers, and hyphens,
+      start with a letter and end with a letter or a number, and have a max
+      length of 63 characters. In other words, it must match the following
+      regex: `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    repairModes: Required. Defines the types of automatic repair actions for
+      failed jobs.
+    sourcePhases: Optional. Phases within which jobs are subject to automatic
+      repair actions on failure. Proceeds only after phase name matched any
+      one in the list, or for all phases if unspecified. This value must
+      consist of lower-case letters, numbers, and hyphens, start with a letter
+      and end with a letter or a number, and have a max length of 63
+      characters. In other words, it must match the following regex:
+      `^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$`.
+    waitPolicy: Optional. WaitForDeployPolicy delays a `Rollout` repair when a
+      deploy policy violation is encountered.
+  """
+
+  class WaitPolicyValueValuesEnum(_messages.Enum):
+    r"""Optional. WaitForDeployPolicy delays a `Rollout` repair when a deploy
+    policy violation is encountered.
+
+    Values:
+      WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED: No WaitForDeployPolicy is specified.
+      NEVER: Never waits on DeployPolicy, terminates `AutomationRun` if
+        DeployPolicy check failed.
+      LATEST: When policy passes, execute the latest `AutomationRun` only.
+    """
+    WAIT_FOR_DEPLOY_POLICY_UNSPECIFIED = 0
+    NEVER = 1
+    LATEST = 2
+
+  condition = _messages.MessageField('AutomationRuleCondition', 1)
+  id = _messages.StringField(2)
+  jobs = _messages.StringField(3, repeated=True)
+  repairModes = _messages.MessageField('RepairMode', 4, repeated=True)
+  sourcePhases = _messages.StringField(5, repeated=True)
+  waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
+
+
 class Resource(_messages.Message):
   r"""Contains information on the resources to select for a deploy policy.
 
@@ -4579,6 +4681,82 @@ class RestrictRollout(_messages.Message):
   timeWindows = _messages.MessageField('TimeWindow', 4)
 
 
+class Retry(_messages.Message):
+  r"""Retries the failed job.
+
+  Enums:
+    BackoffModeValueValuesEnum: Optional. The pattern of how wait time will be
+      increased. Default is linear. Backoff mode will be ignored if `wait` is
+      0.
+
+  Fields:
+    attempts: Required. Total number of retries. Retry will skipped if set to
+      0; The minimum value is 1, and the maximum value is 10.
+    backoffMode: Optional. The pattern of how wait time will be increased.
+      Default is linear. Backoff mode will be ignored if `wait` is 0.
+    wait: Optional. How long to wait for the first retry. Default is 0, and
+      the maximum value is 14d.
+  """
+
+  class BackoffModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The pattern of how wait time will be increased. Default is
+    linear. Backoff mode will be ignored if `wait` is 0.
+
+    Values:
+      BACKOFF_MODE_UNSPECIFIED: No WaitMode is specified.
+      BACKOFF_MODE_LINEAR: Increases the wait time linearly.
+      BACKOFF_MODE_EXPONENTIAL: Increases the wait time exponentially.
+    """
+    BACKOFF_MODE_UNSPECIFIED = 0
+    BACKOFF_MODE_LINEAR = 1
+    BACKOFF_MODE_EXPONENTIAL = 2
+
+  attempts = _messages.IntegerField(1)
+  backoffMode = _messages.EnumField('BackoffModeValueValuesEnum', 2)
+  wait = _messages.StringField(3)
+
+
+class RetryAttempt(_messages.Message):
+  r"""RetryAttempt represents an action of retrying the failed Cloud Deploy
+  job.
+
+  Enums:
+    StateValueValuesEnum: Output only. Valid state of this retry action.
+
+  Fields:
+    attempt: Output only. The index of this retry attempt.
+    jobId: Output only. The job ID for the Job to retry.
+    phaseId: Output only. The phase ID of the phase that includes the job
+      being retried.
+    state: Output only. Valid state of this retry action.
+    wait: Output only. How long the operation will be paused.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Valid state of this retry action.
+
+    Values:
+      REPAIR_STATE_UNSPECIFIED: The `repair` has an unspecified state.
+      REPAIR_STATE_SUCCEEDED: The `repair` has succeeded.
+      REPAIR_STATE_CANCELLED: The `repair` was cancelled.
+      REPAIR_STATE_FAILED: The `repair` has failed.
+      REPAIR_STATE_IN_PROGRESS: The `repair` is in progress.
+      REPAIR_STATE_PENDING: The `repair` is pending.
+    """
+    REPAIR_STATE_UNSPECIFIED = 0
+    REPAIR_STATE_SUCCEEDED = 1
+    REPAIR_STATE_CANCELLED = 2
+    REPAIR_STATE_FAILED = 3
+    REPAIR_STATE_IN_PROGRESS = 4
+    REPAIR_STATE_PENDING = 5
+
+  attempt = _messages.IntegerField(1)
+  jobId = _messages.StringField(2)
+  phaseId = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+  wait = _messages.StringField(5)
+
+
 class RetryJobRequest(_messages.Message):
   r"""RetryJobRequest is the request object used by `RetryJob`.
 
@@ -4596,6 +4774,87 @@ class RetryJobRequest(_messages.Message):
 
 class RetryJobResponse(_messages.Message):
   r"""The response object from 'RetryJob'."""
+
+
+class RetryPhase(_messages.Message):
+  r"""RetryPhase contains the retry attempts and the metadata for initiating a
+  new attempt.
+
+  Enums:
+    BackoffModeValueValuesEnum: Output only. The pattern of how the wait time
+      of the retry attempt is calculated.
+
+  Fields:
+    attempts: Output only. Detail of a retry action.
+    backoffMode: Output only. The pattern of how the wait time of the retry
+      attempt is calculated.
+    totalAttempts: Output only. The number of attempts that have been made.
+  """
+
+  class BackoffModeValueValuesEnum(_messages.Enum):
+    r"""Output only. The pattern of how the wait time of the retry attempt is
+    calculated.
+
+    Values:
+      BACKOFF_MODE_UNSPECIFIED: No WaitMode is specified.
+      BACKOFF_MODE_LINEAR: Increases the wait time linearly.
+      BACKOFF_MODE_EXPONENTIAL: Increases the wait time exponentially.
+    """
+    BACKOFF_MODE_UNSPECIFIED = 0
+    BACKOFF_MODE_LINEAR = 1
+    BACKOFF_MODE_EXPONENTIAL = 2
+
+  attempts = _messages.MessageField('RetryAttempt', 1, repeated=True)
+  backoffMode = _messages.EnumField('BackoffModeValueValuesEnum', 2)
+  totalAttempts = _messages.IntegerField(3)
+
+
+class Rollback(_messages.Message):
+  r"""Rolls back a `Rollout`.
+
+  Fields:
+    destinationPhase: Optional. The starting phase ID for the `Rollout`. If
+      unspecified, the `Rollout` will start in the stable phase.
+  """
+
+  destinationPhase = _messages.StringField(1)
+
+
+class RollbackAttempt(_messages.Message):
+  r"""RollbackAttempt represents an action of rolling back a Cloud Deploy
+  'Target'.
+
+  Enums:
+    StateValueValuesEnum: Output only. Valid state of this rollback action.
+
+  Fields:
+    destinationPhase: Output only. The phase to which the rollout will be
+      rolled back to.
+    rolloutId: Output only. ID of the rollback `Rollout` to create.
+    state: Output only. Valid state of this rollback action.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Valid state of this rollback action.
+
+    Values:
+      REPAIR_STATE_UNSPECIFIED: The `repair` has an unspecified state.
+      REPAIR_STATE_SUCCEEDED: The `repair` has succeeded.
+      REPAIR_STATE_CANCELLED: The `repair` was cancelled.
+      REPAIR_STATE_FAILED: The `repair` has failed.
+      REPAIR_STATE_IN_PROGRESS: The `repair` is in progress.
+      REPAIR_STATE_PENDING: The `repair` is pending.
+    """
+    REPAIR_STATE_UNSPECIFIED = 0
+    REPAIR_STATE_SUCCEEDED = 1
+    REPAIR_STATE_CANCELLED = 2
+    REPAIR_STATE_FAILED = 3
+    REPAIR_STATE_IN_PROGRESS = 4
+    REPAIR_STATE_PENDING = 5
+
+  destinationPhase = _messages.StringField(1)
+  rolloutId = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class RollbackTargetConfig(_messages.Message):
@@ -5610,6 +5869,9 @@ class TargetRender(_messages.Message):
         check Cloud Build logs.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
         request. See failure_message for additional details.
+      VERIFICATION_CONFIG_NOT_FOUND: The render operation did not complete
+        successfully because the verification stanza required for verify was
+        not found on the skaffold configuration.
       CUSTOM_ACTION_NOT_FOUND: The render operation did not complete
         successfully because the custom action required for predeploy or
         postdeploy was not found in the skaffold configuration. See
@@ -5622,8 +5884,9 @@ class TargetRender(_messages.Message):
     CLOUD_BUILD_UNAVAILABLE = 1
     EXECUTION_FAILED = 2
     CLOUD_BUILD_REQUEST_FAILED = 3
-    CUSTOM_ACTION_NOT_FOUND = 4
-    DEPLOYMENT_STRATEGY_NOT_SUPPORTED = 5
+    VERIFICATION_CONFIG_NOT_FOUND = 4
+    CUSTOM_ACTION_NOT_FOUND = 5
+    DEPLOYMENT_STRATEGY_NOT_SUPPORTED = 6
 
   class RenderingStateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the render operation for this Target.

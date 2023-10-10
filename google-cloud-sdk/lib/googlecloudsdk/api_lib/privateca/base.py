@@ -23,6 +23,7 @@ from googlecloudsdk.api_lib.util import apis
 import six.moves.urllib.parse
 
 DEFAULT_API_VERSION = 'v1beta1'
+V1_API_VERSION = 'v1'
 
 
 def GetClientClass(api_version=DEFAULT_API_VERSION):

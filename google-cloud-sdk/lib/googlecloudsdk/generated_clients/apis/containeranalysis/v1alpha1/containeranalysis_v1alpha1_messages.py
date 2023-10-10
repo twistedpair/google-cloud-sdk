@@ -2202,6 +2202,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Mess
 class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource(_messages.Message):
   r"""Location of the source in an archive file in Cloud Storage.
 
+  Enums:
+    SourceFetcherValueValuesEnum: Optional. Option to specify the tool to
+      fetch the source file for the build.
+
   Fields:
     bucket: Cloud Storage bucket containing the source (see [Bucket Name
       Requirements](https://cloud.google.com/storage/docs/bucket-
@@ -2211,11 +2215,28 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource(_messages.Message
     object: Cloud Storage object containing the source. This object must be a
       zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing source to
       build.
+    sourceFetcher: Optional. Option to specify the tool to fetch the source
+      file for the build.
   """
+
+  class SourceFetcherValueValuesEnum(_messages.Enum):
+    r"""Optional. Option to specify the tool to fetch the source file for the
+    build.
+
+    Values:
+      SOURCE_FETCHER_UNSPECIFIED: Unspecified defaults to GSUTIL.
+      GSUTIL: Use the "gsutil" tool to download the source file.
+      GCS_FETCHER: Use the Cloud Storage Fetcher tool to download the source
+        file.
+    """
+    SOURCE_FETCHER_UNSPECIFIED = 0
+    GSUTIL = 1
+    GCS_FETCHER = 2
 
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+  sourceFetcher = _messages.EnumField('SourceFetcherValueValuesEnum', 4)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest(_messages.Message):
@@ -6670,6 +6691,7 @@ class VulnerabilityDetails(_messages.Message):
       In the case where multiple PackageIssues have different effective
       severities, the one set here will be the highest severity of any of the
       PackageIssues.
+    extraDetails: Occurrence-specific extra details about the vulnerability.
     packageIssue: The set of affected locations and their fixes (if available)
       within the associated resource.
     severity: Output only. The note provider assigned Severity of the
@@ -6743,10 +6765,11 @@ class VulnerabilityDetails(_messages.Message):
   cvssV3 = _messages.MessageField('CVSS', 3)
   cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 4)
   effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 5)
-  packageIssue = _messages.MessageField('PackageIssue', 6, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
-  type = _messages.StringField(8)
-  vexAssessment = _messages.MessageField('VexAssessment', 9)
+  extraDetails = _messages.StringField(6)
+  packageIssue = _messages.MessageField('PackageIssue', 7, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 8)
+  type = _messages.StringField(9)
+  vexAssessment = _messages.MessageField('VexAssessment', 10)
 
 
 class VulnerabilityLocation(_messages.Message):

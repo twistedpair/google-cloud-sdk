@@ -22,10 +22,15 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.command_lib.util.apis import arg_utils
+from googlecloudsdk.core import exceptions as sdk_core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 import six
+
+
+class BootDiskConfigurationError(sdk_core_exceptions.Error):
+  """Error if the boot disk configuration is invalid."""
 
 
 def GetMessagesModule(version='v2alpha1'):
@@ -120,6 +125,9 @@ def CreateNodeSpec(ref, args, request):
     node_spec.node.tags = args.tags
   node_spec.node.networkConfig.enableExternalIps = not args.internal_ips
 
+  if args.boot_disk:
+    node_spec.node.bootDiskConfig = ParseBootDiskConfig(args.boot_disk)
+
   node_spec.node.metadata = MergeMetadata(args)
 
   if args.node_prefix and not args.node_count:
@@ -135,8 +143,52 @@ def CreateNodeSpec(ref, args, request):
     if args.node_prefix:
       node_spec.multiNodeParams.nodeIdPrefix = args.node_prefix
   request.queuedResource.tpu.nodeSpec = [node_spec]
-
   return request
+
+
+def ParseBootDiskConfig(boot_disk_args) -> GetMessagesModule().BootDiskConfig:
+  """Parses configurations for boot disk.
+
+  Parsing boot disk configuration if --boot-disk flag is set.
+
+  Args:
+    boot_disk_args: args for --boot-disk flag.
+
+  Returns:
+    Return GetMessagesModule().BootDiskConfig object with parsed configurations.
+
+  Raises:
+    BootDiskConfigurationError: if confidential compute is enable
+      but kms-key is not provided.
+    BootDiskConfigurationError: if invalid argument name is provided.
+  """
+  tpu_messages = GetMessagesModule()
+  kms_key_arg_name = 'kms-key'
+  confidential_compute_arg_name = 'confidential-compute'
+  for arg_name in boot_disk_args.keys():
+    if arg_name not in [kms_key_arg_name, confidential_compute_arg_name]:
+      raise BootDiskConfigurationError(
+          '--boot-disk only supports arguments: %s and %s'
+          % (confidential_compute_arg_name, kms_key_arg_name)
+      )
+
+  enable_confidential_compute = boot_disk_args.get(
+      confidential_compute_arg_name, 'False').lower() == 'true'
+  kms_key = boot_disk_args.get(kms_key_arg_name, None)
+
+  if enable_confidential_compute and kms_key is None:
+    raise BootDiskConfigurationError(
+        'argument --boot-disk: with confidential-compute=%s '
+        'requires kms-key; received: %s' % (
+            enable_confidential_compute, kms_key)
+    )
+  customer_encryption_key = tpu_messages.CustomerEncryptionKey(
+      kmsKeyName=kms_key
+  )
+  return tpu_messages.BootDiskConfig(
+      customerEncryptionKey=customer_encryption_key,
+      enableConfidentialCompute=enable_confidential_compute,
+  )
 
 
 def VerifyNodeCount(ref, args, request):

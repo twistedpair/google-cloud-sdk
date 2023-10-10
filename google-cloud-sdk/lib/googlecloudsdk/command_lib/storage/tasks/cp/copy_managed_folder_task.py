@@ -41,11 +41,11 @@ class CopyManagedFolderTask(copy_util.CopyTaskWithExitHandler):
   ):
     """Initializes CopyManagedFolderTask. Parent class documents arguments."""
     super(CopyManagedFolderTask, self).__init__(
-        source_resource,
-        destination_resource,
-        print_created_message,
-        user_request_args,
-        verbose,
+        source_resource=source_resource,
+        destination_resource=destination_resource,
+        print_created_message=print_created_message,
+        user_request_args=user_request_args,
+        verbose=verbose,
     )
     self.parallel_processing_key = (
         self._destination_resource.storage_url.url_string
@@ -86,3 +86,14 @@ class CopyManagedFolderTask(copy_util.CopyTaskWithExitHandler):
 
     if progress_callback:
       progress_callback(0)
+
+  def __eq__(self, other):
+    if not isinstance(other, CopyManagedFolderTask):
+      return NotImplemented
+    return (
+        self._source_resource == other._source_resource
+        and self._destination_resource == other._destination_resource
+        and self._print_created_message == other._print_created_message
+        and self._user_request_args == other._user_request_args
+        and self._verbose == other._verbose
+    )

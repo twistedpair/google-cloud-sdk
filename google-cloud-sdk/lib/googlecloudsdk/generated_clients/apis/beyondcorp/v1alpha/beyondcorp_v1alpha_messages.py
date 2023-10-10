@@ -482,7 +482,8 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest(_messages
       overwritten in the PartnerTenant resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      does not provide a mask then all fields will be overwritten. Mutable
+      fields: display_name, partner_metadata, group_information.
   """
 
   googleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 1)
@@ -499,8 +500,9 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsCreateRequ
     googleCloudBeyondcorpPartnerservicesV1alphaProxyConfig: A
       GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig resource to be
       passed as the request body.
-    parent: Required. The resource name of the Tenant using the form:
-      `organizations/{organization_id}/locations/global/tenants/{tenant_id}`
+    parent: Required. The resource name of the parent PartnerTenant using the
+      form: `organizations/{organization_id}/locations/global/partnerTenants/{
+      partner_tenant_id}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -576,8 +578,8 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsGetRequest
 
   Fields:
     name: Required. The resource name of the ProxyConfig using the form: `orga
-      nizations/{organization_id}/locations/global/tenants/{tenant_id}/proxyCo
-      nfigs/{proxy_config_id}`
+      nizations/{organization_id}/locations/global/partnerTenants/{partner_ten
+      ant_id}/proxyConfigs/{proxy_config_id}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -3896,7 +3898,7 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant(_messages.Message
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
-  r"""Proxy Configuration of a Tenant.
+  r"""Proxy Configuration of a PartnerTenant.
 
   Fields:
     createTime: Output only. Timestamp when the resource was created.
@@ -3904,6 +3906,7 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
       ProxyConfig. Cannot exceed 64 characters.
     encryptionInfo: Optional. Information to encrypt JWT for the proxy server.
     name: Output only. ProxyConfig resource name.
+    proxyProtocolConfig: Optional. Protocol config data for the Proxy.
     proxyUri: Required. The URI of the proxy server.
     routingInfo: Required. Routing info to direct traffic to the proxy server.
     transportInfo: Required. Transport layer information to verify for the
@@ -3915,10 +3918,52 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
   displayName = _messages.StringField(2)
   encryptionInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo', 3)
   name = _messages.StringField(4)
-  proxyUri = _messages.StringField(5)
-  routingInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo', 6)
-  transportInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo', 7)
-  updateTime = _messages.StringField(8)
+  proxyProtocolConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyProtocolConfig', 5)
+  proxyUri = _messages.StringField(6)
+  routingInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo', 7)
+  transportInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo', 8)
+  updateTime = _messages.StringField(9)
+
+
+class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyProtocolConfig(_messages.Message):
+  r"""The protocol data that specifies how to communicate with Partner's
+  Proxy.
+
+  Messages:
+    MetadataValue: Optional. Untyped property bag to be sent back to the proxy
+      using client specific mechanism.
+
+  Fields:
+    metadata: Optional. Untyped property bag to be sent back to the proxy
+      using client specific mechanism.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetadataValue(_messages.Message):
+    r"""Optional. Untyped property bag to be sent back to the proxy using
+    client specific mechanism.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetadataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetadataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metadata = _messages.MessageField('MetadataValue', 1)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo(_messages.Message):

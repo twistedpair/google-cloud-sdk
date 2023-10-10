@@ -48,11 +48,11 @@ _LINK_TYPE_CHOICES = {
 
 _REQUESTED_FEATURES_CHOICES = {
     'MACSEC':
-        'If specified then the interconnect will be created on MACsec capable '
-        'hardware ports. If not specified, the default value is false, which '
-        'will allocate non-MACsec capable ports first if available. This '
-        'parameter can only be provided during interconnect INSERT and cannot '
-        'be changed using interconnect PATCH.'
+        'If specified then the interconnect is created on MACsec capable '
+        'hardware ports. If not specified, the interconnect is created on '
+        'non-MACsec capable ports first, if available. This parameter can only '
+        'be provided during interconnect INSERT and cannot be changed using '
+        'interconnect PATCH.'
 }
 
 
@@ -61,7 +61,7 @@ class InterconnectsCompleter(compute_completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(InterconnectsCompleter, self).__init__(
         collection='compute.interconnects',
-        list_command='alpha compute interconnects list --uri',
+        list_command='compute interconnects list --uri',
         **kwargs)
 
 
@@ -170,6 +170,7 @@ def AddCreateCommonArgs(parser):
   AddLinkType(parser)
   AddNocContactEmail(parser)
   AddRequestedLinkCount(parser)
+  AddRequestedFeatures(parser)
 
 
 def AddCreateGaArgs(parser):
@@ -182,7 +183,6 @@ def AddCreateAlphaBetaArgs(parser):
   """Adds alpha / beta flags for create command to the argparse.ArgumentParser."""
   AddCreateCommonArgs(parser)
   AddInterconnectTypeBetaAndAlpha(parser)
-  AddRequestedFeatures(parser)
 
 
 def AddDescription(parser):

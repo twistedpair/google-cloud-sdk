@@ -49,17 +49,17 @@ class DefaultFormatter(base.BaseFormatter):
     Returns:
       The printed output.
     """
-    component_status = record.status.get('resourceComponentStatuses', {})
     components = []
-    for r in component_status:
-      comp_type = self.PrintType(r.get('type'))
-      comp_name = r.get('name')
-      console_link = r.get('consoleLink', 'n/a')
-      state_name = r.get('state', 'n/a').upper()
+    comp_statuses = (
+        record.status.resourceComponentStatuses if record.status else []
+    )
+    for r in comp_statuses:
+      console_link = r.consoleLink if r.consoleLink else 'n/a'
+      state_name = str(r.state).upper() if r.state else 'N/A'
       state_symbol = self.StatusSymbolAndColor(state_name)
       components.append(
           cp.Lines([
-              '{} ({})'.format(comp_type, comp_name),
+              '{} ({})'.format(self.PrintType(r.type), r.name),
               cp.Labeled([
                   ('Console link', console_link),
                   ('Resource Status', state_symbol + ' ' + state_name),

@@ -697,6 +697,27 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
+class Filter(_messages.Message):
+  r"""Defines the filter for `Restore`. This filter can be used to further
+  refine the resource selection of the `Restore` beyond the coarse-grained
+  scope defined in the `RestorePlan`. `exclusion_filters` take precedence over
+  `inclusion_filters`. If a resource matches both `inclusion_filters` and
+  `exclusion_filters`, it will not be restored. Next id: 3
+
+  Fields:
+    exclusionFilters: Optional. Excludes resources from restoration. If
+      specified, a resource will not be restored if it matches any
+      `ResourceSelector` of the `exclusion_filters`.
+    inclusionFilters: Optional. Selects resources for restoration. If
+      specified, only resources which match `inclusion_filters` will be
+      selected for restoration. A resource will be selected if it matches any
+      `ResourceSelector` of the `inclusion_filters`.
+  """
+
+  exclusionFilters = _messages.MessageField('ResourceSelector', 1, repeated=True)
+  inclusionFilters = _messages.MessageField('ResourceSelector', 2, repeated=True)
+
+
 class GetBackupIndexDownloadUrlResponse(_messages.Message):
   r"""Response message for GetBackupIndexDownloadUrl.
 
@@ -1814,7 +1835,8 @@ class GroupKind(_messages.Message):
     resourceGroup: Optional. API group string of a Kubernetes resource, e.g.
       "apiextensions.k8s.io", "storage.k8s.io", etc. Note: use empty string
       for core API group
-    resourceKind: Optional. Kind of a Kubernetes resource, e.g.
+    resourceKind: Optional. Kind of a Kubernetes resource, must be in
+      UpperCamelCase (PascalCase) and singular form. E.g.
       "CustomResourceDefinition", "StorageClass", etc.
   """
 
@@ -2170,9 +2192,77 @@ class ResourceFilter(_messages.Message):
   namespaces = _messages.StringField(3, repeated=True)
 
 
+class ResourceSelector(_messages.Message):
+  r"""Defines a selector to identify a single or a group of resources.
+  Conditions in the selector are optional, if a condition is not specified, no
+  restrictions will be applied on that dimension. If more than one condition
+  is specified, a resource will be selected if and only if all conditions are
+  met. Next id: 5
+
+  Messages:
+    LabelsValue: Optional. Selects resources using Kubernetes
+      [labels](https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/). If specified, a resource will be selected if and only
+      if the resource has all of the provided labels and all the label values
+      match.
+
+  Fields:
+    groupKind: Optional. Selects resources using their Kubernetes GroupKinds.
+      If specified, only resources of provided GroupKind will be selected.
+    labels: Optional. Selects resources using Kubernetes
+      [labels](https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/labels/). If specified, a resource will be selected if and only
+      if the resource has all of the provided labels and all the label values
+      match.
+    name: Optional. Selects resources using their resource names. If
+      specified, only resources with the provided name will be selected.
+    namespace: Optional. Selects resources using their namespaces. This only
+      applies to namespace scoped resources and cannot be used for selecting
+      cluster scoped resources. If specified, only resources in the provided
+      namespace will be selected. If not specified, the filter will apply to
+      both cluster scoped and namespace scoped resources (e.g. name or label).
+      The [Namespace](https://pkg.go.dev/k8s.io/api/core/v1#Namespace)
+      resource itself will be restored if and only if any resources within the
+      namespace are restored.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Selects resources using Kubernetes
+    [labels](https://kubernetes.io/docs/concepts/overview/working-with-
+    objects/labels/). If specified, a resource will be selected if and only if
+    the resource has all of the provided labels and all the label values
+    match.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  groupKind = _messages.MessageField('GroupKind', 1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  namespace = _messages.StringField(4)
+
+
 class Restore(_messages.Message):
   r"""Represents both a request to Restore some portion of a Backup into a
-  target GKE cluster and a record of the restore operation itself. Next id: 18
+  target GKE cluster and a record of the restore operation itself. Next id: 19
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the Restore.
@@ -2202,6 +2292,14 @@ class Restore(_messages.Message):
       `GetRestore`, and systems are expected to put that etag in the request
       to `UpdateRestore` or `DeleteRestore` to ensure that their change will
       be applied to the same version of the resource.
+    filter: Optional. Immutable. Filters resources for `Restore`. If not
+      specified, the scope of the restore will remain the same as defined in
+      the `RestorePlan`. If this is specified, and no resources are matched by
+      the `inclusion_filters` or everyting is excluded by the
+      `exclusion_filters`, nothing will be restored. This filter can only be
+      specified if the value of namespaced_resource_restore_mode is set to
+      `MERGE_SKIP_ON_CONFLICT`, `MERGE_REPLACE_VOLUME_ON_CONFLICT` or
+      `MERGE_REPLACE_ON_CONFLICT`.
     labels: A set of custom labels supplied by user.
     name: Output only. The full name of the Restore resource. Format:
       `projects/*/locations/*/restorePlans/*/restores/*`
@@ -2277,17 +2375,18 @@ class Restore(_messages.Message):
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
   etag = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  resourcesExcludedCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  resourcesFailedCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  resourcesRestoredCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  restoreConfig = _messages.MessageField('RestoreConfig', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateReason = _messages.StringField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
-  volumesRestoredCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  filter = _messages.MessageField('Filter', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  resourcesExcludedCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  resourcesFailedCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  resourcesRestoredCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  restoreConfig = _messages.MessageField('RestoreConfig', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateReason = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
+  volumesRestoredCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
 
 
 class RestoreConfig(_messages.Message):

@@ -469,6 +469,8 @@ apis:
       resources:
         nextHopGateways:
           path: projects/{project}/global/gateways/{nextHopGateway}
+        regionSecurityPolicyRules:
+          path: projects/{project}/regions/{region}/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
         securityPolicyRules:
           path: projects/{project}/global/securityPolicies/{securityPolicy}/securityPolicyRules/{securityPolicyRule}
   container:

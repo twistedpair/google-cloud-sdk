@@ -158,22 +158,38 @@ class IndexEndpointsClient(object):
   def DeployIndexBeta(self, index_endpoint_ref, args):
     """Deploy an index to an index endpoint."""
     index_ref = _ParseIndex(args.index, args.region)
-
-    automatic_resources = self.messages.GoogleCloudAiplatformV1beta1AutomaticResources(
-    )
-    if args.min_replica_count is not None:
-      automatic_resources.minReplicaCount = args.min_replica_count
-    if args.max_replica_count is not None:
-      automatic_resources.maxReplicaCount = args.max_replica_count
-
     deployed_index = self.messages.GoogleCloudAiplatformV1beta1DeployedIndex(
-        automaticResources=automatic_resources,
         displayName=args.display_name,
         id=args.deployed_index_id,
-        index=index_ref.RelativeName())
+        index=index_ref.RelativeName(),
+    )
 
     if args.reserved_ip_ranges is not None:
       deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
+    if args.machine_type is not None:
+      dedicated_resources = (
+          self.messages.GoogleCloudAiplatformV1beta1DedicatedResources()
+      )
+      dedicated_resources.machineSpec = (
+          self.messages.GoogleCloudAiplatformV1beta1MachineSpec(
+              machineType=args.machine_type
+          )
+      )
+      if args.min_replica_count is not None:
+        dedicated_resources.minReplicaCount = args.min_replica_count
+      if args.max_replica_count is not None:
+        dedicated_resources.maxReplicaCount = args.max_replica_count
+      deployed_index.dedicatedResources = dedicated_resources
+    else:
+      automatic_resources = (
+          self.messages.GoogleCloudAiplatformV1beta1AutomaticResources()
+      )
+      if args.min_replica_count is not None:
+        automatic_resources.minReplicaCount = args.min_replica_count
+      if args.max_replica_count is not None:
+        automatic_resources.maxReplicaCount = args.max_replica_count
+      deployed_index.automaticResources = automatic_resources
 
     deploy_index_req = self.messages.GoogleCloudAiplatformV1beta1DeployIndexRequest(
         deployedIndex=deployed_index)
@@ -185,22 +201,38 @@ class IndexEndpointsClient(object):
   def DeployIndex(self, index_endpoint_ref, args):
     """Deploy an v1 index to an index endpoint."""
     index_ref = _ParseIndex(args.index, args.region)
-
-    automatic_resources = self.messages.GoogleCloudAiplatformV1AutomaticResources(
-    )
-    if args.min_replica_count is not None:
-      automatic_resources.minReplicaCount = args.min_replica_count
-    if args.max_replica_count is not None:
-      automatic_resources.maxReplicaCount = args.max_replica_count
-
     deployed_index = self.messages.GoogleCloudAiplatformV1DeployedIndex(
-        automaticResources=automatic_resources,
         displayName=args.display_name,
         id=args.deployed_index_id,
-        index=index_ref.RelativeName())
+        index=index_ref.RelativeName(),
+    )
 
     if args.reserved_ip_ranges is not None:
       deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
+    if args.machine_type is not None:
+      dedicated_resources = (
+          self.messages.GoogleCloudAiplatformV1DedicatedResources()
+      )
+      dedicated_resources.machineSpec = (
+          self.messages.GoogleCloudAiplatformV1MachineSpec(
+              machineType=args.machine_type
+          )
+      )
+      if args.min_replica_count is not None:
+        dedicated_resources.minReplicaCount = args.min_replica_count
+      if args.max_replica_count is not None:
+        dedicated_resources.maxReplicaCount = args.max_replica_count
+      deployed_index.dedicatedResources = dedicated_resources
+    else:
+      automatic_resources = (
+          self.messages.GoogleCloudAiplatformV1AutomaticResources()
+      )
+      if args.min_replica_count is not None:
+        automatic_resources.minReplicaCount = args.min_replica_count
+      if args.max_replica_count is not None:
+        automatic_resources.maxReplicaCount = args.max_replica_count
+      deployed_index.automaticResources = automatic_resources
 
     deploy_index_req = self.messages.GoogleCloudAiplatformV1DeployIndexRequest(
         deployedIndex=deployed_index)

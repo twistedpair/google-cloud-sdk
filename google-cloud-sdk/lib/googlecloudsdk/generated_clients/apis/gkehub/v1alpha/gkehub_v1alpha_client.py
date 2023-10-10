@@ -50,6 +50,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
     self.projects_locations_namespaces_rbacrolebindings = self.ProjectsLocationsNamespacesRbacrolebindingsService(self)
     self.projects_locations_namespaces = self.ProjectsLocationsNamespacesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_rollouts = self.ProjectsLocationsRolloutsService(self)
     self.projects_locations_scopes_namespaces_resourcequotas = self.ProjectsLocationsScopesNamespacesResourcequotasService(self)
     self.projects_locations_scopes_namespaces = self.ProjectsLocationsScopesNamespacesService(self)
     self.projects_locations_scopes_rbacrolebindings = self.ProjectsLocationsScopesRbacrolebindingsService(self)
@@ -1514,6 +1515,97 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsRolloutsService(base_api.BaseApiService):
+    """Service class for the projects_locations_rollouts resource."""
+
+    _NAME = 'projects_locations_rollouts'
+
+    def __init__(self, client):
+      super(GkehubV1alpha.ProjectsLocationsRolloutsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a new rollout resource.
+
+      Args:
+        request: (GkehubProjectsLocationsRolloutsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/rollouts',
+        http_method='POST',
+        method_id='gkehub.projects.locations.rollouts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['rolloutId'],
+        relative_path='v1alpha/{+parent}/rollouts',
+        request_field='rollout',
+        request_type_name='GkehubProjectsLocationsRolloutsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Retrieve a single rollout.
+
+      Args:
+        request: (GkehubProjectsLocationsRolloutsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Rollout) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/rollouts/{rolloutsId}',
+        http_method='GET',
+        method_id='gkehub.projects.locations.rollouts.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsRolloutsGetRequest',
+        response_type_name='Rollout',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Retrieve the list of all rollouts.
+
+      Args:
+        request: (GkehubProjectsLocationsRolloutsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRolloutsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/rollouts',
+        http_method='GET',
+        method_id='gkehub.projects.locations.rollouts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/rollouts',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsRolloutsListRequest',
+        response_type_name='ListRolloutsResponse',
         supports_download=False,
     )
 

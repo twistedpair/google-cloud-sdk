@@ -76,11 +76,26 @@ BucketDisplayTitlesAndDefaults = collections.namedtuple(
         'uniform_bucket_level_access',
         'public_access_prevention',
         'rpo',
+        'autoclass',
         'autoclass_enabled_time',
         'satisfies_pzs',
         'soft_delete_policy',
         ACL_KEY,
         DEFAULT_ACL_KEY,
+    ),
+)
+
+
+# Determines the order in which the fields should be displayed for
+# a ManagedFolderResource.
+ManagedFolderDisplayTitlesAndDefaults = collections.namedtuple(
+    'ManagedFolderDisplayTitlesAndDefaults',
+    (
+        'name',
+        'bucket',
+        'create_time',
+        'metageneration',
+        'update_time',
     ),
 )
 

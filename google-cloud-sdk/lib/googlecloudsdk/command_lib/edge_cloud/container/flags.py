@@ -314,3 +314,60 @@ def AddOfflineCredential(parser):
       Once specified, an offline credential will be generated for the cluster.
       """,
   )
+
+
+def AddNodeCount(parser, required=True):
+  parser.add_argument(
+      '--node-count',
+      required=required,
+      help="""
+      Default nodeCount used by this node pool.
+      """,
+  )
+
+
+def AddNodeLocation(parser):
+  parser.add_argument(
+      '--node-location',
+      required=True,
+      help="""
+      Google Edge Cloud zone where nodes in this node pool will be created.
+      """,
+  )
+
+
+def AddMachineFilter(parser):
+  parser.add_argument(
+      '--machine-filter',
+      help="""
+      Only machines matching this filter will be allowed to join the node
+      pool. The filtering language accepts strings like "name=<name>", and is
+      documented in more detail at https://google.aip.dev/160.
+      """,
+  )
+
+
+def AddLocalDiskKMSKey(parser):
+  parser.add_argument(
+      '--local-disk-kms-key',
+      help="""
+      Google Cloud KMS key that will be used to secure local disks on nodes
+      in this node pool. The Edge Container service account for this project
+      must have `roles/cloudkms.cryptoKeyEncrypterDecrypter` on the key.
+
+      If not provided, a Google-managed key will be used instead.
+      """,
+  )
+
+
+def AddNodeLabels(parser):
+  parser.add_argument(
+      '--node-labels',
+      help="""
+      Comma-delimited list of key-value pairs that comprise labels for the
+      individual nodes in the node pool.
+      """,
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(),
+      hidden=True,
+  )

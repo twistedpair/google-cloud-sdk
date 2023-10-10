@@ -19,8 +19,9 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
+from googlecloudsdk.api_lib.vmware import clusters
+from googlecloudsdk.api_lib.vmware import networks
 from googlecloudsdk.api_lib.vmware import util
-from googlecloudsdk.api_lib.vmware.networks import NetworksClient
 from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core.exceptions import Error
 
@@ -49,7 +50,8 @@ class PrivateCloudsClient(util.VmwareClientBase):
   def __init__(self):
     super(PrivateCloudsClient, self).__init__()
     self.service = self.client.projects_locations_privateClouds
-    self.networks_client = NetworksClient()
+    self.networks_client = networks.NetworksClient()
+    self.cluster_client = clusters.ClustersClient()
 
   def Get(self, resource):
     request = (
@@ -71,7 +73,8 @@ class PrivateCloudsClient(util.VmwareClientBase):
       private_cloud_type,
       description=None,
       secondary_zone=None,
-      preferred_zone=None):
+      preferred_zone=None,
+  ):
     parent = resource.Parent().RelativeName()
     project = resource.Parent().Parent().Name()
     private_cloud_id = resource.Name()
@@ -155,11 +158,13 @@ class PrivateCloudsClient(util.VmwareClientBase):
         self.service,
         request,
         batch_size_attribute='pageSize',
-        field='privateClouds')
+        field='privateClouds',
+    )
 
   def GetDnsForwarding(self, resource):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsGetDnsForwardingRequest(
-        name=resource.RelativeName() + '/dnsForwarding')
+        name=resource.RelativeName() + '/dnsForwarding'
+    )
     return self.service.GetDnsForwarding(request)
 
   def UpdateDnsForwarding(self, resource, args_rules):
@@ -169,7 +174,8 @@ class PrivateCloudsClient(util.VmwareClientBase):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsUpdateDnsForwardingRequest(
         name=resource.RelativeName() + '/dnsForwarding',
         dnsForwarding=dns_forwarding,
-        updateMask=update_mask)
+        updateMask=update_mask,
+    )
     return self.service.UpdateDnsForwarding(request)
 
   def _ParseRules(self, args_rules):
@@ -177,23 +183,25 @@ class PrivateCloudsClient(util.VmwareClientBase):
 
   def _ParseRule(self, rule):
     return self.messages.ForwardingRule(
-        domain=rule['domain'],
-        nameServers=rule['name-servers']
+        domain=rule['domain'], nameServers=rule['name-servers']
     )
 
   def GetNsxCredentials(self, resource):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsShowNsxCredentialsRequest(
-        privateCloud=resource.RelativeName())
+        privateCloud=resource.RelativeName()
+    )
     return self.service.ShowNsxCredentials(request)
 
   def ResetNsxCredentials(self, resource):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsResetNsxCredentialsRequest(
-        privateCloud=resource.RelativeName())
+        privateCloud=resource.RelativeName()
+    )
     return self.service.ResetNsxCredentials(request)
 
   def GetVcenterCredentials(self, resource, username=None):
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsShowVcenterCredentialsRequest(
-        privateCloud=resource.RelativeName(), username=username)
+        privateCloud=resource.RelativeName(), username=username
+    )
     return self.service.ShowVcenterCredentials(request)
 
   def ResetVcenterCredentials(self, resource, username=None):
@@ -212,3 +220,8 @@ class PrivateCloudsClient(util.VmwareClientBase):
         message_enum=self.messages.PrivateCloud.TypeValueValuesEnum,
     ).GetEnumForChoice(arg_utils.EnumNameToChoice(private_cloud_type))
     return type_enum
+
+  def GetManagementCluster(self, resource):
+    for cluster in self.cluster_client.List(resource):
+      if cluster.management:
+        return cluster

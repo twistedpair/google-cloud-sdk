@@ -1739,6 +1739,7 @@ class Registration(_messages.Message):
         in [Google Domains](https://domains.google/). You can no longer update
         it with this API, and information shown about it may be stale. Domains
         in this state are not automatically renewed by Cloud Domains.
+      EXPIRED: The domain is expired.
     """
     STATE_UNSPECIFIED = 0
     REGISTRATION_PENDING = 1
@@ -1749,6 +1750,7 @@ class Registration(_messages.Message):
     ACTIVE = 6
     SUSPENDED = 7
     EXPORTED = 8
+    EXPIRED = 9
 
   class SupportedPrivacyValueListEntryValuesEnum(_messages.Enum):
     r"""SupportedPrivacyValueListEntryValuesEnum enum type.

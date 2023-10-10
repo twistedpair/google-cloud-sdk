@@ -41,6 +41,11 @@ display_name:
   api_field: googleCloudDatacatalogV1Entry.displayName
   help_text: |-
     Human-readable name for the entry.
+fully_qualified_name:
+  arg_name: fully-qualified-name
+  api_field: googleCloudDatacatalogV1Entry.fullyQualifiedName
+  help_text: |-
+    Fully qualified name of the resource.
 add_file_patterns:
   arg_name: add-file-patterns
   type: 'googlecloudsdk.calliope.arg_parsers:ArgList:'

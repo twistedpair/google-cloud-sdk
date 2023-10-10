@@ -353,7 +353,7 @@ _LIST_INSTANCES_FORMAT_ALPHA = """\
                 :label=LAST_ERROR
         )"""
 
-_RELEASE_TRACK_TO_LIST_INSTANCES_FORAMT = {
+_RELEASE_TRACK_TO_LIST_INSTANCES_FORMAT = {
     base.ReleaseTrack.GA: _LIST_INSTANCES_FORMAT,
     base.ReleaseTrack.BETA: _LIST_INSTANCES_FORMAT_BETA,
     base.ReleaseTrack.ALPHA: _LIST_INSTANCES_FORMAT_ALPHA,
@@ -389,7 +389,8 @@ def AddListInstancesOutputFormat(parser, release_track=base.ReleaseTrack.GA):
       'preservedState': _TransformPreservedState,
   })
   parser.display_info.AddFormat(
-      _RELEASE_TRACK_TO_LIST_INSTANCES_FORAMT[release_track])
+      _RELEASE_TRACK_TO_LIST_INSTANCES_FORMAT[release_track]
+  )
 
 
 # Rename ot HELP_BASE
@@ -857,7 +858,7 @@ def AddMigStatefulIPsFlagsForInstanceConfigs(parser):
   )
 
 
-def AddCreateInstancesFlags(parser, add_stateful_ips=False):
+def AddCreateInstancesFlags(parser):
   """Adding stateful flags for creating and updating instance configs."""
   parser.add_argument(
       '--instance',
@@ -890,41 +891,45 @@ def AddCreateInstancesFlags(parser, add_stateful_ips=False):
           STATEFUL_METADATA_HELP.format(
               argument_name=stateful_metadata_argument_name)))
 
-  if add_stateful_ips:
-    stateful_ips_help_text_template = textwrap.dedent(
-        STATEFUL_IPS_HELP_BASE +
-        STATEFUL_IPS_HELP_TEMPLATE +
-        STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ADDRESS_HELP +
-        STATEFUL_IP_ADDRESS_ARG_HELP +
-        STATEFUL_IP_AUTO_DELETE_ARG_HELP)
+  stateful_ips_help_text_template = textwrap.dedent(
+      STATEFUL_IPS_HELP_BASE
+      + STATEFUL_IPS_HELP_TEMPLATE
+      + STATEFUL_IP_INTERFACE_NAME_ARG_WITH_ADDRESS_HELP
+      + STATEFUL_IP_ADDRESS_ARG_HELP
+      + STATEFUL_IP_AUTO_DELETE_ARG_HELP
+  )
 
-    stateful_internal_ip_flag_name = '--stateful-internal-ip'
-    parser.add_argument(
-        stateful_internal_ip_flag_name,
-        type=arg_parsers.ArgDict(
-            spec={
-                'interface-name': str,
-                'address': str,
-                'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
-                    stateful_internal_ip_flag_name)
-            }),
-        action='append',
-        help=stateful_ips_help_text_template.format(ip_type='internal'),
-    )
+  stateful_internal_ip_flag_name = '--stateful-internal-ip'
+  parser.add_argument(
+      stateful_internal_ip_flag_name,
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name': str,
+              'address': str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  stateful_internal_ip_flag_name
+              ),
+          }
+      ),
+      action='append',
+      help=stateful_ips_help_text_template.format(ip_type='internal'),
+  )
 
-    stateful_external_ip_flag_name = '--stateful-external-ip'
-    parser.add_argument(
-        stateful_external_ip_flag_name,
-        type=arg_parsers.ArgDict(
-            spec={
-                'interface-name': str,
-                'address': str,
-                'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
-                    stateful_external_ip_flag_name)
-            }),
-        action='append',
-        help=stateful_ips_help_text_template.format(ip_type='external'),
-    )
+  stateful_external_ip_flag_name = '--stateful-external-ip'
+  parser.add_argument(
+      stateful_external_ip_flag_name,
+      type=arg_parsers.ArgDict(
+          spec={
+              'interface-name': str,
+              'address': str,
+              'auto-delete': AutoDeleteFlag.ValidatorWithFlagName(
+                  stateful_external_ip_flag_name
+              ),
+          }
+      ),
+      action='append',
+      help=stateful_ips_help_text_template.format(ip_type='external'),
+  )
 
 
 def AddMigStatefulUpdateInstanceFlag(parser):

@@ -2402,6 +2402,10 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1SourceProvenance(_messages.Mess
 class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource(_messages.Message):
   r"""Location of the source in an archive file in Cloud Storage.
 
+  Enums:
+    SourceFetcherValueValuesEnum: Optional. Option to specify the tool to
+      fetch the source file for the build.
+
   Fields:
     bucket: Cloud Storage bucket containing the source (see [Bucket Name
       Requirements](https://cloud.google.com/storage/docs/bucket-
@@ -2411,11 +2415,28 @@ class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSource(_messages.Message
     object: Cloud Storage object containing the source. This object must be a
       zipped (`.zip`) or gzipped archive file (`.tar.gz`) containing source to
       build.
+    sourceFetcher: Optional. Option to specify the tool to fetch the source
+      file for the build.
   """
+
+  class SourceFetcherValueValuesEnum(_messages.Enum):
+    r"""Optional. Option to specify the tool to fetch the source file for the
+    build.
+
+    Values:
+      SOURCE_FETCHER_UNSPECIFIED: Unspecified defaults to GSUTIL.
+      GSUTIL: Use the "gsutil" tool to download the source file.
+      GCS_FETCHER: Use the Cloud Storage Fetcher tool to download the source
+        file.
+    """
+    SOURCE_FETCHER_UNSPECIFIED = 0
+    GSUTIL = 1
+    GCS_FETCHER = 2
 
   bucket = _messages.StringField(1)
   generation = _messages.IntegerField(2)
   object = _messages.StringField(3)
+  sourceFetcher = _messages.EnumField('SourceFetcherValueValuesEnum', 4)
 
 
 class ContaineranalysisGoogleDevtoolsCloudbuildV1StorageSourceManifest(_messages.Message):
@@ -5668,7 +5689,6 @@ class VulnerabilityNote(_messages.Message):
     cvssVersion: CVSS version used to populate cvss_score and severity.
     details: Details of all known distros and packages affected by this
       vulnerability.
-    extraDetails: Occurrence-specific extra details about the vulnerability.
     severity: The note provider assigned severity of this vulnerability.
     sourceUpdateTime: The time this information was last changed at the
       source. This is an upstream timestamp from the underlying information
@@ -5715,10 +5735,9 @@ class VulnerabilityNote(_messages.Message):
   cvssV3 = _messages.MessageField('CVSSv3', 3)
   cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 4)
   details = _messages.MessageField('Detail', 5, repeated=True)
-  extraDetails = _messages.StringField(6)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 7)
-  sourceUpdateTime = _messages.StringField(8)
-  windowsDetails = _messages.MessageField('WindowsDetail', 9, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 6)
+  sourceUpdateTime = _messages.StringField(7)
+  windowsDetails = _messages.MessageField('WindowsDetail', 8, repeated=True)
 
 
 class VulnerabilityOccurrence(_messages.Message):
@@ -5756,6 +5775,7 @@ class VulnerabilityOccurrence(_messages.Message):
       effective severity on the PackageIssue level. In the case where multiple
       PackageIssues have differing effective severities, this field should be
       the highest severity for any of the PackageIssues.
+    extraDetails: Occurrence-specific extra details about the vulnerability.
     fixAvailable: Output only. Whether at least one of the affected packages
       has a fix available.
     longDescription: Output only. A detailed description of this
@@ -5834,14 +5854,15 @@ class VulnerabilityOccurrence(_messages.Message):
   cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 3)
   cvssv3 = _messages.MessageField('CVSS', 4)
   effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 5)
-  fixAvailable = _messages.BooleanField(6)
-  longDescription = _messages.StringField(7)
-  packageIssue = _messages.MessageField('PackageIssue', 8, repeated=True)
-  relatedUrls = _messages.MessageField('RelatedUrl', 9, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
-  shortDescription = _messages.StringField(11)
-  type = _messages.StringField(12)
-  vexAssessment = _messages.MessageField('VexAssessment', 13)
+  extraDetails = _messages.StringField(6)
+  fixAvailable = _messages.BooleanField(7)
+  longDescription = _messages.StringField(8)
+  packageIssue = _messages.MessageField('PackageIssue', 9, repeated=True)
+  relatedUrls = _messages.MessageField('RelatedUrl', 10, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 11)
+  shortDescription = _messages.StringField(12)
+  type = _messages.StringField(13)
+  vexAssessment = _messages.MessageField('VexAssessment', 14)
 
 
 class VulnerabilityOccurrencesSummary(_messages.Message):

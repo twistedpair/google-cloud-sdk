@@ -21,6 +21,8 @@ from __future__ import unicode_literals
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage.resources import resource_reference
+from googlecloudsdk.command_lib.storage.tasks.cp import copy_managed_folder_task
 from googlecloudsdk.command_lib.storage.tasks.cp import daisy_chain_copy_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import file_upload_task
@@ -153,6 +155,15 @@ def get_copy_task(
         user_request_args.resource_args.preserve_acl):
       raise errors.Error(
           'Cannot preserve ACLs while copying between cloud providers.'
+      )
+
+    if isinstance(source_resource, resource_reference.ManagedFolderResource):
+      return copy_managed_folder_task.CopyManagedFolderTask(
+          source_resource,
+          destination_resource,
+          print_created_message=print_created_message,
+          user_request_args=user_request_args,
+          verbose=verbose,
       )
     if different_providers or force_daisy_chain:
       return daisy_chain_copy_task.DaisyChainCopyTask(

@@ -972,15 +972,15 @@ class CloudtasksProjectsLocationsUpdateCmekConfigRequest(_messages.Message):
 
   Fields:
     cmekConfig: A CmekConfig resource to be passed as the request body.
-    locationsId: A string attribute.
-    projectsId: A string attribute.
+    name: Output only. The config resource name which includes the project and
+      location and must end in 'cmekConfig', in the format
+      projects/PROJECT_ID/locations/LOCATION_ID/cmekConfig`
     updateMask: List of fields to be updated in this request.
   """
 
   cmekConfig = _messages.MessageField('CmekConfig', 1)
-  locationsId = _messages.StringField(2, required=True)
-  projectsId = _messages.StringField(3, required=True)
-  updateMask = _messages.StringField(4)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class CmekConfig(_messages.Message):

@@ -32,7 +32,7 @@ class _ObjectFormatWrapper(BaseFormatWrapper):
   def __str__(self):
     """Returns string of select properties from resource."""
     size = getattr(self.resource, 'size', 0)
-    url_string, _ = self._check_and_handles_all_versions()
+    url_string, _ = self._check_and_handles_versions()
 
     # Example: 6194    gs://test/doc/README.md
     return ('{size:<13}{url}').format(
@@ -49,16 +49,16 @@ class _ContainerSummaryFormatWrapper(BaseFormatWrapper):
   def __init__(
       self,
       resource,
-      all_versions=False,
       container_size=None,
+      object_state=None,
       readable_sizes=False,
       use_gsutil_style=False,
   ):
     """See BaseFormatWrapper class for function doc strings."""
     super(_ContainerSummaryFormatWrapper, self).__init__(
         resource,
-        all_versions=all_versions,
         display_detail=ls_command_util.DisplayDetail.SHORT,
+        object_state=object_state,
         readable_sizes=readable_sizes,
         use_gsutil_style=use_gsutil_style,
     )
@@ -102,8 +102,8 @@ class DuExecutor(BaseListExecutor):
   def __init__(
       self,
       cloud_urls,
-      all_versions=False,
       exclude_patterns=None,
+      object_state=None,
       readable_sizes=False,
       summarize=False,
       total=False,
@@ -114,8 +114,8 @@ class DuExecutor(BaseListExecutor):
 
     super(DuExecutor, self).__init__(
         cloud_urls=cloud_urls,
-        all_versions=all_versions,
         exclude_patterns=exclude_patterns,
+        object_state=object_state,
         readable_sizes=readable_sizes,
         recursion_flag=True,
         total=total,

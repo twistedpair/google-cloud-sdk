@@ -55,7 +55,7 @@ class IntegrationPrinter(cp.CustomPrinterBase):
     config_block = formatter.TransformConfig(record)
     component_block = (
         formatter.TransformComponentStatus(record)
-        if record.status
+        if record.status.resourceComponentStatuses
         else 'Status not available')
 
     lines = [
@@ -91,7 +91,9 @@ class IntegrationPrinter(cp.CustomPrinterBase):
     """
     con = console_attr.GetConsoleAttr()
     formatter = GetFormatter(record.metadata)
-    resource_state = record.status.get('state', states.UNKNOWN)
+    resource_state = states.UNKNOWN
+    if record.status and record.status.state:
+      resource_state = str(record.status.state)
     symbol = formatter.StatusSymbolAndColor(resource_state)
     return con.Emphasize(
         '{} Integration status: {} in region {}'.format(

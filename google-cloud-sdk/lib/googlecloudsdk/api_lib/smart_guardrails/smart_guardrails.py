@@ -97,6 +97,11 @@ _POLICY_BINDING_DELETE_ADVICE = (
     " roles, if necessary.\n"
 )
 
+_POLICY_BINDING_REPLACE_ADVICE = (
+    "We recommend replacing it with the role{} [{}], in order to remove "
+    "unused permissions while preserving the used one.\n"
+)
+
 _PROJECT_INSIGHT_TYPE = "google.resourcemanager.project.ChangeRiskInsight"
 
 _SA_INSIGHT_TYPE = "google.iam.serviceAccount.ChangeRiskInsight"
@@ -190,13 +195,16 @@ def _GetResourceRiskReasons(gcloud_insight):
   return reasons
 
 
-def _GetDeletionRiskMessage(gcloud_insight, risk_message, reasons_prefix=""):
+def _GetDeletionRiskMessage(
+    gcloud_insight, risk_message, reasons_prefix="", add_new_line=True
+):
   """Returns a risk message for resource deletion.
 
   Args:
     gcloud_insight: Insight object returned by the recommender API.
     risk_message: String risk message.
     reasons_prefix: String prefix before listing reasons.
+    add_new_line: Bool for if a new line is added when no reasons are present.
 
   Returns:
     Formatted string risk message with reasons if any. The reasons are
@@ -204,7 +212,7 @@ def _GetDeletionRiskMessage(gcloud_insight, risk_message, reasons_prefix=""):
   """
   reasons = _GetResourceRiskReasons(gcloud_insight)
   if not reasons:
-    return risk_message + ".\n"
+    return "{}.{}".format(risk_message, "\n" if add_new_line else "")
   if len(reasons) == 1:
     return "{0}{1} {2}\n".format(risk_message, reasons_prefix, reasons[0])
   message = "{0}{1}:\n".format(risk_message, reasons_prefix)
@@ -277,6 +285,44 @@ def _IsDefaultComputeEngineServiceAccount(email, project_number):
   return re.search(
       r"^[0-9]+-compute@developer(\.[^.]+\.iam)?\.gserviceaccount\.com", email
   )
+
+
+def _GetPolicyBindingMinimalRoles(gcloud_insight):
+  """Returns minimal roles extracted from the IAM policy binding insight.
+
+  Args:
+    gcloud_insight: Insight returned by the recommender API.
+
+  Returns: A list of strings. Empty if no minimal roles were found.
+  """
+  minimal_roles = []
+  for additional_property in gcloud_insight.content.additionalProperties:
+    if additional_property.key == "risk":
+      for p in additional_property.value.object_value.properties:
+        if p.key == "usageAtRisk":
+          for f in p.value.object_value.properties:
+            if f.key == "iamPolicyUtilization":
+              for iam_p in f.value.object_value.properties:
+                if iam_p.key == "minimalRoles":
+                  for role in iam_p.value.array_value.entries:
+                    minimal_roles.append(role.string_value)
+  return minimal_roles
+
+
+def _GetPolicyBindingDeletionAdvice(minimal_roles):
+  """Returns advice for policy binding deletion.
+
+  Args:
+    minimal_roles: A string list of minimal recommended roles.
+
+  Returns: A string advice on safe deletion.
+  """
+  if minimal_roles:
+    return _POLICY_BINDING_REPLACE_ADVICE.format(
+        "" if len(minimal_roles) <= 1 else "s", ", ".join(minimal_roles)
+    )
+  else:
+    return _POLICY_BINDING_DELETE_ADVICE
 
 
 def GetProjectDeletionRisk(release_track, project_id):
@@ -374,13 +420,19 @@ def GetIamPolicyBindingDeletionRisk(
       matcher=policy_matcher,
   )
   if risk_insight:
-    return "\n".join([
-        _POLICY_BINDING_DELETE_WARNING_MESSAGE.format(member_role),
+    risk_message = "{} {}".format(
         _GetDeletionRiskMessage(
             risk_insight,
             _POLICY_BINDING_DELETE_RISK_MESSAGE.format(member_role),
+            add_new_line=False,
         ),
-        _POLICY_BINDING_DELETE_ADVICE,
+        _GetPolicyBindingDeletionAdvice(
+            _GetPolicyBindingMinimalRoles(risk_insight)
+        ),
+    )
+    return "\n".join([
+        _POLICY_BINDING_DELETE_WARNING_MESSAGE.format(member_role),
+        risk_message,
         _GetInsightLink(risk_insight),
     ])
   # If there are no risks to deleting the IAM policy binding,

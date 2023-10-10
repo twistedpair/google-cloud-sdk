@@ -1682,7 +1682,7 @@ class CsvOptions(_messages.Message):
       first byte of the encoded string to split the data in its raw, binary
       state. BigQuery also supports the escape sequence "\t" to specify a tab
       separator. The default value is a comma (',').
-    null_marker: [Optional] An custom string that will represent a NULL value
+    nullMarker: [Optional] An custom string that will represent a NULL value
       in CSV import data.
     preserveAsciiControlCharacters: [Optional] Preserves the embedded ASCII
       control characters (the first 32 characters in the ASCII-table, from
@@ -1713,7 +1713,7 @@ class CsvOptions(_messages.Message):
   allowQuotedNewlines = _messages.BooleanField(2)
   encoding = _messages.StringField(3)
   fieldDelimiter = _messages.StringField(4)
-  null_marker = _messages.StringField(5)
+  nullMarker = _messages.StringField(5)
   preserveAsciiControlCharacters = _messages.BooleanField(6)
   quote = _messages.StringField(7, default='"')
   skipLeadingRows = _messages.IntegerField(8)
@@ -4664,6 +4664,9 @@ class QueryResponse(_messages.Message):
     numDmlAffectedRows: [Output-only] The number of rows affected by a DML
       statement. Present only for DML statements INSERT, UPDATE or DELETE.
     pageToken: A token used for paging results.
+    queryId: Query ID for the completed query. This ID will be auto-generated.
+      This field is not yet available and it is currently not guaranteed to be
+      populated.
     rows: An object with as many results as can be contained within the
       maximum permitted reply size. To get any additional rows, you can call
       GetQueryResults and specify the jobReference returned above.
@@ -4688,11 +4691,12 @@ class QueryResponse(_messages.Message):
   kind = _messages.StringField(7, default='bigquery#queryResponse')
   numDmlAffectedRows = _messages.IntegerField(8)
   pageToken = _messages.StringField(9)
-  rows = _messages.MessageField('TableRow', 10, repeated=True)
-  schema = _messages.MessageField('TableSchema', 11)
-  sessionInfo = _messages.MessageField('SessionInfo', 12)
-  totalBytesProcessed = _messages.IntegerField(13)
-  totalRows = _messages.IntegerField(14, variant=_messages.Variant.UINT64)
+  queryId = _messages.StringField(10)
+  rows = _messages.MessageField('TableRow', 11, repeated=True)
+  schema = _messages.MessageField('TableSchema', 12)
+  sessionInfo = _messages.MessageField('SessionInfo', 13)
+  totalBytesProcessed = _messages.IntegerField(14)
+  totalRows = _messages.IntegerField(15, variant=_messages.Variant.UINT64)
 
 
 class QueryTimelineSample(_messages.Message):
@@ -4919,6 +4923,9 @@ class Routine(_messages.Message):
     LanguageValueValuesEnum: Optional. Defaults to "SQL" if
       remote_function_options field is absent, not set otherwise.
     RoutineTypeValueValuesEnum: Required. The type of routine.
+    SecurityModeValueValuesEnum: Optional. The security mode of the routine,
+      if defined. If not defined, the security mode is automatically
+      determined from the routine's configuration.
 
   Fields:
     arguments: Optional.
@@ -4974,6 +4981,9 @@ class Routine(_messages.Message):
       `Decrement` remains FLOAT64.
     routineReference: Required. Reference describing the ID of this routine.
     routineType: Required. The type of routine.
+    securityMode: Optional. The security mode of the routine, if defined. If
+      not defined, the security mode is automatically determined from the
+      routine's configuration.
     sparkOptions: Optional. Spark specific options.
     strictMode: Optional. Can be set for procedures only. If true (default),
       the definition body will be validated in the creation and the updates of
@@ -5046,6 +5056,23 @@ class Routine(_messages.Message):
     TABLE_VALUED_FUNCTION = 3
     AGGREGATE_FUNCTION = 4
 
+  class SecurityModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The security mode of the routine, if defined. If not
+    defined, the security mode is automatically determined from the routine's
+    configuration.
+
+    Values:
+      SECURITY_MODE_UNSPECIFIED: The security mode of the routine is
+        unspecified.
+      DEFINER: The routine is to be executed with the privileges of the user
+        who defines it.
+      INVOKER: The routine is to be executed with the privileges of the user
+        who invokes it.
+    """
+    SECURITY_MODE_UNSPECIFIED = 0
+    DEFINER = 1
+    INVOKER = 2
+
   arguments = _messages.MessageField('Argument', 1, repeated=True)
   creationTime = _messages.IntegerField(2)
   dataGovernanceType = _messages.EnumField('DataGovernanceTypeValueValuesEnum', 3)
@@ -5061,8 +5088,9 @@ class Routine(_messages.Message):
   returnType = _messages.MessageField('StandardSqlDataType', 13)
   routineReference = _messages.MessageField('RoutineReference', 14)
   routineType = _messages.EnumField('RoutineTypeValueValuesEnum', 15)
-  sparkOptions = _messages.MessageField('SparkOptions', 16)
-  strictMode = _messages.BooleanField(17)
+  securityMode = _messages.EnumField('SecurityModeValueValuesEnum', 16)
+  sparkOptions = _messages.MessageField('SparkOptions', 17)
+  strictMode = _messages.BooleanField(18)
 
 
 class RoutineReference(_messages.Message):
@@ -5247,12 +5275,12 @@ class SparkLoggingInfo(_messages.Message):
   r"""A SparkLoggingInfo object.
 
   Fields:
-    project_id: [Output-only] Project ID used for logging
-    resource_type: [Output-only] Resource type used for logging
+    projectId: [Output-only] Project ID used for logging
+    resourceType: [Output-only] Resource type used for logging
   """
 
-  project_id = _messages.StringField(1)
-  resource_type = _messages.StringField(2)
+  projectId = _messages.StringField(1)
+  resourceType = _messages.StringField(2)
 
 
 class SparkOptions(_messages.Message):

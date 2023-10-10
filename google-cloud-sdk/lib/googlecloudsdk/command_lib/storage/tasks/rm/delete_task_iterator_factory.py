@@ -19,9 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import progress_callbacks
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.tasks.buckets import delete_bucket_task
+from googlecloudsdk.command_lib.storage.tasks.cp import delete_managed_folder_task
 from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
-
 from six.moves import queue
 
 
@@ -46,6 +47,7 @@ class DeleteTaskIteratorFactory:
     self._user_request_args = user_request_args
 
     self._bucket_delete_tasks = queue.Queue()
+    self._managed_folder_delete_tasks = queue.Queue()
     self._object_delete_tasks = queue.Queue()
     self._flat_wildcard_results_iterator = (
         self._get_flat_wildcard_results_iterator())
@@ -59,34 +61,48 @@ class DeleteTaskIteratorFactory:
       True if resource found.
     """
     for name_expansion_result in self._name_expansion_iterator:
-      resource_url = name_expansion_result.resource.storage_url
+      resource = name_expansion_result.resource
+      resource_url = resource.storage_url
+      # The wildcard iterator can return UnknownResources, so we use URLs to
+      # check for buckets.
       if resource_url.is_bucket():
         self._bucket_delete_tasks.put(
-            delete_bucket_task.DeleteBucketTask(resource_url))
+            delete_bucket_task.DeleteBucketTask(resource_url)
+        )
+      elif isinstance(resource, resource_reference.ManagedFolderResource):
+        self._managed_folder_delete_tasks.put(
+            delete_managed_folder_task.DeleteManagedFolderTask(resource)
+        )
       else:
         self._object_delete_tasks.put(
             delete_object_task.DeleteObjectTask(
-                resource_url, user_request_args=self._user_request_args))
+                resource_url, user_request_args=self._user_request_args
+            )
+        )
       yield True
 
   def _resource_iterator(self, resource_queue):
     """Yields a resource from the queue."""
     resource_count = 0
     try:
-
-      while (not resource_queue.empty() or
-             next(self._flat_wildcard_results_iterator)):
+      while not resource_queue.empty() or next(
+          self._flat_wildcard_results_iterator
+      ):
         if not resource_queue.empty():
           resource_count += 1
           yield resource_queue.get()
     except StopIteration:
       pass
     if resource_count:
-      progress_callbacks.workload_estimator_callback(self._task_status_queue,
-                                                     resource_count)
+      progress_callbacks.workload_estimator_callback(
+          self._task_status_queue, resource_count
+      )
 
   def bucket_iterator(self):
     return self._resource_iterator(self._bucket_delete_tasks)
+
+  def managed_folder_iterator(self):
+    return self._resource_iterator(self._managed_folder_delete_tasks)
 
   def object_iterator(self):
     return self._resource_iterator(self._object_delete_tasks)

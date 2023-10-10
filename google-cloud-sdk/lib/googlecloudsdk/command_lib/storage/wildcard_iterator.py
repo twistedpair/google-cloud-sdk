@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 
 import abc
 import collections
-import enum
 import fnmatch
 import heapq
 import os
@@ -33,6 +32,7 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.api_lib.storage import errors as api_errors
 from googlecloudsdk.api_lib.storage import request_config_factory
 from googlecloudsdk.command_lib.storage import errors as command_errors
+from googlecloudsdk.command_lib.storage import folder_util
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core import log
@@ -45,26 +45,6 @@ COMPRESS_WILDCARDS_REGEX = re.compile(r'\*{3,}')
 WILDCARD_REGEX = re.compile(r'[*?\[\]]')
 
 _RELATIVE_PATH_SYMBOLS = frozenset(['.', '.' + os.sep, '..', '..' + os.sep])
-
-
-class ManagedFolderSetting(enum.Enum):
-  """Indicates how to deal with managed folders."""
-
-  # Used for resource-specific commands that should not have output influenced
-  # by managed folders at all. Example usage: the `objects list` command.
-  DO_NOT_LIST = 'do_not_list'
-
-  # Indicates that managed folders should be included as prefixes.
-  LIST_AS_PREFIXES = 'list_as_prefixes'
-
-  # Yields managed folders with object resources sorted by name: managed folders
-  # will precede any objects that are prefixed by the folder name. No prefix
-  # resources are yielded.
-  RECURSIVE_LIST_WITH_OBJECTS = 'recursive_list_with_objects'
-
-  # Yields managed folder resources without object resources. No prefix
-  # resources are yielded.
-  RECURSIVE_LIST_WITHOUT_OBJECTS = 'recursive_list_without_objects'
 
 
 def _is_hidden(path):
@@ -83,11 +63,8 @@ def contains_wildcard(url_string):
   return bool(WILDCARD_REGEX.search(url_string))
 
 
-# TODO(b/301620718): Make version setting enum, where all_versions and
-# soft_deleted_only are mutually exclusive.
 def get_wildcard_iterator(
     url_str,
-    all_versions=False,
     error_on_missing_key=True,
     exclude_patterns=None,
     fetch_encrypted_object_hashes=False,
@@ -97,17 +74,15 @@ def get_wildcard_iterator(
     get_bucket_metadata=False,
     halt_on_empty_response=True,
     ignore_symlinks=False,
-    managed_folder_setting=ManagedFolderSetting.DO_NOT_LIST,
+    managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
     next_page_token=None,
+    object_state=cloud_api.ObjectState.LIVE,
     preserve_symlinks=False,
-    soft_deleted_only=False,
 ):
   """Instantiate a WildcardIterator for the given URL string.
 
   Args:
     url_str (str): URL string which may contain wildcard characters.
-    all_versions (bool): If true, the iterator yields all versions of objects
-      matching the wildcard.  If false, yields just the live object version.
     error_on_missing_key (bool): If true, and the encryption key needed to
       decrypt an object is missing, the iterator raises an error for that
       object.
@@ -127,12 +102,11 @@ def get_wildcard_iterator(
     halt_on_empty_response (bool): Stops querying after empty list response. See
       CloudApi for details.
     ignore_symlinks (bool): Skip over symlinks instead of following them.
-    managed_folder_setting (ManagedFolderSetting): Indicates how to deal with
-      managed folders.
+    managed_folder_setting (folder_util.ManagedFolderSetting): Indicates how to
+      deal with managed folders.
     next_page_token (str|None): Used to resume LIST calls.
+    object_state (cloud_api.ObjectState): Versions of objects to query.
     preserve_symlinks (bool): Preserve symlinks instead of following them.
-    soft_deleted_only (bool): Returns soft-deleted objects and not live,
-      past-version, or other lifecycle-status objects.
 
   Returns:
     A WildcardIterator object.
@@ -141,7 +115,6 @@ def get_wildcard_iterator(
   if isinstance(url, storage_url.CloudUrl):
     return CloudWildcardIterator(
         url,
-        all_versions=all_versions,
         error_on_missing_key=error_on_missing_key,
         exclude_patterns=exclude_patterns,
         fetch_encrypted_object_hashes=fetch_encrypted_object_hashes,
@@ -151,7 +124,7 @@ def get_wildcard_iterator(
         halt_on_empty_response=halt_on_empty_response,
         managed_folder_setting=managed_folder_setting,
         next_page_token=next_page_token,
-        soft_deleted_only=soft_deleted_only,
+        object_state=object_state,
     )
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(
@@ -345,7 +318,6 @@ class CloudWildcardIterator(WildcardIterator):
   def __init__(
       self,
       url,
-      all_versions=False,
       error_on_missing_key=True,
       exclude_patterns=None,
       fetch_encrypted_object_hashes=False,
@@ -353,16 +325,14 @@ class CloudWildcardIterator(WildcardIterator):
       files_only=False,
       get_bucket_metadata=False,
       halt_on_empty_response=True,
-      managed_folder_setting=ManagedFolderSetting.DO_NOT_LIST,
+      managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
       next_page_token=None,
-      soft_deleted_only=False,
+      object_state=cloud_api.ObjectState.LIVE,
   ):
     """Instantiates an iterator that matches the wildcard URL.
 
     Args:
       url (CloudUrl): CloudUrl that may contain wildcard that needs expansion.
-      all_versions (bool): If true, the iterator yields all versions of objects
-        matching the wildcard.  If false, yields just the live object version.
       error_on_missing_key (bool): If true, and the encryption key needed to
         decrypt an object is missing, the iterator raises an error for that
         object.
@@ -379,17 +349,15 @@ class CloudWildcardIterator(WildcardIterator):
         be returned without verifying the buckets exist.
       halt_on_empty_response (bool): Stops querying after empty list response.
         See CloudApi for details.
-      managed_folder_setting (ManagedFolderSetting): Indicates how to deal with
-        managed folders.
+      managed_folder_setting (folder_util.ManagedFolderSetting): Indicates how
+        to deal with managed folders.
       next_page_token (str|None): Used to resume LIST calls.
-      soft_deleted_only (bool): Returns soft-deleted objects and not live,
-        past-version, or other lifecycle-status objects.
+      object_state (cloud_api.ObjectState): Versions of objects to query.
     """
     super(CloudWildcardIterator, self).__init__(
         url, exclude_patterns=exclude_patterns, files_only=files_only
     )
     self._client = api_factory.get_api(self._url.scheme)
-    self._all_versions = all_versions
     self._error_on_missing_key = error_on_missing_key
     self._fetch_encrypted_object_hashes = fetch_encrypted_object_hashes
     self._fields_scope = fields_scope
@@ -397,7 +365,16 @@ class CloudWildcardIterator(WildcardIterator):
     self._halt_on_empty_response = halt_on_empty_response
     self._managed_folder_setting = managed_folder_setting
     self._next_page_token = next_page_token
-    self._soft_deleted_only = soft_deleted_only
+    self._object_state = object_state
+
+    if (
+        object_state is cloud_api.ObjectState.LIVE
+        and self._url.generation is not None
+    ):
+      self._object_state_for_listing = cloud_api.ObjectState.LIVE_AND_NONCURRENT
+    else:
+      self._object_state_for_listing = object_state
+    self._soft_deleted = object_state is cloud_api.ObjectState.SOFT_DELETED
 
   def __iter__(self):
     if self._files_only and (self._url.is_provider() or self._url.is_bucket()):
@@ -410,23 +387,35 @@ class CloudWildcardIterator(WildcardIterator):
         if self._url.is_bucket():
           yield bucket_or_unknown_resource
         else:  # URL is an object or prefix.
-          for obj_resource in self._fetch_objects(
-              bucket_or_unknown_resource.storage_url.bucket_name):
+          for resource in self._fetch_sub_bucket_resources(
+              bucket_or_unknown_resource.storage_url.bucket_name
+          ):
             if self._exclude_patterns and self._exclude_patterns.match(
-                obj_resource.storage_url.versionless_url_string
+                resource.storage_url.versionless_url_string
             ):
               continue
+
             if self._files_only and (
-                not isinstance(obj_resource, resource_reference.ObjectResource)
+                not isinstance(resource, resource_reference.ObjectResource)
                 or (  # Directory placeholder object.
-                    obj_resource.storage_url.object_name.endswith(
+                    resource.storage_url.object_name.endswith(
                         storage_url.CLOUD_URL_DELIMITER
                     )
-                    and obj_resource.size == 0
+                    and resource.size == 0
                 )
             ):
               continue
-            yield obj_resource
+
+            if (
+                self._managed_folder_setting
+                is folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS
+                and not isinstance(
+                    resource, resource_reference.ManagedFolderResource
+                )
+            ):
+              continue
+
+            yield resource
 
   def _decrypt_resource_if_necessary(self, resource):
     if (
@@ -444,7 +433,7 @@ class CloudWildcardIterator(WildcardIterator):
             resource.name,
             generation=self._url.generation,
             fields_scope=self._fields_scope,
-            soft_deleted=self._soft_deleted_only,
+            soft_deleted=self._soft_deleted,
         )
       if resource.decryption_key_hash_sha256:
         request_config = request_config_factory.get_request_config(
@@ -459,7 +448,7 @@ class CloudWildcardIterator(WildcardIterator):
               request_config,
               generation=self._url.generation,
               fields_scope=self._fields_scope,
-              soft_deleted=self._soft_deleted_only,
+              soft_deleted=self._soft_deleted,
           )
     # No decryption necessary or don't have proper key.
     return resource
@@ -474,7 +463,7 @@ class CloudWildcardIterator(WildcardIterator):
           request_config_factory.get_request_config(self._url),
           generation=self._url.generation,
           fields_scope=self._fields_scope,
-          soft_deleted=self._soft_deleted_only,
+          soft_deleted=self._soft_deleted,
       )
 
       return self._decrypt_resource_if_necessary(resource)
@@ -483,11 +472,13 @@ class CloudWildcardIterator(WildcardIterator):
       pass
     return None
 
-  def _fetch_objects(self, bucket_name):
+  def _fetch_sub_bucket_resources(self, bucket_name):
     """Fetch all objects for the given bucket that match the URL."""
     needs_further_expansion = (
-        contains_wildcard(self._url.object_name) or self._all_versions or
-        self._url.url_string.endswith(self._url.delimiter))
+        contains_wildcard(self._url.object_name)
+        or self._object_state is cloud_api.ObjectState.LIVE_AND_NONCURRENT
+        or self._url.url_string.endswith(self._url.delimiter)
+    )
     if not needs_further_expansion:
       # Assume that the URL represents a single object.
       direct_query_result = self._try_getting_object_directly(bucket_name)
@@ -499,29 +490,25 @@ class CloudWildcardIterator(WildcardIterator):
   def _get_resource_iterator(self, bucket_name, wildcard_parts):
     if (
         self._managed_folder_setting
-        is not ManagedFolderSetting.RECURSIVE_LIST_WITHOUT_OBJECTS
+        is not folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS
         # Even if we're just listing managed folders, we need to call
         # list_objects to expand non-recursive wildcards using delimiters. For
         # example, to expand gs://bucket/*/dir/**, we will call list_objects to
         # get PrefixResources needed to expand the first wildcard. After all
-        # wildcards in the prefix are expanded, wildcard_parts.suffix will be
+        # wildcards in the prefix are expanded, wildcard_parts.delimiter will be
         # None, and we will skip this call.
-        or wildcard_parts.suffix
+        or wildcard_parts.delimiter
     ):
       # If we are using managed folders at all, we need to include them as
       # prefixes so that wildcard expansion works appropriately.
       include_folders_as_prefixes = (
-          self._managed_folder_setting is not ManagedFolderSetting.DO_NOT_LIST
+          self._managed_folder_setting
+          is not folder_util.ManagedFolderSetting.DO_NOT_LIST
       )
 
-      # Backend does not accept both all_versions and soft_deleted_only.
-      fetch_all_versions = not self._soft_deleted_only and (
-          self._all_versions or bool(self._url.generation)
-      )
       # TODO(b/299973762): Allow the list_objects API method to only yield
       # prefixes if we want managed folders without objects.
       object_iterator = self._client.list_objects(
-          all_versions=fetch_all_versions,
           bucket_name=bucket_name,
           delimiter=wildcard_parts.delimiter,
           fields_scope=self._fields_scope,
@@ -529,7 +516,7 @@ class CloudWildcardIterator(WildcardIterator):
           include_folders_as_prefixes=include_folders_as_prefixes,
           next_page_token=self._next_page_token,
           prefix=wildcard_parts.prefix or None,
-          soft_deleted_only=self._soft_deleted_only,
+          object_state=self._object_state_for_listing,
       )
     else:
       object_iterator = []
@@ -539,8 +526,8 @@ class CloudWildcardIterator(WildcardIterator):
     # so this is the only circumstance where it's safe to call.
     is_recursive_expansion = wildcard_parts.delimiter is None
     should_list_managed_folders = self._managed_folder_setting in (
-        ManagedFolderSetting.RECURSIVE_LIST_WITH_OBJECTS,
-        ManagedFolderSetting.RECURSIVE_LIST_WITHOUT_OBJECTS,
+        folder_util.ManagedFolderSetting.LIST_WITH_OBJECTS,
+        folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
     )
 
     if (
@@ -559,6 +546,30 @@ class CloudWildcardIterator(WildcardIterator):
         managed_folder_iterator,
         key=lambda resource: resource.storage_url.url_string,
     )
+
+  def _maybe_convert_prefix_to_managed_folder(self, resource):
+    """If resource is a prefix, attempts to convert it to a managed folder."""
+    if (
+        # pylint: disable=unidiomatic-typecheck
+        # We do not want this check to pass for child classes.
+        type(resource) is not resource_reference.PrefixResource
+        # pylint: enable=unidiomatic-typecheck
+        or self._managed_folder_setting
+        not in {
+            folder_util.ManagedFolderSetting.LIST_WITH_OBJECTS,
+            folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
+        }
+        or cloud_api.Capability.MANAGED_FOLDERS not in self._client.capabilities
+    ):
+      return resource
+
+    try:
+      prefix_url = resource.storage_url
+      return self._client.get_managed_folder(
+          prefix_url.bucket_name, prefix_url.object_name
+      )
+    except api_errors.NotFoundError:
+      return resource
 
   def _expand_object_path(self, bucket_name):
     """Expands object names.
@@ -618,18 +629,22 @@ class CloudWildcardIterator(WildcardIterator):
             if WILDCARD_REGEX.search(resource_path):
               error = command_errors.InvalidUrlError(
                   'Cloud folders named with wildcards are not supported.'
-                  ' API returned {}'.format(resource))
+                  ' API returned {}'.format(resource)
+              )
             else:
-              names_needing_expansion.append(resource_path +
-                                             wildcard_parts.suffix)
+              names_needing_expansion.append(
+                  resource_path + wildcard_parts.suffix
+              )
         else:
           # Make sure regular object not returned if the original query was for
           # a prefix or object with a trailing delimiter.
           # Needed for gs://b/f*/ to filter out gs://b/f.txt.
-          if (not resource_path.endswith(self._url.delimiter) and
-              original_object_name.endswith(self._url.delimiter)):
+          if not resource_path.endswith(
+              self._url.delimiter
+          ) and original_object_name.endswith(self._url.delimiter):
             continue
 
+          resource = self._maybe_convert_prefix_to_managed_folder(resource)
           yield self._decrypt_resource_if_necessary(resource)
 
     if error:

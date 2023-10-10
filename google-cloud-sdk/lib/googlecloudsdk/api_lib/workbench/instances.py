@@ -125,7 +125,7 @@ def GetBootDisk(args, messages):
         include_filter=lambda x: 'UNSPECIFIED' not in x,
     ).GetEnumForChoice(arg_utils.EnumNameToChoice(args.boot_disk_encryption))
   if args.IsSpecified('boot_disk_kms_key'):
-    kms_key = args.CONCEPTS.kms_key.Parse().RelativeName()
+    kms_key = args.CONCEPTS.boot_disk_kms_key.Parse().RelativeName()
   return boot_disk_message(
       diskType=boot_disk_type_enum,
       diskEncryption=boot_disk_encryption_enum,
@@ -161,7 +161,7 @@ def GetDataDisk(args, messages):
         include_filter=lambda x: 'UNSPECIFIED' not in x,
     ).GetEnumForChoice(arg_utils.EnumNameToChoice(args.data_disk_encryption))
   if args.IsSpecified('data_disk_kms_key'):
-    kms_key = args.CONCEPTS.kms_key.Parse().RelativeName()
+    kms_key = args.CONCEPTS.data_disk_kms_key.Parse().RelativeName()
   return data_disk_message(
       diskType=data_disk_type_enum,
       diskEncryption=data_disk_encryption_enum,

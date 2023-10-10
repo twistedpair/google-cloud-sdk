@@ -21,11 +21,55 @@ from __future__ import unicode_literals
 import argparse
 
 from apitools.base.protorpclite import messages
+from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.container.fleet import resources
 from googlecloudsdk.command_lib.container.fleet.policycontroller import constants
 from googlecloudsdk.command_lib.container.fleet.policycontroller import exceptions
+from googlecloudsdk.command_lib.export import util
+from googlecloudsdk.core.console import console_io
+
+
+def fleet_default_cfg_flag():
+  return base.Argument(
+      '--fleet-default-member-config',
+      type=str,
+      help="""The path to an policy-controller.yaml configuration
+        file. If specified, this configuration will become the default Policy
+        Controller configuration for all memberships in your fleet. It can be
+        overridden with a membership-specific configuration by using the
+        the `Update` command.
+
+        To enable the Policy Controller Feature with a fleet-level default
+        membership configuration, run:
+
+          $ {command} --fleet-default-member-config=/path/to/policy-controller.yaml
+      """,
+  )
+
+
+def no_fleet_default_cfg_flag(include_no: bool = False):
+  """Flag for unsetting fleet default configuration."""
+  flag = '--{}fleet-default-member-config'.format('no-' if include_no else '')
+  return base.Argument(
+      flag,
+      action='store_true',
+      help="""Removes the fleet default configuration for policy controller.
+      Memberships configured with the fleet default will maintain their current
+      configuration.
+
+          $ {} {}
+      """.format('{command}', flag),
+  )
+
+
+def fleet_default_cfg_group():
+  """Flag group for accepting a Fleet Default Configuration file."""
+  config_group = base.ArgumentGroup(mutex=True)
+  config_group.AddArgument(fleet_default_cfg_flag())
+  config_group.AddArgument(no_fleet_default_cfg_flag(True))
+  return config_group
 
 
 class PocoFlags:
@@ -202,7 +246,7 @@ class PocoFlags:
 
 
 class PocoFlagParser:
-  """Takes PocoFlag arguments and uses them to modify membership specs.
+  """Converts PocoFlag arguments to internal representations.
 
   hub_cfg references the PolicyControllerHubConfig object in:
   third_party/py/googlecloudsdk/generated_clients/apis/gkehub/v1alpha/gkehub_v1alpha_messages.py
@@ -292,6 +336,19 @@ class PocoFlagParser:
       hub_cfg.monitoring = config
 
     return hub_cfg
+
+  def is_feature_update(self) -> bool:
+    return (
+        self.args.fleet_default_member_config
+        or self.args.no_fleet_default_member_config
+    )
+
+  def load_fleet_default_cfg(self) -> messages.Message:
+    if self.args.fleet_default_member_config:
+      data = console_io.ReadFromFileOrStdin(
+          self.args.fleet_default_member_config, binary=False
+      )
+      return util.Import(self.messages.PolicyControllerMembershipSpec, data)
 
   @property
   def template_lib_cfg(self) -> messages.Message:

@@ -262,6 +262,15 @@ def AddArchitectureFlag(parser, messages):
       ))
 
 
+def AddAccessModeFlag(parser, messages):
+  access_mode_enum_type = messages.Disk.AccessModeValueValuesEnum
+  return parser.add_argument(
+      '--access-mode',
+      choices=access_mode_enum_type.names(),
+      help='Specifies the access mode that the disk can support.',
+  )
+
+
 def AddLocationHintArg(parser):
   parser.add_argument(
       '--location-hint',

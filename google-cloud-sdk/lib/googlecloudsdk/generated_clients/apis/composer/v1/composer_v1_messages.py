@@ -1805,7 +1805,14 @@ class StopAirflowCommandResponse(_messages.Message):
 
 
 class StorageConfig(_messages.Message):
-  r"""The configuration for data storage in the environment."""
+  r"""The configuration for data storage in the environment.
+
+  Fields:
+    bucket: Optional. The name of the Cloud Storage bucket used by the
+      environment. No `gs://` prefix.
+  """
+
+  bucket = _messages.StringField(1)
 
 
 class TriggererResource(_messages.Message):

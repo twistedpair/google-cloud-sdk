@@ -597,7 +597,13 @@ def AddCreateInstanceFlags(api_version, parser):
       metavar='KEY=VALUE')
   parser.add_argument(
       '--metadata',
-      help='Custom metadata to apply to this instance.',
+      help=("""\
+Custom metadata to apply to this instance.
+
+For example, to specify a Cloud Storage bucket for automatic backup,
+you can use the `gcs-data-bucket` metadata tag. Format:
+`"--metadata=gcs-data-bucket=``BUCKET''"`.
+"""),
       type=arg_parsers.ArgDict(),
       metavar='KEY=VALUE')
   parser.add_argument(

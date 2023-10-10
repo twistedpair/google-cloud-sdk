@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import enum
 
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.storage import errors
@@ -42,6 +43,15 @@ class ReplicationStrategy(enum.Enum):
   """Enum class for specifying the replication setting."""
   DEFAULT = 'DEFAULT'
   ASYNC_TURBO = 'ASYNC_TURBO'
+
+
+def get_object_state_from_flags(flag_args):
+  """Returns object version to query based on user flags."""
+  if getattr(flag_args, 'soft_deleted', False):
+    return cloud_api.ObjectState.SOFT_DELETED
+  if getattr(flag_args, 'all_versions', False):
+    return cloud_api.ObjectState.LIVE_AND_NONCURRENT
+  return cloud_api.ObjectState.LIVE
 
 
 def add_additional_headers_flag(parser):
@@ -484,8 +494,22 @@ def add_read_paths_from_stdin_flag(
   )
 
 
+def add_soft_deleted_flag(parser):
+  """Adds flag for only displaying soft-deleted objects."""
+  parser.add_argument(
+      '--soft-deleted',
+      action='store_true',
+      hidden=True,
+      help=(
+          'Displays soft-deleted objects only. Excludes live and noncurrent'
+          ' objects.'
+      ),
+  )
+
+
 def add_soft_delete_flags(parser):
   """Adds flags related to soft delete feature."""
+  add_soft_deleted_flag(parser)
   parser.add_argument(
       '--exhaustive',
       action='store_true',
@@ -500,15 +524,6 @@ def add_soft_delete_flags(parser):
       '--next-page-token',
       hidden=True,
       help='Page token for resuming LIST calls.',
-  )
-  parser.add_argument(
-      '--soft-deleted',
-      action='store_true',
-      hidden=True,
-      help=(
-          'Displays soft-deleted objects only. Excludes live and noncurrent'
-          ' objects.'
-      ),
   )
 
 

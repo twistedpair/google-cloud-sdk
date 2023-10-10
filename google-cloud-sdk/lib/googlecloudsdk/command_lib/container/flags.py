@@ -64,8 +64,10 @@ _BINAUTHZ_GKE_POLICY_REGEX = (
 )
 
 _PMU_LEVEL = {
-    'architectural': 'Enables architectural PMU events tied to non last ' +
-                     'level cache (LLC) events.',
+    'architectural': (
+        'Enables architectural PMU events tied to non last '
+        + 'level cache (LLC) events.'
+    ),
     'standard': 'Enables most documented core/L2 PMU events.',
     'enhanced': 'Enables most documented core/L2 and LLC PMU events.',
 }
@@ -274,8 +276,9 @@ be either the project ID or the project number.
   )
 
 
-def AddReleaseChannelFlag(parser, is_update=False, autopilot=False,
-                          hidden=False):
+def AddReleaseChannelFlag(
+    parser, is_update=False, autopilot=False, hidden=False
+):
   """Adds a --release-channel flag to the given parser."""
   short_text = """\
 Release channel a cluster is subscribed to.
@@ -313,7 +316,7 @@ advantage of new features.""",
       'stable': """\
 Clusters subscribed to 'stable' receive versions that are known to be
 stable and reliable in production.""",
-    }
+  }
   if not autopilot:
     choices.update({
         'None': """\
@@ -863,7 +866,7 @@ Standard rollout policy options for blue-green upgrade.
 This argument should be used in conjunction with
 `--enable-autoprovisioning-blue-green-upgrade` to take effect.
 
-Batch sizes are specfied by one of, batch-node-count or batch-percent.
+Batch sizes are specified by one of, batch-node-count or batch-percent.
 The duration between batches is specified by batch-soak-duration.
 
 Example:
@@ -1348,7 +1351,7 @@ Enable sending metrics from master components to Cloud Operations.
   )
 
 
-def AddLoggingFlag(parser):
+def AddLoggingFlag(parser, autopilot=False):
   """Adds a --logging flag to parser."""
   help_text = """\
 Set the components that have logging enabled. Valid component values are:
@@ -1363,6 +1366,20 @@ Examples:
   $ {command} --logging=SYSTEM,API_SERVER,WORKLOAD
   $ {command} --logging=NONE
 """
+  if autopilot:
+    help_text = """\
+Set the components that have logging enabled. Valid component values are:
+`SYSTEM`, `WORKLOAD`, `API_SERVER`, `CONTROLLER_MANAGER`, `SCHEDULER`, `NONE`
+
+For more information, see
+https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-logs
+
+Examples:
+
+  $ {command} --logging=SYSTEM,WORKLOAD
+  $ {command} --logging=SYSTEM,API_SERVER,WORKLOAD
+"""
+
   parser.add_argument(
       '--logging',
       type=arg_parsers.ArgList(),
@@ -1372,7 +1389,7 @@ Examples:
   )
 
 
-def AddMonitoringFlag(parser):
+def AddMonitoringFlag(parser, autopilot=False):
   """Adds a --monitoring flag to parser."""
   help_text = """\
 Set the components that have monitoring enabled. Valid component values are:
@@ -1387,6 +1404,22 @@ Examples:
   $ {command} --monitoring=SYSTEM,API_SERVER,POD
   $ {command} --monitoring=NONE
 """
+
+  if autopilot:
+    help_text = """\
+Set the components that have monitoring enabled. Valid component values are:
+`SYSTEM`, `WORKLOAD` (Deprecated), `NONE`, `API_SERVER`, `CONTROLLER_MANAGER`,
+`SCHEDULER`, `DAEMONSET`, `DEPLOYMENT`, `HPA`, `POD`, `STATEFULSET`, `STORAGE`
+
+For more information, see
+https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-metrics
+
+Examples:
+
+  $ {command} --monitoring=SYSTEM,API_SERVER,POD
+  $ {command} --monitoring=SYSTEM
+"""
+
   parser.add_argument(
       '--monitoring',
       type=arg_parsers.ArgList(),
@@ -1554,9 +1587,10 @@ Examples:
 
 New nodes, including ones created by resize or recreate, will have these local SSDs.
 
-Local SSDs have a fixed 375 GB capacity per device. The number of disks that
-can be attached to an instance is limited by the maximum number of disks
-available on a machine, which differs by compute zone.
+For first- and second-generation machine types, a nonzero count field is
+required for local ssd to be configured. For third-generation machine types, the
+count field is optional because the count is inferred from the machine type.
+
 See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
 """.format(
       'node-pool-1 --cluster=example cluster'
@@ -1585,8 +1619,10 @@ Examples:
   $ {{command}} {0} --ephemeral-storage local-ssd-count=2
 
 'local-ssd-count' specifies the number of local SSDs to use to back ephemeral
-storage. Local SDDs use NVMe interfaces and each is 375 GB in size.
-Setting 'local-ssd-count=0' disables using local SSDs as ephemeral storage.
+storage. Local SDDs use NVMe interfaces. For first- and second-generation
+machine types, a nonzero count field is required for local ssd to be configured.
+For third-generation machine types, the count field is optional because the count
+is inferred from the machine type.
 
 See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
 """.format(
@@ -1599,9 +1635,7 @@ See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
       help=help_text,
       hidden=hidden,
       nargs='?',
-      type=arg_parsers.ArgDict(
-          spec={'local-ssd-count': int}
-      ),
+      type=arg_parsers.ArgDict(spec={'local-ssd-count': int}),
   )
 
 
@@ -1618,8 +1652,10 @@ Examples:
   $ {{command}} {0} --ephemeral-storage-local-ssd count=2
 
 'count' specifies the number of local SSDs to use to back ephemeral
-storage. Local SDDs use NVMe interfaces and each is 375 GB in size.
-Setting 'count=0' disables using local SSDs as ephemeral storage.
+storage. Local SDDs use NVMe interfaces. For first- and second-generation
+machine types, a nonzero count field is required for local ssd to be configured.
+For third-generation machine types, the count field is optional because the count
+is inferred from the machine type.
 
 See https://cloud.google.com/compute/docs/disks/local-ssd for more information.
 """.format(
@@ -3383,7 +3419,7 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
   visible_addon_options = [
       addon
       for addon in addon_options
-      if addon != api_adapter.APPLICATIONMANAGER
+      if addon not in [api_adapter.APPLICATIONMANAGER, api_adapter.STATEFULHA]
   ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
   parser.add_argument(
@@ -5303,7 +5339,8 @@ def AddPerformanceMonitoringUnit(parser, hidden=True):
       choices=_PMU_LEVEL,
       help=help_text,
       default=None,
-      hidden=hidden)
+      hidden=hidden,
+  )
 
 
 def AddNumaNodeCount(parser):
@@ -5323,7 +5360,8 @@ def AddNumaNodeCount(parser):
 def AddHostMaintenanceIntervalFlag(parser, for_node_pool=False, hidden=True):
   """Adds a --host-maintenance-interval flag to the given parser."""
   type_validator = arg_parsers.RegexpValidator(
-      r'^(PERIODIC|AS_NEEDED)$', 'Type must be either"PERIODIC" or "AS_NEEDED"')
+      r'^(PERIODIC|AS_NEEDED)$', 'Type must be either"PERIODIC" or "AS_NEEDED"'
+  )
   if for_node_pool:
     help_text = """\
 Specify the frequency of planned host maintenance events in the new nodepool
@@ -5348,7 +5386,8 @@ The maintenance interval type must be either 'PERIODIC' or 'AS_NEEDED'
       '--host-maintenance-interval',
       type=type_validator,
       hidden=hidden,
-      help=help_text)
+      help=help_text,
+  )
 
 
 def AddEnableGcfsFlag(parser, for_node_pool=False, hidden=True):

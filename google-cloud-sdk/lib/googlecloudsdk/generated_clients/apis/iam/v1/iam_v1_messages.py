@@ -1572,6 +1572,22 @@ class IamProjectsLocationsWorkloadIdentityPoolsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsGetIamPolicyRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsGetIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsGetRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsGetRequest object.
 
@@ -1632,6 +1648,23 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesDeleteRequest(_messages
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetIamPolicyRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetIamPolicyRequest
+  object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesGetRequest(_messages.Message):
@@ -1696,6 +1729,23 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesDelete
   name = _messages.StringField(1, required=True)
 
 
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetIamPolicyRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGe
+  tIamPolicyRequest object.
+
+  Fields:
+    getIamPolicyRequest: A GetIamPolicyRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  getIamPolicyRequest = _messages.MessageField('GetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGetRequest(_messages.Message):
   r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesGe
   tRequest object.
@@ -1753,6 +1803,40 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesPatchR
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workloadIdentityPoolManagedIdentity = _messages.MessageField('WorkloadIdentityPoolManagedIdentity', 3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSetIamPolicyRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesSe
+  tIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesTestIamPermissionsRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesTe
+  stIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesManagedIdentitiesUndeleteRequest(_messages.Message):
@@ -1889,6 +1973,41 @@ class IamProjectsLocationsWorkloadIdentityPoolsNamespacesPatchRequest(_messages.
   name = _messages.StringField(1, required=True)
   updateMask = _messages.StringField(2)
   workloadIdentityPoolNamespace = _messages.MessageField('WorkloadIdentityPoolNamespace', 3)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetIamPolicyRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsNamespacesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsNamespacesTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  IamProjectsLocationsWorkloadIdentityPoolsNamespacesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsNamespacesUndeleteRequest(_messages.Message):
@@ -2213,6 +2332,39 @@ class IamProjectsLocationsWorkloadIdentityPoolsProvidersUndeleteRequest(_message
 
   name = _messages.StringField(1, required=True)
   undeleteWorkloadIdentityPoolProviderRequest = _messages.MessageField('UndeleteWorkloadIdentityPoolProviderRequest', 2)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsSetIamPolicyRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class IamProjectsLocationsWorkloadIdentityPoolsTestIamPermissionsRequest(_messages.Message):
+  r"""A IamProjectsLocationsWorkloadIdentityPoolsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
 class IamProjectsLocationsWorkloadIdentityPoolsUndeleteRequest(_messages.Message):

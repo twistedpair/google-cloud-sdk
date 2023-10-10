@@ -379,12 +379,12 @@ class ApphubProjectsLocationsGetTopologyRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class ApphubProjectsLocationsGlobalGetHostProjectRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGlobalGetHostProjectRequest object.
+class ApphubProjectsLocationsGlobalLookupServiceProjectAttachmentRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsGlobalLookupServiceProjectAttachmentRequest
+  object.
 
   Fields:
-    name: Required. Host Project resource name with format:
-      "projects/{project_id}/locations/global/hostProject".
+    name: Required. Name value of the project to check attachment for.
   """
 
   name = _messages.StringField(1, required=True)
@@ -540,6 +540,36 @@ class ApphubProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ApphubProjectsLocationsServicesGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsServicesGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsServicesListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsServicesListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListServicesRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ApphubProjectsLocationsUpdateTelemetryRequest(_messages.Message):
   r"""A ApphubProjectsLocationsUpdateTelemetryRequest object.
 
@@ -572,6 +602,36 @@ class ApphubProjectsLocationsUpdateTopologyRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class ApphubProjectsLocationsWorkloadsGetRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsWorkloadsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApphubProjectsLocationsWorkloadsListRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsWorkloadsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListWorkloadsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class Application(_messages.Message):
   r"""Application defines the governance boundary for App Hub Entities that
   perform a logical end-to-end business function. We support Application level
@@ -593,6 +653,8 @@ class Application(_messages.Message):
       Application can contain services from the same region. ex1. A us-
       central1 application can contain services from us-central1. ex2. A
       global application can contain services from global region.
+    uid: Output only. A globally unique identifier (in UUID4 format) for the
+      application.
     updateTime: Output only. Application update time.
     workloadAttachments: Collection of workloads owned by application Updated
       whenever new workloads are registered/unregistered under the
@@ -608,8 +670,9 @@ class Application(_messages.Message):
   name = _messages.StringField(5)
   scope = _messages.MessageField('Scope', 6)
   serviceAttachments = _messages.MessageField('ServiceAttachment', 7, repeated=True)
-  updateTime = _messages.StringField(8)
-  workloadAttachments = _messages.MessageField('WorkloadAttachment', 9, repeated=True)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
+  workloadAttachments = _messages.MessageField('WorkloadAttachment', 10, repeated=True)
 
 
 class Attributes(_messages.Message):
@@ -690,20 +753,6 @@ class Environment(_messages.Message):
   """
 
   environment = _messages.StringField(1)
-
-
-class HostProject(_messages.Message):
-  r"""Message represents a host project. HostProject is a global resource.
-
-  Fields:
-    hostProject: Output only. Host project number with format:
-      projects/{project_number}
-    name: Required. Host Project resource name with format:
-      "projects/{service-project-id}/locations/global/hostProject".
-  """
-
-  hostProject = _messages.StringField(1)
-  name = _messages.StringField(2)
 
 
 class ListApplicationsResponse(_messages.Message):
@@ -870,6 +919,16 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class LookupServiceProjectAttachmentResponse(_messages.Message):
+  r"""A LookupServiceProjectAttachmentResponse object.
+
+  Fields:
+    serviceProjectAttachment: A ServiceProjectAttachment attribute.
+  """
+
+  serviceProjectAttachment = _messages.MessageField('ServiceProjectAttachment', 1)
 
 
 class Operation(_messages.Message):
@@ -1050,6 +1109,8 @@ class Service(_messages.Message):
       resource that can comprise a service. These are immutable.
     serviceReference: Output only. Reference to an underlying networking
       resource that can comprise a service. These are immutable.
+    uid: Output only. A globally unique identifier (in UUID4 format) for the
+      `Service`.
     updateTime: Output only. Service update time.
   """
 
@@ -1061,7 +1122,8 @@ class Service(_messages.Message):
   name = _messages.StringField(6)
   serviceProperties = _messages.MessageField('ServiceProperties', 7)
   serviceReference = _messages.MessageField('ServiceReference', 8)
-  updateTime = _messages.StringField(9)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class ServiceAttachment(_messages.Message):
@@ -1085,11 +1147,14 @@ class ServiceProjectAttachment(_messages.Message):
       format of projects//locations/global/serviceProjectAttachments/
     serviceProject: Required. Immutable. Service project name with format:
       projects/abc or projects/123
+    uid: Output only. A globally unique identifier (in UUID4 format) for the
+      `ServiceProjectAttachment`.
   """
 
   createTime = _messages.StringField(1)
   name = _messages.StringField(2)
   serviceProject = _messages.StringField(3)
+  uid = _messages.StringField(4)
 
 
 class ServiceProperties(_messages.Message):
@@ -1288,6 +1353,8 @@ class Workload(_messages.Message):
     name: Full resource identifier of a Workload 1. Registered workload
       format: projects//locations//applications//workloads/ 2. Discovered
       workload format: projects//locations//workloads/
+    uid: Output only. A globally unique identifier (in UUID4 format) for the
+      `Workload`.
     updateTime: Output only. Workload update time.
     workloadProperties: Output only. Properties of an underlying compute
       resource represented by the workload. These are immutable.
@@ -1301,9 +1368,10 @@ class Workload(_messages.Message):
   discoveredWorkload = _messages.StringField(4)
   displayName = _messages.StringField(5)
   name = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
-  workloadProperties = _messages.MessageField('WorkloadProperties', 8)
-  workloadReference = _messages.MessageField('WorkloadReference', 9)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
+  workloadProperties = _messages.MessageField('WorkloadProperties', 9)
+  workloadReference = _messages.MessageField('WorkloadReference', 10)
 
 
 class WorkloadAttachment(_messages.Message):

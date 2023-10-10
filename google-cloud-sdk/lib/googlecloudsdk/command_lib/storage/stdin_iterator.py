@@ -37,9 +37,11 @@ class StdinIterator(six.Iterator):
     return line.rstrip()
 
 
-def get_urls_iterable(normal_urls_argument, should_read_paths_from_stdin):
+def get_urls_iterable(
+    normal_urls_argument, should_read_paths_from_stdin, allow_empty=False
+):
   """Helps command decide between normal URL args and a StdinIterator."""
-  if not (normal_urls_argument or should_read_paths_from_stdin):
+  if not (normal_urls_argument or should_read_paths_from_stdin or allow_empty):
     raise errors.InvalidUrlError(
         'Must have URL arguments if not reading paths from stdin.'
     )

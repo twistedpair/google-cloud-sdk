@@ -784,11 +784,6 @@ def PrintPostDeployHints(new_versions, updated_configs):
           _TASK_CONSOLE_LINK.format(properties.VALUES.core.project.Get()))
   if yaml_parsing.ConfigYamlInfo.DISPATCH in updated_configs:
     log.status.Print('\nCustom routings have been updated.')
-  if yaml_parsing.ConfigYamlInfo.DOS in updated_configs:
-    log.status.Print('\nDoS protection has been updated.'
-                     '\n\nTo delete all blacklist entries, redeploy the '
-                     'dos.yaml file with the following content:\n'
-                     '    blacklist:')
   if yaml_parsing.ConfigYamlInfo.QUEUE in updated_configs:
     log.status.Print('\nTask queues have been updated.')
     log.status.Print('\nVisit the Cloud Platform Console Task Queues page '

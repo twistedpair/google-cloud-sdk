@@ -30,7 +30,8 @@ class BulkRestoreObjectsTask(task.Task):
 
   def __init__(
       self,
-      url,
+      bucket_url,
+      object_globs,
       allow_overwrite=False,
       deleted_after_time=None,
       deleted_before_time=None,
@@ -39,9 +40,9 @@ class BulkRestoreObjectsTask(task.Task):
     """Initializes task.
 
     Args:
-      url (CloudUrl): URL matching objects to restore. If bucket URL, restores
-        all objects in bucket. If object URL, extracts bucket and uses object
-        portion of URL for `matchGlobs` API argument.
+      bucket_url (StorageUrl): Launch a bulk restore operation for this bucket.
+      object_globs (list[str]): Objects in the target bucket matching these glob
+        patterns will be restored.
       allow_overwrite (bool): Overwrite existing live objects.
       deleted_after_time (datetime): Filter results to objects soft-deleted
         after this time. Backend will reject if used with `live_at_time`.
@@ -50,7 +51,8 @@ class BulkRestoreObjectsTask(task.Task):
       user_request_args (UserRequestArgs|None): Contains restore settings.
     """
     super(BulkRestoreObjectsTask, self).__init__()
-    self._url = url
+    self._bucket_url = bucket_url
+    self._object_globs = object_globs
     self._allow_overwrite = allow_overwrite
     self._deleted_after_time = deleted_after_time
     self._deleted_before_time = deleted_before_time
@@ -58,18 +60,19 @@ class BulkRestoreObjectsTask(task.Task):
 
   def execute(self, task_status_queue=None):
     log.status.Print(
-        'Creating bulk restore operation for {}...'.format(
-            self._url.versionless_url_string
+        'Creating bulk restore operation for bucket {} with globs: {}'.format(
+            self._bucket_url, self._object_globs
         )
     )
-    provider = self._url.scheme
     request_config = request_config_factory.get_request_config(
-        self._url,
+        # Arbitrarily use first glob to get CloudUrl for object.
+        self._bucket_url.join(self._object_globs[0]),
         user_request_args=self._user_request_args,
     )
 
-    api_factory.get_api(provider).bulk_restore_objects(
-        self._url,
+    api_factory.get_api(self._bucket_url.scheme).bulk_restore_objects(
+        self._bucket_url,
+        self._object_globs,
         request_config=request_config,
         allow_overwrite=self._allow_overwrite,
         deleted_after_time=self._deleted_after_time,
@@ -83,7 +86,8 @@ class BulkRestoreObjectsTask(task.Task):
     if not isinstance(other, type(self)):
       return NotImplemented
     return (
-        self._url == other._url
+        self._bucket_url == other._bucket_url
+        and self._object_globs == other._object_globs
         and self._allow_overwrite == other._allow_overwrite
         and self._deleted_after_time == other._deleted_after_time
         and self._deleted_before_time == other._deleted_before_time

@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 import collections
 import functools
+import json
+from typing import Mapping, Sequence
 
 from googlecloudsdk.api_lib.run import k8s_object
 
@@ -115,6 +117,42 @@ class ContainerResource(k8s_object.KubernetesObject):
     (i.e. setting and deleting keys) modify the underlying nested volumes.
     """
     return VolumesAsDictionaryWrapper(self.spec.volumes, self._messages.Volume)
+
+  @property
+  def dependencies(self) -> Mapping[str, Sequence[str]]:
+    """Returns a dictionary of container dependencies.
+
+    Container dependencies are stored in the
+    'run.googleapis.com/container-dependencies' annotation. The returned
+    dictionary maps containers to a list of their dependencies by name. Note
+    that updates to the returned dictionary do not update the resource's
+    container dependencies unless the dependencies setter is used.
+    """
+    dependencies = {}
+    if k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION in self.annotations:
+      dependencies = json.loads(
+          self.annotations[k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION]
+      )
+    return dependencies
+
+  @dependencies.setter
+  def dependencies(self, dependencies: Mapping[str, Sequence[str]]):
+    """Sets the resource's container dependencies.
+
+    Args:
+      dependencies: A dictionary mapping containers to a list of their
+        dependencies by name.
+
+    Container dependencies are stored in the
+    'run.googleapis.com/container-dependencies' annotation as json. Setting an
+    empty set of dependencies will clear this annotation.
+    """
+    if dependencies:
+      self.annotations[k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION] = (
+          json.dumps({k: list(v) for k, v in dependencies.items()})
+      )
+    elif k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION in self.annotations:
+      del self.annotations[k8s_object.CONTAINER_DEPENDENCIES_ANNOTATION]
 
 
 class Container(object):

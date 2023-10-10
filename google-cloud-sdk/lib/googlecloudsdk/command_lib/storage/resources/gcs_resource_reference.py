@@ -85,6 +85,7 @@ class GcsBucketResource(resource_reference.BucketResource):
   """API-specific subclass for handling metadata.
 
   Additional GCS Attributes:
+    autoclass (dict|None): Autoclass settings for the bucket
     autoclass_enabled_time (datetime|None): Datetime Autoclass feature was
       enabled on bucket. None means the feature is disabled.
     custom_placement_config (dict|None): Dual Region of a bucket.
@@ -105,6 +106,9 @@ class GcsBucketResource(resource_reference.BucketResource):
       self,
       storage_url_object,
       acl=None,
+      autoclass=None,
+      # autoclass field should already have the enabled_time information.
+      # This is being kept here for backward compatibility.
       autoclass_enabled_time=None,
       cors_config=None,
       creation_time=None,
@@ -154,6 +158,7 @@ class GcsBucketResource(resource_reference.BucketResource):
         versioning_enabled=versioning_enabled,
         website_config=website_config,
     )
+    self.autoclass = autoclass
     self.autoclass_enabled_time = autoclass_enabled_time
     self.custom_placement_config = custom_placement_config
     self.default_acl = default_acl
@@ -186,6 +191,7 @@ class GcsBucketResource(resource_reference.BucketResource):
   def __eq__(self, other):
     return (
         super(GcsBucketResource, self).__eq__(other)
+        and self.autoclass == other.autoclass
         and self.autoclass_enabled_time == other.autoclass_enabled_time
         and self.custom_placement_config == other.custom_placement_config
         and self.default_acl == other.default_acl

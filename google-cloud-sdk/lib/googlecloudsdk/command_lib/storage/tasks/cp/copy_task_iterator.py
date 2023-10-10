@@ -18,12 +18,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import copy
 import os
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import manifest_util
+from googlecloudsdk.command_lib.storage import path_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
@@ -35,7 +35,6 @@ from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
-from googlecloudsdk.core.util import platforms
 
 _ONE_TB_IN_BYTES = 1099511627776
 _RELATIVE_PATH_SYMBOLS = frozenset(['.', '..'])
@@ -203,33 +202,6 @@ def _is_expanded_url_valid_parent_dir(expanded_url):
       ])
 
 
-def _sanitize_destination_resource_if_needed(destination_resource):
-  """Returns the destination resource with invalid characters replaced.
-
-  The invalid characters are only replaced if the destination URL is a FileUrl
-  and the platform is Windows. This is required because Cloud URLs may have
-  certain characters that are not allowed in file paths on Windows.
-
-  Args:
-    destination_resource (Resource): The destination resource.
-
-  Returns:
-    The destination resource with invalid characters replaced from the
-    destination path.
-  """
-  if (
-      isinstance(destination_resource.storage_url, storage_url.FileUrl)
-      and properties.VALUES.storage.convert_incompatible_windows_path_characters.GetBool()
-      and platforms.OperatingSystem.IsWindows()
-  ):
-    sanitized_destination_resource = copy.deepcopy(destination_resource)
-    sanitized_destination_resource.storage_url.object_name = (
-        platforms.MakePathWindowsCompatible(
-            sanitized_destination_resource.storage_url.object_name))
-    return sanitized_destination_resource
-  return destination_resource
-
-
 class CopyTaskIterator:
   """Iterates over each expanded source and creates an appropriate copy task."""
 
@@ -268,7 +240,10 @@ class CopyTaskIterator:
         workload from this iterator.
       user_request_args (UserRequestArgs|None): Values for RequestConfig.
     """
-    self._all_versions = source_name_iterator.all_versions
+    self._all_versions = (
+        source_name_iterator.object_state
+        is cloud_api.ObjectState.LIVE_AND_NONCURRENT
+    )
     self._has_multiple_top_level_sources = (
         source_name_iterator.has_multiple_top_level_resources)
     self._has_cloud_source = False
@@ -438,43 +413,54 @@ class CopyTaskIterator:
           user_request_args=self._user_request_args,
       )
 
-    if (self._task_status_queue and
-        (self._total_file_count > 0 or self._total_size > 0)):
+    if self._task_status_queue and (
+        self._total_file_count > 0 or self._total_size > 0
+    ):
       # Show fraction of total copies completed now that we know totals.
       progress_callbacks.workload_estimator_callback(
           self._task_status_queue,
           item_count=self._total_file_count,
-          size=self._total_size)
+          size=self._total_size,
+      )
 
-    if (self._total_size > _ONE_TB_IN_BYTES and self._has_cloud_source and
-        not self._has_local_source and
-        destination_url.scheme is storage_url.ProviderPrefix.GCS and
-        properties.VALUES.storage.suggest_transfer.GetBool()):
+    if (
+        self._total_size > _ONE_TB_IN_BYTES
+        and self._has_cloud_source
+        and not self._has_local_source
+        and destination_url.scheme is storage_url.ProviderPrefix.GCS
+        and properties.VALUES.storage.suggest_transfer.GetBool()
+    ):
       log.status.Print(
           'For large copies, consider the `gcloud transfer jobs create ...`'
           ' command. Learn more at'
           '\nhttps://cloud.google.com/storage-transfer-service'
           '\nRun `gcloud config set storage/suggest_transfer False` to'
-          ' disable this message.')
+          ' disable this message.'
+      )
 
   def _get_copy_destination(self, raw_destination, source):
     """Returns the final destination StorageUrl instance."""
     completion_is_necessary = (
-        _destination_is_container(raw_destination) or
-        (self._multiple_sources and not _resource_is_stream(raw_destination))
-        or source.resource.storage_url.versionless_url_string !=
-        source.expanded_url.versionless_url_string  # Recursion case.
+        _destination_is_container(raw_destination)
+        or (self._multiple_sources and not _resource_is_stream(raw_destination))
+        or source.resource.storage_url.versionless_url_string
+        != source.expanded_url.versionless_url_string  # Recursion case.
     )
     if completion_is_necessary:
-      if (isinstance(source.expanded_url, storage_url.FileUrl) and
-          source.expanded_url.is_stdio):
+      if (
+          isinstance(source.expanded_url, storage_url.FileUrl)
+          and source.expanded_url.is_stdio
+      ):
         raise errors.Error(
-            'Destination object name needed when source is stdin.')
+            'Destination object name needed when source is stdin.'
+        )
       destination_resource = self._complete_destination(raw_destination, source)
     else:
       destination_resource = raw_destination
-    sanitized_destination_resource = _sanitize_destination_resource_if_needed(
-        destination_resource)
+
+    sanitized_destination_resource = (
+        path_util.sanitize_file_resource_for_windows(destination_resource)
+    )
     return sanitized_destination_resource
 
   def _complete_destination(self, destination_container, source):
@@ -509,12 +495,33 @@ class CopyTaskIterator:
           destination_container, source
       )
     else:
-      # Schema might give us incorrect suffix for Windows.
-      # TODO(b/169093672) This will not be required if we get rid of file://
-      schemaless_url = source_url.versionless_url_string.rpartition(
+      # On Windows with a relative path URL like file://file.txt, partitioning
+      # on the delimiter will fail to remove file://, so destination_suffix
+      # would include the scheme. We remove the scheme here to avoid this.
+      _, _, url_without_scheme = source_url.versionless_url_string.rpartition(
           source_url.scheme.value + '://'
-      )[2]
-      destination_suffix = schemaless_url.rpartition(source_url.delimiter)[2]
+      )
+
+      # Ignores final slashes when completing names. For example, where
+      # source_url is gs://bucket/folder/ and destination_url is gs://bucket1,
+      # the completed URL should be gs://bucket1/folder/.
+      if url_without_scheme.endswith(source_url.delimiter):
+        url_without_scheme_and_trailing_delimiter = (
+            url_without_scheme[:-len(source_url.delimiter)]
+        )
+      else:
+        url_without_scheme_and_trailing_delimiter = url_without_scheme
+
+      _, _, destination_suffix = (
+          url_without_scheme_and_trailing_delimiter.rpartition(
+              source_url.delimiter
+          )
+      )
+
+      if url_without_scheme_and_trailing_delimiter != url_without_scheme:
+        # Adds the removed delimiter back.
+        destination_suffix += source_url.delimiter
+
     destination_url_prefix = storage_url.storage_url_from_string(
         destination_url.versionless_url_string.rstrip(destination_url.delimiter)
     )

@@ -284,6 +284,7 @@ CONFIGCONNECTOR = 'ConfigConnector'
 GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
 GCPFILESTORECSIDRIVER = 'GcpFilestoreCsiDriver'
 GCSFUSECSIDRIVER = 'GcsFuseCsiDriver'
+STATEFULHA = 'StatefulHA'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
@@ -318,6 +319,7 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     GCPFILESTORECSIDRIVER,
     BACKUPRESTORE,
     GCSFUSECSIDRIVER,
+    STATEFULHA,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
@@ -1778,6 +1780,7 @@ class APIAdapter(object):
           enable_cloud_build=(CLOUDBUILD in options.addons),
           enable_backup_restore=(BACKUPRESTORE in options.addons),
           enable_gcsfuse_csi_driver=(GCSFUSECSIDRIVER in options.addons),
+          enable_stateful_ha=(STATEFULHA in options.addons),
       )
       # CONFIGCONNECTOR is disabled by default.
       if CONFIGCONNECTOR in options.addons:
@@ -3277,6 +3280,10 @@ class APIAdapter(object):
       if options.disable_addons.get(GCSFUSECSIDRIVER) is not None:
         addons.gcsFuseCsiDriverConfig = self.messages.GcsFuseCsiDriverConfig(
             enabled=not options.disable_addons.get(GCSFUSECSIDRIVER))
+      if options.disable_addons.get(STATEFULHA) is not None:
+        addons.statefulHaConfig = (
+            self.messages.StatefulHAConfig(
+                enabled=not options.disable_addons.get(STATEFULHA)))
       if options.disable_addons.get(BACKUPRESTORE) is not None:
         addons.gkeBackupAgentConfig = (
             self.messages.GkeBackupAgentConfig(
@@ -3769,7 +3776,8 @@ class APIAdapter(object):
                     enable_application_manager=None,
                     enable_cloud_build=None,
                     enable_backup_restore=None,
-                    enable_gcsfuse_csi_driver=None):
+                    enable_gcsfuse_csi_driver=None,
+                    enable_stateful_ha=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -3783,7 +3791,8 @@ class APIAdapter(object):
       enable_application_manager: whether to enable ApplicationManager.
       enable_cloud_build: whether to enable CloudBuild.
       enable_backup_restore: whether to enable BackupRestore.
-      enable_gcsfuse_csi_driver: wherher to enable GcsFuseCsiDriver.
+      enable_gcsfuse_csi_driver: whether to enable GcsFuseCsiDriver.
+      enable_stateful_ha: whether to enable StatefulHA addon.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -3822,6 +3831,8 @@ class APIAdapter(object):
     if enable_gcsfuse_csi_driver:
       addons.gcsFuseCsiDriverConfig = self.messages.GcsFuseCsiDriverConfig(
           enabled=True)
+    if enable_stateful_ha:
+      addons.statefulHaConfig = self.messages.StatefulHAConfig(enabled=True)
 
     return addons
 

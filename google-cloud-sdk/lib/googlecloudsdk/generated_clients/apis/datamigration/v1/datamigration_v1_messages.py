@@ -1085,7 +1085,7 @@ class DatabaseEngineInfo(_messages.Message):
 
   Fields:
     engine: Required. Engine type.
-    version: Required. Engine named version, for example 12.c.1.
+    version: Required. Engine version, for example "12.c.1".
   """
 
   class EngineValueValuesEnum(_messages.Enum):
@@ -3848,6 +3848,10 @@ class MigrationJobVerificationError(_messages.Message):
         databases that are conflicting with those in the source DB.
       PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE: Insufficient privilege to enable
         the parallelism configuration.
+      EXISTING_DATA: The destination instance contains existing data or user
+        defined entities (for example databases, tables, or functions). You
+        can only migrate to empty instances. Clear your destination instance
+        and retry the migration job.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3877,6 +3881,7 @@ class MigrationJobVerificationError(_messages.Message):
     SOURCE_SIZE_EXCEEDS_THRESHOLD = 25
     EXISTING_CONFLICTING_DATABASES = 26
     PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE = 27
+    EXISTING_DATA = 28
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

@@ -5185,6 +5185,9 @@ class Operation(_messages.Message):
         typically an indication of issues. For more details, see
         [documentation on resizes](https://cloud.google.com/kubernetes-
         engine/docs/concepts/maintenance-windows-and-exclusions#repairs).
+      FLEET_FEATURE_UPGRADE: Fleet features of GKE Enterprise are being
+        upgraded. The cluster should be assumed to be blocked for other
+        upgrades until the operation finishes.
     """
     TYPE_UNSPECIFIED = 0
     CREATE_CLUSTER = 1
@@ -5205,6 +5208,7 @@ class Operation(_messages.Message):
     SET_MAINTENANCE_POLICY = 16
     UPDATE_IP_ALLOCATION_POLICY = 17
     RESIZE_CLUSTER = 18
+    FLEET_FEATURE_UPGRADE = 19
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The current status of the operation.

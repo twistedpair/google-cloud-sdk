@@ -35,6 +35,32 @@ SpecMapping = Dict[str, messages.Message]
 class PocoCommand:
   """A mixin for Policy Controller specific functionality."""
 
+  def update_fleet_default(self, default_cfg) -> None:
+    """Update the feature configuration."""
+    mask = ['fleet_default_member_config']
+    feature = self.messages.Feature(
+        # TODO(b/302390572) Figure out the right way to do this.
+        # Inserting this so that something exists on the feature during deletes.
+        # Otherwise the CLH will drop the update.
+        # DO NOT PUT 'name' IN THE MASK.
+        name='notarealname'
+    )
+    if default_cfg is not None:
+      feature.fleetDefaultMemberConfig = (
+          self.messages.CommonFleetDefaultMemberConfigSpec(
+              policycontroller=default_cfg
+          )
+      )
+
+    try:
+      return self.Update(mask, feature)
+    except gcloud_exceptions.Error as e:
+      fne = self.FeatureNotEnabledError()
+      if six.text_type(e) == six.text_type(fne):
+        return self.Enable(feature)
+      else:
+        raise e
+
   def current_specs(self) -> SpecMapping:
     """Fetches the current specs from the server.
 

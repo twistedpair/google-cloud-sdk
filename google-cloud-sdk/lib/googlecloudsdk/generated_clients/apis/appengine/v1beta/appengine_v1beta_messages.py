@@ -431,6 +431,34 @@ class AppengineAppsGetRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class AppengineAppsListRuntimesRequest(_messages.Message):
+  r"""A AppengineAppsListRuntimesRequest object.
+
+  Enums:
+    EnvironmentValueValuesEnum: Optional. The environment of the Application.
+
+  Fields:
+    environment: Optional. The environment of the Application.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
+  """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""Optional. The environment of the Application.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Default value.
+      STANDARD: App Engine Standard.
+      FLEXIBLE: App Engine Flexible
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEXIBLE = 2
+
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class AppengineAppsLocationsGetRequest(_messages.Message):
   r"""A AppengineAppsLocationsGetRequest object.
 
@@ -513,34 +541,6 @@ class AppengineAppsRepairRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   repairApplicationRequest = _messages.MessageField('RepairApplicationRequest', 2)
-
-
-class AppengineAppsRuntimesListRequest(_messages.Message):
-  r"""A AppengineAppsRuntimesListRequest object.
-
-  Enums:
-    EnvironmentValueValuesEnum: Optional. The environment of the Application.
-
-  Fields:
-    environment: Optional. The environment of the Application.
-    parent: Required. Name of the parent Application resource. Example:
-      apps/myapp.
-  """
-
-  class EnvironmentValueValuesEnum(_messages.Enum):
-    r"""Optional. The environment of the Application.
-
-    Values:
-      ENVIRONMENT_UNSPECIFIED: Default value.
-      STANDARD: App Engine Standard.
-      FLEXIBLE: App Engine Flexible
-    """
-    ENVIRONMENT_UNSPECIFIED = 0
-    STANDARD = 1
-    FLEXIBLE = 2
-
-  environment = _messages.EnumField('EnvironmentValueValuesEnum', 1)
-  parent = _messages.StringField(2, required=True)
 
 
 class AppengineAppsServicesDeleteRequest(_messages.Message):

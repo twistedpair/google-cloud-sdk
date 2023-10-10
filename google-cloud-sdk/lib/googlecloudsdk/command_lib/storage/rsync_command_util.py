@@ -25,6 +25,7 @@ from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import fast_crc32c_util
 from googlecloudsdk.command_lib.storage import hash_util
+from googlecloudsdk.command_lib.storage import path_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import posix_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
@@ -41,7 +42,6 @@ from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
-
 import six
 
 
@@ -424,7 +424,6 @@ def _get_copy_task(
     copy_destination = _get_copy_destination_resource(
         source_object, source_container, destination_container
     )
-
   if dry_run:
     if isinstance(source_object, resource_reference.FileObjectResource):
       try:
@@ -607,7 +606,12 @@ def _get_copy_destination_resource(
   new_destination_object_url = destination_container.storage_url.join(
       destination_delimited_containerless_source_string
   )
-  return resource_reference.UnknownResource(new_destination_object_url)
+
+  new_destination_resource = resource_reference.UnknownResource(
+      new_destination_object_url
+  )
+
+  return path_util.sanitize_file_resource_for_windows(new_destination_resource)
 
 
 def _log_skipping_symlink(resource):

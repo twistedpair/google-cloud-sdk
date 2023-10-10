@@ -20,7 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
-from typing import Any, Dict, Optional
+from typing import Any, Dict, List, Optional
 
 from apitools.base.py import encoding as apitools_encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -91,52 +91,65 @@ def GetApplication(
 
 
 def ListApplications(
-    client: runapps_v1alpha1_client.RunappsV1alpha1,
-    app_ref: resources) -> runapps_v1alpha1_messages.ListApplicationsResponse:
+    client: runapps_v1alpha1_client.RunappsV1alpha1, app_ref: resources
+) -> runapps_v1alpha1_messages.ListApplicationsResponse:
   """Calls ListApplications API of Runapps for the specified reference."""
-  request = (client.MESSAGES_MODULE
-             .RunappsProjectsLocationsApplicationsListRequest(
-                 parent=app_ref.RelativeName()))
+  request = (
+      client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsListRequest(
+          parent=app_ref.RelativeName()
+      )
+  )
 
   response = client.projects_locations_applications.List(request)
   if response.unreachable:
-    log.warning('The following regions did not respond: {}. '
-                'List results may be incomplete'.format(', '.join(
-                    sorted(response.unreachable))))
+    log.warning(
+        'The following regions did not respond: {}. '
+        'List results may be incomplete'.format(
+            ', '.join(sorted(response.unreachable))
+        )
+    )
 
   return response
 
 
 def ApplicationToDict(
-    application: runapps_v1alpha1_messages.Application) -> Dict[str, Any]:
+    application: runapps_v1alpha1_messages.Application,
+) -> Dict[str, Any]:
   """Converts application resource to a dictionary."""
   app_dict = apitools_encoding.MessageToDict(application)
-  app_dict.setdefault(APP_DICT_CONFIG_KEY,
-                      {}).setdefault(APP_CONFIG_DICT_RESOURCES_KEY, {})
+  app_dict.setdefault(APP_DICT_CONFIG_KEY, {}).setdefault(
+      APP_CONFIG_DICT_RESOURCES_KEY, {}
+  )
   return app_dict
 
 
 def GetApplicationStatus(
     client: runapps_v1alpha1_client.RunappsV1alpha1,
     app_ref: resources,
-    resource_name: Optional[str] = None
-    ) -> Optional[runapps_v1alpha1_messages.ApplicationStatus]:
+    resource_ids: Optional[List[runapps_v1alpha1_messages.ResourceID]] = None,
+) -> Optional[runapps_v1alpha1_messages.ApplicationStatus]:
   """Calls GetApplicationStatus API of Runapps for the specified reference.
 
   Args:
     client: the api client to use.
-    app_ref: the resource reference of
-      the application.
-    resource_name: name of the resource to get status for. If not given, all
-      resources in the application will be queried.
+    app_ref: the resource reference of the application.
+    resource_ids: ResourceID of the resource to get status for. If not given,
+      all resources in the application will be queried.
 
   Returns:
     The ApplicationStatus object. Or None if not found.
   """
-  read_mask = 'resources.{}'.format(resource_name) if resource_name else None
+
+  if resource_ids:
+    res_filters = [
+        res_id.type + '/' + res_id.name for res_id in resource_ids
+    ]
+  else:
+    res_filters = []
   module = client.MESSAGES_MODULE
   request = module.RunappsProjectsLocationsApplicationsGetStatusRequest(
-      name=app_ref.RelativeName(), readMask=read_mask)
+      name=app_ref.RelativeName(), resources=res_filters
+  )
   try:
     return client.projects_locations_applications.GetStatus(request)
   except apitools_exceptions.HttpNotFoundError:

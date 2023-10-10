@@ -176,6 +176,27 @@ class FirestoreProjectsDatabasesImportDocumentsRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class GoogleFirestoreAdminV1CreateDatabaseMetadata(_messages.Message):
+  r"""Metadata related to the create database operation."""
+
+
+class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
+  r"""Metadata related to the delete database operation."""
+
+
+class GoogleFirestoreAdminV1Progress(_messages.Message):
+  r"""Describes the progress of the operation. Unit of work is generic and
+  must be interpreted based on where Progress is used.
+
+  Fields:
+    completedWork: The amount of work completed.
+    estimatedWork: The amount of work estimated.
+  """
+
+  completedWork = _messages.IntegerField(1)
+  estimatedWork = _messages.IntegerField(2)
+
+
 class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
   r"""Metadata for the long-running operation from the RestoreDatabase
   request.
@@ -188,6 +209,8 @@ class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
     database: The name of the database being restored to.
     endTime: The time the restore finished, unset for ongoing restores.
     operationState: The operation state of the restore.
+    progressPercentage: How far along the restore is as an estimated
+      percentage of remaining time.
     startTime: The time the restore was started.
   """
 
@@ -219,7 +242,8 @@ class GoogleFirestoreAdminV1RestoreDatabaseMetadata(_messages.Message):
   database = _messages.StringField(2)
   endTime = _messages.StringField(3)
   operationState = _messages.EnumField('OperationStateValueValuesEnum', 4)
-  startTime = _messages.StringField(5)
+  progressPercentage = _messages.MessageField('GoogleFirestoreAdminV1Progress', 5)
+  startTime = _messages.StringField(6)
 
 
 class GoogleFirestoreAdminV1UpdateDatabaseMetadata(_messages.Message):
@@ -753,8 +777,8 @@ class GoogleLongrunningOperation(_messages.Message):
       create time. Some services might not provide such metadata. Any method
       that returns a long-running operation should document the metadata type,
       if any.
-    ResponseValue: The normal response of the operation in case of success. If
-      the original method returns no data on success, such as `Delete`, the
+    ResponseValue: The normal, successful response of the operation. If the
+      original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
       methods, the response should have the type `XxxResponse`, where `Xxx` is
@@ -776,7 +800,7 @@ class GoogleLongrunningOperation(_messages.Message):
       service that originally returns it. If you use the default HTTP mapping,
       the `name` should be a resource name ending with
       `operations/{unique_id}`.
-    response: The normal response of the operation in case of success. If the
+    response: The normal, successful response of the operation. If the
       original method returns no data on success, such as `Delete`, the
       response is `google.protobuf.Empty`. If the original method is standard
       `Get`/`Create`/`Update`, the response should be the resource. For other
@@ -815,9 +839,9 @@ class GoogleLongrunningOperation(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResponseValue(_messages.Message):
-    r"""The normal response of the operation in case of success. If the
-    original method returns no data on success, such as `Delete`, the response
-    is `google.protobuf.Empty`. If the original method is standard
+    r"""The normal, successful response of the operation. If the original
+    method returns no data on success, such as `Delete`, the response is
+    `google.protobuf.Empty`. If the original method is standard
     `Get`/`Create`/`Update`, the response should be the resource. For other
     methods, the response should have the type `XxxResponse`, where `Xxx` is
     the original method name. For example, if the original method name is

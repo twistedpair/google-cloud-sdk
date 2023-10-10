@@ -63,6 +63,20 @@ class UploadStrategy(enum.Enum):
   STREAMING = 'streaming'
 
 
+class FieldsScope(enum.Enum):
+  """Values used to determine fields and projection values for API calls."""
+
+  FULL = 1
+  NO_ACL = 2
+  RSYNC = 3  # Only for objects.
+  SHORT = 4
+
+
+class HmacKeyState(enum.Enum):
+  ACTIVE = 'ACTIVE'
+  INACTIVE = 'INACTIVE'
+
+
 class NotificationEventType(enum.Enum):
   """Used to filter what events a notification configuration notifies on."""
   OBJECT_ARCHIVE = 'OBJECT_ARCHIVE'
@@ -77,17 +91,12 @@ class NotificationPayloadFormat(enum.Enum):
   NONE = 'none'
 
 
-class FieldsScope(enum.Enum):
-  """Values used to determine fields and projection values for API calls."""
-  FULL = 1
-  NO_ACL = 2
-  RSYNC = 3  # Only for objects.
-  SHORT = 4
+class ObjectState(enum.Enum):
+  """For whether to operate on live, noncurrent, or soft-deleted objects."""
 
-
-class HmacKeyState(enum.Enum):
-  ACTIVE = 'ACTIVE'
-  INACTIVE = 'INACTIVE'
+  LIVE = 'live'  # Default.
+  LIVE_AND_NONCURRENT = 'live-and-noncurrent'
+  SOFT_DELETED = 'soft-deleted'
 
 
 DEFAULT_PROVIDER = storage_url.ProviderPrefix.GCS
@@ -552,12 +561,11 @@ class CloudApi(object):
       bucket_name,
       prefix=None,
       delimiter=None,
-      all_versions=None,
       fields_scope=None,
       halt_on_empty_response=True,
       include_folders_as_prefixes=False,
       next_page_token=None,
-      soft_deleted_only=False,
+      object_state=ObjectState.LIVE,
   ):
     """Lists objects (with metadata) and prefixes in a bucket.
 
@@ -565,7 +573,6 @@ class CloudApi(object):
       bucket_name (str): Bucket containing the objects.
       prefix (str|None): Prefix for directory-like behavior.
       delimiter (str|None): Delimiter for directory-like behavior.
-      all_versions (boolean|None): If true, list all object versions.
       fields_scope (FieldsScope): Determines the fields and projection
         parameters of API call.
       halt_on_empty_response (bool): For features like soft delete, the API may
@@ -577,8 +584,7 @@ class CloudApi(object):
       next_page_token (str|None): Used to resume LIST calls. For example, if
         halt_on_empty_response was true and a halt warning is printed, it will
         contain a next_page_token the user can use to resume querying.
-      soft_deleted_only (bool): Returns soft-deleted objects and not live,
-        past-version, or other lifecycle-status objects.
+      object_state (ObjectState): What versions of an object to query.
 
     Yields:
       Iterator over resource_reference.ObjectResource objects.
@@ -939,11 +945,12 @@ class CloudApi(object):
     """
     raise NotImplementedError('get_operation must be overridden.')
 
-  def list_operations(self, bucket_name):
+  def list_operations(self, bucket_name, server_side_filter=None):
     """Lists long-running operations.
 
     Args:
       bucket_name (str): Bucket associated with target operations.
+      server_side_filter: (str|None): Filter operations on backend.
 
     Raises:
       CloudApiError: API returned an error.
@@ -974,7 +981,8 @@ class CloudApi(object):
 
   def bulk_restore_objects(
       self,
-      url,
+      bucket_url,
+      object_globs,
       request_config,
       allow_overwrite=False,
       deleted_after_time=None,
@@ -983,7 +991,9 @@ class CloudApi(object):
     """Initiates long-running operation to restore soft-deleted objects.
 
     Args:
-      url (storage_url.CloudUrl): Object URL. May contain wildcards.
+      bucket_url (StorageUrl): Launch a bulk restore operation for this bucket.
+      object_globs (list[str]): Objects in the target bucket matching these glob
+        patterns will be restored.
       request_config (RequestConfig): Contains preconditions for API requests.
       allow_overwrite (bool): Allow overwriting live objects with soft-deleted
         versions.

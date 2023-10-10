@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 
 import abc
 
-from typing import Optional, Dict
+from typing import Optional
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core import properties
@@ -61,14 +61,14 @@ class Record(object):
       region: str,
       metadata: Optional[types_utils.TypeMetadata] = None,
       resource: Optional[runapps.Resource] = None,
-      status: Dict[str, str] = None,
+      status: Optional[runapps.ResourceStatus] = None,
       latest_deployment: runapps.Deployment = None,
   ):
     self.name = name
     self.region = region
     self.metadata = metadata
     self.resource = resource if resource else runapps.Resource()
-    self.status = status if status is not None else {}
+    self.status = status if status else runapps.ResourceStatus()
     self.latest_deployment = latest_deployment
 
 
@@ -133,7 +133,7 @@ class BaseFormatter:
     """
     return '{} {}'.format(self.StatusSymbolAndColor(status), status)
 
-  def StatusSymbolAndColor(self, status):
+  def StatusSymbolAndColor(self, status: str) -> str:
     """Return the color symbol for the status.
 
     Args:
@@ -153,7 +153,7 @@ class BaseFormatter:
     return GetSymbol(DEFAULT)
 
 
-def GetSymbol(status, encoding=None):
+def GetSymbol(status, encoding=None) -> str:
   """Chooses a symbol to be displayed to the console based on the status.
 
   Args:

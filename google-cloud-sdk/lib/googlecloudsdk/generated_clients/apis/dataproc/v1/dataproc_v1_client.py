@@ -399,6 +399,33 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateSparkApplicationContext(self, request, global_params=None):
+      r"""Calls SparkIngestionService.PushSparkApplicationContextData to write wrapper objects from dataplane to spanner.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesUpdateSparkApplicationContextRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UpdateSparkApplicationContextResponse) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSparkApplicationContext')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSparkApplicationContext.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplicationContext',
+        http_method='PUT',
+        method_id='dataproc.projects.locations.batches.updateSparkApplicationContext',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='updateSparkApplicationContextRequest',
+        request_type_name='DataprocProjectsLocationsBatchesUpdateSparkApplicationContextRequest',
+        response_type_name='UpdateSparkApplicationContextResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -1379,7 +1406,7 @@ class DataprocV1(base_api.BaseApiClient):
         method_id='dataproc.projects.regions.clusters.nodeGroups.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['nodeGroupId', 'requestId'],
+        query_params=['nodeGroupId', 'parentOperationId', 'requestId'],
         relative_path='v1/{+parent}/nodeGroups',
         request_field='nodeGroup',
         request_type_name='DataprocProjectsRegionsClustersNodeGroupsCreateRequest',

@@ -29,7 +29,7 @@ GDCE_SYS_ADDONS_CONFIG = 'systemAddonsConfig'
 
 def ClusterAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
-      name='cluster', help_text='cluster of the {resource}.')
+      name='cluster', help_text='Cluster of the {resource}.')
 
 
 def LocationAttributeConfig():
@@ -59,6 +59,36 @@ def AddClusterResourceArg(parser, verb, positional=True):
       name,
       GetClusterResourceSpec(),
       'Edge Container cluster {}.'.format(verb),
+      required=True).AddToParser(parser)
+
+
+def NodePoolAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='nodePool', help_text='Node pool of the {resource}.')
+
+
+def GetNodePoolResourceSpec():
+  return concepts.ResourceSpec(
+      'edgecontainer.projects.locations.clusters.nodePools',
+      resource_name='node pool',
+      clustersId=ClusterAttributeConfig(),
+      nodePoolsId=NodePoolAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def AddNodePoolResourceArg(parser, verb):
+  """Adds a resource argument for an Edge Container node pool.
+
+  Args:
+    parser: The argparse parser to add the resource arg to.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  name = 'node_pool'
+  concept_parsers.ConceptParser.ForResource(
+      name,
+      GetNodePoolResourceSpec(),
+      'Edge Container node pool {}.'.format(verb),
       required=True).AddToParser(parser)
 
 

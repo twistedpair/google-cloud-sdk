@@ -23,6 +23,7 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import list_util
 from googlecloudsdk.command_lib.storage.list_util import BaseFormatWrapper
 from googlecloudsdk.command_lib.storage.list_util import BaseListExecutor
@@ -45,9 +46,9 @@ class _HeaderFormatWrapper(BaseFormatWrapper):
   def __init__(
       self,
       resource,
-      all_versions=False,
       display_detail=DisplayDetail.SHORT,
       include_etag=False,
+      object_state=None,
       readable_sizes=False,
       full_formatter=None,
       use_gsutil_style=False,
@@ -56,10 +57,10 @@ class _HeaderFormatWrapper(BaseFormatWrapper):
 
     super(_HeaderFormatWrapper, self).__init__(
         resource,
-        all_versions=all_versions,
         display_detail=display_detail,
         full_formatter=full_formatter,
         include_etag=include_etag,
+        object_state=object_state,
         readable_sizes=readable_sizes,
         use_gsutil_style=use_gsutil_style,
     )
@@ -84,23 +85,21 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
   def __init__(
       self,
       resource,
-      all_versions=False,
       display_detail=DisplayDetail.SHORT,
       full_formatter=None,
       include_etag=False,
+      object_state=None,
       readable_sizes=False,
-      soft_deleted=False,
       use_gsutil_style=False,
   ):
     """See BaseFormatWrapper class for function doc strings."""
 
     super(_ResourceFormatWrapper, self).__init__(
         resource,
-        all_versions=all_versions,
         display_detail=display_detail,
         include_etag=include_etag,
+        object_state=object_state,
         readable_sizes=readable_sizes,
-        soft_deleted=soft_deleted,
         use_gsutil_style=use_gsutil_style,
     )
 
@@ -122,7 +121,7 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
         self.resource.creation_time
     )
 
-    url_string, metageneration_string = self._check_and_handles_all_versions()
+    url_string, metageneration_string = self._check_and_handles_versions()
 
     if self._include_etag:
       etag_string = '  etag={}'.format(str(self.resource.etag))
@@ -147,16 +146,21 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
         or isinstance(self.resource, resource_reference.PrefixResource)
     ):
       return self._format_for_list_long()
+
+    show_version_in_url = self._object_state in (
+        cloud_api.ObjectState.LIVE_AND_NONCURRENT,
+        cloud_api.ObjectState.SOFT_DELETED,
+    )
     if self._display_detail == DisplayDetail.FULL and (
         isinstance(self.resource, resource_reference.BucketResource)
         or isinstance(self.resource, resource_reference.ObjectResource)
     ):
       return self._full_formatter.format(
-          self.resource, show_version_in_url=self._all_versions
+          self.resource, show_version_in_url=show_version_in_url
       )
     if self._display_detail == DisplayDetail.JSON:
       return self.resource.get_json_dump()
-    if self._all_versions or self._soft_deleted:
+    if show_version_in_url:
       # Include generation in URL.
       return self.resource.storage_url.url_string
     return self.resource.storage_url.versionless_url_string
@@ -168,31 +172,29 @@ class LsExecutor(BaseListExecutor):
   def __init__(
       self,
       cloud_urls,
-      all_versions=False,
       buckets_flag=False,
       display_detail=DisplayDetail.SHORT,
       fetch_encrypted_object_hashes=False,
       halt_on_empty_response=True,
       include_etag=False,
       next_page_token=None,
+      object_state=None,
       readable_sizes=False,
       recursion_flag=False,
-      soft_deleted_only=False,
       use_gsutil_style=False,
   ):
     """See BaseListExecutor class for function doc strings."""
     super(LsExecutor, self).__init__(
         cloud_urls=cloud_urls,
-        all_versions=all_versions,
         buckets_flag=buckets_flag,
         display_detail=display_detail,
         fetch_encrypted_object_hashes=fetch_encrypted_object_hashes,
         halt_on_empty_response=halt_on_empty_response,
         include_etag=include_etag,
         next_page_token=next_page_token,
+        object_state=object_state,
         readable_sizes=readable_sizes,
         recursion_flag=recursion_flag,
-        soft_deleted_only=soft_deleted_only,
         use_gsutil_style=use_gsutil_style,
     )
 

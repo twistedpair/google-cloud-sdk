@@ -333,14 +333,19 @@ class ArgAdder(object):
     )
     return self
 
-  def AddRequestPriority(self):
-    """Add argument for request priority to parser."""
+  def AddIsolation(self):
+    """Add argument for isolating this app profile's traffic to parser."""
+    isolation_group = self.parser.add_mutually_exclusive_group(hidden=True)
+    standard_isolation_group = isolation_group.add_group(
+        'Standard Isolation',
+        hidden=True,
+    )
     choices = {
         'PRIORITY_LOW': 'Requests will be treated with low priority.',
         'PRIORITY_MEDIUM': 'Requests will be treated with medium priority.',
         'PRIORITY_HIGH': 'Requests will be treated with high priority.',
     }
-    self.parser.add_argument(
+    standard_isolation_group.add_argument(
         '--priority',
         type=lambda x: x.replace('-', '_').upper(),
         choices=choices,

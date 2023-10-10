@@ -1747,17 +1747,17 @@ def AddAutoscalingUpdateFlagsToGroup(update_type_group, release_track):
   WEB_SERVER_STORAGE.AddToParser(update_group)
   MIN_WORKERS.AddToParser(update_group)
   MAX_WORKERS.AddToParser(update_group)
-  if release_track != base.ReleaseTrack.GA:
-    triggerer_params_group = update_group.add_argument_group(
-        TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION, mutex=True)
-    triggerer_enabled_group = triggerer_params_group.add_argument_group(
-        TRIGGERER_ENABLED_GROUP_DESCRIPTION)
-    TRIGGERER_CPU.AddToParser(triggerer_enabled_group)
-    TRIGGERER_COUNT.AddToParser(triggerer_enabled_group)
-    TRIGGERER_MEMORY.AddToParser(triggerer_enabled_group)
-    ENABLE_TRIGGERER.AddToParser(triggerer_enabled_group)
-    DISABLE_TRIGGERER.AddToParser(triggerer_params_group)
 
+  triggerer_params_group = update_group.add_argument_group(
+      TRIGGERER_PARAMETERS_FLAG_GROUP_DESCRIPTION, mutex=True)
+  triggerer_enabled_group = triggerer_params_group.add_argument_group(
+      TRIGGERER_ENABLED_GROUP_DESCRIPTION)
+  TRIGGERER_CPU.AddToParser(triggerer_enabled_group)
+  TRIGGERER_COUNT.AddToParser(triggerer_enabled_group)
+  TRIGGERER_MEMORY.AddToParser(triggerer_enabled_group)
+  ENABLE_TRIGGERER.AddToParser(triggerer_enabled_group)
+  DISABLE_TRIGGERER.AddToParser(triggerer_params_group)
+  if release_track != base.ReleaseTrack.GA:
     dag_processor_params_group = update_group.add_argument_group(
         DAG_PROCESSOR_PARAMETERS_FLAG_GROUP_DESCRIPTION,
         hidden=True,

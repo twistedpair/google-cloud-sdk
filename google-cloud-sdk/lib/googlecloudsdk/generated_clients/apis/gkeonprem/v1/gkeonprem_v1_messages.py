@@ -47,7 +47,7 @@ class BareMetalAdminApiServerArgument(_messages.Message):
 
 
 class BareMetalAdminCluster(_messages.Message):
-  r"""## Resource that represents a bare metal admin cluster.
+  r"""Resource that represents a bare metal admin cluster. LINT.IfChange
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the bare metal
@@ -540,7 +540,7 @@ class BareMetalBgpPeerConfig(_messages.Message):
 
 
 class BareMetalCluster(_messages.Message):
-  r"""Resource that represents a bare metal user cluster.
+  r"""Resource that represents a bare metal user cluster. LINT.IfChange
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the bare metal
@@ -1432,7 +1432,7 @@ class BareMetalStandaloneBgpPeerConfig(_messages.Message):
 
 
 class BareMetalStandaloneCluster(_messages.Message):
-  r"""Resource that represents a bare metal standalone cluster.
+  r"""Resource that represents a bare metal standalone cluster. LINT.IfChange
 
   Enums:
     ProfileValueValuesEnum: Profile specifies the installation profile for the

@@ -262,3 +262,15 @@ partnerSSEGateway:
     parameter_name: partnerSSEGatewaysId
     attribute_name: partner_sse_gateway
     help: Id of the partner SSE gateway.
+
+firewallAttachment:
+  name: firewall attachment
+  collection: networksecurity.projects.locations.firewallAttachments
+  request_id_field: firewallAttachmentId
+  attributes:
+  - *project
+  - *location
+  - &firewallAttachment
+    parameter_name: firewallAttachmentId
+    attribute_name: firewall_attachment
+    help: Id of the firewall attachment

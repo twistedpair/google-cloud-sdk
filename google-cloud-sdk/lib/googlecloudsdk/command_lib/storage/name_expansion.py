@@ -23,6 +23,7 @@ import enum
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import folder_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import wildcard_iterator
@@ -41,9 +42,9 @@ class BucketSetting(enum.Enum):
 
 class RecursionSetting(enum.Enum):
   """An enum saying whether or not recursion is requested."""
-  YES = '_yes'
   NO = '_no'
   NO_WITH_WARNING = '_no_with_warning'
+  YES = '_yes'
 
 
 class NameExpansionIterator:
@@ -59,52 +60,76 @@ class NameExpansionIterator:
   def __init__(
       self,
       urls_iterable,
-      all_versions=False,
       fields_scope=cloud_api.FieldsScope.NO_ACL,
       ignore_symlinks=False,
       include_buckets=BucketSetting.NO,
+      managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+      object_state=cloud_api.ObjectState.LIVE,
       preserve_symlinks=False,
+      raise_error_for_unmatched_urls=True,
       recursion_requested=RecursionSetting.NO_WITH_WARNING,
+      url_found_match_tracker=None,
   ):
     """Instantiates NameExpansionIterator.
 
     Args:
       urls_iterable (Iterable[str]): The URLs to expand.
-      all_versions (bool): True if all versions of objects should be fetched,
-        else False.
       fields_scope (cloud_api.FieldsScope): Determines amount of metadata
         returned by API.
       ignore_symlinks (bool): Skip over symlinks instead of following them.
       include_buckets (BucketSetting): Whether to fetch matched buckets and
         whether to raise an error.
+      managed_folder_setting (folder_util.ManagedFolderSetting): Indicates how
+        to deal with managed folders.
+      object_state (cloud_api.ObjectState): Versions of objects to query.
       preserve_symlinks (bool): Preserve symlinks instead of following them.
+      raise_error_for_unmatched_urls (bool): If True, raises an error if any url
+        in `url_found_match_tracker` is unmatched after expansion.
       recursion_requested (RecursionSetting): Says whether or not recursion is
         requested.
+      url_found_match_tracker (OrderedDict|None): Maps top-level URLs to a
+        boolean indicating whether they matched resources. Mutated as resources
+        are yielded. Reusing a tracker dict across NameExpansionIterators with
+        different expansion criteria suppresses unmatched errors if any iterator
+        expands a URL.
     """
-    self.all_versions = all_versions
-
+    self.object_state = object_state
     self._urls_iterator = (
-        plurality_checkable_iterator.PluralityCheckableIterator(urls_iterable))
+        plurality_checkable_iterator.PluralityCheckableIterator(urls_iterable)
+    )
     self._fields_scope = fields_scope
     self._ignore_symlinks = ignore_symlinks
     self._include_buckets = include_buckets
+    self._managed_folder_setting = managed_folder_setting
     self._preserve_symlinks = preserve_symlinks
+    self._raise_error_for_unmatched_urls = raise_error_for_unmatched_urls
     self._recursion_requested = recursion_requested
+
+    if url_found_match_tracker is None:
+      self._url_found_match_tracker = collections.OrderedDict()
+    else:
+      self._url_found_match_tracker = url_found_match_tracker
 
     self._top_level_iterator = (
         plurality_checkable_iterator.PluralityCheckableIterator(
-            self._get_top_level_iterator()))
+            self._get_top_level_iterator()
+        )
+    )
     self._has_multiple_top_level_resources = None
-    self._url_found_match_tracker = collections.OrderedDict()
 
-  def _get_wildcard_iterator(self, url):
+  def _get_wildcard_iterator(
+      self,
+      url,
+      managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+  ):
     """Returns get_wildcard_iterator with instance variables as args."""
     return wildcard_iterator.get_wildcard_iterator(
         url,
-        all_versions=self.all_versions,
         fetch_encrypted_object_hashes=True,
         fields_scope=self._fields_scope,
         ignore_symlinks=self._ignore_symlinks,
+        managed_folder_setting=managed_folder_setting,
+        object_state=self.object_state,
         preserve_symlinks=self._preserve_symlinks,
     )
 
@@ -121,8 +146,9 @@ class NameExpansionIterator:
     """
     if self._has_multiple_top_level_resources is None:
       self._has_multiple_top_level_resources = (
-          self._urls_iterator.is_plural() or
-          self._top_level_iterator.is_plural())
+          self._urls_iterator.is_plural()
+          or self._top_level_iterator.is_plural()
+      )
     return self._has_multiple_top_level_resources
 
   def _get_top_level_iterator(self):
@@ -139,8 +165,36 @@ class NameExpansionIterator:
             'Expected object URL. Received: {}'.format(url)
         )
       # Set to True if associated Cloud resource found in __iter__.
-      self._url_found_match_tracker[url] = False
-      for resource in self._get_wildcard_iterator(url):
+      self._url_found_match_tracker[url] = self._url_found_match_tracker.get(
+          url, False
+      )
+
+      if (
+          self._managed_folder_setting
+          in {
+              folder_util.ManagedFolderSetting.LIST_WITH_OBJECTS,
+              folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
+          }
+          and self._recursion_requested is RecursionSetting.YES
+      ):
+        # No need to perform additional managed folder API calls, since we will
+        # recurse inside of containers anyway.
+        wildcard_iterator_managed_folder_setting = (
+            folder_util.ManagedFolderSetting.LIST_AS_PREFIXES
+        )
+      else:
+        wildcard_iterator_managed_folder_setting = self._managed_folder_setting
+
+      for resource in self._get_wildcard_iterator(
+          url,
+          managed_folder_setting=wildcard_iterator_managed_folder_setting,
+      ):
+        if (
+            self._managed_folder_setting
+            is folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS
+            and isinstance(resource, resource_reference.ObjectResource)
+        ):
+          continue
         yield url, self._get_name_expansion_result(resource,
                                                    resource.storage_url,
                                                    original_storage_url)
@@ -148,7 +202,10 @@ class NameExpansionIterator:
   def _get_nested_objects_iterator(self, parent_name_expansion_result):
     new_storage_url = parent_name_expansion_result.resource.storage_url.join(
         '**')
-    child_resources = self._get_wildcard_iterator(new_storage_url.url_string)
+    child_resources = self._get_wildcard_iterator(
+        new_storage_url.url_string,
+        managed_folder_setting=self._managed_folder_setting,
+    )
     for child_resource in child_resources:
       yield self._get_name_expansion_result(
           child_resource, parent_name_expansion_result.resource.storage_url,
@@ -157,8 +214,8 @@ class NameExpansionIterator:
   def _get_name_expansion_result(self, resource, expanded_url, original_url):
     """Returns a NameExpansionResult, removing generations when appropriate."""
     keep_generation_in_url = (
-        self.all_versions or
-        original_url.generation  # User requested a specific generation.
+        self.object_state is cloud_api.ObjectState.LIVE_AND_NONCURRENT
+        or original_url.generation  # User requested a specific generation.
     )
     if not keep_generation_in_url:
       new_storage_url = storage_url.storage_url_from_string(
@@ -167,6 +224,9 @@ class NameExpansionIterator:
     return NameExpansionResult(resource, expanded_url, original_url)
 
   def _raise_no_url_match_error_if_necessary(self):
+    if not self._raise_error_for_unmatched_urls:
+      return
+
     non_matching_urls = [
         url for url, found_match in self._url_found_match_tracker.items()
         if not found_match
@@ -202,8 +262,20 @@ class NameExpansionIterator:
       should_return_bucket = self._include_buckets is BucketSetting.YES and (
           name_expansion_result.resource.storage_url.is_bucket()
       )
-      if not resource_reference.is_container_or_has_container_url(
-          name_expansion_result.resource) or should_return_bucket:
+      should_return_managed_folder = self._managed_folder_setting in {
+          folder_util.ManagedFolderSetting.LIST_WITH_OBJECTS,
+          folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
+      } and isinstance(
+          name_expansion_result.resource,
+          resource_reference.ManagedFolderResource,
+      )
+      if (
+          not resource_reference.is_container_or_has_container_url(
+              name_expansion_result.resource
+          )
+          or should_return_bucket
+          or should_return_managed_folder
+      ):
         self._url_found_match_tracker[input_url] = True
         yield name_expansion_result
 
@@ -215,7 +287,7 @@ class NameExpansionIterator:
             self._url_found_match_tracker[input_url] = True
             yield nested_name_expansion_result
 
-        elif not should_return_bucket:
+        elif not (should_return_bucket or should_return_managed_folder):
           if self._recursion_requested is RecursionSetting.NO_WITH_WARNING:
             # Does not warn about buckets processed above because it's confusing
             # to warn about something that was successfully processed.

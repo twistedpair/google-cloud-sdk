@@ -31,7 +31,7 @@ enable_delete_protection:
   default: null
   required: false
   help_text: |
-    If set to true, the firestore database will be updated to have database delete protection
+    If set to true, the Firestore database will be updated to have database delete protection
     enabled. A database with delete protection enabled cannot be deleted. You can disable the
     delete protection via --no-delete-protection.
   choices:
@@ -47,9 +47,8 @@ enable_pitr:
   default: null
   required: false
   help_text: |
-    If set to true, the firestore database will be updated to enable Point In Time Recovery.
-    Customers will gradually gain the full read access to their data over the past 7 days and
-    they will be charged. You can disable the this feature via --no-enable-pitr.
+    If set to true, the Firestore database will be updated to enable Point In Time Recovery. You can
+    disable the this feature via --no-enable-pitr.
   choices:
   - arg_value: true
     enum_value: POINT_IN_TIME_RECOVERY_ENABLED

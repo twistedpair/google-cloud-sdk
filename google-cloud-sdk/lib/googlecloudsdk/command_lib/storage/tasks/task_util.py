@@ -18,10 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
 import sys
 
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import optimize_parameters_util
 from googlecloudsdk.core import properties
 
 
@@ -44,6 +44,11 @@ def should_use_parallelism():
   """
   process_count = properties.VALUES.storage.process_count.GetInt()
   thread_count = properties.VALUES.storage.thread_count.GetInt()
+  if process_count is None or thread_count is None:
+    # This can arise if optimize_parameters_util.detect_and_set_best_config has
+    # not been called before this method is called. This indicates that the user
+    # has not opted out of parallelism.
+    return optimize_parameters_util.DEFAULT_TO_PARALLELISM
   return process_count > 1 or thread_count > 1
 
 

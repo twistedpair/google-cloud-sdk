@@ -46,7 +46,7 @@ class RedisFormatter(default.DefaultFormatter):
     ## correct variables. This will not be trivial since binding is not
     ## contained with redis resource.
 
-    state = record.status.get('state', '')
+    state = str(record.status.state)
     if state != states.ACTIVE:
       return None
 

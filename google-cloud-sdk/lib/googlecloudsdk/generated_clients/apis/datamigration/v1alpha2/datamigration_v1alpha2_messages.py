@@ -1438,6 +1438,10 @@ class MigrationJobVerificationError(_messages.Message):
         databases that are conflicting with those in the source DB.
       PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE: Insufficient privilege to enable
         the parallelism configuration.
+      EXISTING_DATA: The destination instance contains existing data or user
+        defined entities (for example databases, tables, or functions). You
+        can only migrate to empty instances. Clear your destination instance
+        and retry the migration job.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -1455,6 +1459,7 @@ class MigrationJobVerificationError(_messages.Message):
     SOURCE_SIZE_EXCEEDS_THRESHOLD = 13
     EXISTING_CONFLICTING_DATABASES = 14
     PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE = 15
+    EXISTING_DATA = 16
 
   errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 1)
   errorDetailMessage = _messages.StringField(2)

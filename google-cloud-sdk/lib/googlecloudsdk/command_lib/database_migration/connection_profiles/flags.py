@@ -37,12 +37,12 @@ def AddDisplayNameFlag(parser):
   parser.add_argument('--display-name', help=help_text)
 
 
-def AddDatabaseParamsFlags(parser):
+def AddDatabaseParamsFlags(parser, require_password=True):
   """Adds the database connectivity flags to the given parser."""
 
   database_params_group = parser.add_group(required=False, mutex=False)
   AddUsernameFlag(database_params_group, required=True)
-  AddPasswordFlagGroup(database_params_group, required=True)
+  AddPasswordFlagGroup(database_params_group, required=require_password)
   AddHostFlag(database_params_group, required=True)
   AddPortFlag(database_params_group, required=True)
 

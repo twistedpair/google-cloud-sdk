@@ -65,8 +65,7 @@ class CmekConfig(object):
     )
     request = self.messages.CloudtasksProjectsLocationsUpdateCmekConfigRequest(
         cmekConfig=cmek_config,
-        locationsId=location_id,
-        projectsId=project_id,
+        name=cmek_config_name
     )
 
     return self.cmek_config_service.UpdateCmekConfig(request)

@@ -617,6 +617,12 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       include their permissions. If IamPolicyAnalysisQuery.access_selector is
       specified, the access section of the result will be determined by the
       selector, and this flag is not allowed to set. Default is false.
+    analysisQuery_options_includeDenyPolicyAnalysis: Optional. If true, the
+      response includes deny policy analysis results for access tuples. The
+      deny policy analysis will be conducted on max 1000 access tuples. For
+      access tuples don't have deny policy analysis result populated, you can
+      issue another query of that access tuple to get deny policy analysis
+      result for it. Default is false.
     analysisQuery_options_outputGroupEdges: Optional. If true, the result will
       output the relevant membership relationships between groups and other
       groups, and between groups and principals. Default is false.
@@ -670,12 +676,13 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
   analysisQuery_options_expandGroups = _messages.BooleanField(6)
   analysisQuery_options_expandResources = _messages.BooleanField(7)
   analysisQuery_options_expandRoles = _messages.BooleanField(8)
-  analysisQuery_options_outputGroupEdges = _messages.BooleanField(9)
-  analysisQuery_options_outputResourceEdges = _messages.BooleanField(10)
-  analysisQuery_resourceSelector_fullResourceName = _messages.StringField(11)
-  executionTimeout = _messages.StringField(12)
-  savedAnalysisQuery = _messages.StringField(13)
-  scope = _messages.StringField(14, required=True)
+  analysisQuery_options_includeDenyPolicyAnalysis = _messages.BooleanField(9)
+  analysisQuery_options_outputGroupEdges = _messages.BooleanField(10)
+  analysisQuery_options_outputResourceEdges = _messages.BooleanField(11)
+  analysisQuery_resourceSelector_fullResourceName = _messages.StringField(12)
+  executionTimeout = _messages.StringField(13)
+  savedAnalysisQuery = _messages.StringField(14)
+  scope = _messages.StringField(15, required=True)
 
 
 class CloudassetAnalyzeMoveRequest(_messages.Message):
@@ -986,6 +993,32 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
   readTimeWindow_endTime = _messages.StringField(4)
   readTimeWindow_startTime = _messages.StringField(5)
   relationshipTypes = _messages.StringField(6, repeated=True)
+
+
+class CloudassetEffectiveIamDenyPoliciesListRequest(_messages.Message):
+  r"""A CloudassetEffectiveIamDenyPoliciesListRequest object.
+
+  Fields:
+    fullResourceName: Required. The [full resource
+      name](https://cloud.google.com/asset-inventory/docs/resource-name-
+      format) to get effective iam deny policies. Currently the allowed values
+      are: * //cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER *
+      //cloudresourcemanager.googleapis.com/projects/PROJECT_ID *
+      //cloudresourcemanager.googleapis.com/folders/FOLDER_NUMBER *
+      //cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_NUMBER
+    pageSize: The maximum number of deny policies to be returned in a single
+      response. Default is 100, minimum is 1, and maximum is 500. Page size is
+      capped at 500 even if a larger value is given.
+    pageToken: The `next_page_token` returned from the previous
+      `ListEffectiveIamDenyPoliciesResponse`, or unspecified for the first
+      `ListEffectiveIamDenyPoliciesRequest`. It is a continuation of a prior
+      `ListEffectiveIamDenyPolicies` call, and the API should return the next
+      page of deny policies.
+  """
+
+  fullResourceName = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
 
 
 class CloudassetEffectiveIamPoliciesBatchGetRequest(_messages.Message):
@@ -1527,6 +1560,22 @@ class Date(_messages.Message):
   day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class DenyAnalysisResult(_messages.Message):
+  r"""A deny policy analysis result for an access tuple.
+
+  Fields:
+    accessTuple: An access tuple that is conducted deny policy analysis. This
+      access tuple should match at least one access tuple derived from
+      IamPolicyAnalysisResult.
+    denyDetails: The details about how denied_access_tuple is denied. If it is
+      empty, it means no deny rule is found to have any effect on the access
+      tuple.
+  """
+
+  accessTuple = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultAccessTuple', 1)
+  denyDetails = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultDenyDetail', 2, repeated=True)
 
 
 class EffectiveIamPolicy(_messages.Message):
@@ -2190,6 +2239,101 @@ class GoogleCloudAssetV1CustomConstraint(_messages.Message):
   resourceTypes = _messages.StringField(7, repeated=True)
 
 
+class GoogleCloudAssetV1DenyAnalysisResultAccess(_messages.Message):
+  r"""An IAM role or permission under analysis.
+
+  Fields:
+    permission: The IAM permission in [v1
+      format](https://cloud.google.com/iam/docs/permissions-reference)
+    role: The IAM role.
+  """
+
+  permission = _messages.StringField(1)
+  role = _messages.StringField(2)
+
+
+class GoogleCloudAssetV1DenyAnalysisResultAccessTuple(_messages.Message):
+  r"""An access tuple contains a tuple of a resource, an identity and an
+  access.
+
+  Fields:
+    access: One access from
+      IamPolicyAnalysisResult.AccessControlList.accesses.
+    identity: One identity from
+      IamPolicyAnalysisResult.IdentityList.identities.
+    resource: One resource from
+      IamPolicyAnalysisResult.AccessControlList.resources.
+  """
+
+  access = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultAccess', 1)
+  identity = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultIdentity', 2)
+  resource = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultResource', 3)
+
+
+class GoogleCloudAssetV1DenyAnalysisResultDenyDetail(_messages.Message):
+  r"""A deny detail that explains which IAM deny rule denies the
+  denied_access_tuple.
+
+  Fields:
+    accesses: The accesses that are denied. This could be the
+      AccessTuple.access, or a subset of it. For example, if the
+      AccessTuple.access is a role, this field could contain permissions in
+      that role that are denied.
+    denyRule: A deny rule in an IAM deny policy.
+    exceptionIdentities: The identities that are exceptions from deny. This
+      field is populated when: * The deny_rule has `exception_principals`; *
+      For each exception_principal EP, EP is IN identities;
+    identities: The identities that are denied. This could be the
+      AccessTuple.identity, or its subset. For example, if the
+      AccessTuple.identity is a group, this field could contain user accounts
+      in that group that are denied. This field is populated with: * The
+      [AccessTuple.identity] if it's IN the deny_rule's `denied_principals`,
+      and not IN the `exception_principals`; * For each denied principal DP in
+      the deny_rule's `denied_principals`, DP is s IN the
+      [AccessTuple.identity] and not IN the `exception_principals`; The IN
+      operator is defined as below: * An identity is in an identities list,
+      e.g.: user:foo@ in [user:foo@, user:bar@, group:baz@]; * An identity is
+      in a member of an identity of a list, e.g.: user:foo@ is a member of
+      group:baz@, which is in a list [user:bar@, group:baz@];
+    resources: The resources that are denied. This could be the
+      AccessTuple.resource, or its descendant resources. For example, if the
+      AccessTuple.resource is a project, this field could contain BigQuery
+      datasets in that project that are denied.
+  """
+
+  accesses = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultAccess', 1, repeated=True)
+  denyRule = _messages.MessageField('GoogleIamV2DenyRule', 2)
+  exceptionIdentities = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultIdentity', 3, repeated=True)
+  identities = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultIdentity', 4, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssetV1DenyAnalysisResultResource', 5, repeated=True)
+
+
+class GoogleCloudAssetV1DenyAnalysisResultIdentity(_messages.Message):
+  r"""An identity under analysis.
+
+  Fields:
+    name: The identity of members, formatted as appear in an [IAM policy
+      binding](https://cloud.google.com/iam/reference/rest/v1/Binding). For
+      example, they might be formatted like the following: -
+      user:foo@google.com - group:group1@google.com -
+      serviceAccount:s1@prj1.iam.gserviceaccount.com -
+      projectOwner:some_project_id - domain:google.com - allUsers
+  """
+
+  name = _messages.StringField(1)
+
+
+class GoogleCloudAssetV1DenyAnalysisResultResource(_messages.Message):
+  r"""A Google Cloud resource under analysis.
+
+  Fields:
+    fullResourceName: The [full resource name](https://cloud.google.com/asset-
+      inventory/docs/resource-name-format)
+  """
+
+  fullResourceName = _messages.StringField(1)
+
+
 class GoogleCloudAssetV1Edge(_messages.Message):
   r"""A directional edge.
 
@@ -2841,6 +2985,169 @@ class GoogleCloudOrgpolicyV1RestoreDefault(_messages.Message):
   services activated.
   """
 
+
+
+class GoogleIamV2DenyRule(_messages.Message):
+  r"""A deny rule in an IAM deny policy.
+
+  Fields:
+    denialCondition: The condition that determines whether this deny rule
+      applies to a request. If the condition expression evaluates to `true`,
+      then the deny rule is applied; otherwise, the deny rule is not applied.
+      Each deny rule is evaluated independently. If this deny rule does not
+      apply to a request, other deny rules might still apply. The condition
+      can use CEL functions that evaluate [resource
+      tags](https://cloud.google.com/iam/help/conditions/resource-tags). Other
+      functions and operators are not supported.
+    deniedPermissions: The permissions that are explicitly denied by this
+      rule. Each permission uses the format
+      `{service_fqdn}/{resource}.{verb}`, where `{service_fqdn}` is the fully
+      qualified domain name for the service. For example,
+      `iam.googleapis.com/roles.list`.
+    deniedPrincipals: The identities that are prevented from using one or more
+      permissions on Google Cloud resources. This field can contain the
+      following values: * `principalSet://goog/public:all`: A special
+      identifier that represents any principal that is on the internet, even
+      if they do not have a Google Account or are not logged in. *
+      `principal://goog/subject/{email_id}`: A specific Google Account.
+      Includes Gmail, Cloud Identity, and Google Workspace user accounts. For
+      example, `principal://goog/subject/alice@example.com`. *
+      `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
+      Google Account that was deleted recently. For example,
+      `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
+      the Google Account is recovered, this identifier reverts to the standard
+      identifier for a Google Account. *
+      `principalSet://goog/group/{group_id}`: A Google group. For example,
+      `principalSet://goog/group/admins@example.com`. *
+      `deleted:principalSet://goog/group/{group_id}?uid={uid}`: A Google group
+      that was deleted recently. For example,
+      `deleted:principalSet://goog/group/admins@example.com?uid=1234567890`.
+      If the Google group is restored, this identifier reverts to the standard
+      identifier for a Google group. * `principal://iam.googleapis.com/project
+      s/-/serviceAccounts/{service_account_id}`: A Google Cloud service
+      account. For example,
+      `principal://iam.googleapis.com/projects/-/serviceAccounts/my-service-
+      account@iam.gserviceaccount.com`. * `deleted:principal://iam.googleapis.
+      com/projects/-/serviceAccounts/{service_account_id}?uid={uid}`: A Google
+      Cloud service account that was deleted recently. For example,
+      `deleted:principal://iam.googleapis.com/projects/-/serviceAccounts/my-
+      service-account@iam.gserviceaccount.com?uid=1234567890`. If the service
+      account is undeleted, this identifier reverts to the standard identifier
+      for a service account. *
+      `principalSet://goog/cloudIdentityCustomerId/{customer_id}`: All of the
+      principals associated with the specified Google Workspace or Cloud
+      Identity customer ID. For example,
+      `principalSet://goog/cloudIdentityCustomerId/C01Abc35`.
+    exceptionPermissions: Specifies the permissions that this rule excludes
+      from the set of denied permissions given by `denied_permissions`. If a
+      permission appears in `denied_permissions` _and_ in
+      `exception_permissions` then it will _not_ be denied. The excluded
+      permissions can be specified using the same syntax as
+      `denied_permissions`.
+    exceptionPrincipals: The identities that are excluded from the deny rule,
+      even if they are listed in the `denied_principals`. For example, you
+      could add a Google group to the `denied_principals`, then exclude
+      specific users who belong to that group. This field can contain the same
+      values as the `denied_principals` field, excluding
+      `principalSet://goog/public:all`, which represents all users on the
+      internet.
+  """
+
+  denialCondition = _messages.MessageField('Expr', 1)
+  deniedPermissions = _messages.StringField(2, repeated=True)
+  deniedPrincipals = _messages.StringField(3, repeated=True)
+  exceptionPermissions = _messages.StringField(4, repeated=True)
+  exceptionPrincipals = _messages.StringField(5, repeated=True)
+
+
+class GoogleIamV2Policy(_messages.Message):
+  r"""Data for an IAM policy.
+
+  Messages:
+    AnnotationsValue: A key-value map to store arbitrary metadata for the
+      `Policy`. Keys can be up to 63 characters. Values can be up to 255
+      characters.
+
+  Fields:
+    annotations: A key-value map to store arbitrary metadata for the `Policy`.
+      Keys can be up to 63 characters. Values can be up to 255 characters.
+    createTime: Output only. The time when the `Policy` was created.
+    deleteTime: Output only. The time when the `Policy` was deleted. Empty if
+      the policy is not deleted.
+    displayName: A user-specified description of the `Policy`. This value can
+      be up to 63 characters.
+    etag: An opaque tag that identifies the current version of the `Policy`.
+      IAM uses this value to help manage concurrent updates, so they do not
+      cause one update to be overwritten by another. If this field is present
+      in a CreatePolicyRequest, the value is ignored.
+    kind: Output only. The kind of the `Policy`. Always contains the value
+      `DenyPolicy`.
+    name: Immutable. The resource name of the `Policy`, which must be unique.
+      Format: `policies/{attachment_point}/denypolicies/{policy_id}` The
+      attachment point is identified by its URL-encoded full resource name,
+      which means that the forward-slash character, `/`, must be written as
+      `%2F`. For example,
+      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
+      project/denypolicies/my-deny-policy`. For organizations and folders, use
+      the numeric ID in the full resource name. For projects, requests can use
+      the alphanumeric or the numeric ID. Responses always contain the numeric
+      ID.
+    rules: A list of rules that specify the behavior of the `Policy`. All of
+      the rules should be of the `kind` specified in the `Policy`.
+    uid: Immutable. The globally unique ID of the `Policy`. Assigned
+      automatically when the `Policy` is created.
+    updateTime: Output only. The time when the `Policy` was last updated.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""A key-value map to store arbitrary metadata for the `Policy`. Keys can
+    be up to 63 characters. Values can be up to 255 characters.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  createTime = _messages.StringField(2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  kind = _messages.StringField(6)
+  name = _messages.StringField(7)
+  rules = _messages.MessageField('GoogleIamV2PolicyRule', 8, repeated=True)
+  uid = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class GoogleIamV2PolicyRule(_messages.Message):
+  r"""A single rule in a `Policy`.
+
+  Fields:
+    denyRule: A rule for a deny policy.
+    description: A user-specified description of the rule. This value can be
+      up to 256 characters.
+  """
+
+  denyRule = _messages.MessageField('GoogleIamV2DenyRule', 1)
+  description = _messages.StringField(2)
 
 
 class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
@@ -3585,6 +3892,20 @@ class GoogleIdentityAccesscontextmanagerV1VpcSubNetwork(_messages.Message):
   vpcIpSubnetworks = _messages.StringField(2, repeated=True)
 
 
+class IamDenyPolicyInfo(_messages.Message):
+  r"""The IAM Deny policies and its attached resource.
+
+  Fields:
+    policy: A deny policy that is directly attached to attached_resource.
+    resource: The full resource name the policy is directly attached to in
+      full resource name format. For example:
+      //cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER
+  """
+
+  policy = _messages.MessageField('GoogleIamV2Policy', 1)
+  resource = _messages.StringField(2)
+
+
 class IamPolicyAnalysis(_messages.Message):
   r"""An analysis message to group the query and results.
 
@@ -3592,6 +3913,13 @@ class IamPolicyAnalysis(_messages.Message):
     analysisQuery: The analysis query.
     analysisResults: A list of IamPolicyAnalysisResult that matches the
       analysis query, or empty if no result is found.
+    denyAnalysisResults: A list of DenyAnalysisResult, which contains access
+      tuples in the analysis_results that are conducted deny policy analysis.
+      The deny policy analysis will be conducted on max 1000 access tuples.
+      For access tuples don't have deny policy analysis result populated, you
+      can issue another query of that access tuple to get deny policy analysis
+      result for it. This is only populated when
+      IamPolicyAnalysisQuery.Options.include_deny_policy_analysis is true.
     fullyExplored: Represents whether all entries in the analysis_results have
       been fully explored to answer the query.
     nonCriticalErrors: A list of non-critical errors happened during the query
@@ -3600,8 +3928,9 @@ class IamPolicyAnalysis(_messages.Message):
 
   analysisQuery = _messages.MessageField('IamPolicyAnalysisQuery', 1)
   analysisResults = _messages.MessageField('IamPolicyAnalysisResult', 2, repeated=True)
-  fullyExplored = _messages.BooleanField(3)
-  nonCriticalErrors = _messages.MessageField('IamPolicyAnalysisState', 4, repeated=True)
+  denyAnalysisResults = _messages.MessageField('DenyAnalysisResult', 3, repeated=True)
+  fullyExplored = _messages.BooleanField(4)
+  nonCriticalErrors = _messages.MessageField('IamPolicyAnalysisState', 5, repeated=True)
 
 
 class IamPolicyAnalysisOutputConfig(_messages.Message):
@@ -4009,6 +4338,33 @@ class ListAssetsResponse(_messages.Message):
   readTime = _messages.StringField(3)
 
 
+class ListEffectiveIamDenyPoliciesResponse(_messages.Message):
+  r"""The response message for `ListEffectiveIamDenyPolicies`.
+
+  Fields:
+    effectiveIamDenyPolicies: The effective IAM deny policies for the
+      ListEffectiveIamDenyPoliciesRequest.full_resource_name. These include
+      the IAM deny policies set on the
+      ListEffectiveIamDenyPoliciesRequest.full_resource_name and those
+      inherited from its parents and ancestors. Note that these deny policies
+      are not filtered according to the resource type of the
+      ListEffectiveIamDenyPoliciesRequest.full_resource_name. IAM deny
+      policies for the same IamDenyPolicyInfo.attached_resource are grouped
+      (that is, are listed next to each other). These IAM deny policies are
+      hierarchically ordered by IamDenyPolicyInfo.attached_resource starting
+      from ListEffectiveIamDenyPoliciesRequest.full_resource_name itself to
+      its parents and ancestors, such that iam_deny_policies[i]'s
+      DenyPolicyInfo.attached_resource is either the child of
+      iam_deny_policies[i+1]'s DenyPolicyInfo.attached_resource or they are
+      the same resource, if iam_deny_policies[i+1] exists.
+    nextPageToken: Token to retrieve the next page of results. Set to empty if
+      there are no remaining results
+  """
+
+  effectiveIamDenyPolicies = _messages.MessageField('IamDenyPolicyInfo', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListFeedsResponse(_messages.Message):
   r"""A ListFeedsResponse object.
 
@@ -4239,6 +4595,12 @@ class Options(_messages.Message):
       If IamPolicyAnalysisQuery.access_selector is specified, the access
       section of the result will be determined by the selector, and this flag
       is not allowed to set. Default is false.
+    includeDenyPolicyAnalysis: Optional. If true, the response includes deny
+      policy analysis results for access tuples. The deny policy analysis will
+      be conducted on max 1000 access tuples. For access tuples don't have
+      deny policy analysis result populated, you can issue another query of
+      that access tuple to get deny policy analysis result for it. Default is
+      false.
     outputGroupEdges: Optional. If true, the result will output the relevant
       membership relationships between groups and other groups, and between
       groups and principals. Default is false.
@@ -4250,8 +4612,9 @@ class Options(_messages.Message):
   expandGroups = _messages.BooleanField(2)
   expandResources = _messages.BooleanField(3)
   expandRoles = _messages.BooleanField(4)
-  outputGroupEdges = _messages.BooleanField(5)
-  outputResourceEdges = _messages.BooleanField(6)
+  includeDenyPolicyAnalysis = _messages.BooleanField(5)
+  outputGroupEdges = _messages.BooleanField(6)
+  outputResourceEdges = _messages.BooleanField(7)
 
 
 class OrgPolicyResult(_messages.Message):

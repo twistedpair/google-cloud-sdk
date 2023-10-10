@@ -21,6 +21,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import collections
 import contextlib
 import os
 
@@ -29,8 +30,10 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import flags
+from googlecloudsdk.command_lib.storage import folder_util
 from googlecloudsdk.command_lib.storage import name_expansion
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
+from googlecloudsdk.command_lib.storage import rm_command_util
 from googlecloudsdk.command_lib.storage import stdin_iterator
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
@@ -42,6 +45,7 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
+
 
 _ALL_VERSIONS_HELP_TEXT = """\
 Copy all source versions from a source bucket or folder. If not set, only the
@@ -241,6 +245,19 @@ def add_cp_and_mv_flags(parser):
       ' to change a composite object into a non-composite object.'
       ' Note: Daisy chain mode is automatically used when copying between'
       ' providers.')
+  parser.add_argument(
+      '--include-managed-folders',
+      action='store_true',
+      default=False,
+      hidden=True,
+      help=(
+          'Includes managed folders in command operations. '
+          ' This only affects recursive intra-cloud transfers, for'
+          ' which gcloud storage will set up a managed folder in the'
+          ' destination with the same IAM policy bindings as the source. By'
+          ' default gcloud storage will not include managed folders in copies.'
+      ),
+  )
   symlinks_group = parser.add_group(
       mutex=True,
       help=(
@@ -269,18 +286,19 @@ def add_cp_and_mv_flags(parser):
       '-Z',
       '--gzip-local-all',
       action='store_true',
-      help=_GZIP_LOCAL_ALL_HELP_TEXT)
+      help=_GZIP_LOCAL_ALL_HELP_TEXT,
+  )
   gzip_flags_group.add_argument(
       '-z',
       '--gzip-local',
       metavar='FILE_EXTENSIONS',
       type=arg_parsers.ArgList(),
-      help=_GZIP_LOCAL_EXTENSIONS_HELP_TEXT)
+      help=_GZIP_LOCAL_EXTENSIONS_HELP_TEXT,
+  )
 
   acl_flags_group = parser.add_group()
   flags.add_predefined_acl_flag(acl_flags_group)
   flags.add_preserve_acl_flag(acl_flags_group)
-
   flags.add_encryption_flags(parser)
   flags.add_read_paths_from_stdin_flag(
       parser,
@@ -330,6 +348,26 @@ def _validate_args(args, raw_destination_url):
         'Cannot specify storage class for a non-cloud destination: {}'.format(
             raw_destination_url
         )
+    )
+
+  if (
+      isinstance(raw_destination_url, storage_url.FileUrl)
+      and args.include_managed_folders
+  ):
+    raise errors.Error(
+        'Cannot include managed folders with a non-cloud destination: {}'
+        .format(raw_destination_url)
+    )
+
+  if args.include_managed_folders and args.read_paths_from_stdin:
+    raise errors.Error(
+        'Cannot include managed folders when reading paths from stdin, as this'
+        ' would require storing all paths passed to gcloud storage in memory.'
+    )
+
+  if args.include_managed_folders and not args.recursive:
+    raise errors.Error(
+        'Cannot include managed folders unless recursion is enabled.'
     )
 
 
@@ -404,44 +442,18 @@ def _is_parallelizable(args, raw_destination_url, first_source_url):
   return True
 
 
-def run_cp(args, delete_source=False):
-  """Runs implementation of cp surface with tweaks for similar commands."""
-  raw_destination_url = storage_url.storage_url_from_string(args.destination)
-  _validate_args(args, raw_destination_url)
-
-  encryption_util.initialize_key_store(args)
-
-  if args.preserve_acl:
-    fields_scope = cloud_api.FieldsScope.FULL
-  else:
-    fields_scope = cloud_api.FieldsScope.NO_ACL
-
-  raw_source_string_iterator = (
-      plurality_checkable_iterator.PluralityCheckableIterator(
-          stdin_iterator.get_urls_iterable(args.source,
-                                           args.read_paths_from_stdin)))
-
-  source_expansion_iterator = name_expansion.NameExpansionIterator(
-      raw_source_string_iterator,
-      all_versions=args.all_versions,
-      fields_scope=fields_scope,
-      ignore_symlinks=args.ignore_symlinks,
-      preserve_symlinks=args.preserve_symlinks,
-      recursion_requested=name_expansion.RecursionSetting.YES
-      if args.recursive
-      else name_expansion.RecursionSetting.NO_WITH_WARNING,
-  )
-
+def _execute_copy_tasks(
+    args,
+    delete_source,
+    parallelizable,
+    raw_destination_url,
+    source_expansion_iterator,
+):
+  """Returns appropriate exit code after creating and executing copy tasks."""
   if raw_destination_url.is_stdio:
     task_status_queue = None
   else:
     task_status_queue = task_graph_executor.multiprocessing_context.Queue()
-
-  first_raw_source_string = raw_source_string_iterator.peek()
-  first_source_url = storage_url.storage_url_from_string(
-      first_raw_source_string)
-  parallelizable = _is_parallelizable(args, raw_destination_url,
-                                      first_source_url)
 
   user_request_args = (
       user_request_args_factory.get_user_request_args_from_command_args(
@@ -472,3 +484,96 @@ def run_cp(args, delete_source=False):
         ),
         continue_on_error=args.continue_on_error,
     )
+
+
+def _get_managed_folder_iterator(args, url_found_match_tracker):
+  return name_expansion.NameExpansionIterator(
+      args.source,
+      managed_folder_setting=(
+          folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS
+      ),
+      raise_error_for_unmatched_urls=False,
+      recursion_requested=name_expansion.RecursionSetting.YES,
+      url_found_match_tracker=url_found_match_tracker,
+  )
+
+
+def run_cp(args, delete_source=False):
+  """Runs implementation of cp surface with tweaks for similar commands."""
+  raw_destination_url = storage_url.storage_url_from_string(args.destination)
+  _validate_args(args, raw_destination_url)
+  encryption_util.initialize_key_store(args)
+
+  url_found_match_tracker = collections.OrderedDict()
+
+  if args.include_managed_folders:
+    source_expansion_iterator = _get_managed_folder_iterator(
+        args, url_found_match_tracker
+    )
+    exit_code = _execute_copy_tasks(
+        args=args,
+        delete_source=False,
+        parallelizable=False,
+        raw_destination_url=raw_destination_url,
+        source_expansion_iterator=source_expansion_iterator,
+    )
+    if exit_code:
+      # An error occurred setting up managed folders in the destination, so we
+      # exit out early, as managed folders regulate permissions and we do not
+      # want to copy to a location that is incorrectly configured.
+      return exit_code
+
+  raw_source_string_iterator = (
+      plurality_checkable_iterator.PluralityCheckableIterator(
+          stdin_iterator.get_urls_iterable(
+              args.source, args.read_paths_from_stdin
+          )
+      )
+  )
+  first_source_url = storage_url.storage_url_from_string(
+      raw_source_string_iterator.peek()
+  )
+  parallelizable = _is_parallelizable(
+      args, raw_destination_url, first_source_url
+  )
+
+  if args.preserve_acl:
+    fields_scope = cloud_api.FieldsScope.FULL
+  else:
+    fields_scope = cloud_api.FieldsScope.NO_ACL
+
+  source_expansion_iterator = name_expansion.NameExpansionIterator(
+      raw_source_string_iterator,
+      fields_scope=fields_scope,
+      ignore_symlinks=args.ignore_symlinks,
+      managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
+      object_state=flags.get_object_state_from_flags(args),
+      preserve_symlinks=args.preserve_symlinks,
+      recursion_requested=name_expansion.RecursionSetting.YES
+      if args.recursive
+      else name_expansion.RecursionSetting.NO_WITH_WARNING,
+      url_found_match_tracker=url_found_match_tracker,
+  )
+  exit_code = _execute_copy_tasks(
+      args=args,
+      delete_source=delete_source,
+      parallelizable=parallelizable,
+      raw_destination_url=raw_destination_url,
+      source_expansion_iterator=source_expansion_iterator,
+  )
+
+  if delete_source and args.include_managed_folders:
+    managed_folder_expansion_iterator = name_expansion.NameExpansionIterator(
+        args.source,
+        managed_folder_setting=folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
+        raise_error_for_unmatched_urls=False,
+        recursion_requested=name_expansion.RecursionSetting.YES,
+        url_found_match_tracker=url_found_match_tracker,
+    )
+    exit_code = rm_command_util.remove_managed_folders(
+        args,
+        managed_folder_expansion_iterator,
+        task_graph_executor.multiprocessing_context.Queue(),
+    )
+
+  return exit_code

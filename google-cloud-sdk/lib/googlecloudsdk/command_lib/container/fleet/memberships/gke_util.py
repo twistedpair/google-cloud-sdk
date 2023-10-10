@@ -34,7 +34,7 @@ def ParseGKEURI(gke_uri):
   The expected patterns are matched to extract the cluster location and name.
   Args:
    gke_uri: GKE resource URI, e.g., https://container.googleapis.com/v1/
-   projects/my-project/zones/us-west2-c/clusters/test1
+     projects/my-project/zones/us-west2-c/clusters/test1
 
   Returns:
     cluster's project, location, and name
@@ -49,20 +49,27 @@ def ParseGKEURI(gke_uri):
 
   region_matcher = re.search(regional_uri_pattern, gke_uri)
   if region_matcher is not None:
-    return region_matcher.group(1), region_matcher.group(
-        2), region_matcher.group(3)
+    return (
+        region_matcher.group(1),
+        region_matcher.group(2),
+        region_matcher.group(3),
+    )
 
   location_matcher = re.search(location_uri_pattern, gke_uri)
   if location_matcher is not None:
-    return location_matcher.group(1), location_matcher.group(
-        2), location_matcher.group(3)
+    return (
+        location_matcher.group(1),
+        location_matcher.group(2),
+        location_matcher.group(3),
+    )
 
   raise exceptions.Error(
       'argument --gke-uri: {} is invalid. '
       '--gke-uri must be of format: `https://container.googleapis.com/v1/'
       'projects/my-project/locations/us-central1-a/clusters/my-cluster`. '
       'You can use command: `gcloud container clusters list --uri` to view the '
-      'current GKE clusters in your project.'.format(gke_uri))
+      'current GKE clusters in your project.'.format(gke_uri)
+  )
 
 
 def ParseGKECluster(gke_cluster):
@@ -80,11 +87,13 @@ def ParseGKECluster(gke_cluster):
     return cluster_matcher.group(1), cluster_matcher.group(2)
   raise exceptions.Error(
       'argument --gke-cluster: {} is invalid. --gke-cluster must be of format: '
-      '`{{REGION OR ZONE}}/{{CLUSTER_NAME`}}`'.format(gke_cluster))
+      '`{{REGION OR ZONE}}/{{CLUSTER_NAME`}}`'.format(gke_cluster)
+  )
 
 
-def ConstructGKEClusterResoureLinkAndURI(project_id, cluster_location,
-                                         cluster_name):
+def ConstructGKEClusterResourceLinkAndURI(
+    project_id, cluster_location, cluster_name
+):
   """Constructs GKE URI and resource name from args and container endpoint.
 
   Args:
@@ -105,9 +114,13 @@ def ConstructGKEClusterResoureLinkAndURI(project_id, cluster_location,
     container_endpoint = container_endpoint[:-1]
   gke_resource_link = '//{}/projects/{}/locations/{}/clusters/{}'.format(
       container_endpoint.replace('https://', '', 1).replace('http://', '', 1),
-      project_id, cluster_location, cluster_name)
+      project_id,
+      cluster_location,
+      cluster_name,
+  )
   gke_cluster_uri = '{}/v1/projects/{}/locations/{}/clusters/{}'.format(
-      container_endpoint, project_id, cluster_location, cluster_name)
+      container_endpoint, project_id, cluster_location, cluster_name
+  )
   return gke_resource_link, gke_cluster_uri
 
 
@@ -122,4 +135,4 @@ def GetGKEClusterResoureLinkAndURI(gke_uri, gke_cluster):
   else:
     cluster_project = properties.VALUES.core.project.GetOrFail()
     location, name = ParseGKECluster(gke_cluster)
-  return ConstructGKEClusterResoureLinkAndURI(cluster_project, location, name)
+  return ConstructGKEClusterResourceLinkAndURI(cluster_project, location, name)

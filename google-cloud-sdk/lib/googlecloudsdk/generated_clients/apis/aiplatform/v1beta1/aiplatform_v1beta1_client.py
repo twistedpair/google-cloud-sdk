@@ -14479,6 +14479,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def List(self, request, global_params=None):
+      r"""Lists publisher models in Model Garden.
+
+      Args:
+        request: (AiplatformPublishersModelsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ListPublisherModelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/publishers/{publishersId}/models',
+        http_method='GET',
+        method_id='aiplatform.publishers.models.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'languageCode', 'orderBy', 'pageSize', 'pageToken', 'view'],
+        relative_path='v1beta1/{+parent}/models',
+        request_field='',
+        request_type_name='AiplatformPublishersModelsListRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ListPublisherModelsResponse',
+        supports_download=False,
+    )
+
   class PublishersService(base_api.BaseApiService):
     """Service class for the publishers resource."""
 

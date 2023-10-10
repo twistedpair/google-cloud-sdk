@@ -1115,7 +1115,7 @@ class BigtableadminProjectsInstancesTablesViewsGetRequest(_messages.Message):
         documented in the request
       NAME_ONLY: Only populates `name`.
       BASIC: Only populates the view's basic metadata. This includes: name,
-        view_type, deletion_protection, create_time, update_time, etag.
+        view_type, deletion_protection, etag.
       FULL: Populates every fields
     """
     RESPONSE_VIEW_UNSPECIFIED = 0
@@ -1159,7 +1159,7 @@ class BigtableadminProjectsInstancesTablesViewsListRequest(_messages.Message):
         documented in the request
       NAME_ONLY: Only populates `name`.
       BASIC: Only populates the view's basic metadata. This includes: name,
-        view_type, deletion_protection, create_time, update_time, etag.
+        view_type, deletion_protection, etag.
       FULL: Populates every fields
     """
     RESPONSE_VIEW_UNSPECIFIED = 0
@@ -3438,8 +3438,6 @@ class View(_messages.Message):
   r"""Placeholder for admin API work while we work out the internals.
 
   Fields:
-    createTime: Output only. A commit timestamp representing when this View
-      was created.
     deletionProtection: Set to true to make the view protected against
       deletion. The parent Table and containing Instance cannot be deleted if
       a View has this bit set.
@@ -3449,16 +3447,12 @@ class View(_messages.Message):
     name: The name of the view. Values are of the form
       `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
     subsetView: A view permitting access to an explicit subset of a Table.
-    updateTime: Output only. A commit timestamp representing when this View
-      was updated.
   """
 
-  createTime = _messages.StringField(1)
-  deletionProtection = _messages.BooleanField(2)
-  etag = _messages.StringField(3)
-  name = _messages.StringField(4)
-  subsetView = _messages.MessageField('SubsetView', 5)
-  updateTime = _messages.StringField(6)
+  deletionProtection = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  subsetView = _messages.MessageField('SubsetView', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

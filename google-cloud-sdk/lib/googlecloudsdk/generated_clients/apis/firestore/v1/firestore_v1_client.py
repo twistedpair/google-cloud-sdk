@@ -1057,7 +1057,7 @@ class FirestoreV1(base_api.BaseApiClient):
         method_id='firestore.projects.databases.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['allowMissing', 'etag', 'validateOnly'],
+        query_params=['etag'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='FirestoreProjectsDatabasesDeleteRequest',
@@ -1201,7 +1201,7 @@ class FirestoreV1(base_api.BaseApiClient):
     )
 
     def Restore(self, request, global_params=None):
-      r"""Create a new database by restore from an existing backup. The new database must be in the same cloud region or multi-region location as the existing backup. This behaves similar to FirestoreAdmin.CreateDatabase except instead of creating a new empty database, a new database is created with the database type, index configuration, and documents from an existing backup. The long-running operation can be used to track the progress of the restore, with the Operation's metadata field type being the RestoreDatabaseMetadata. The response type is the Database if the restore was successful. The new database is not readable or writeable until the LRO has completed. Cancelling the returned operation will stop the restore and delete the in-progress database, if the restore is still active.
+      r"""Creates a new database by restoring from an existing backup. The new database must be in the same cloud region or multi-region location as the existing backup. This behaves similar to FirestoreAdmin.CreateDatabase except instead of creating a new empty database, a new database is created with the database type, index configuration, and documents from an existing backup. The long-running operation can be used to track the progress of the restore, with the Operation's metadata field type being the RestoreDatabaseMetadata. The response type is the Database if the restore was successful. The new database is not readable or writeable until the LRO has completed.
 
       Args:
         request: (FirestoreProjectsDatabasesRestoreRequest) input message
