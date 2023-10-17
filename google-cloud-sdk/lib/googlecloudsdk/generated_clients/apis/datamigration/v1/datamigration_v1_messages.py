@@ -501,10 +501,32 @@ class CloudSqlSettings(_messages.Message):
       SQL_DATABASE_VERSION_UNSPECIFIED: Unspecified version.
       MYSQL_5_6: MySQL 5.6.
       MYSQL_5_7: MySQL 5.7.
+      MYSQL_8_0: MySQL 8.0.
+      MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
+        version is 18.
+      MYSQL_8_0_26: The database major version is MySQL 8.0 and the minor
+        version is 26.
+      MYSQL_8_0_27: The database major version is MySQL 8.0 and the minor
+        version is 27.
+      MYSQL_8_0_28: The database major version is MySQL 8.0 and the minor
+        version is 28.
+      MYSQL_8_0_30: The database major version is MySQL 8.0 and the minor
+        version is 30.
+      MYSQL_8_0_31: The database major version is MySQL 8.0 and the minor
+        version is 31.
+      MYSQL_8_0_32: The database major version is MySQL 8.0 and the minor
+        version is 32.
+      MYSQL_8_0_33: The database major version is MySQL 8.0 and the minor
+        version is 33.
+      MYSQL_8_0_34: The database major version is MySQL 8.0 and the minor
+        version is 34.
+      MYSQL_8_0_35: The database major version is MySQL 8.0 and the minor
+        version is 35.
+      MYSQL_8_0_36: The database major version is MySQL 8.0 and the minor
+        version is 36.
       POSTGRES_9_6: PostgreSQL 9.6.
       POSTGRES_11: PostgreSQL 11.
       POSTGRES_10: PostgreSQL 10.
-      MYSQL_8_0: MySQL 8.0.
       POSTGRES_12: PostgreSQL 12.
       POSTGRES_13: PostgreSQL 13.
       POSTGRES_14: PostgreSQL 14.
@@ -513,14 +535,25 @@ class CloudSqlSettings(_messages.Message):
     SQL_DATABASE_VERSION_UNSPECIFIED = 0
     MYSQL_5_6 = 1
     MYSQL_5_7 = 2
-    POSTGRES_9_6 = 3
-    POSTGRES_11 = 4
-    POSTGRES_10 = 5
-    MYSQL_8_0 = 6
-    POSTGRES_12 = 7
-    POSTGRES_13 = 8
-    POSTGRES_14 = 9
-    POSTGRES_15 = 10
+    MYSQL_8_0 = 3
+    MYSQL_8_0_18 = 4
+    MYSQL_8_0_26 = 5
+    MYSQL_8_0_27 = 6
+    MYSQL_8_0_28 = 7
+    MYSQL_8_0_30 = 8
+    MYSQL_8_0_31 = 9
+    MYSQL_8_0_32 = 10
+    MYSQL_8_0_33 = 11
+    MYSQL_8_0_34 = 12
+    MYSQL_8_0_35 = 13
+    MYSQL_8_0_36 = 14
+    POSTGRES_9_6 = 15
+    POSTGRES_11 = 16
+    POSTGRES_10 = 17
+    POSTGRES_12 = 18
+    POSTGRES_13 = 19
+    POSTGRES_14 = 20
+    POSTGRES_15 = 21
 
   class EditionValueValuesEnum(_messages.Enum):
     r"""Optional. The edition of the given Cloud SQL instance.

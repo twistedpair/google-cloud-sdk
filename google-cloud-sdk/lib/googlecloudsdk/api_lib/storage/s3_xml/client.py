@@ -70,7 +70,7 @@ def _catch_client_error_raise_s3_api_error(format_str=None):
   """
 
   return errors.catch_error_raise_cloud_api_error(
-      [(botocore.exceptions.ClientError, errors.XmlApiError)],
+      [(botocore.exceptions.ClientError, None, errors.XmlApiError)],
       format_str=format_str,
   )
 
@@ -628,7 +628,7 @@ class S3XmlClient(cloud_api.CloudApi):
       delimiter=None,
       fields_scope=None,
       halt_on_empty_response=True,
-      include_folders_as_prefixes=False,
+      include_folders_as_prefixes=None,
       next_page_token=None,
       object_state=cloud_api.ObjectState.LIVE,
   ):

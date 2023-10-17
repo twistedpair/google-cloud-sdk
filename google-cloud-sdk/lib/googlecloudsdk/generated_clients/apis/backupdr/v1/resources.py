@@ -18,7 +18,7 @@ import enum
 
 
 BASE_URL = 'https://backupdr.googleapis.com/v1/'
-DOCS_URL = 'https://cloud.google.com/'
+DOCS_URL = 'https://cloud.google.com/backup-disaster-recovery'
 
 
 class Collections(enum.Enum):

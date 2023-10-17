@@ -52,7 +52,8 @@ def GetRecommendFlag(action):
       help=(
           'If true, checks Active Assist recommendation for the risk level of '
           '{}, and issues a warning in the prompt. Optional flag is set to '
-          'false/no by default.'
+          'false/no by default. For details see https://cloud.google.com/'
+          'recommender/docs/change-risk-recommendations'
       ).format(action),
   )
 

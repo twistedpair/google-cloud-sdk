@@ -243,6 +243,7 @@ class BaremetalsolutionProjectsLocationsInstancesPatchRequest(_messages.Message)
       `projects/{project}/locations/{location}/instances/{instance}`
     updateMask: The list of fields to update. The currently supported fields
       are: `labels` `hyperthreading_enabled` `os_image` `ssh_keys`
+      `kms_key_version`
   """
 
   instance = _messages.MessageField('Instance', 1)

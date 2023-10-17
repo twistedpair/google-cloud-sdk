@@ -32,6 +32,20 @@ def InstanceAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(name='instance')
 
 
+def RepositoryAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(name='repository')
+
+
+def GetRegionResourceSpec():
+  return concepts.ResourceSpec(
+      'securesourcemanager.projects.locations',
+      resource_name='location',
+      locationsId=RegionAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
 def GetInstanceResourceSpec():
   return concepts.ResourceSpec(
       'securesourcemanager.projects.locations.instances',
@@ -40,6 +54,34 @@ def GetInstanceResourceSpec():
       locationsId=RegionAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False)
+
+
+def GetRepositoryResourceSpec():
+  return concepts.ResourceSpec(
+      'securesourcemanager.projects.locations.repositories',
+      resource_name='repository',
+      repositoriesId=RepositoryAttributeConfig(),
+      locationsId=RegionAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
+def AddRegionResourceArg(parser, verb):
+  """Add a resource argument for a Secure Source Manager location.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      '--region',
+      GetRegionResourceSpec(),
+      'The Secure Source Manager location {}.'.format(verb),
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddInstanceResourceArg(parser, verb):
@@ -55,4 +97,22 @@ def AddInstanceResourceArg(parser, verb):
       'instance',
       GetInstanceResourceSpec(),
       'The Secure Source Manager instance {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
+
+
+def AddRepositoryResourceArg(parser, verb):
+  """Add a resource argument for a Secure Source Manager repository.
+
+  NOTE: Must be used only if it's the only resource arg in the command.
+
+  Args:
+    parser: the parser for the command.
+    verb: str, the verb to describe the resource, such as 'to update'.
+  """
+  concept_parsers.ConceptParser.ForResource(
+      'repository',
+      GetRepositoryResourceSpec(),
+      'The Secure Source Manager repository {}.'.format(verb),
+      required=True,
+  ).AddToParser(parser)

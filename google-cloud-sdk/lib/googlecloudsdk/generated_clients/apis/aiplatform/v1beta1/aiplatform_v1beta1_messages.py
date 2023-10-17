@@ -1883,7 +1883,11 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesCreateRequest(_messages.Me
       EntityType/FeatureGroup.
     googleCloudAiplatformV1beta1Feature: A GoogleCloudAiplatformV1beta1Feature
       resource to be passed as the request body.
-    parent: A string attribute.
+    parent: Required. The resource name of the EntityType or FeatureGroup to
+      create a Feature. Format for entity_type as parent: `projects/{project}/
+      locations/{location}/featurestores/{featurestore}/entityTypes/{entity_ty
+      pe}` Format for feature_group as parent:
+      `projects/{project}/locations/{location}/featureGroups/{feature_group}`
   """
 
   featureId = _messages.StringField(1)
@@ -1933,10 +1937,11 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesListRequest(_messages.Mess
       after 2020-01-31T15:30:00.000000Z. * `labels.active = yes AND labels.env
       = prod` --> Features having both (active: yes) and (env: prod) labels. *
       `labels.env: *` --> Any Feature which has a label with 'env' as the key.
-    latestStatsCount: If set, return the most recent
-      ListFeaturesRequest.latest_stats_count of stats for each Feature in
-      response. Valid value is [0, 10]. If number of stats exists <
-      ListFeaturesRequest.latest_stats_count, return all existing stats.
+    latestStatsCount: Only applicable for Vertex AI Feature Store (Legacy). If
+      set, return the most recent ListFeaturesRequest.latest_stats_count of
+      stats for each Feature in response. Valid value is [0, 10]. If number of
+      stats exists < ListFeaturesRequest.latest_stats_count, return all
+      existing stats.
     orderBy: A comma-separated list of fields to order by, sorted in ascending
       order. Use "desc" after a field name for descending. Supported fields: *
       `feature_id` * `value_type` (Not supported for FeatureRegistry Feature)
@@ -1946,10 +1951,12 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesListRequest(_messages.Mess
       returned. The maximum value is 1000; any value greater than 1000 will be
       coerced to 1000.
     pageToken: A page token, received from a previous
-      FeaturestoreService.ListFeatures call. Provide this to retrieve the
+      FeaturestoreService.ListFeatures call or
+      FeatureRegistryService.ListFeatures call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
-      FeaturestoreService.ListFeatures must match the call that provided the
-      page token.
+      FeaturestoreService.ListFeatures or or
+      FeatureRegistryService.ListFeatures must match the call that provided
+      the page token.
     parent: Required. The resource name of the Location to list Features.
       Format for entity_type as parent: `projects/{project}/locations/{locatio
       n}/featurestores/{featurestore}/entityTypes/{entity_type}` Format for
@@ -2031,17 +2038,20 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesPatchRequest(_messages.Mes
       resource to be passed as the request body.
     name: Immutable. Name of the Feature. Format: `projects/{project}/location
       s/{location}/featurestores/{featurestore}/entityTypes/{entity_type}/feat
-      ures/{feature}` The last part feature is assigned by the client. The
-      feature can be up to 64 characters long and can consist only of ASCII
-      Latin letters A-Z and a-z, underscore(_), and ASCII digits 0-9 starting
-      with a letter. The value will be unique given an entity type.
+      ures/{feature}` `projects/{project}/locations/{location}/featureGroups/{
+      feature_group}/features/{feature}` The last part feature is assigned by
+      the client. The feature can be up to 64 characters long and can consist
+      only of ASCII Latin letters A-Z and a-z, underscore(_), and ASCII digits
+      0-9 starting with a letter. The value will be unique given an entity
+      type.
     updateMask: Field mask is used to specify the fields to be overwritten in
       the Features resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
       will be overwritten if it is in the mask. If the user does not provide a
       mask then only the non-empty fields present in the request will be
       overwritten. Set the update_mask to `*` to override all fields.
-      Updatable fields: * `description` * `labels` * `disable_monitoring`
+      Updatable fields: * `description` * `labels` * `disable_monitoring` (Not
+      supported for FeatureRegistry Feature)
   """
 
   googleCloudAiplatformV1beta1Feature = _messages.MessageField('GoogleCloudAiplatformV1beta1Feature', 1)
@@ -2763,7 +2773,11 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesCreateRequest(_
       EntityType/FeatureGroup.
     googleCloudAiplatformV1beta1Feature: A GoogleCloudAiplatformV1beta1Feature
       resource to be passed as the request body.
-    parent: A string attribute.
+    parent: Required. The resource name of the EntityType or FeatureGroup to
+      create a Feature. Format for entity_type as parent: `projects/{project}/
+      locations/{location}/featurestores/{featurestore}/entityTypes/{entity_ty
+      pe}` Format for feature_group as parent:
+      `projects/{project}/locations/{location}/featureGroups/{feature_group}`
   """
 
   featureId = _messages.StringField(1)
@@ -2817,10 +2831,11 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesListRequest(_me
       after 2020-01-31T15:30:00.000000Z. * `labels.active = yes AND labels.env
       = prod` --> Features having both (active: yes) and (env: prod) labels. *
       `labels.env: *` --> Any Feature which has a label with 'env' as the key.
-    latestStatsCount: If set, return the most recent
-      ListFeaturesRequest.latest_stats_count of stats for each Feature in
-      response. Valid value is [0, 10]. If number of stats exists <
-      ListFeaturesRequest.latest_stats_count, return all existing stats.
+    latestStatsCount: Only applicable for Vertex AI Feature Store (Legacy). If
+      set, return the most recent ListFeaturesRequest.latest_stats_count of
+      stats for each Feature in response. Valid value is [0, 10]. If number of
+      stats exists < ListFeaturesRequest.latest_stats_count, return all
+      existing stats.
     orderBy: A comma-separated list of fields to order by, sorted in ascending
       order. Use "desc" after a field name for descending. Supported fields: *
       `feature_id` * `value_type` (Not supported for FeatureRegistry Feature)
@@ -2830,10 +2845,12 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesListRequest(_me
       returned. The maximum value is 1000; any value greater than 1000 will be
       coerced to 1000.
     pageToken: A page token, received from a previous
-      FeaturestoreService.ListFeatures call. Provide this to retrieve the
+      FeaturestoreService.ListFeatures call or
+      FeatureRegistryService.ListFeatures call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
-      FeaturestoreService.ListFeatures must match the call that provided the
-      page token.
+      FeaturestoreService.ListFeatures or or
+      FeatureRegistryService.ListFeatures must match the call that provided
+      the page token.
     parent: Required. The resource name of the Location to list Features.
       Format for entity_type as parent: `projects/{project}/locations/{locatio
       n}/featurestores/{featurestore}/entityTypes/{entity_type}` Format for
@@ -2927,17 +2944,20 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesPatchRequest(_m
       resource to be passed as the request body.
     name: Immutable. Name of the Feature. Format: `projects/{project}/location
       s/{location}/featurestores/{featurestore}/entityTypes/{entity_type}/feat
-      ures/{feature}` The last part feature is assigned by the client. The
-      feature can be up to 64 characters long and can consist only of ASCII
-      Latin letters A-Z and a-z, underscore(_), and ASCII digits 0-9 starting
-      with a letter. The value will be unique given an entity type.
+      ures/{feature}` `projects/{project}/locations/{location}/featureGroups/{
+      feature_group}/features/{feature}` The last part feature is assigned by
+      the client. The feature can be up to 64 characters long and can consist
+      only of ASCII Latin letters A-Z and a-z, underscore(_), and ASCII digits
+      0-9 starting with a letter. The value will be unique given an entity
+      type.
     updateMask: Field mask is used to specify the fields to be overwritten in
       the Features resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
       will be overwritten if it is in the mask. If the user does not provide a
       mask then only the non-empty fields present in the request will be
       overwritten. Set the update_mask to `*` to override all fields.
-      Updatable fields: * `description` * `labels` * `disable_monitoring`
+      Updatable fields: * `description` * `labels` * `disable_monitoring` (Not
+      supported for FeatureRegistry Feature)
   """
 
   googleCloudAiplatformV1beta1Feature = _messages.MessageField('GoogleCloudAiplatformV1beta1Feature', 1)
@@ -9993,7 +10013,11 @@ class GoogleCloudAiplatformV1beta1CreateFeatureRequest(_messages.Message):
       128 characters, and valid characters are `[a-z0-9_]`. The first
       character cannot be a number. The value must be unique within an
       EntityType/FeatureGroup.
-    parent: A string attribute.
+    parent: Required. The resource name of the EntityType or FeatureGroup to
+      create a Feature. Format for entity_type as parent: `projects/{project}/
+      locations/{location}/featurestores/{featurestore}/entityTypes/{entity_ty
+      pe}` Format for feature_group as parent:
+      `projects/{project}/locations/{location}/featureGroups/{feature_group}`
   """
 
   feature = _messages.MessageField('GoogleCloudAiplatformV1beta1Feature', 1)
@@ -13119,12 +13143,12 @@ class GoogleCloudAiplatformV1beta1ExportTensorboardTimeSeriesDataResponse(_messa
 
 
 class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
-  r"""Feature Metadata information that describes an attribute of an entity
-  type. For example, apple is an entity type, and color is a feature that
-  describes apple.
+  r"""Feature Metadata information. For example, color is a feature that
+  describes an apple.
 
   Enums:
-    ValueTypeValueValuesEnum: Immutable. Type of Feature value.
+    ValueTypeValueValuesEnum: Immutable. Only applicable for Vertex AI Feature
+      Store (Legacy). Type of Feature value.
 
   Messages:
     LabelsValue: Optional. The labels with user-defined metadata to organize
@@ -13137,10 +13161,12 @@ class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
       prefixed with "aiplatform.googleapis.com/" and are immutable.
 
   Fields:
-    createTime: Output only. Timestamp when this EntityType was created.
+    createTime: Output only. Only applicable for Vertex AI Feature Store
+      (Legacy). Timestamp when this EntityType was created.
     description: Description of the Feature.
-    disableMonitoring: Optional. If not set, use the monitoring_config defined
-      for the EntityType this Feature belongs to. Only Features with type
+    disableMonitoring: Optional. Only applicable for Vertex AI Feature Store
+      (Legacy). If not set, use the monitoring_config defined for the
+      EntityType this Feature belongs to. Only Features with type
       (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring.
       If set to true, all types of data monitoring are disabled despite the
       config on EntityType.
@@ -13154,33 +13180,39 @@ class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
       of labels. No more than 64 user labels can be associated with one
       Feature (System labels are excluded)." System reserved label keys are
       prefixed with "aiplatform.googleapis.com/" and are immutable.
-    monitoringConfig: Optional. Deprecated: The custom monitoring
-      configuration for this Feature, if not set, use the monitoring_config
-      defined for the EntityType this Feature belongs to. Only Features with
-      type (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable
-      monitoring. If this is populated with
-      FeaturestoreMonitoringConfig.disabled = true, snapshot analysis
-      monitoring is disabled; if
+    monitoringConfig: Optional. Only applicable for Vertex AI Feature Store
+      (Legacy). Deprecated: The custom monitoring configuration for this
+      Feature, if not set, use the monitoring_config defined for the
+      EntityType this Feature belongs to. Only Features with type
+      (Feature.ValueType) BOOL, STRING, DOUBLE or INT64 can enable monitoring.
+      If this is populated with FeaturestoreMonitoringConfig.disabled = true,
+      snapshot analysis monitoring is disabled; if
       FeaturestoreMonitoringConfig.monitoring_interval specified, snapshot
       analysis monitoring is enabled. Otherwise, snapshot analysis monitoring
       config is same as the EntityType's this Feature belongs to.
-    monitoringStats: Output only. A list of historical SnapshotAnalysis stats
-      requested by user, sorted by FeatureStatsAnomaly.start_time descending.
-    monitoringStatsAnomalies: Output only. The list of historical stats and
-      anomalies with specified objectives.
+    monitoringStats: Output only. Only applicable for Vertex AI Feature Store
+      (Legacy). A list of historical SnapshotAnalysis stats requested by user,
+      sorted by FeatureStatsAnomaly.start_time descending.
+    monitoringStatsAnomalies: Output only. Only applicable for Vertex AI
+      Feature Store (Legacy). The list of historical stats and anomalies with
+      specified objectives.
     name: Immutable. Name of the Feature. Format: `projects/{project}/location
       s/{location}/featurestores/{featurestore}/entityTypes/{entity_type}/feat
-      ures/{feature}` The last part feature is assigned by the client. The
-      feature can be up to 64 characters long and can consist only of ASCII
-      Latin letters A-Z and a-z, underscore(_), and ASCII digits 0-9 starting
-      with a letter. The value will be unique given an entity type.
-    updateTime: Output only. Timestamp when this EntityType was most recently
-      updated.
-    valueType: Immutable. Type of Feature value.
+      ures/{feature}` `projects/{project}/locations/{location}/featureGroups/{
+      feature_group}/features/{feature}` The last part feature is assigned by
+      the client. The feature can be up to 64 characters long and can consist
+      only of ASCII Latin letters A-Z and a-z, underscore(_), and ASCII digits
+      0-9 starting with a letter. The value will be unique given an entity
+      type.
+    updateTime: Output only. Only applicable for Vertex AI Feature Store
+      (Legacy). Timestamp when this EntityType was most recently updated.
+    valueType: Immutable. Only applicable for Vertex AI Feature Store
+      (Legacy). Type of Feature value.
   """
 
   class ValueTypeValueValuesEnum(_messages.Enum):
-    r"""Immutable. Type of Feature value.
+    r"""Immutable. Only applicable for Vertex AI Feature Store (Legacy). Type
+    of Feature value.
 
     Values:
       VALUE_TYPE_UNSPECIFIED: The value type is unspecified.

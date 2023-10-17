@@ -3221,6 +3221,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'securitycentermanagement': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.securitycentermanagement.v1',
+                    client_classpath='securitycentermanagement_v1_client.SecuritycentermanagementV1',
+                    base_url='https://securitycentermanagement.googleapis.com/',
+                    messages_modulepath='securitycentermanagement_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'securityposture': {
         'v1alpha':
             APIDef(

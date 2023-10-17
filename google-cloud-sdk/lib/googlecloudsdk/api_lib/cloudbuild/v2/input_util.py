@@ -26,7 +26,7 @@ from googlecloudsdk.core import yaml
 
 def LoadYamlFromPath(path):
   try:
-    data = yaml.load_path(path)
+    data = yaml.load_path(path, round_trip=True, preserve_quotes=True)
   except yaml.Error as e:
     raise cloudbuild_exceptions.ParserError(path, e.inner_error)
   if not yaml.dict_like(data):

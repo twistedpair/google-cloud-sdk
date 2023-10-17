@@ -313,7 +313,7 @@ def CreateGroupReference(client, resources, args):
 
 
 _LIST_INSTANCES_FORMAT = """\
-        table(instance.basename():label=NAME,
+        table(name:label=NAME,
               instance.scope().segment(0):label=ZONE,
               instanceStatus:label=STATUS,
               instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
@@ -326,7 +326,7 @@ _LIST_INSTANCES_FORMAT = """\
         )"""
 
 _LIST_INSTANCES_FORMAT_BETA = """\
-        table(instance.basename():label=NAME,
+        table(name:label=NAME,
               instance.scope().segment(0):label=ZONE,
               instanceStatus:label=STATUS,
               instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
@@ -340,7 +340,7 @@ _LIST_INSTANCES_FORMAT_BETA = """\
         )"""
 
 _LIST_INSTANCES_FORMAT_ALPHA = """\
-        table(instance.basename():label=NAME,
+        table(name:label=NAME,
               instance.scope().segment(0):label=ZONE,
               instanceStatus:label=STATUS,
               instanceHealth[0].detailedHealthState:label=HEALTH_STATE,
@@ -389,8 +389,7 @@ def AddListInstancesOutputFormat(parser, release_track=base.ReleaseTrack.GA):
       'preservedState': _TransformPreservedState,
   })
   parser.display_info.AddFormat(
-      _RELEASE_TRACK_TO_LIST_INSTANCES_FORMAT[release_track]
-  )
+      _RELEASE_TRACK_TO_LIST_INSTANCES_FORMAT[release_track])
 
 
 # Rename ot HELP_BASE

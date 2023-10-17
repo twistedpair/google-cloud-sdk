@@ -25,7 +25,9 @@ import json
 import textwrap
 
 from googlecloudsdk.command_lib.storage import storage_url
+from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.core.resource import resource_projector
+
 
 LONGEST_METADATA_KEY_LENGTH = 26
 METADATA_LINE_INDENT_LENGTH = 2
@@ -57,7 +59,8 @@ def get_unsupported_object_type(resource):
       type, else None.
   """
   if (
-      resource.storage_url.scheme == storage_url.ProviderPrefix.S3
+      isinstance(resource, resource_reference.ObjectResource)
+      and resource.storage_url.scheme == storage_url.ProviderPrefix.S3
       and resource.storage_class == 'GLACIER'
   ):
     return UnsupportedObjectType.GLACIER

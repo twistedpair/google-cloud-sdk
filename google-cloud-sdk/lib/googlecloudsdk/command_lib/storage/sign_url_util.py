@@ -23,10 +23,14 @@ import hashlib
 import json
 import urllib.parse
 
+from googlecloudsdk.api_lib.util import apis_internal
+from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.core import log
 from googlecloudsdk.core import requests as core_requests
+from googlecloudsdk.core import transport
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.credentials import transports
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import times
 import requests
@@ -53,6 +57,7 @@ def get_signed_url(
     parameters,
     path,
     region,
+    delegates,
 ):
   """Gets a signed URL for a GCS XML API request.
 
@@ -70,12 +75,12 @@ def get_signed_url(
     path (str): Of the form `/bucket-name/object-name`. Specifies the resource
       that is targeted by the request.
     region (str): The region of the target resource instance.
+    delegates (list[str]|None): The list of service accounts in a delegation
+      chain specified in --impersonate-service-account.
 
   Returns:
     A URL (str) used to make the specified request.
   """
-  from OpenSSL import crypto  # pylint: disable=g-import-not-at-top
-
   encoded_path = urllib.parse.quote(path, safe='/~')
 
   signing_time = times.Now(tzinfo=times.UTC)
@@ -85,8 +90,8 @@ def get_signed_url(
   headers_to_sign.update(headers)
   canonical_headers_string = ''.join(
       [
-          '{}:{}\n'.format(key.lower(), value)
-          for key, value in sorted(headers_to_sign.items())
+          '{}:{}\n'.format(k.lower(), v)
+          for k, v in sorted(headers_to_sign.items())
       ]
   )
   canonical_signed_headers_string = ';'.join(sorted(headers_to_sign.keys()))
@@ -108,8 +113,8 @@ def get_signed_url(
   query_params_to_sign.update(parameters)
   canonical_query_string = '&'.join(
       [
-          '{}={}'.format(key, urllib.parse.quote_plus(value))
-          for key, value in sorted(query_params_to_sign.items())
+          '{}={}'.format(k, urllib.parse.quote_plus(v))
+          for k, v in sorted(query_params_to_sign.items())
       ]
   )
 
@@ -139,7 +144,12 @@ def get_signed_url(
 
   log.debug('String to sign:\n' + string_to_sign)
 
-  raw_signature = crypto.sign(key, string_to_sign.encode('utf-8'), _DIGEST)
+  raw_signature = (
+      _sign_with_key(key, string_to_sign)
+      if key
+      else _sign_with_iam(client_id, string_to_sign, delegates)
+  )
+
   signature = base64.b16encode(raw_signature).lower().decode('utf-8')
   return ('{host}{path}?x-goog-signature={signature}&{query_string}').format(
       host=host,
@@ -149,8 +159,67 @@ def get_signed_url(
   )
 
 
-def get_signing_information_from_file(path, password=None):
-  """Loads signing information from a JSON or P12 private key file.
+def _sign_with_iam(account_email, string_to_sign, delegates):
+  """Generates a signature using the IAM sign-blob method.
+
+  Args:
+    account_email (str): Email of the service account to sign as.
+    string_to_sign (str): String to sign.
+    delegates (list[str]|None): The list of service accounts in a delegation
+      chain specified in --impersonate-service-account.
+
+  Returns:
+    A raw signature for the specified string.
+  """
+  # If X is some user account and Y is a service account:
+  # X needs roles/iam.serviceAccountTokenCreator on Y in order to impersonate Y.
+  # X needs roles/iam.serviceAccountTokenCreator on Y in order to signBlob as Y.
+  # Y needs roles/iam.serviceAccountTokenCreator on itself to signBlob alone.
+  # Therefore, when X impersonates Y, we know that the permissions are
+  # provisioned correctly for X to signBlob as Y, but we don't know if Y has
+  # permissions to call signBlob alone. To take advantage of the permissions,
+  # you need to issue the signBlob call as X and pass Y as a parameter. To do
+  # this we revert to the original X credentials by turning off impersonation.
+  # This is why we override the http_client using apis_internal in this section.
+  http_client = transports.GetApitoolsTransport(
+      response_encoding=transport.ENCODING, allow_account_impersonation=False
+  )
+  # pylint: disable=protected-access
+  client = apis_internal._GetClientInstance(
+      'iamcredentials', 'v1', http_client=http_client
+  )
+  messages = client.MESSAGES_MODULE
+  response = client.projects_serviceAccounts.SignBlob(
+      messages.IamcredentialsProjectsServiceAccountsSignBlobRequest(
+          name=iam_util.EmailToAccountResourceName(account_email),
+          signBlobRequest=messages.SignBlobRequest(
+              payload=bytes(string_to_sign, 'utf-8'),
+              delegates=[
+                  iam_util.EmailToAccountResourceName(delegate)
+                  for delegate in delegates or []
+              ],
+          ),
+      )
+  )
+  return response.signedBlob
+
+
+def _sign_with_key(key, string_to_sign):
+  """Generates a signature using OpenSSL.crypto.
+
+  Args:
+    key (crypto.PKey): Key for the signing service account.
+    string_to_sign (str): String to sign.
+
+  Returns:
+      A raw signature for the specified string.
+  """
+  from OpenSSL import crypto  # pylint: disable=g-import-not-at-top
+  return crypto.sign(key, string_to_sign.encode('utf-8'), _DIGEST)
+
+
+def get_signing_information_from_json(raw_data, password_bytes=None):
+  """Loads signing information from a JSON or P12 private key.
 
   JSON keys from GCP do not use a passphrase by default, so we follow gsutil in
   not prompting the user for a password.
@@ -159,22 +228,13 @@ def get_signing_information_from_file(path, password=None):
   user if they do not provide a password.
 
   Args:
-    path (str): The location of the file.
-    password (str): The password used to decrypt encrypted private keys.
+    raw_data (str): Un-parsed JSON data from the key file or creds store.
+    password_bytes (bytes): A password used to decrypt encrypted private keys.
 
   Returns:
     A tuple (client_id: str, key: crypto.PKey), which can be used to sign URLs.
   """
   from OpenSSL import crypto  # pylint:disable=g-import-not-at-top
-
-  if password:
-    password_bytes = password.encode('utf-8')
-  else:
-    password_bytes = None
-
-  with files.BinaryFileReader(path) as file:
-    raw_data = file.read()
-
   try:
     # Expects JSON formatted like the return value of the iam service-account
     # keys create command:
@@ -202,6 +262,27 @@ def get_signing_information_from_file(path, password=None):
     keystore = crypto.load_pkcs12(raw_data, passphrase=password_bytes)
     client_id = keystore.get_certificate().get_subject().CN
     return client_id, keystore.get_privatekey()
+
+
+def get_signing_information_from_file(path, password=None):
+  """Loads signing information from a JSON or P12 private key file.
+
+  Args:
+    path (str): The location of the file.
+    password (str|None): The password used to decrypt encrypted private keys.
+
+  Returns:
+    A tuple (client_id: str, key: crypto.PKey), which can be used to sign URLs.
+  """
+  if password:
+    password_bytes = password.encode('utf-8')
+  else:
+    password_bytes = None
+
+  with files.BinaryFileReader(path) as file:
+    raw_data = file.read()
+
+  return get_signing_information_from_json(raw_data, password_bytes)
 
 
 def probe_access_to_resource(
@@ -253,6 +334,7 @@ def probe_access_to_resource(
       parameters=parameters,
       path=path,
       region=region,
+      delegates=None,
   )
   session = core_requests.GetSession()
   response = session.head(url)

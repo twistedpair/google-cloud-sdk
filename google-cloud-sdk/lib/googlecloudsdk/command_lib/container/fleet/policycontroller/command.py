@@ -107,7 +107,7 @@ class PocoCommand:
     # Map short path to full path and spec.
     # These specs have their project number in their full path.
     specs = {
-        fleet_util.MembershipPartialName(path): (path, spec)
+        fleet_util.MembershipPartialName(path): (path, self._rebuild_spec(spec))
         for path, spec in self.current_specs().items()
         if fleet_util.MembershipPartialName(path) in memberships_paths
     }
@@ -129,11 +129,31 @@ class PocoCommand:
     # Drop the short path info and send back the specs, if they were all found.
     return {path: spec for (path, spec) in specs.values()}
 
+  def _rebuild_spec(self, spec: messages.Message) -> messages.Message:
+    """Rebuilds the spec to only include information from policycontroller.
+
+    This is necessary so that feature-level values managed by Hub are not
+    unintentionally overwritten (i.e. 'origin').
+
+    Args:
+      spec: The spec found by querying the API.
+
+    Returns:
+      MembershipFeatureSpec with only policycontroller values, leaving off
+      other top-level data.
+    """
+    return self.messages.MembershipFeatureSpec(
+        policycontroller=spec.policycontroller
+    )
+
   def update_specs(self, specs: SpecMapping) -> None:
     """Merges spec changes and sends and update to the API.
 
     Specs refer to PolicyControllerMembershipSpec objects defined here:
     third_party/py/googlecloudsdk/generated_clients/apis/gkehub/v1alpha/gkehub_v1alpha_messages.py
+
+    (Note the above is for the ALPHA api track. Other tracks are found
+    elsewhere.)
 
     Args:
       specs: Specs with updates. These are merged with the existing spec (new

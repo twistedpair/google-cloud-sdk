@@ -41,3 +41,4 @@ properties:
     - WINDOWS
     - SEV_LIVE_MIGRATABLE
     - SEV_SNP_CAPABLE
+    - SEV_LIVE_MIGRATABLE_V2

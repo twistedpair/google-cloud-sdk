@@ -27,8 +27,10 @@ import os
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.storage import encryption_util
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import errors_util
 from googlecloudsdk.command_lib.storage import flags
 from googlecloudsdk.command_lib.storage import folder_util
 from googlecloudsdk.command_lib.storage import name_expansion
@@ -168,6 +170,21 @@ def add_gzip_in_flight_flags(parser):
   )
 
 
+def add_include_managed_folders_flag(parser):
+  parser.add_argument(
+      '--include-managed-folders',
+      action='store_true',
+      default=False,
+      help=(
+          'Includes managed folders in command operations. For'
+          ' transfers, gcloud storage will set up managed folders in the'
+          ' destination with the same IAM policy bindings as the source.'
+          ' Managed folders are only included with recursive cloud-to-cloud'
+          ' transfers.'
+      ),
+  )
+
+
 def add_ignore_symlinks_flag(parser_or_group, default=False):
   """Adds flag for skipping copying symlinks."""
   parser_or_group.add_argument(
@@ -221,7 +238,7 @@ def add_cp_mv_rsync_flags(parser):
   )
 
 
-def add_cp_and_mv_flags(parser):
+def add_cp_and_mv_flags(parser, release_track):
   """Adds flags to cp, mv, or other cp-based commands."""
   parser.add_argument('source', nargs='*', help='The source path(s) to copy.')
   parser.add_argument('destination', help='The destination path.')
@@ -245,19 +262,9 @@ def add_cp_and_mv_flags(parser):
       ' to change a composite object into a non-composite object.'
       ' Note: Daisy chain mode is automatically used when copying between'
       ' providers.')
-  parser.add_argument(
-      '--include-managed-folders',
-      action='store_true',
-      default=False,
-      hidden=True,
-      help=(
-          'Includes managed folders in command operations. '
-          ' This only affects recursive intra-cloud transfers, for'
-          ' which gcloud storage will set up a managed folder in the'
-          ' destination with the same IAM policy bindings as the source. By'
-          ' default gcloud storage will not include managed folders in copies.'
-      ),
-  )
+  # TODO(b/304524534): Remove this condition.
+  if release_track is base.ReleaseTrack.ALPHA:
+    add_include_managed_folders_flag(parser)
   symlinks_group = parser.add_group(
       mutex=True,
       help=(
@@ -332,6 +339,43 @@ def add_recursion_flag(parser):
   )
 
 
+def validate_include_managed_folders(
+    args, raw_source_urls, raw_destination_url
+):
+  """Validates that arguments are consistent with managed folder operations."""
+  # TODO(b/304524534): Replace with args.include_managed_folders.
+  if not getattr(args, 'include_managed_folders', False):
+    return
+
+  if isinstance(raw_destination_url, storage_url.FileUrl):
+    raise errors.Error(
+        'Cannot include managed folders with a non-cloud destination: {}'
+        .format(raw_destination_url)
+    )
+
+  if getattr(args, 'read_paths_from_stdin', None):
+    raise errors.Error(
+        'Cannot include managed folders when reading paths from stdin, as this'
+        ' would require storing all paths passed to gcloud storage in memory.'
+    )
+
+  for url_string in raw_source_urls:
+    url = storage_url.storage_url_from_string(url_string)
+    if isinstance(url, storage_url.FileUrl):
+      raise errors.Error(
+          'Cannot include managed folders with a non-cloud source: {}'.format(
+              url
+          )
+      )
+
+  if not args.recursive:
+    raise errors.Error(
+        'Cannot include managed folders unless recursion is enabled.'
+    )
+
+  errors_util.raise_error_if_not_gcs(args.command_path, raw_destination_url)
+
+
 def _validate_args(args, raw_destination_url):
   """Raises errors if invalid flags are passed."""
   if args.no_clobber and args.if_generation_match:
@@ -349,26 +393,7 @@ def _validate_args(args, raw_destination_url):
             raw_destination_url
         )
     )
-
-  if (
-      isinstance(raw_destination_url, storage_url.FileUrl)
-      and args.include_managed_folders
-  ):
-    raise errors.Error(
-        'Cannot include managed folders with a non-cloud destination: {}'
-        .format(raw_destination_url)
-    )
-
-  if args.include_managed_folders and args.read_paths_from_stdin:
-    raise errors.Error(
-        'Cannot include managed folders when reading paths from stdin, as this'
-        ' would require storing all paths passed to gcloud storage in memory.'
-    )
-
-  if args.include_managed_folders and not args.recursive:
-    raise errors.Error(
-        'Cannot include managed folders unless recursion is enabled.'
-    )
+  validate_include_managed_folders(args, args.source, raw_destination_url)
 
 
 @contextlib.contextmanager
@@ -506,7 +531,8 @@ def run_cp(args, delete_source=False):
 
   url_found_match_tracker = collections.OrderedDict()
 
-  if args.include_managed_folders:
+  # TODO(b/304524534): Replace with args.include_managed_folders.
+  if getattr(args, 'include_managed_folders', False):
     source_expansion_iterator = _get_managed_folder_iterator(
         args, url_found_match_tracker
     )
@@ -562,7 +588,11 @@ def run_cp(args, delete_source=False):
       source_expansion_iterator=source_expansion_iterator,
   )
 
-  if delete_source and args.include_managed_folders:
+  if (
+      delete_source
+      # TODO(b/304524534): Replace with args.include_managed_folders.
+      and getattr(args, 'include_managed_folders', False)
+  ):
     managed_folder_expansion_iterator = name_expansion.NameExpansionIterator(
         args.source,
         managed_folder_setting=folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,

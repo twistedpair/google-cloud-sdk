@@ -563,7 +563,7 @@ class CloudApi(object):
       delimiter=None,
       fields_scope=None,
       halt_on_empty_response=True,
-      include_folders_as_prefixes=False,
+      include_folders_as_prefixes=None,
       next_page_token=None,
       object_state=ObjectState.LIVE,
   ):

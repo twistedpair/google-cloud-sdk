@@ -1193,6 +1193,22 @@ class FleetClient(object):
     return self.client.projects_locations_memberships_rbacrolebindings.GenerateMembershipRBACRoleBindingYAML(
         req)
 
+  def CreateRollout(
+      self, req: messages.GkehubProjectsLocationsRolloutsCreateRequest
+  ) -> messages.Operation:
+    """Creates a rollout resource from the Fleet rollout API.
+
+    Args:
+      req: An HTTP create rollout request to be sent to the API server.
+
+    Returns:
+      A long-running operation.
+
+    Raises:
+      apitools.base.py.HttpError: if the request returns an HTTP error
+    """
+    return self.client.projects_locations_rollouts.Create(req)
+
 
 class OperationClient:
   """Client for the GKE Hub API long-running operations."""

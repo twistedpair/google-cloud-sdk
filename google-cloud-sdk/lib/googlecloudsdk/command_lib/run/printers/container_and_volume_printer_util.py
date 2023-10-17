@@ -71,7 +71,7 @@ def GetContainer(
           'Env vars',
           GetUserEnvironmentVariables(container),
       ),
-      ('Volumes', GetVolumeMounts(container)),
+      ('Volume Mounts', GetVolumeMounts(container)),
       ('Secrets', GetSecrets(container)),
       ('Config Maps', GetConfigMaps(container)),
       (
@@ -137,6 +137,8 @@ def GetVolumeMounts(container: container_resource.Container) -> cp.Table:
 
 def _FormatVolumeMount(name, volume):
   """Format details about a volume mount."""
+  if not volume:
+    return 'volume not found'
   if volume.emptyDir:
     return cp.Labeled([
         ('name', name),
@@ -164,14 +166,13 @@ def _FormatVolume(volume):
   if volume.emptyDir:
     return cp.Labeled([
         ('type', 'in-memory'),
-        ('size-limit', volume.empty_dir.sizeLimit),
+        ('size-limit', volume.emptyDir.sizeLimit),
     ])
   elif volume.nfs:
     return cp.Labeled([
         ('type', 'nfs'),
         ('location', '{}:{}'.format(volume.nfs.server, volume.nfs.path)),
-        'read-only',
-        volume.nfs.readOnly,
+        ('read-only', volume.nfs.readOnly),
     ])
   elif volume.csi:
     if volume.csi.driver == 'gcsfuse.run.googleapis.com':

@@ -23,6 +23,7 @@ from typing import List
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.container.fleet import util
+from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope import parser_arguments
@@ -36,6 +37,10 @@ from googlecloudsdk.generated_clients.apis.gkehub.v1alpha import gkehub_v1alpha_
 # pylint: disable=invalid-name
 # Follow the naming style in calliope library, use snake_case for properties,
 # CamelCase for function names.
+
+_BINAUTHZ_GKE_POLICY_REGEX = (
+    'projects/([^/]+)/platforms/gke/policies/([a-zA-Z0-9_-]+)'
+)
 
 
 class FleetFlags:
@@ -98,6 +103,7 @@ class FleetFlags:
         help='Default cluster configurations to apply across the fleet.',
     )
     self._AddSecurityPostureConfig(default_cluster_config_group)
+    self._AddBinaryAuthorizationConfig(default_cluster_config_group)
 
   def _AddSecurityPostureConfig(
       self, default_cluster_config_group: parser_arguments.ArgumentInterceptor
@@ -114,13 +120,13 @@ class FleetFlags:
   ):
     security_posture_config_group.add_argument(
         '--security-posture',
-        choices=['disabled', 'basic', 'enterprise'],
+        choices=['disabled', 'standard'],
         default=None,
         hidden=True,
         help=textwrap.dedent("""\
           To apply basic security posture to the clusters of the fleet,
 
-            $ {command} --security-posture=basic
+            $ {command} --security-posture=standard
 
           """),
     )
@@ -130,7 +136,7 @@ class FleetFlags:
   ):
     security_posture_config_group.add_argument(
         '--workload-vulnerability-scanning',
-        choices=['disabled', 'basic', 'enterprise'],
+        choices=['disabled', 'standard', 'enterprise'],
         default=None,
         hidden=True,
         help=textwrap.dedent("""\
@@ -139,6 +145,59 @@ class FleetFlags:
               $ {command} --workload-vulnerability-scanning=disabled
 
             """),
+    )
+
+  def _AddBinaryAuthorizationConfig(
+      self, default_cluster_config_group: parser_arguments.ArgumentInterceptor
+  ):
+    binary_authorization_config_group = default_cluster_config_group.add_group(
+        hidden=True,
+        help='Binary Authorization config.',
+    )
+    self._AddBinauthzEvaluationMode(binary_authorization_config_group)
+    self._AddBinauthzPolicyBindings(binary_authorization_config_group)
+
+  def _AddBinauthzEvaluationMode(
+      self,
+      binary_authorization_config_group: parser_arguments.ArgumentInterceptor,
+  ):
+    binary_authorization_config_group.add_argument(
+        '--binauthz-evaluation-mode',
+        choices=['DISABLED', 'POLICY_BINDINGS'],
+        default=None,
+        hidden=True,
+        help=textwrap.dedent("""\
+          Configure binary authorization mode for clusters to onboard the fleet,
+
+            $ {command} --binauthz-evaluation-mode=POLICY_BINDINGS
+
+          """),
+    )
+
+  def _AddBinauthzPolicyBindings(
+      self,
+      binary_authorization_config_group: parser_arguments.ArgumentInterceptor,
+  ):
+    platform_policy_type = arg_parsers.RegexpValidator(
+        _BINAUTHZ_GKE_POLICY_REGEX,
+        'GKE policy resource names have the following format: '
+        '`projects/{project_number}/platforms/gke/policies/{policy_id}`',
+    )
+    binary_authorization_config_group.add_argument(
+        '--binauthz-policy-bindings',
+        default=None,
+        hidden=True,
+        metavar='name=BINAUTHZ_POLICY',
+        help=textwrap.dedent("""\
+          The relative resource name of the Binary Authorization policy to audit
+          and/or enforce. GKE policies have the following format:
+          `projects/{project_number}/platforms/gke/policies/{policy_id}`."""),
+        type=arg_parsers.ArgDict(
+            spec={
+                'name': platform_policy_type,
+            },
+            required_keys=['name'],
+        ),
     )
 
   def _OperationResourceSpec(self):
@@ -244,8 +303,7 @@ class FleetFlagParser:
     enum_type = self.messages.SecurityPostureConfig.ModeValueValuesEnum
     mapping = {
         'disabled': enum_type.DISABLED,
-        'basic': enum_type.BASIC,
-        'enterprise': enum_type.ENTERPRISE,
+        'standard': enum_type.BASIC,
     }
     choice = self.args.security_posture
 
@@ -269,7 +327,7 @@ class FleetFlagParser:
     )
     mapping = {
         'disabled': enum_type.VULNERABILITY_DISABLED,
-        'basic': enum_type.VULNERABILITY_BASIC,
+        'standard': enum_type.VULNERABILITY_BASIC,
         'enterprise': enum_type.VULNERABILITY_ENTERPRISE,
     }
     choice = self.args.workload_vulnerability_scanning
@@ -285,9 +343,50 @@ class FleetFlagParser:
 
     return mapping[choice]
 
+  def _BinaryAuthorizationConfig(
+      self) -> fleet_messages.BinaryAuthorizationConfig:
+    ret = self.messages.BinaryAuthorizationConfig()
+    ret.evaluationMode = self._EvaluationMode()
+    ret.policyBindings = self._PolicyBindings()
+    return self.TrimEmpty(ret)
+
+  def _EvaluationMode(
+      self,
+  ) -> fleet_messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum:
+    """Parses --binauthz-evaluation-mode."""
+    enum_type = (
+        self.messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum
+    )
+    mapping = {
+        'DISABLED': enum_type.DISABLED,
+        'POLICY_BINDINGS': enum_type.POLICY_BINDINGS,
+    }
+    choice = self.args.binauthz_evaluation_mode
+
+    if choice is None:
+      return None
+
+    valid_options = ', '.join(sorted(list(mapping)))
+    if choice not in mapping:
+      return exceptions.InvalidArgumentException(
+          choice, 'expect [{}]'.format(valid_options)
+      )
+
+    return mapping[choice]
+
+  def _PolicyBindings(self) -> [fleet_messages.PolicyBinding]:
+    """Parses --binauthz-policy-bindings."""
+    policy_binding = self.args.binauthz_policy_bindings
+    if policy_binding is not None:
+      return [
+          fleet_messages.PolicyBinding(name=policy_binding[0]['name'])
+      ]
+    return []
+
   def _DefaultClusterConfig(self) -> fleet_messages.DefaultClusterConfig:
     ret = self.messages.DefaultClusterConfig()
     ret.securityPostureConfig = self._SecurityPostureConfig()
+    ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig()
     return self.TrimEmpty(ret)
 
   def OperationRef(self) -> resources.Resource:

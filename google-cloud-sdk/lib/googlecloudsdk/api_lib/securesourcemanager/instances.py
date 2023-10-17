@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -47,20 +48,28 @@ class InstancesClient(object):
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('securesourcemanager', 'v1')
 
-  def Create(self, instance_ref, kms_key):
+  def Create(self, instance_ref, kms_key, is_private, ca_pool):
     """Create a new Secure Source Manager instance.
 
     Args:
       instance_ref: a resource reference to
         securesourcemanager.projects.locations.instances.
       kms_key: customer managed encrypted key to create instance.
+      is_private:  boolean indicator for private instance.
+      ca_pool: path of ca pool for private instance.
 
     Returns:
       Created instance.
     """
+    private_config = None
+    if is_private:
+      private_config = self.messages.PrivateConfig(
+          caPool=ca_pool, isPrivate=is_private
+      )
     instance = self.messages.Instance(
-        kmsKey=kms_key
+        kmsKey=kms_key, privateConfig=private_config
     )
+    # messages_util.DictToMessageWithErrorCheck
     create_req = self.messages.SecuresourcemanagerProjectsLocationsInstancesCreateRequest(
         instance=instance,
         instanceId=instance_ref.instancesId,
@@ -112,10 +121,25 @@ class InstancesClient(object):
     if has_result:
       poller = waiter.CloudOperationPoller(
           self.client.projects_locations_instances,
-          self.client.projects_locations_operations)
+          self.client.projects_locations_operations,
+      )
     else:
       poller = waiter.CloudOperationPollerNoResources(
-          self.client.projects_locations_operations)
+          self.client.projects_locations_operations
+      )
 
     return waiter.WaitFor(
-        poller, operation_ref, message, max_wait_ms=max_wait.seconds * 1000)
+        poller, operation_ref, message, max_wait_ms=max_wait.seconds * 1000
+    )
+
+  def GetApiBaseUrl(self, location_ref, instance_id):
+    """Get the API URL of a Cloud Git instance."""
+    get_req = (
+        self.messages.SecuresourcemanagerProjectsLocationsInstancesGetRequest(
+            name='{}/instances/{}'.format(
+                location_ref.RelativeName(), instance_id
+            )
+        )
+    )
+    api_base_url = self._service.Get(get_req).hostConfig.api
+    return 'https://{}/'.format(api_base_url)

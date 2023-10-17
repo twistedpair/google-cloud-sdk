@@ -332,6 +332,118 @@ class AuthztoolkitProjectsLocationsPoliciesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(4)
 
 
+class AuthztoolkitProjectsLocationsTargetAssociationsCreateRequest(_messages.Message):
+  r"""A AuthztoolkitProjectsLocationsTargetAssociationsCreateRequest object.
+
+  Fields:
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    targetAssociation: A TargetAssociation resource to be passed as the
+      request body.
+    targetAssociationId: Required. Id of the requesting object If auto-
+      generating Id server-side, remove this field and target_association_id
+      from the method_signature of Create RPC
+  """
+
+  parent = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetAssociation = _messages.MessageField('TargetAssociation', 3)
+  targetAssociationId = _messages.StringField(4)
+
+
+class AuthztoolkitProjectsLocationsTargetAssociationsDeleteRequest(_messages.Message):
+  r"""A AuthztoolkitProjectsLocationsTargetAssociationsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class AuthztoolkitProjectsLocationsTargetAssociationsGetRequest(_messages.Message):
+  r"""A AuthztoolkitProjectsLocationsTargetAssociationsGetRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AuthztoolkitProjectsLocationsTargetAssociationsListRequest(_messages.Message):
+  r"""A AuthztoolkitProjectsLocationsTargetAssociationsListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for ListTargetAssociationsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class AuthztoolkitProjectsLocationsTargetAssociationsPatchRequest(_messages.Message):
+  r"""A AuthztoolkitProjectsLocationsTargetAssociationsPatchRequest object.
+
+  Fields:
+    name: Identifier. name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    targetAssociation: A TargetAssociation resource to be passed as the
+      request body.
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the TargetAssociation resource by the update. The fields
+      specified in the update_mask are relative to the resource, not the full
+      request. A field will be overwritten if it is in the mask. If the user
+      does not provide a mask then all fields will be overwritten.
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+  targetAssociation = _messages.MessageField('TargetAssociation', 3)
+  updateMask = _messages.StringField(4)
+
+
 class Binding(_messages.Message):
   r"""Message describing Binding object
 
@@ -446,6 +558,21 @@ class ListPoliciesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   policies = _messages.MessageField('Policy', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListTargetAssociationsResponse(_messages.Message):
+  r"""Message for response to listing TargetAssociations
+
+  Fields:
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    targetAssociations: The list of TargetAssociation
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  targetAssociations = _messages.MessageField('TargetAssociation', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
 
 
@@ -854,6 +981,20 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TargetAssociation(_messages.Message):
+  r"""Message describing TargetAssociation object
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    name: Identifier. name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
 
 
 class To(_messages.Message):

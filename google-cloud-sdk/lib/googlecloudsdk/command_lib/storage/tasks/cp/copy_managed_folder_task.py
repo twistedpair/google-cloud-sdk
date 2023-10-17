@@ -23,6 +23,8 @@ import os
 import threading
 
 from googlecloudsdk.api_lib.storage import api_factory
+from googlecloudsdk.api_lib.storage import errors
+from googlecloudsdk.api_lib.storage import gcs_iam_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
@@ -73,15 +75,26 @@ class CopyManagedFolderTask(copy_util.CopyTaskWithExitHandler):
     source_policy = api_client.get_managed_folder_iam_policy(
         source_url.bucket_name, source_url.object_name
     )
-    api_client.create_managed_folder(
-        destination_url.bucket_name,
-        destination_url.object_name,
-    )
+
+    try:
+      api_client.create_managed_folder(
+          destination_url.bucket_name,
+          destination_url.object_name,
+      )
+    except errors.ConflictError:
+      pass
 
     self._print_created_message_if_requested(self._destination_resource)
 
+    # Source etag will not match the destination causing precondition failures.
+    source_policy.etag = None
+    # Version must be specified.
+    source_policy.version = gcs_iam_util.IAM_POLICY_VERSION
+
     api_client.set_managed_folder_iam_policy(
-        destination_url.bucket_name, destination_url.object_name, source_policy
+        destination_url.bucket_name,
+        destination_url.object_name,
+        source_policy,
     )
 
     if progress_callback:

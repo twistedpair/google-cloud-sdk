@@ -29,7 +29,7 @@ from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import scaled_integer
 
 
-_PARALLEL_UPLOAD_STATIC_SALT = """
+_PARALLEL_UPLOAD_STATIC_PREFIX = """
 PARALLEL_UPLOAD_SALT_TO_PREVENT_COLLISIONS.
 The theory is that no user will have prepended this to the front of
 one of their object names and then do an MD5 hash of the name, and
@@ -53,7 +53,7 @@ def _get_temporary_component_name(
 ):
   """Gets a temporary object name for a component of source_resource."""
   source_name = source_resource.storage_url.object_name
-  salted_name = _PARALLEL_UPLOAD_STATIC_SALT + source_name
+  salted_name = _PARALLEL_UPLOAD_STATIC_PREFIX + source_name
   sha1_hash = hashlib.sha1(salted_name.encode('utf-8'))
 
   component_prefix = (

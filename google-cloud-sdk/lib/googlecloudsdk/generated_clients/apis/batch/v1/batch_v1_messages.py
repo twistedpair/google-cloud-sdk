@@ -1694,8 +1694,9 @@ class TaskGroup(_messages.Message):
       on parent Job name. For example: "projects/123456/locations/us-
       west1/jobs/job01/taskGroups/group01".
     parallelism: Max number of tasks that can run in parallel. Default to
-      min(task_count, 1000). Field parallelism must be 1 if the
-      scheduling_policy is IN_ORDER.
+      min(task_count, parallel tasks per job limit). See: [Job
+      Limits](https://cloud.google.com/batch/quotas#job_limits). Field
+      parallelism must be 1 if the scheduling_policy is IN_ORDER.
     permissiveSsh: When true, Batch will configure SSH to allow passwordless
       login between VMs running the Batch tasks in the same TaskGroup.
     requireHostsFile: When true, Batch will populate a file with a list of all

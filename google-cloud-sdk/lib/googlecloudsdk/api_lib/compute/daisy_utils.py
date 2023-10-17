@@ -51,6 +51,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.util import encoding as encoding_util
 import six
 
 _DEFAULT_BUILDER_DOCKER_PATTERN = 'gcr.io/{gcp_project}/{executable}:{docker_image_tag}'
@@ -205,9 +206,17 @@ class CloudBuildClientWithFiltering(cb_logs.CloudBuildClient):
 
     seconds_between_poll = backoff(0)
     seconds_elapsed = 0
-
+    poll_build_logs = True
     while build.status in working_statuses:
-      log_tailer.Poll()
+      if poll_build_logs:
+        try:
+          log_tailer.Poll()
+        except apitools_exceptions.HttpError as e:
+          log.warning(
+              'Failed to fetch cloud build logs: {}. Waiting for build to'
+              ' complete.'.format(encoding_util.Decode(e.content))
+          )
+          poll_build_logs = False
       time.sleep(seconds_between_poll)
       build = self.GetBuild(build_ref)
       seconds_elapsed += seconds_between_poll
@@ -217,8 +226,22 @@ class CloudBuildClientWithFiltering(cb_logs.CloudBuildClient):
     # final poll will get the full log contents because GCS is strongly
     # consistent and Container Builder waits for logs to finish pushing before
     # marking the build complete.
-    log_tailer.Poll(is_last=True)
-
+    # Poll the logs final time only if the build status has changed.
+    if poll_build_logs:
+      try:
+        log_tailer.Poll(is_last=True)
+      except apitools_exceptions.CommunicationError as e:
+        log.warning(
+            'Failed to fetch cloud build logs: {}.'.format(
+                encoding_util.Decode(e.content)
+            )
+        )
+      except apitools_exceptions.HttpError as e:
+        log.warning(
+            'Failed to fetch cloud build logs: {}.'.format(
+                encoding_util.Decode(e.content)
+            )
+        )
     return build
 
 
@@ -317,17 +340,22 @@ def _CheckIamPermissions(
   # TODO(b/298174304): This is a workaround to check storage permissions
   # for now. Ideally we should check only for necessary permissions list
   # and apply predefined roles accordingly.
-  if custom_cloudbuild_service_account:
-    _VerifyCloudBuildStoragePermissions(
-        project_id,
-        build_account,
-        _CurrentRolesForAccount(policy, build_account),
-        CLOUD_BUILD_STORAGE_PERMISSIONS,
-    )
+  current_cloudbuild_account_roles = _CurrentRolesForAccount(
+      policy, build_account
+  )
+  _VerifyCloudBuildStoragePermissions(
+      project_id,
+      build_account,
+      current_cloudbuild_account_roles,
+      CLOUD_BUILD_STORAGE_PERMISSIONS,
+  )
 
-  _VerifyRolesAndPromptIfMissing(project_id, build_account,
-                                 _CurrentRolesForAccount(policy, build_account),
-                                 frozenset(cloudbuild_service_account_roles))
+  _VerifyRolesAndPromptIfMissing(
+      project_id,
+      build_account,
+      current_cloudbuild_account_roles,
+      frozenset(cloudbuild_service_account_roles),
+  )
 
   current_compute_account_roles = _CurrentRolesForAccount(
       policy, compute_account)

@@ -42,6 +42,7 @@ class AuthztoolkitV1alpha(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_policies_bindings = self.ProjectsLocationsPoliciesBindingsService(self)
     self.projects_locations_policies = self.ProjectsLocationsPoliciesService(self)
+    self.projects_locations_targetAssociations = self.ProjectsLocationsTargetAssociationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -449,6 +450,151 @@ class AuthztoolkitV1alpha(base_api.BaseApiClient):
         relative_path='v1alpha/{+name}',
         request_field='policy',
         request_type_name='AuthztoolkitProjectsLocationsPoliciesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsTargetAssociationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_targetAssociations resource."""
+
+    _NAME = 'projects_locations_targetAssociations'
+
+    def __init__(self, client):
+      super(AuthztoolkitV1alpha.ProjectsLocationsTargetAssociationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new TargetAssociation in a given project and location.
+
+      Args:
+        request: (AuthztoolkitProjectsLocationsTargetAssociationsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/targetAssociations',
+        http_method='POST',
+        method_id='authztoolkit.projects.locations.targetAssociations.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'targetAssociationId'],
+        relative_path='v1alpha/{+parent}/targetAssociations',
+        request_field='targetAssociation',
+        request_type_name='AuthztoolkitProjectsLocationsTargetAssociationsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a single TargetAssociation.
+
+      Args:
+        request: (AuthztoolkitProjectsLocationsTargetAssociationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/targetAssociations/{targetAssociationsId}',
+        http_method='DELETE',
+        method_id='authztoolkit.projects.locations.targetAssociations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AuthztoolkitProjectsLocationsTargetAssociationsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets details of a single TargetAssociation.
+
+      Args:
+        request: (AuthztoolkitProjectsLocationsTargetAssociationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (TargetAssociation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/targetAssociations/{targetAssociationsId}',
+        http_method='GET',
+        method_id='authztoolkit.projects.locations.targetAssociations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AuthztoolkitProjectsLocationsTargetAssociationsGetRequest',
+        response_type_name='TargetAssociation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists TargetAssociations in a given project and location.
+
+      Args:
+        request: (AuthztoolkitProjectsLocationsTargetAssociationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListTargetAssociationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/targetAssociations',
+        http_method='GET',
+        method_id='authztoolkit.projects.locations.targetAssociations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/targetAssociations',
+        request_field='',
+        request_type_name='AuthztoolkitProjectsLocationsTargetAssociationsListRequest',
+        response_type_name='ListTargetAssociationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates the parameters of a single TargetAssociation.
+
+      Args:
+        request: (AuthztoolkitProjectsLocationsTargetAssociationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/targetAssociations/{targetAssociationsId}',
+        http_method='PATCH',
+        method_id='authztoolkit.projects.locations.targetAssociations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha/{+name}',
+        request_field='targetAssociation',
+        request_type_name='AuthztoolkitProjectsLocationsTargetAssociationsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

@@ -19,13 +19,31 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
-
 from googlecloudsdk.api_lib.storage import errors as cloud_errors
 
 ERROR_TRANSLATION = [
-    (apitools_exceptions.HttpNotFoundError, cloud_errors.GcsNotFoundError),
-    (apitools_exceptions.HttpError, cloud_errors.GcsApiError),
+    (
+        apitools_exceptions.HttpNotFoundError,
+        None,
+        cloud_errors.GcsNotFoundError,
+    ),
+    (
+        apitools_exceptions.HttpError,
+        409,
+        cloud_errors.GcsConflictError,
+    ),
+    (
+        apitools_exceptions.HttpError,
+        412,
+        cloud_errors.GcsPreconditionFailedError,
+    ),
+    (apitools_exceptions.HttpError, None, cloud_errors.GcsApiError),
 ]
+
+
+def get_status_code(error):
+  if error.response:
+    return error.response.get('status')
 
 
 def catch_http_error_raise_gcs_api_error(format_str=None):
@@ -41,4 +59,7 @@ def catch_http_error_raise_gcs_api_error(format_str=None):
       customizable error message.
   """
   return cloud_errors.catch_error_raise_cloud_api_error(
-      ERROR_TRANSLATION, format_str=format_str)
+      ERROR_TRANSLATION,
+      format_str=format_str,
+      status_code_getter=get_status_code,
+  )

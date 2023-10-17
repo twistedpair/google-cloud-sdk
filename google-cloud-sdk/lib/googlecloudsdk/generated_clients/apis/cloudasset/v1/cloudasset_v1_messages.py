@@ -995,32 +995,6 @@ class CloudassetBatchGetAssetsHistoryRequest(_messages.Message):
   relationshipTypes = _messages.StringField(6, repeated=True)
 
 
-class CloudassetEffectiveIamDenyPoliciesListRequest(_messages.Message):
-  r"""A CloudassetEffectiveIamDenyPoliciesListRequest object.
-
-  Fields:
-    fullResourceName: Required. The [full resource
-      name](https://cloud.google.com/asset-inventory/docs/resource-name-
-      format) to get effective iam deny policies. Currently the allowed values
-      are: * //cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER *
-      //cloudresourcemanager.googleapis.com/projects/PROJECT_ID *
-      //cloudresourcemanager.googleapis.com/folders/FOLDER_NUMBER *
-      //cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_NUMBER
-    pageSize: The maximum number of deny policies to be returned in a single
-      response. Default is 100, minimum is 1, and maximum is 500. Page size is
-      capped at 500 even if a larger value is given.
-    pageToken: The `next_page_token` returned from the previous
-      `ListEffectiveIamDenyPoliciesResponse`, or unspecified for the first
-      `ListEffectiveIamDenyPoliciesRequest`. It is a continuation of a prior
-      `ListEffectiveIamDenyPolicies` call, and the API should return the next
-      page of deny policies.
-  """
-
-  fullResourceName = _messages.StringField(1, required=True)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-
-
 class CloudassetEffectiveIamPoliciesBatchGetRequest(_messages.Message):
   r"""A CloudassetEffectiveIamPoliciesBatchGetRequest object.
 
@@ -1429,21 +1403,25 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       `relationships.INSTANCE_TO_INSTANCEGROUP:instance-group-1` to find
       Compute Engine instances that have relationships with `instance-group-1`
       in the Compute Engine instance group resource name, for relationship
-      type `INSTANCE_TO_INSTANCEGROUP`. * `state:ACTIVE` to find Google Cloud
-      resources whose state contains `ACTIVE` as a word. * `NOT state:ACTIVE`
-      to find Google Cloud resources whose state doesn't contain `ACTIVE` as a
-      word. * `createTime<1609459200` to find Google Cloud resources that were
-      created before `2021-01-01 00:00:00 UTC`. `1609459200` is the epoch
-      timestamp of `2021-01-01 00:00:00 UTC` in seconds. *
-      `updateTime>1609459200` to find Google Cloud resources that were updated
-      after `2021-01-01 00:00:00 UTC`. `1609459200` is the epoch timestamp of
-      `2021-01-01 00:00:00 UTC` in seconds. * `Important` to find Google Cloud
-      resources that contain `Important` as a word in any of the searchable
-      fields. * `Impor*` to find Google Cloud resources that contain `Impor`
-      as a prefix of any word in any of the searchable fields. * `Important
-      location:(us-west1 OR global)` to find Google Cloud resources that
-      contain `Important` as a word in any of the searchable fields and are
-      also located in the `us-west1` region or the `global` location.
+      type `INSTANCE_TO_INSTANCEGROUP`. * `sccSecurityMarks.key=value` to find
+      Cloud resources that are attached with security marks whose key is `key`
+      and value is `value'. * `sccSecurityMarks.key:*` to find Cloud resources
+      that are attached with security marks whose key is `key`. *
+      `state:ACTIVE` to find Google Cloud resources whose state contains
+      `ACTIVE` as a word. * `NOT state:ACTIVE` to find Google Cloud resources
+      whose state doesn't contain `ACTIVE` as a word. *
+      `createTime<1609459200` to find Google Cloud resources that were created
+      before `2021-01-01 00:00:00 UTC`. `1609459200` is the epoch timestamp of
+      `2021-01-01 00:00:00 UTC` in seconds. * `updateTime>1609459200` to find
+      Google Cloud resources that were updated after `2021-01-01 00:00:00
+      UTC`. `1609459200` is the epoch timestamp of `2021-01-01 00:00:00 UTC`
+      in seconds. * `Important` to find Google Cloud resources that contain
+      `Important` as a word in any of the searchable fields. * `Impor*` to
+      find Google Cloud resources that contain `Impor` as a prefix of any word
+      in any of the searchable fields. * `Important location:(us-west1 OR
+      global)` to find Google Cloud resources that contain `Important` as a
+      word in any of the searchable fields and are also located in the `us-
+      west1` region or the `global` location.
     readMask: Optional. A comma-separated list of fields that you want
       returned in the results. The following fields are returned by default if
       not specified: * `name` * `assetType` * `project` * `folders` *
@@ -3060,96 +3038,6 @@ class GoogleIamV2DenyRule(_messages.Message):
   exceptionPrincipals = _messages.StringField(5, repeated=True)
 
 
-class GoogleIamV2Policy(_messages.Message):
-  r"""Data for an IAM policy.
-
-  Messages:
-    AnnotationsValue: A key-value map to store arbitrary metadata for the
-      `Policy`. Keys can be up to 63 characters. Values can be up to 255
-      characters.
-
-  Fields:
-    annotations: A key-value map to store arbitrary metadata for the `Policy`.
-      Keys can be up to 63 characters. Values can be up to 255 characters.
-    createTime: Output only. The time when the `Policy` was created.
-    deleteTime: Output only. The time when the `Policy` was deleted. Empty if
-      the policy is not deleted.
-    displayName: A user-specified description of the `Policy`. This value can
-      be up to 63 characters.
-    etag: An opaque tag that identifies the current version of the `Policy`.
-      IAM uses this value to help manage concurrent updates, so they do not
-      cause one update to be overwritten by another. If this field is present
-      in a CreatePolicyRequest, the value is ignored.
-    kind: Output only. The kind of the `Policy`. Always contains the value
-      `DenyPolicy`.
-    name: Immutable. The resource name of the `Policy`, which must be unique.
-      Format: `policies/{attachment_point}/denypolicies/{policy_id}` The
-      attachment point is identified by its URL-encoded full resource name,
-      which means that the forward-slash character, `/`, must be written as
-      `%2F`. For example,
-      `policies/cloudresourcemanager.googleapis.com%2Fprojects%2Fmy-
-      project/denypolicies/my-deny-policy`. For organizations and folders, use
-      the numeric ID in the full resource name. For projects, requests can use
-      the alphanumeric or the numeric ID. Responses always contain the numeric
-      ID.
-    rules: A list of rules that specify the behavior of the `Policy`. All of
-      the rules should be of the `kind` specified in the `Policy`.
-    uid: Immutable. The globally unique ID of the `Policy`. Assigned
-      automatically when the `Policy` is created.
-    updateTime: Output only. The time when the `Policy` was last updated.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class AnnotationsValue(_messages.Message):
-    r"""A key-value map to store arbitrary metadata for the `Policy`. Keys can
-    be up to 63 characters. Values can be up to 255 characters.
-
-    Messages:
-      AdditionalProperty: An additional property for a AnnotationsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type AnnotationsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a AnnotationsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  kind = _messages.StringField(6)
-  name = _messages.StringField(7)
-  rules = _messages.MessageField('GoogleIamV2PolicyRule', 8, repeated=True)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
-
-
-class GoogleIamV2PolicyRule(_messages.Message):
-  r"""A single rule in a `Policy`.
-
-  Fields:
-    denyRule: A rule for a deny policy.
-    description: A user-specified description of the rule. This value can be
-      up to 256 characters.
-  """
-
-  denyRule = _messages.MessageField('GoogleIamV2DenyRule', 1)
-  description = _messages.StringField(2)
-
-
 class GoogleIdentityAccesscontextmanagerV1AccessLevel(_messages.Message):
   r"""An `AccessLevel` is a label that can be applied to requests to Google
   Cloud services, along with a list of requirements necessary for the label to
@@ -3892,20 +3780,6 @@ class GoogleIdentityAccesscontextmanagerV1VpcSubNetwork(_messages.Message):
   vpcIpSubnetworks = _messages.StringField(2, repeated=True)
 
 
-class IamDenyPolicyInfo(_messages.Message):
-  r"""The IAM Deny policies and its attached resource.
-
-  Fields:
-    policy: A deny policy that is directly attached to attached_resource.
-    resource: The full resource name the policy is directly attached to in
-      full resource name format. For example:
-      //cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER
-  """
-
-  policy = _messages.MessageField('GoogleIamV2Policy', 1)
-  resource = _messages.StringField(2)
-
-
 class IamPolicyAnalysis(_messages.Message):
   r"""An analysis message to group the query and results.
 
@@ -4336,33 +4210,6 @@ class ListAssetsResponse(_messages.Message):
   assets = _messages.MessageField('Asset', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   readTime = _messages.StringField(3)
-
-
-class ListEffectiveIamDenyPoliciesResponse(_messages.Message):
-  r"""The response message for `ListEffectiveIamDenyPolicies`.
-
-  Fields:
-    effectiveIamDenyPolicies: The effective IAM deny policies for the
-      ListEffectiveIamDenyPoliciesRequest.full_resource_name. These include
-      the IAM deny policies set on the
-      ListEffectiveIamDenyPoliciesRequest.full_resource_name and those
-      inherited from its parents and ancestors. Note that these deny policies
-      are not filtered according to the resource type of the
-      ListEffectiveIamDenyPoliciesRequest.full_resource_name. IAM deny
-      policies for the same IamDenyPolicyInfo.attached_resource are grouped
-      (that is, are listed next to each other). These IAM deny policies are
-      hierarchically ordered by IamDenyPolicyInfo.attached_resource starting
-      from ListEffectiveIamDenyPoliciesRequest.full_resource_name itself to
-      its parents and ancestors, such that iam_deny_policies[i]'s
-      DenyPolicyInfo.attached_resource is either the child of
-      iam_deny_policies[i+1]'s DenyPolicyInfo.attached_resource or they are
-      the same resource, if iam_deny_policies[i+1] exists.
-    nextPageToken: Token to retrieve the next page of results. Set to empty if
-      there are no remaining results
-  """
-
-  effectiveIamDenyPolicies = _messages.MessageField('IamDenyPolicyInfo', 1, repeated=True)
-  nextPageToken = _messages.StringField(2)
 
 
 class ListFeedsResponse(_messages.Message):

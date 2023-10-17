@@ -7653,6 +7653,20 @@ class ComputeBackendBucketsDeleteSignedUrlKeyRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputeBackendBucketsGetIamPolicyRequest(_messages.Message):
+  r"""A ComputeBackendBucketsGetIamPolicyRequest object.
+
+  Fields:
+    optionsRequestedPolicyVersion: Requested IAM Policy version.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  optionsRequestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
 class ComputeBackendBucketsGetRequest(_messages.Message):
   r"""A ComputeBackendBucketsGetRequest object.
 
@@ -7805,6 +7819,36 @@ class ComputeBackendBucketsSetEdgeSecurityPolicyRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
+
+
+class ComputeBackendBucketsSetIamPolicyRequest(_messages.Message):
+  r"""A ComputeBackendBucketsSetIamPolicyRequest object.
+
+  Fields:
+    globalSetPolicyRequest: A GlobalSetPolicyRequest resource to be passed as
+      the request body.
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+  """
+
+  globalSetPolicyRequest = _messages.MessageField('GlobalSetPolicyRequest', 1)
+  project = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+
+
+class ComputeBackendBucketsTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeBackendBucketsTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeBackendBucketsUpdateRequest(_messages.Message):
@@ -8275,6 +8319,21 @@ class ComputeBackendServicesSetSecurityPolicyRequest(_messages.Message):
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 4)
+
+
+class ComputeBackendServicesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeBackendServicesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  resource = _messages.StringField(2, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 3)
 
 
 class ComputeBackendServicesUpdateRequest(_messages.Message):
@@ -19832,6 +19891,23 @@ class ComputeRegionBackendServicesSetSecurityPolicyRequest(_messages.Message):
   region = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
   securityPolicyReference = _messages.MessageField('SecurityPolicyReference', 5)
+
+
+class ComputeRegionBackendServicesTestIamPermissionsRequest(_messages.Message):
+  r"""A ComputeRegionBackendServicesTestIamPermissionsRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    region: The name of the region for this request.
+    resource: Name or id of the resource for this request.
+    testPermissionsRequest: A TestPermissionsRequest resource to be passed as
+      the request body.
+  """
+
+  project = _messages.StringField(1, required=True)
+  region = _messages.StringField(2, required=True)
+  resource = _messages.StringField(3, required=True)
+  testPermissionsRequest = _messages.MessageField('TestPermissionsRequest', 4)
 
 
 class ComputeRegionBackendServicesUpdateRequest(_messages.Message):

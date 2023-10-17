@@ -186,3 +186,15 @@ def ValidateMutexOnSourceAndParent(args):
         "Only provide a full resource name "
         "(organizations/123/sources/456) or a --parent flag, not both."
     )
+
+
+def ExtractSecurityMarksFromResponse(response, args):
+  """Returns security marks from finding response."""
+  del args
+  list_finding_response = list(response)
+  if len(list_finding_response) > 1:
+    raise errors.InvalidSCCInputError(
+        "ListFindingResponse must only return one finding since it is "
+        "filtered by Finding Name.")
+  for finding_result in list_finding_response:
+    return finding_result.finding.securityMarks

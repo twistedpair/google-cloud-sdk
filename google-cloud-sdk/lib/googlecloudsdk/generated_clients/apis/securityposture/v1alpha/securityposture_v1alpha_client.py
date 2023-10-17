@@ -636,7 +636,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a posture in a given organization and location. User must provide revision_id to retrieve a specific revision of the resource. NOT_FOUND error is returned if the revision_id or the Posture name does not exist. In case revision_id is not provided then the latest Posture revision by create_time is returned.
+      r"""Gets a posture in a given organization and location. User must provide revision_id to retrieve a specific revision of the resource. NOT_FOUND error is returned if the revision_id or the Posture name does not exist. In case revision_id is not provided then the latest Posture revision by UpdateTime is returned.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesGetRequest) input message
@@ -663,7 +663,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""========================== Postures ========================== Lists Postures in a given organization and location. In case a posture has multiple revisions, the latest revision as per CreateTime will be returned.
+      r"""========================== Postures ========================== Lists Postures in a given organization and location. In case a posture has multiple revisions, the latest revision as per UpdateTime will be returned.
 
       Args:
         request: (SecuritypostureOrganizationsLocationsPosturesListRequest) input message

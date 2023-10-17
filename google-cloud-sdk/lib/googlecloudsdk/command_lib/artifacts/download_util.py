@@ -20,10 +20,11 @@ from __future__ import unicode_literals
 
 import os
 import shutil
+import sys
 
 from apitools.base.py import transfer
 from googlecloudsdk.command_lib.artifacts import requests
-from googlecloudsdk.core import exceptions
+from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import transports
 
@@ -38,7 +39,8 @@ def Download(tmp_path, final_path, file_res_name, allow_overwrite):
 
   # Only move the file to the user specified path if overwrites are allowed.
   if os.path.exists(final_path) and not allow_overwrite:
-    raise exceptions.Error('File {} already exists.'.format(final_path))
+    log.error('File {} already exists.'.format(final_path))
+    sys.exit(1)
 
   m = requests.GetMessages()
   request = m.ArtifactregistryMediaDownloadRequest(name=file_res_name)
@@ -64,4 +66,6 @@ def Download(tmp_path, final_path, file_res_name, allow_overwrite):
     finally:
       d.stream.close()
 
-  shutil.move(tmp_path, final_path)
+  # Move the file from tmp_path to the final_path for single file downloads.
+  if tmp_path != final_path:
+    shutil.move(tmp_path, final_path)

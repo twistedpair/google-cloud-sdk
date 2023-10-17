@@ -455,6 +455,9 @@ class OperationMetadata(_messages.Message):
     apiVersion: Output only. API version used to start the operation.
     createTime: Output only. The time the operation was created.
     endTime: Output only. The time the operation finished running.
+    errorMessage: Output only. This is a output only optional field which will
+      be filled only in cases where PostureDeployments enter failure states
+      like UPDATE_FAILED or CREATE_FAILED or DELETE_FAILED.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have been
       cancelled successfully have Operation.error value with a
@@ -469,10 +472,11 @@ class OperationMetadata(_messages.Message):
   apiVersion = _messages.StringField(1)
   createTime = _messages.StringField(2)
   endTime = _messages.StringField(3)
-  requestedCancellation = _messages.BooleanField(4)
-  statusMessage = _messages.StringField(5)
-  target = _messages.StringField(6)
-  verb = _messages.StringField(7)
+  errorMessage = _messages.StringField(4)
+  requestedCancellation = _messages.BooleanField(5)
+  statusMessage = _messages.StringField(6)
+  target = _messages.StringField(7)
+  verb = _messages.StringField(8)
 
 
 class OrgPolicyCannedConstraint(_messages.Message):
@@ -685,6 +689,9 @@ class PostureDeployment(_messages.Message):
       loop for concurrency control. Not setting the `etag` in a
       `UpdatePostureDeployment` request will result in an unconditional write
       of the `PostureDeployment`.
+    failureMessage: Output only. This is a output only optional field which
+      will be filled in case where PostureDeployment enters a failure state
+      like UPDATE_FAILED or CREATE_FAILED or DELETE_FAILED.
     name: Required. The name of this PostureDeployment resource, in the format
       of projects/{project_id}/locations/{location_id}/postureDeployments/{pos
       tureDeployment}.
@@ -758,13 +765,14 @@ class PostureDeployment(_messages.Message):
   desiredPostureId = _messages.StringField(4)
   desiredPostureRevisionId = _messages.StringField(5)
   etag = _messages.StringField(6)
-  name = _messages.StringField(7)
-  postureId = _messages.StringField(8)
-  postureRevisionId = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  targetResource = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  failureMessage = _messages.StringField(7)
+  name = _messages.StringField(8)
+  postureId = _messages.StringField(9)
+  postureRevisionId = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  targetResource = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class PostureTemplate(_messages.Message):

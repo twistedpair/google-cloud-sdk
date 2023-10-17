@@ -428,9 +428,15 @@ class DatabaseConfig(_messages.Message):
       or db-n1-standard-16. If not specified, db-n1-standard-2 will be used.
       Supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-*.*.*.
+    zone: Optional. The Compute Engine zone where the Airflow database is
+      created. If zone is provided, it must be in the region selected for the
+      environment. If zone is not provided, a zone is automatically selected.
+      The zone can only be set during environment creation. Supported for
+      Cloud Composer environments in versions composer-2.*.*-airflow-*.*.*.
   """
 
   machineType = _messages.StringField(1)
+  zone = _messages.StringField(2)
 
 
 class DatabaseFailoverRequest(_messages.Message):

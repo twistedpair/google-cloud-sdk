@@ -45,6 +45,12 @@ class ReplicationStrategy(enum.Enum):
   ASYNC_TURBO = 'ASYNC_TURBO'
 
 
+class RetentionMode(enum.Enum):
+  """Enum class for specifying the retention mode."""
+  LOCKED = 'LOCKED'
+  UNLOCKED = 'UNLOCKED'
+
+
 def get_object_state_from_flags(flag_args):
   """Returns object version to query based on user flags."""
   if getattr(flag_args, 'soft_deleted', False):
@@ -491,6 +497,55 @@ def add_read_paths_from_stdin_flag(
 ):
   parser.add_argument(
       '--read-paths-from-stdin', '-I', action='store_true', help=help_text
+  )
+
+
+def add_retention_flags(parser, is_update=False, hidden=True):
+  """Adds the flags for object retention lock.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+    is_update (bool): True if flags are for the objects update command.
+    hidden (bool): True if flags should be hidden.
+  """
+  group_help = 'Flags for setting object retention.'
+  if is_update:
+    subject = 'object'
+    retention_group = parser.add_group(
+        category='RETENTION',
+        mutex=True,
+        hidden=hidden
+    )
+    retention_group.add_argument(
+        '--clear-retention',
+        action='store_true',
+        help='Clears object retention settings and unlocks the policy.',
+        hidden=hidden
+    )
+    retention_set_group = retention_group.add_group(help=group_help)
+  else:
+    subject = 'destination object'
+    retention_set_group = parser.add_group(
+        category='RETENTION',
+        hidden=hidden,
+        help=group_help
+    )
+
+  retention_set_group.add_argument(
+      '--retention-mode',
+      choices=sorted([option.value for option in RetentionMode]),
+      help=('Sets the {} retention mode to either LOCKED or UNLOCKED. When'
+            ' retention mode is LOCKED, the retain until time can only be'
+            ' increased.'.format(subject)),
+      hidden=hidden,
+  )
+  retention_set_group.add_argument(
+      '--retain-until',
+      type=arg_parsers.Datetime.Parse,
+      help=('Ensures the {} is retained until the specified time in RFC 3339'
+            ' format.'.format(subject)),
+      metavar='DATETIME',
+      hidden=hidden,
   )
 
 

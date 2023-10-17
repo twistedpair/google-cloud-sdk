@@ -24,11 +24,11 @@ import enum
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import errors
+from googlecloudsdk.command_lib.storage import folder_util
 from googlecloudsdk.command_lib.storage import plurality_checkable_iterator
 from googlecloudsdk.command_lib.storage import wildcard_iterator
 from googlecloudsdk.command_lib.storage.resources import resource_reference
 from googlecloudsdk.command_lib.storage.resources import shim_format_util
-
 import six
 
 
@@ -175,6 +175,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
       fetch_encrypted_object_hashes=False,
       halt_on_empty_response=True,
       include_etag=False,
+      include_managed_folders=False,
       next_page_token=None,
       object_state=None,
       readable_sizes=False,
@@ -198,6 +199,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         See CloudApi for details.
       include_etag (bool): Print etag string of resource, depending on other
         settings.
+      include_managed_folders (bool): Includes managed folders in list results.
       next_page_token (str|None): Used to resume LIST calls.
       object_state (cloud_api.ObjectState): Versions of objects to query.
       readable_sizes (bool): Convert bytes to a more human readable format for
@@ -216,6 +218,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
     self._fetch_encrypted_object_hashes = fetch_encrypted_object_hashes
     self._halt_on_empty_response = halt_on_empty_response
     self._include_etag = include_etag
+    self._include_managed_folders = include_managed_folders
     self._next_page_token = next_page_token
     self._object_state = object_state
     self._readable_sizes = readable_sizes
@@ -246,6 +249,15 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
     fields_scope = _translate_display_detail_to_fields_scope(
         self._display_detail, is_bucket_listing=False
     )
+    if self._include_managed_folders:
+      # Not using LIST_WITH_OBJECTS here since it adds extra managed folder
+      # GET/LIST calls. This is helpful if a delimiter isn't provided with the
+      # request, but since this call is used for recursion, which traverses each
+      # layer of hierarchy using a delimiter, we do not need these calls.
+      managed_folder_setting = folder_util.ManagedFolderSetting.LIST_AS_PREFIXES
+    else:
+      managed_folder_setting = folder_util.ManagedFolderSetting.DO_NOT_LIST
+
     iterator = wildcard_iterator.CloudWildcardIterator(
         new_cloud_url,
         error_on_missing_key=False,
@@ -253,6 +265,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
         fetch_encrypted_object_hashes=self._fetch_encrypted_object_hashes,
         fields_scope=fields_scope,
         halt_on_empty_response=self._halt_on_empty_response,
+        managed_folder_setting=managed_folder_setting,
         next_page_token=self._next_page_token,
         object_state=self._object_state,
     )
@@ -378,6 +391,12 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
     fields_scope = _translate_display_detail_to_fields_scope(
         self._display_detail, is_bucket_listing=raw_cloud_url.is_provider()
     )
+
+    if self._include_managed_folders:
+      managed_folder_setting = folder_util.ManagedFolderSetting.LIST_AS_PREFIXES
+    else:
+      managed_folder_setting = folder_util.ManagedFolderSetting.DO_NOT_LIST
+
     resources = plurality_checkable_iterator.PluralityCheckableIterator(
         wildcard_iterator.CloudWildcardIterator(
             raw_cloud_url,
@@ -387,6 +406,7 @@ class BaseListExecutor(six.with_metaclass(abc.ABCMeta)):
             fields_scope=fields_scope,
             get_bucket_metadata=self._buckets_flag,
             halt_on_empty_response=self._halt_on_empty_response,
+            managed_folder_setting=managed_folder_setting,
             next_page_token=self._next_page_token,
             object_state=self._object_state,
         )

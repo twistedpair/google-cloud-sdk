@@ -21,22 +21,44 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 
-def AddMaxWait(parser,
-               default_max_wait,
-               help_text="Time to synchronously wait for the operation to "
-               "complete, after which the operation continues asynchronously. "
-               "Ignored if --no-async isn't specified. "
-               "See $ gcloud topic datetimes for information on time formats."):
+def AddInstance(
+    parser, help_text="The Cloud Git instance used to create the repo"
+):
+  parser.add_argument(
+      "--instance", dest="instance", required=True, help=help_text
+  )
+
+
+def AddKmsKey(parser, help_text="KMS key used to encrypt instance optionally."):
+  parser.add_argument(
+      "--kms-key", dest="kms_key", required=False, help=help_text
+  )
+
+
+def AddMaxWait(
+    parser,
+    default_max_wait,
+    help_text="Time to synchronously wait for the operation to complete, after which the operation continues asynchronously. Ignored if `--no-async` isn't specified. See $ gcloud topic datetimes for information on time formats.",
+):
   parser.add_argument(
       "--max-wait",
       dest="max_wait",
       required=False,
       default=default_max_wait,
       help=help_text,
-      type=arg_parsers.Duration())
+      type=arg_parsers.Duration(),
+  )
 
-
-def AddKmsKey(parser, help_text="KMS key used to encrypt instance optionally."):
+def AddIsPrivate(parser, help_text="Bool indicator for private instance."):
   parser.add_argument(
-      "--kms-key", dest="kms_key", required=False, help=help_text
+      "--is-private",
+      dest="is_private",
+      action="store_true",
+      required=False,
+      help=help_text,
+  )
+
+def AddCAPool(parser, help_text="CA Pool path for private instance."):
+  parser.add_argument(
+      "--ca-pool", dest="ca_pool", required=False, help=help_text
   )

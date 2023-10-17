@@ -155,12 +155,11 @@ def AddKmsKeyArg(parser):
       required=False)
 
 
-def GetTierArg(messages, api_version):
+def GetTierArg(messages):
   """Adds a --tier flag to the given parser.
 
   Args:
     messages: The messages module.
-    api_version: filestore_client api version.
 
   Returns:
     the choice arg.
@@ -185,30 +184,18 @@ def GetTierArg(messages, api_version):
       ),
       'HIGH_SCALE_SSD': (
           'high-scale-ssd',
-          """High Scale instances offer NFS storage\
-          system with expanded capacity and performance scaling\
-          capabilities.""",
+          """High Scale SSD instance, an alias for ZONAL.
+            Use ZONAL instead whenever possible.""",
       ),
-  }
-  if (
-      api_version == filestore_client.ALPHA_API_VERSION
-      or api_version == filestore_client.BETA_API_VERSION
-  ):
-    custom_mappings['HIGH_SCALE_SSD'] = (
-        'high-scale-ssd',
-        """High Scale instances offer NFS storage\
-          system with expanded capacity and performance scaling\
-          capabilities.
-          Use ZONAL instead whenever possible.""",
-    )
-    custom_mappings['ZONAL'] = (
-        'zonal',
-        """Zonal instances offer NFS storage\
+      'ZONAL': (
+          'zonal',
+          """Zonal instances offer NFS storage\
             system suitable for high performance computing application\
             requirements. It offers fast performance that scales\
             with capacity and allows you to grow and shrink\
             capacity.""",
-    )
+      ),
+  }
   tier_arg = arg_utils.ChoiceEnumMapper(
       '--tier',
       messages.Instance.TierValueValuesEnum,
@@ -410,6 +397,9 @@ unit is specified, GB is assumed. Acceptable instance capacities for each tier a
 * BASIC_HDD: 1TB-63.9TB in 1GB increments or its multiples.
 * BASIC_SSD: 2.5TB-63.9TB in 1GB increments or its multiples.
 * HIGH_SCALE_SSD: 10TB-100TB in 2.5TB increments or its multiples.
+* ZONAL: 1TB-100TB:
+  - 1TB-9.75TB in 256GB increments or its multiples.
+  - 10TB-100TB in 2.5TB increments or its multiples.
 * ENTERPRISE: 1TB-10TB in 256GB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
@@ -512,7 +502,7 @@ def AddInstanceCreateArgs(parser, api_version):
   labels_util.AddCreateLabelsFlags(parser)
   AddNetworkArg(parser)
   messages = filestore_client.GetMessages(version=api_version)
-  GetTierArg(messages, api_version).choice_arg.AddToParser(parser)
+  GetTierArg(messages).choice_arg.AddToParser(parser)
   if api_version == filestore_client.BETA_API_VERSION:
     GetProtocolArg(messages).choice_arg.AddToParser(parser)
     AddManagedActiveDirectoryArg(parser)

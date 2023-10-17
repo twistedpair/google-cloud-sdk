@@ -2738,6 +2738,7 @@ class TaskInstance(_messages.Message):
     dagRunId: The DAG run ID the task instance belongs to.
     endDate: Timestamp when the task instance finished execution.
     executionDate: Execution date for the task.
+    externalExecutorId: ID of the external executor.
     hostname: Hostname of the machine or pod the task runs on.
     id: The task instance ID. It is the same as the task ID of a DAG.
     isDynamicallyMapped: Whether this TaskInstance is dynamically mapped.
@@ -2803,21 +2804,22 @@ class TaskInstance(_messages.Message):
   dagRunId = _messages.StringField(2)
   endDate = _messages.StringField(3)
   executionDate = _messages.StringField(4)
-  hostname = _messages.StringField(5)
-  id = _messages.StringField(6)
-  isDynamicallyMapped = _messages.BooleanField(7)
-  mapIndex = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  maxTries = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  name = _messages.StringField(10)
-  pool = _messages.StringField(11)
-  priorityWeight = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  queue = _messages.StringField(13)
-  queuedDttm = _messages.StringField(14)
-  startDate = _messages.StringField(15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  taskId = _messages.StringField(17)
-  taskType = _messages.StringField(18)
-  tryNumber = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  externalExecutorId = _messages.StringField(5)
+  hostname = _messages.StringField(6)
+  id = _messages.StringField(7)
+  isDynamicallyMapped = _messages.BooleanField(8)
+  mapIndex = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  maxTries = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  name = _messages.StringField(11)
+  pool = _messages.StringField(12)
+  priorityWeight = _messages.IntegerField(13, variant=_messages.Variant.INT32)
+  queue = _messages.StringField(14)
+  queuedDttm = _messages.StringField(15)
+  startDate = _messages.StringField(16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  taskId = _messages.StringField(18)
+  taskType = _messages.StringField(19)
+  tryNumber = _messages.IntegerField(20, variant=_messages.Variant.INT32)
 
 
 class TaskLogsRetentionConfig(_messages.Message):

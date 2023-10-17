@@ -101,11 +101,14 @@ class FileLoadError(Error):
     super(FileLoadError, self).__init__(e, verb='load', f=f)
 
 
-def load(stream,
-         file_hint=None,
-         round_trip=False,
-         location_value=False,
-         version=VERSION_1_1):
+def load(
+    stream,
+    file_hint=None,
+    round_trip=False,
+    location_value=False,
+    version=VERSION_1_1,
+    preserve_quotes=None,
+):
   """Loads YAML from the given steam.
 
   Args:
@@ -118,10 +121,11 @@ def load(stream,
     round_trip: bool, True to use the RoundTripLoader which preserves ordering
       and line numbers.
     location_value: bool, True to use a loader that preserves ordering and line
-      numbers for all values. Each YAML data item is an object with value and
-      lc attributes, where lc.line and lc.col are the line and column location
-      for the item in the YAML source file.
+      numbers for all values. Each YAML data item is an object with value and lc
+      attributes, where lc.line and lc.col are the line and column location for
+      the item in the YAML source file.
     version: str, YAML version to use when parsing.
+    preserve_quotes: bool, True preserve all the quotes.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -133,7 +137,9 @@ def load(stream,
     if location_value:
       return yaml_location_value.LocationValueLoad(stream)
     loader = yaml.RoundTripLoader if round_trip else yaml.SafeLoader
-    return yaml.load(stream, loader, version=version)
+    return yaml.load(
+        stream, loader, version=version, preserve_quotes=preserve_quotes
+    )
   except yaml.YAMLError as e:
     raise YAMLParseError(e, f=file_hint)
 
@@ -163,10 +169,13 @@ def load_all(stream, file_hint=None, version=VERSION_1_1, round_trip=False):
     raise YAMLParseError(e, f=file_hint)
 
 
-def load_path(path,
-              round_trip=False,
-              location_value=False,
-              version=VERSION_1_1):
+def load_path(
+    path,
+    round_trip=False,
+    location_value=False,
+    version=VERSION_1_1,
+    preserve_quotes=None,
+):
   """Loads YAML from the given file path.
 
   Args:
@@ -174,10 +183,11 @@ def load_path(path,
     round_trip: bool, True to use the RoundTripLoader which preserves ordering
       and line numbers.
     location_value: bool, True to use a loader that preserves ordering and line
-      numbers for all values. Each YAML data item is an object with value and
-      lc attributes, where lc.line and lc.col are the line and column location
-      for the item in the YAML source file.
+      numbers for all values. Each YAML data item is an object with value and lc
+      attributes, where lc.line and lc.col are the line and column location for
+      the item in the YAML source file.
     version: str, YAML version to use when parsing.
+    preserve_quotes: bool, True preserve all the quotes.
 
   Raises:
     YAMLParseError: If the data could not be parsed.
@@ -193,7 +203,9 @@ def load_path(path,
           file_hint=path,
           round_trip=round_trip,
           location_value=location_value,
-          version=version)
+          version=version,
+          preserve_quotes=preserve_quotes,
+      )
   except files.Error as e:
     raise FileLoadError(e, f=path)
 

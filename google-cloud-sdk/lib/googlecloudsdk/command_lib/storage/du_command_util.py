@@ -20,13 +20,10 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import list_util
-from googlecloudsdk.command_lib.storage import ls_command_util
-from googlecloudsdk.command_lib.storage.list_util import BaseFormatWrapper
-from googlecloudsdk.command_lib.storage.list_util import BaseListExecutor
 from googlecloudsdk.command_lib.storage.resources import shim_format_util
 
 
-class _ObjectFormatWrapper(BaseFormatWrapper):
+class _ObjectFormatWrapper(list_util.BaseFormatWrapper):
   """For formatting how obejects are printed when listed by du."""
 
   def __str__(self):
@@ -43,7 +40,7 @@ class _ObjectFormatWrapper(BaseFormatWrapper):
     )
 
 
-class _ContainerSummaryFormatWrapper(BaseFormatWrapper):
+class _ContainerSummaryFormatWrapper(list_util.BaseFormatWrapper):
   """For formatting how containers are printed when listed by du."""
 
   def __init__(
@@ -54,10 +51,10 @@ class _ContainerSummaryFormatWrapper(BaseFormatWrapper):
       readable_sizes=False,
       use_gsutil_style=False,
   ):
-    """See BaseFormatWrapper class for function doc strings."""
+    """See list_util.BaseFormatWrapper class for function doc strings."""
     super(_ContainerSummaryFormatWrapper, self).__init__(
         resource,
-        display_detail=ls_command_util.DisplayDetail.SHORT,
+        display_detail=list_util.DisplayDetail.SHORT,
         object_state=object_state,
         readable_sizes=readable_sizes,
         use_gsutil_style=use_gsutil_style,
@@ -96,7 +93,7 @@ class _BucketSummaryFormatWrapper(_ContainerSummaryFormatWrapper):
       return ''
 
 
-class DuExecutor(BaseListExecutor):
+class DuExecutor(list_util.BaseListExecutor):
   """Helper class for the Du command."""
 
   def __init__(
@@ -110,7 +107,7 @@ class DuExecutor(BaseListExecutor):
       use_gsutil_style=False,
       zero_terminator=False,
   ):
-    """See BaseListExecutor class for function doc strings."""
+    """See list_util.BaseListExecutor class for function doc strings."""
 
     super(DuExecutor, self).__init__(
         cloud_urls=cloud_urls,

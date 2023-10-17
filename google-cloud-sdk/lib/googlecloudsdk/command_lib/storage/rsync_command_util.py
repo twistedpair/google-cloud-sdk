@@ -49,6 +49,11 @@ _CSV_COLUMNS_COUNT = 10
 _NO_MATCHES_MESSAGE = 'Did not find existing container at: {}'
 
 
+# Used to distinguish files containing objects and files containing managed
+# folders. Added to a file name which is hashed.
+_MANAGED_FOLDER_PREFIX = 'managed_folders'
+
+
 def get_existing_or_placeholder_destination_resource(
     path, ignore_symlinks=True
 ):
@@ -98,13 +103,17 @@ def get_existing_container_resource(path, ignore_symlinks=True):
   return resource
 
 
-def get_hashed_list_file_path(list_file_name, chunk_number=None):
+def get_hashed_list_file_path(
+    list_file_name, chunk_number=None, is_managed_folder_list=False
+):
   """Hashes and returns a list file path.
 
   Args:
     list_file_name (str): The list file name prior to it being hashed.
     chunk_number (int|None): The number of the chunk fetched if file represents
       chunk of total list.
+    is_managed_folder_list (bool): If True, the file will contain managed folder
+      resources instead of object resources, and should have a different name.
 
   Returns:
     str: Final (hashed) list file path.
@@ -115,8 +124,14 @@ def get_hashed_list_file_path(list_file_name, chunk_number=None):
   delimiterless_file_name = tracker_file_util.get_delimiterless_file_path(
       list_file_name
   )
+
+  # Added as a prefix, since a suffix of delimiterless_file_name is added to the
+  # hashed file name.
+  managed_folder_prefix = (
+      _MANAGED_FOLDER_PREFIX if is_managed_folder_list else ''
+  )
   hashed_file_name = tracker_file_util.get_hashed_file_name(
-      delimiterless_file_name
+      managed_folder_prefix + delimiterless_file_name
   )
 
   if chunk_number is None:
@@ -145,9 +160,9 @@ def get_csv_line_from_resource(resource):
   """Builds a line for files listing the contents of the source and destination.
 
   Args:
-    resource (FileObjectResource|ObjectResource): Contains item URL and
-      metadata, which can be generated from the local file in the case of
-      FileObjectResource.
+    resource (FileObjectResource|ObjectResource|ManagedFolderResource): Contains
+      item URL and metadata, which can be generated from the local file in the
+      case of FileObjectResource.
 
   Returns:
     String formatted as "URL,etag,size,atime,mtime,uid,gid,mode,crc32c,md5".
@@ -156,6 +171,11 @@ def get_csv_line_from_resource(resource):
       "mode" is in base-eight (octal) form, e.g. "440".
   """
   url = resource.storage_url.url_string
+  if isinstance(resource, resource_reference.ManagedFolderResource):
+    # Managed folders are not associated with any metadata we can use in diffs,
+    # other than their name.
+    return url
+
   if isinstance(resource, resource_reference.FileObjectResource):
     etag = None
     size = None
@@ -205,21 +225,33 @@ def get_csv_line_from_resource(resource):
   return ','.join(['' if x is None else six.text_type(x) for x in line_values])
 
 
-def parse_csv_line_to_resource(line):
+def parse_csv_line_to_resource(line, is_managed_folder=False):
   """Parses a line from files listing of rsync source and destination.
 
   Args:
     line (str|None): CSV line. See `get_csv_line_from_resource` docstring.
+    is_managed_folder (bool): If True, returns a managed folder resource for
+      cloud URLs. Otherwise, returns an object URL.
 
   Returns:
-    FileObjectResource|ObjectResource|None: Resource containing data needed for
-      rsync if data line given.
+    FileObjectResource|ManagedFolderResource|ObjectResource|None: Resource
+      containing data needed for rsync if data line given.
   """
   if not line:
     return None
   # Capping splits prevents commas in URL from being caught.
+  line_information = line.rstrip().rsplit(',', _CSV_COLUMNS_COUNT)
+  url_string = line_information[0]
+  url_object = storage_url.storage_url_from_string(url_string)
+
+  if isinstance(url_object, storage_url.FileUrl):
+    return resource_reference.FileObjectResource(url_object)
+
+  if is_managed_folder:
+    return resource_reference.ManagedFolderResource(url_object)
+
   (
-      url_string,
+      _,
       etag_string,
       size_string,
       storage_class_string,
@@ -232,9 +264,6 @@ def parse_csv_line_to_resource(line):
       md5_string,
   ) = line.rstrip().rsplit(',', _CSV_COLUMNS_COUNT)
 
-  url_object = storage_url.storage_url_from_string(url_string)
-  if isinstance(url_object, storage_url.FileUrl):
-    return resource_reference.FileObjectResource(url_object)
   cloud_object = resource_reference.ObjectResource(
       url_object,
       etag=etag_string if etag_string else None,
@@ -398,50 +427,52 @@ class _IterateResource(enum.Enum):
 
 def _get_copy_task(
     user_request_args,
-    source_object,
-    posix_to_set,
+    source_resource,
+    posix_to_set=None,
     source_container=None,
-    destination_object=None,
+    destination_resource=None,
     destination_container=None,
     dry_run=False,
     skip_unsupported=False,
 ):
   """Generates copy tasks with generic settings and logic."""
   if skip_unsupported:
-    unsupported_type = resource_util.get_unsupported_object_type(source_object)
+    unsupported_type = resource_util.get_unsupported_object_type(
+        source_resource
+    )
     if unsupported_type:
       log.status.Print(
           resource_util.UNSUPPORTED_OBJECT_WARNING_FORMAT.format(
-              source_object, unsupported_type.value
+              source_resource, unsupported_type.value
           )
       )
       return
 
-  if destination_object:
-    copy_destination = destination_object
+  if destination_resource:
+    copy_destination = destination_resource
   else:
-    # Must have destination_container if not destination_object.
+    # Must have destination_container if not destination_resource.
     copy_destination = _get_copy_destination_resource(
-        source_object, source_container, destination_container
+        source_resource, source_container, destination_container
     )
   if dry_run:
-    if isinstance(source_object, resource_reference.FileObjectResource):
+    if isinstance(source_resource, resource_reference.FileObjectResource):
       try:
-        with files.BinaryFileReader(source_object.storage_url.object_name):
+        with files.BinaryFileReader(source_resource.storage_url.object_name):
           pass
       except:  # pylint: disable=broad-except
         log.error(
-            'Could not open {}'.format(source_object.storage_url.object_name)
+            'Could not open {}'.format(source_resource.storage_url.object_name)
         )
         raise
     log.status.Print(
-        'Would copy {} to {}'.format(source_object, copy_destination)
+        'Would copy {} to {}'.format(source_resource, copy_destination)
     )
     return
 
-  if isinstance(source_object, resource_reference.CloudResource) and (
+  if isinstance(source_resource, resource_reference.CloudResource) and (
       isinstance(destination_container, resource_reference.CloudResource)
-      or isinstance(destination_object, resource_reference.CloudResource)
+      or isinstance(destination_resource, resource_reference.CloudResource)
   ):
     if (
         user_request_args.resource_args
@@ -454,7 +485,7 @@ def _get_copy_task(
     fields_scope = None
 
   return copy_task_factory.get_copy_task(
-      source_object,
+      source_resource,
       copy_destination,
       do_not_decompress=True,
       fetch_source_fields_scope=fields_scope,
@@ -464,7 +495,7 @@ def _get_copy_task(
   )
 
 
-def _compare_equal_urls_to_get_task_and_iteration_instruction(
+def _compare_equal_object_urls_to_get_task_and_iteration_instruction(
     user_request_args,
     source_object,
     destination_object,
@@ -475,8 +506,6 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
     skip_unsupported=False,
 ):
   """Similar to get_task_and_iteration_instruction except for equal URLs."""
-  if user_request_args.no_clobber:
-    return (None, _IterateResource.SOURCE)
 
   destination_posix = posix_util.get_posix_attributes_from_resource(
       destination_object
@@ -510,7 +539,7 @@ def _compare_equal_urls_to_get_task_and_iteration_instruction(
             source_object,
             posix_to_set,
             destination_posix,
-            destination_object=destination_object,
+            destination_resource=destination_object,
             dry_run=dry_run,
             skip_unsupported=skip_unsupported,
         ),
@@ -591,15 +620,15 @@ def _get_comparison_url(object_resource, container_resource):
 
 
 def _get_copy_destination_resource(
-    source_object, source_container, destination_container
+    source_resource, source_container, destination_container
 ):
   """Gets destination resource needed for copy tasks."""
   containerless_source_string = _get_url_string_minus_base_container(
-      source_object, source_container
+      source_resource, source_container
   )
   destination_delimited_containerless_source_string = (
       containerless_source_string.replace(
-          source_object.storage_url.delimiter,
+          source_resource.storage_url.delimiter,
           destination_container.storage_url.delimiter,
       )
   )
@@ -624,9 +653,9 @@ def _print_would_remove(resource):
 
 def _get_task_and_iteration_instruction(
     user_request_args,
-    source_object,
+    source_resource,
     source_container,
-    destination_object,
+    destination_resource,
     destination_container,
     compare_only_hashes=False,
     delete_unmatched_destination_objects=False,
@@ -639,13 +668,14 @@ def _get_task_and_iteration_instruction(
 
   Args:
     user_request_args (UserRequestArgs): User flags.
-    source_object (FileObjectResource|ObjectResource|None): Source resource for
-      comparison. `None` indicates no sources left to copy.
+    source_resource: Source resource for comparison, a FileObjectResource,
+      ManagedFolderResource, ObjectResource, or None. `None` indicates no
+      sources left to copy.
     source_container (FileDirectoryResource|PrefixResource|BucketResource):
-      Stripped from beginning of source_object to get comparison URL.
-    destination_object (FileObjectResource|ObjectResource|None): Destination
-      resource for comparison. `None` indicates all remaining source resources
-      are new.
+      Stripped from beginning of source_resource to get comparison URL.
+    destination_resource: Destination resource for comparison, a
+      FileObjectResource, ManagedFolderResource, ObjectResource, or None. `None`
+      indicates all remaining source resources are new.
     destination_container (FileDirectoryResource|PrefixResource|BucketResource):
       If a copy task is generated for a source item with no equivalent existing
       destination item, it will copy to this general container. Also used to get
@@ -666,8 +696,8 @@ def _get_task_and_iteration_instruction(
     First entry:
     None: Don't do anything for these resources.
     DeleteObjectTask: Remove an extra object from the destination.
-    FileDownloadTask|FileUploadTask|IntraCloudCopyTask: Update the destination
-      with a copy of the source object.
+    FileDownloadTask|FileUploadTask|IntraCloudCopyTask|ManagedFolderCopyTask:
+      Update the destination with a copy of the source object.
     PatchFilePosixTask: Update the file destination POSIX data with the source's
       POSIX data.
     PatchObjectTask: Update the cloud destination's POSIX data with the source's
@@ -679,43 +709,50 @@ def _get_task_and_iteration_instruction(
   Raises:
     errors.Error: Missing a resource (does not account for subfunction errors).
   """
-  if not (source_object or destination_object):
+  if not (source_resource or destination_resource):
     raise errors.Error(
         'Comparison requires at least a source or a destination.'
     )
 
-  if not source_object:
-    if delete_unmatched_destination_objects:
+  if not source_resource:
+    if delete_unmatched_destination_objects and not isinstance(
+        destination_resource, resource_reference.ManagedFolderResource
+    ):
       if dry_run:
-        _print_would_remove(destination_object)
+        _print_would_remove(destination_resource)
       else:
         return (
             delete_object_task.DeleteObjectTask(
-                destination_object.storage_url,
+                destination_resource.storage_url,
                 user_request_args=user_request_args,
             ),
             _IterateResource.DESTINATION,
         )
     return (None, _IterateResource.DESTINATION)
 
-  if ignore_symlinks and source_object.is_symlink:
-    _log_skipping_symlink(source_object)
+  if ignore_symlinks and source_resource.is_symlink:
+    _log_skipping_symlink(source_resource)
     return (None, _IterateResource.SOURCE)
 
-  source_posix = posix_util.get_posix_attributes_from_resource(source_object)
-  if user_request_args.preserve_posix:
-    posix_to_set = source_posix
-  else:
-    posix_to_set = posix_util.PosixAttributes(
-        None, source_posix.mtime, None, None, None
+  if not isinstance(source_resource, resource_reference.ManagedFolderResource):
+    source_posix = posix_util.get_posix_attributes_from_resource(
+        source_resource
     )
+    if user_request_args.preserve_posix:
+      posix_to_set = source_posix
+    else:
+      posix_to_set = posix_util.PosixAttributes(
+          None, source_posix.mtime, None, None, None
+      )
+  else:
+    posix_to_set = None
 
-  if not destination_object:
+  if not destination_resource:
     return (
         _get_copy_task(
             user_request_args,
-            source_object,
-            posix_to_set,
+            source_resource,
+            posix_to_set=posix_to_set,
             source_container=source_container,
             destination_container=destination_container,
             dry_run=dry_run,
@@ -724,20 +761,20 @@ def _get_task_and_iteration_instruction(
         _IterateResource.SOURCE,
     )
 
-  if ignore_symlinks and destination_object.is_symlink:
-    _log_skipping_symlink(destination_object)
+  if ignore_symlinks and destination_resource.is_symlink:
+    _log_skipping_symlink(destination_resource)
     return (None, _IterateResource.DESTINATION)
 
-  source_url = _get_comparison_url(source_object, source_container)
+  source_url = _get_comparison_url(source_resource, source_container)
   destination_url = _get_comparison_url(
-      destination_object, destination_container
+      destination_resource, destination_container
   )
   if source_url < destination_url:
     return (
         _get_copy_task(
             user_request_args,
-            source_object,
-            posix_to_set,
+            source_resource,
+            posix_to_set=posix_to_set,
             source_container=source_container,
             destination_container=destination_container,
             dry_run=dry_run,
@@ -747,23 +784,44 @@ def _get_task_and_iteration_instruction(
     )
 
   if source_url > destination_url:
-    if delete_unmatched_destination_objects:
+    if delete_unmatched_destination_objects and not isinstance(
+        destination_resource, resource_reference.ManagedFolderResource
+    ):
       if dry_run:
-        _print_would_remove(destination_object)
+        _print_would_remove(destination_resource)
       else:
         return (
             delete_object_task.DeleteObjectTask(
-                destination_object.storage_url,
+                destination_resource.storage_url,
                 user_request_args=user_request_args,
             ),
             _IterateResource.DESTINATION,
         )
     return (None, _IterateResource.DESTINATION)
 
-  return _compare_equal_urls_to_get_task_and_iteration_instruction(
+  if user_request_args.no_clobber:
+    return (None, _IterateResource.SOURCE)
+
+  if isinstance(source_resource, resource_reference.ManagedFolderResource):
+    # No metadata diffing is performed for managed folders.
+    return (
+        _get_copy_task(
+            user_request_args,
+            source_resource,
+            source_container=source_container,
+            destination_resource=destination_resource,
+            destination_container=destination_container,
+            dry_run=dry_run,
+            posix_to_set=None,
+            skip_unsupported=skip_unsupported,
+        ),
+        _IterateResource.BOTH,
+    )
+
+  return _compare_equal_object_urls_to_get_task_and_iteration_instruction(
       user_request_args,
-      source_object,
-      destination_object,
+      source_resource,
+      destination_resource,
       posix_to_set,
       compare_only_hashes=compare_only_hashes,
       dry_run=dry_run,
@@ -784,6 +842,7 @@ def get_operation_iterator(
     delete_unmatched_destination_objects=False,
     dry_run=False,
     ignore_symlinks=False,
+    yield_managed_folder_operations=False,
     skip_if_destination_has_later_modification_time=False,
     skip_unsupported=False,
     task_status_queue=None,
@@ -793,17 +852,21 @@ def get_operation_iterator(
   with files.FileReader(source_list_file) as source_reader, files.FileReader(
       destination_list_file
   ) as destination_reader:
-    source_object = parse_csv_line_to_resource(next(source_reader, None))
-    destination_object = parse_csv_line_to_resource(
-        next(destination_reader, None)
+    source_resource = parse_csv_line_to_resource(
+        next(source_reader, None),
+        is_managed_folder=yield_managed_folder_operations,
+    )
+    destination_resource = parse_csv_line_to_resource(
+        next(destination_reader, None),
+        is_managed_folder=yield_managed_folder_operations,
     )
 
-    while source_object or destination_object:
+    while source_resource or destination_resource:
       task, iteration_instruction = _get_task_and_iteration_instruction(
           user_request_args,
-          source_object,
+          source_resource,
           source_container,
-          destination_object,
+          destination_resource,
           destination_container,
           compare_only_hashes=compare_only_hashes,
           delete_unmatched_destination_objects=(
@@ -818,20 +881,24 @@ def get_operation_iterator(
       )
       if task:
         operation_count += 1
-        if isinstance(task, copy_util.CopyTask):
-          bytes_operated_on += source_object.size or 0
+        if isinstance(task, copy_util.ObjectCopyTask):
+          bytes_operated_on += source_resource.size or 0
         yield task
       if iteration_instruction in (
           _IterateResource.SOURCE,
           _IterateResource.BOTH,
       ):
-        source_object = parse_csv_line_to_resource(next(source_reader, None))
+        source_resource = parse_csv_line_to_resource(
+            next(source_reader, None),
+            is_managed_folder=yield_managed_folder_operations,
+        )
       if iteration_instruction in (
           _IterateResource.DESTINATION,
           _IterateResource.BOTH,
       ):
-        destination_object = parse_csv_line_to_resource(
-            next(destination_reader, None)
+        destination_resource = parse_csv_line_to_resource(
+            next(destination_reader, None),
+            is_managed_folder=yield_managed_folder_operations,
         )
 
   if task_status_queue and (operation_count or bytes_operated_on):

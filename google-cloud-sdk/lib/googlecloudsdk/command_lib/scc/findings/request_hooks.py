@@ -68,16 +68,6 @@ def ListFindingsReqHook(ref, args, req):
   return req
 
 
-def ListFindingsSecurityMarksReqHook(ref, args, req):
-  """Generates a finding's parent and adds filter based on finding name."""
-  del ref  # Unused.
-  _ValidateMutexOnFindingAndSourceAndOrganization(args)
-  finding_name = _GetFindingNameForParent(args)
-  req.parent = GetSourceParentFromResourceName(finding_name)
-  req.filter = "name : \"" + _GetFindingIdFromName(finding_name) + "\""
-  return req
-
-
 def GroupFindingsReqHook(ref, args, req):
   """Generate a finding's name and parent using org, source and finding id."""
   del ref  # Unused.

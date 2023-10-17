@@ -1013,6 +1013,52 @@ class HmacKeysMetadata(_messages.Message):
   nextPageToken = _messages.StringField(3)
 
 
+class ManagedFolder(_messages.Message):
+  r"""A managed folder.
+
+  Fields:
+    bucket: The name of the bucket containing this managed folder.
+    createTime: The creation time of the managed folder in RFC 3339 format.
+    id: The ID of the managed folder, including the bucket name and managed
+      folder name.
+    kind: The kind of item this is. For managed folders, this is always
+      storage#managedFolder.
+    metageneration: The version of the metadata for this managed folder. Used
+      for preconditions and for detecting changes in metadata.
+    name: The name of the managed folder. Required if not specified by URL
+      parameter.
+    selfLink: The link to this managed folder.
+    updateTime: The last update time of the managed folder metadata in RFC
+      3339 format.
+  """
+
+  bucket = _messages.StringField(1)
+  createTime = _message_types.DateTimeField(2)
+  id = _messages.StringField(3)
+  kind = _messages.StringField(4, default='storage#managedFolder')
+  metageneration = _messages.IntegerField(5)
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  updateTime = _message_types.DateTimeField(8)
+
+
+class ManagedFolders(_messages.Message):
+  r"""A list of managed folders.
+
+  Fields:
+    items: The list of items.
+    kind: The kind of item this is. For lists of managed folders, this is
+      always storage#managedFolders.
+    nextPageToken: The continuation token, used to page through large result
+      sets. Provide this value in a subsequent request to return the next page
+      of results.
+  """
+
+  items = _messages.MessageField('ManagedFolder', 1, repeated=True)
+  kind = _messages.StringField(2, default='storage#managedFolders')
+  nextPageToken = _messages.StringField(3)
+
+
 class Notification(_messages.Message):
   r"""A subscription to receive Google PubSub notifications.
 
@@ -1136,6 +1182,9 @@ class Object(_messages.Message):
       hold transitioned from true to false.
     generation: The content generation of this object. Used for object
       versioning.
+    hardDeleteTime: This is the time (in the future) when the soft-deleted
+      object will no longer be restorable. It is equal to the soft delete time
+      plus the current soft delete retention duration of the bucket.
     id: The ID of the object, including the bucket name, object name, and
       generation number.
     kind: The kind of item this is. For objects, this is always
@@ -1163,6 +1212,8 @@ class Object(_messages.Message):
       having to first unset the temporary hold).
     selfLink: The link to this object.
     size: Content-Length of the data in bytes.
+    softDeleteTime: The time at which the object became soft-deleted in RFC
+      3339 format.
     storageClass: Storage class of the object.
     temporaryHold: Whether an object is under temporary hold. While this flag
       is set to true, the object is protected against deletion and overwrites.
@@ -1171,8 +1222,9 @@ class Object(_messages.Message):
       that unlike event-based hold, temporary hold does not impact retention
       expiration time of an object.
     timeCreated: The creation time of the object in RFC 3339 format.
-    timeDeleted: The deletion time of the object in RFC 3339 format. Will be
-      returned if and only if this version of the object has been deleted.
+    timeDeleted: The time at which the object became noncurrent in RFC 3339
+      format. Will be returned if and only if this version of the object has
+      been deleted.
     timeStorageClassUpdated: The time at which the object's storage class was
       last changed. When the object is initially created, it will be set to
       timeCreated.
@@ -1259,25 +1311,27 @@ class Object(_messages.Message):
   etag = _messages.StringField(12)
   eventBasedHold = _messages.BooleanField(13)
   generation = _messages.IntegerField(14)
-  id = _messages.StringField(15)
-  kind = _messages.StringField(16, default='storage#object')
-  kmsKeyName = _messages.StringField(17)
-  md5Hash = _messages.StringField(18)
-  mediaLink = _messages.StringField(19)
-  metadata = _messages.MessageField('MetadataValue', 20)
-  metageneration = _messages.IntegerField(21)
-  name = _messages.StringField(22)
-  owner = _messages.MessageField('OwnerValue', 23)
-  retention = _messages.MessageField('RetentionValue', 24)
-  retentionExpirationTime = _message_types.DateTimeField(25)
-  selfLink = _messages.StringField(26)
-  size = _messages.IntegerField(27, variant=_messages.Variant.UINT64)
-  storageClass = _messages.StringField(28)
-  temporaryHold = _messages.BooleanField(29)
-  timeCreated = _message_types.DateTimeField(30)
-  timeDeleted = _message_types.DateTimeField(31)
-  timeStorageClassUpdated = _message_types.DateTimeField(32)
-  updated = _message_types.DateTimeField(33)
+  hardDeleteTime = _message_types.DateTimeField(15)
+  id = _messages.StringField(16)
+  kind = _messages.StringField(17, default='storage#object')
+  kmsKeyName = _messages.StringField(18)
+  md5Hash = _messages.StringField(19)
+  mediaLink = _messages.StringField(20)
+  metadata = _messages.MessageField('MetadataValue', 21)
+  metageneration = _messages.IntegerField(22)
+  name = _messages.StringField(23)
+  owner = _messages.MessageField('OwnerValue', 24)
+  retention = _messages.MessageField('RetentionValue', 25)
+  retentionExpirationTime = _message_types.DateTimeField(26)
+  selfLink = _messages.StringField(27)
+  size = _messages.IntegerField(28, variant=_messages.Variant.UINT64)
+  softDeleteTime = _message_types.DateTimeField(29)
+  storageClass = _messages.StringField(30)
+  temporaryHold = _messages.BooleanField(31)
+  timeCreated = _message_types.DateTimeField(32)
+  timeDeleted = _message_types.DateTimeField(33)
+  timeStorageClassUpdated = _message_types.DateTimeField(34)
+  updated = _message_types.DateTimeField(35)
 
 
 class ObjectAccessControl(_messages.Message):
@@ -1369,7 +1423,7 @@ class Objects(_messages.Message):
 
 
 class Policy(_messages.Message):
-  r"""A bucket/object IAM policy.
+  r"""A bucket/object/managedFolder IAM policy.
 
   Messages:
     BindingsValueListEntry: A BindingsValueListEntry object.
@@ -1381,8 +1435,9 @@ class Policy(_messages.Message):
     kind: The kind of item this is. For policies, this is always
       storage#policy. This field is ignored on input.
     resourceId: The ID of the resource to which this policy belongs. Will be
-      of the form projects/_/buckets/bucket for buckets, and
-      projects/_/buckets/bucket/objects/object for objects. A specific
+      of the form projects/_/buckets/bucket for buckets,
+      projects/_/buckets/bucket/objects/object for objects, and
+      projects/_/buckets/bucket/managedFolders/managedFolder. A specific
       generation may be specified by appending #generationNumber to the end of
       the object name, e.g. projects/_/buckets/my-bucket/objects/data.txt#17.
       The current generation can be denoted with #0. This field is ignored on
@@ -2235,6 +2290,120 @@ class StorageDefaultObjectAccessControlsUpdateRequest(_messages.Message):
   userProject = _messages.StringField(4)
 
 
+class StorageManagedFoldersDeleteRequest(_messages.Message):
+  r"""A StorageManagedFoldersDeleteRequest object.
+
+  Fields:
+    bucket: Name of the bucket containing the managed folder.
+    ifMetagenerationMatch: If set, only deletes the managed folder if its
+      metageneration matches this value.
+    ifMetagenerationNotMatch: If set, only deletes the managed folder if its
+      metageneration does not match this value.
+    managedFolder: The managed folder name/path.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  ifMetagenerationMatch = _messages.IntegerField(2)
+  ifMetagenerationNotMatch = _messages.IntegerField(3)
+  managedFolder = _messages.StringField(4, required=True)
+
+
+class StorageManagedFoldersDeleteResponse(_messages.Message):
+  r"""An empty StorageManagedFoldersDelete response."""
+
+
+class StorageManagedFoldersGetIamPolicyRequest(_messages.Message):
+  r"""A StorageManagedFoldersGetIamPolicyRequest object.
+
+  Fields:
+    bucket: Name of the bucket containing the managed folder.
+    managedFolder: The managed folder name/path.
+    optionsRequestedPolicyVersion: The IAM policy format version to be
+      returned. If the optionsRequestedPolicyVersion is for an older version
+      that doesn't support part of the requested IAM policy, the request
+      fails.
+    userProject: The project to be billed for this request. Required for
+      Requester Pays buckets.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  managedFolder = _messages.StringField(2, required=True)
+  optionsRequestedPolicyVersion = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  userProject = _messages.StringField(4)
+
+
+class StorageManagedFoldersGetRequest(_messages.Message):
+  r"""A StorageManagedFoldersGetRequest object.
+
+  Fields:
+    bucket: Name of the bucket containing the managed folder.
+    ifMetagenerationMatch: Makes the return of the managed folder metadata
+      conditional on whether the managed folder's current metageneration
+      matches the given value.
+    ifMetagenerationNotMatch: Makes the return of the managed folder metadata
+      conditional on whether the managed folder's current metageneration does
+      not match the given value.
+    managedFolder: The managed folder name/path.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  ifMetagenerationMatch = _messages.IntegerField(2)
+  ifMetagenerationNotMatch = _messages.IntegerField(3)
+  managedFolder = _messages.StringField(4, required=True)
+
+
+class StorageManagedFoldersListRequest(_messages.Message):
+  r"""A StorageManagedFoldersListRequest object.
+
+  Fields:
+    bucket: Name of the bucket containing the managed folder.
+    pageSize: Maximum number of items return in a single page of responses.
+    pageToken: A previously-returned page token representing part of the
+      larger set of results to view.
+    prefix: The managed folder name/path prefix to filter the output list of
+      results.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  prefix = _messages.StringField(4)
+
+
+class StorageManagedFoldersSetIamPolicyRequest(_messages.Message):
+  r"""A StorageManagedFoldersSetIamPolicyRequest object.
+
+  Fields:
+    bucket: Name of the bucket containing the managed folder.
+    managedFolder: The managed folder name/path.
+    policy: A Policy resource to be passed as the request body.
+    userProject: The project to be billed for this request. Required for
+      Requester Pays buckets.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  managedFolder = _messages.StringField(2, required=True)
+  policy = _messages.MessageField('Policy', 3)
+  userProject = _messages.StringField(4)
+
+
+class StorageManagedFoldersTestIamPermissionsRequest(_messages.Message):
+  r"""A StorageManagedFoldersTestIamPermissionsRequest object.
+
+  Fields:
+    bucket: Name of the bucket containing the managed folder.
+    managedFolder: The managed folder name/path.
+    permissions: Permissions to test.
+    userProject: The project to be billed for this request. Required for
+      Requester Pays buckets.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  managedFolder = _messages.StringField(2, required=True)
+  permissions = _messages.StringField(3, required=True)
+  userProject = _messages.StringField(4)
+
+
 class StorageNotificationsDeleteRequest(_messages.Message):
   r"""A StorageNotificationsDeleteRequest object.
 
@@ -2870,6 +3039,9 @@ class StorageObjectsListRequest(_messages.Message):
     endOffset: Filter results to objects whose names are lexicographically
       before endOffset. If startOffset is also set, the objects listed will
       have names between startOffset (inclusive) and endOffset (exclusive).
+    includeFoldersAsPrefixes: Only applicable if delimiter is set to '/'. If
+      true, will also include folders and managed folders (besides objects) in
+      the returned prefixes.
     includeTrailingDelimiter: If true, objects that end in exactly one
       instance of delimiter will have their metadata included in items in
       addition to prefixes.
@@ -2908,16 +3080,17 @@ class StorageObjectsListRequest(_messages.Message):
   bucket = _messages.StringField(1, required=True)
   delimiter = _messages.StringField(2)
   endOffset = _messages.StringField(3)
-  includeTrailingDelimiter = _messages.BooleanField(4)
-  matchGlob = _messages.StringField(5)
-  maxResults = _messages.IntegerField(6, variant=_messages.Variant.UINT32, default=1000)
-  pageToken = _messages.StringField(7)
-  prefix = _messages.StringField(8)
-  projection = _messages.EnumField('ProjectionValueValuesEnum', 9)
-  softDeleted = _messages.BooleanField(10)
-  startOffset = _messages.StringField(11)
-  userProject = _messages.StringField(12)
-  versions = _messages.BooleanField(13)
+  includeFoldersAsPrefixes = _messages.BooleanField(4)
+  includeTrailingDelimiter = _messages.BooleanField(5)
+  matchGlob = _messages.StringField(6)
+  maxResults = _messages.IntegerField(7, variant=_messages.Variant.UINT32, default=1000)
+  pageToken = _messages.StringField(8)
+  prefix = _messages.StringField(9)
+  projection = _messages.EnumField('ProjectionValueValuesEnum', 10)
+  softDeleted = _messages.BooleanField(11)
+  startOffset = _messages.StringField(12)
+  userProject = _messages.StringField(13)
+  versions = _messages.BooleanField(14)
 
 
 class StorageObjectsPatchRequest(_messages.Message):
@@ -3481,24 +3654,30 @@ class StorageProjectsServiceAccountGetRequest(_messages.Message):
 
 
 class TestIamPermissionsResponse(_messages.Message):
-  r"""A storage.(buckets|objects).testIamPermissions response.
+  r"""A storage.(buckets|objects|managedFolders).testIamPermissions response.
 
   Fields:
     kind: The kind of item this is.
     permissions: The permissions held by the caller. Permissions are always of
-      the format storage.resource.capability, where resource is one of buckets
-      or objects. The supported permissions are as follows:   -
-      storage.buckets.delete - Delete bucket.   - storage.buckets.get - Read
-      bucket metadata.   - storage.buckets.getIamPolicy - Read bucket IAM
-      policy.   - storage.buckets.create - Create bucket.   -
-      storage.buckets.list - List buckets.   - storage.buckets.setIamPolicy -
-      Update bucket IAM policy.   - storage.buckets.update - Update bucket
-      metadata.   - storage.objects.delete - Delete object.   -
-      storage.objects.get - Read object data and metadata.   -
-      storage.objects.getIamPolicy - Read object IAM policy.   -
-      storage.objects.create - Create object.   - storage.objects.list - List
-      objects.   - storage.objects.setIamPolicy - Update object IAM policy.
-      - storage.objects.update - Update object metadata.
+      the format storage.resource.capability, where resource is one of
+      buckets, objects, or managedFolders. The supported permissions are as
+      follows:   - storage.buckets.delete - Delete bucket.   -
+      storage.buckets.get - Read bucket metadata.   -
+      storage.buckets.getIamPolicy - Read bucket IAM policy.   -
+      storage.buckets.create - Create bucket.   - storage.buckets.list - List
+      buckets.   - storage.buckets.setIamPolicy - Update bucket IAM policy.
+      - storage.buckets.update - Update bucket metadata.   -
+      storage.objects.delete - Delete object.   - storage.objects.get - Read
+      object data and metadata.   - storage.objects.getIamPolicy - Read object
+      IAM policy.   - storage.objects.create - Create object.   -
+      storage.objects.list - List objects.   - storage.objects.setIamPolicy -
+      Update object IAM policy.   - storage.objects.update - Update object
+      metadata.  - storage.managedFolders.delete - Delete managed folder.   -
+      storage.managedFolders.get - Read managed folder metadata.   -
+      storage.managedFolders.getIamPolicy - Read managed folder IAM policy.
+      - storage.managedFolders.create - Create managed folder.   -
+      storage.managedFolders.list - List managed folders.   -
+      storage.managedFolders.setIamPolicy - Update managed folder IAM policy.
   """
 
   kind = _messages.StringField(1, default='storage#testIamPermissionsResponse')

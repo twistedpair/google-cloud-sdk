@@ -856,12 +856,28 @@ class ControlPlaneManagement(_messages.Message):
   r"""Status of control plane management. Only reported per-member.
 
   Enums:
+    ImplementationValueValuesEnum: Output only. Implementation of managed
+      control plane.
     StateValueValuesEnum: State of control plane management.
 
   Fields:
     details: Explanation of state.
+    implementation: Output only. Implementation of managed control plane.
     state: State of control plane management.
   """
+
+  class ImplementationValueValuesEnum(_messages.Enum):
+    r"""Output only. Implementation of managed control plane.
+
+    Values:
+      IMPLEMENTATION_UNSPECIFIED: Unspecified
+      ISTIOD: A Google build of istiod is used for the managed control plane.
+      TRAFFIC_DIRECTOR: Traffic director is used for the managed control
+        plane.
+    """
+    IMPLEMENTATION_UNSPECIFIED = 0
+    ISTIOD = 1
+    TRAFFIC_DIRECTOR = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""State of control plane management.
@@ -890,7 +906,8 @@ class ControlPlaneManagement(_messages.Message):
     DEGRADED = 7
 
   details = _messages.MessageField('StatusDetails', 1, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
+  implementation = _messages.EnumField('ImplementationValueValuesEnum', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
 
 
 class ControlPlaneRevision(_messages.Message):

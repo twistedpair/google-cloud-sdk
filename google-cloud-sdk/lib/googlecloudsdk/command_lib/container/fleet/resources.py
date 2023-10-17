@@ -717,3 +717,27 @@ def MembershipBindingResourceName(args):
     projects/x/locations/l/memberships/y/bindings/z)
   """
   return args.CONCEPTS.binding.Parse().RelativeName()
+
+
+def AddRolloutResourceArg(parser, api_version='v1'):
+  """Add resource arg for projects/{}/locations/{}/rollouts/{}."""
+  # Flags without '--' prefix are automatically positional
+  spec = concepts.ResourceSpec(
+      'gkehub.projects.locations.rollouts',
+      api_version=api_version,
+      resource_name='rollout',
+      plural_name='rollouts',
+      disable_auto_completers=True,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=_DefaultToGlobalLocationAttributeConfig(),
+      rolloutsId=_BasicAttributeConfig('rollout'),
+  )
+  concept_parsers.ConceptParser.ForResource(
+      name='rollout',
+      resource_spec=spec,
+      group_help='The group of arguments defining a Fleet Rollout.',
+      plural=False,
+      required=True,
+      # This hides the location flag as we only allow global scope.
+      flag_name_overrides={'location': ''},
+  ).AddToParser(parser)

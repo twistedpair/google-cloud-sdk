@@ -23,20 +23,11 @@ import re
 from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
 from googlecloudsdk.command_lib.scc.hooks import GetParentFromResourceName
 from googlecloudsdk.command_lib.scc.util import GetParentFromNamedArguments
-from googlecloudsdk.command_lib.scc.util import GetParentFromPositionalArguments
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
 class InvalidNotificationConfigError(core_exceptions.Error):
   """Exception raised for errors in the input."""
-
-
-def ListNotificationReqHook(ref, args, req):
-  """Generate an organization id if only given numbers."""
-  del ref
-  req.parent = GetParentFromPositionalArguments(args)
-
-  return req
 
 
 def CreateNotificationReqHook(ref, args, req):

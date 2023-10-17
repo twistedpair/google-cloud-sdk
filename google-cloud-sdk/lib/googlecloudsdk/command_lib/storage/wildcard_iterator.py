@@ -78,6 +78,7 @@ def get_wildcard_iterator(
     next_page_token=None,
     object_state=cloud_api.ObjectState.LIVE,
     preserve_symlinks=False,
+    raise_managed_folder_precondition_errors=False,
 ):
   """Instantiate a WildcardIterator for the given URL string.
 
@@ -107,6 +108,10 @@ def get_wildcard_iterator(
     next_page_token (str|None): Used to resume LIST calls.
     object_state (cloud_api.ObjectState): Versions of objects to query.
     preserve_symlinks (bool): Preserve symlinks instead of following them.
+    raise_managed_folder_precondition_errors (bool): If True, raises
+      precondition errors from managed folder listing. Otherwise, suppresses
+      these errors. This is helpful in commands that list managed folders by
+      default.
 
   Returns:
     A WildcardIterator object.
@@ -125,6 +130,7 @@ def get_wildcard_iterator(
         managed_folder_setting=managed_folder_setting,
         next_page_token=next_page_token,
         object_state=object_state,
+        raise_managed_folder_precondition_errors=raise_managed_folder_precondition_errors,
     )
   elif isinstance(url, storage_url.FileUrl):
     return FileWildcardIterator(
@@ -328,6 +334,7 @@ class CloudWildcardIterator(WildcardIterator):
       managed_folder_setting=folder_util.ManagedFolderSetting.DO_NOT_LIST,
       next_page_token=None,
       object_state=cloud_api.ObjectState.LIVE,
+      raise_managed_folder_precondition_errors=True,
   ):
     """Instantiates an iterator that matches the wildcard URL.
 
@@ -353,6 +360,10 @@ class CloudWildcardIterator(WildcardIterator):
         to deal with managed folders.
       next_page_token (str|None): Used to resume LIST calls.
       object_state (cloud_api.ObjectState): Versions of objects to query.
+      raise_managed_folder_precondition_errors (bool): If True, raises
+        precondition errors from managed folder listing. Otherwise, suppresses
+        these errors. This is helpful in commands that list managed folders by
+        default.
     """
     super(CloudWildcardIterator, self).__init__(
         url, exclude_patterns=exclude_patterns, files_only=files_only
@@ -366,6 +377,9 @@ class CloudWildcardIterator(WildcardIterator):
     self._managed_folder_setting = managed_folder_setting
     self._next_page_token = next_page_token
     self._object_state = object_state
+    self._raise_managed_folder_precondition_errors = (
+        raise_managed_folder_precondition_errors
+    )
 
     if (
         object_state is cloud_api.ObjectState.LIVE
@@ -487,6 +501,33 @@ class CloudWildcardIterator(WildcardIterator):
     # Will run if direct check found no result.
     return self._expand_object_path(bucket_name)
 
+  def _get_managed_folder_iterator(self, bucket_name, wildcard_parts):
+    # Listing all objects under a prefix (recursive listing) occurs when
+    # `delimiter` is None. `list_managed_folders` does not support delimiters,
+    # so this is the only circumstance where it's safe to call.
+    is_recursive_expansion = wildcard_parts.delimiter is None
+    should_list_managed_folders = self._managed_folder_setting in (
+        folder_util.ManagedFolderSetting.LIST_WITH_OBJECTS,
+        folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
+    )
+    try:
+      if (
+          should_list_managed_folders
+          and cloud_api.Capability.MANAGED_FOLDERS in self._client.capabilities
+          and is_recursive_expansion
+      ):
+        managed_folder_iterator = self._client.list_managed_folders(
+            bucket_name=bucket_name, prefix=wildcard_parts.prefix or None
+        )
+      else:
+        managed_folder_iterator = []
+
+      for resource in managed_folder_iterator:
+        yield resource
+    except api_errors.PreconditionFailedError:
+      if self._raise_managed_folder_precondition_errors:
+        raise
+
   def _get_resource_iterator(self, bucket_name, wildcard_parts):
     if (
         self._managed_folder_setting
@@ -501,9 +542,17 @@ class CloudWildcardIterator(WildcardIterator):
     ):
       # If we are using managed folders at all, we need to include them as
       # prefixes so that wildcard expansion works appropriately.
-      include_folders_as_prefixes = (
+      setting_is_do_not_list = (
           self._managed_folder_setting
-          is not folder_util.ManagedFolderSetting.DO_NOT_LIST
+          is folder_util.ManagedFolderSetting.DO_NOT_LIST
+      )
+
+      # The API raises an error if we attempt to include folders as prefixes
+      # and do not specify a delimiter.
+      uses_delimiter = bool(wildcard_parts.delimiter)
+
+      include_folders_as_prefixes = (
+          None if setting_is_do_not_list or not uses_delimiter else True
       )
 
       # TODO(b/299973762): Allow the list_objects API method to only yield
@@ -521,25 +570,9 @@ class CloudWildcardIterator(WildcardIterator):
     else:
       object_iterator = []
 
-    # Listing all objects under a prefix (recursive listing) occurs when
-    # `delimiter` is None. `list_managed_folders` does not support delimiters,
-    # so this is the only circumstance where it's safe to call.
-    is_recursive_expansion = wildcard_parts.delimiter is None
-    should_list_managed_folders = self._managed_folder_setting in (
-        folder_util.ManagedFolderSetting.LIST_WITH_OBJECTS,
-        folder_util.ManagedFolderSetting.LIST_WITHOUT_OBJECTS,
+    managed_folder_iterator = self._get_managed_folder_iterator(
+        bucket_name, wildcard_parts
     )
-
-    if (
-        should_list_managed_folders
-        and cloud_api.Capability.MANAGED_FOLDERS in self._client.capabilities
-        and is_recursive_expansion
-    ):
-      managed_folder_iterator = self._client.list_managed_folders(
-          bucket_name=bucket_name, prefix=wildcard_parts.prefix or None
-      )
-    else:
-      managed_folder_iterator = []
 
     return heapq.merge(
         object_iterator,

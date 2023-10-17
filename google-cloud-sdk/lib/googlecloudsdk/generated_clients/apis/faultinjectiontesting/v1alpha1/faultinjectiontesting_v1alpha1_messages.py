@@ -52,7 +52,7 @@ class Experiment(_messages.Message):
     createTime: Output only. Create time stamp.
     deleted: Output only. is deleted flag for experiments
     description: End user description of the experiment.
-    name: Required. The format for the name is:
+    name: Required. Identifier. The format for the name is:
       projects/{project}/locations/{location}/experiments/{experiment_name}
     runFaults: faults to run in experiment
     stopConditions: stop condtions for the faults
@@ -90,8 +90,8 @@ class Fault(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     deleted: Output only. [Output only] is_deleted flag
     description: End user description of the fault.
-    name: Unique name for the fault per project, provided by the end user. The
-      format for the name is:
+    name: Identifier. Unique name for the fault per project, provided by the
+      end user. The format for the name is:
       projects/{project}/locations/{location}/faults/{fault_name}
   """
 
@@ -262,7 +262,7 @@ class FaultinjectiontestingProjectsLocationsExperimentsPatchRequest(_messages.Me
 
   Fields:
     experiment: A Experiment resource to be passed as the request body.
-    name: Required. The format for the name is:
+    name: Required. Identifier. The format for the name is:
       projects/{project}/locations/{location}/experiments/{experiment_name}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -372,8 +372,8 @@ class FaultinjectiontestingProjectsLocationsFaultsPatchRequest(_messages.Message
 
   Fields:
     fault: A Fault resource to be passed as the request body.
-    name: Unique name for the fault per project, provided by the end user. The
-      format for the name is:
+    name: Identifier. Unique name for the fault per project, provided by the
+      end user. The format for the name is:
       projects/{project}/locations/{location}/faults/{fault_name}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -599,8 +599,8 @@ class Job(_messages.Message):
   r"""Message describing Job object
 
   Enums:
-    JobStateValueValuesEnum: The current state of the job. Default value is
-      UNDEFINED
+    JobStateValueValuesEnum: Output only. The current state of the job.
+      Default value is UNDEFINED
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
@@ -613,15 +613,16 @@ class Job(_messages.Message):
     faultPepStatuses: List of fault configurations and their PEP statuses for
       the job.
     faultTargets: Required. Fault targets passed to this job run
-    jobState: The current state of the job. Default value is UNDEFINED
-    name: Job name of the running job. The format for the name is:
+    jobState: Output only. The current state of the job. Default value is
+      UNDEFINED
+    name: Identifier. Job name of the running job. The format for the name is:
       projects/{project}/locations/{location}/jobs/{job_name}
     runStatus: Error codes and warnings associated with the job run.
     timeWindow: TimeWindow specified by user for list query.
   """
 
   class JobStateValueValuesEnum(_messages.Enum):
-    r"""The current state of the job. Default value is UNDEFINED
+    r"""Output only. The current state of the job. Default value is UNDEFINED
 
     Values:
       STATE_UNSPECIFIED: Job state is STATE_UNSPECIFIED for validate job

@@ -590,7 +590,7 @@ def RunDeploy(
     runtime_builder_strategy=runtime_builders.RuntimeBuilderStrategy.NEVER,
     parallel_build=True,
     flex_image_build_option=FlexImageBuildOptions.ON_CLIENT,
-    use_legacy_apis=False):
+):
   """Perform a deployment based on the given args.
 
   Args:
@@ -608,9 +608,6 @@ def RunDeploy(
     flex_image_build_option: FlexImageBuildOptions, whether a flex deployment
       should upload files so that the server can build the image or build the
       image on client or build the image on client using the buildpacks.
-    use_legacy_apis: bool, if true, use the legacy deprecated admin-console-hr
-      superapp for queue.yaml and cron.yaml uploads instead of Cloud Tasks &
-      Cloud Scheduler FEs.
 
   Returns:
     A dict on the form `{'versions': new_versions, 'configs': updated_configs}`
@@ -638,18 +635,6 @@ def RunDeploy(
     # pylint: disable=protected-access
     log.debug('API endpoint: [{endpoint}], API version: [{version}]'.format(
         endpoint=api_client.client.url, version=api_client.client._VERSION))
-    # The legacy admin console API client.
-    # The Admin Console API existed long before the App Engine Admin API, and
-    # isn't being improved. We're in the process of migrating all of the calls
-    # over to the Admin API, but a few things (notably config deployments)
-    # haven't been ported over yet.
-    # Import only when necessary, to decrease startup time.
-    # pylint: disable=g-import-not-at-top
-    from googlecloudsdk.api_lib.app import appengine_client
-    # pylint: enable=g-import-not-at-top
-    ac_client = appengine_client.AppengineClient(args.server,
-                                                 args.ignore_bad_certs)
-
     app = _PossiblyCreateApp(api_client, project)
     _RaiseIfStopped(api_client, app)
 
@@ -718,14 +703,14 @@ def RunDeploy(
           api_client.UpdateDispatchRules(config.GetRules())
         elif config.name == yaml_parsing.ConfigYamlInfo.INDEX:
           index_api.CreateMissingIndexes(project, config.parsed)
-        elif (not use_legacy_apis and
-              config.name == yaml_parsing.ConfigYamlInfo.QUEUE):
+        elif config.name == yaml_parsing.ConfigYamlInfo.QUEUE:
           RunDeployCloudTasks(config)
-        elif (not use_legacy_apis and
-              config.name == yaml_parsing.ConfigYamlInfo.CRON):
+        elif config.name == yaml_parsing.ConfigYamlInfo.CRON:
           RunDeployCloudScheduler(config)
         else:
-          ac_client.UpdateConfig(config.name, config.parsed)
+          raise ValueError(
+              'Unkonwn config [{config}]'.format(config=config.name)
+          )
     metrics.CustomTimedEvent(metric_names.UPDATE_CONFIG)
 
   updated_configs = [c.name for c in configs]

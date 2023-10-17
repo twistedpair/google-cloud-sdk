@@ -59,6 +59,8 @@ S3_RESOURCE_WARNING_FIELDS = {
     'event_based_hold': 'Setting Event-Based Holds',
     'placement': 'Setting Dual-Region for a Bucket',
     'preserve_acl': 'Preserving ACLs',
+    'retain_until': 'Setting Time to Retain Until',
+    'retention_mode': 'Setting Retention Mode',
     'soft_delete_duration': 'Setting Soft Delete Policies',
     'temporary_hold': 'Setting Temporary Holds',
     'uniform_bucket_level_access': 'Setting Uniform Bucket Level Access',
@@ -321,9 +323,9 @@ class _ObjectConfig(_ResourceConfig):
       changed.
     decryption_key (encryption_util.EncryptionKey): The key that should be used
       to decrypt information in GCS.
-    encryption_key (encryption_util.EncryptionKey|None|str): The key that should
-      be used to encrypt information in GCS or clear encryptions (the string
-      user_request_args_factory.CLEAR).
+    encryption_key (encryption_util.EncryptionKey|None|CLEAR): The key that
+      should be used to encrypt information in GCS or clear encryptions (the
+      string user_request_args_factory.CLEAR).
     md5_hash (str|None): MD5 digest to use for validation.
     preserve_acl (bool): Whether or not to preserve existing ACLs on an object
       during a copy or other operation.
@@ -395,6 +397,10 @@ class _GcsObjectConfig(_ObjectConfig):
     event_based_hold (bool|None): An event-based hold should be placed on an
       object.
     custom_time (datetime|None): Custom time user can set.
+    retain_until (datetime|None): Time to retain the object until.
+    retention_mode (flags.RetentionMode|None|CLEAR): The key that should
+      be used to set the retention mode policy in GCS or clear retention (the
+      string user_request_args_factory.CLEAR).
     temporary_hold (bool|None): A temporary hold should be placed on an object.
   """
   # pylint:enable=g-missing-from-attributes
@@ -416,6 +422,8 @@ class _GcsObjectConfig(_ObjectConfig):
                encryption_key=None,
                event_based_hold=None,
                md5_hash=None,
+               retain_until=None,
+               retention_mode=None,
                size=None,
                temporary_hold=None):
     super(_GcsObjectConfig, self).__init__(
@@ -436,6 +444,8 @@ class _GcsObjectConfig(_ObjectConfig):
         size=size)
     self.custom_time = custom_time
     self.event_based_hold = event_based_hold
+    self.retain_until = retain_until
+    self.retention_mode = retention_mode
     self.temporary_hold = temporary_hold
 
   def __eq__(self, other):
@@ -444,6 +454,8 @@ class _GcsObjectConfig(_ObjectConfig):
     return (super(_GcsObjectConfig, self).__eq__(other) and
             self.custom_time == other.custom_time and
             self.event_based_hold == other.event_based_hold and
+            self.retain_until == other.retain_until and
+            self.retention_mode == other.retention_mode and
             self.temporary_hold == other.temporary_hold)
 
 
@@ -527,7 +539,8 @@ class _GcsRequestConfig(_RequestConfig):
                resource_args=None):
     super(_GcsRequestConfig, self).__init__(
         predefined_acl_string=predefined_acl_string,
-        predefined_default_object_acl_string=predefined_default_object_acl_string,
+        predefined_default_object_acl_string=(
+            predefined_default_object_acl_string),
         resource_args=resource_args)
     self.gzip_settings = gzip_settings
     self.no_clobber = no_clobber
@@ -674,6 +687,8 @@ def _get_request_config_resource_args(url,
       if user_resource_args:
         new_resource_args.custom_time = user_resource_args.custom_time
         new_resource_args.event_based_hold = user_resource_args.event_based_hold
+        new_resource_args.retain_until = user_resource_args.retain_until
+        new_resource_args.retention_mode = user_resource_args.retention_mode
         new_resource_args.temporary_hold = user_resource_args.temporary_hold
 
     elif url.scheme == storage_url.ProviderPrefix.S3:
@@ -705,7 +720,8 @@ def _get_request_config_resource_args(url,
         new_resource_args.md5_hash = user_resource_args.md5_hash
 
       new_resource_args.cache_control = user_resource_args.cache_control
-      new_resource_args.content_disposition = user_resource_args.content_disposition
+      new_resource_args.content_disposition = (
+          user_resource_args.content_disposition)
       new_resource_args.content_encoding = user_resource_args.content_encoding
       new_resource_args.content_language = user_resource_args.content_language
       new_resource_args.custom_fields_to_set = (

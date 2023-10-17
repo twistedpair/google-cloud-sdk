@@ -5201,6 +5201,21 @@ https://cloud.google.com/compute/confidential-vm/docs/about-cvm.""".format(
   )
 
 
+def AddEnableConfidentialStorageFlag(parser, for_node_pool=False, hidden=False):
+  """Adds a --enable-confidential-storage flag to the given parser."""
+  target = 'node pool' if for_node_pool else 'cluster'
+
+  help_text = """\
+Enable confidential storage for the {}. Enabling Confidential Storage will
+create boot disk with confidential mode
+""".format(target)
+
+  parser.add_argument(
+      '--enable-confidential-storage', help=help_text, default=None,
+      hidden=hidden, action='store_true',
+  )
+
+
 def AddKubernetesObjectsExportConfig(parser, for_create=False):
   """Adds kubernetes-objects-changes-target and kubernetes-objects-snapshots-target flags to parser."""
   help_text = """\
@@ -6097,7 +6112,6 @@ def AddInTransitEncryptionFlag(parser):
       choices=['inter-node-transparent', 'none'],
       default=None,
       help=help_text,
-      hidden=True,
   )
 
 

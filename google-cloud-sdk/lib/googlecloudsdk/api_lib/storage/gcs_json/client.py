@@ -28,6 +28,7 @@ from __future__ import unicode_literals
 import contextlib
 import errno
 import json
+import uuid
 
 from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import list_pager
@@ -254,10 +255,11 @@ class JsonClient(cloud_api.CloudApi):
 
   capabilities = {
       cloud_api.Capability.COMPOSE_OBJECTS,
+      cloud_api.Capability.DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM,
+      cloud_api.Capability.ENCRYPTION,
+      cloud_api.Capability.MANAGED_FOLDERS,
       cloud_api.Capability.RESUMABLE_UPLOAD,
       cloud_api.Capability.SLICED_DOWNLOAD,
-      cloud_api.Capability.ENCRYPTION,
-      cloud_api.Capability.DAISY_CHAIN_SEEKABLE_UPLOAD_STREAM,
   }
 
   # The API limits the number of objects that can be composed in a single call.
@@ -923,12 +925,11 @@ class JsonClient(cloud_api.CloudApi):
       delimiter=None,
       fields_scope=cloud_api.FieldsScope.NO_ACL,
       halt_on_empty_response=True,
-      include_folders_as_prefixes=False,
+      include_folders_as_prefixes=None,
       next_page_token=None,
       object_state=cloud_api.ObjectState.LIVE,
   ):
     """See super class."""
-    del include_folders_as_prefixes  # Unused until API support is available.
     projection = self._get_projection(fields_scope,
                                       self.messages.StorageObjectsListRequest)
     global_params = None
@@ -970,6 +971,7 @@ class JsonClient(cloud_api.CloudApi):
           projection=projection,
           pageToken=next_page_token,
           maxResults=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
+          includeFoldersAsPrefixes=include_folders_as_prefixes,
           # Avoid needlessly appending "&softDeleted=False" to URL.
           softDeleted=soft_deleted,
       )
@@ -1166,6 +1168,80 @@ class JsonClient(cloud_api.CloudApi):
     return metadata_util.get_object_resource_from_metadata(metadata)
 
   @error_util.catch_http_error_raise_gcs_api_error()
+  def create_managed_folder(self, bucket_name, managed_folder_name):
+    """See CloudApi class for function doc strings."""
+    folder_message = self.messages.ManagedFolder(
+        bucket=bucket_name, name=managed_folder_name
+    )
+    response = self.client.managedFolders.Insert(folder_message)
+    return metadata_util.get_managed_folder_resource_from_metadata(response)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def delete_managed_folder(self, bucket_name, managed_folder_name):
+    """See CloudApi class for function doc strings."""
+    delete_request = self.messages.StorageManagedFoldersDeleteRequest(
+        bucket=bucket_name, managedFolder=managed_folder_name
+    )
+    self.client.managedFolders.Delete(delete_request)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def get_managed_folder(self, bucket_name, managed_folder_name):
+    """See CloudApi class for function doc strings."""
+    response = self.client.managedFolders.Get(
+        self.messages.StorageManagedFoldersGetRequest(
+            bucket=bucket_name, managedFolder=managed_folder_name
+        )
+    )
+    return metadata_util.get_managed_folder_resource_from_metadata(response)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def get_managed_folder_iam_policy(self, bucket_name, managed_folder_name):
+    """See CloudApi class for function doc strings."""
+    global_params = self.messages.StandardQueryParameters(
+        fields='bindings,etag',
+    )
+    return self.client.managedFolders.GetIamPolicy(
+        self.messages.StorageManagedFoldersGetIamPolicyRequest(
+            bucket=bucket_name, managedFolder=managed_folder_name
+        ),
+        global_params=global_params,
+    )
+
+  def list_managed_folders(self, bucket_name, prefix=None):
+    """See CloudApi class for function doc strings."""
+    try:
+      for folder in list_pager.YieldFromList(
+          self.client.managedFolders,
+          self.messages.StorageManagedFoldersListRequest(
+              bucket=bucket_name,
+              prefix=prefix,
+          ),
+          batch_size=1000,
+          batch_size_attribute='pageSize',
+          field='items',
+      ):
+        yield metadata_util.get_managed_folder_resource_from_metadata(folder)
+    except apitools_exceptions.HttpError as e:
+      core_exceptions.reraise(
+          cloud_errors.translate_error(
+              e,
+              error_util.ERROR_TRANSLATION,
+              status_code_getter=error_util.get_status_code,
+          )
+      )
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def set_managed_folder_iam_policy(
+      self, bucket_name, managed_folder_name, policy
+  ):
+    """See CloudApi class for function doc strings."""
+    return self.client.managedFolders.SetIamPolicy(
+        self.messages.StorageManagedFoldersSetIamPolicyRequest(
+            bucket=bucket_name, managedFolder=managed_folder_name, policy=policy
+        )
+    )
+
+  @error_util.catch_http_error_raise_gcs_api_error()
   def get_service_agent(self, project_id=None, project_number=None):
     """See CloudApi class for doc strings."""
     if project_id:
@@ -1337,16 +1413,19 @@ class JsonClient(cloud_api.CloudApi):
     else:
       preserve_acl = None
 
-    operation = self.client.objects.BulkRestore(
-        self.messages.StorageObjectsBulkRestoreRequest(
-            bucket=bucket_url.bucket_name,
-            bulkRestoreObjectsRequest=self.messages.BulkRestoreObjectsRequest(
-                allowOverwrite=allow_overwrite,
-                copySourceAcl=preserve_acl,
-                matchGlobs=object_globs,
-                softDeletedAfterTime=deleted_after_time,
-                softDeletedBeforeTime=deleted_before_time,
-            ),
-        )
-    )
+    with self._apitools_request_headers_context(
+        {'x-goog-gcs-idempotency-token': uuid.uuid4()}
+    ):
+      operation = self.client.objects.BulkRestore(
+          self.messages.StorageObjectsBulkRestoreRequest(
+              bucket=bucket_url.bucket_name,
+              bulkRestoreObjectsRequest=self.messages.BulkRestoreObjectsRequest(
+                  allowOverwrite=allow_overwrite,
+                  copySourceAcl=preserve_acl,
+                  matchGlobs=object_globs,
+                  softDeletedAfterTime=deleted_after_time,
+                  softDeletedBeforeTime=deleted_before_time,
+              ),
+          )
+      )
     return operation

@@ -67,6 +67,7 @@ class NameExpansionIterator:
       object_state=cloud_api.ObjectState.LIVE,
       preserve_symlinks=False,
       raise_error_for_unmatched_urls=True,
+      raise_managed_folder_precondition_errors=True,
       recursion_requested=RecursionSetting.NO_WITH_WARNING,
       url_found_match_tracker=None,
   ):
@@ -85,6 +86,10 @@ class NameExpansionIterator:
       preserve_symlinks (bool): Preserve symlinks instead of following them.
       raise_error_for_unmatched_urls (bool): If True, raises an error if any url
         in `url_found_match_tracker` is unmatched after expansion.
+      raise_managed_folder_precondition_errors (bool): If True, raises
+        precondition errors from managed folder listing. Otherwise, suppresses
+        these errors. This is helpful in commands that list managed folders by
+        default.
       recursion_requested (RecursionSetting): Says whether or not recursion is
         requested.
       url_found_match_tracker (OrderedDict|None): Maps top-level URLs to a
@@ -103,6 +108,9 @@ class NameExpansionIterator:
     self._managed_folder_setting = managed_folder_setting
     self._preserve_symlinks = preserve_symlinks
     self._raise_error_for_unmatched_urls = raise_error_for_unmatched_urls
+    self._raise_managed_folder_precondition_errors = (
+        raise_managed_folder_precondition_errors
+    )
     self._recursion_requested = recursion_requested
 
     if url_found_match_tracker is None:
@@ -131,6 +139,9 @@ class NameExpansionIterator:
         managed_folder_setting=managed_folder_setting,
         object_state=self.object_state,
         preserve_symlinks=self._preserve_symlinks,
+        raise_managed_folder_precondition_errors=(
+            self._raise_managed_folder_precondition_errors
+        ),
     )
 
   @property

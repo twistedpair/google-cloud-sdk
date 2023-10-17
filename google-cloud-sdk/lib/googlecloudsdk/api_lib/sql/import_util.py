@@ -105,6 +105,8 @@ def BakImportContext(
     no_recovery,
     recovery_only,
     bak_type,
+    stop_at,
+    stop_at_mark,
 ):
   """Generates the ImportContext for the given args, for importing from BAK.
 
@@ -122,6 +124,8 @@ def BakImportContext(
     no_recovery: Whether the import executes with NORECOVERY keyword.
     recovery_only: Whether the import skip download and bring database online.
     bak_type: Type of the bak file.
+    stop_at: Equivalent to SQL Server STOPAT keyword.
+    stop_at_mark: Equivalent to SQL Server STOPATMARK keyword.
 
   Returns:
     ImportContext, for use in InstancesImportRequest.importContext.
@@ -141,6 +145,9 @@ def BakImportContext(
   bak_import_options.noRecovery = no_recovery
   bak_import_options.recoveryOnly = recovery_only
   bak_import_options.bakType = ParseBakType(sql_messages, bak_type)
+  if stop_at is not None:
+    bak_import_options.stopAt = stop_at.strftime('%Y-%m-%dT%H:%M:%S.%fZ')
+  bak_import_options.stopAtMark = stop_at_mark
 
   return sql_messages.ImportContext(
       kind='sql#importContext',

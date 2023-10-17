@@ -1593,9 +1593,9 @@ class AddVolumeMountChange(ContainerConfigChanger):
 
   def AdjustContainer(self, container, messages_mod):
     for mount in self._new_mounts:
-      if 'name' not in mount or 'path' not in mount:
+      if 'volume' not in mount or 'mount-path' not in mount:
         raise exceptions.ConfigurationError(
-            'Added Volume mounts must have a `name` and a `path`.'
+            'Added Volume mounts must have a `volume` and a `mount-path`.'
         )
-      container.volume_mounts[mount['path']] = mount['name']
+      container.volume_mounts[mount['mount-path']] = mount['volume']
     return container

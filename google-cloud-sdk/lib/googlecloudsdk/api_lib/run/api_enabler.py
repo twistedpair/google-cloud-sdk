@@ -18,23 +18,37 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import urllib.parse as urlparse
+
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.services import services_util
 from googlecloudsdk.api_lib.services import serviceusage
 from googlecloudsdk.api_lib.services.exceptions import GetServicePermissionDeniedException
-
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
+_RUN_API_NAMES = frozenset(
+    ['run.googleapis.com', 'staging-run.sandbox.googleapis.com']
+)
 
-def CheckAndEnableApis(project_id, required_apis):
+
+def get_run_api():
+  endpoint = properties.VALUES.api_endpoint_overrides.run.Get()
+  if endpoint:
+    api = urlparse.urlparse(endpoint).hostname
+    if api in _RUN_API_NAMES:
+      return api
+  return 'run.googleapis.com'
+
+
+def check_and_enable_apis(project_id, required_apis):
   """Ensure the given APIs are enabled for the specified project."""
   if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
     # no need to even check if prompting is disabled.
     return False
   try:
-    apis_not_enabled = GetDisabledApis(project_id, required_apis)
+    apis_not_enabled = get_disabled_apis(project_id, required_apis)
   except GetServicePermissionDeniedException:
     return False
   if apis_not_enabled:
@@ -58,7 +72,7 @@ def CheckAndEnableApis(project_id, required_apis):
   return True
 
 
-def GetDisabledApis(project_id, required_apis):
+def get_disabled_apis(project_id, required_apis):
   apis_not_enabled = [
       # iterable is sorted for scenario tests.  The order of API calls
       # should happen in the same order each time for the scenario tests.

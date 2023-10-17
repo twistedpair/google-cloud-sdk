@@ -1342,9 +1342,10 @@ def AddBakImportBakTypeArgument(parser):
   choices = [
       messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.FULL.name,
       messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.DIFF.name,
+      messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.TLOG.name,
   ]
   help_text = (
-      'Type of bak file that will be imported, FULL or DIFF. SQL Server only.'
+      'Type of bak file that will be imported. Applicable to SQL Server only.'
   )
   parser.add_argument(
       '--bak-type',
@@ -1352,6 +1353,35 @@ def AddBakImportBakTypeArgument(parser):
       required=False,
       default=messages.ImportContext.BakImportOptionsValue.BakTypeValueValuesEnum.FULL.name,
       help=help_text,
+  )
+
+
+def AddBakImportStopAtArgument(parser):
+  """Add the 'stop-at' argument to the parser for bak import."""
+  parser.add_argument(
+      '--stop-at',
+      type=arg_parsers.Datetime.Parse,
+      required=False,
+      help=(
+          'Equivalent to SQL Server STOPAT keyword. '
+          'Used in transaction log import only. '
+          'Transaction log import stop at this timestamp. '
+          'Format: YYYY-MM-DDTHH:MM:SS.'
+      ),
+  )
+
+
+def AddBakImportStopAtMarkArgument(parser):
+  """Add the 'stop-at-mark' argument to the parser for bak import."""
+  parser.add_argument(
+      '--stop-at-mark',
+      required=False,
+      help=(
+          'Equivalent to SQL Server STOPATMARK keyword. '
+          'Used in transaction log import only. '
+          'Transaction log import stop at the given mark. '
+          'To stop at given LSN, use --stop-at-mark=lsn:xxx. '
+      ),
   )
 
 

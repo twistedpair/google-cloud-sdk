@@ -255,6 +255,7 @@ def get_object_resource_from_metadata(metadata):
       event_based_hold=(
           metadata.eventBasedHold if metadata.eventBasedHold else None
       ),
+      hard_delete_time=metadata.hardDeleteTime,
       kms_key=metadata.kmsKeyName,
       md5_hash=metadata.md5Hash,
       metadata=metadata,
@@ -262,6 +263,7 @@ def get_object_resource_from_metadata(metadata):
       noncurrent_time=metadata.timeDeleted,
       retention_expiration=metadata.retentionExpirationTime,
       size=metadata.size,
+      soft_delete_time=metadata.softDeleteTime,
       storage_class=metadata.storageClass,
       storage_class_update_time=metadata.timeStorageClassUpdated,
       temporary_hold=metadata.temporaryHold if metadata.temporaryHold else None,
@@ -770,3 +772,19 @@ def update_object_metadata_from_request_config(
   object_metadata.acl = (
       _get_list_with_added_and_removed_acl_grants(
           object_metadata.acl, resource_args, is_bucket=False))
+
+
+def get_managed_folder_resource_from_metadata(metadata):
+  """Returns a ManagedFolderResource from Apitools metadata."""
+  url = storage_url.CloudUrl(
+      scheme=storage_url.ProviderPrefix.GCS,
+      bucket_name=metadata.bucket,
+      object_name=metadata.name,
+  )
+  return resource_reference.ManagedFolderResource(
+      url,
+      create_time=metadata.createTime,
+      metadata=metadata,
+      metageneration=metadata.metageneration,
+      update_time=metadata.updateTime,
+  )

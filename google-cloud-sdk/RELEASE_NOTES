@@ -5,6 +5,76 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 451.0.0 (2023-10-17)
+
+### Google Cloud CLI
+
+* Bump cryptography to 41.0.4 and pyopenssl to 23.2.0.
+
+### App Engine
+
+* Enable devappserver support for Python 3.12 runtime.
+
+### Assured Workloads
+
+*   Added `--acknowledge-type` flag (optional) for `gcloud assured workloads
+violations acknowledge` to acknowledge violation with type through gCloud
+command.
+
+### Cloud Filestore
+
+*   Added `--tier=ZONAL` flag to `gcloud filestore instances create` to support a zonal filestore instance creation.
+
+### Cloud Run
+
+* Added volumes and volume mounts to `gcloud run jobs describe`,
+  `gcloud run jobs executions describe`, and
+  `gcloud run jobs executions tasks describe`.
+
+### Cloud SQL
+
+* Add new enum `TLOG` to `--bak-type` and added `--stop-at` and `--stop-at-mark` flag
+to `gcloud sql import bak` to support transaction log import on Cloud SQL for SQL Server.
+
+### Cloud Storage
+
+* Updated `gcloud storage sign-url` to allow using service account credentials
+  to create signed URLs. Omit `--private-key-file` flag to use the active
+  service account or account specified with `--impersonate-service-account`
+  flag.
+
+### Compute Engine
+
+* Added `SEV_LIVE_MIGRATABLE_V2` to the list of `--guest-os-features` for
+`gcloud compute images create`.
+* Promoted `gcloud compute backend-services list-usable` to GA.
+* Updated `gcloud compute images import` to handle exceptions in case of failure in fetching the cloud build logs.
+* Updated `gcloud compute images import` to check the storage permissions required for cloud build service account.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.26.7 to 1.27.4.
+* Additional kubectl versions:
+  * kubectl.1.23 (1.23.17)
+  * kubectl.1.24 (1.24.16)
+  * kubectl.1.25 (1.25.12)
+  * kubectl.1.26 (1.26.7)
+  * kubectl.1.27 (1.27.4)
+* Deprecate `--enable-workload-config-audit`, `--enable-workload-vulnerability-scanning`, and `enable-security-posture` flags in `gcloud container clusters {create, create-auto, update}`. The replacements for these are:
+  * `--enable-workload-config-audit` -> `--security-posture=standard`
+  * `--enable-security-posture` -> `--security-posture=standard`
+  * `--enable-workload-vulnerability-scanning` -> `--workload-vulnerability-scanning=standard`
+* Added `enterprise` value to the available modes for `--workload-vulnerability-scanning` flag in the alpha and beta tracks.
+* Added `--in-transit-encryption` flag to `gcloud container clusters create` and `gcloud container clusters update`.
+
+### Service Extensions
+
+* New commands for service-extensions resources - LbTrafficExtensions and LbRouteExtensions.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 450.0.0 (2023-10-10)
 
 ### AI

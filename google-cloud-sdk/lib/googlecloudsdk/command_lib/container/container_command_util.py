@@ -306,7 +306,7 @@ def ParseUpdateOptionsBase(args, locations):
       min_accelerator=args.min_accelerator,
       max_accelerator=args.max_accelerator,
       logging_variant=args.logging_variant,
-      in_transit_encryption=args.in_transit_encryption)
+      in_transit_encryption=getattr(args, 'in_transit_encryption', None))
 
   if (args.disable_addons and
       api_adapter.GCEPDCSIDRIVER in args.disable_addons):

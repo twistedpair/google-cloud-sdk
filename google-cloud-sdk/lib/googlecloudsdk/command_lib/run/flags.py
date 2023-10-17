@@ -578,14 +578,14 @@ def AddCloudSQLFlags(parser):
 
 def AddVolumesFlags(parser, release_track):
   """Add flags for adding and removing volumes."""
-  group = parser.add_group(hidden=True)
+  group = parser.add_group()
   group.add_argument(
       '--add-volume',
-      type=arg_parsers.ArgDict(),
+      type=arg_parsers.ArgDict(required_keys=['name', 'type']),
       action='append',
       metavar='KEY=VALUE',
       help=(
-          'Adds a volume to the Cloud Run service. To add more than one '
+          'Adds a volume to the Cloud Run resource. To add more than one '
           'volume, specify this flag mulitple times.'
           ' Volumes must have a `name` and `type` key. '
           'Only certain values are supported for `type`. Depending on the '
@@ -596,8 +596,10 @@ def AddVolumesFlags(parser, release_track):
   )
   group.add_argument(
       '--remove-volume',
-      action='append',
-      help='Removes volumes from the Cloud Run service.',
+      type=arg_parsers.ArgList(),
+      action=arg_parsers.UpdateAction,
+      metavar='VOLUME',
+      help='Removes volumes from the Cloud Run resource.',
   )
 
 
@@ -605,7 +607,7 @@ def AddVolumeMountFlag():
   """Returns container flag for adding a volume mount."""
 
   def _LimitMountKeys(key):
-    if key not in {'name', 'path'}:
+    if key not in {'volume', 'mount-path'}:
       raise serverless_exceptions.ArgumentError(
           'Key [{}] not recognized for dict arg'.format(key)
       )
@@ -614,14 +616,15 @@ def AddVolumeMountFlag():
   return base.Argument(
       '--add-volume-mount',
       action='append',
-      hidden=True,
       type=arg_parsers.ArgDict(
-          required_keys=['name', 'path'], key_type=_LimitMountKeys
+          required_keys=['volume', 'mount-path'], key_type=_LimitMountKeys
       ),
       metavar='KEY=VALUE',
       help=(
           'Adds a mount to the current container. Must contain the keys'
-          ' `name=NAME` and `path=/PATH`'
+          ' `volume=NAME` and `mount-path=/PATH` where NAME is the name of a'
+          ' volume on this resource and PATH is the path within the'
+          " container's filesystem to mount this volume."
       ),
   )
 
@@ -631,7 +634,6 @@ def RemoveVolumeMountFlag():
   return base.Argument(
       '--remove-volume-mount',
       action=arg_parsers.UpdateAction,
-      hidden=True,
       type=arg_parsers.ArgList(),
       metavar='MOUNT',
       help='Removes a mount from the current container.',

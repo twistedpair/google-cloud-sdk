@@ -363,6 +363,7 @@ class Instance(_messages.Message):
       must be one of the valid GCP regions. `instance_id`: User provided name
       for the instance, must be unique for a project_number and location_id
       combination.
+    privateConfig: Optional. Private settings for private instance.
     state: Output only. Current state of the instance.
     stateNote: Output only. An optional field providing information about the
       current instance state.
@@ -430,9 +431,10 @@ class Instance(_messages.Message):
   kmsKey = _messages.StringField(3)
   labels = _messages.MessageField('LabelsValue', 4)
   name = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  stateNote = _messages.EnumField('StateNoteValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  privateConfig = _messages.MessageField('PrivateConfig', 6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  stateNote = _messages.EnumField('StateNoteValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class IssueRedirectTicketInternalRequest(_messages.Message):
@@ -801,6 +803,27 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class PrivateConfig(_messages.Message):
+  r"""PrivateConfig includes settings for private instance.
+
+  Fields:
+    caPool: Required. Immutable. CA pool resource, resource must in the format
+      of `projects/{project}/locations/{location}/caPools/{ca_pool}`.
+    httpServiceAttachment: Output only. Service Attachment for HTTP, resource
+      is in the format of `projects/{project}/regions/{region}/serviceAttachme
+      nts/{service_attachment}`.
+    isPrivate: Required. Immutable. Indicate if it's private instance.
+    sshServiceAttachment: Output only. Service Attachment for SSH, resource is
+      in the format of `projects/{project}/regions/{region}/serviceAttachments
+      /{service_attachment}`.
+  """
+
+  caPool = _messages.StringField(1)
+  httpServiceAttachment = _messages.StringField(2)
+  isPrivate = _messages.BooleanField(3)
+  sshServiceAttachment = _messages.StringField(4)
 
 
 class Repository(_messages.Message):

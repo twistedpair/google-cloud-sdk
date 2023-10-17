@@ -1308,6 +1308,9 @@ class _SectionApiEndpointOverrides(_Section):
     self.securedlandingzone = self._Add(
         'securedlandingzone', hidden=True, command='gcloud scc slz-overwatch')
     self.securesourcemanager = self._Add('securesourcemanager', hidden=True)
+    self.securitycentermanagement = self._Add(
+        'securitycentermanagement', command='gcloud scc manage', hidden=True
+    )
     self.securityposture = self._Add('securityposture', hidden=True)
     self.servicedirectory = self._Add(
         'servicedirectory', command='gcloud service-directory')

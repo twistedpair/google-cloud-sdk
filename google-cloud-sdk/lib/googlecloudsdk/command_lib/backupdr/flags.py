@@ -28,13 +28,14 @@ def GetManagementServerResourceSpec():
       resource_name='Management Server',
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def LocationAttributeConfig(arg_name='location'):
   return concepts.ResourceParameterAttributeConfig(
-      name=arg_name,
-      help_text='The location of the {resource}.')
+      name=arg_name, help_text='The location of the {resource}.'
+  )
 
 
 def AddManagementServerResourceArg(parser, verb):
@@ -44,7 +45,8 @@ def AddManagementServerResourceArg(parser, verb):
       name,
       GetManagementServerResourceSpec(),
       'Management Server {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddNetwork(parser, required=True):
@@ -58,4 +60,8 @@ def AddNetwork(parser, required=True):
       '--network',
       required=required,
       type=str,
-      help='Name of an existing VPC network with a private service connection')
+      help=(
+          'Name of an existing VPC network with private service access'
+          ' configured'
+      ),
+  )

@@ -45,6 +45,7 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_datasets_annotationSpecs = self.ProjectsLocationsDatasetsAnnotationSpecsService(self)
     self.projects_locations_datasets_dataItems_annotations = self.ProjectsLocationsDatasetsDataItemsAnnotationsService(self)
     self.projects_locations_datasets_dataItems = self.ProjectsLocationsDatasetsDataItemsService(self)
+    self.projects_locations_datasets_datasetVersions = self.ProjectsLocationsDatasetsDatasetVersionsService(self)
     self.projects_locations_datasets_savedQueries = self.ProjectsLocationsDatasetsSavedQueriesService(self)
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
     self.projects_locations_endpoints = self.ProjectsLocationsEndpointsService(self)
@@ -64,8 +65,13 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_models_evaluations_slices = self.ProjectsLocationsModelsEvaluationsSlicesService(self)
     self.projects_locations_models_evaluations = self.ProjectsLocationsModelsEvaluationsService(self)
     self.projects_locations_models = self.ProjectsLocationsModelsService(self)
+    self.projects_locations_nasJobs_nasTrialDetails = self.ProjectsLocationsNasJobsNasTrialDetailsService(self)
+    self.projects_locations_nasJobs = self.ProjectsLocationsNasJobsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_pipelineJobs = self.ProjectsLocationsPipelineJobsService(self)
+    self.projects_locations_publishers_models = self.ProjectsLocationsPublishersModelsService(self)
+    self.projects_locations_publishers = self.ProjectsLocationsPublishersService(self)
+    self.projects_locations_schedules = self.ProjectsLocationsSchedulesService(self)
     self.projects_locations_specialistPools = self.ProjectsLocationsSpecialistPoolsService(self)
     self.projects_locations_studies_trials = self.ProjectsLocationsStudiesTrialsService(self)
     self.projects_locations_studies = self.ProjectsLocationsStudiesService(self)
@@ -623,6 +629,151 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsDatasetsDatasetVersionsService(base_api.BaseApiService):
+    """Service class for the projects_locations_datasets_datasetVersions resource."""
+
+    _NAME = 'projects_locations_datasets_datasetVersions'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsDatasetsDatasetVersionsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a version from a Dataset.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsDatasetVersionsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/datasetVersions',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.datasets.datasetVersions.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/datasetVersions',
+        request_field='googleCloudAiplatformV1DatasetVersion',
+        request_type_name='AiplatformProjectsLocationsDatasetsDatasetVersionsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Dataset version.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsDatasetVersionsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/datasetVersions/{datasetVersionsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.datasets.datasetVersions.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsDatasetVersionsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Dataset version.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsDatasetVersionsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1DatasetVersion) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/datasetVersions/{datasetVersionsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.datasets.datasetVersions.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['readMask'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsDatasetVersionsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1DatasetVersion',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists DatasetVersions in a Dataset.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsDatasetVersionsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListDatasetVersionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/datasetVersions',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.datasets.datasetVersions.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1/{+parent}/datasetVersions',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsDatasetVersionsListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListDatasetVersionsResponse',
+        supports_download=False,
+    )
+
+    def Restore(self, request, global_params=None):
+      r"""Restores a dataset version.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsDatasetVersionsRestoreRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Restore')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Restore.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/datasetVersions/{datasetVersionsId}:restore',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.datasets.datasetVersions.restore',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:restore',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsDatasetVersionsRestoreRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsDatasetsSavedQueriesService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_savedQueries resource."""
 
@@ -632,6 +783,33 @@ class AiplatformV1(base_api.BaseApiClient):
       super(AiplatformV1.ProjectsLocationsDatasetsSavedQueriesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a SavedQuery.
+
+      Args:
+        request: (AiplatformProjectsLocationsDatasetsSavedQueriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/savedQueries/{savedQueriesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.datasets.savedQueries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDatasetsSavedQueriesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
     def List(self, request, global_params=None):
       r"""Lists SavedQueries in a Dataset.
@@ -978,7 +1156,7 @@ class AiplatformV1(base_api.BaseApiClient):
     )
 
     def Explain(self, request, global_params=None):
-      r"""Perform an online explanation. If deployed_model_id is specified, the corresponding DeployModel must have explanation_spec populated. If deployed_model_id is not specified, all DeployedModels must have explanation_spec populated. Only deployed AutoML tabular Models have explanation_spec.
+      r"""Perform an online explanation. If deployed_model_id is specified, the corresponding DeployModel must have explanation_spec populated. If deployed_model_id is not specified, all DeployedModels must have explanation_spec populated.
 
       Args:
         request: (AiplatformProjectsLocationsEndpointsExplainRequest) input message
@@ -4242,6 +4420,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UpdateExplanationDataset(self, request, global_params=None):
+      r"""Incrementally update the dataset used for an examples model.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateExplanationDataset')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateExplanationDataset.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:updateExplanationDataset',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.updateExplanationDataset',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1/{+model}:updateExplanationDataset',
+        request_field='googleCloudAiplatformV1UpdateExplanationDatasetRequest',
+        request_type_name='AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Upload(self, request, global_params=None):
       r"""Uploads a Model artifact into Vertex AI.
 
@@ -4266,6 +4471,215 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1UploadModelRequest',
         request_type_name='AiplatformProjectsLocationsModelsUploadRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNasJobsNasTrialDetailsService(base_api.BaseApiService):
+    """Service class for the projects_locations_nasJobs_nasTrialDetails resource."""
+
+    _NAME = 'projects_locations_nasJobs_nasTrialDetails'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsNasJobsNasTrialDetailsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a NasTrialDetail.
+
+      Args:
+        request: (AiplatformProjectsLocationsNasJobsNasTrialDetailsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1NasTrialDetail) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}/nasTrialDetails/{nasTrialDetailsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.nasJobs.nasTrialDetails.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNasJobsNasTrialDetailsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1NasTrialDetail',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List top NasTrialDetails of a NasJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsNasJobsNasTrialDetailsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListNasTrialDetailsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}/nasTrialDetails',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.nasJobs.nasTrialDetails.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/nasTrialDetails',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNasJobsNasTrialDetailsListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListNasTrialDetailsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNasJobsService(base_api.BaseApiService):
+    """Service class for the projects_locations_nasJobs resource."""
+
+    _NAME = 'projects_locations_nasJobs'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsNasJobsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Cancels a NasJob. Starts asynchronous cancellation on the NasJob. The server makes a best effort to cancel the job, but success is not guaranteed. Clients can use JobService.GetNasJob or other methods to check whether the cancellation succeeded or whether the job completed despite cancellation. On successful cancellation, the NasJob is not deleted; instead it becomes a job with a NasJob.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`, and NasJob.state is set to `CANCELLED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsNasJobsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}:cancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.nasJobs.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='googleCloudAiplatformV1CancelNasJobRequest',
+        request_type_name='AiplatformProjectsLocationsNasJobsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Create(self, request, global_params=None):
+      r"""Creates a NasJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsNasJobsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1NasJob) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/nasJobs',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.nasJobs.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/nasJobs',
+        request_field='googleCloudAiplatformV1NasJob',
+        request_type_name='AiplatformProjectsLocationsNasJobsCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1NasJob',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a NasJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsNasJobsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.nasJobs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNasJobsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a NasJob.
+
+      Args:
+        request: (AiplatformProjectsLocationsNasJobsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1NasJob) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/nasJobs/{nasJobsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.nasJobs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNasJobsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1NasJob',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NasJobs in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsNasJobsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListNasJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/nasJobs',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.nasJobs.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1/{+parent}/nasJobs',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNasJobsListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListNasJobsResponse',
         supports_download=False,
     )
 
@@ -4556,6 +4970,279 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='AiplatformProjectsLocationsPipelineJobsListRequest',
         response_type_name='GoogleCloudAiplatformV1ListPipelineJobsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPublishersModelsService(base_api.BaseApiService):
+    """Service class for the projects_locations_publishers_models resource."""
+
+    _NAME = 'projects_locations_publishers_models'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsPublishersModelsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Predict(self, request, global_params=None):
+      r"""Perform an online prediction.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1PredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('Predict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Predict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:predict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.predict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:predict',
+        request_field='googleCloudAiplatformV1PredictRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1PredictResponse',
+        supports_download=False,
+    )
+
+    def RawPredict(self, request, global_params=None):
+      r"""Perform an online prediction with an arbitrary HTTP payload. The response includes the following HTTP headers: * `X-Vertex-AI-Endpoint-Id`: ID of the Endpoint that served this prediction. * `X-Vertex-AI-Deployed-Model-Id`: ID of the Endpoint's DeployedModel that served this prediction.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsRawPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('RawPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    RawPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:rawPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.rawPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:rawPredict',
+        request_field='googleCloudAiplatformV1RawPredictRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsRawPredictRequest',
+        response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsPublishersService(base_api.BaseApiService):
+    """Service class for the projects_locations_publishers resource."""
+
+    _NAME = 'projects_locations_publishers'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsPublishersService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsLocationsSchedulesService(base_api.BaseApiService):
+    """Service class for the projects_locations_schedules resource."""
+
+    _NAME = 'projects_locations_schedules'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsSchedulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a Schedule.
+
+      Args:
+        request: (AiplatformProjectsLocationsSchedulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1Schedule) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schedules',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.schedules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/schedules',
+        request_field='googleCloudAiplatformV1Schedule',
+        request_type_name='AiplatformProjectsLocationsSchedulesCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1Schedule',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a Schedule.
+
+      Args:
+        request: (AiplatformProjectsLocationsSchedulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.schedules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsSchedulesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a Schedule.
+
+      Args:
+        request: (AiplatformProjectsLocationsSchedulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1Schedule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.schedules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsSchedulesGetRequest',
+        response_type_name='GoogleCloudAiplatformV1Schedule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists Schedules in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsSchedulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListSchedulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schedules',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.schedules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/schedules',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsSchedulesListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListSchedulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an active or paused Schedule. When the Schedule is updated, new runs will be scheduled starting from the updated next execution time after the update time based on the time_specification in the updated Schedule. All unstarted runs before the update time will be skipped while already created runs will NOT be paused or canceled.
+
+      Args:
+        request: (AiplatformProjectsLocationsSchedulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1Schedule) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}',
+        http_method='PATCH',
+        method_id='aiplatform.projects.locations.schedules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudAiplatformV1Schedule',
+        request_type_name='AiplatformProjectsLocationsSchedulesPatchRequest',
+        response_type_name='GoogleCloudAiplatformV1Schedule',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      r"""Pauses a Schedule. Will mark Schedule.state to 'PAUSED'. If the schedule is paused, no new runs will be created. Already created runs will NOT be paused or canceled.
+
+      Args:
+        request: (AiplatformProjectsLocationsSchedulesPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}:pause',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.schedules.pause',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:pause',
+        request_field='googleCloudAiplatformV1PauseScheduleRequest',
+        request_type_name='AiplatformProjectsLocationsSchedulesPauseRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resumes a paused Schedule to start scheduling new runs. Will mark Schedule.state to 'ACTIVE'. Only paused Schedule can be resumed. When the Schedule is resumed, new runs will be scheduled starting from the next execution time after the current time based on the time_specification in the Schedule. If Schedule.catchUp is set up true, all missed runs will be scheduled for backfill first.
+
+      Args:
+        request: (AiplatformProjectsLocationsSchedulesResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/schedules/{schedulesId}:resume',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.schedules.resume',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:resume',
+        request_field='googleCloudAiplatformV1ResumeScheduleRequest',
+        request_type_name='AiplatformProjectsLocationsSchedulesResumeRequest',
+        response_type_name='GoogleProtobufEmpty',
         supports_download=False,
     )
 
@@ -5922,6 +6609,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1Tensorboard',
         request_type_name='AiplatformProjectsLocationsTensorboardsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def ReadSize(self, request, global_params=None):
+      r"""Returns the storage size for a given TensorBoard instance.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsReadSizeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ReadTensorboardSizeResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReadSize')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReadSize.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}:readSize',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.readSize',
+        ordered_params=['tensorboard'],
+        path_params=['tensorboard'],
+        query_params=[],
+        relative_path='v1/{+tensorboard}:readSize',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsReadSizeRequest',
+        response_type_name='GoogleCloudAiplatformV1ReadTensorboardSizeResponse',
         supports_download=False,
     )
 

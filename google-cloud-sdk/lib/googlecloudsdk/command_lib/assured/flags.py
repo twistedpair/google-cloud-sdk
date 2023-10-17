@@ -46,6 +46,8 @@ compliance_regimes = {
 
 PARTNERS = ['LOCAL_CONTROLS_BY_S3NS', 'SOVEREIGN_CONTROLS_BY_T_SYSTEMS']
 
+ACKNOWLEDGE_TYPE = ['SINGLE_VIOLATION', 'EXISTING_CHILD_RESOURCE_VIOLATIONS']
+
 
 def AddListWorkloadsFlags(parser):
   parser.add_argument(
@@ -363,4 +365,11 @@ def AddAcknowledgeViolationsFlags(parser):
       '--comment',
       required=True,
       help='Business justification used added to acknowledge a violation.',
+  )
+  parser.add_argument(
+      '--acknowledge-type',
+      help="""the acknowledge type for specified violation, which is one of:
+      SINGLE_VIOLATION - to acknowledge specified violation,
+      EXISTING_CHILD_RESOURCE_VIOLATIONS - to acknowledge specified org policy
+      violation and all associated child resource violations.""",
   )

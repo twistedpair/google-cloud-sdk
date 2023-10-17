@@ -217,6 +217,8 @@ class _UserObjectArgs(_UserResourceArgs):
       event_based_hold=None,
       md5_hash=None,
       preserve_acl=None,
+      retain_until=None,
+      retention_mode=None,
       storage_class=None,
       temporary_hold=None,
   ):
@@ -235,6 +237,8 @@ class _UserObjectArgs(_UserResourceArgs):
     self.event_based_hold = event_based_hold
     self.md5_hash = md5_hash
     self.preserve_acl = preserve_acl
+    self.retain_until = retain_until
+    self.retention_mode = retention_mode
     self.storage_class = storage_class
     self.temporary_hold = temporary_hold
 
@@ -254,6 +258,8 @@ class _UserObjectArgs(_UserResourceArgs):
             self.event_based_hold == other.event_based_hold and
             self.md5_hash == other.md5_hash and
             self.preserve_acl == other.preserve_acl and
+            self.retain_until == other.retain_until and
+            self.retention_mode == other.retention_mode and
             self.storage_class == other.storage_class and
             self.temporary_hold == other.temporary_hold)
 
@@ -425,6 +431,10 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
 
       event_based_hold = getattr(args, 'event_based_hold', None)
       preserve_acl = getattr(args, 'preserve_acl', None)
+      retain_until = _get_value_or_clear_from_flag(
+          args, 'clear_retention', 'retain_until')
+      retention_mode = _get_value_or_clear_from_flag(
+          args, 'clear_retention', 'retention_mode')
       storage_class = getattr(args, 'storage_class', None)
       temporary_hold = getattr(args, 'temporary_hold', None)
 
@@ -444,6 +454,8 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           event_based_hold=event_based_hold,
           md5_hash=md5_hash,
           preserve_acl=preserve_acl,
+          retain_until=retain_until,
+          retention_mode=retention_mode,
           storage_class=storage_class,
           temporary_hold=temporary_hold)
 

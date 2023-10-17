@@ -43,10 +43,7 @@ def add_volume(volume, volumes, messages, release_track):
     raise serverless_exceptions.ConfigurationError(
         'All added volumes must have a name and type'
     )
-  if volume['name'] in volumes:
-    raise serverless_exceptions.ConfigurationError(
-        'Volume with name {} already exists'.format(volume['name'])
-    )
+
   if volume['type'] not in _supported_volume_types:
     raise serverless_exceptions.ConfigurationError(
         'Volume type {} not supported'.format(volume['type'])
@@ -59,6 +56,7 @@ def add_volume(volume, volumes, messages, release_track):
     )
   vol_type.validate_volume_add(volume)
   vol_type.fill_volume(volume, new_vol, messages)
+
   volumes[volume['name']] = new_vol
 
 

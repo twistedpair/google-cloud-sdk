@@ -53,10 +53,6 @@ class RetryableApiError(CloudApiError):
   pass
 
 
-class GcsApiError(CloudApiError, api_exceptions.HttpException):
-  pass
-
-
 class NotFoundError(CloudApiError):
   """Error raised when the requested resource does not exist.
 
@@ -67,8 +63,20 @@ class NotFoundError(CloudApiError):
   pass
 
 
+class PreconditionFailedError(CloudApiError):
+  """Raised when a precondition is not satisfied."""
+
+
+class ConflictError(CloudApiError):
+  """Raised when a resource cannot be created because one already exists."""
+
+
 class ResumableUploadAbortError(CloudApiError):
   """Raised when a resumable upload needs to be restarted."""
+  pass
+
+
+class GcsApiError(CloudApiError, api_exceptions.HttpException):
   pass
 
 
@@ -153,6 +161,14 @@ class GcsNotFoundError(GcsApiError, NotFoundError):
         match_object_resource_path.group('object'), generation_string)
 
 
+class GcsPreconditionFailedError(GcsApiError, PreconditionFailedError):
+  """Raised when a precondition is not satisfied."""
+
+
+class GcsConflictError(GcsApiError, ConflictError):
+  """Raised when a resource cannot be created because one already exists."""
+
+
 class S3ErrorPayload(api_exceptions.FormattableErrorPayload):
   """Allows using format strings to create strings from botocore ClientErrors.
 
@@ -209,7 +225,12 @@ class XmlApiError(CloudApiError, api_exceptions.HttpException):
         error, error_format=error_format, payload_class=S3ErrorPayload)
 
 
-def translate_error(error, translation_list, format_str=None):
+# TODO(b/303869146): Translate precondition errors for XML APIs.
+
+
+def translate_error(
+    error, translation_list, format_str=None, status_code_getter=None
+):
   """Translates error or returns original error if no matches.
 
   Note, an error will be translated if it is a child class of a value in
@@ -217,32 +238,57 @@ def translate_error(error, translation_list, format_str=None):
 
   Args:
     error (Exception): Error to translate.
-    translation_list (list): List of (Exception, Exception) tuples. Translates
-      errors that are instances of first error type to second. If there is a
-      hierarchy, error types earlier in list are translated first.
+    translation_list (list): List of (Exception, int|None, Exception) tuples.
+      Translates errors that are instances of first error type to second if the
+      status code of the first exception matches the integer value. If the
+      status code argument is None, the entry will translate errors of any
+      status code.
     format_str (str|None): An api_lib.util.exceptions.FormattableErrorPayload
       format string. Note that any properties that are accessed here are on the
       FormattableErrorPayload object, not the object returned from the server.
+    status_code_getter (Exception -> int|None): Function that gets a status code
+      from the exception type raised by the underlying client, e.g.
+      apitools_exceptions.HttpError. If None, only entries with a null status
+      code in `translation_list` will translate errors.
 
   Returns:
     Error (Exception). Translated if match. Else, original error.
   """
-  for untranslated_error, translated_error in translation_list:
-    if isinstance(error, untranslated_error):
+  if status_code_getter is None:
+    status_code_getter = lambda _: None
+
+  for (
+      untranslated_error,
+      untranslated_status_code,
+      translated_error,
+  ) in translation_list:
+    if isinstance(error, untranslated_error) and (
+        untranslated_status_code is None
+        or status_code_getter is None
+        or status_code_getter(error) == untranslated_status_code
+    ):
       return translated_error(error, format_str)
   return error
 
 
-def catch_error_raise_cloud_api_error(translation_list, format_str=None):
+def catch_error_raise_cloud_api_error(
+    translation_list, format_str=None, status_code_getter=None
+):
   """Decorator catches an error and raises CloudApiError with a custom message.
 
   Args:
-    translation_list (list): List of (Exception, Exception) tuples.
-      Translates errors that are instances of first error type to second. If
-      there is a hierarchy, error types earlier in list are translated first.
+    translation_list (list): List of (Exception, int|None, Exception) tuples.
+      Translates errors that are instances of first error type to second if the
+      status code of the first exception matches the integer value. If the
+      status code argument is None, the entry will translate errors of any
+      status code.
     format_str (str|None): An api_lib.util.exceptions.FormattableErrorPayload
       format string. Note that any properties that are accessed here are on the
       FormattableErrorPayload object, not the object returned from the server.
+    status_code_getter (Exception -> int|None): Function that gets a status code
+      from the exception type raised by the underlying client, e.g.
+      apitools_exceptions.HttpError. If None, only entries with a null status
+      code in `translation_list` will translate errors.
 
   Returns:
     A decorator that catches errors and raises a CloudApiError with a
@@ -264,7 +310,13 @@ def catch_error_raise_cloud_api_error(translation_list, format_str=None):
       except Exception as e:
         # pylint:enable=broad-except
         core_exceptions.reraise(
-            translate_error(e, translation_list, format_str))
+            translate_error(
+                e,
+                translation_list,
+                format_str=format_str,
+                status_code_getter=status_code_getter,
+            )
+        )
 
     return wrapper
 

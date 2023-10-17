@@ -72,6 +72,18 @@ def fleet_default_cfg_group():
   return config_group
 
 
+def origin_flag():
+  """Builds flag for setting configuration to the fleet default."""
+  return base.Argument(
+      '--origin',
+      choices=['FLEET'],
+      type=str,
+      help="""If --origin=FLEET will set the configuration of the membership to
+      the fleet default.
+      """,
+  )
+
+
 class PocoFlags:
   """Handle common flags for Poco Commands.
 
@@ -222,17 +234,6 @@ class PocoFlags:
         ),
     )
 
-  def add_template_library(self):
-    """Adds handling for installing the template library."""
-    self.parser.add_argument(
-        '--template-library',
-        action=EnableDisableAction,
-        help=(
-            'If set, installs a library of constraint templates for common'
-            ' policy types. (To disable, use --no-template-library)'
-        ),
-    )
-
   def add_version(self):
     """Adds handling for version flag."""
     self.parser.add_argument(
@@ -364,27 +365,26 @@ class PocoFlagParser:
       return self.messages.PolicyControllerPolicyContentSpec()
     return poco_cfg.policyContent
 
-  def update_template_library(
-      self, poco_cfg: messages.Message
-  ) -> messages.Message:
-    """Updates the template library/content installation."""
-    if self.args.template_library is not None:
-      policy_content = self._get_policy_content(poco_cfg)
-      if self.args.template_library:
-        cfg = self.template_lib_cfg(installation=self.template_lib_enum.ALL)
-      else:
-        cfg = self.template_lib_cfg(
-            installation=self.template_lib_enum.NOT_INSTALLED
-        )
-      policy_content.templateLibrary = cfg
-      poco_cfg.policyContent = policy_content
-
-    return poco_cfg
-
   def update_version(self, poco: messages.Message) -> messages.Message:
     if self.args.version:
       poco.version = self.args.version
     return poco
+
+  def use_default_cfg(self) -> bool:
+    return self.args.origin and self.args.origin == 'FLEET'
+
+  def set_default_cfg(
+      self, feature: messages.Message, membership: messages.Message
+  ) -> messages.Message:
+    self.set_origin_fleet(membership)
+    membership.policycontroller = (
+        feature.fleetDefaultMemberConfig.policycontroller
+    )
+
+  def set_origin_fleet(self, membership: messages.Message) -> messages.Message:
+    membership.origin = self.messages.Origin(
+        type=self.messages.Origin.TypeValueValuesEnum.FLEET
+    )
 
 
 class EnableDisableAction(argparse.Action):

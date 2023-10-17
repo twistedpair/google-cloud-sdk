@@ -1236,6 +1236,10 @@ apis:
         organizations.securityHealthAnalyticsSettings.customModules:
           path: organizations/{organizationsId}/securityHealthAnalyticsSettings/customModules/{customModulesId}
       default: true
+  securitycentermanagement:
+    v1:
+      discovery_doc: securitycentermanagement_v1.json
+      default: true
   securityposture:
     v1alpha:
       discovery_doc: securityposture_v1alpha.json
@@ -1946,6 +1950,10 @@ canonical_surfaces:
   scc:
     name: securitycenter
     command: scc
+  securitycentermanagement:
+    name: securitycentermanagement
+    command: scc manage
+    hidden: true
   sddc:
     name: sddc
     command: vmware sddc

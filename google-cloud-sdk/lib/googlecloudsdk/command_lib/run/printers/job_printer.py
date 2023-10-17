@@ -126,6 +126,14 @@ class JobPrinter(cp.CustomPrinterBase):
             'SQL connections',
             k8s_util.GetCloudSqlInstances(job_spec_annotations),
         ),
+        (
+            'Volume Mounts',
+            container_util.GetVolumeMounts(record.template.container),
+        ),
+        (
+            'Volumes',
+            container_util.GetVolumes(record.template),
+        ),
     ])
 
   @staticmethod
@@ -205,6 +213,14 @@ class TaskPrinter(cp.CustomPrinterBase):
         ('Secrets', container_util.GetSecrets(record.container)),
         ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
         ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
+        (
+            'Volume Mounts',
+            container_util.GetVolumeMounts(record.container),
+        ),
+        (
+            'Volumes',
+            container_util.GetVolumes(record),
+        ),
     ])
 
   @staticmethod
@@ -267,6 +283,14 @@ class ExecutionPrinter(cp.CustomPrinterBase):
         ('Secrets', container_util.GetSecrets(record.template.container)),
         ('VPC access', k8s_util.GetVpcNetwork(record.annotations)),
         ('SQL connections', k8s_util.GetCloudSqlInstances(record.annotations)),
+        (
+            'Volume Mounts',
+            container_util.GetVolumeMounts(record.template.container),
+        ),
+        (
+            'Volumes',
+            container_util.GetVolumes(record.template),
+        ),
     ])
 
   @staticmethod

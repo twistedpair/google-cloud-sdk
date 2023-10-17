@@ -280,7 +280,7 @@ class CopyTaskIterator:
         getattr(user_request_args, 'manifest_path', None))
 
   def _raise_error_if_source_matches_destination(self):
-    if not self._multiple_sources:
+    if not self._multiple_sources and not self._source_name_iterator.is_empty():
       source_url = self._source_name_iterator.peek().expanded_url
       if source_url == self._raw_destination.storage_url:
         raise errors.InvalidUrlError(

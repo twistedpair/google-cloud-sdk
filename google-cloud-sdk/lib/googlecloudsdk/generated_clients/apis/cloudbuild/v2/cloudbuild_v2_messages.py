@@ -2029,7 +2029,8 @@ class PipelineRun(_messages.Message):
   r"""Message describing PipelineRun object
 
   Enums:
-    PipelineRunStatusValueValuesEnum: Status of the PipelineRun.
+    PipelineRunStatusValueValuesEnum: Pipelinerun status the user can provide.
+      Used for cancellation.
 
   Messages:
     AnnotationsValue: User annotations. See
@@ -2049,7 +2050,8 @@ class PipelineRun(_messages.Message):
       `projects/{project}/locations/{location}/pipelineRuns/{pipeline_run}`
     params: Params is a list of parameter names and values.
     pipelineRef: PipelineRef refer to a specific instance of a Pipeline.
-    pipelineRunStatus: Status of the PipelineRun.
+    pipelineRunStatus: Pipelinerun status the user can provide. Used for
+      cancellation.
     pipelineSpec: PipelineSpec defines the desired state of Pipeline.
     resolvedPipelineSpec: Output only. The exact PipelineSpec used to
       instantiate the run.
@@ -2070,7 +2072,7 @@ class PipelineRun(_messages.Message):
   """
 
   class PipelineRunStatusValueValuesEnum(_messages.Enum):
-    r"""Status of the PipelineRun.
+    r"""Pipelinerun status the user can provide. Used for cancellation.
 
     Values:
       PIPELINE_RUN_STATUS_UNSPECIFIED: Default enum type; should not be used.
@@ -2987,7 +2989,8 @@ class TaskRun(_messages.Message):
   r"""Message describing TaskRun object
 
   Enums:
-    TaskRunStatusValueValuesEnum: Status of the TaskRun.
+    TaskRunStatusValueValuesEnum: Taskrun status the user can provide. Used
+      for cancellation.
 
   Messages:
     AnnotationsValue: User annotations. See
@@ -3014,7 +3017,7 @@ class TaskRun(_messages.Message):
     taskRef: TaskRef refer to a specific instance of a task.
     taskRunResults: Output only. List of results written out by the task's
       containers
-    taskRunStatus: Status of the TaskRun.
+    taskRunStatus: Taskrun status the user can provide. Used for cancellation.
     taskSpec: TaskSpec contains the Spec to instantiate a TaskRun.
     timeout: Time after which the task times out. Defaults to 1 hour. If you
       set the timeout to 0, the TaskRun will have no timeout and will run
@@ -3028,7 +3031,7 @@ class TaskRun(_messages.Message):
   """
 
   class TaskRunStatusValueValuesEnum(_messages.Enum):
-    r"""Status of the TaskRun.
+    r"""Taskrun status the user can provide. Used for cancellation.
 
     Values:
       TASK_RUN_STATUS_UNSPECIFIED: Default enum type; should not be used.

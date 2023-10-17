@@ -5107,6 +5107,86 @@ class GoogleCloudDataplexV1EnvironmentSessionStatus(_messages.Message):
   active = _messages.BooleanField(1)
 
 
+class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):
+  r"""Payload associated with Governance related log events.
+
+  Enums:
+    EventTypeValueValuesEnum: The type of the event.
+
+  Fields:
+    entity: Entity resource information if the log event is associated with a
+      specific entity.
+    eventType: The type of the event.
+    message: The log message.
+  """
+
+  class EventTypeValueValuesEnum(_messages.Enum):
+    r"""The type of the event.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: An unspecified event type.
+      RESOURCE_IAM_POLICY_UPDATE: Resource IAM policy update event.
+      BIGQUERY_TABLE_CREATE: BigQuery table create event.
+      BIGQUERY_TABLE_UPDATE: BigQuery table update event.
+      BIGQUERY_TABLE_DELETE: BigQuery table delete event.
+      BIGQUERY_CONNECTION_CREATE: BigQuery connection create event.
+      BIGQUERY_CONNECTION_UPDATE: BigQuery connection update event.
+      BIGQUERY_CONNECTION_DELETE: BigQuery connection delete event.
+      BIGQUERY_TAXONOMY_CREATE: BigQuery taxonomy created.
+      BIGQUERY_POLICY_TAG_CREATE: BigQuery policy tag created.
+      BIGQUERY_POLICY_TAG_DELETE: BigQuery policy tag deleted.
+      BIGQUERY_POLICY_TAG_SET_IAM_POLICY: BigQuery set iam policy for policy
+        tag.
+      ACCESS_POLICY_UPDATE: Access policy update event.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    RESOURCE_IAM_POLICY_UPDATE = 1
+    BIGQUERY_TABLE_CREATE = 2
+    BIGQUERY_TABLE_UPDATE = 3
+    BIGQUERY_TABLE_DELETE = 4
+    BIGQUERY_CONNECTION_CREATE = 5
+    BIGQUERY_CONNECTION_UPDATE = 6
+    BIGQUERY_CONNECTION_DELETE = 7
+    BIGQUERY_TAXONOMY_CREATE = 8
+    BIGQUERY_POLICY_TAG_CREATE = 9
+    BIGQUERY_POLICY_TAG_DELETE = 10
+    BIGQUERY_POLICY_TAG_SET_IAM_POLICY = 11
+    ACCESS_POLICY_UPDATE = 12
+
+  entity = _messages.MessageField('GoogleCloudDataplexV1GovernanceEventEntity', 1)
+  eventType = _messages.EnumField('EventTypeValueValuesEnum', 2)
+  message = _messages.StringField(3)
+
+
+class GoogleCloudDataplexV1GovernanceEventEntity(_messages.Message):
+  r"""Information about Entity resource that the log event is associated with.
+
+  Enums:
+    EntityTypeValueValuesEnum: Type of entity.
+
+  Fields:
+    entity: The Entity resource the log event is associated with. Format: proj
+      ects/{project_number}/locations/{location_id}/lakes/{lake_id}/zones/{zon
+      e_id}/entities/{entity_id}
+    entityType: Type of entity.
+  """
+
+  class EntityTypeValueValuesEnum(_messages.Enum):
+    r"""Type of entity.
+
+    Values:
+      ENTITY_TYPE_UNSPECIFIED: An unspecified Entity type.
+      TABLE: Table entity type.
+      FILESET: Fileset entity type.
+    """
+    ENTITY_TYPE_UNSPECIFIED = 0
+    TABLE = 1
+    FILESET = 2
+
+  entity = _messages.StringField(1)
+  entityType = _messages.EnumField('EntityTypeValueValuesEnum', 2)
+
+
 class GoogleCloudDataplexV1Job(_messages.Message):
   r"""A job represents an instance of a task.
 

@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from apitools.base.py import list_pager
+
 from googlecloudsdk.api_lib.accesscontextmanager import util
 from googlecloudsdk.api_lib.util import waiter
 
@@ -30,13 +32,30 @@ class Client(object):
     self.client = client or util.GetClient(version=version)
     self.messages = messages or self.client.MESSAGES_MODULE
 
-  def Patch(self,
-            level_ref,
-            description=None,
-            title=None,
-            basic_level_combine_function=None,
-            basic_level_conditions=None,
-            custom_level_expr=None):
+  def List(self, policy_ref, limit=None):
+    req = (
+        self.messages.AccesscontextmanagerAccessPoliciesAccessLevelsListRequest(
+            parent=policy_ref.RelativeName()
+        )
+    )
+    return list_pager.YieldFromList(
+        self.client.accessPolicies_accessLevels,
+        req,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=None,
+        field='accessLevels',
+    )
+
+  def Patch(
+      self,
+      level_ref,
+      description=None,
+      title=None,
+      basic_level_combine_function=None,
+      basic_level_conditions=None,
+      custom_level_expr=None,
+  ):
     """Patch an access level.
 
     Args:

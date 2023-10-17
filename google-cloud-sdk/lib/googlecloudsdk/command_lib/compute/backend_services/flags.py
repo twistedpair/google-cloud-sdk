@@ -260,8 +260,8 @@ def AddIpAddressSelectionPolicy(parser):
       choices=['IPV4_ONLY', 'PREFER_IPV6', 'IPV6_ONLY'],
       type=lambda x: x.replace('-', '_').upper(),
       help="""\
-      Specifies preference of traffic to the backend (from the proxy and from
-      the client for proxyless gRPC).
+      Specifies a preference for traffic sent from the proxy to the backend (or
+      from the client to the backend for proxyless gRPC).
 
       Can only be set if load balancing scheme is INTERNAL_SELF_MANAGED,
       INTERNAL_MANAGED or EXTERNAL_MANAGED.
@@ -269,18 +269,18 @@ def AddIpAddressSelectionPolicy(parser):
       The possible values are:
 
        IPV4_ONLY
-         Only send IPv4 traffic to the backends of the Backend Service
+         Only send IPv4 traffic to the backends of the backend service,
          regardless of traffic from the client to the proxy. Only IPv4
-         health-checks are used to check the health of the backends.
+         health checks are used to check the health of the backends.
 
        PREFER_IPV6
-         Prioritize the connection to the endpoints IPv6 address over its IPv4
+         Prioritize the connection to the endpoint's IPv6 address over its IPv4
          address (provided there is a healthy IPv6 address).
 
        IPV6_ONLY
-         Only send IPv6 traffic to the backends of the Backend Service
+         Only send IPv6 traffic to the backends of the backend service,
          regardless of traffic from the client to the proxy. Only IPv6
-         health-checks are used to check the health of the backends.
+         health checks are used to check the health of the backends.
       """,
   )
 

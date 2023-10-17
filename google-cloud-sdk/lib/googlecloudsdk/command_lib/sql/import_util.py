@@ -253,5 +253,7 @@ def RunBakImportCommand(args, client):
       args.no_recovery,
       args.recovery_only,
       args.bak_type,
+      args.stop_at,
+      args.stop_at_mark,
   )
   return RunImportCommand(args, client, sql_import_context)

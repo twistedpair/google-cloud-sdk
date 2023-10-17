@@ -28,7 +28,7 @@ import time
 import uuid
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as apitools_exceptions
-
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.dataproc import exceptions
 from googlecloudsdk.api_lib.dataproc import storage_helpers
 from googlecloudsdk.calliope import arg_parsers
@@ -948,3 +948,21 @@ def UpdateSessionTemplate(dataproc, name, template):
   template = dataproc.client.projects_locations_sessionTemplates.Patch(template)
   log.status.Print('Updated [{0}].'.format(template.name))
   return template
+
+
+def YieldFromListWithUnreachableList(unreachable_warning_msg, *args, **kwargs):
+  """Yields from paged List calls handling unreachable list."""
+  unreachable = set()
+
+  def _GetFieldFn(message, attr):
+    unreachable.update(message.unreachable)
+    return getattr(message, attr)
+
+  result = list_pager.YieldFromList(get_field_func=_GetFieldFn, *args, **kwargs)
+  for item in result:
+    yield item
+  if unreachable:
+    log.warning(
+        unreachable_warning_msg,
+        ', '.join(sorted(unreachable)),
+    )

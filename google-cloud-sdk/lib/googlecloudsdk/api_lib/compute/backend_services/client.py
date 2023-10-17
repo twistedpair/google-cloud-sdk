@@ -100,15 +100,10 @@ class BackendService(object):
                   backendService=self.ref.Name()))
 
   def MakeSetSecurityPolicyRequestTuple(self,
-                                        security_policy,
-                                        support_regional_security_policy=False):
+                                        security_policy):
     """Makes a call to set the security policy on a backend service."""
     region = getattr(self.ref, 'region', None)
     if region:
-      if not support_regional_security_policy:
-        raise calliope_exceptions.InvalidArgumentException(
-            'region',
-            'Can only set security policy for global backend services.')
       return (
           self._client.regionBackendServices,
           'SetSecurityPolicy',

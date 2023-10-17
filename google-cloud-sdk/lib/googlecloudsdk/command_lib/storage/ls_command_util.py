@@ -25,9 +25,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.storage import cloud_api
 from googlecloudsdk.command_lib.storage import list_util
-from googlecloudsdk.command_lib.storage.list_util import BaseFormatWrapper
-from googlecloudsdk.command_lib.storage.list_util import BaseListExecutor
-from googlecloudsdk.command_lib.storage.list_util import DisplayDetail
 from googlecloudsdk.command_lib.storage.resources import gcloud_full_resource_formatter
 from googlecloudsdk.command_lib.storage.resources import gsutil_full_resource_formatter
 from googlecloudsdk.command_lib.storage.resources import resource_reference
@@ -40,20 +37,20 @@ LONG_LIST_ROW_FORMAT = (
 )
 
 
-class _HeaderFormatWrapper(BaseFormatWrapper):
+class _HeaderFormatWrapper(list_util.BaseFormatWrapper):
   """For formatting how headers print when listed."""
 
   def __init__(
       self,
       resource,
-      display_detail=DisplayDetail.SHORT,
+      display_detail=list_util.DisplayDetail.SHORT,
       include_etag=False,
       object_state=None,
       readable_sizes=False,
       full_formatter=None,
       use_gsutil_style=False,
   ):
-    """See BaseFormatWrapper class for function doc strings."""
+    """See list_util.BaseFormatWrapper class for function doc strings."""
 
     super(_HeaderFormatWrapper, self).__init__(
         resource,
@@ -73,26 +70,26 @@ class _HeaderFormatWrapper(BaseFormatWrapper):
       return ''
 
     url = self.resource.storage_url.versionless_url_string
-    if self._display_detail == DisplayDetail.JSON:
+    if self._display_detail == list_util.DisplayDetail.JSON:
       return self.resource.get_json_dump()
     # This will print as "gs://bucket:" or "gs://bucket/prefix/:".
     return '\n{}:'.format(url)
 
 
-class _ResourceFormatWrapper(BaseFormatWrapper):
+class _ResourceFormatWrapper(list_util.BaseFormatWrapper):
   """For formatting how resources print when listed."""
 
   def __init__(
       self,
       resource,
-      display_detail=DisplayDetail.SHORT,
+      display_detail=list_util.DisplayDetail.SHORT,
       full_formatter=None,
       include_etag=False,
       object_state=None,
       readable_sizes=False,
       use_gsutil_style=False,
   ):
-    """See BaseFormatWrapper class for function doc strings."""
+    """See list_util.BaseFormatWrapper class for function doc strings."""
 
     super(_ResourceFormatWrapper, self).__init__(
         resource,
@@ -141,7 +138,7 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
     )
 
   def __str__(self):
-    if self._display_detail == DisplayDetail.LONG and (
+    if self._display_detail == list_util.DisplayDetail.LONG and (
         isinstance(self.resource, resource_reference.ObjectResource)
         or isinstance(self.resource, resource_reference.PrefixResource)
     ):
@@ -151,14 +148,14 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
         cloud_api.ObjectState.LIVE_AND_NONCURRENT,
         cloud_api.ObjectState.SOFT_DELETED,
     )
-    if self._display_detail == DisplayDetail.FULL and (
+    if self._display_detail == list_util.DisplayDetail.FULL and (
         isinstance(self.resource, resource_reference.BucketResource)
         or isinstance(self.resource, resource_reference.ObjectResource)
     ):
       return self._full_formatter.format(
           self.resource, show_version_in_url=show_version_in_url
       )
-    if self._display_detail == DisplayDetail.JSON:
+    if self._display_detail == list_util.DisplayDetail.JSON:
       return self.resource.get_json_dump()
     if show_version_in_url:
       # Include generation in URL.
@@ -166,24 +163,25 @@ class _ResourceFormatWrapper(BaseFormatWrapper):
     return self.resource.storage_url.versionless_url_string
 
 
-class LsExecutor(BaseListExecutor):
+class LsExecutor(list_util.BaseListExecutor):
   """Helper class for the ls command."""
 
   def __init__(
       self,
       cloud_urls,
       buckets_flag=False,
-      display_detail=DisplayDetail.SHORT,
+      display_detail=list_util.DisplayDetail.SHORT,
       fetch_encrypted_object_hashes=False,
       halt_on_empty_response=True,
       include_etag=False,
+      include_managed_folders=False,
       next_page_token=None,
       object_state=None,
       readable_sizes=False,
       recursion_flag=False,
       use_gsutil_style=False,
   ):
-    """See BaseListExecutor class for function doc strings."""
+    """See list_util.BaseListExecutor class for function doc strings."""
     super(LsExecutor, self).__init__(
         cloud_urls=cloud_urls,
         buckets_flag=buckets_flag,
@@ -191,6 +189,7 @@ class LsExecutor(BaseListExecutor):
         fetch_encrypted_object_hashes=fetch_encrypted_object_hashes,
         halt_on_empty_response=halt_on_empty_response,
         include_etag=include_etag,
+        include_managed_folders=include_managed_folders,
         next_page_token=next_page_token,
         object_state=object_state,
         readable_sizes=readable_sizes,
@@ -213,7 +212,8 @@ class LsExecutor(BaseListExecutor):
       self, resource_url, only_display_buckets, object_count, total_bytes
   ):
     if (
-        self._display_detail in (DisplayDetail.LONG, DisplayDetail.FULL)
+        self._display_detail
+        in (list_util.DisplayDetail.LONG, list_util.DisplayDetail.FULL)
         and not only_display_buckets
     ):
       # Long listing needs summary line.

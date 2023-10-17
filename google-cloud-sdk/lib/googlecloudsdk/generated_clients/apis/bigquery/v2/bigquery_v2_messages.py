@@ -50,6 +50,24 @@ class AggregateClassificationMetrics(_messages.Message):
   threshold = _messages.FloatField(7)
 
 
+class AggregationThresholdPolicy(_messages.Message):
+  r"""Represents privacy policy associated with "aggregation threshold"
+  method.
+
+  Fields:
+    privacyUnitColumns: Optional. The privacy unit column(s) associated with
+      this policy. For now, only one column per data source object (table,
+      view) is allowed as a privacy unit column. Representing as a repeated
+      field in metadata for extensibility to multiple columns in future.
+      Duplicates and Repeated struct fields are not allowed. For nested
+      fields, use dot notation ("outer.inner")
+    threshold: Optional. The threshold for the "aggregation threshold" policy.
+  """
+
+  privacyUnitColumns = _messages.StringField(1, repeated=True)
+  threshold = _messages.IntegerField(2)
+
+
 class Argument(_messages.Message):
   r"""Input/output argument of a function or a stored procedure.
 
@@ -3494,6 +3512,46 @@ class JobConfigurationTableCopy(_messages.Message):
   writeDisposition = _messages.StringField(8)
 
 
+class JobCreationReason(_messages.Message):
+  r"""Reason about why a Job was created from a [`jobs.query`](https://cloud.g
+  oogle.com/bigquery/docs/reference/rest/v2/jobs/query) method when used with
+  `JOB_CREATION_OPTIONAL` Job creation mode. For [`jobs.insert`](https://cloud
+  .google.com/bigquery/docs/reference/rest/v2/jobs/insert) method calls it
+  will always be `REQUESTED`. This feature is not yet available. Jobs will
+  always be created.
+
+  Enums:
+    CodeValueValuesEnum: Output only. Specifies the high level reason why a
+      Job was created.
+
+  Fields:
+    code: Output only. Specifies the high level reason why a Job was created.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies the high level reason why a Job was created.
+
+    Values:
+      CODE_UNSPECIFIED: Reason is not specified.
+      REQUESTED: Job creation was requested.
+      LONG_RUNNING: The query request ran beyond a system defined timeout
+        specified by the [timeoutMs field in the QueryRequest](https://cloud.g
+        oogle.com/bigquery/docs/reference/rest/v2/jobs/query#queryrequest). As
+        a result it was considered a long running operation for which a job
+        was created.
+      LARGE_RESULTS: The results from the query cannot fit in the response.
+      OTHER: BigQuery has determined that the query needs to be executed as a
+        Job.
+    """
+    CODE_UNSPECIFIED = 0
+    REQUESTED = 1
+    LONG_RUNNING = 2
+    LARGE_RESULTS = 3
+    OTHER = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
 class JobList(_messages.Message):
   r"""A JobList object.
 
@@ -4345,6 +4403,18 @@ class PrincipalComponentInfo(_messages.Message):
   explainedVariance = _messages.FloatField(2)
   explainedVarianceRatio = _messages.FloatField(3)
   principalComponentId = _messages.IntegerField(4)
+
+
+class PrivacyPolicy(_messages.Message):
+  r"""Represents privacy policy that contains the privacy requirements
+  specified by the data owner. Currently, this is only supported on views.
+
+  Fields:
+    aggregationThresholdPolicy: Optional. Policy used for aggregation
+      thresholds.
+  """
+
+  aggregationThresholdPolicy = _messages.MessageField('AggregationThresholdPolicy', 1)
 
 
 class ProjectList(_messages.Message):

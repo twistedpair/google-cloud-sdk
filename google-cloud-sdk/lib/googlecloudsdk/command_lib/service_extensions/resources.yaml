@@ -6,7 +6,7 @@ project:
     parameter_name: projectsId
     attribute_name: project
     help: |
-      The project Id.
+      The project ID.
     property: core/project
 
 location:
@@ -29,14 +29,14 @@ optionalLocation:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      The location Id.
+      The location ID.
     fallthroughs:
     # If the location is not specified, assume 'global' by default.
     - hook: googlecloudsdk.command_lib.service_extensions.util:SetLocationAsGlobal
       hint: use global location
 
 lbTrafficExtension:
-  name: LB Traffic Extension
+  name: LbTrafficExtension
   collection: networkservices.projects.locations.lbTrafficExtensions
   request_id_field: lbTrafficExtensionId
   attributes:
@@ -46,10 +46,10 @@ lbTrafficExtension:
     parameter_name: lbTrafficExtensionsId
     attribute_name: lb_traffic_extension
     help: |
-      Id of the LB Traffic Extension.
+      The ID of the `LbTrafficExtension`.
 
 lbRouteExtension:
-  name: LB Route Extension
+  name: LbRouteExtension
   collection: networkservices.projects.locations.lbRouteExtensions
   request_id_field: lbRouteExtensionId
   attributes:
@@ -59,7 +59,7 @@ lbRouteExtension:
     parameter_name: lbRouteExtensionsId
     attribute_name: lb_route_extension
     help: |
-      Id of the LB Route Extension.
+      The ID of the `LbRouteExtension`.
 
 wasmAction:
   name: WasmAction
@@ -71,7 +71,7 @@ wasmAction:
   - &wasmAction
     parameter_name: wasmActionsId
     attribute_name: wasm_action
-    help: The ID of the WasmAction.
+    help: The ID of the `WasmAction`.
 
 wasmPlugin:
   name: WasmPlugin
@@ -83,7 +83,7 @@ wasmPlugin:
   - &wasmPlugin
     parameter_name: wasmPluginsId
     attribute_name: wasm_plugin
-    help: The ID of the WasmPlugin.
+    help: The ID of the `WasmPlugin`.
 
 wasmPluginVersion:
   name: WasmPluginVersion
@@ -96,4 +96,4 @@ wasmPluginVersion:
   - &version
     parameter_name: versionsId
     attribute_name: wasm_plugin_version
-    help: The ID of the WasmPluginVersion.
+    help: The ID of the `WasmPluginVersion`.

@@ -45,9 +45,9 @@ class ViolationsClient(object):
     """List all Assured Workloads violations belonging to the given workload.
 
     Args:
-      parent: str, the parent workload of the Assured Workloads Violations
-        to be listed, in the form:
-          organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD}.
+      parent: str, the parent workload of the Assured Workloads Violations to be
+        listed, in the form:
+        organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD}.
       limit: int or None, the total number of results to return.
       page_size: int, the number of entries in each batch (affects requests
         made, but not the yielded results).
@@ -56,14 +56,16 @@ class ViolationsClient(object):
       A list of all Assured Workloads violations belonging to a given workload.
     """
     list_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest(
-        parent=parent, pageSize=page_size)
+        parent=parent, pageSize=page_size
+    )
     return list_pager.YieldFromList(
         self._service,
         list_req,
         field='violations',
         batch_size=page_size,
         limit=limit,
-        batch_size_attribute=None)
+        batch_size_attribute=None,
+    )
 
   def Describe(self, name):
     """Describe an existing Assured Workloads compliance violation.
@@ -77,11 +79,18 @@ class ViolationsClient(object):
       Specified Assured Workloads Violation.
     """
     describe_req = self.messages.AssuredworkloadsOrganizationsLocationsWorkloadsViolationsGetRequest(
-        name=name)
+        name=name
+    )
     return self.client.organizations_locations_workloads_violations.Get(
-        describe_req)
+        describe_req
+    )
 
-  def Acknowledge(self, name, comment):
+  def Acknowledge(
+      self,
+      name,
+      comment,
+      acknowledge_type=None,
+  ):
     """Acknowledge an existing Assured Workloads compliance violation.
 
     Args:
@@ -90,11 +99,17 @@ class ViolationsClient(object):
         organizations/{ORG_ID}/locations/{LOCATION}/workloads/{WORKLOAD_ID}/violations/{VIOLATION_ID}.
       comment: str, the business justification which the user wants to add while
         acknowledging a violation.
+      acknowledge_type: str, the acknowledge type for specified violation, which
+        is one of: SINGLE_VIOLATION - to acknowledge specified violation,
+        EXISTING_CHILD_RESOURCE_VIOLATIONS - to acknowledge specified org policy
+        violation and all associated child resource violations.
 
     Returns:
       Specified Assured Workloads Violation.
     """
     acknowledgement_req = message_util.CreateAcknowledgeRequest(
-        name, comment, self._release_track)
+        name, comment, acknowledge_type, self._release_track
+    )
     return self.client.organizations_locations_workloads_violations.Acknowledge(
-        acknowledgement_req)
+        acknowledgement_req
+    )

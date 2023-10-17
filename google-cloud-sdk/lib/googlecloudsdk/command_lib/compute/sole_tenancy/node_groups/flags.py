@@ -40,13 +40,15 @@ _MAINTENANCE_POLICY_MAPPINGS = {
 
 _MAINTENANCE_INTERVAL_CHOICES = {
     'as-needed': (
-        ' VMs are eligible to receive infrastructure and hypervisor updates as'
-        ' they become available.'
+        ' hosts are eligible to receive infrastructure and hypervisor updates'
+        ' as they become available.'
     ),
     'recurrent': (
-        'VMs receive infrastructure and hypervisor updates on a periodic basis,'
-        ' minimizing the number of maintenance operations (live migrations or'
-        ' terminations) on an individual VM.'
+        'hosts receive planned infrastructure and hypervisor updates on a'
+        ' periodic basis, but not more frequently than every 28 days. This'
+        ' minimizes the number of planned maintenance operations on individual'
+        ' hosts and reduces the frequency of disruptions, both live migrations'
+        ' and terminations, on individual VMs.'
     ),
 }
 

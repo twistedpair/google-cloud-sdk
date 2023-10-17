@@ -895,10 +895,8 @@ class Interface(_messages.Message):
   building the BGP session.
 
   Fields:
-    ipv4Cidr: IP address and range of the interface. This value is only used
-      when linked_interconnect_attachment is set.
-    ipv6Cidr: IPv6 address and range of the interface This value is only used
-      when linked_interconnect_attachment is set.
+    ipv4Cidr: IP address and range of the interface.
+    ipv6Cidr: IPv6 address and range of the interface.
     linkedInterconnectAttachment: The canonical name of the linked
       Interconnect attachment.
     loopbackIpAddresses: Create loopback interface in the router when

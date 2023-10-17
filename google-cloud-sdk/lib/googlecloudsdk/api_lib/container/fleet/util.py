@@ -23,6 +23,7 @@ from typing import Union
 
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import resources
 from googlecloudsdk.generated_clients.apis.gkehub.v1 import gkehub_v1_client as ga_client
@@ -393,3 +394,29 @@ def OperationRef(operation: alpha_messages.Operation) -> resources.Resource:
   return resources.REGISTRY.ParseRelativeName(
       operation.name, collection='gkehub.projects.locations.operations'
   )
+
+
+def RolloutRef(args: parser_extensions.Namespace) -> resources.Resource:
+  if getattr(args.CONCEPTS, 'rollout', None):
+    return args.CONCEPTS.rollout.Parse()
+
+
+def RolloutName(args: parser_extensions.Namespace) -> str:
+  rollout_ref = RolloutRef(args)
+  if rollout_ref:
+    return rollout_ref.RelativeName()
+  return None
+
+
+def RolloutParentName(args: parser_extensions.Namespace):
+  rollout_ref = RolloutRef(args)
+  if rollout_ref:
+    return rollout_ref.Parent().RelativeName()
+  return None
+
+
+def RolloutId(args: parser_extensions.Namespace) -> str:
+  rollout_ref = RolloutRef(args)
+  if rollout_ref:
+    return rollout_ref.Name()
+  return None

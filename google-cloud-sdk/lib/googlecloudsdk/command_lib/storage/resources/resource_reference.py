@@ -457,6 +457,10 @@ class ManagedFolderResource(PrefixResource):
     return self.storage_url.bucket_name
 
   @property
+  def is_symlink(self):
+    return False
+
+  @property
   def name(self):
     return self.storage_url.object_name
 

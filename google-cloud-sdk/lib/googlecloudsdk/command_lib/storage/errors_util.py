@@ -22,8 +22,9 @@ from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 
 
-def _raise_error_for_wrong_resource_type(command_list, expected_resource_type,
-                                         example, url):
+def _raise_error_for_wrong_resource_type(
+    command_list, expected_resource_type, example, url
+):
   """Raises error for user input mismatched with command resource type.
 
   Example message:
@@ -46,30 +47,46 @@ def _raise_error_for_wrong_resource_type(command_list, expected_resource_type,
 
   raise errors.InvalidUrlError(
       '"{}" only accepts {} URLs.\nExample: "{}"\nReceived: "{}"'.format(
-          ' '.join(command_list), expected_resource_type, example, url))
+          ' '.join(command_list), expected_resource_type, example, url
+      )
+  )
 
 
 def raise_error_if_not_bucket(command_list, url):
   if not (isinstance(url, storage_url.CloudUrl) and url.is_bucket()):
-    _raise_error_for_wrong_resource_type(command_list, 'bucket', 'gs://bucket',
-                                         url)
+    _raise_error_for_wrong_resource_type(
+        command_list, 'bucket', 'gs://bucket', url
+    )
 
 
 def raise_error_if_not_cloud_object(command_list, url):
   if not (isinstance(url, storage_url.CloudUrl) and url.is_object()):
-    _raise_error_for_wrong_resource_type(command_list, 'object',
-                                         'gs://bucket/object.txt', url)
+    _raise_error_for_wrong_resource_type(
+        command_list, 'object', 'gs://bucket/object.txt', url
+    )
 
 
-def raise_error_if_not_gcs(command_list, url):
+def raise_error_if_not_gcs(command_list, url, example='gs://bucket'):
   if not (
       isinstance(url, storage_url.CloudUrl)
       and url.scheme is storage_url.ProviderPrefix.GCS
   ):
-    _raise_error_for_wrong_resource_type(command_list, 'Google Cloud Storage',
-                                         'gs://bucket', url)
+    _raise_error_for_wrong_resource_type(
+        command_list, 'Google Cloud Storage', example, url
+    )
 
 
 def raise_error_if_not_gcs_bucket(command_list, url):
   raise_error_if_not_gcs(command_list, url)
   raise_error_if_not_bucket(command_list, url)
+
+
+def raise_error_if_not_gcs_managed_folder(command_list, url):
+  raise_error_if_not_gcs(command_list, url, example='gs://bucket/folder/')
+  if not (isinstance(url, storage_url.CloudUrl) and url.is_object()):
+    _raise_error_for_wrong_resource_type(
+        command_list,
+        'Google Cloud Storage managed folder',
+        'gs://bucket/folder/',
+        url,
+    )

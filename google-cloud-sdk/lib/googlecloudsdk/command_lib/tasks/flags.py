@@ -35,8 +35,8 @@ def AddCmekConfigResourceFlag(parser):
       '--kms-key-name',
       help=(
           'Fully qualified identifier for the key or just the key ID. The'
-          ' latter requires the `--kms-keyring=mykeyring` and'
-          ' `--kms-project=myproject` flags to be provided too.'
+          ' latter requires that the --kms-keyring and --kms-project flags be'
+          ' provided too.'
       ),
       required=True,
   )
@@ -73,8 +73,9 @@ def AddCmekConfigResourceFlag(parser):
       action='store_true',
       required=True,
       help=(
-          'Disable CMEK for the Cloud Tasks by clearing out Cloud KMS'
-          " cryptokey in the project and the location's CMEK config"
+          'Disables CMEK for Cloud Tasks in the specified location by clearing'
+          ' the Cloud KMS cryptokey from the Cloud Tasks project and CMEK'
+          ' configuration.'
       ),
   )
   cmek_clear_group = base.ArgumentGroup(

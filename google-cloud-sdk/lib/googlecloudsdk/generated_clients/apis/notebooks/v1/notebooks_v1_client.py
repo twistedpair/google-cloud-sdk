@@ -510,6 +510,33 @@ class NotebooksV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Migrate(self, request, global_params=None):
+      r"""Migrates an existing User-Managed Notebook to Workbench Instances.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesMigrateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Migrate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Migrate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:migrate',
+        http_method='POST',
+        method_id='notebooks.projects.locations.instances.migrate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:migrate',
+        request_field='migrateInstanceRequest',
+        request_type_name='NotebooksProjectsLocationsInstancesMigrateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Register(self, request, global_params=None):
       r"""Registers an existing legacy notebook instance to the Notebooks API server. Legacy instances are instances created with the legacy Compute Engine calls. They are not manageable by the Notebooks API out of the box. This call makes these instances manageable by the Notebooks API.
 
@@ -1256,6 +1283,33 @@ class NotebooksV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NotebooksProjectsLocationsRuntimesListRequest',
         response_type_name='ListRuntimesResponse',
+        supports_download=False,
+    )
+
+    def Migrate(self, request, global_params=None):
+      r"""Migrate an existing Runtime to a new Workbench Instance.
+
+      Args:
+        request: (NotebooksProjectsLocationsRuntimesMigrateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Migrate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Migrate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/runtimes/{runtimesId}:migrate',
+        http_method='POST',
+        method_id='notebooks.projects.locations.runtimes.migrate',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:migrate',
+        request_field='migrateRuntimeRequest',
+        request_type_name='NotebooksProjectsLocationsRuntimesMigrateRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

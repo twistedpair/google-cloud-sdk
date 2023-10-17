@@ -1631,10 +1631,12 @@ compute:
     supported_apis:
     - alpha
     - beta
+    - v1
   regionSecurityPolicyRules:
     supported_apis:
     - alpha
     - beta
+    - v1
   regionSslCertificates:
     supported_apis:
     - alpha

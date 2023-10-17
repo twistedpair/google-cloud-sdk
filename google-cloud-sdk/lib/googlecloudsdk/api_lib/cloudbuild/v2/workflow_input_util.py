@@ -21,6 +21,7 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.cloudbuild.v2 import client_util
 from googlecloudsdk.api_lib.cloudbuild.v2 import input_util
+from googlecloudsdk.core import yaml
 
 
 def CloudBuildYamlDataToWorkflow(workflow):
@@ -50,8 +51,9 @@ def _WorkflowTransform(workflow):
 
   pipeline = workflow.pop("pipeline")
   if "spec" in pipeline:
-    _PipelineSpecTransform(pipeline["spec"])
-    workflow["pipelineSpec"] = pipeline["spec"]
+    workflow["pipelineSpecYaml"] = _PipelineSpecYamlCommentIndentation(
+        yaml.dump(pipeline["spec"], round_trip=True)
+    )
   elif "ref" in pipeline:
     input_util.RefTransform(pipeline["ref"])
     workflow["ref"] = pipeline["ref"]
@@ -171,3 +173,33 @@ def _WorkspaceBindingTransform(workspace_binding):
 
   else:
     return
+
+
+def _PipelineSpecYamlCommentIndentation(pipeline_spec_yaml):
+  """Fix indentation for comments in the yaml during apply."""
+
+  # yaml.dump keeps all indentation for comments, but removes it for rest of the
+  # lines. during 'describe' command, indentation is added to comments again so
+  # it would appear strange. so removing 4 leading empty spaces in comments here
+  # used in apply.
+  output = []
+  for l in pipeline_spec_yaml.splitlines(True):
+    sl = l.strip()
+    if sl.startswith("#") and l.startswith(" " * 4):
+      output.append(l[4:])
+    else:
+      output.append(l)
+  return "".join(output)
+
+
+def WorkflowDisplay(workflow):
+  """Apply formatting to the workflow for describe command."""
+  if "pipelineSpecYaml" in workflow:
+    workflow["pipeline"] = {"spec": workflow.pop("pipelineSpecYaml")}
+  elif (
+      "pipelineSpec" in workflow and "generatedYaml" in workflow["pipelineSpec"]
+  ):
+    workflow["pipeline"] = {
+        "spec": workflow["pipelineSpec"].pop("generatedYaml")
+    }
+    del workflow["pipelineSpec"]

@@ -14,11 +14,13 @@
 # limitations under the License.
 """Wrapper for Cloud Run TrafficTargets messages."""
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
 import collections
+from collections.abc import Container, Mapping
 
 from googlecloudsdk.core import exceptions
 
@@ -31,6 +33,7 @@ except AttributeError:
 
 class InvalidTrafficSpecificationError(exceptions.Error):
   """Error to indicate an invalid traffic specification."""
+
   pass
 
 
@@ -53,7 +56,8 @@ def NewTrafficTarget(messages, key, percent=None, tag=None):
   """
   if key == LATEST_REVISION_KEY:
     result = messages.TrafficTarget(
-        latestRevision=True, percent=percent, tag=tag)
+        latestRevision=True, percent=percent, tag=tag
+    )
   else:
     result = messages.TrafficTarget(revisionName=key, percent=percent, tag=tag)
   return result
@@ -153,7 +157,8 @@ def NewRoundingCorrectionPrecedence(key_and_percent):
   return [
       1 - (float_percent - int(float_percent)),
       float_percent,
-      SortKeyFromKey(key)]
+      SortKeyFromKey(key),
+  ]
 
 
 class TrafficTargets(collections_abc.MutableMapping):
@@ -203,8 +208,9 @@ class TrafficTargets(collections_abc.MutableMapping):
     Raises:
       KeyError: If this object does not contain the given key.
     """
-    result = sorted((t for t in self._m if GetKey(t) == key),
-                    key=_GetItemSortKey)
+    result = sorted(
+        (t for t in self._m if GetKey(t) == key), key=_GetItemSortKey
+    )
     if not result:
       raise KeyError(key)
     return result
@@ -294,26 +300,31 @@ class TrafficTargets(collections_abc.MutableMapping):
       key = GetKey(target)
       if target.tag:
         tag_targets.append(
-            NewTrafficTarget(self._messages, key, tag=target.tag))
+            NewTrafficTarget(self._messages, key, tag=target.tag)
+        )
       if target.percent:
-        percent_targets.setdefault(key, NewTrafficTarget(
-            self._messages, key, 0)).percent += target.percent
+        percent_targets.setdefault(
+            key, NewTrafficTarget(self._messages, key, 0)
+        ).percent += target.percent
     return percent_targets, tag_targets
 
   def _ValidateCurrentTraffic(self, existing_percent_targets):
+    """Validate current traffic targets."""
     percent = 0
     for target in existing_percent_targets:
       percent += target.percent
 
     if percent != 100:
       raise ValueError(
-          'Current traffic allocation of %s is not 100 percent' % percent)
+          'Current traffic allocation of %s is not 100 percent' % percent
+      )
 
     for target in existing_percent_targets:
       if target.percent < 0:
         raise ValueError(
-            'Current traffic for target %s is negative (%s)' % (
-                GetKey(target), target.percent))
+            'Current traffic for target %s is negative (%s)'
+            % (GetKey(target), target.percent)
+        )
 
   def _GetUnassignedTargets(self, new_percentages):
     """Get TrafficTargets with traffic not in new_percentages."""
@@ -329,18 +340,21 @@ class TrafficTargets(collections_abc.MutableMapping):
     specified_percent = sum(new_percentages.values())
     if specified_percent > 100:
       raise InvalidTrafficSpecificationError(
-          'Over 100% of traffic is specified.')
+          'Over 100% of traffic is specified.'
+      )
 
     for key in new_percentages:
       if new_percentages[key] < 0 or new_percentages[key] > 100:
         raise InvalidTrafficSpecificationError(
-            'New traffic for target %s is %s, not between 0 and 100' % (
-                key, new_percentages[key]))
+            'New traffic for target %s is %s, not between 0 and 100'
+            % (key, new_percentages[key])
+        )
 
     if not unspecified_targets and specified_percent < 100:
       raise InvalidTrafficSpecificationError(
           'Every target with traffic is updated but 100% of '
-          'traffic has not been specified.')
+          'traffic has not been specified.'
+      )
 
   def _GetPercentUnspecifiedTraffic(self, new_percentages):
     """Returns percentage of traffic not explicitly specified by caller."""
@@ -348,13 +362,16 @@ class TrafficTargets(collections_abc.MutableMapping):
     return 100 - specified_percent
 
   def _IntPercentages(self, float_percentages):
+    """Returns rounded integer percentages."""
     rounded_percentages = {
-        k: int(float_percentages[k]) for k in float_percentages}
+        k: int(float_percentages[k]) for k in float_percentages
+    }
     loss = int(round(sum(float_percentages.values()))) - sum(
-        rounded_percentages.values())
+        rounded_percentages.values()
+    )
     correction_precedence = sorted(
-        float_percentages.items(),
-        key=NewRoundingCorrectionPrecedence)
+        float_percentages.items(), key=NewRoundingCorrectionPrecedence
+    )
     for key, _ in correction_precedence[:loss]:
       rounded_percentages[key] += 1
     return rounded_percentages
@@ -364,7 +381,8 @@ class TrafficTargets(collections_abc.MutableMapping):
     if percent_to_assign == 0:
       return {}
     percent_to_assign_from = sum(
-        target.percent for target in unassigned_targets.values())
+        target.percent for target in unassigned_targets.values()
+    )
     #
     # We assign traffic to unassigned targests (were seving and
     # have not explicit new percentage assignent). The assignment
@@ -379,11 +397,14 @@ class TrafficTargets(collections_abc.MutableMapping):
     #          percent_to_assign)/percent_to_assign_from)
     assigned_percentages = {}
     for k in unassigned_targets:
-      assigned_percentages[k] = unassigned_targets[k].percent * float(
-          percent_to_assign)/percent_to_assign_from
+      assigned_percentages[k] = (
+          unassigned_targets[k].percent
+          * float(percent_to_assign)
+          / percent_to_assign_from
+      )
     return assigned_percentages
 
-  def UpdateTraffic(self, new_percentages):
+  def UpdateTraffic(self, new_percentages: Mapping[str, int]):
     """Update traffic percent assignments.
 
     The updated traffic percent assignments will include assignments explicitly
@@ -404,8 +425,9 @@ class TrafficTargets(collections_abc.MutableMapping):
      o The 0% target has a tag.
 
     Args:
-      new_percentages: Dict[str, int], Map from revision to percent
-        traffic for the revision. 'LATEST' means the latest rev.
+      new_percentages: Map from revision to percent traffic for the revision.
+        'LATEST' means the latest rev.
+
     Raises:
       ValueError: If the current traffic for the service is invalid.
       InvalidTrafficSpecificationError: If the caller attempts to set
@@ -417,7 +439,8 @@ class TrafficTargets(collections_abc.MutableMapping):
     unassigned_targets = self._GetUnassignedTargets(updated_percentages)
     self._ValidateNewPercentages(updated_percentages, unassigned_targets)
     updated_percentages.update(
-        self._GetAssignedPercentages(updated_percentages, unassigned_targets))
+        self._GetAssignedPercentages(updated_percentages, unassigned_targets)
+    )
     int_percentages = self._IntPercentages(updated_percentages)
     new_percent_targets = []
     for key in int_percentages:
@@ -444,15 +467,22 @@ class TrafficTargets(collections_abc.MutableMapping):
         percent_targets[latest_ready_revision_name].percent += latest.percent
       else:
         percent_targets[latest_ready_revision_name] = NewTrafficTarget(
-            self._messages, latest_ready_revision_name, latest.percent)
+            self._messages, latest_ready_revision_name, latest.percent
+        )
       sorted_percent_targets = sorted(
-          percent_targets.values(), key=SortKeyFromTarget)
+          percent_targets.values(), key=SortKeyFromTarget
+      )
       self._m[:] = sorted_percent_targets + tag_targets
 
   def TagToKey(self):
     return {target.tag: GetKey(target) for target in self._m if target.tag}
 
-  def UpdateTags(self, to_update, to_remove, clear_others):
+  def UpdateTags(
+      self,
+      to_update: Mapping[str, str],
+      to_remove: Container[str],
+      clear_others: bool,
+  ):
     """Update traffic tags.
 
     Removes and/or clears existing traffic tags as requested. Always adds new
@@ -479,5 +509,6 @@ class TrafficTargets(collections_abc.MutableMapping):
         new_targets.append(target)
     for tag, revision_key in sorted(to_update.items()):
       new_targets.append(
-          NewTrafficTarget(self._messages, revision_key, tag=tag))
+          NewTrafficTarget(self._messages, revision_key, tag=tag)
+      )
     self._m[:] = new_targets

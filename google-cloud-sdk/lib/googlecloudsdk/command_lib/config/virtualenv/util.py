@@ -30,12 +30,12 @@ import six
 MODULES = [
     'crcmod',
     'grpcio',
-    'pyopenssl==23.0.0',
+    'pyopenssl==23.2.0',
     'google_crc32c',
     'certifi',
     (
         'https://github.com/googleapis/enterprise-certificate-proxy/releases/download/v0.2.3/'
-        'cryptography-39.0.1-cp36-abi3-macosx_10_12_{}.whl'
+        'cryptography-41.0.4-cp37-abi3-macosx_10_12_{}.whl'
     ).format('universal2' if platform.processor() == 'arm' else 'x86_64'),
 ]
 

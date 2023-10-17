@@ -651,6 +651,7 @@ class CreateClusterOptions(object):
       autopilot=None,
       private_ipv6_google_access_type=None,
       enable_confidential_nodes=None,
+      enable_confidential_storage=None,
       cluster_dns=None,
       cluster_dns_scope=None,
       cluster_dns_domain=None,
@@ -854,6 +855,7 @@ class CreateClusterOptions(object):
     self.autopilot = autopilot
     self.private_ipv6_google_access_type = private_ipv6_google_access_type
     self.enable_confidential_nodes = enable_confidential_nodes
+    self.enable_confidential_storage = enable_confidential_storage
     self.cluster_dns = cluster_dns
     self.cluster_dns_scope = cluster_dns_scope
     self.cluster_dns_domain = cluster_dns_domain
@@ -1215,91 +1217,94 @@ class SetNetworkPolicyOptions(object):
 class CreateNodePoolOptions(object):
   """Options to pass to CreateNodePool."""
 
-  def __init__(self,
-               machine_type=None,
-               disk_size_gb=None,
-               scopes=None,
-               node_version=None,
-               num_nodes=None,
-               local_ssd_count=None,
-               local_ssd_volume_configs=None,
-               ephemeral_storage=None,
-               local_nvme_ssd_block=None,
-               ephemeral_storage_local_ssd=None,
-               boot_disk_kms_key=None,
-               tags=None,
-               node_labels=None,
-               labels=None,
-               node_taints=None,
-               enable_autoscaling=None,
-               max_nodes=None,
-               min_nodes=None,
-               total_max_nodes=None,
-               total_min_nodes=None,
-               location_policy=None,
-               enable_autoprovisioning=None,
-               image_type=None,
-               image=None,
-               image_project=None,
-               image_family=None,
-               preemptible=None,
-               spot=None,
-               placement_type=None,
-               placement_policy=None,
-               tpu_topology=None,
-               enable_queued_provisioning=None,
-               enable_autorepair=None,
-               enable_autoupgrade=None,
-               service_account=None,
-               disk_type=None,
-               accelerators=None,
-               min_cpu_platform=None,
-               workload_metadata=None,
-               workload_metadata_from_node=None,
-               max_pods_per_node=None,
-               sandbox=None,
-               metadata=None,
-               linux_sysctls=None,
-               max_surge_upgrade=None,
-               max_unavailable_upgrade=None,
-               node_locations=None,
-               shielded_secure_boot=None,
-               shielded_integrity_monitoring=None,
-               system_config_from_file=None,
-               reservation_affinity=None,
-               reservation=None,
-               node_group=None,
-               enable_gcfs=None,
-               enable_image_streaming=None,
-               gvnic=None,
-               pod_ipv4_range=None,
-               create_pod_ipv4_range=None,
-               enable_private_nodes=None,
-               threads_per_core=None,
-               enable_blue_green_upgrade=None,
-               enable_surge_upgrade=None,
-               node_pool_soak_duration=None,
-               standard_rollout_policy=None,
-               autoscaled_rollout_policy=None,
-               maintenance_interval=None,
-               network_performance_config=None,
-               enable_confidential_nodes=None,
-               disable_pod_cidr_overprovision=None,
-               enable_fast_socket=None,
-               logging_variant=None,
-               windows_os_version=None,
-               enable_best_effort_provision=None,
-               min_provision_nodes=None,
-               additional_node_network=None,
-               additional_pod_network=None,
-               enable_nested_virtualization=None,
-               performance_monitoring_unit=None,
-               sole_tenant_node_affinity_file=None,
-               host_maintenance_interval=None,
-               enable_insecure_kubelet_readonly_port=None,
-               resource_manager_tags=None,
-               containerd_config_from_file=None,
-               secondary_boot_disks=None):
+  def __init__(
+      self,
+      machine_type=None,
+      disk_size_gb=None,
+      scopes=None,
+      node_version=None,
+      num_nodes=None,
+      local_ssd_count=None,
+      local_ssd_volume_configs=None,
+      ephemeral_storage=None,
+      local_nvme_ssd_block=None,
+      ephemeral_storage_local_ssd=None,
+      boot_disk_kms_key=None,
+      tags=None,
+      node_labels=None,
+      labels=None,
+      node_taints=None,
+      enable_autoscaling=None,
+      max_nodes=None,
+      min_nodes=None,
+      total_max_nodes=None,
+      total_min_nodes=None,
+      location_policy=None,
+      enable_autoprovisioning=None,
+      image_type=None,
+      image=None,
+      image_project=None,
+      image_family=None,
+      preemptible=None,
+      spot=None,
+      placement_type=None,
+      placement_policy=None,
+      tpu_topology=None,
+      enable_queued_provisioning=None,
+      enable_autorepair=None,
+      enable_autoupgrade=None,
+      service_account=None,
+      disk_type=None,
+      accelerators=None,
+      min_cpu_platform=None,
+      workload_metadata=None,
+      workload_metadata_from_node=None,
+      max_pods_per_node=None,
+      sandbox=None,
+      metadata=None,
+      linux_sysctls=None,
+      max_surge_upgrade=None,
+      max_unavailable_upgrade=None,
+      node_locations=None,
+      shielded_secure_boot=None,
+      shielded_integrity_monitoring=None,
+      system_config_from_file=None,
+      reservation_affinity=None,
+      reservation=None,
+      node_group=None,
+      enable_gcfs=None,
+      enable_image_streaming=None,
+      gvnic=None,
+      pod_ipv4_range=None,
+      create_pod_ipv4_range=None,
+      enable_private_nodes=None,
+      threads_per_core=None,
+      enable_blue_green_upgrade=None,
+      enable_surge_upgrade=None,
+      node_pool_soak_duration=None,
+      standard_rollout_policy=None,
+      autoscaled_rollout_policy=None,
+      maintenance_interval=None,
+      network_performance_config=None,
+      enable_confidential_nodes=None,
+      enable_confidential_storage=None,
+      disable_pod_cidr_overprovision=None,
+      enable_fast_socket=None,
+      logging_variant=None,
+      windows_os_version=None,
+      enable_best_effort_provision=None,
+      min_provision_nodes=None,
+      additional_node_network=None,
+      additional_pod_network=None,
+      enable_nested_virtualization=None,
+      performance_monitoring_unit=None,
+      sole_tenant_node_affinity_file=None,
+      host_maintenance_interval=None,
+      enable_insecure_kubelet_readonly_port=None,
+      resource_manager_tags=None,
+      containerd_config_from_file=None,
+      secondary_boot_disks=None,
+  ):
     self.machine_type = machine_type
     self.disk_size_gb = disk_size_gb
     self.scopes = scopes
@@ -1370,6 +1375,7 @@ class CreateNodePoolOptions(object):
     self.maintenance_interval = maintenance_interval
     self.network_performance_config = network_performance_config
     self.enable_confidential_nodes = enable_confidential_nodes
+    self.enable_confidential_storage = enable_confidential_storage
     self.disable_pod_cidr_overprovision = disable_pod_cidr_overprovision
     self.enable_fast_socket = enable_fast_socket
     self.logging_variant = logging_variant
@@ -2321,6 +2327,7 @@ class APIAdapter(object):
     self._AddEphemeralStorageToNodeConfig(node_config, options)
     self._AddEphemeralStorageLocalSsdToNodeConfig(node_config, options)
     self._AddLocalNvmeSsdBlockToNodeConfig(node_config, options)
+    self._AddEnableConfidentialStorageToNodeConfig(node_config, options)
 
     if options.tags:
       node_config.tags = options.tags
@@ -3888,6 +3895,11 @@ class APIAdapter(object):
     node_config.localNvmeSsdBlockConfig = self.messages.LocalNvmeSsdBlockConfig(
         localSsdCount=count)
 
+  def _AddEnableConfidentialStorageToNodeConfig(self, node_config, options):
+    if not options.enable_confidential_storage:
+      return
+    node_config.enableConfidentialStorage = options.enable_confidential_storage
+
   def _AddNodeTaintsToNodeConfig(self, node_config, options):
     """Add nodeTaints to nodeConfig."""
     if options.node_taints is None:
@@ -4123,6 +4135,10 @@ class APIAdapter(object):
     self._AddEphemeralStorageToNodeConfig(node_config, options)
     self._AddEphemeralStorageLocalSsdToNodeConfig(node_config, options)
     self._AddLocalNvmeSsdBlockToNodeConfig(node_config, options)
+    if options.enable_confidential_storage:
+      node_config.enableConfidentialStorage = (
+          options.enable_confidential_storage
+      )
     if options.boot_disk_kms_key:
       node_config.bootDiskKmsKey = options.boot_disk_kms_key
     if options.tags:

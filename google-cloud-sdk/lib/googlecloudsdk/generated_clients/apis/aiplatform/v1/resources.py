@@ -93,6 +93,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DATASETS_DATASETVERSIONS = (
+      'projects.locations.datasets.datasetVersions',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/datasets/'
+              '{datasetsId}/datasetVersions/{datasetVersionsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ENDPOINTS = (
       'projects.locations.endpoints',
       '{+name}',
@@ -303,6 +314,28 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'modelsId', 'operationsId'],
       True
   )
+  PROJECTS_LOCATIONS_NASJOBS = (
+      'projects.locations.nasJobs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/nasJobs/'
+              '{nasJobsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NASJOBS_NASTRIALDETAILS = (
+      'projects.locations.nasJobs.nasTrialDetails',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/nasJobs/'
+              '{nasJobsId}/nasTrialDetails/{nasTrialDetailsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',
@@ -321,6 +354,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/pipelineJobs/'
               '{pipelineJobsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_SCHEDULES = (
+      'projects.locations.schedules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/schedules/'
+              '{schedulesId}',
       },
       ['name'],
       True
