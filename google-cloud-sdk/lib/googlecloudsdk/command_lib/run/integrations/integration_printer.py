@@ -24,11 +24,8 @@ from frozendict import frozendict
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run.integrations import deployment_states
 from googlecloudsdk.command_lib.run.integrations.formatters import base
-from googlecloudsdk.command_lib.run.integrations.formatters import cloudsql_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import default_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import domain_routing_formatter
-from googlecloudsdk.command_lib.run.integrations.formatters import firebasehosting_formatter
-from googlecloudsdk.command_lib.run.integrations.formatters import redis_formatter
 from googlecloudsdk.command_lib.run.integrations.formatters import states
 from googlecloudsdk.core.console import console_attr
 from googlecloudsdk.core.resource import custom_printer_base as cp
@@ -40,9 +37,6 @@ INTEGRATION_PRINTER_FORMAT = 'integration'
 _DEFAULT_FORMATTER = default_formatter.DefaultFormatter()
 _INTEGRATION_FORMATTER_MAPS = frozendict({
     'custom-domains': domain_routing_formatter.DomainRoutingFormatter(),
-    'redis': redis_formatter.RedisFormatter(),
-    'cloudsql': cloudsql_formatter.CloudSQLFormatter(),
-    'firebase-hosting': firebasehosting_formatter.FirebaseHostingFormatter(),
 })
 
 

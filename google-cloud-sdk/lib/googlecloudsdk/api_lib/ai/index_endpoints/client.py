@@ -53,21 +53,92 @@ class IndexEndpointsClient(object):
     labels = labels_util.ParseCreateArgs(
         args,
         self.messages.GoogleCloudAiplatformV1beta1IndexEndpoint.LabelsValue)
-    req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
-        parent=location_ref.RelativeName(),
-        googleCloudAiplatformV1beta1IndexEndpoint=self.messages
-        .GoogleCloudAiplatformV1beta1IndexEndpoint(
-            displayName=args.display_name,
-            description=args.description,
-            network=args.network,
-            labels=labels))
+
+    encryption_spec = None
+    if args.encryption_kms_key_name is not None:
+      encryption_spec = (
+          self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
+              kmsKeyName=args.encryption_kms_key_name))
+
+    private_service_connect_config = None
+    if args.enable_private_service_connect:
+      private_service_connect_config = (
+          self.messages.GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig(
+              enablePrivateServiceConnect=args.enable_private_service_connect,
+              projectAllowlist=(args.project_allowlist
+                                if args.project_allowlist else [])
+          )
+      )
+
+      req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
+          parent=location_ref.RelativeName(),
+          googleCloudAiplatformV1beta1IndexEndpoint=self.messages.GoogleCloudAiplatformV1beta1IndexEndpoint(
+              displayName=args.display_name,
+              description=args.description,
+              publicEndpointEnabled=args.public_endpoint_enabled,
+              labels=labels,
+              encryptionSpec=encryption_spec,
+              privateServiceConnectConfig=private_service_connect_config,
+          ),
+      )
+    elif args.network is not None:
+      req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
+          parent=location_ref.RelativeName(),
+          googleCloudAiplatformV1beta1IndexEndpoint=self.messages.GoogleCloudAiplatformV1beta1IndexEndpoint(
+              displayName=args.display_name,
+              description=args.description,
+              network=args.network,
+              labels=labels,
+          ),
+      )
+    else:
+      req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
+          parent=location_ref.RelativeName(),
+          googleCloudAiplatformV1beta1IndexEndpoint=self.messages.GoogleCloudAiplatformV1beta1IndexEndpoint(
+              displayName=args.display_name,
+              description=args.description,
+              publicEndpointEnabled=True,
+              labels=labels,
+              encryptionSpec=encryption_spec,
+              privateServiceConnectConfig=private_service_connect_config,
+          ),
+      )
+
     return self._service.Create(req)
 
   def Create(self, location_ref, args):
     """Create a new v1 index endpoint."""
     labels = labels_util.ParseCreateArgs(
         args, self.messages.GoogleCloudAiplatformV1IndexEndpoint.LabelsValue)
-    if args.network is not None:
+
+    encryption_spec = None
+    if args.encryption_kms_key_name is not None:
+      encryption_spec = (
+          self.messages.GoogleCloudAiplatformV1EncryptionSpec(
+              kmsKeyName=args.encryption_kms_key_name))
+
+    private_service_connect_config = None
+    if args.enable_private_service_connect:
+      private_service_connect_config = (
+          self.messages.GoogleCloudAiplatformV1PrivateServiceConnectConfig(
+              enablePrivateServiceConnect=args.enable_private_service_connect,
+              projectAllowlist=(args.project_allowlist
+                                if args.project_allowlist else []),
+          )
+      )
+
+      req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
+          parent=location_ref.RelativeName(),
+          googleCloudAiplatformV1IndexEndpoint=self.messages.GoogleCloudAiplatformV1IndexEndpoint(
+              displayName=args.display_name,
+              description=args.description,
+              publicEndpointEnabled=args.public_endpoint_enabled,
+              labels=labels,
+              encryptionSpec=encryption_spec,
+              privateServiceConnectConfig=private_service_connect_config,
+          ),
+      )
+    elif args.network is not None:
       req = self.messages.AiplatformProjectsLocationsIndexEndpointsCreateRequest(
           parent=location_ref.RelativeName(),
           googleCloudAiplatformV1IndexEndpoint=self.messages.GoogleCloudAiplatformV1IndexEndpoint(
@@ -85,6 +156,8 @@ class IndexEndpointsClient(object):
               description=args.description,
               publicEndpointEnabled=True,
               labels=labels,
+              encryptionSpec=encryption_spec,
+              privateServiceConnectConfig=private_service_connect_config,
           ),
       )
 
@@ -167,6 +240,20 @@ class IndexEndpointsClient(object):
     if args.reserved_ip_ranges is not None:
       deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
 
+    if args.deployment_group is not None:
+      deployed_index.deploymentGroup = args.deployment_group
+
+    if args.enable_access_logging is not None:
+      deployed_index.enableAccessLogging = args.enable_access_logging
+
+    if args.audiences is not None and args.allowed_issuers is not None:
+      auth_provider = self.messages.GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider()
+      auth_provider.audiences.extend(args.audiences)
+      auth_provider.allowedIssuers.extend(args.allowed_issuers)
+      deployed_index.deployedIndexAuthConfig = (
+          self.messages.GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig(
+              authProvider=auth_provider))
+
     if args.machine_type is not None:
       dedicated_resources = (
           self.messages.GoogleCloudAiplatformV1beta1DedicatedResources()
@@ -205,10 +292,22 @@ class IndexEndpointsClient(object):
         displayName=args.display_name,
         id=args.deployed_index_id,
         index=index_ref.RelativeName(),
+        enableAccessLogging=args.enable_access_logging
     )
 
     if args.reserved_ip_ranges is not None:
       deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
+    if args.deployment_group is not None:
+      deployed_index.deploymentGroup = args.deployment_group
+
+    if args.audiences is not None and args.allowed_issuers is not None:
+      auth_provider = self.messages.GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider()
+      auth_provider.audiences.extend(args.audiences)
+      auth_provider.allowedIssuers.extend(args.allowed_issuers)
+      deployed_index.deployedIndexAuthConfig = (
+          self.messages.GoogleCloudAiplatformV1DeployedIndexAuthConfig(
+              authProvider=auth_provider))
 
     if args.machine_type is not None:
       dedicated_resources = (

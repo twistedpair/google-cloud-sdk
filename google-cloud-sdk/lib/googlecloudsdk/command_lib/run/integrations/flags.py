@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import Dict
+
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.api_lib.run.integrations import validator
 from googlecloudsdk.calliope import arg_parsers
@@ -130,7 +132,7 @@ def ListIntegrationsOfType(parser):
       '--type', type=str, help='Filter Integrations by Type of Integration.')
 
 
-def GetParameters(args):
+def GetParameters(args) -> Dict[str, str]:
   """Validates all parameters and returns a dict of values."""
   parameters = {}
   if args.IsSpecified('parameters'):

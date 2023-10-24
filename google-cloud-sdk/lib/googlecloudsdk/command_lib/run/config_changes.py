@@ -15,16 +15,21 @@
 """Class for representing various changes to a Configuration."""
 
 from __future__ import absolute_import
+from __future__ import annotations
 from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
 import abc
+import argparse
 import collections
+from collections.abc import Collection, Container, Iterable, Mapping, MutableMapping
 import copy
+import dataclasses
 import itertools
 import json
-import typing
+import types
+from typing import Any, ClassVar
 
 from googlecloudsdk.api_lib.run import container_resource
 from googlecloudsdk.api_lib.run import job
@@ -45,12 +50,10 @@ import six
 class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
   """An abstract class representing configuration changes."""
 
-  def __init__(self, adjusts_template):
-    self._adjusts_template = adjusts_template
-
   @property
+  @abc.abstractmethod
   def adjusts_template(self):
-    return self._adjusts_template
+    """Returns True if any template-level changes should be made."""
 
   @abc.abstractmethod
   def Adjust(self, resource):
@@ -63,28 +66,63 @@ class ConfigChanger(six.with_metaclass(abc.ABCMeta, object)):
       A k8s_object that reflects applying the requested update.
       May be resource after a mutation or a different object.
     """
-    return resource
 
 
-class ContainerConfigChanger(ConfigChanger):
-  """An abstract class representing container configuration changes."""
+class NonTemplateConfigChanger(ConfigChanger):
+  """An abstract class representing non-template configuration changes."""
 
-  def __init__(self, container_name=None):
-    self._container_name = container_name
-    super(ContainerConfigChanger, self).__init__(adjusts_template=True)
+  @property
+  def adjusts_template(self):
+    return False
+
+
+class TemplateConfigChanger(ConfigChanger):
+  """An abstract class representing template configuration changes."""
+
+  @property
+  def adjusts_template(self):
+    return True
+
+
+@dataclasses.dataclass(frozen=True)
+class ContainerConfigChanger(TemplateConfigChanger):
+  """An abstract class representing container configuration changes.
+
+  Attributes:
+    container_name: Name of the container to modify. If None the primary
+      container is modified.
+  """
+
+  container_name: str | None = None
 
   @abc.abstractmethod
-  def AdjustContainer(self, container, messages_mod):
-    """Adjust the given Container.
+  def AdjustContainer(
+      self,
+      container: container_resource.Container,
+      messages_mod: types.ModuleType,
+  ):
+    """Mutate the given container.
+
+    This method is called by this class's Adjust method and should apply the
+    desired changes directly to container.
 
     Args:
       container: the container to adjust.
-      messages_mod: messages module.
+      messages_mod: Run v1 messages module.
     """
 
-  def Adjust(self, resource):
-    if self._container_name:
-      container = resource.template.containers[self._container_name]
+  def Adjust(self, resource: container_resource.ContainerResource):
+    """Returns a modified resource.
+
+    Adjusts resource by applying changes to the container specified by
+    self.container_name if present or the primary container otherwise. Calls
+    AdjustContainer to apply changes to the selected container.
+
+    Args:
+      resource: The resoure to modify.
+    """
+    if self.container_name:
+      container = resource.template.containers[self.container_name]
     else:
       container = resource.template.container
 
@@ -114,20 +152,31 @@ def AdjustsTemplate(changes):
   return any([c.adjusts_template for c in changes])
 
 
+@dataclasses.dataclass(frozen=True)
 class LabelChanges(ConfigChanger):
-  """Represents the user intent to modify metadata labels."""
+  """Represents the user intent to modify metadata labels.
 
-  LABELS_NOT_ALLOWED_IN_REVISION = [service.ENDPOINT_VISIBILITY]
+  Attributes:
+    diff: Label diff to apply.
+    copy_to_revision: A boolean indicating that label changes should be copied
+      to the resource's template.
+  """
 
-  def __init__(self, diff, copy_to_revision=True):
-    super(LabelChanges, self).__init__(adjusts_template=copy_to_revision)
-    self._diff = diff
-    self._copy_to_revision = copy_to_revision
+  _LABELS_NOT_ALLOWED_IN_REVISION: ClassVar[frozenset[str]] = frozenset(
+      [service.ENDPOINT_VISIBILITY]
+  )
+
+  diff: labels_util.Diff
+  copy_to_revision: bool = True
+
+  @property
+  def adjusts_template(self):
+    return self.copy_to_revision
 
   def Adjust(self, resource):
     # Currently assumes all "system"-owned labels are applied by the control
     # plane and it's ok for us to clear them on the client.
-    update_result = self._diff.Apply(
+    update_result = self.diff.Apply(
         k8s_object.Meta(resource.MessagesModule()).LabelsValue,
         resource.metadata.labels,
     )
@@ -141,13 +190,13 @@ class LabelChanges(ConfigChanger):
           if hasattr(resource, 'execution_template')
           else resource.template
       )
-      if self._copy_to_revision and hasattr(template, 'labels'):
+      if self.copy_to_revision and hasattr(template, 'labels'):
         # Service labels are the source of truth and *overwrite* revision labels
         # See go/run-labels-prd for deets.
         # However, we need to preserve the nonce if there is one.
         nonce = template.labels.get(revision.NONCE_LABEL)
         template.metadata.labels = copy.deepcopy(maybe_new_labels)
-        for label_to_remove in self.LABELS_NOT_ALLOWED_IN_REVISION:
+        for label_to_remove in self._LABELS_NOT_ALLOWED_IN_REVISION:
           if label_to_remove in template.labels:
             del template.labels[label_to_remove]
         if nonce:
@@ -155,11 +204,8 @@ class LabelChanges(ConfigChanger):
     return resource
 
 
-class JobNonceChange(ConfigChanger):
+class JobNonceChange(TemplateConfigChanger):
   """Adds a new nonce to the job template, for forcing an image pull."""
-
-  def __init__(self):
-    super(JobNonceChange, self).__init__(adjusts_template=True)
 
   def Adjust(self, resource):
     resource.execution_template.labels[job.NONCE_LABEL] = (
@@ -169,12 +215,15 @@ class JobNonceChange(ConfigChanger):
     return resource
 
 
-class ReplaceJobChange(ConfigChanger):
-  """Represents the user intent to replace the job."""
+@dataclasses.dataclass(frozen=True)
+class ReplaceJobChange(NonTemplateConfigChanger):
+  """Represents the user intent to replace the job.
 
-  def __init__(self, new_job):
-    super(ReplaceJobChange, self).__init__(adjusts_template=False)
-    self._job = new_job
+  Attributes:
+    new_job: New job that will replace the existing job.
+  """
+
+  new_job: job.Job
 
   def Adjust(self, resource):
     """Returns a replacement for resource.
@@ -187,16 +236,19 @@ class ReplaceJobChange(ConfigChanger):
       resource: job.Job, The job to adjust.
     """
     if resource.metadata.resourceVersion:
-      self._job.metadata.resourceVersion = resource.metadata.resourceVersion
-    return self._job
+      self.new_job.metadata.resourceVersion = resource.metadata.resourceVersion
+    return self.new_job
 
 
-class ReplaceServiceChange(ConfigChanger):
-  """Represents the user intent to replace the service."""
+@dataclasses.dataclass(frozen=True)
+class ReplaceServiceChange(NonTemplateConfigChanger):
+  """Represents the user intent to replace the service.
 
-  def __init__(self, new_service):
-    super(ReplaceServiceChange, self).__init__(adjusts_template=False)
-    self._service = new_service
+  Attributes:
+    new_service: New service that will replace the existing service.
+  """
+
+  new_service: service.Service
 
   def Adjust(self, resource):
     """Returns a replacement for resource.
@@ -209,20 +261,25 @@ class ReplaceServiceChange(ConfigChanger):
       resource: service.Service, The service to adjust.
     """
     if resource.metadata.resourceVersion:
-      self._service.metadata.resourceVersion = resource.metadata.resourceVersion
+      self.new_service.metadata.resourceVersion = (
+          resource.metadata.resourceVersion
+      )
       # Knative will complain if you try to edit (incl remove) serving annots.
       # So replicate them here.
       for k, v in resource.annotations.items():
         if k.startswith(k8s_object.SERVING_GROUP):
-          self._service.annotations[k] = v
-    return self._service
+          self.new_service.annotations[k] = v
+    return self.new_service
 
 
+@dataclasses.dataclass(frozen=True, init=False)
 class EndpointVisibilityChange(LabelChanges):
   """Represents the user intent to modify the endpoint visibility.
 
   Only applies to Cloud Run for Anthos.
   """
+
+  endpoint_visibility: dataclasses.InitVar[bool]
 
   def __init__(self, endpoint_visibility):
     """Determine label changes for modifying endpoint visibility.
@@ -240,144 +297,170 @@ class EndpointVisibilityChange(LabelChanges):
       diff = labels_util.Diff(subtractions=[service.ENDPOINT_VISIBILITY])
     # Don't copy this label to the revision because it's not supported there.
     # See b/154664962.
-    super(EndpointVisibilityChange, self).__init__(diff, False)
+    super().__init__(diff, False)
 
 
-class SetAnnotationChange(ConfigChanger):
-  """Represents the user intent to set an annotation."""
+@dataclasses.dataclass(frozen=True)
+class SetAnnotationChange(NonTemplateConfigChanger):
+  """Represents the user intent to set an annotation.
 
-  def __init__(self, key, value):
-    super(SetAnnotationChange, self).__init__(adjusts_template=False)
-    self._key = key
-    self._value = value
+  Attributes:
+    key: Annotation to set.
+    value: Annotation value to set.
+  """
+
+  key: str
+  value: str
 
   def Adjust(self, resource):
-    resource.annotations[self._key] = self._value
+    resource.annotations[self.key] = self.value
     return resource
 
 
-class DeleteAnnotationChange(ConfigChanger):
-  """Represents the user intent to delete an annotation."""
+@dataclasses.dataclass(frozen=True)
+class DeleteAnnotationChange(NonTemplateConfigChanger):
+  """Represents the user intent to delete an annotation.
 
-  def __init__(self, key):
-    super(DeleteAnnotationChange, self).__init__(adjusts_template=False)
-    self._key = key
+  Attributes:
+    key: Annotation to delete.
+  """
+
+  key: str
 
   def Adjust(self, resource):
     annotations = resource.annotations
-    if self._key in annotations:
-      del annotations[self._key]
+    if self.key in annotations:
+      del annotations[self.key]
     return resource
 
 
-class SetTemplateAnnotationChange(ConfigChanger):
-  """Represents the user intent to set a template annotation."""
+@dataclasses.dataclass(frozen=True)
+class SetTemplateAnnotationChange(TemplateConfigChanger):
+  """Represents the user intent to set a template annotation.
 
-  def __init__(self, key, value):
-    super(SetTemplateAnnotationChange, self).__init__(adjusts_template=True)
-    self._key = key
-    self._value = value
+  Attributes:
+    key: Template annotation to set.
+    value: Annotation value to set.
+  """
+
+  key: str
+  value: str
 
   def Adjust(self, resource):
-    resource.template.annotations[self._key] = self._value
+    resource.template.annotations[self.key] = self.value
     return resource
 
 
-class DeleteTemplateAnnotationChange(ConfigChanger):
-  """Represents the user intent to delete a template annotation."""
+@dataclasses.dataclass(frozen=True)
+class DeleteTemplateAnnotationChange(TemplateConfigChanger):
+  """Represents the user intent to delete a template annotation.
 
-  def __init__(self, key):
-    super(DeleteTemplateAnnotationChange, self).__init__(adjusts_template=True)
-    self._key = key
+  Attributes:
+    key: Template annotation to delete.
+  """
+
+  key: str
 
   def Adjust(self, resource):
     annotations = resource.template.annotations
-    if self._key in annotations:
-      del annotations[self._key]
+    if self.key in annotations:
+      del annotations[self.key]
     return resource
 
 
-class SetLaunchStageAnnotationChange(ConfigChanger):
-  """Sets a VPC connector annotation on the service."""
+@dataclasses.dataclass(frozen=True)
+class SetLaunchStageAnnotationChange(NonTemplateConfigChanger):
+  """Sets launch stage annotation on a resource.
 
-  def __init__(self, launch_stage):
-    super(SetLaunchStageAnnotationChange, self).__init__(adjusts_template=False)
-    self._launch_stage = launch_stage
+  Attributes:
+    launch_stage: The launch stage to set.
+  """
+
+  launch_stage: base.ReleaseTrack
 
   def Adjust(self, resource):
-    if self._launch_stage == base.ReleaseTrack.GA:
+    if self.launch_stage == base.ReleaseTrack.GA:
       return resource
     else:
       resource.annotations[k8s_object.LAUNCH_STAGE_ANNOTATION] = (
-          self._launch_stage.id
+          self.launch_stage.id
       )
       return resource
 
 
+@dataclasses.dataclass(frozen=True)
 class SetClientNameAndVersionAnnotationChange(ConfigChanger):
-  """Sets the client name and version annotations."""
+  """Sets the client name and version annotations.
 
-  def __init__(self, client_name, client_version, set_on_template=True):
-    super(SetClientNameAndVersionAnnotationChange, self).__init__(
-        adjusts_template=set_on_template
-    )
-    self._client_name = client_name
-    self._client_version = client_version
-    self._set_on_template = set_on_template
+  Attributes:
+    client_name: Client name to set.
+    client_version: Client version to set.
+    set_on_template: A boolean indicating whether the client name and version
+      annotations should be set on the resource template as well.
+  """
+
+  client_name: str
+  client_version: str
+  set_on_template: bool = True
+
+  @property
+  def adjusts_template(self):
+    return self.set_on_template
 
   def Adjust(self, resource):
-    if self._client_name is not None:
-      resource.annotations[k8s_object.CLIENT_NAME_ANNOTATION] = (
-          self._client_name
-      )
-      if self._set_on_template and hasattr(resource.template, 'annotations'):
+    if self.client_name is not None:
+      resource.annotations[k8s_object.CLIENT_NAME_ANNOTATION] = self.client_name
+      if self.set_on_template and hasattr(resource.template, 'annotations'):
         resource.template.annotations[k8s_object.CLIENT_NAME_ANNOTATION] = (
-            self._client_name
+            self.client_name
         )
-    if self._client_version is not None:
+    if self.client_version is not None:
       resource.annotations[k8s_object.CLIENT_VERSION_ANNOTATION] = (
-          self._client_version
+          self.client_version
       )
-      if self._set_on_template and hasattr(resource.template, 'annotations'):
+      if self.set_on_template and hasattr(resource.template, 'annotations'):
         resource.template.annotations[k8s_object.CLIENT_VERSION_ANNOTATION] = (
-            self._client_version
+            self.client_version
         )
     return resource
 
 
-class SandboxChange(ConfigChanger):
-  """Sets a sandbox annotation on the service."""
+@dataclasses.dataclass(frozen=True)
+class SandboxChange(TemplateConfigChanger):
+  """Sets a sandbox annotation on the service.
 
-  def __init__(self, sandbox):
-    super(SandboxChange, self).__init__(adjusts_template=True)
-    self._sandbox = sandbox
+  Attributes:
+    sandbox: The sandbox annotation value to set.
+  """
+
+  sandbox: str
 
   def Adjust(self, resource):
     resource.template.annotations[container_resource.SANDBOX_ANNOTATION] = (
-        self._sandbox
+        self.sandbox
     )
     return resource
 
 
-class VpcConnectorChange(ConfigChanger):
-  """Sets a VPC connector annotation on the service."""
+@dataclasses.dataclass(frozen=True)
+class VpcConnectorChange(TemplateConfigChanger):
+  """Sets a VPC connector annotation on the service.
 
-  def __init__(self, connector_name):
-    super(VpcConnectorChange, self).__init__(adjusts_template=True)
-    self._connector_name = connector_name
+  Attributes:
+    connector_name: The VPC connector name to set in the annotation.
+  """
+
+  connector_name: str
 
   def Adjust(self, resource):
     resource.template.annotations[container_resource.VPC_ACCESS_ANNOTATION] = (
-        self._connector_name
+        self.connector_name
     )
     return resource
 
 
-class ClearVpcConnectorChange(ConfigChanger):
+class ClearVpcConnectorChange(TemplateConfigChanger):
   """Clears a VPC connector annotation on the service."""
-
-  def __init__(self):
-    super(ClearVpcConnectorChange, self).__init__(adjusts_template=True)
 
   def Adjust(self, resource):
     annotations = resource.template.annotations
@@ -388,18 +471,29 @@ class ClearVpcConnectorChange(ConfigChanger):
     return resource
 
 
+@dataclasses.dataclass(init=False, frozen=True)
 class ImageChange(ContainerConfigChanger):
-  """A Cloud Run container deployment."""
+  """A Cloud Run container deployment.
+
+  Attributes:
+    image: The image to set in the adjusted container.
+  """
+
+  image: str
 
   def __init__(self, image, **kwargs):
-    super(ImageChange, self).__init__(**kwargs)
-    self.image = image
+    super().__init__(**kwargs)
+    object.__setattr__(self, 'image', image)
 
   def AdjustContainer(self, container, messages_mod):
     container.image = self.image
 
 
-def _PruneMapping(mapping, keys_to_remove, clear_others):
+def _PruneMapping(
+    mapping: MutableMapping[str, str],
+    keys_to_remove: Collection[str],
+    clear_others: bool,
+):
   if clear_others:
     mapping.clear()
   else:
@@ -409,7 +503,12 @@ def _PruneMapping(mapping, keys_to_remove, clear_others):
 
 
 def _PruneManagedVolumeMapping(
-    resource, res_volumes, volume_mounts, removes, clear_others, external_mounts
+    resource,
+    res_volumes,
+    volume_mounts: MutableMapping[str, str],
+    removes: Collection[str],
+    clear_others: bool,
+    external_mounts: Container[str],
 ):
   """Remove the specified volume mappings from the config."""
   if clear_others:
@@ -468,22 +567,19 @@ def _CopyToNewVolume(
   return new_volume_name
 
 
+@dataclasses.dataclass(frozen=True)
 class EnvVarLiteralChanges(ContainerConfigChanger):
-  """Represents the user intent to modify environment variables string literals."""
+  """Represents the user intent to modify environment variables string literals.
 
-  def __init__(self, updates, removes, clear_others, **kwargs):
-    """Initialize a new EnvVarLiteralChanges object.
+  Attributes:
+    updates: Updated env var names and values to set.
+    removes: Env vars to remove.
+    clear_others: If true clear all non-updated env vars.
+  """
 
-    Args:
-      updates: {str, str}, Update env var names and values.
-      removes: [str], List of env vars to remove.
-      clear_others: bool, If true, clear all non-updated env vars.
-      **kwargs: ContainerConfigChanger args.
-    """
-    super(EnvVarLiteralChanges, self).__init__(**kwargs)
-    self._updates = updates
-    self._removes = removes
-    self._clear_others = clear_others
+  updates: Mapping[str, str] = dataclasses.field(default_factory=dict)
+  removes: Collection[str] = dataclasses.field(default_factory=list)
+  clear_others: bool = False
 
   def AdjustContainer(self, container, messages_mod):
     """Mutates the given config's env vars to match the desired changes.
@@ -501,12 +597,10 @@ class EnvVarLiteralChanges(ContainerConfigChanger):
         (e.g. env var's secret source can't be replaced with a config map
         source).
     """
-    _PruneMapping(
-        container.env_vars.literals, self._removes, self._clear_others
-    )
+    _PruneMapping(container.env_vars.literals, self.removes, self.clear_others)
 
     try:
-      container.env_vars.literals.update(self._updates)
+      container.env_vars.literals.update(self.updates)
     except KeyError as e:
       raise exceptions.ConfigurationError(
           'Cannot update environment variable [{}] to string literal '
@@ -516,26 +610,22 @@ class EnvVarLiteralChanges(ContainerConfigChanger):
       )
 
 
-class SecretEnvVarChanges(ConfigChanger):
-  """Represents the user intent to modify environment variable secrets."""
+@dataclasses.dataclass(frozen=True)
+class SecretEnvVarChanges(TemplateConfigChanger):
+  """Represents the user intent to modify environment variable secrets.
 
-  def __init__(self, updates, removes, clear_others, container_name=None):
-    """Initialize a new SecretEnvVarChanges object.
+  Attributes:
+    updates: Env var names and values to update.
+    removes: List of env vars to remove.
+    clear_others: If true clear all non-updated env vars.
+    container_name: Name of the container to update. If None, the resource's
+      primary container is update.
+  """
 
-    Args:
-      updates: {str: ReachableSecret}, Update env var names and values.
-      removes: [str], List of env vars to remove.
-      clear_others: bool, If true, clear all non-updated env vars.
-      container_name: str, Name of the container to update.
-
-    Raises:
-      ConfigurationError if a key hasn't been provided for a source.
-    """
-    super(SecretEnvVarChanges, self).__init__(adjusts_template=True)
-    self._updates = updates
-    self._removes = removes
-    self._clear_others = clear_others
-    self._container_name = container_name
+  updates: Mapping[str, secrets_mapping.ReachableSecret]
+  removes: Collection[str]
+  clear_others: bool
+  container_name: str | None = None
 
   def Adjust(self, resource):
     """Mutates the given config's env vars to match the desired changes.
@@ -552,15 +642,15 @@ class SecretEnvVarChanges(ConfigChanger):
         (e.g. env var's secret source can't be replaced with a config map
         source).
     """
-    if self._container_name:
+    if self.container_name:
       env_vars = resource.template.containers[
-          self._container_name
+          self.container_name
       ].env_vars.secrets
     else:
       env_vars = resource.template.env_vars.secrets
-    _PruneMapping(env_vars, self._removes, self._clear_others)
+    _PruneMapping(env_vars, self.removes, self.clear_others)
 
-    for name, reachable_secret in self._updates.items():
+    for name, reachable_secret in self.updates.items():
       try:
         env_vars[name] = reachable_secret.AsEnvVarSource(resource)
       except KeyError:
@@ -574,7 +664,7 @@ class SecretEnvVarChanges(ConfigChanger):
     return resource
 
 
-class ConfigMapEnvVarChanges(ConfigChanger):
+class ConfigMapEnvVarChanges(TemplateConfigChanger):
   """Represents the user intent to modify environment variable config maps."""
 
   def __init__(self, updates, removes, clear_others):
@@ -588,7 +678,7 @@ class ConfigMapEnvVarChanges(ConfigChanger):
     Raises:
       ConfigurationError if a key hasn't been provided for a source.
     """
-    super(ConfigMapEnvVarChanges, self).__init__(adjusts_template=True)
+    super().__init__()
     self._updates = {}
     for name, v in updates.items():
       # Split the given values into 2 parts:
@@ -645,62 +735,96 @@ class ConfigMapEnvVarChanges(ConfigChanger):
     )
 
 
+@dataclasses.dataclass(frozen=True)
 class ResourceChanges(ContainerConfigChanger):
-  """Represents the user intent to update resource limits."""
+  """Represents the user intent to update resource limits.
 
-  def __init__(self, memory=None, cpu=None, **kwargs):
-    super(ResourceChanges, self).__init__(**kwargs)
-    self._memory = memory
-    self._cpu = cpu
+  Attributes:
+    memory: Updated memory limit to set in the container. Specified as string
+      ending in 'Mi' or 'Gi'. If None the memory limit is not changed.
+    cpu: Updated cpu limit to set in the container if not None.
+  """
+
+  memory: str | None = None
+  cpu: str | None = None
 
   def AdjustContainer(self, container, messages_mod):
     """Mutates the given config's resource limits to match what's desired."""
-    if self._memory is not None:
-      container.resource_limits['memory'] = self._memory
-    if self._cpu is not None:
-      container.resource_limits['cpu'] = self._cpu
+    if self.memory is not None:
+      container.resource_limits['memory'] = self.memory
+    if self.cpu is not None:
+      container.resource_limits['cpu'] = self.cpu
 
 
-class CloudSQLChanges(ConfigChanger):
-  """Represents the intent to update the Cloug SQL instances."""
+@dataclasses.dataclass(frozen=True)
+class CloudSQLChanges(TemplateConfigChanger):
+  """Represents the intent to update the Cloug SQL instances.
 
-  def __init__(self, project, region, args):
-    """Initializes the intent to update the Cloud SQL instances.
+  Attributes:
+    project: Project to use as the default project for Cloud SQL instances.
+    region: Region to use as the default region for Cloud SQL instances
+    args: Args to the command.
+  """
+
+  add_cloudsql_instances: list[str]
+  remove_cloudsql_instances: list[str]
+  set_cloudsql_instances: list[str]
+  clear_cloudsql_instances: bool | None = None
+
+  @classmethod
+  def FromArgs(
+      cls,
+      project: str | None = None,
+      region: str | None = None,
+      *,
+      args: argparse.Namespace,
+  ):
+    """Returns a CloudSQLChanges object from the given args.
 
     Args:
-      project: Project to use as the default project for Cloud SQL instances.
-      region: Region to use as the default region for Cloud SQL instances
-      args: Args to the command.
+      project: Optional project. If absent project must be specified in each
+        Cloud SQL instance.
+      region: Optional region. If absent region must be specified in each Cloud
+        SQL instance.
+      args: Command line args to parse CloudSQL flags from.
     """
-    super(CloudSQLChanges, self).__init__(adjusts_template=True)
-    self._project = project
-    self._region = region
-    self._args = args
 
-  # Here we are a proxy through to the actual args to set some extra augmented
-  # information on each one, so each cloudsql instance gets the region and
-  # project.
-  @property
-  def add_cloudsql_instances(self):
-    return self._AugmentArgs('add_cloudsql_instances')
+    def AugmentArgs(arg_name):
+      val = getattr(args, arg_name, None)
+      if val is None:
+        return None
+      return [Augment(i) for i in val]
 
-  @property
-  def remove_cloudsql_instances(self):
-    return self._AugmentArgs('remove_cloudsql_instances')
+    def Augment(instance_str):
+      instance = instance_str.split(':')
+      if len(instance) == 3:
+        return ':'.join(instance)
+      elif len(instance) == 1:
+        if not project:
+          raise exceptions.CloudSQLError(
+              'To specify a Cloud SQL instance by plain name, you must specify'
+              ' a project.'
+          )
+        if not region:
+          raise exceptions.CloudSQLError(
+              'To specify a Cloud SQL instance by plain name, you must be '
+              'deploying to a managed Cloud Run region.'
+          )
+        return ':'.join(itertools.chain([project, region], instance))
+      else:
+        raise exceptions.CloudSQLError(
+            'Malformed CloudSQL instance string: {}'.format(instance_str)
+        )
 
-  @property
-  def set_cloudsql_instances(self):
-    return self._AugmentArgs('set_cloudsql_instances')
-
-  @property
-  def clear_cloudsql_instances(self):
-    return getattr(self._args, 'clear_cloudsql_instances', None)
-
-  def _AugmentArgs(self, arg_name):
-    val = getattr(self._args, arg_name, None)
-    if val is None:
-      return None
-    return [self._Augment(i) for i in val]
+    # Augment args so each cloudsql instance gets the region and project.
+    return cls(
+        add_cloudsql_instances=AugmentArgs('add_cloudsql_instances'),
+        remove_cloudsql_instances=AugmentArgs('remove_cloudsql_instances'),
+        set_cloudsql_instances=AugmentArgs('set_cloudsql_instances'),
+        clear_cloudsql_instances=getattr(
+            args, 'clear_cloudsql_instances', None
+        ),
+    )
 
   def Adjust(self, resource):
     def GetCurrentInstances():
@@ -720,85 +844,86 @@ class CloudSQLChanges(ConfigChanger):
       )
     return resource
 
-  def _Augment(self, instance_str):
-    instance = instance_str.split(':')
-    if len(instance) == 3:
-      ret = tuple(instance)
-    elif len(instance) == 1:
-      if not self._project:
-        raise exceptions.CloudSQLError(
-            'To specify a Cloud SQL instance by plain name, you must specify a '
-            'project.'
-        )
-      if not self._region:
-        raise exceptions.CloudSQLError(
-            'To specify a Cloud SQL instance by plain name, you must be '
-            'deploying to a managed Cloud Run region.'
-        )
-      ret = self._project, self._region, instance[0]
-    else:
-      raise exceptions.CloudSQLError(
-          'Malformed CloudSQL instance string: {}'.format(instance_str)
-      )
-    return ':'.join(ret)
 
+@dataclasses.dataclass(frozen=True)
+class ConcurrencyChanges(TemplateConfigChanger):
+  """Represents the user intent to update concurrency preference.
 
-class ConcurrencyChanges(ConfigChanger):
-  """Represents the user intent to update concurrency preference."""
+  Attributes:
+    concurrency: The concurrency value to set in the resource template. If None
+      concurrency is cleared.
+  """
 
-  def __init__(self, concurrency):
-    super(ConcurrencyChanges, self).__init__(adjusts_template=True)
-    self._concurrency = None if concurrency == 'default' else int(concurrency)
+  concurrency: int | None = None
+
+  @classmethod
+  def FromFlag(cls, concurrency):
+    """Returns a ConcurrencyChanges object from the --concurrency flag value.
+
+    Args:
+      concurrency: The concurrency flag value. If 'default' concurrency is
+        cleared, otherwise should be an integer concurrency value to set.
+    """
+    return cls(None if concurrency == 'default' else int(concurrency))
 
   def Adjust(self, resource):
     """Mutates the given config's resource limits to match what's desired."""
-    resource.template.concurrency = self._concurrency
+    resource.template.concurrency = self.concurrency
     return resource
 
 
-class TimeoutChanges(ConfigChanger):
-  """Represents the user intent to update request duration."""
+@dataclasses.dataclass(frozen=True)
+class TimeoutChanges(TemplateConfigChanger):
+  """Represents the user intent to update request duration.
 
-  def __init__(self, timeout):
-    super(TimeoutChanges, self).__init__(adjusts_template=True)
-    self._timeout = timeout
+  Attributes:
+    timeout: The timeout to set in the resource template.
+  """
+
+  timeout: str
 
   def Adjust(self, resource):
     """Mutates the given config's timeout to match what's desired."""
-    resource.template.timeout = self._timeout
+    resource.template.timeout = self.timeout
     return resource
 
 
-class ServiceAccountChanges(ConfigChanger):
-  """Represents the user intent to change service account for the revision."""
+@dataclasses.dataclass(frozen=True)
+class ServiceAccountChanges(TemplateConfigChanger):
+  """Represents the user intent to change service account for the revision.
 
-  def __init__(self, service_account):
-    super(ServiceAccountChanges, self).__init__(adjusts_template=True)
-    self._service_account = service_account
+  Attributes:
+    service_account: The service account to set.
+  """
+
+  service_account: str
 
   def Adjust(self, resource):
     """Mutates the given config's service account to match what's desired."""
-    resource.template.service_account = self._service_account
+    resource.template.service_account = self.service_account
     return resource
 
 
 _MAX_RESOURCE_NAME_LENGTH = 63
 
 
-class RevisionNameChanges(ConfigChanger):
-  """Represents the user intent to change revision name."""
+@dataclasses.dataclass(frozen=True)
+class RevisionNameChanges(TemplateConfigChanger):
+  """Represents the user intent to change revision name.
 
-  def __init__(self, revision_suffix):
-    super(RevisionNameChanges, self).__init__(adjusts_template=True)
-    self._revision_suffix = revision_suffix
+  Attributes:
+    revision_suffix: Suffix to append to the revision name.
+  """
+
+  revision_suffix: str
 
   def Adjust(self, resource):
     """Mutates the given config's revision name to match what's desired."""
     max_prefix_length = (
-        _MAX_RESOURCE_NAME_LENGTH - len(self._revision_suffix) - 1
+        _MAX_RESOURCE_NAME_LENGTH - len(self.revision_suffix) - 1
     )
     resource.template.name = '{}-{}'.format(
-        resource.name[:max_prefix_length], self._revision_suffix
+        resource.name[:max_prefix_length], self.revision_suffix
     )
     return resource
 
@@ -839,24 +964,22 @@ def _PruneVolumes(mounted_volumes, res_volumes):
       del res_volumes[volume]
 
 
-class SecretVolumeChanges(ConfigChanger):
-  """Represents the user intent to change volumes with secret source types."""
+@dataclasses.dataclass(frozen=True)
+class SecretVolumeChanges(TemplateConfigChanger):
+  """Represents the user intent to change volumes with secret source types.
 
-  def __init__(self, updates, removes, clear_others, container_name=None):
-    """Initialize a new SecretVolumeChanges object.
+  Attributes:
+    updates: Updates to mount path and volume fields.
+    removes: List of mount paths to remove.
+    clear_others: If true clear all non-updated volumes and mounts of the given
+      [volume_type].
+    container_name: Name of the container to update.
+  """
 
-    Args:
-      updates: {str: ReachableSecret}, Update mount path and volume fields.
-      removes: [str], List of mount paths to remove.
-      clear_others: bool, If true, clear all non-updated volumes and mounts of
-        the given [volume_type].
-      container_name: str, Name of the container to update.
-    """
-    super(SecretVolumeChanges, self).__init__(adjusts_template=True)
-    self._updates = updates
-    self._removes = removes
-    self._clear_others = clear_others
-    self._container_name = container_name
+  updates: Mapping[str, secrets_mapping.ReachableSecret]
+  removes: Collection[str]
+  clear_others: bool
+  container_name: str | None = None
 
   def _UpdateManagedVolumes(
       self, resource, volume_mounts, res_volumes, external_mounts
@@ -867,7 +990,7 @@ class SecretVolumeChanges(ConfigChanger):
     for path, vol in volume_mounts.items():
       volumes_to_mounts[vol].append(path)
 
-    for file_path, reachable_secret in self._updates.items():
+    for file_path, reachable_secret in self.updates.items():
       mount_point = file_path.rsplit('/', 1)[0]
       if mount_point in new_volumes:
         if new_volumes[mount_point].secretName != reachable_secret.secret_name:
@@ -952,8 +1075,8 @@ class SecretVolumeChanges(ConfigChanger):
         the new volume (e.g. mount that points to a volume with a secret source
         can't be replaced with a volume that has a config map source).
     """
-    if self._container_name:
-      container = resource.template.containers[self._container_name]
+    if self.container_name:
+      container = resource.template.containers[self.container_name]
     else:
       container = resource.template.container
     volume_mounts = container.volume_mounts.secrets
@@ -971,19 +1094,19 @@ class SecretVolumeChanges(ConfigChanger):
           resource,
           res_volumes,
           volume_mounts,
-          self._removes,
-          self._clear_others,
+          self.removes,
+          self.clear_others,
           external_mounts,
       )
     else:
-      removes = self._removes
-      _PruneMapping(volume_mounts, removes, self._clear_others)
+      removes = self.removes
+      _PruneMapping(volume_mounts, removes, self.clear_others)
     if platforms.IsManaged():
       self._UpdateManagedVolumes(
           resource, volume_mounts, res_volumes, external_mounts
       )
     else:
-      for file_path, reachable_secret in self._updates.items():
+      for file_path, reachable_secret in self.updates.items():
         volume_name = _UniqueVolumeName(
             reachable_secret.secret_name, resource.template.volumes
         )
@@ -1008,7 +1131,7 @@ class SecretVolumeChanges(ConfigChanger):
     return resource
 
 
-class ConfigMapVolumeChanges(ConfigChanger):
+class ConfigMapVolumeChanges(TemplateConfigChanger):
   """Represents the user intent to change volumes with config map source types."""
 
   def __init__(self, updates, removes, clear_others):
@@ -1020,7 +1143,7 @@ class ConfigMapVolumeChanges(ConfigChanger):
       clear_others: bool, If true, clear all non-updated volumes and mounts of
         the given [volume_type].
     """
-    super(ConfigMapVolumeChanges, self).__init__(adjusts_template=True)
+    super().__init__()
     self._updates = {}
     for k, v in updates.items():
       # Split the given values into 2 parts:
@@ -1086,11 +1209,8 @@ class ConfigMapVolumeChanges(ConfigChanger):
     return source
 
 
-class NoTrafficChange(ConfigChanger):
+class NoTrafficChange(NonTemplateConfigChanger):
   """Represents the user intent to block traffic for a new revision."""
-
-  def __init__(self):
-    super(NoTrafficChange, self).__init__(adjusts_template=False)
 
   def Adjust(self, resource):
     """Removes LATEST from the services traffic assignments."""
@@ -1105,104 +1225,122 @@ class NoTrafficChange(ConfigChanger):
     return resource
 
 
-class TrafficChanges(ConfigChanger):
-  """Represents the user intent to change a service's traffic assignments."""
+@dataclasses.dataclass(frozen=True)
+class TrafficChanges(NonTemplateConfigChanger):
+  """Represents the user intent to change a service's traffic assignments.
 
-  def __init__(
-      self,
-      new_percentages,
-      by_tag=False,
-      tags_to_update=None,
-      tags_to_remove=None,
-      clear_other_tags=False,
-  ):
-    super(TrafficChanges, self).__init__(adjusts_template=False)
-    self._new_percentages = new_percentages
-    self._by_tag = by_tag
-    self._tags_to_update = tags_to_update or {}
-    self._tags_to_remove = tags_to_remove or []
-    self._clear_other_tags = clear_other_tags
+  Attributes:
+    new_percentages: New traffic percentages to set.
+    by_tag: Boolean indicating that new traffic percentages are specified by
+      tag.
+    tags_to_update: Traffic tag values to update.
+    tags_to_remove: Traffic tags to remove.
+    clear_other_tags: Whether nonupdated tags should be cleared.
+  """
+
+  new_percentages: Mapping[str, int]
+  by_tag: bool = False
+  tags_to_update: Mapping[str, str] = dataclasses.field(default_factory=dict)
+  tags_to_remove: Container[str] = dataclasses.field(default_factory=list)
+  clear_other_tags: bool = False
 
   def Adjust(self, resource):
     """Mutates the given service's traffic assignments."""
-    if self._tags_to_update or self._tags_to_remove or self._clear_other_tags:
+    if self.tags_to_update or self.tags_to_remove or self.clear_other_tags:
       resource.spec_traffic.UpdateTags(
-          self._tags_to_update, self._tags_to_remove, self._clear_other_tags
+          self.tags_to_update,
+          self.tags_to_remove,
+          self.clear_other_tags,
       )
-    if self._new_percentages:
-      if self._by_tag:
+    if self.new_percentages:
+      if self.by_tag:
         tag_to_key = resource.spec_traffic.TagToKey()
         percentages = {}
-        for tag in self._new_percentages:
+        for tag in self.new_percentages:
           try:
-            percentages[tag_to_key[tag]] = self._new_percentages[tag]
+            percentages[tag_to_key[tag]] = self.new_percentages[tag]
           except KeyError:
             raise exceptions.ConfigurationError(
                 'There is no revision tagged with [{}] in the traffic'
                 ' allocation for [{}].'.format(tag, resource.name)
             )
       else:
-        percentages = self._new_percentages
+        percentages = self.new_percentages
       resource.spec_traffic.UpdateTraffic(percentages)
     return resource
 
 
-class TagOnDeployChange(ConfigChanger):
-  """The intent to provide a tag for the revision you're currently deploying."""
+@dataclasses.dataclass(frozen=True)
+class TagOnDeployChange(NonTemplateConfigChanger):
+  """The intent to provide a tag for the revision you're currently deploying.
 
-  def __init__(self, tag):
-    super(TagOnDeployChange, self).__init__(adjusts_template=False)
-    self._tag = tag
+  Attributes:
+    tag: The tag to apply to the new revision.
+  """
+
+  tag: str
 
   def Adjust(self, resource):
     """Gives the revision that's being created the given tag."""
-    tags_to_update = {self._tag: resource.template.name}
+    tags_to_update = {self.tag: resource.template.name}
     resource.spec_traffic.UpdateTags(tags_to_update, [], False)
     return resource
 
 
+@dataclasses.dataclass(init=False, frozen=True)
 class ContainerCommandChange(ContainerConfigChanger):
-  """Represents the user intent to change the 'command' for the container."""
+  """Represents the user intent to change the 'command' for the container.
+
+  Attributes:
+    command: The command to set in the adjusted container.
+  """
+
+  command: str
 
   def __init__(self, command, **kwargs):
-    super(ContainerCommandChange, self).__init__(**kwargs)
-    self._commands = command
+    super().__init__(**kwargs)
+    object.__setattr__(self, 'command', command)
 
   def AdjustContainer(self, container, messages_mod):
-    container.command = self._commands
+    container.command = self.command
 
 
+@dataclasses.dataclass(init=False, frozen=True)
 class ContainerArgsChange(ContainerConfigChanger):
-  """Represents the user intent to change the 'args' for the container."""
+  """Represents the user intent to change the 'args' for the container.
+
+  Attributes:
+    args: The args to set in the adjusted container.
+  """
+
+  args: list[str]
 
   def __init__(self, args, **kwargs):
-    super(ContainerArgsChange, self).__init__(**kwargs)
-    self._args = args
+    super().__init__(**kwargs)
+    object.__setattr__(self, 'args', args)
 
   def AdjustContainer(self, container, messages_mod):
-    container.args = self._args
+    container.args = self.args
 
 
 _HTTP2_NAME = 'h2c'
 _DEFAULT_PORT = 8080
 
 
+@dataclasses.dataclass(frozen=True)
 class ContainerPortChange(ContainerConfigChanger):
-  """Represents the user intent to change the port name and/or number."""
+  """Represents the user intent to change the port name and/or number.
 
-  def __init__(self, port=None, use_http2=None, **kwargs):
-    """Initialize a ContainerPortChange.
+  Attributes:
+    port: The port to set, "default" to unset the containerPort field, or None
+      to not modify the port number.
+    use_http2: True to set the port name for http/2, False to unset it, or None
+      to not modify the port name.
+    **kwargs: ContainerConfigChanger args.
+  """
 
-    Args:
-      port: str, the port number to set the port to, "default" to unset the
-        containerPort field, or None to not modify the port number.
-      use_http2: bool, True to set the port name for http/2, False to unset it,
-        or None to not modify the port name.
-      **kwargs: ContainerConfigChanger args.
-    """
-    super(ContainerPortChange, self).__init__(**kwargs)
-    self._port = port
-    self._http2 = use_http2
+  port: str | None = None
+  use_http2: bool | None = None
 
   def AdjustContainer(self, container, messages_mod):
     """Modify an existing ContainerPort or create a new one."""
@@ -1211,14 +1349,14 @@ class ContainerPortChange(ContainerConfigChanger):
     )
     old_port = port_msg.containerPort or 8080  # default port
     # Set port to given value or clear field
-    if self._port == 'default':
+    if self.port == 'default':
       port_msg.reset('containerPort')
-    elif self._port is not None:
-      port_msg.containerPort = int(self._port)
+    elif self.port is not None:
+      port_msg.containerPort = int(self.port)
     # Set name for http/2 or clear field
-    if self._http2:
+    if self.use_http2:
       port_msg.name = _HTTP2_NAME
-    elif self._http2 is not None:
+    elif self.use_http2 is not None:
       port_msg.reset('name')
     # A port number must be specified
     if port_msg.name and not port_msg.containerPort:
@@ -1239,117 +1377,127 @@ class ContainerPortChange(ContainerConfigChanger):
           container.startupProbe.tcpSocket.reset('port')
 
 
-class SpecChange(ConfigChanger):
-  """Represents the user intent to update field in the resource's spec."""
+@dataclasses.dataclass(frozen=True)
+class ExecutionTemplateSpecChange(TemplateConfigChanger):
+  """Represents the intent to update field in an execution template's spec.
 
-  def __init__(self, field, value):
-    super(SpecChange, self).__init__(adjusts_template=True)
-    self._field = field
-    self._value = value
+  Attributes:
+    field: The field to update in the execution template spec.
+    value: The value to set in the updated field.
+  """
+
+  field: str
+  value: Any
 
   def Adjust(self, resource):
-    setattr(resource.spec, self._field, self._value)
+    setattr(resource.execution_template.spec, self.field, self.value)
     return resource
 
 
-class ExecutionTemplateSpecChange(ConfigChanger):
-  """Represents the intent to update field in an execution template's spec."""
+@dataclasses.dataclass(frozen=True)
+class JobMaxRetriesChange(TemplateConfigChanger):
+  """Represents the user intent to update a job's restart policy.
 
-  def __init__(self, field, value):
-    super(ExecutionTemplateSpecChange, self).__init__(adjusts_template=True)
-    self._field = field
-    self._value = value
+  Attributes:
+    max_retries: The max retry number to set in the job's restart policy.
+  """
+
+  max_retries: int
 
   def Adjust(self, resource):
-    setattr(resource.execution_template.spec, self._field, self._value)
+    resource.task_template.spec.maxRetries = self.max_retries
     return resource
 
 
-class JobMaxRetriesChange(ConfigChanger):
-  """Represents the user intent to update a job's restart policy."""
+@dataclasses.dataclass(frozen=True)
+class JobTaskTimeoutChange(TemplateConfigChanger):
+  """Represents the user intent to update a job's instance deadline.
 
-  def __init__(self, max_retries):
-    super(JobMaxRetriesChange, self).__init__(adjusts_template=True)
-    self._max_retries = max_retries
+  Attributes:
+    timeout_seconds: The timeout in seconds to set in the job's instance
+      deadline.
+  """
+
+  timeout_seconds: int
 
   def Adjust(self, resource):
-    resource.task_template.spec.maxRetries = self._max_retries
+    resource.task_template.spec.timeoutSeconds = self.timeout_seconds
     return resource
 
 
-class JobTaskTimeoutChange(ConfigChanger):
-  """Represents the user intent to update a job's instance deadline."""
+@dataclasses.dataclass(frozen=True)
+class CpuThrottlingChange(TemplateConfigChanger):
+  """Sets the cpu-throttling annotation on the service template.
 
-  def __init__(self, timeout_seconds):
-    super(JobTaskTimeoutChange, self).__init__(adjusts_template=True)
-    self._timeout_seconds = timeout_seconds
+  Attributes:
+    throttling: The throttling annotation value to set.
+  """
 
-  def Adjust(self, resource):
-    resource.task_template.spec.timeoutSeconds = self._timeout_seconds
-    return resource
-
-
-class CpuThrottlingChange(ConfigChanger):
-  """Sets the cpu-throttling annotation on the service template."""
-
-  def __init__(self, throttling):
-    super(CpuThrottlingChange, self).__init__(adjusts_template=True)
-    self._throttling = throttling
+  throttling: bool
 
   def Adjust(self, resource):
     resource.template.annotations[
         container_resource.CPU_THROTTLE_ANNOTATION
-    ] = str(self._throttling)
+    ] = str(self.throttling)
     return resource
 
 
-class StartupCpuBoostChange(ConfigChanger):
-  """Sets the startup-cpu-boost annotation on the service template."""
+@dataclasses.dataclass(frozen=True)
+class StartupCpuBoostChange(TemplateConfigChanger):
+  """Sets the startup-cpu-boost annotation on the service template.
 
-  def __init__(self, cpu_boost):
-    super(StartupCpuBoostChange, self).__init__(adjusts_template=True)
-    self._cpu_boost = cpu_boost
+  Attributes:
+    cpu_boost: Boolean indicating whether CPU boost should be enabled.
+  """
+
+  cpu_boost: bool
 
   def Adjust(self, resource):
     resource.template.annotations[
         container_resource.COLD_START_BOOST_ANNOTATION
-    ] = str(self._cpu_boost)
+    ] = str(self.cpu_boost)
     return resource
 
 
-class DefaultUrlChange(ConfigChanger):
-  """Sets the disable-default-url annotation on the service template."""
+@dataclasses.dataclass(frozen=True)
+class DefaultUrlChange(TemplateConfigChanger):
+  """Sets the disable-default-url annotation on the service template.
 
-  def __init__(self, default_url):
-    super(DefaultUrlChange, self).__init__(adjusts_template=True)
-    self._default_url = default_url
+  Attributes:
+    default_url: Boolean indicating whether the default URL should be enabled.
+  """
+
+  default_url: bool
 
   def Adjust(self, resource):
-    resource.template.annotations[
-        container_resource.DISABLE_URL_ANNOTATION
-    ] = str(not self._default_url)
+    resource.template.annotations[container_resource.DISABLE_URL_ANNOTATION] = (
+        str(not self.default_url)
+    )
     return resource
 
 
-class NetworkInterfacesChange(ConfigChanger):
-  """Sets or updates the network interfaces annotation on the template."""
+@dataclasses.dataclass(frozen=True)
+class NetworkInterfacesChange(TemplateConfigChanger):
+  """Sets or updates the network interfaces annotation on the template.
 
-  def __init__(
-      self,
-      network_is_set,
-      network,
-      subnet_is_set,
-      subnet,
-      network_tags_is_set,
-      network_tags,
-  ):
-    super(NetworkInterfacesChange, self).__init__(adjusts_template=True)
-    self._network_is_set = network_is_set
-    self._network = network
-    self._subnet_is_set = subnet_is_set
-    self._subnet = subnet
-    self._network_tags_is_set = network_tags_is_set
-    self._network_tags = network_tags
+  Attributes:
+    network_is_set: Boolean indicating whether network was explicitly set by the
+      user.
+    network: The network to set.
+    subnet_is_set: Boolean indicating whether subnet was explicitly set by the
+      user.
+    subnet: The subnet to set.
+    network_tags_is_set: Boolean indicating whether network_tags was explicitly
+      set by the user.
+    network_tags: The network tags to set.
+  """
+
+  network_is_set: bool
+  network: str
+  subnet_is_set: bool
+  subnet: str
+  network_tags_is_set: bool
+  network_tags: list[str]
 
   def _SetOrClear(self, m, key, value):
     if value:
@@ -1366,12 +1514,12 @@ class NetworkInterfacesChange(ConfigChanger):
       network_interface = json.loads(
           annotations[k8s_object.NETWORK_INTERFACES_ANNOTATION]
       )[0]
-    if self._network_is_set:
-      self._SetOrClear(network_interface, 'network', self._network)
-    if self._subnet_is_set:
-      self._SetOrClear(network_interface, 'subnetwork', self._subnet)
-    if self._network_tags_is_set:
-      self._SetOrClear(network_interface, 'tags', self._network_tags)
+    if self.network_is_set:
+      self._SetOrClear(network_interface, 'network', self.network)
+    if self.subnet_is_set:
+      self._SetOrClear(network_interface, 'subnetwork', self.subnet)
+    if self.network_tags_is_set:
+      self._SetOrClear(network_interface, 'tags', self.network_tags)
     value = ''
     if network_interface:
       value = '[{interfaces}]'.format(
@@ -1389,11 +1537,8 @@ class NetworkInterfacesChange(ConfigChanger):
     return resource
 
 
-class ClearNetworkInterfacesChange(ConfigChanger):
+class ClearNetworkInterfacesChange(TemplateConfigChanger):
   """Clears a network interfaces annotation on the resource."""
-
-  def __init__(self):
-    super(ClearNetworkInterfacesChange, self).__init__(adjusts_template=True)
 
   def Adjust(self, resource):
     annotations = resource.template.annotations
@@ -1404,33 +1549,31 @@ class ClearNetworkInterfacesChange(ConfigChanger):
     return resource
 
 
-class CustomAudiencesChanges(ConfigChanger):
-  """Represents the intent to update the custom audiences."""
+@dataclasses.dataclass(frozen=True)
+class CustomAudiencesChanges(TemplateConfigChanger):
+  """Represents the intent to update the custom audiences.
 
-  def __init__(self, args):
-    """Initializes the intent to update the custom audiences.
+  Attributes:
+    args: Args to the command.
+  """
 
-    Args:
-      args: Args to the command.
-    """
-    super(CustomAudiencesChanges, self).__init__(adjusts_template=True)
-    self._args = args
+  args: object
 
   @property
   def add_custom_audiences(self):
-    return getattr(self._args, 'add_custom_audiences', None)
+    return getattr(self.args, 'add_custom_audiences', None)
 
   @property
   def remove_custom_audiences(self):
-    return getattr(self._args, 'remove_custom_audiences', None)
+    return getattr(self.args, 'remove_custom_audiences', None)
 
   @property
   def set_custom_audiences(self):
-    return getattr(self._args, 'set_custom_audiences', None)
+    return getattr(self.args, 'set_custom_audiences', None)
 
   @property
   def clear_custom_audiences(self):
-    return getattr(self._args, 'clear_custom_audiences', None)
+    return getattr(self.args, 'clear_custom_audiences', None)
 
   def Adjust(self, resource):
     def GetCurrentCustomAudiences():
@@ -1454,34 +1597,45 @@ class CustomAudiencesChanges(ConfigChanger):
     return resource
 
 
-class RuntimeChange(ConfigChanger):
-  """Sets the runtime annotation on the service template."""
+@dataclasses.dataclass(frozen=True)
+class RuntimeChange(TemplateConfigChanger):
+  """Sets the runtime annotation on the service template.
 
-  def __init__(self, runtime):
-    super(RuntimeChange, self).__init__(adjusts_template=True)
-    self._runtime = runtime
+  Attributes:
+    runtime: The runtime annotation value to set.
+  """
+
+  runtime: str
 
   def Adjust(self, resource):
-    resource.template.spec.runtimeClassName = self._runtime
+    resource.template.spec.runtimeClassName = self.runtime
     return resource
 
 
-class RemoveContainersChange(ConfigChanger):
-  """Removes the specified containers."""
+@dataclasses.dataclass(frozen=True)
+class RemoveContainersChange(TemplateConfigChanger):
+  """Removes the specified containers.
 
-  def __init__(self, containers: typing.Iterable[str]):
-    """RemoveContainersChange constructor.
+  Attributes:
+    containers: Containers to remove.
+  """
+
+  containers: frozenset[str]
+
+  @classmethod
+  def FromContainerNames(cls, containers: Iterable[str]):
+    """Returns a RemoveContainersChange that removes the specified containers.
 
     Args:
-      containers: A list of containers to remove.
+      containers: The names of containers to remove. Duplicate container names
+        are ignored.
     """
-    super(RemoveContainersChange, self).__init__(adjusts_template=True)
-    self._containers = frozenset(containers)
+    return cls(frozenset(containers))
 
   def Adjust(
       self, resource: k8s_object.KubernetesObject
   ) -> k8s_object.KubernetesObject:
-    for container in self._containers:
+    for container in self.containers:
       try:
         del resource.template.containers[container]
       except KeyError:
@@ -1489,21 +1643,18 @@ class RemoveContainersChange(ConfigChanger):
     return resource
 
 
-class ContainerDependenciesChange(ConfigChanger):
+@dataclasses.dataclass(frozen=True)
+class ContainerDependenciesChange(TemplateConfigChanger):
   """Sets container dependencies.
 
   Updates the dependencies of containers present in new_dependencies. The
   dependencies of other containers will be left unchanged.
+
+  Attributes:
+      new_dependencies: A map of containers to their updated dependencies.
   """
 
-  def __init__(self, new_dependencies):
-    """ContainerDependenciesChange constructor.
-
-    Args:
-      new_dependencies: A map of containers to their updated dependencies.
-    """
-    super(ContainerDependenciesChange, self).__init__(adjusts_template=True)
-    self._new_dependencies = new_dependencies
+  new_dependencies: Mapping[str, Iterable[str]]
 
   def Adjust(
       self, resource: k8s_object.KubernetesObject
@@ -1517,7 +1668,7 @@ class ContainerDependenciesChange(ConfigChanger):
         if container_name in containers
     }
 
-    for container, depends_on in self._new_dependencies.items():
+    for container, depends_on in self.new_dependencies.items():
       if not container:
         container = resource.template.container.name
       depends_on = frozenset(depends_on)
@@ -1537,62 +1688,93 @@ class ContainerDependenciesChange(ConfigChanger):
     return resource
 
 
-class RemoveVolumeChange(ConfigChanger):
-  """Removes volumes from the service or job template."""
+@dataclasses.dataclass(frozen=True)
+class RemoveVolumeChange(TemplateConfigChanger):
+  """Removes volumes from the service or job template.
 
-  def __init__(self, removed_volumes):
-    super(RemoveVolumeChange, self).__init__(adjusts_template=True)
-    self._removed_volumes = removed_volumes
+  Attributes:
+    removed_volumes: The volumes to remove.
+  """
+
+  removed_volumes: Iterable[str]
+  clear_volumes: bool
 
   def Adjust(self, resource):
-    for to_remove in self._removed_volumes:
-      if to_remove in resource.template.volumes:
-        del resource.template.volumes[to_remove]
+    # having remove and clear is redundant, but we'll allow it.
+    if self.clear_volumes:
+      vols = list(resource.template.volumes)
+      for vol in vols:
+        del resource.template.volumes[vol]
+    else:
+      for to_remove in self.removed_volumes:
+        if to_remove in resource.template.volumes:
+          del resource.template.volumes[to_remove]
     return resource
 
 
-class AddVolumeChange(ConfigChanger):
-  """Updates Volumes set on the service or job template."""
+@dataclasses.dataclass(frozen=True)
+class AddVolumeChange(TemplateConfigChanger):
+  """Updates Volumes set on the service or job template.
 
-  def __init__(self, new_volumes, release_track):
-    super(AddVolumeChange, self).__init__(adjusts_template=True)
-    self._new_volumes = new_volumes
-    self._release_track = release_track
+  Attributes:
+    new_volumes: The volumes to add.
+    release_track: The resource's release track. Used to verify volume types are
+      supported in that release track.
+  """
+
+  new_volumes: Collection[Mapping[str, str]]
+  release_track: base.ReleaseTrack
 
   def Adjust(self, resource):
-    for to_add in self._new_volumes:
+    for to_add in self.new_volumes:
       volumes.add_volume(
           to_add,
           resource.template.volumes,
           resource.MessagesModule(),
-          self._release_track,
+          self.release_track,
       )
     return resource
 
 
+@dataclasses.dataclass(frozen=True)
 class RemoveVolumeMountChange(ContainerConfigChanger):
-  """Removes Volume Mounts from the container."""
+  """Removes Volume Mounts from the container.
 
-  def __init__(self, removed_mounts, **kwargs):
-    super(RemoveVolumeMountChange, self).__init__(**kwargs)
-    self._removed_mounts = removed_mounts
+  Attributes:
+    removed_mounts: Volume mounts to remove from the adjusted container.
+  """
+
+  removed_mounts: Collection[str] = dataclasses.field(default_factory=list)
+  clear_mounts: bool = False
 
   def AdjustContainer(self, container, messages_mod):
-    for to_remove in self._removed_mounts:
-      if to_remove in container.volume_mounts:
-        del container.volume_mounts[to_remove]
+    if self.clear_mounts:
+      # iterating over the dictionary wrapper directly while deleting from it
+      # casues problems.
+      keys = list(container.volume_mounts)
+      for mount in keys:
+        del container.volume_mounts[mount]
+    else:
+      for to_remove in self.removed_mounts:
+        if to_remove in container.volume_mounts:
+          del container.volume_mounts[to_remove]
     return container
 
 
+@dataclasses.dataclass(frozen=True)
 class AddVolumeMountChange(ContainerConfigChanger):
-  """Updates Volume Mounts set on the container."""
+  """Updates Volume Mounts set on the container.
 
-  def __init__(self, new_mounts, **kwargs):
-    super(AddVolumeMountChange, self).__init__(**kwargs)
-    self._new_mounts = new_mounts
+  Attributes:
+    new_mounts: Mounts to add to the adjusted container.
+  """
+
+  new_mounts: Collection[Mapping[str, str]] = dataclasses.field(
+      default_factory=list
+  )
 
   def AdjustContainer(self, container, messages_mod):
-    for mount in self._new_mounts:
+    for mount in self.new_mounts:
       if 'volume' not in mount or 'mount-path' not in mount:
         raise exceptions.ConfigurationError(
             'Added Volume mounts must have a `volume` and a `mount-path`.'

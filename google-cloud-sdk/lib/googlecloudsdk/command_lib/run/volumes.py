@@ -197,7 +197,9 @@ class _InMemoryVolume(_VolumeType):
     return {
         'size-limit': (
             'A quantity representing the maximum amount of memory allocated to'
-            ' this volume, such as "512Mi" or "3G".'
+            ' this volume, such as "512Mi" or "3G". Data stored in an in-memory'
+            ' volume consumes the memory allocation of the container that wrote'
+            ' the data.'
         )
     }
 

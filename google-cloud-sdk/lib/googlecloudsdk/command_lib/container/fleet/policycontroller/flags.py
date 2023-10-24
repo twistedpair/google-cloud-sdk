@@ -35,7 +35,7 @@ def fleet_default_cfg_flag():
   return base.Argument(
       '--fleet-default-member-config',
       type=str,
-      help="""The path to an policy-controller.yaml configuration
+      help="""The path to a policy-controller.yaml configuration
         file. If specified, this configuration will become the default Policy
         Controller configuration for all memberships in your fleet. It can be
         overridden with a membership-specific configuration by using the

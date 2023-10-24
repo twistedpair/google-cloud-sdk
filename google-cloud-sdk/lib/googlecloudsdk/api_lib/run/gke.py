@@ -26,12 +26,11 @@ import socket
 import ssl
 import tempfile
 import threading
+
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core.util import files
-
-import six
 
 
 class NoCaCertError(exceptions.Error):
@@ -64,15 +63,15 @@ class _AddressPatches(object):
   def MonkeypatchAddressChecking(self, hostname, ip):
     """Change ssl address checking so the given ip answers to the hostname."""
     with self._lock:
+      match_hostname_exists = hasattr(ssl, 'match_hostname')
       if self._host_to_ip is None:
         self._host_to_ip = {}
         self._ip_to_host = {}
-        self._old_match_hostname = ssl.match_hostname
-        self._old_getaddrinfo = socket.getaddrinfo
-        if six.PY3:
+        if match_hostname_exists:
+          # We are not in Python 3.12+
+          self._old_match_hostname = ssl.match_hostname
           ssl.match_hostname = self._MatchHostname
-        else:
-          socket.getaddrinfo = self._GetAddrInfo
+        self._old_getaddrinfo = socket.getaddrinfo
       if hostname in self._host_to_ip:
         raise ValueError(
             'Cannot re-patch the same address: {}'.format(hostname))
@@ -82,10 +81,7 @@ class _AddressPatches(object):
       self._host_to_ip[hostname] = ip
       self._ip_to_host[ip] = hostname
     try:
-      if six.PY3:
-        yield ip
-      else:
-        yield hostname
+      yield ip
     finally:
       with self._lock:
         del self._host_to_ip[hostname]
@@ -93,10 +89,8 @@ class _AddressPatches(object):
         if not self._host_to_ip:
           self._host_to_ip = None
           self._ip_to_host = None
-          if six.PY3:
+          if match_hostname_exists:
             ssl.match_hostname = self._old_match_hostname
-          else:
-            socket.getaddrinfo = self._old_getaddrinfo
 
   def _GetAddrInfo(self, host, *args, **kwargs):
     """Like socket.getaddrinfo, only with translation."""
@@ -177,11 +171,10 @@ def ClusterConnectionInfo(cluster_ref):
     raise NoCaCertError('Cluster is missing certificate authority data.')
   fd, filename = tempfile.mkstemp()
   os.close(fd)
-  files.WriteBinaryFileContents(filename, base64.b64decode(ca_data),
-                                private=True)
+  files.WriteBinaryFileContents(
+      filename, base64.b64decode(ca_data), private=True
+  )
   try:
     yield cluster.endpoint, filename
   finally:
     os.remove(filename)
-
-

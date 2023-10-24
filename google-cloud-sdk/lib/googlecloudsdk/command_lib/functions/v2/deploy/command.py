@@ -104,6 +104,7 @@ _V1_ONLY_FLAGS = [
     ('security_level', '--security-level'),
     # Not yet supported flags
     ('buildpack_stack', '--buildpack-stack'),
+    ('runtime_update_policy', '--runtime-update-policy'),
 ]
 _V1_ONLY_FLAG_ERROR = (
     '`%s` is only supported in Cloud Functions (First generation).'

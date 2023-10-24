@@ -1935,23 +1935,47 @@ def AddUpgradePolicy(parser: parser_arguments.ArgumentInterceptor):
   )
 
   upgrade_policy_group.add_argument(
-      '--upgrade-control-plane',
-      type=arg_parsers.ArgBoolean(),
+      '--upgrade-policy',
+      type=arg_parsers.ArgDict(
+          spec={
+              'control-plane-only': arg_parsers.ArgBoolean(),
+          },
+      ),
       help=textwrap.dedent("""\
-      If not specified, node pools are upgraded together with the control plane.
+      If not specified, control-plane-only is set to False. In the next upgrade operation, all worker node pools will be upgraded together with the control plane.
 
-      Examples:
+      Example:
 
-        To upgrade control plane only and keep node pools version unchanged,
+        To upgrade the control plane only and keep worker node pools version unchanged, first specify the policy:
 
           ```shell
-          $ {command} --upgrade-control-plane=True
+          $ {command} CLUSTER --upgrade-policy control-plane-only=True
           ```
 
-        To upgrade both control plane and node pools,
+        Then to start the upgrade operation using the specified policy, run:
 
           ```shell
-          $ {command} --upgrade-control-plane=False
+          $ {parent_command} upgrade CLUSTER --version=VERSION
+          ```
+
+        After upgrading only the cluster control plane, to upgrade an individual node pool, run:
+
+          ```shell
+          $ {grandparent_command} node-pools update NODE_POOL --version=VERSION
+          ```
+
+      Example:
+
+        Alternatively, to upgrade both the control plane and all worker node pools, first specify the policy:
+
+          ```shell
+          $ {command} CLUSTER --upgrade-policy control-plane-only=False
+          ```
+
+        Then to start the upgrade operation using the specified policy, run:
+
+          ```shell
+          $ {parent_command} upgrade CLUSTER --version=VERSION
           ```
       """),
   )

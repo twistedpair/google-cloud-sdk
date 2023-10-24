@@ -92,6 +92,8 @@ class GcsBucketResource(resource_reference.BucketResource):
     default_acl (dict|None): Default object ACLs for the bucket.
     default_kms_key (str|None): Default KMS key for objects in the bucket.
     location_type (str|None): Region, dual-region, etc.
+    per_object_retention (dict|None): Contains object retention settings for
+      bucket.
     project_number (int|None): The project number to which the bucket belongs
       (different from project name and project ID).
     public_access_prevention (str|None): Public access prevention status.
@@ -125,6 +127,7 @@ class GcsBucketResource(resource_reference.BucketResource):
       logging_config=None,
       metadata=None,
       metageneration=None,
+      per_object_retention=None,
       project_number=None,
       public_access_prevention=None,
       requester_pays=None,
@@ -164,6 +167,7 @@ class GcsBucketResource(resource_reference.BucketResource):
     self.default_acl = default_acl
     self.default_kms_key = default_kms_key
     self.location_type = location_type
+    self.per_object_retention = per_object_retention
     self.project_number = project_number
     self.public_access_prevention = public_access_prevention
     self.rpo = rpo
@@ -197,6 +201,7 @@ class GcsBucketResource(resource_reference.BucketResource):
         and self.default_acl == other.default_acl
         and self.default_kms_key == other.default_kms_key
         and self.location_type == other.location_type
+        and self.per_object_retention == other.per_object_retention
         and self.project_number == other.project_number
         and self.public_access_prevention == other.public_access_prevention
         and self.rpo == other.rpo
@@ -247,6 +252,8 @@ class GcsObjectResource(resource_reference.ObjectResource):
     storage_class_update_time (datetime|None): Storage class update time.
     hard_delete_time (datetime|None): Time that soft-deleted objects will be
       permanently deleted.
+    retention_settings (dict|None): Contains retention settings for individual
+      object.
     soft_delete_time (datetime|None): Time that object was soft-deleted.
   """
 
@@ -275,6 +282,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
       metageneration=None,
       noncurrent_time=None,
       retention_expiration=None,
+      retention_settings=None,
       size=None,
       soft_delete_time=None,
       storage_class=None,
@@ -312,6 +320,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
         update_time,
     )
     self.hard_delete_time = hard_delete_time
+    self.retention_settings = retention_settings
     self.soft_delete_time = soft_delete_time
     self.storage_class_update_time = storage_class_update_time
 
@@ -319,6 +328,7 @@ class GcsObjectResource(resource_reference.ObjectResource):
     return (
         super(GcsObjectResource, self).__eq__(other)
         and self.hard_delete_time == other.hard_delete_time
+        and self.retention_settings == other.retention_settings
         and self.soft_delete_time == other.soft_delete_time
         and self.storage_class_update_time == other.storage_class_update_time
     )

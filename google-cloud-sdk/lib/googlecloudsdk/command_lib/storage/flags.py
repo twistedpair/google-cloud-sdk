@@ -47,8 +47,8 @@ class ReplicationStrategy(enum.Enum):
 
 class RetentionMode(enum.Enum):
   """Enum class for specifying the retention mode."""
-  LOCKED = 'LOCKED'
-  UNLOCKED = 'UNLOCKED'
+  LOCKED = 'Locked'
+  UNLOCKED = 'Unlocked'
 
 
 def get_object_state_from_flags(flag_args):
@@ -481,6 +481,46 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
     add_inventory_reports_metadata_fields_flag(parser, require_create_flags)
 
 
+def add_dataset_config_location_flag(parser):
+  """Adds the location flag for the dataset-config commands.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+  """
+  parser.add_argument(
+      '--location',
+      type=str,
+      required=True,
+      help='Provide location of the dataset config.',
+  )
+
+
+def add_dataset_config_create_update_flags(parser):
+  """Adds the flags for the dataset-config create and update commands.
+
+  Args:
+    parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+  """
+  parser.add_argument(
+      '--retention-period-days',
+      type=int,
+      metavar='RETENTION_DAYS',
+      help='Provide retention period for the config.',
+  )
+  parser.add_argument(
+      '--skip-verification',
+      action='store_true',
+      help=(
+          'Skips failures from the verification phase before data is ingested.'
+      ),
+  )
+  parser.add_argument(
+      '--description',
+      type=str,
+      help='Optional user description for dataset config.',
+  )
+
+
 def add_raw_display_flag(parser):
   parser.add_argument(
       '--raw',
@@ -488,6 +528,18 @@ def add_raw_display_flag(parser):
       help=(
           'Shows metadata in the format returned by the API instead of'
           ' standardizing it.'
+      ),
+  )
+
+
+def add_admission_policy_flag(parser):
+  parser.add_argument(
+      '--admission-policy',
+      choices=['ADMIT_ON_FIRST_MISS', 'ADMIT_ON_SECOND_MISS'],
+      default='ADMIT_ON_FIRST_MISS',
+      help=(
+          'The cache admission policy decides for each cache miss, whether to'
+          ' insert the missed block or not.'
       ),
   )
 
@@ -579,6 +631,19 @@ def add_soft_delete_flags(parser):
       '--next-page-token',
       hidden=True,
       help='Page token for resuming LIST calls.',
+  )
+
+
+def add_enable_per_object_retention_flag(parser):
+  """Adds flag for enabling object retention for buckets."""
+  parser.add_argument(
+      '--enable-per-object-retention',
+      action='store_true',
+      hidden=True,
+      help=(
+          'Enables each object in the bucket to have its own retention policy,'
+          ' which prevents deletion until stored for a specific length of time.'
+      ),
   )
 
 

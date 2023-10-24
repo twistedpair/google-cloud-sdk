@@ -19,12 +19,31 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-import abc
 import re
-from typing import List, Optional
+from typing import List, Optional, Dict, Set
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
+
+
+def GetComponentTypesFromSelectors(selectors) -> Set[str]:
+  """Returns a list of component types included in a create/update deployment.
+
+  Args:
+    selectors: list of dict of type names (string) that will be deployed.
+
+  Returns:
+    set of component types as strings. The component types can also include
+    hidden resource types that should be called out as part of the deployment
+    progress output.
+  """
+  if not selectors:
+    return {}
+  rtypes = set()
+  for type_name in selectors:
+    rtypes.add(type_name['type'])
+  return rtypes
 
 
 class TypeKit(object):
@@ -57,11 +76,6 @@ class TypeKit(object):
   def is_ingress_service(self):
     return self._type_metadata.service_type == types_utils.ServiceType.INGRESS
 
-  @abc.abstractmethod
-  def GetAllReferences(self, resource_config):
-    return []
-
-  @abc.abstractmethod
   def GetDeployMessage(self, create: bool = False) -> str:
     """Message that is shown to the user upon starting the deployment.
 
@@ -74,82 +88,151 @@ class TypeKit(object):
     Returns:
       The message displayed to the user.
     """
+    del create  # Not use in this default implementation.
+    if self._type_metadata.eta_in_min:
+      return 'This might take up to {} minutes.'.format(
+          self._type_metadata.eta_in_min
+      )
+    return ''
 
-  @abc.abstractmethod
-  def UpdateResourceConfig(self, parameters, resource_config):
+  def UpdateResourceConfig(
+      self,
+      parameters: Dict[str, str],
+      resource: runapps_v1alpha1_messages.Resource,
+  ) -> List[str]:
     """Updates config according to the parameters.
 
     Each TypeKit should override this method to update the resource config
     specific to the need of the typekit.
 
     Args:
-      parameters: dict, parameters from the command
-      resource_config: dict, the resource config object of the integration
+      parameters: parameters from the command
+      resource: the resource object of the integration
+
+    Returns:
+      list of service names referred in parameters.
     """
+    metadata = self._type_metadata
+    config_dict = {}
+    if resource.config:
+      config_dict = encoding.MessageToDict(resource.config)
+    for param in metadata.parameters:
+      param_value = parameters.get(param.name)
+      if param_value:
+        # TODO(b/303113714): Add value validation.
+        if param.data_type == 'int':
+          config_dict[param.config_name] = int(param_value)
+        elif param.data_type == 'number':
+          config_dict[param.config_name] = float(param_value)
+        else:
+          # default is string
+          config_dict[param.config_name] = param_value
+    resource.config = encoding.DictToMessage(
+        config_dict, runapps_v1alpha1_messages.Resource.ConfigValue
+    )
+    return []
+
+  def _SetBinding(
+      self,
+      to_resource: runapps_v1alpha1_messages.Resource,
+      from_resource: runapps_v1alpha1_messages.Resource,
+      parameters: Optional[Dict[str, str]] = None,
+  ):
+    """Add a binding from a resource to another resource.
+
+    Args:
+      to_resource: the resource this binding to be pointing to.
+      from_resource: the resource this binding to be configured from.
+      parameters: the binding config from parameter
+    """
+    from_ids = [x.targetRef.id for x in from_resource.bindings]
+    if to_resource.id not in from_ids:
+      from_resource.bindings.append(
+          runapps_v1alpha1_messages.Binding(
+              targetRef=runapps_v1alpha1_messages.ResourceRef(id=to_resource.id)
+          )
+      )
+    if parameters:
+      for binding in from_resource.bindings:
+        if binding.targetRef.id == to_resource.id:
+          binding_config = (
+              encoding.MessageToDict(binding.config) if binding.config else {}
+          )
+          for key in parameters:
+            binding_config[key] = parameters[key]
+          binding.config = encoding.DictToMessage(
+              binding_config, runapps_v1alpha1_messages.Binding.ConfigValue
+          )
 
   def BindServiceToIntegration(
       self,
-      integration_name,
-      resource_config,
-      service_name,
-      service_config,
-      parameters,
+      integration: runapps_v1alpha1_messages.Resource,
+      workload: runapps_v1alpha1_messages.Resource,
+      parameters: Optional[Dict[str, str]] = None,
   ):
-    """Binds a service to the integration.
+    """Bind a workload to an integration.
 
     Args:
-      integration_name: str, name of the integration
-      resource_config: dict, the resource config object of the integration
-      service_name: str, name of the service
-      service_config: dict, the resouce config object of the service
-      parameters: dict, parameters from the command
+      integration: the resource of the inetgration.
+      workload: the resource the workload.
+      parameters: the binding config from parameter.
     """
-    del resource_config, service_name, parameters  # Not used here.
-    ref_to_add = '{}/{}'.format(self.resource_type, integration_name)
-    # Check if ref already exists.
-    refs = set(ref['ref'] for ref in service_config.get('resources', []))
-    if ref_to_add not in refs:
-      service_config.setdefault('resources', []).append({'ref': ref_to_add})
+    if self._type_metadata.service_type == types_utils.ServiceType.INGRESS:
+      self._SetBinding(workload, integration, parameters)
+    else:
+      self._SetBinding(integration, workload, parameters)
+
+  def RemoveBinding(
+      self,
+      to_resource: runapps_v1alpha1_messages.Resource,
+      from_resource: runapps_v1alpha1_messages.Resource,
+  ):
+    """Remove a binding from a resource that's pointing to another resource.
+
+    Args:
+      to_resource: the resource this binding is pointing to.
+      from_resource: the resource this binding is configured from.
+    """
+    from_resource.bindings = [
+        x
+        for x in from_resource.bindings
+        if x.targetRef.id != to_resource.id
+    ]
 
   def UnbindServiceFromIntegration(
       self,
-      integration_name,
-      resource_config,
-      service_name,
-      service_config,
-      parameters,
+      integration: runapps_v1alpha1_messages.Resource,
+      workload: runapps_v1alpha1_messages.Resource,
   ):
-    """Unbinds a service from the integration.
+    """Unbind a workload from an integration.
 
     Args:
-      integration_name: str, name of the integration
-      resource_config: dict, the resource config object of the integration
-      service_name: str, name of the service
-      service_config: dict, the resouce config object of the service
-      parameters: dict, parameters from the command
+      integration: the resource of the inetgration.
+      workload: the resource the workload.
     """
-    del resource_config, service_name, parameters  # Not used here.
-    ref_to_remove = '{}/{}'.format(self.resource_type, integration_name)
-    service_config['resources'] = [
-        x
-        for x in service_config.get('resources', [])
-        if x['ref'] != ref_to_remove
-    ]
+    if self._type_metadata.service_type == types_utils.ServiceType.INGRESS:
+      self.RemoveBinding(workload, integration)
+    else:
+      self.RemoveBinding(integration, workload)
 
-  def NewIntegrationName(self, service, parameters, resources_map):
+  def NewIntegrationName(
+      self, appconfig: runapps_v1alpha1_messages.Config
+  ) -> str:
     """Returns a name for a new integration.
 
     Args:
-      service: str, name of the service
-      parameters: dict, parameters from the command
-      resources_map: the map of all resources in the application
+      appconfig: the application config
 
     Returns:
       str, a new name for the integration.
     """
-    del service, parameters  # Not used in here.
     name = '{}-{}'.format(self.integration_type, 1)
-    while name in resources_map:
+    existing_names = {
+        res.id.name
+        for res in appconfig.resourceList
+        if (res.id.type == self.resource_type)
+    }
+    while name in existing_names:
       # If name already taken, tries adding an integer suffix to it.
       # If suffixed name also exists, tries increasing the number until finding
       # an available one.
@@ -184,36 +267,10 @@ class TypeKit(object):
     """
     return [{'type': self.resource_type, 'name': integration_name}]
 
-  # TODO(b/298063267): clean up after replacing all with GetBindedWorkload
-  def GetRefServices(self, name, resource_config, all_resources):
-    """Returns list of cloud run service that is binded to this resource.
-
-    Args:
-      name: str, name of the resource.
-      resource_config: dict, the resource config object of the integration.
-      all_resources: dict, all the resources in the application.
-
-    Returns:
-      list cloud run service names
-    """
-    del resource_config  # Not used here.
-    services = []
-    if self.is_backing_service:
-      for resource_name, resource in all_resources.items():
-        ref_name = '{}/{}'.format(self.resource_type, name)
-        if resource.get('service', {}).get('resources'):
-          if any(
-              [
-                  ref['ref'] == ref_name
-                  for ref in resource['service']['resources']
-              ]
-          ):
-            services.append(resource_name)
-    return services
-
   def GetBindedWorkloads(
       self,
       resource: runapps_v1alpha1_messages.Resource,
+      # TODO(b/304638571): change this to app config to be consistent.
       all_resources: List[runapps_v1alpha1_messages.Resource],
       workload_type: str = 'service',
   ) -> List[runapps_v1alpha1_messages.ResourceID]:
@@ -238,19 +295,19 @@ class TypeKit(object):
       return [
           workload.id.name
           for workload in filtered_workloads
-          if self._FindBinding(workload, resource.id.type, resource.id.name)
+          if self._FindBindings(workload, resource.id.type, resource.id.name)
       ]
     return [
-        res_id.name
-        for res_id in self._FindBindingRecursive(resource, workload_type)
+        res_id.targetRef.id.name
+        for res_id in self._FindBindingsRecursive(resource, workload_type)
     ]
 
-  def _FindBindingRecursive(
+  def _FindBindingsRecursive(
       self,
       resource: runapps_v1alpha1_messages.Resource,
       target_type: Optional[str] = None,
       target_name: Optional[str] = None,
-  ) -> List[runapps_v1alpha1_messages.ResourceID]:
+  ) -> List[runapps_v1alpha1_messages.Binding]:
     """Find bindings from the given resource and its subresource.
 
     Args:
@@ -263,20 +320,20 @@ class TypeKit(object):
     Returns:
       list of ResourceID of the bindings.
     """
-    svcs = self._FindBinding(resource, target_type, target_name)
+    svcs = self._FindBindings(resource, target_type, target_name)
     if resource.subresources:
       for subresource in resource.subresources:
         svcs.extend(
-            self._FindBindingRecursive(subresource, target_type, target_name)
+            self._FindBindingsRecursive(subresource, target_type, target_name)
         )
     return svcs
 
-  def _FindBinding(
+  def _FindBindings(
       self,
       resource: runapps_v1alpha1_messages.Resource,
       target_type: Optional[str],
       target_name: Optional[str],
-  ) -> List[runapps_v1alpha1_messages.ResourceID]:
+  ) -> List[runapps_v1alpha1_messages.Binding]:
     """Returns list of bindings that match the target_type and target_name.
 
     Args:
@@ -294,45 +351,31 @@ class TypeKit(object):
       if (not target_name or binding.targetRef.id.name == target_name) and (
           not target_type or binding.targetRef.id.type == target_type
       ):
-        result.append(binding.targetRef.id)
+        result.append(binding)
     return result
 
-  def GetCreateComponentTypes(self, selectors, app_dict):
+  def GetCreateComponentTypes(self, selectors):
     """Returns a list of component types included in a create/update deployment.
 
     Args:
       selectors: list of dict of type names (string) that will be deployed.
-      app_dict: The application resource as dictionary.
 
     Returns:
       set of component types as strings. The component types can also include
       hidden resource types that should be called out as part of the deployment
       progress output.
     """
-    del app_dict  # Unused.
-    if not selectors:
-      return {}
-    rtypes = set()
-    for type_name in selectors:
-      rtypes.add(type_name['type'])
-    return rtypes
+    return GetComponentTypesFromSelectors(selectors)
 
-  def GetDeleteComponentTypes(self, selectors, app_dict):
+  def GetDeleteComponentTypes(self, selectors):
     """Returns a list of component types included in a delete deployment.
 
     Args:
       selectors: list of dict of type names (string) that will be deployed.
-      app_dict: The application resource as dictionary.
 
     Returns:
       set of component types as strings. The component types can also include
       hidden resource types that should be called out as part of the deployment
       progress output.
     """
-    del app_dict  # Unused.
-    if not selectors:
-      return {}
-    rtypes = set()
-    for type_name in selectors:
-      rtypes.add(type_name['type'])
-    return rtypes
+    return GetComponentTypesFromSelectors(selectors)

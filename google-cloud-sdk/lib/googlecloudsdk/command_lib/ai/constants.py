@@ -20,24 +20,20 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.calliope import base
 
-ALPHA_VERSION = 'ALPHA'
 BETA_VERSION = 'BETA'
 GA_VERSION = 'GA'
 AI_PLATFORM_API_VERSION = {
     GA_VERSION: 'v1',
-    BETA_VERSION: 'v1beta1',
-    ALPHA_VERSION: 'v1alpha1'
+    BETA_VERSION: 'v1beta1'
 }
 AI_PLATFORM_MESSAGE_PREFIX = {
     GA_VERSION: 'GoogleCloudAiplatformV1',
-    BETA_VERSION: 'GoogleCloudAiplatformV1beta1',
-    ALPHA_VERSION: 'GoogleCloudAiplatformV1alpha1'
+    BETA_VERSION: 'GoogleCloudAiplatformV1beta1'
 }
 AI_PLATFORM_API_NAME = 'aiplatform'
 AI_PLATFORM_RELEASE_TRACK_TO_VERSION = {
     base.ReleaseTrack.GA: GA_VERSION,
-    base.ReleaseTrack.BETA: BETA_VERSION,
-    base.ReleaseTrack.ALPHA: ALPHA_VERSION
+    base.ReleaseTrack.BETA: BETA_VERSION
 }
 
 # The default available regions for most Vertex AI products. See

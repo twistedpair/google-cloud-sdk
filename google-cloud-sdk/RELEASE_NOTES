@@ -5,6 +5,125 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 452.0.0 (2023-10-24)
+
+### AI
+
+* Added `deployment-group`, `enable-access-logging`,`audiences`,`allowed-issuers` to `gcloud ai index-endpoints deploy-index`.
+* Added `enable-private-service-connect`, `project-allowlist`, `encryption-kms-key-name` to `gcloud ai index-endpoints create`.
+
+### Anthos On-Prem
+
+*   Renamed `--upgrade-control-plane` flag of `gcloud container vmware clusters create` and `gcloud container vmware clusters update` to `--upgrade-policy`. Promoted `--upgrade-policy` flag to GA.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.21 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.21>.
+
+### Artifact Registry
+
+*  Fixed `Registry URL` in the output of `artifacts repositories describe`.
+
+### Cloud BCE App Connector
+
+* Added `gcloud beta beyondcorp app gateways`. Commands in this group manages app connector gateways. For more information, see <https://cloud.google.com/beyondcorp-enterprise/docs/enable-app-connector>.
+
+### Cloud Bigtable
+
+* Added `--priority` flag to `gcloud bigtable app-profiles create` and `gcloud bigtable app-profiles update`.
+
+### Cloud Composer
+
+* Added `--cloud-preferred-zone` to `gcloud composer environments create`
+to select preferred zone for sql database creation.
+* Added  `--storage-bucket` to `gcloud composer environments create` to specify the Cloud Storage bucket to be used by the environment.
+* Added  `--storage-bucket` to `gcloud beta composer environments create` to specify the Cloud Storage bucket to be used by the environment.
+
+### Cloud Dataproc
+
+* Added `--driver-required-memory-mb` and `--driver-required-vcores` flags to `gcloud dataproc jobs submit`.
+
+### Cloud Domains
+
+* Deprecated `gcloud domains registrations export/import/transfer` commands.
+* Deprecated `--use-google-domains-dns` and `--contact-privacy=private-contact-data` flags from `gcloud domains registrations` command group. See <https://cloud.google.com/domains/docs/deprecations/feature-deprecations> for more information.
+
+### Cloud IAM
+
+*   Promoted optional  `--recommend` flag to beta for the following command:
+    *   `gcloud iam service-account delete`
+
+### Cloud NetApp
+
+* Added `gcloud beta netapp backup-vaults` surface command, and made help text public.
+
+### Cloud Resource Manager
+
+*   Promoted optional  `--recommend` flag to beta for the following commands:
+    *   `gcloud projects remove-iam-policy-binding`
+    *   `gcloud projects delete`
+
+### Cloud SQL
+
+* Support `--ssl-mode` flag for `gcloud sql instances create` and
+  `gcloud sql instances patch`.
+
+### Cloud Spanner
+
+* Added the flags `--autoscaling-min-nodes`, `--autoscaling-max-nodes`,
+`--autoscaling-min-processing-units`, `--autoscaling-max-processing-units`,
+`--autoscaling-high-priority-cpu-target` and `--autoscaling-storage-target` to
+support creating an autoscaled instance in `gcloud spanner instances create`, or
+updating the autoscaling config of an instance in
+`gcloud spanner instances update`.
+
+### Cloud Storage
+
+* Releases `storage operations` command group for managing long-running operations. However, there is currently no way to create these operations.
+
+### Cloud TPU
+
+* Promote `--add-tags`, `--clear-tags`, and `--remove-tags` flags of
+  `gcloud compute tpus tpu-vm update` to GA.
+
+### Cloud Workstations
+
+*   Added `config set workstations/region REGION`, `config set workstations/cluster CLUSTER_ID`, `config set workstations/config CONFIG_ID`, and `config set workstations/workstation WORKSTATIONS_ID` commands.
+
+### Compute Engine
+
+* Promoted regional INTERNET_IP_PORT and INTERNET_FQDN_PORT Network Endpoint
+  Groups in `gcloud compute network-endpoint-groups` to GA. Affected commands:
+    * `gcloud compute network-endpoint-groups create`
+    * `gcloud compute network-endpoint-groups list-network-endpoints`
+    * `gcloud compute network-endpoint-groups update <RESOURCE_NAME> --add-endpoint`
+    * `gcloud compute network-endpoint-groups update <RESOURCE_NAME> --remove-endpoint`
+* Promoted `ENDPOINT_TYPE_MANAGED_PROXY_LB` enum option of `--endpoint-types` flag in `gcloud compute routers nats create` to GA.
+* Added `gcloud beta compute project-zonal-metadata` for managing project zonal
+metadata. Documentation of this feature is available at
+<https://cloud.google.com/compute/docs/metadata/setting-custom-metadata#set-custom-project-zonal-metadata>.
+* Promoted `gcloud compute network-attachments update` to GA.
+
+### Firebase Test Lab
+
+* Increased the maximum number of test shards allowed for Arm virtual devices from 100 to 200 shards when using `--num-uniform-shards` or `--test-targets-for-shard` with `gcloud firebase test android run`.
+
+### Kubernetes Engine
+
+*  Added `--machine-type`, `--disk-type` and `--disk-size` flags to `gcloud container node-pools update`
+  for migrating node pool configuration via node pool upgrade strategy.
+  For more information see <https://cloud.google.com/kubernetes-engine/docs/concepts/node-pool-upgrade-strategies>.
+
+### Notebooks
+
+* Added `gcloud notebooks runtimes migrate` command.
+  This command migrates a Google-Managed Notebook to a Workbench Instance.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 451.0.1 (2023-10-19)
 
 

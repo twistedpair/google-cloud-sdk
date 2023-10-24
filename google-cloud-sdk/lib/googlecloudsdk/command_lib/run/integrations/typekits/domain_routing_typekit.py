@@ -19,8 +19,14 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import List, Optional, Dict
+
+from apitools.base.py import encoding
 from googlecloudsdk.command_lib.run.integrations.typekits import base
 from googlecloudsdk.command_lib.runapps import exceptions
+from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
+
+DOMAIN_TYPE = 'domain'
 
 
 class DomainRoutingTypeKit(base.TypeKit):
@@ -33,87 +39,115 @@ class DomainRoutingTypeKit(base.TypeKit):
       message += ' Manual DNS configuration will be required after completion.'
     return message
 
-  def UpdateResourceConfig(self, parameters, resource_config):
+  def UpdateResourceConfig(
+      self,
+      parameters: Dict[str, str],
+      resource: runapps_v1alpha1_messages.Resource,
+  ) -> List[str]:
     """Updates the resource config according to the parameters.
 
     Args:
-      parameters: dict, parameters from the command
-      resource_config: dict, the resource config object of the integration
+      parameters: parameters from the command
+      resource: the resource object of the integration
 
     Returns:
-      list of services referred in parameters.
+      list of service names referred in parameters.
     """
-    domains = resource_config.setdefault('domains', [])
     services = []
     if 'set-mapping' in parameters:
       url, service = self._ParseMappingNotation(parameters.get('set-mapping'))
       services.append(service)
-      service_ref = 'service/' + service
+      svc_id = runapps_v1alpha1_messages.ResourceID(
+          name=service, type='service'
+      )
       domain, path = self._ParseDomainPath(url)
-      domain_config = self._FindDomainConfig(domains, domain)
+      domain_config = self._FindDomainConfig(resource.subresources, domain)
       if domain_config is None:
-        domain_config = {'domain': domain}
-        domains.append(domain_config)
-      routes = domain_config.setdefault('routes', [])
-      if path != '/*' and not routes:
+        domain_res_name = self._DomainResourceName(domain)
+        domain_config = runapps_v1alpha1_messages.Resource(
+            id=runapps_v1alpha1_messages.ResourceID(
+                type=DOMAIN_TYPE, name=domain_res_name
+            ),
+            config=encoding.DictToMessage(
+                {'domain': domain},
+                runapps_v1alpha1_messages.Resource.ConfigValue,
+            ),
+        )
+        resource.subresources.append(domain_config)
+      if path != '/*' and not domain_config.bindings:
         raise exceptions.ArgumentError('New domain must map to root path')
       # If path already set to other service, remove it.
-      self._RemovePath(routes, path)
-      for route in routes:
-        if route.get('ref') == service_ref:
-          route.setdefault('paths', []).append(path)
-          break
+      self._RemovePath(domain_config, path)
+
+      bindings = self._FindBindings(domain_config, 'service', service)
+      if bindings:
+        binding = bindings[0]
+        cfg = encoding.MessageToDict(binding.config)
+        cfg.setdefault('paths', []).append(path)
+        binding.config = encoding.DictToMessage(
+            cfg, runapps_v1alpha1_messages.Binding.ConfigValue
+        )
       else:
-        routes.append({'ref': service_ref, 'paths': [path]})
+        domain_config.bindings.append(
+            runapps_v1alpha1_messages.Binding(
+                targetRef=runapps_v1alpha1_messages.ResourceRef(id=svc_id),
+                config=encoding.DictToMessage(
+                    {'paths': [path]},
+                    runapps_v1alpha1_messages.Binding.ConfigValue,
+                ),
+            )
+        )
+
     elif 'remove-mapping' in parameters:
       url = parameters.get('remove-mapping')
       if ':' in url:
         raise exceptions.ArgumentError(
             'Service notion not allowed in remove-mapping')
       domain, path = self._ParseDomainPath(url)
-      domain_config = self._FindDomainConfig(domains, domain)
+      domain_config = self._FindDomainConfig(resource.subresources, domain)
       if domain_config is None:
         raise exceptions.ArgumentError(
             'Domain "{}" does not exist'.format(domain))
-      routes = domain_config.get('routes')
       if path == '/*':
         # Removing root route
-        if len(routes) > 1:
+        if len(domain_config.bindings) > 1:
           # If the root route is not the only route, it can't be removed.
           raise exceptions.ArgumentError(
               ('Can not remove root route of domain "{}" '+
                'because there are other routes configured.').format(domain))
         else:
           # If it's the only route, delete the whole domain.
-          domains.remove(domain_config)
+          resource.subresources.remove(domain_config)
       else:
         # Removing non-root route
-        self._RemovePath(routes, path)
+        self._RemovePath(domain_config, path)
     elif 'remove-domain' in parameters:
       domain = parameters['remove-domain'].lower()
-      domain_config = self._FindDomainConfig(domains, domain)
+      domain_config = self._FindDomainConfig(resource.subresources, domain)
       if domain_config is None:
         raise exceptions.ArgumentError(
             'Domain "{}" does not exist'.format(domain))
-      domains.remove(domain_config)
+      resource.subresources.remove(domain_config)
 
-    if not domains:
+    if not resource.subresources:
       raise exceptions.ArgumentError(
           ('Can not remove the last domain. '+
            'Use "gcloud run integrations delete custom-domains" instead.'))
 
     return services
 
-  def BindServiceToIntegration(self, integration_name, resource_config,
-                               service_name, service_config, parameters):
-    """Binds a service to the integration.
+  def BindServiceToIntegration(
+      self,
+      integration: runapps_v1alpha1_messages.Resource,
+      workload: runapps_v1alpha1_messages.Resource,
+      parameters: Optional[Dict[str, str]] = None,
+  ):
+    """Bind a workload to an integration.
 
     Args:
-      integration_name: str, name of the integration
-      resource_config: dict, the resource config object of the integration
-      service_name: str, name of the service
-      service_config: dict, the resouce config object of the service
-      parameters: dict, parameters from the command
+      integration: the resource of the inetgration.
+      workload: the resource the workload.
+      parameters: the binding config from parameter.
 
     Raises:
       exceptions.ArgumentError: always raise this exception because binding
@@ -122,16 +156,16 @@ class DomainRoutingTypeKit(base.TypeKit):
     raise exceptions.ArgumentError(
         '--add-service is not supported in custom-domains integration')
 
-  def UnbindServiceFromIntegration(self, integration_name, resource_config,
-                                   service_name, service_config, parameters):
-    """Unbinds a service from the integration.
+  def UnbindServiceFromIntegration(
+      self,
+      integration: runapps_v1alpha1_messages.Resource,
+      workload: runapps_v1alpha1_messages.Resource,
+  ):
+    """Unbind a workload from an integration.
 
     Args:
-      integration_name: str, name of the integration
-      resource_config: dict, the resource config object of the integration
-      service_name: str, name of the service
-      service_config: dict, the resouce config object of the service
-      parameters: dict, parameters from the command
+      integration: the resource of the inetgration.
+      workload: the resource the workload.
 
     Raises:
       exceptions.ArgumentError: always raise this exception because unbinding
@@ -140,47 +174,45 @@ class DomainRoutingTypeKit(base.TypeKit):
     raise exceptions.ArgumentError(
         '--remove-service is not supported in custom-domains integration')
 
-  def NewIntegrationName(self, service, parameters, app_dict):
-    """Returns a name for a new integration."""
-    return self.singleton_name
-
-  def GetRefServices(self, name, resource_config, all_resources):
-    """Returns list of cloud run service that is binded to this resource.
+  def NewIntegrationName(
+      self, appconfig: runapps_v1alpha1_messages.Config
+  ) -> str:
+    """Returns a name for a new integration.
 
     Args:
-      name: str, name of the resource.
-      resource_config: dict, the resource config object of the integration
-      all_resources: dict, all the resources in the application.
+      appconfig: the application config
 
     Returns:
-      list cloud run service names
+      str, a new name for the integration.
     """
-    return self._GetAllServices(resource_config)
+    return self.singleton_name
 
-  def _GetAllServices(self, resource_config):
-    services = []
-    for domain_config in resource_config.get('domains', []):
-      for route in domain_config.get('routes', []):
-        ref = route.get('ref')
-        if ref:
-          services.append(ref.replace('service/', ''))
+  def _FindDomainConfig(
+      self, subresources: List[runapps_v1alpha1_messages.Resource], domain
+  ) -> Optional[runapps_v1alpha1_messages.Resource]:
+    for res in subresources:
+      if res.id.type == DOMAIN_TYPE:
+        cfg = encoding.MessageToDict(res.config)
+        if cfg.get('domain') == domain:
+          return res
+    return None
 
-    return services
-
-  def _FindDomainConfig(self, domains, domain):
-    for domain_config in domains:
-      if domain_config['domain'] == domain:
-        return domain_config
-
-  def _RemovePath(self, routes, path):
-    for route in routes:
-      paths = route.setdefault('paths', [])
+  def _RemovePath(
+      self, domain_res: runapps_v1alpha1_messages.Resource, path: str
+  ):
+    for route in domain_res.bindings:
+      cfg = encoding.MessageToDict(route.config)
+      paths = cfg.get('paths')
       for route_path in paths:
         if route_path == path:
           paths.remove(route_path)
           break
-      if not paths:
-        routes.remove(route)
+      if paths:
+        route.config = encoding.DictToMessage(
+            cfg, runapps_v1alpha1_messages.Binding.ConfigValue
+        )
+      else:
+        domain_res.bindings.remove(route)
 
   def _ParseMappingNotation(self, mapping):
     mapping_parts = mapping.split(':')
@@ -199,3 +231,6 @@ class DomainRoutingTypeKit(base.TypeKit):
     if len(url_parts) == 2:
       path = '/' + url_parts[1]
     return domain.lower(), path
+
+  def _DomainResourceName(self, domain: str) -> str:
+    return '-'.join(domain.split('.')).lower()

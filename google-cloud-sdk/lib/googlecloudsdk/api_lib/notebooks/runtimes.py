@@ -190,6 +190,39 @@ def CreateRuntimeDiagnoseRequest(args, messages):
           diagnosticConfig=diagnostic_config, timeoutMinutes=timeout_minutes))
 
 
+def CreateRuntimeMigrateRequest(args, messages):
+  """"Create and return Migrate request."""
+  runtime = GetRuntimeResource(args).RelativeName()
+
+  def GetNetworkRelativeName():
+    if args.IsSpecified('network'):
+      return args.CONCEPTS.network.Parse().RelativeName()
+
+  def GetSubnetRelativeName():
+    if args.IsSpecified('subnet'):
+      return args.CONCEPTS.subnet.Parse().RelativeName()
+
+  def GetPostStartupScriptOption():
+    type_enum = None
+    if args.IsSpecified('post_startup_script_option'):
+      request_message = messages.MigrateRuntimeRequest
+      type_enum = arg_utils.ChoiceEnumMapper(
+          arg_name='post-startup-script-option',
+          message_enum=request_message.PostStartupScriptOptionValueValuesEnum,
+          include_filter=lambda x: 'UNSPECIFIED' not in x).GetEnumForChoice(
+              arg_utils.EnumNameToChoice(args.post_startup_script_option))
+    return type_enum
+
+  return messages.NotebooksProjectsLocationsRuntimesMigrateRequest(
+      name=runtime,
+      migrateRuntimeRequest=messages.MigrateRuntimeRequest(
+          network=GetNetworkRelativeName(),
+          subnet=GetSubnetRelativeName(),
+          serviceAccount=args.service_account,
+          postStartupScriptOption=GetPostStartupScriptOption(),
+      ))
+
+
 def GetRuntimeURI(resource):
   instance = resources.REGISTRY.ParseRelativeName(
       resource.name, collection='notebooks.projects.locations.runtimes')
@@ -201,6 +234,7 @@ class OperationType(enum.Enum):
   DELETE = (log.DeletedResource, 'deleted')
   UPDATE = (log.UpdatedResource, 'updated')
   RESET = (log.ResetResource, 'reset')
+  MIGRATE = (log.UpdatedResource, 'migrated')
 
 
 def HandleLRO(operation,

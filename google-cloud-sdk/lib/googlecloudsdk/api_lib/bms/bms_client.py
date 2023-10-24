@@ -119,7 +119,7 @@ class BmsClient(object):
         field='instances')
 
   def UpdateInstance(self, instance_resource, labels, os_image,
-                     enable_hyperthreading):
+                     enable_hyperthreading, ssh_keys, kms_crypto_key_version):
     """Update an existing instance resource."""
     updated_fields = []
     if labels is not None:
@@ -128,16 +128,22 @@ class BmsClient(object):
       updated_fields.append('os_image')
     if enable_hyperthreading is not None:
       updated_fields.append('hyperthreading_enabled')
+    if ssh_keys:
+      updated_fields.append('ssh_keys')
+    if kms_crypto_key_version is not None:
+      updated_fields.append('kms_crypto_key_version')
+
+    ssh_keys_relative = [ssh_key.RelativeName() for ssh_key in ssh_keys]
 
     instance_msg = self.messages.Instance(
         name=instance_resource.RelativeName(), labels=labels, osImage=os_image,
-        hyperthreadingEnabled=enable_hyperthreading)
+        hyperthreadingEnabled=enable_hyperthreading, sshKeys=ssh_keys_relative,
+        kmsKeyVersion=kms_crypto_key_version)
 
     request = self.messages.BaremetalsolutionProjectsLocationsInstancesPatchRequest(
         name=instance_resource.RelativeName(),
         instance=instance_msg,
         updateMask=','.join(updated_fields))
-
     return self.instances_service.Patch(request)
 
   def RenameInstance(self, instance_resource, new_name):
@@ -150,6 +156,12 @@ class BmsClient(object):
             renameInstanceRequest=rename_instance_request)
     )
     return self.instances_service.Rename(request)
+
+  def LoadInstanceAuthInfo(self, instance_resource):
+    """Load instance auth info."""
+    request = self.messages.BaremetalsolutionProjectsLocationsInstancesLoadAuthInfoRequest(
+        name=instance_resource.RelativeName())
+    return self.instances_service.LoadAuthInfo(request)
 
   def ListSnapshotSchedulePolicies(self,
                                    project_resource,

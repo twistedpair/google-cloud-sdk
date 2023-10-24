@@ -425,6 +425,24 @@ class AutomationResourceSelector(_messages.Message):
   targets = _messages.MessageField('TargetAttribute', 1, repeated=True)
 
 
+class AutomationRolloutMetadata(_messages.Message):
+  r"""AutomationRolloutMetadata contains Automation-related actions that were
+  performed on a rollout.
+
+  Fields:
+    advanceAutomationRuns: Output only. The IDs of the AutomationRuns
+      initiated by an advance rollout rule.
+    promoteAutomationRun: Output only. The ID of the AutomationRun initiated
+      by a promote release rule.
+    repairAutomationRuns: Output only. The IDs of the AutomationRuns initiated
+      by a repair rollout rule.
+  """
+
+  advanceAutomationRuns = _messages.StringField(1, repeated=True)
+  promoteAutomationRun = _messages.StringField(2)
+  repairAutomationRuns = _messages.StringField(3, repeated=True)
+
+
 class AutomationRule(_messages.Message):
   r"""`AutomationRule` defines the automation activities.
 
@@ -779,7 +797,8 @@ class CloudRunMetadata(_messages.Message):
 
   Fields:
     job: Output only. The name of the Cloud Run job that is associated with a
-      `Rollout`. Format is projects{project}/locations/{location}/jobs/{name}.
+      `Rollout`. Format is
+      projects/{project}/locations/{location}/jobs/{job_name}.
     revision: Output only. The Cloud Run Revision id associated with a
       `Rollout`.
     service: Output only. The name of the Cloud Run Service that is associated
@@ -3495,11 +3514,15 @@ class Metadata(_messages.Message):
   r"""Metadata includes information associated with a `Rollout`.
 
   Fields:
+    automation: Output only. AutomationRolloutMetadata contains the
+      information about the interactions between Automation service and this
+      rollout.
     cloudRun: Output only. The name of the Cloud Run Service that is
       associated with a `Rollout`.
   """
 
-  cloudRun = _messages.MessageField('CloudRunMetadata', 1)
+  automation = _messages.MessageField('AutomationRolloutMetadata', 1)
+  cloudRun = _messages.MessageField('CloudRunMetadata', 2)
 
 
 class MultiTarget(_messages.Message):
@@ -4729,6 +4752,7 @@ class RetryAttempt(_messages.Message):
     phaseId: Output only. The phase ID of the phase that includes the job
       being retried.
     state: Output only. Valid state of this retry action.
+    stateDesc: Output only. Description of the state of the Retry.
     wait: Output only. How long the operation will be paused.
   """
 
@@ -4737,11 +4761,12 @@ class RetryAttempt(_messages.Message):
 
     Values:
       REPAIR_STATE_UNSPECIFIED: The `repair` has an unspecified state.
-      REPAIR_STATE_SUCCEEDED: The `repair` has succeeded.
-      REPAIR_STATE_CANCELLED: The `repair` was cancelled.
-      REPAIR_STATE_FAILED: The `repair` has failed.
-      REPAIR_STATE_IN_PROGRESS: The `repair` is in progress.
-      REPAIR_STATE_PENDING: The `repair` is pending.
+      REPAIR_STATE_SUCCEEDED: The `repair` action has succeeded.
+      REPAIR_STATE_CANCELLED: The `repair` action was cancelled.
+      REPAIR_STATE_FAILED: The `repair` action has failed.
+      REPAIR_STATE_IN_PROGRESS: The `repair` action is in progress.
+      REPAIR_STATE_PENDING: The `repair` action is pending.
+      REPAIR_STATE_SKIPPED: The `repair` action was skipped.
     """
     REPAIR_STATE_UNSPECIFIED = 0
     REPAIR_STATE_SUCCEEDED = 1
@@ -4749,12 +4774,14 @@ class RetryAttempt(_messages.Message):
     REPAIR_STATE_FAILED = 3
     REPAIR_STATE_IN_PROGRESS = 4
     REPAIR_STATE_PENDING = 5
+    REPAIR_STATE_SKIPPED = 6
 
   attempt = _messages.IntegerField(1)
   jobId = _messages.StringField(2)
   phaseId = _messages.StringField(3)
   state = _messages.EnumField('StateValueValuesEnum', 4)
-  wait = _messages.StringField(5)
+  stateDesc = _messages.StringField(5)
+  wait = _messages.StringField(6)
 
 
 class RetryJobRequest(_messages.Message):
@@ -4832,6 +4859,7 @@ class RollbackAttempt(_messages.Message):
       rolled back to.
     rolloutId: Output only. ID of the rollback `Rollout` to create.
     state: Output only. Valid state of this rollback action.
+    stateDesc: Output only. Description of the state of the Rollback.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -4839,11 +4867,12 @@ class RollbackAttempt(_messages.Message):
 
     Values:
       REPAIR_STATE_UNSPECIFIED: The `repair` has an unspecified state.
-      REPAIR_STATE_SUCCEEDED: The `repair` has succeeded.
-      REPAIR_STATE_CANCELLED: The `repair` was cancelled.
-      REPAIR_STATE_FAILED: The `repair` has failed.
-      REPAIR_STATE_IN_PROGRESS: The `repair` is in progress.
-      REPAIR_STATE_PENDING: The `repair` is pending.
+      REPAIR_STATE_SUCCEEDED: The `repair` action has succeeded.
+      REPAIR_STATE_CANCELLED: The `repair` action was cancelled.
+      REPAIR_STATE_FAILED: The `repair` action has failed.
+      REPAIR_STATE_IN_PROGRESS: The `repair` action is in progress.
+      REPAIR_STATE_PENDING: The `repair` action is pending.
+      REPAIR_STATE_SKIPPED: The `repair` action was skipped.
     """
     REPAIR_STATE_UNSPECIFIED = 0
     REPAIR_STATE_SUCCEEDED = 1
@@ -4851,10 +4880,12 @@ class RollbackAttempt(_messages.Message):
     REPAIR_STATE_FAILED = 3
     REPAIR_STATE_IN_PROGRESS = 4
     REPAIR_STATE_PENDING = 5
+    REPAIR_STATE_SKIPPED = 6
 
   destinationPhase = _messages.StringField(1)
   rolloutId = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
+  stateDesc = _messages.StringField(4)
 
 
 class RollbackTargetConfig(_messages.Message):
@@ -5192,6 +5223,93 @@ class RolloutNotificationEvent(_messages.Message):
   rollout = _messages.StringField(4)
   targetId = _messages.StringField(5)
   type = _messages.EnumField('TypeValueValuesEnum', 6)
+
+
+class RolloutUpdateEvent(_messages.Message):
+  r"""Payload proto for "clouddeploy.googleapis.com/rollout_update" Platform
+  Log event that describes the rollout update event.
+
+  Enums:
+    RolloutUpdateTypeValueValuesEnum: Output only. The type of the rollout
+      update.
+    TypeValueValuesEnum: Type of this notification, e.g. for a rollout update
+      event.
+
+  Fields:
+    message: Debug message for when a rollout update event occurs.
+    pipelineUid: Unique identifier of the pipeline.
+    releaseUid: Unique identifier of the release.
+    rollout: The name of the rollout.
+    rolloutUpdateType: Output only. The type of the rollout update.
+    targetId: ID of the target.
+    type: Type of this notification, e.g. for a rollout update event.
+  """
+
+  class RolloutUpdateTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the rollout update.
+
+    Values:
+      ROLLOUT_UPDATE_TYPE_UNSPECIFIED: Rollout update type unspecified.
+      PENDING: rollout state updated to pending.
+      PENDING_RELEASE: Rollout state updated to pending release.
+      IN_PROGRESS: Rollout state updated to in progress.
+      CANCELLING: Rollout state updated to cancelling.
+      CANCELLED: Rollout state updated to cancelled.
+      HALTED: Rollout state updated to halted.
+      SUCCEEDED: Rollout state updated to succeeded.
+      FAILED: Rollout state updated to failed.
+      APPROVAL_REQUIRED: Rollout requires approval.
+      APPROVED: Rollout has been approved.
+      REJECTED: Rollout has been rejected.
+      ADVANCE_REQUIRED: Rollout requires advance to the next phase.
+      ADVANCED: Rollout has been advanced.
+    """
+    ROLLOUT_UPDATE_TYPE_UNSPECIFIED = 0
+    PENDING = 1
+    PENDING_RELEASE = 2
+    IN_PROGRESS = 3
+    CANCELLING = 4
+    CANCELLED = 5
+    HALTED = 6
+    SUCCEEDED = 7
+    FAILED = 8
+    APPROVAL_REQUIRED = 9
+    APPROVED = 10
+    REJECTED = 11
+    ADVANCE_REQUIRED = 12
+    ADVANCED = 13
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a rollout update event.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
+
+  message = _messages.StringField(1)
+  pipelineUid = _messages.StringField(2)
+  releaseUid = _messages.StringField(3)
+  rollout = _messages.StringField(4)
+  rolloutUpdateType = _messages.EnumField('RolloutUpdateTypeValueValuesEnum', 5)
+  targetId = _messages.StringField(6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class RuntimeConfig(_messages.Message):

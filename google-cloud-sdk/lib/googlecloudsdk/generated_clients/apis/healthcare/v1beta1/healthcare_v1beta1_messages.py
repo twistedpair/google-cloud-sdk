@@ -671,6 +671,87 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BlobStorageInfo(_messages.Message):
+  r"""BlobStorageInfo contains details about the data stored in Blob Storage
+  for the referenced resource. Note: Storage class is only valid for DICOM and
+  hence will only be populated for DICOM resources.
+
+  Enums:
+    StorageClassValueValuesEnum: The storage class in which the Blob data is
+      stored.
+
+  Fields:
+    sizeBytes: Size in bytes of data stored in Blob Storage.
+    storageClass: The storage class in which the Blob data is stored.
+    storageClassUpdateTime: The time at which the storage class was updated.
+      This is used to compute early deletion fees of the resource.
+  """
+
+  class StorageClassValueValuesEnum(_messages.Enum):
+    r"""The storage class in which the Blob data is stored.
+
+    Values:
+      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
+        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
+        the StorageClass is set in the field mask, an InvalidRequest error is
+        thrown.
+      STANDARD: This stores the Object in Blob Standard Storage:
+        https://cloud.google.com/storage/docs/storage-classes#standard
+      NEARLINE: This stores the Object in Blob Nearline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#nearline
+      COLDLINE: This stores the Object in Blob Coldline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#coldline
+      ARCHIVE: This stores the Object in Blob Archive Storage:
+        https://cloud.google.com/storage/docs/storage-classes#archive
+    """
+    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
+    STANDARD = 1
+    NEARLINE = 2
+    COLDLINE = 3
+    ARCHIVE = 4
+
+  sizeBytes = _messages.IntegerField(1)
+  storageClass = _messages.EnumField('StorageClassValueValuesEnum', 2)
+  storageClassUpdateTime = _messages.StringField(3)
+
+
+class BlobStorageSettings(_messages.Message):
+  r"""Settings for data stored in Blob storage.
+
+  Enums:
+    BlobStorageClassValueValuesEnum: The Storage class in which the Blob data
+      is stored.
+
+  Fields:
+    blobStorageClass: The Storage class in which the Blob data is stored.
+  """
+
+  class BlobStorageClassValueValuesEnum(_messages.Enum):
+    r"""The Storage class in which the Blob data is stored.
+
+    Values:
+      BLOB_STORAGE_CLASS_UNSPECIFIED: If unspecified in CreateDataset, the
+        StorageClass defaults to STANDARD. If unspecified in UpdateDataset and
+        the StorageClass is set in the field mask, an InvalidRequest error is
+        thrown.
+      STANDARD: This stores the Object in Blob Standard Storage:
+        https://cloud.google.com/storage/docs/storage-classes#standard
+      NEARLINE: This stores the Object in Blob Nearline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#nearline
+      COLDLINE: This stores the Object in Blob Coldline Storage:
+        https://cloud.google.com/storage/docs/storage-classes#coldline
+      ARCHIVE: This stores the Object in Blob Archive Storage:
+        https://cloud.google.com/storage/docs/storage-classes#archive
+    """
+    BLOB_STORAGE_CLASS_UNSPECIFIED = 0
+    STANDARD = 1
+    NEARLINE = 2
+    COLDLINE = 3
+    ARCHIVE = 4
+
+  blobStorageClass = _messages.EnumField('BlobStorageClassValueValuesEnum', 1)
+
+
 class BoundingPoly(_messages.Message):
   r"""A bounding polygon for the detected image annotation.
 
@@ -4496,6 +4577,42 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesGetSeri
   series = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesGetStorageInfoRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesIns
+  tancesGetStorageInfoRequest object.
+
+  Fields:
+    resource: Required. The path of the resource for which the storage info is
+      requested (for exaxmple for a DICOM Instance: `projects/{projectid}/data
+      sets/{datasetid}/dicomStores/{dicomStoreId}/dicomWeb/studies/{study_uid}
+      /series/{series_uid}/instances/{instance_uid}`)
+  """
+
+  resource = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSetBlobStorageSettingsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSetBlobSt
+  orageSettingsRequest object.
+
+  Fields:
+    resource: Required. The path of the resource to update the blob storage
+      settings in the format of `projects/{projectID}/datasets/{datasetID}/dic
+      omStores/{dicomStoreID}/dicomWeb/studies/{studyUID}`, `projects/{project
+      ID}/datasets/{datasetID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{st
+      udyUID}/series/{seriesUID}/`, or `projects/{projectID}/datasets/{dataset
+      ID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{serie
+      sUID}/instances/{instanceUID}`. If `filter_config` is specified, set the
+      value of `resource` to the resource name of a DICOM store in the format
+      `projects/{projectID}/datasets/{datasetID}/dicomStores/{dicomStoreID}`.
+    setBlobStorageSettingsRequest: A SetBlobStorageSettingsRequest resource to
+      be passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setBlobStorageSettingsRequest = _messages.MessageField('SetBlobStorageSettingsRequest', 2)
+
+
 class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresExportRequest object.
 
@@ -4682,6 +4799,29 @@ class HealthcareProjectsLocationsDatasetsDicomStoresSearchForStudiesRequest(_mes
 
   dicomWebPath = _messages.StringField(1, required=True)
   parent = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresSetBlobStorageSettingsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDicomStoresSetBlobStorageSettingsRequest
+  object.
+
+  Fields:
+    resource: Required. The path of the resource to update the blob storage
+      settings in the format of `projects/{projectID}/datasets/{datasetID}/dic
+      omStores/{dicomStoreID}/dicomWeb/studies/{studyUID}`, `projects/{project
+      ID}/datasets/{datasetID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{st
+      udyUID}/series/{seriesUID}/`, or `projects/{projectID}/datasets/{dataset
+      ID}/dicomStores/{dicomStoreID}/dicomWeb/studies/{studyUID}/series/{serie
+      sUID}/instances/{instanceUID}`. If `filter_config` is specified, set the
+      value of `resource` to the resource name of a DICOM store in the format
+      `projects/{projectID}/datasets/{datasetID}/dicomStores/{dicomStoreID}`.
+    setBlobStorageSettingsRequest: A SetBlobStorageSettingsRequest resource to
+      be passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setBlobStorageSettingsRequest = _messages.MessageField('SetBlobStorageSettingsRequest', 2)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresSetIamPolicyRequest(_messages.Message):
@@ -6765,13 +6905,16 @@ class ImportDicomDataRequest(_messages.Message):
   instances by ignoring the newly-pushed instance. It does not overwrite.
 
   Fields:
+    blobStorageSettings: Optional. The blob storage settings for the data
+      imported by this operation.
     gcsSource: Cloud Storage source data location and import configuration.
       The Cloud Healthcare Service Agent requires the
       `roles/storage.objectViewer` Cloud IAM roles on the Cloud Storage
       location.
   """
 
-  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomGcsSource', 1)
+  blobStorageSettings = _messages.MessageField('BlobStorageSettings', 1)
+  gcsSource = _messages.MessageField('GoogleCloudHealthcareV1beta1DicomGcsSource', 2)
 
 
 class ImportDicomDataResponse(_messages.Message):
@@ -8426,6 +8569,29 @@ class SeriesMetrics(_messages.Message):
   structuredStorageSizeBytes = _messages.IntegerField(4)
 
 
+class SetBlobStorageSettingsRequest(_messages.Message):
+  r"""Request message for `SetBlobStorageSettings` method.
+
+  Fields:
+    blobStorageSettings: The blob storage settings to update for the specified
+      resources. Only fields listed in `update_mask` are applied.
+    filterConfig: Optional. A filter configuration. If `filter_config` is
+      specified, set the value of `resource` to the resource name of a DICOM
+      store in the format
+      `projects/{projectID}/datasets/{datasetID}/dicomStores/{dicomStoreID}`.
+  """
+
+  blobStorageSettings = _messages.MessageField('BlobStorageSettings', 1)
+  filterConfig = _messages.MessageField('DicomFilterConfig', 2)
+
+
+class SetBlobStorageSettingsResponse(_messages.Message):
+  r"""Returns additional info in regards to a completed set blob storage
+  settings API.
+  """
+
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -8603,6 +8769,25 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class StorageInfo(_messages.Message):
+  r"""StorageInfo encapsulates all the storage info of a resource.
+
+  Fields:
+    blobStorageInfo: Info about the data stored in blob storage for the
+      resource.
+    referencedResource: The resource whose storage info is returned. For
+      example, to specify the resource path of a DICOM Instance: `projects/{pr
+      ojectid}/datasets/{datasetid}/dicomStores/{dicom_store_id}/dicomWeb/stud
+      i/{study_uid}/series/{series_uid}/instances/{instance_uid}`
+    structuredStorageInfo: Info about the data stored in structured storage
+      for the resource.
+  """
+
+  blobStorageInfo = _messages.MessageField('BlobStorageInfo', 1)
+  referencedResource = _messages.StringField(2)
+  structuredStorageInfo = _messages.MessageField('StructuredStorageInfo', 3)
+
+
 class StreamConfig(_messages.Message):
   r"""Contains configuration for streaming FHIR export.
 
@@ -8665,6 +8850,17 @@ class StreamConfig(_messages.Message):
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1beta1FhirBigQueryDestination', 1)
   deidentifiedStoreDestination = _messages.MessageField('DeidentifiedStoreDestination', 2)
   resourceTypes = _messages.StringField(3, repeated=True)
+
+
+class StructuredStorageInfo(_messages.Message):
+  r"""StructuredStorageInfo contains details about the data stored in
+  Structured Storage for the referenced resource.
+
+  Fields:
+    sizeBytes: Size in bytes of data stored in structured storage.
+  """
+
+  sizeBytes = _messages.IntegerField(1)
 
 
 class StudyMetrics(_messages.Message):

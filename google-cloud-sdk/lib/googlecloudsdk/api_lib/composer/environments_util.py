@@ -99,6 +99,8 @@ class CreateEnvironmentFlags:
       descriptions to allow access to the web server.
     cloud_sql_machine_type: str or None, Cloud SQL machine type used by the
       Airflow database.
+    cloud_sql_preferred_zone: str or None, Cloud SQL db preferred zone. Can be
+      specified only in Composer 2.0.0.
     web_server_machine_type: str or None, machine type used by the Airflow web
       server
     kms_key: str or None, the user-provided customer-managed encryption key
@@ -173,10 +175,10 @@ class CreateEnvironmentFlags:
     composer_internal_ipv4_cidr_block: str or None. The IP range in CIDR
       notation to use internally by Cloud Composer. Can be specified only in
       Composer 3.
-    enable_private_builds_only: bool or None, whether to enable the
-      support for private only builds.
-    disable_private_builds_only: bool or None, whether to disable the
-      support for private only builds.
+    enable_private_builds_only: bool or None, whether to enable the support for
+      private only builds.
+    disable_private_builds_only: bool or None, whether to disable the support
+      for private only builds.
     storage_bucket: str or None. An existing Cloud Storage bucket to be used by
       the environment.
   """
@@ -254,6 +256,7 @@ class CreateEnvironmentFlags:
       snapshot_schedule_timezone=None,
       enable_cloud_data_lineage_integration=None,
       enable_high_resilience=None,
+      cloud_sql_preferred_zone=None,
       support_web_server_plugins=None,
       dag_processor_cpu=None,
       dag_processor_count=None,
@@ -332,6 +335,7 @@ class CreateEnvironmentFlags:
         enable_cloud_data_lineage_integration
     )
     self.enable_high_resilience = enable_high_resilience
+    self.cloud_sql_preferred_zone = cloud_sql_preferred_zone
     self.support_web_server_plugins = support_web_server_plugins
     self.dag_processor_cpu = dag_processor_cpu
     self.dag_processor_storage_gb = dag_processor_storage_gb
@@ -552,6 +556,10 @@ def _CreateConfig(messages, flags, is_composer_v1):
   if flags.cloud_sql_machine_type:
     config.databaseConfig = messages.DatabaseConfig(
         machineType=flags.cloud_sql_machine_type)
+  if flags.cloud_sql_preferred_zone:
+    config.databaseConfig = messages.DatabaseConfig(
+        zone=flags.cloud_sql_preferred_zone
+    )
   if flags.web_server_machine_type:
     config.webServerConfig = messages.WebServerConfig(
         machineType=flags.web_server_machine_type)

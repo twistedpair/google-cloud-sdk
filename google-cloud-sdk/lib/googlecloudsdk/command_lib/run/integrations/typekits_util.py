@@ -21,9 +21,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run.integrations.typekits import base
-from googlecloudsdk.command_lib.run.integrations.typekits import cloudsql_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import domain_routing_typekit
-from googlecloudsdk.command_lib.run.integrations.typekits import firebasehosting_typekit
 from googlecloudsdk.command_lib.run.integrations.typekits import redis_typekit
 from googlecloudsdk.command_lib.runapps import exceptions
 from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
@@ -41,33 +39,31 @@ def GetTypeKit(integration_type: str) -> base.TypeKit:
   Returns:
     A typekit instance.
   """
+  # Typekits with custom implementations
   if integration_type == 'custom-domains':
     return domain_routing_typekit.DomainRoutingTypeKit(
         types_utils.GetTypeMetadata('custom-domains')
     )
   if integration_type == 'redis':
     return redis_typekit.RedisTypeKit(types_utils.GetTypeMetadata('redis'))
-  if integration_type == 'cloudsql':
-    return cloudsql_typekit.CloudSqlTypeKit(
-        types_utils.GetTypeMetadata('cloudsql')
-    )
-  if integration_type == 'firebase-hosting':
-    return firebasehosting_typekit.FirebaseHostingTypeKit(
-        types_utils.GetTypeMetadata('firebase-hosting')
-    )
+
+  # Typekits with only default implementations.
+  typekit = types_utils.GetTypeMetadata(integration_type)
+  if typekit:
+    return base.TypeKit(typekit)
+
   raise exceptions.ArgumentError(
       'Integration of type {} is not supported'.format(integration_type)
   )
 
 
-# TODO(b/298063267): clean up this after replace all with generic one.
 def GetTypeKitByResource(
     resource: runapps_v1alpha1_messages.Resource,
 ) -> base.TypeKit:
   """Returns a typekit for the given resource.
 
   Args:
-    resource: dict, the resource object.
+    resource: The resource object.
 
   Raises:
     ArgumentError: If the resource's type is not recognized.
@@ -75,32 +71,10 @@ def GetTypeKitByResource(
   Returns:
     A typekit instance.
   """
-  type_metadata = types_utils.GetIntegrationFromResource(resource)
+  type_metadata = types_utils.GetTypeMetadataByResource(resource)
   if type_metadata is None:
     raise exceptions.ArgumentError(
         'Integration of resource {} is not recognized'.format(resource)
     )
   integration_type = type_metadata.integration_type
   return GetTypeKit(integration_type)
-
-
-def GetTypeKitByResourceGeneric(
-    resource: runapps_v1alpha1_messages.Resource,
-) -> base.TypeKit:
-  """Returns a typekit for the given resource.
-
-  Args:
-    resource: dict, the resource object.
-
-  Raises:
-    ArgumentError: If the resource's type is not recognized.
-
-  Returns:
-    A typekit instance.
-  """
-  type_metadata = types_utils.GetTypeMetadataFromResource(resource)
-  if type_metadata is None:
-    raise exceptions.ArgumentError(
-        'Integration of resource {} is not recognized'.format(resource)
-    )
-  return GetTypeKit(type_metadata.integration_type)

@@ -642,8 +642,8 @@ def AddRegistryBaseToRepositoryInfo(response, unused_args):
   )
   log.status.Print(
       "Registry URL: {}-{}.pkg.dev/{}/{}".format(
-          str(response.format).lower(),
           repo_name.locationsId,
+          str(response.format).lower(),
           repo_name.projectsId.replace(":", "/"),
           repo_name.repositoriesId,
       )

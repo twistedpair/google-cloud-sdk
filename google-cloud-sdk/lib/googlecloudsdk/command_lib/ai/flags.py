@@ -207,6 +207,25 @@ def GetEncryptionKmsKeyNameArg():
       """)
 
 
+def AddPrivateServiceConnectConfig(parser):
+  base.Argument('--enable-private-service-connect',
+                required=False,
+                default=False,
+                action='store_true',
+                help="""\
+If true, expose the index endpoint via private service connect.
+""").AddToParser(parser)
+
+  base.Argument('--project-allowlist',
+                required=False,
+                metavar='PROJECTS',
+                type=arg_parsers.ArgList(),
+                help="""\
+List of projects from which the forwarding rule will target the service
+attachment.
+""").AddToParser(parser)
+
+
 def AddPredictInstanceArg(parser, required=True):
   """Add arguments for different types of predict instances."""
   base.Argument(
@@ -413,6 +432,61 @@ def AddReservedIpRangesArgs(parser, resource_type):
       type=arg_parsers.ArgList(),
       help=('List of reserved IP ranges {} will be deployed to.'.format(
           resource_type))).AddToParser(parser)
+
+
+def AddEncryptionSpecArg(parser, resource_type):
+  """Add arguments for the encryption spec."""
+  base.Argument(
+      '--kms-key-name',
+      type=str,
+      help=("""\
+Cloud KMS resource identifier of the customer managed encryption key used to
+protect a {}. Has the form:
+`projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-key`.
+Key needs to be in the same region as where the compute resource is created
+""".format(resource_type))).AddToParser(parser)
+
+
+def AddDeploymentGroupArg(parser):
+  """Add arguments for deployment group."""
+  base.Argument(
+      '--deployment-group',
+      metavar='DEPLOYMENT_GROUP',
+      type=str,
+      help=("""\
+Deployment group can be no longer than 64 characters (eg:`test`, `prod`).
+If not set, we will use the `default` deployment group.
+
+Creating deployment_groups with `reserved_ip_ranges` is a recommended practice
+when the peered network has multiple peering ranges.This creates your
+deployments from predictable IP spaces for easier traffic administration.
+""")).AddToParser(parser)
+
+
+def AddAuthConfigArgs(parser, resource_type):
+  """Add arguments for auth provider."""
+  base.Argument(
+      '--audiences',
+      metavar='AUDIENCES',
+      type=arg_parsers.ArgList(),
+      help=("""\
+List of JWT audiences that are allowed to access a {}.
+
+JWT containing any of these audiences
+(https://tools.ietf.org/html/draft-ietf-oauth-json-web-token-32#section -4.1.3)
+will be accepted.
+""").format(resource_type)).AddToParser(parser)
+
+  base.Argument(
+      '--allowed-issuers',
+      metavar='ALLOWED_ISSUERS',
+      type=arg_parsers.ArgList(),
+      help=("""\
+List of allowed JWT issuers for a {}.
+
+Each entry must be a valid Google service account, in the following format:
+`service-account-name@project-id.iam.gserviceaccount.com`
+""").format(resource_type)).AddToParser(parser)
 
 
 def GetEnableAccessLoggingArg():
@@ -947,6 +1021,24 @@ def GetIndexDatapointIdsArg(noun, required=False):
           noun=noun))
 
 
+def GetIndexUpdateMethod(required=False):
+  return base.Argument(
+      '--index-update-method',
+      required=required,
+      type=str,
+      help="""\
+The update method to use with this index. Choose `stream_update` or
+`batch_update`. If not set, batch update will be used by default.
+
+`batch_update`: can update index with `gcloud ai indexes update` using
+datapoints files on Cloud Storage.
+
+`stream update`: can update datapoints with `upsert-datapoints` and
+`delete-datapoints` and will be applied nearly real-time.
+"""
+  )
+
+
 def GetDeploymentResourcePoolResourceSpec(
     resource_name='deployment_resource_pool',
     prompt_func=region_util.PromptForDeploymentResourcePoolSupportedRegion):
@@ -1259,12 +1351,7 @@ The type of the accelerator can only be one of the following: {}.
     raise errors.ArgumentError("""\
 The count of the accelerator must be greater than 0.
 """)
-  if version == constants.ALPHA_VERSION:
-    accelerator_msg = (
-        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                               constants.AI_PLATFORM_API_VERSION[version])
-        .GoogleCloudAiplatformV1alpha1MachineSpec)
-  elif version == constants.BETA_VERSION:
+  if version == constants.BETA_VERSION:
     accelerator_msg = (
         apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
                                constants.AI_PLATFORM_API_VERSION[version])
@@ -1282,16 +1369,7 @@ The count of the accelerator must be greater than 0.
 
 def GetAcceleratorTypeMapper(version):
   """Get a mapper for accelerator type to enum value."""
-  if version == constants.ALPHA_VERSION:
-    return arg_utils.ChoiceEnumMapper(
-        'generic-accelerator',
-        apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,
-                               constants.AI_PLATFORM_API_VERSION[version]).
-        GoogleCloudAiplatformV1alpha1MachineSpec.AcceleratorTypeValueValuesEnum,
-        help_str='The available types of accelerators.',
-        include_filter=lambda x: x.startswith('NVIDIA'),
-        required=False)
-  elif version == constants.BETA_VERSION:
+  if version == constants.BETA_VERSION:
     return arg_utils.ChoiceEnumMapper(
         'generic-accelerator',
         apis.GetMessagesModule(constants.AI_PLATFORM_API_NAME,

@@ -19,14 +19,12 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import imp
 import os
 import pkgutil
 import sys
+import types
 
 from googlecloudsdk.core.util import files
-
-import six
 
 
 def _GetPackageName(module_name):
@@ -86,29 +84,54 @@ def IsImportable(name, path):
       return os.path.isfile(os.path.join(name_path, '__init__.py'))
     return os.path.exists(name_path + '.py')
 
-  try:
-    if imp.find_module(name, [path]):
-      return True
-  except ImportError:
-    pass
-
-  if not hasattr(pkgutil, 'get_importer'):
-    return False
-
   name_path = name.split('.')
   importer = pkgutil.get_importer(os.path.join(path, *name_path[:-1]))
-
   return importer and importer.find_module(name_path[-1])
 
 
-def _GetPathRoot(path):
-  """Returns longest path from sys.path which is prefix of given path."""
+def GetModuleFromPathLegacy(name_to_give, module_path):
+  """Returns loaded module at given path under given name."""
+  import imp  # pylint: disable=g-import-not-at-top,deprecated-module
+  module_dir, module_name = os.path.split(module_path)
+  try:
+    result = imp.find_module(module_name, [module_dir])
+  except ImportError:
+    # imp.find_module does not respects PEP 302 import hooks, and does not work
+    # over package archives. Try pkgutil import hooks.
+    return _GetModuleFromPathViaPkgutil(module_path, name_to_give)
+  else:
+    try:
+      f, file_path, items = result
+      return imp.load_module(name_to_give, f, file_path, items)
+    finally:
+      if f:
+        f.close()
 
-  longest_path = ''
-  for p in sys.path:
-    if path.startswith(p) and len(longest_path) < len(p):
-      longest_path = p
-  return longest_path
+
+def GetModuleFromPathNew(name_to_give, module_path):
+  """Returns loaded module at given path under given name."""
+  import importlib.util  # pylint: disable=g-import-not-at-top
+
+  if os.path.isfile(os.path.join(module_path, '__init__.py')):
+    spec = importlib.util.spec_from_file_location(
+        name_to_give, os.path.join(module_path, '__init__.py'))
+  elif os.path.isfile(module_path + '.py'):
+    spec = importlib.util.spec_from_file_location(
+        name_to_give, module_path + '.py')
+  else:
+    # Ideally we could do e.g.:
+    #   module_dir = os.path.dirname(module_path)
+    #   finder = pkgutil.get_importer(module_dir)
+    #   spec = finder.find_spec(module_name)
+    # and go through the normal flow below, but there doesn't seem to be a way
+    # to customize the module name in that case. So we fall back to creating the
+    # ModuleType and populating it ourselves here.
+    return _GetModuleFromPathViaPkgutil(module_path, name_to_give)
+
+  module = importlib.util.module_from_spec(spec)
+  sys.modules[name_to_give] = module
+  spec.loader.exec_module(module)
+  return module
 
 
 def GetModuleFromPath(name_to_give, module_path):
@@ -127,20 +150,12 @@ def GetModuleFromPath(name_to_give, module_path):
   Raises:
     ImportError: if module cannot be imported.
   """
-  module_dir, module_name = os.path.split(module_path)
-  try:
-    result = imp.find_module(module_name, [module_dir])
-  except ImportError:
-    # imp.find_module does not respects PEP 302 import hooks, and does not work
-    # over package archives. Try pkgutil import hooks.
-    return _GetModuleFromPathViaPkgutil(module_path, name_to_give)
+  # TODO(b/277791616): Replace this with just GetModuleFromPathNew and get rid
+  # of GetModuleFromPathLegacy.
+  if sys.version_info < (3, 12):
+    return GetModuleFromPathLegacy(name_to_give, module_path)
   else:
-    try:
-      f, file_path, items = result
-      return imp.load_module(name_to_give, f, file_path, items)
-    finally:
-      if f:
-        f.close()
+    return GetModuleFromPathNew(name_to_give, module_path)
 
 
 def _GetModuleFromPathViaPkgutil(module_path, name_to_give):
@@ -158,25 +173,12 @@ def _GetModuleFromPathViaPkgutil(module_path, name_to_give):
 def _LoadModule(importer, module_path, module_name, name_to_give):
   """Loads the module or package under given name."""
   code = importer.get_code(module_name)
-  module = imp.new_module(name_to_give)
-  package_path_parts = name_to_give.split('.')
+  module = types.ModuleType(name_to_give)
   if importer.is_package(module_name):
     module.__path__ = [module_path]
     module.__file__ = os.path.join(module_path, '__init__.pyc')
   else:
-    package_path_parts.pop()  # Don't treat module as a package.
     module.__file__ = module_path + '.pyc'
-
-  # Define package if it does not exists.
-  if six.PY2:
-    # This code does not affect the official installations of the cloud sdk.
-    # This function does not work on python 3, but removing this call will
-    # generate runtime warnings when running gcloud as a zip archive. So we keep
-    # this call in python 2 so it can continue to work as intended.
-    imp.load_module('.'.join(package_path_parts), None,
-                    os.path.join(_GetPathRoot(module_path),
-                                 *package_path_parts),
-                    ('', '', imp.PKG_DIRECTORY))
 
   # pylint: disable=exec-used
   exec(code, module.__dict__)

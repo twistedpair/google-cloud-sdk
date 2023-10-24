@@ -140,6 +140,15 @@ COMPLETERS_BY_CONVENTION = {
 
 
 # Flags.
+def AddProjectFlag(parser):
+  parser.add_argument(
+      '--project',
+      metavar='PROJECT_ID_OR_NUMBER',
+      required=True,
+      help='Project ID to opt out.',
+  )
+
+
 def AddLocationFlag(parser, resource='resource'):
   parser.add_argument(
       '--location',
@@ -531,6 +540,16 @@ def AddDefaultEkmConnectionFlag(parser, required=False):
       'and location. Can be an empty string to remove the default '
       'EkmConnection.',
       required=required)
+
+
+def AddUndoOptOutFlag(parser):
+  parser.add_argument(
+      '--undo',
+      default=None,
+      action='store_true',
+      dest='undo',
+      help='Opt the project back in the key deletion change.',
+  )
 
 
 # Parsing.

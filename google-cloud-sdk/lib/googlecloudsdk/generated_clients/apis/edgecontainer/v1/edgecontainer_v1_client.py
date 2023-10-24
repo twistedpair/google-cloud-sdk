@@ -283,6 +283,33 @@ class EdgecontainerV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateOfflineCredential(self, request, global_params=None):
+      r"""Generates an offline credential for a Cluster.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsClustersGenerateOfflineCredentialRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateOfflineCredentialResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateOfflineCredential')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateOfflineCredential.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:generateOfflineCredential',
+        http_method='GET',
+        method_id='edgecontainer.projects.locations.clusters.generateOfflineCredential',
+        ordered_params=['cluster'],
+        path_params=['cluster'],
+        query_params=[],
+        relative_path='v1/{+cluster}:generateOfflineCredential',
+        request_field='',
+        request_type_name='EdgecontainerProjectsLocationsClustersGenerateOfflineCredentialRequest',
+        response_type_name='GenerateOfflineCredentialResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets details of a single Cluster.
 
@@ -360,6 +387,33 @@ class EdgecontainerV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='cluster',
         request_type_name='EdgecontainerProjectsLocationsClustersPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Upgrade(self, request, global_params=None):
+      r"""Upgrades a single cluster.
+
+      Args:
+        request: (EdgecontainerProjectsLocationsClustersUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Upgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Upgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:upgrade',
+        http_method='POST',
+        method_id='edgecontainer.projects.locations.clusters.upgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:upgrade',
+        request_field='upgradeClusterRequest',
+        request_type_name='EdgecontainerProjectsLocationsClustersUpgradeRequest',
         response_type_name='Operation',
         supports_download=False,
     )

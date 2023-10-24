@@ -271,7 +271,7 @@ def Apply(
     local_source=None,
     stage_bucket=None,
     ignore_file=None,
-    import_existing_resources=None,
+    import_existing_resources=False,
     artifacts_gcs_bucket=None,
     worker_pool=None,
     gcs_source=None,

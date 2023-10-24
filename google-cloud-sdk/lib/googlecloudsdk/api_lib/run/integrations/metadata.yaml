@@ -5,6 +5,8 @@ integrations:
   required_field: domains
   visible: true
   service_type: ingress
+  label: Custom Domains
+  product: Cloud Load Balancer
   description: Configure custom domains for Cloud Run services with Google Cloud Load Balancer.
   example_command: |-
     Create the integration to add the first domain mapping:
@@ -35,23 +37,33 @@ integrations:
 
 - integration_type: redis
   resource_type: redis
+  label: 'Redis'
+  product: Cloud Memorystore
   description: Configure a Redis instance (Cloud Memorystore) and connect it to a Cloud Run Service.
   example_command: |-
     $ gcloud {track} run integrations create --service=[SERVICE] --type=redis --parameters=memory-size-gb=2
   service_type: backing
   visible: true
+  eta_in_min: 10
+  cta: >-
+    To connect to the Redis instance utilize the environment variables REDISHOST and REDISPORT.
+    These have been added to the Cloud Run service for you.
   parameters:
   - name: memory-size-gb
+    config_name: memorySizeGb
+    label: Capacity (GB)
     description: Memory capacity of the Redis instance.
     data_type: int
     default: 1
   - name: tier
+    label: Service Tier
     description: >
       The service tier of the instance. Supported options include BASIC for standalone
       instance and STANDARD_HA for highly available primary/replica instances.
     data_type: string
     hidden: true
   - name: version
+    label: Version
     description: >
       The version of Redis software. If not provided, latest supported version will be used.
       Supported values include: REDIS_6_X, REDIS_5_0, REDIS_4_0 and REDIS_3_2.
@@ -64,18 +76,26 @@ integrations:
 
 - integration_type: cloudsql
   resource_type: cloudsql
+  label: Cloud SQL
+  product: Cloud SQL
   description: Configure a CloudSQL database instance and connect it to a Cloud Run Service.
   example_command: |-
     $ gcloud {track} run integrations create --service=[SERVICE] --type=cloudsql --parameters=version=MYSQL_8_0,tier=db-f1-micro
   service_type: backing
   visible: false
+  eta_in_min: 15
+  cta: >-
+    To connect to the CloudSQL instance utilize the environment variables DB_NAME, DB_SOCKET,
+    DB_USER, and DB_PASS. These have been added to the Cloud Run service for you.
   parameters:
   - name: tier
+    label: Machine Type
     description: 'The service tier of the instance. For example: db-f1-micro or db-g1-small.'
     data_type: string
     update_allowed: false
     required: true
   - name: version
+    label: Database Version
     description: >-
       The version of CloudSQL software. For example: MYSQL_8_0, POSTGRES_14, or SQLSERVER_2019_STANDARD.
       See https://cloud.google.com/sql/docs/mysql/admin-api/rest/v1beta4/SqlDatabaseVersion for more details.
@@ -89,13 +109,21 @@ integrations:
 
 - integration_type: firebase-hosting
   resource_type: firebase-hosting
+  label: Firebase Hosting
+  product: Firebase Hosting
   description: Configure custom domains for Cloud Run services with Firebase Hosting.
   example_command: |-
     $ gcloud {track} run integrations create --service=[SERVICE] --type=firebase-hosting --parameters=site-id=examplesite
   service_type: ingress
   visible: true
+  eta_in_min: 5
+  cta: |-
+    To configure free custom domain mappings for this site, visit the Firebase console at https://console.firebase.google.com/project/%%project%%/hosting/sites/%%config.siteId%%
+    To make this site publicly available, make sure the Cloud Run service has ingress configured to allow 'All' traffic. Learn more at https://cloud.google.com/run/docs/securing/ingress
   parameters:
   - name: site-id
+    config_name: siteId
+    label: Subdomain (Site ID)
     description: 'The name of the Firebase Hosting site, which is the sub-domain of the default firebase domains created.'
     data_type: string
     update_allowed: true

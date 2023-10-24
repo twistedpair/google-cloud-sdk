@@ -484,8 +484,10 @@ def Run(args, track=None):
   ):
     if args.runtime_update_policy == 'automatic':
       function.automaticUpdatePolicy = messages.AutomaticUpdatePolicy()
+      function.onDeployUpdatePolicy = None
     if args.runtime_update_policy == 'on-deploy':
       function.onDeployUpdatePolicy = messages.OnDeployUpdatePolicy()
+      function.automaticUpdatePolicy = None
     updated_fields.extend(['automaticUpdatePolicy', 'onDeployUpdatePolicy'])
 
   warning = api_util.ValidateRuntimeOrRaise(

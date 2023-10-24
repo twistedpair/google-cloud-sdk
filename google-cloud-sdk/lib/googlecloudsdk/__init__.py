@@ -20,12 +20,22 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.core.util import importing
+import importlib.util
+import sys
+
 from googlecloudsdk.core.util import lazy_regex
+
 
 # Lazy loader doesn't work in some environments, such as par files
 try:
-  importing.lazy_load_module('googlecloudsdk.api_lib.app.yaml_parsing')
+  module_name = 'googlecloudsdk.api_lib.app.yaml_parsing'
+  try:
+    sys.modules[module_name]
+  except KeyError:
+    spec = importlib.util.find_spec(module_name)
+    module = importlib.util.module_from_spec(spec)
+    loader = importlib.util.LazyLoader(spec.loader)
+    loader.exec_module(module)
 except ImportError:
   pass
 

@@ -365,18 +365,6 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
-class BlobStorageInfo(_messages.Message):
-  r"""BlobStorageInfo contains details about the data stored in Blob Storage
-  for the referenced resource. Note: Storage class is only valid for DICOM and
-  hence will only be populated for DICOM resources.
-
-  Fields:
-    sizeBytes: Size in bytes of data stored in Blob Storage.
-  """
-
-  sizeBytes = _messages.IntegerField(1)
-
-
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -3219,20 +3207,6 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDeleteRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
-class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesGetStorageInfoRequest(_messages.Message):
-  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesIns
-  tancesGetStorageInfoRequest object.
-
-  Fields:
-    resource: Required. The path of the resource for which the storage info is
-      requested (for exaxmple for a DICOM Instance: `projects/{projectid}/data
-      sets/{datasetid}/dicomStores/{dicomStoreId}/dicomWeb/studies/{study_uid}
-      /series/{series_uid}/instances/{instance_uid}`)
-  """
-
-  resource = _messages.StringField(1, required=True)
-
-
 class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresExportRequest object.
 
@@ -5439,25 +5413,6 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class StorageInfo(_messages.Message):
-  r"""StorageInfo encapsulates all the storage info of a resource.
-
-  Fields:
-    blobStorageInfo: Info about the data stored in blob storage for the
-      resource.
-    referencedResource: The resource whose storage info is returned. For
-      example, to specify the resource path of a DICOM Instance: `projects/{pr
-      ojectid}/datasets/{datasetid}/dicomStores/{dicom_store_id}/dicomWeb/stud
-      i/{study_uid}/series/{series_uid}/instances/{instance_uid}`
-    structuredStorageInfo: Info about the data stored in structured storage
-      for the resource.
-  """
-
-  blobStorageInfo = _messages.MessageField('BlobStorageInfo', 1)
-  referencedResource = _messages.StringField(2)
-  structuredStorageInfo = _messages.MessageField('StructuredStorageInfo', 3)
-
-
 class StreamConfig(_messages.Message):
   r"""Contains configuration for streaming FHIR export.
 
@@ -5526,17 +5481,6 @@ class StreamConfig(_messages.Message):
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2FhirBigQueryDestination', 1)
   deidentifiedStoreDestination = _messages.MessageField('DeidentifiedStoreDestination', 2)
   resourceTypes = _messages.StringField(3, repeated=True)
-
-
-class StructuredStorageInfo(_messages.Message):
-  r"""StructuredStorageInfo contains details about the data stored in
-  Structured Storage for the referenced resource.
-
-  Fields:
-    sizeBytes: Size in bytes of data stored in structured storage.
-  """
-
-  sizeBytes = _messages.IntegerField(1)
 
 
 class TagFilterList(_messages.Message):

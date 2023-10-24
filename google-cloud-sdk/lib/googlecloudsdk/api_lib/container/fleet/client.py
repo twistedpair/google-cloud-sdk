@@ -1209,6 +1209,28 @@ class FleetClient(object):
     """
     return self.client.projects_locations_rollouts.Create(req)
 
+  def DescribeRollout(
+      self, req: messages.GkehubProjectsLocationsRolloutsGetRequest
+  ) -> messages.Rollout:
+    """Describes a fleet rollout."""
+    return self.client.projects_locations_rollouts.Get(req)
+
+  def ListRollouts(
+      self,
+      req: messages.GkehubProjectsLocationsRolloutsListRequest,
+      page_size=None,
+      limit=None,
+  ) -> Generator[messages.Rollout, None, None]:
+    """Lists fleet rollouts."""
+    return list_pager.YieldFromList(
+        self.client.projects_locations_rollouts,
+        req,
+        field='rollouts',
+        batch_size=page_size,
+        limit=limit,
+        batch_size_attribute='pageSize',
+    )
+
 
 class OperationClient:
   """Client for the GKE Hub API long-running operations."""

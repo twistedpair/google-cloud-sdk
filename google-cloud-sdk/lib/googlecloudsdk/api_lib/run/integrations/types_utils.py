@@ -20,7 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-from typing import List, Mapping, Optional
+from typing import List, Optional
 
 from googlecloudsdk.command_lib.runapps import exceptions
 from googlecloudsdk.core import properties
@@ -75,6 +75,9 @@ class Parameters:
     create_allowed: If false, the param cannot be provided on a create
       command.
     default: The value provided for the param if the user has not provided one.
+    config_name: The name of the associated field in the config. If not
+      provided, it will default to camelcase of `name`.
+    label: The descriptive name of the param.
   """
 
   def __init__(self, name: str, description: str, data_type: str,
@@ -82,8 +85,12 @@ class Parameters:
                required: bool = False,
                hidden: bool = False,
                create_allowed: bool = True,
-               default: Optional[object] = None):
+               default: Optional[object] = None,
+               config_name: Optional[str] = None,
+               label: Optional[str] = None,
+               ):
     self.name = name
+    self.config_name = config_name if config_name else ToCamelCase(name)
     self.description = description
     self.data_type = data_type
     self.update_allowed = update_allowed
@@ -91,6 +98,7 @@ class Parameters:
     self.hidden = hidden
     self.create_allowed = create_allowed
     self.default = default
+    self.label = label
 
 
 class TypeMetadata:
@@ -112,6 +120,10 @@ class TypeMetadata:
       a singleton.  The name is used as an identifier in the resource config.
     required_apis: APIs required for the integration to work.  The user will be
       prompted to enable these APIs if they are not already enabled.
+    eta_in_min: estimate deploy time in minutes.
+    cta: call to action template.
+    label: the display name for the integration.
+    product: the GCP product behind the integration.
     visible: If true, then the integration is useable by anyone without any
       special configuration.
   """
@@ -125,6 +137,10 @@ class TypeMetadata:
                disable_service_flags: bool = False,
                singleton_name: Optional[str] = None,
                required_field: Optional[str] = None,
+               eta_in_min: Optional[int] = None,
+               cta: Optional[str] = None,
+               label: Optional[str] = None,
+               product: Optional[str] = None,
                visible: bool = False):
     self.integration_type = integration_type
     self.resource_type = resource_type
@@ -136,6 +152,10 @@ class TypeMetadata:
     self.disable_service_flags = disable_service_flags
     self.singleton_name = singleton_name
     self.required_field = required_field
+    self.eta_in_min = eta_in_min
+    self.cta = cta
+    self.label = label
+    self.product = product
     self.visible = visible
 
     if update_exclusive_groups is None:
@@ -145,7 +165,7 @@ class TypeMetadata:
         UpdateExclusiveGroup(**group) for group in update_exclusive_groups]
 
 
-def _GetTypeMetadata() -> List[TypeMetadata]:
+def _GetAllTypeMetadata() -> List[TypeMetadata]:
   """Returns metadata for each integration type.
 
   This loads the metadata from a yaml file at most once and will return the
@@ -181,7 +201,7 @@ def IntegrationTypes(client: runapps_v1alpha1_client) -> List[str]:
   del client
 
   return [
-      integration for integration in _GetTypeMetadata()
+      integration for integration in _GetAllTypeMetadata()
       if _IntegrationVisible(integration)
   ]
 
@@ -196,11 +216,46 @@ def GetTypeMetadata(integration_type: str) -> Optional[TypeMetadata]:
     If the integration does not exist or is not visible to the user,
     then None is returned.
   """
-  for integration in _GetTypeMetadata():
+  for integration in _GetAllTypeMetadata():
     if (integration.integration_type == integration_type and
         _IntegrationVisible(integration)):
       return integration
   return None
+
+
+def GetTypeMetadataByResourceType(
+    resource_type: str,
+) -> Optional[TypeMetadata]:
+  """Returns metadata associated to an integration type.
+
+  Args:
+    resource_type: the resource type
+
+  Returns:
+    If the integration does not exist or is not visible to the user,
+    then None is returned.
+  """
+  for integration in _GetAllTypeMetadata():
+    if integration.resource_type == resource_type and _IntegrationVisible(
+        integration
+    ):
+      return integration
+  return None
+
+
+def GetTypeMetadataByResource(
+    resource: runapps_v1alpha1_messages.Resource,
+) -> Optional[TypeMetadata]:
+  """Returns metadata associated to an integration type.
+
+  Args:
+    resource: the resource object
+
+  Returns:
+    If the integration does not exist or is not visible to the user,
+    then None is returned.
+  """
+  return GetTypeMetadataByResourceType(resource.id.type)
 
 
 def _IntegrationVisible(integration: TypeMetadata) -> bool:
@@ -218,114 +273,6 @@ def _IntegrationVisible(integration: TypeMetadata) -> bool:
   return integration.visible or show_experimental_integrations
 
 
-def GetResourceTypeFromConfig(
-    resource_config: Mapping[str, runapps_v1alpha1_messages.ResourceConfig]
-    ) -> str:
-  """Gets the resource type.
-
-  The input is converted from proto with potentially two fields.
-  One of them is the latestDeployment field (may not be present) and the other
-  is a "oneof" property.  Thus the dictionary is expected to have one or
-  two keys and we only want the one with the "oneof" property.
-
-  Args:
-    resource_config: The resource configuration.
-
-  Returns:
-    The integration type.
-  """
-  keys = [
-      key for key in resource_config.keys() if key != LATEST_DEPLOYMENT_FIELD
-  ]
-  if len(keys) != 1:
-    # We should never gets here, because having more than one key in a
-    # oneof field in not allowed in proto.
-    raise exceptions.ConfigurationError(
-        'resource config is invalid: {}.'.format(resource_config)
-    )
-  return keys[0]
-
-
-def GetTypeMetadataFromResource(
-    resource: runapps_v1alpha1_messages.Resource,
-) -> Optional[TypeMetadata]:
-  """Returns the type metadata associated to the given resource.
-
-  Args:
-    resource: The resource object.
-
-  Returns:
-    The type metadata.
-  """
-  for integration_type in _GetTypeMetadata():
-    if not _IntegrationVisible(integration_type):
-      continue
-    if integration_type.resource_type == resource.id.type:
-      return integration_type
-  return None
-
-
-def GetIntegrationFromResource(
-    resource_config: Mapping[str, runapps_v1alpha1_messages.ResourceConfig]
-    ) -> Optional[TypeMetadata]:
-  """Returns the integration type definition associated to the given resource.
-
-  Args:
-    resource_config: The resource configuration.
-
-  Returns:
-    The integration type definition.
-  """
-  resource_type = GetResourceTypeFromConfig(resource_config)
-  config = resource_config[resource_type]
-  match = None
-  for integration_type in _GetTypeMetadata():
-    if not _IntegrationVisible(integration_type):
-      continue
-    if integration_type.resource_type == resource_type:
-      must_have_field = integration_type.required_field
-      if must_have_field:
-        if config.get(must_have_field, None):
-          return integration_type
-      else:
-        match = integration_type
-  return match
-
-
-def GetIntegrationType(
-    resource_config: Mapping[str, runapps_v1alpha1_messages.ResourceConfig]
-    ) -> str:
-  """Returns the integration type associated to the given resource type.
-
-  Args:
-    resource_config: The resource configuration.
-
-  Returns:
-    The integration type.
-  """
-  type_def = GetIntegrationFromResource(resource_config)
-  if type_def is None:
-    return GetResourceTypeFromConfig(resource_config)
-  return type_def.integration_type
-
-
-def GetIntegrationTypeGeneric(
-    resource: runapps_v1alpha1_messages.Resource,
-) -> str:
-  """Returns the name of the integration type associated to the given resource.
-
-  Args:
-    resource: The resource object.
-
-  Returns:
-    The name of the integration type.
-  """
-  metadata = GetTypeMetadataFromResource(resource)
-  if metadata:
-    return metadata.integration_type
-  return resource.id.type
-
-
 def CheckValidIntegrationType(integration_type: str) -> None:
   """Checks if IntegrationType is supported.
 
@@ -336,3 +283,17 @@ def CheckValidIntegrationType(integration_type: str) -> None:
   if GetTypeMetadata(integration_type) is None:
     raise exceptions.ArgumentError(
         'Integration of type {} is not supported'.format(integration_type))
+
+
+def ToCamelCase(name: str) -> str:
+  """Turns a kebab case name into camel case.
+
+  Args:
+    name: the name string
+
+  Returns:
+    the string in camel case
+
+  """
+  pascal_case = name.replace('-', ' ').title().replace(' ', '')
+  return pascal_case[0].lower() + pascal_case[1:]

@@ -2938,7 +2938,7 @@ def AddDiskTypeFlag(parser):
     parser: A given parser.
   """
   help_text = """\
-Type of the node VM boot disk. For version 1.24.0+, defaults to pd-balanced. Before version 1.24.0, defaults to pd-standard.
+Type of the node VM boot disk. For version 1.24 and later, defaults to pd-balanced. For versions earlier than 1.24, defaults to pd-standard.
 """
   parser.add_argument(
       '--disk-type',
@@ -3668,11 +3668,12 @@ def WarnForEnablingBetaAPIs(args):
     log.status.Print('Note: ' + util.WARN_BETA_APIS_ENABLED)
 
 
-def AddMachineTypeFlag(parser):
+def AddMachineTypeFlag(parser, update=False):
   """Adds --machine-type flag to the parser.
 
   Args:
     parser: A given parser.
+    update: Used for update to exclude legacy shorthand.
   """
 
   help_text = """\
@@ -3681,7 +3682,7 @@ The list of predefined machine types is available using the following command:
 
   $ gcloud compute machine-types list
 
-You can also specify custom machine types with the string "custom-CPUS-RAM"
+You can also specify custom machine types by providing a string with the format "custom-CPUS-RAM"
 where "CPUS" is the number of virtual CPUs and "RAM" is the amount of RAM in
 MiB.
 
@@ -3690,8 +3691,10 @@ of RAM:
 
   $ {command} high-mem-pool --machine-type=custom-2-12288
 """
-
-  parser.add_argument('--machine-type', '-m', help=help_text)
+  if update:
+    parser.add_argument('--machine-type', help=help_text)
+  else:
+    parser.add_argument('--machine-type', '-m', help=help_text)
 
 
 def AddWorkloadIdentityFlags(parser, use_identity_provider=False):

@@ -376,6 +376,8 @@ apis:
     v1:
       discovery_doc: cloudkms_v1.json
       default: true
+    v1alpha1:
+      discovery_doc: cloudkms_v1alpha1.json
   cloudresourcemanager:
     v1beta1:
       discovery_doc: cloudresourcemanager_v1beta1.json
@@ -854,6 +856,8 @@ apis:
       resources:
         iamPolicies:
           path: iamPolicies
+    v3beta:
+      discovery_doc: iam_v3beta.json
   iamcredentials:
     v1:
       discovery_doc: iamcredentials_v1.json

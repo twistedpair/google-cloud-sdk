@@ -67,6 +67,79 @@ class InsightsApi:
     self.client = core_apis.GetClientInstance('storageinsights', 'v1')
     self.messages = core_apis.GetMessagesModule('storageinsights', 'v1')
 
+  def create_dataset_config(
+      self,
+      dataset_config_name,
+      location,
+      destination_project,
+      source_projects,
+      organization_number,
+      include_buckets=None,
+      exclude_buckets=None,
+      include_source_locations=None,
+      exclude_source_locations=None,
+      auto_add_new_buckets=False,
+      retention_period=None,
+      skip_verificatio=False,
+      identity_type=None,
+      description=None,
+  ):
+    """Creates a dataset config."""
+    # TODO(b/302428138) Implement the API layer methods
+    raise NotImplementedError()
+
+  def create_dataset_config_link(
+      self, dataset_config_name, location, destination_project
+  ):
+    """Creates the dataset config link."""
+    # TODO(b/302428138) Implement the API layer methods
+    raise NotImplementedError()
+
+  def delete_dataset_config(
+      self,
+      dataset_config_name,
+      location,
+      destination_project,
+      auto_delete_link=False,
+      force=False,
+  ):
+    """Deletes the dataset config."""
+    # TODO(b/302428138) Implement the API layer methods
+    raise NotImplementedError()
+
+  def delete_dataset_config_link(
+      self, dataset_config_name, location, destination_project
+  ):
+    """Deletes the dataset config link."""
+    # TODO(b/302428138) Implement the API layer methods
+    raise NotImplementedError()
+
+  def get_dataset_config(
+      self, dataset_config_name, location, destination_project
+  ):
+    """Gets the dataset config."""
+    # TODO(b/302428138) Implement the API layer methods
+    raise NotImplementedError()
+
+  def list_dataset_config(
+      self, destination_project, location=None, page_size=None
+  ):
+    # TODO(b/302428138) Implement the API layer methods
+    raise NotImplementedError()
+
+  def update_dataset_config(
+      self,
+      dataset_config_name,
+      location,
+      destination_project,
+      retention_period=None,
+      skip_verificatio=False,
+      description=None,
+  ):
+    """Updates the dataset config."""
+    # TODO(b/302428138) Implement the API layer methods
+    raise NotImplementedError()
+
   def _get_report_format_options(
       self, csv_separator, csv_delimiter, csv_header, parquet
   ):
@@ -89,18 +162,20 @@ class InsightsApi:
         parquet=parquet_options,
     )
 
-  def create(self,
-             source_bucket,
-             destination_url,
-             metadata_fields=None,
-             start_date=None,
-             end_date=None,
-             frequency=None,
-             csv_separator=None,
-             csv_delimiter=None,
-             csv_header=None,
-             parquet=None,
-             display_name=None):
+  def create_inventory_report(
+      self,
+      source_bucket,
+      destination_url,
+      metadata_fields=None,
+      start_date=None,
+      end_date=None,
+      frequency=None,
+      csv_separator=None,
+      csv_delimiter=None,
+      csv_header=None,
+      parquet=None,
+      display_name=None,
+  ):
     """Creates a report config.
 
     Args:
@@ -177,11 +252,9 @@ class InsightsApi:
     else:
       return None
 
-  def list(self,
-           source_bucket=None,
-           destination=None,
-           location=None,
-           page_size=None):
+  def list_inventory_reports(
+      self, source_bucket=None, destination=None, location=None, page_size=None
+  ):
     """Lists the report configs.
 
     Args:
@@ -212,13 +285,13 @@ class InsightsApi:
         batch_size_attribute='pageSize',
         field='reportConfigs')
 
-  def get(self, report_config_name):
+  def get_inventory_report(self, report_config_name):
     """Gets the report config."""
     return self.client.projects_locations_reportConfigs.Get(
         self.messages.StorageinsightsProjectsLocationsReportConfigsGetRequest(
             name=report_config_name))
 
-  def delete(self, report_config_name, force=False):
+  def delete_inventory_report(self, report_config_name, force=False):
     """Deletes the report config."""
     request = (
         self.messages
@@ -297,18 +370,20 @@ class InsightsApi:
         update_mask.append('csvOptions.recordSeparator')
     return (report_format_options, update_mask)
 
-  def update(self,
-             report_config_name,
-             destination_url=None,
-             metadata_fields=None,
-             start_date=None,
-             end_date=None,
-             frequency=None,
-             csv_separator=None,
-             csv_delimiter=None,
-             csv_header=None,
-             parquet=None,
-             display_name=None):
+  def update_inventory_report(
+      self,
+      report_config_name,
+      destination_url=None,
+      metadata_fields=None,
+      start_date=None,
+      end_date=None,
+      frequency=None,
+      csv_separator=None,
+      csv_delimiter=None,
+      csv_header=None,
+      parquet=None,
+      display_name=None,
+  ):
     """Updates a report config.
 
     Args:

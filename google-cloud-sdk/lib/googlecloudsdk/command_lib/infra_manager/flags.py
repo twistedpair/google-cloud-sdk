@@ -247,6 +247,7 @@ def AddImportExistingResourcesFlag(parser, hidden=False):
   parser.add_argument(
       '--import-existing-resources',
       hidden=hidden,
+      action='store_true',
       help=(
           'By default, Infrastructure Manager will return a failure when'
           ' Terraform encounters a 409 code (resource conflict error) during'

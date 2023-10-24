@@ -24,7 +24,6 @@ import datetime
 import json
 from typing import List, Optional
 
-from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run.integrations import api_utils
@@ -38,6 +37,7 @@ from googlecloudsdk.command_lib.run.integrations import integration_list_printer
 from googlecloudsdk.command_lib.run.integrations import messages_util
 from googlecloudsdk.command_lib.run.integrations import stages
 from googlecloudsdk.command_lib.run.integrations import typekits_util
+from googlecloudsdk.command_lib.run.integrations.typekits import base
 from googlecloudsdk.command_lib.runapps import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -130,16 +130,17 @@ class RunAppsOperations(object):
   def region(self):
     return self._region
 
-  def ApplyYaml(self, tracker, yaml_content):
+  def ApplyYaml(self, yaml_content: str):
     """Applies the application config from yaml file.
 
     Args:
-      tracker: StagedProgressTracker, to report on the progress.
-      yaml_content: str, content of the yaml file.
+      yaml_content: content of the yaml file.
     """
     app_dict = dict(yaml_content)
     name = app_dict.pop('name')
-    appconfig = {'config': yaml.dump(yaml_content).encode('utf-8')}
+    appconfig = runapps_v1alpha1_messages.Config(
+        config=yaml.dump(yaml_content).encode('utf-8')
+    )
     match_type_names = []
     vpc = False
 
@@ -156,15 +157,33 @@ class RunAppsOperations(object):
       match_type_names.append({'type': 'vpc', 'name': '*'})
     match_type_names.sort(key=lambda x: x['type'])
 
-    self.ApplyAppConfig(
-        tracker, name, appconfig, match_type_names=match_type_names
+    resource_stages = base.GetComponentTypesFromSelectors(
+        selectors=match_type_names
     )
+    stages_map = stages.ApplyStages(resource_stages)
+
+    def StatusUpdate(tracker, operation, unused_status):
+      self._UpdateDeploymentTracker(tracker, operation, stages_map)
+      return
+
+    with progress_tracker.StagedProgressTracker(
+        'Applying Configuration...',
+        stages_map.values(),
+        failure_message='Failed to apply configuration.'
+    ) as tracker:
+      self.ApplyAppConfig(
+          tracker=tracker,
+          tracker_update_func=StatusUpdate,
+          appname=name,
+          appconfig=appconfig,
+          match_type_names=match_type_names,
+      )
 
   def ApplyAppConfig(
       self,
       tracker,
-      appname,
-      appconfig,
+      appname: str,
+      appconfig: runapps_v1alpha1_messages.Config,
       integration_name=None,
       deploy_message=None,
       match_type_names=None,
@@ -231,7 +250,9 @@ class RunAppsOperations(object):
 
     tracker.UpdateHeaderMessage('Done.')
 
-  def _UpdateApplication(self, appname, appconfig, etag):
+  def _UpdateApplication(
+      self, appname: str, appconfig: runapps_v1alpha1_messages.Config, etag: str
+  ):
     """Update Application config, waits for operation to finish.
 
     Args:
@@ -350,13 +371,24 @@ class RunAppsOperations(object):
     Returns:
       The integration config.
     """
-    appconfig = self.GetDefaultAppConfig()
-    for res in appconfig.resourceList:
-      if res.id.name == name and (not res_type or res.id.type == res_type):
-        return res
+    appconfig = self.GetDefaultApp().config
+    res = self._FindResource(appconfig, name, res_type)
+    if res:
+      return res
     raise exceptions.IntegrationNotFoundError(
         'Integration [{}] cannot be found'.format(name)
     )
+
+  def _FindResource(
+      self,
+      appconfig: runapps_v1alpha1_messages.Config,
+      name: str,
+      res_type: Optional[str] = None,
+  ) -> Optional[runapps_v1alpha1_messages.Resource]:
+    for res in appconfig.resourceList:
+      if res.id.name == name and (not res_type or res.id.type == res_type):
+        return res
+    return None
 
   def GetIntegrationStatus(
       self, res_id: runapps_v1alpha1_messages.ResourceID
@@ -415,10 +447,7 @@ class RunAppsOperations(object):
     Returns:
       The name of the integration.
     """
-    app_dict = self._GetDefaultAppDict()
-    resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
-        api_utils.APP_CONFIG_DICT_RESOURCES_KEY
-    ]
+    app = self.GetDefaultApp()
     typekit = typekits_util.GetTypeKit(integration_type)
     if name and typekit.is_singleton:
       raise exceptions.ArgumentError(
@@ -427,52 +456,44 @@ class RunAppsOperations(object):
           )
       )
     if not name:
-      name = typekit.NewIntegrationName(service, parameters, resources_map)
+      name = typekit.NewIntegrationName(app.config)
 
     resource_type = typekit.resource_type
 
-    if name in resources_map:
+    if self._FindResource(app.config, name, resource_type):
       raise exceptions.ArgumentError(
           messages_util.IntegrationAlreadyExists(name)
       )
 
-    resource_config = {}
-    typekit.UpdateResourceConfig(parameters, resource_config)
+    resource = runapps_v1alpha1_messages.Resource(
+        id=runapps_v1alpha1_messages.ResourceID(name=name, type=resource_type)
+    )
+    services_in_params = typekit.UpdateResourceConfig(parameters, resource)
 
-    resources_map[name] = {resource_type: resource_config}
+    app.config.resourceList.append(resource)
 
     match_type_names = typekit.GetCreateSelectors(name)
-    if service:
-      self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
-    if typekit.is_ingress_service:
-      # For ingress resource, expand the check list and selector to include all
-      # binded services.
-      services = typekit.GetRefServices(name, resource_config, resources_map)
-      for ref_service in services:
-        if ref_service != service:
-          match_type_names.append({'type': _SERVICE_TYPE, 'name': ref_service})
+    services = [service] if service else []
+    services.extend(services_in_params)
+    for svc in services:
+      match_type_names.append({'type': _SERVICE_TYPE, 'name': svc})
 
-    if service:
-      typekit.BindServiceToIntegration(
-          name,
-          resource_config,
-          service,
-          resources_map.setdefault(service, {}).setdefault(_SERVICE_TYPE, {}),
-          parameters,
-      )
-      services = [service]
-    else:
-      services = typekit.GetRefServices(name, resource_config, resources_map)
-
-    self.EnsureCloudRunResources(services, resources_map)
+    for svc in services:
+      self.EnsureWorkloadResources(app.config, svc, _SERVICE_TYPE)
     self.CheckCloudRunServicesExistence(services)
 
+    if service:
+      workload = self._FindResource(app.config, service, _SERVICE_TYPE)
+      typekit.BindServiceToIntegration(
+          integration=resource,
+          workload=workload,
+      )
+
     resource_stages = typekit.GetCreateComponentTypes(
-        selectors=match_type_names, app_dict=app_dict
+        selectors=match_type_names
     )
 
     deploy_message = typekit.GetDeployMessage(create=True)
-    application = encoding.DictToMessage(app_dict, self.messages.Application)
     stages_map = stages.IntegrationStages(
         create=True, resource_types=resource_stages
     )
@@ -491,11 +512,11 @@ class RunAppsOperations(object):
             tracker=tracker,
             tracker_update_func=StatusUpdate,
             appname=_DEFAULT_APP_NAME,
-            appconfig=application.config,
+            appconfig=app.config,
             integration_name=name,
             deploy_message=deploy_message,
             match_type_names=match_type_names,
-            etag=application.etag,
+            etag=app.etag,
         )
       except exceptions.IntegrationsOperationError as err:
         tracker.AddWarning(
@@ -522,11 +543,8 @@ class RunAppsOperations(object):
     Returns:
       The name of the integration.
     """
-    app_dict = self._GetDefaultAppDict()
-    resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
-        api_utils.APP_CONFIG_DICT_RESOURCES_KEY
-    ]
-    existing_resource = resources_map.get(name)
+    app = self.GetDefaultApp()
+    existing_resource = self._FindResource(app.config, name)
     if existing_resource is None:
       raise exceptions.IntegrationNotFoundError(
           messages_util.IntegrationNotFound(name)
@@ -536,37 +554,37 @@ class RunAppsOperations(object):
 
     flags.ValidateUpdateParameters(typekit.integration_type, parameters)
 
-    resource_config = existing_resource[typekit.resource_type]
-
     specified_services = []
     services_in_params = typekit.UpdateResourceConfig(
-        parameters, resource_config
+        parameters, existing_resource
     )
     if services_in_params:
       specified_services.extend(services_in_params)
+    if add_service:
+      specified_services.append(add_service)
 
     match_type_names = typekit.GetCreateSelectors(name)
 
+    for service in specified_services:
+      self.EnsureWorkloadResources(app.config, service, _SERVICE_TYPE)
+      # Specified services are always added to selector.
+      self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
+
     if add_service:
+      workload = self._FindResource(app.config, add_service, _SERVICE_TYPE)
       typekit.BindServiceToIntegration(
-          name,
-          resource_config,
-          add_service,
-          resources_map.setdefault(add_service, {}).setdefault(
-              _SERVICE_TYPE, {}
-          ),
-          parameters,
+          integration=existing_resource,
+          workload=workload,
       )
-      specified_services.append(add_service)
 
     if remove_service:
-      if remove_service in resources_map:
+      workload_res = self._FindResource(
+          app.config, remove_service, _SERVICE_TYPE
+      )
+      if workload_res:
         typekit.UnbindServiceFromIntegration(
-            name,
-            resource_config,
-            remove_service,
-            resources_map[remove_service].setdefault(_SERVICE_TYPE, {}),
-            parameters,
+            integration=existing_resource,
+            workload=workload_res,
         )
         if self.GetCloudRunService(remove_service):
           # remove_service missing will not lead to failure.
@@ -582,10 +600,6 @@ class RunAppsOperations(object):
         )
 
     if specified_services:
-      for service in specified_services:
-        # Specified services are always added to selector.
-        self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
-      self.EnsureCloudRunResources(specified_services, resources_map)
       self.CheckCloudRunServicesExistence(specified_services)
 
     if typekit.is_ingress_service or (
@@ -593,7 +607,9 @@ class RunAppsOperations(object):
         and add_service is None
         and remove_service is None
     ):
-      ref_svcs = typekit.GetRefServices(name, resource_config, resources_map)
+      ref_svcs = typekit.GetBindedWorkloads(
+          existing_resource, app.config.resourceList, _SERVICE_TYPE
+      )
       for service in ref_svcs:
         if service not in specified_services and self.GetCloudRunService(
             service
@@ -602,10 +618,9 @@ class RunAppsOperations(object):
           self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
 
     deploy_message = typekit.GetDeployMessage()
-    application = encoding.DictToMessage(app_dict, self.messages.Application)
 
     resource_stages = typekit.GetCreateComponentTypes(
-        selectors=match_type_names, app_dict=app_dict
+        selectors=match_type_names
     )
     stages_map = stages.IntegrationStages(
         create=False, resource_types=resource_stages
@@ -624,11 +639,11 @@ class RunAppsOperations(object):
           tracker=tracker,
           tracker_update_func=StatusUpdate,
           appname=_DEFAULT_APP_NAME,
-          appconfig=application.config,
+          appconfig=app.config,
           integration_name=name,
           deploy_message=deploy_message,
           match_type_names=match_type_names,
-          etag=application.etag,
+          etag=app.etag,
       )
 
   def DeleteIntegration(self, name):
@@ -643,36 +658,31 @@ class RunAppsOperations(object):
     Returns:
       str, the type of the integration that is deleted.
     """
-    app_dict = self._GetDefaultAppDict()
-    resources_map = app_dict[api_utils.APP_DICT_CONFIG_KEY][
-        api_utils.APP_CONFIG_DICT_RESOURCES_KEY
-    ]
-    resource = resources_map.get(name)
+    app = self.GetDefaultApp()
+    resource = self._FindResource(app.config, name)
     if resource is None:
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name)
       )
     typekit = typekits_util.GetTypeKitByResource(resource)
-    resource_type = typekit.resource_type
 
     # TODO(b/222748706): revisit whether this apply to future ingress services.
     services = []
     if typekit.is_backing_service:
       # Unbind services
-      services = typekit.GetRefServices(
-          name, resource.get(resource_type), resources_map
+      services = typekit.GetBindedWorkloads(
+          resource, app.config.resourceList, _SERVICE_TYPE
       )
     service_match_type_names = []
-    if services:
-      for service in services:
-        if self.GetCloudRunService(service):
-          # Only configure service to unbind if it exists
-          service_match_type_names.append(
-              {'type': _SERVICE_TYPE, 'name': service}
-          )
+    for service in services:
+      if self.GetCloudRunService(service):
+        # Only configure service to unbind if it exists
+        service_match_type_names.append(
+            {'type': _SERVICE_TYPE, 'name': service}
+        )
     delete_match_type_names = typekit.GetDeleteSelectors(name)
     resource_stages = typekit.GetDeleteComponentTypes(
-        selectors=delete_match_type_names, app_dict=app_dict
+        selectors=delete_match_type_names
     )
     stages_map = stages.IntegrationDeleteStages(
         destroy_resource_types=resource_stages,
@@ -690,39 +700,34 @@ class RunAppsOperations(object):
     ) as tracker:
       if services:
         for service in services:
+          workload = self._FindResource(app.config, service, _SERVICE_TYPE)
           typekit.UnbindServiceFromIntegration(
-              name,
-              resource[resource_type],
-              service,
-              resources_map[service][_SERVICE_TYPE],
-              {},
+              integration=resource,
+              workload=workload,
           )
-        application = encoding.DictToMessage(
-            app_dict, self.messages.Application
-        )
         # TODO(b/222748706): refine message on failure.
         if service_match_type_names:
           self.ApplyAppConfig(
               tracker=tracker,
               tracker_update_func=StatusUpdate,
               appname=_DEFAULT_APP_NAME,
-              appconfig=application.config,
+              appconfig=app.config,
               match_type_names=service_match_type_names,
               intermediate_step=True,
-              etag=application.etag,
+              etag=app.etag,
           )
         else:
           self._UpdateApplication(
               appname=_DEFAULT_APP_NAME,
-              appconfig=application.config,
-              etag=application.etag,
+              appconfig=app.config,
+              etag=app.etag,
           )
       # Undeploy integration resource
       delete_selector = {'matchTypeNames': delete_match_type_names}
       self._UndeployResource(name, delete_selector, tracker, StatusUpdate)
 
-    type_def = types_utils.GetIntegrationFromResource(resource)
-    integration_type = type_def.integration_type
+    type_metadata = types_utils.GetTypeMetadataByResource(resource)
+    integration_type = type_metadata.integration_type
     return integration_type
 
   def _UndeployResource(
@@ -746,16 +751,15 @@ class RunAppsOperations(object):
     tracker.CompleteStage(stages.UNDEPLOY_RESOURCE)
 
     # Get application again to refresh etag before update
-    app_dict = self._GetDefaultAppDict()
-    del app_dict[api_utils.APP_DICT_CONFIG_KEY][
-        api_utils.APP_CONFIG_DICT_RESOURCES_KEY
-    ][name]
-    application = encoding.DictToMessage(app_dict, self.messages.Application)
+    app = self.GetDefaultApp()
+    resource = self._FindResource(app.config, name)
+    if resource:
+      app.config.resourceList.remove(resource)
     tracker.StartStage(stages.CLEANUP_CONFIGURATION)
     self._UpdateApplication(
         appname=_DEFAULT_APP_NAME,
-        appconfig=application.config,
-        etag=application.etag,
+        appconfig=app.config,
+        etag=app.etag,
     )
     tracker.CompleteStage(stages.CLEANUP_CONFIGURATION)
 
@@ -849,7 +853,7 @@ class RunAppsOperations(object):
     # is the same every time.  This is useful for scenario tests.
     for resource in sorted(app_resources, key=lambda x: x.id.name):
       try:
-        typekit = typekits_util.GetTypeKitByResourceGeneric(resource)
+        typekit = typekits_util.GetTypeKitByResource(resource)
       except exceptions.ArgumentError:
         # If no matching typekit, like service, skip over.
         continue
@@ -892,24 +896,8 @@ class RunAppsOperations(object):
 
     return output
 
-  def _GetDefaultAppDict(self):
-    """Returns the default application as a dict.
-
-    Returns:
-      dict representing the application.
-    """
-    application = api_utils.GetApplication(
-        self._client, self.GetAppRef(_DEFAULT_APP_NAME)
-    )
-    if not application:
-      application = self.messages.Application(
-          name=_DEFAULT_APP_NAME,
-          config={api_utils.APP_CONFIG_DICT_RESOURCES_KEY: {}},
-      )
-    return api_utils.ApplicationToDict(application)
-
-  def GetDefaultAppConfig(self) -> runapps_v1alpha1_messages.Config:
-    """Returns the default application config.
+  def GetDefaultApp(self) -> runapps_v1alpha1_messages.Application:
+    """Returns the default application.
 
     Returns:
       the application config.
@@ -917,7 +905,19 @@ class RunAppsOperations(object):
     app = api_utils.GetApplication(
         self._client, self.GetAppRef(_DEFAULT_APP_NAME)
     )
-    return app.config if app else runapps_v1alpha1_messages.Config()
+    if not app:
+      app = self.messages.Application(
+          name=_DEFAULT_APP_NAME,
+          config=runapps_v1alpha1_messages.Config(
+              resourceList=[],
+          ),
+      )
+    if not app.config:
+      app.config = runapps_v1alpha1_messages.Config(
+          resourceList=[],
+      )
+    app.config.resources = None
+    return app
 
   def GetAppRef(self, name):
     """Returns the application resource object.
@@ -969,15 +969,27 @@ class RunAppsOperations(object):
     )
     return service_ref
 
-  def EnsureCloudRunResources(self, service_names, resources_map):
+  def EnsureWorkloadResources(
+      self,
+      appconfig: runapps_v1alpha1_messages.Config,
+      res_name: str,
+      res_type: str,
+  ):
     """Make sure resources block for the Cloud Run services exists.
 
     Args:
-      service_names: array, list of service to check.
-      resources_map: the resources map of the application
+      appconfig: the application config
+      res_name: name of the resource,
+      res_type: type of the resource,
     """
-    for service in service_names:
-      resources_map.setdefault(service, {}).setdefault(_SERVICE_TYPE, {})
+    if not self._FindResource(appconfig, res_name, res_type):
+      appconfig.resourceList.append(
+          runapps_v1alpha1_messages.Resource(
+              id=runapps_v1alpha1_messages.ResourceID(
+                  name=res_name, type=res_type
+              )
+          )
+      )
 
   def GetCloudRunService(self, service_name):
     """Check for existence of Cloud Run services.

@@ -19,6 +19,8 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
+from typing import List, Optional, Dict
+from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.core.console import progress_tracker
 
 
@@ -66,7 +68,6 @@ def IntegrationStages(create, resource_types):
   return stages
 
 
-# TODO(b/237396542): Add this to integration type metadata map.
 def _TypeToDescriptiveName(resource_type):
   """Returns a more readable name for a resource type, for printing to console.
 
@@ -76,18 +77,14 @@ def _TypeToDescriptiveName(resource_type):
   Returns:
     string with readable type name.
   """
-  if resource_type == 'router':
-    return 'Load Balancer'
+  metadata = types_utils.GetTypeMetadataByResourceType(resource_type)
+  if metadata:
+    return metadata.product
+  # TODO(b/306021971): remove this if service is added to metadata.
   elif resource_type == 'service':
     return 'Cloud Run Service'
-  elif resource_type == 'redis':
-    return 'Redis Instance'
   elif resource_type == 'vpc':
     return 'VPC Connector'
-  elif resource_type == 'cloudsql':
-    return 'Cloud SQL Instance'
-  elif resource_type == 'firebase-hosting':
-    return 'Firebase Hosting'
   return resource_type
 
 
@@ -120,17 +117,29 @@ def IntegrationDeleteStages(destroy_resource_types,
   return stages
 
 
-def ApplyStages():
+def ApplyStages(
+    resource_types: Optional[List[str]] = None,
+) -> Dict[str, progress_tracker.Stage]:
   """Returns the progress tracker Stages for apply command.
+
+  Args:
+    resource_types: set of resource type strings to deploy.
 
   Returns:
     array of progress_tracker.Stage
   """
-  return [
-      progress_tracker.Stage('Saving Configuration...', key=UPDATE_APPLICATION),
-      progress_tracker.Stage(
-          'Actuating Configuration...', key=CREATE_DEPLOYMENT),
-  ]
+  stages = {
+      UPDATE_APPLICATION: progress_tracker.Stage(
+          'Saving Configuration...', key=UPDATE_APPLICATION
+      ),
+      CREATE_DEPLOYMENT: progress_tracker.Stage(
+          'Actuating Configuration...', key=CREATE_DEPLOYMENT
+      ),
+  }
+  if resource_types:
+    deploy_stages = _DeployStages(resource_types, 'Configuring ')
+    stages.update(deploy_stages)
+  return stages
 
 
 def StageKeyForResourceDeployment(resource_type):

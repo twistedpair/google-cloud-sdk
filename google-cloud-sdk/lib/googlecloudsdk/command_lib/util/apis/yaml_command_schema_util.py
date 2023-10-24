@@ -27,13 +27,12 @@ from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.command_lib.util.args import labels_util
 from googlecloudsdk.core import module_util
 
-import six
-
 
 NAME_FORMAT_KEY = '__name__'
 RESOURCE_ID_FORMAT_KEY = '__resource_id__'
 REL_NAME_FORMAT_KEY = '__relative_name__'
 RESOURCE_TYPE_FORMAT_KEY = '__resource_type__'
+KEY, VALUE = 'key', 'value'
 
 
 def FormatResourceAttrStr(format_string, resource_ref, display_name=None,
@@ -183,7 +182,7 @@ def ImportPythonHook(path):
   return Hook(attr, kwargs)
 
 
-STATIC_ACTIONS = {'store', 'store_true', 'append'}
+STATIC_ACTIONS = frozenset(('store', 'store_true', 'append'))
 
 
 def ParseAction(action, flag_name):
@@ -203,7 +202,7 @@ def ParseAction(action, flag_name):
   if not action:
     return None
 
-  if isinstance(action, six.string_types):
+  if isinstance(action, str):
     if action in STATIC_ACTIONS:
       return action
     return Hook.FromPath(action)
@@ -212,13 +211,13 @@ def ParseAction(action, flag_name):
   if deprecation:
     return actions.DeprecationAction(flag_name, **deprecation)
 
-  raise ValueError('Unknown value for action: ' + six.text_type(action))
+  raise ValueError('Unknown value for action: ' + str(action))
 
 
 BUILTIN_TYPES = {
     'str': str,
     'int': int,
-    'long': long if six.PY2 else int,  # long is referring to a type, so pylint: disable=undefined-variable
+    'long': int,
     'float': float,
     'bool': bool,
 }
@@ -246,7 +245,7 @@ def ParseType(t):
       data = None
     return ArgObject.FromData(data)
 
-  if isinstance(t, six.string_types):
+  if isinstance(t, str):
     builtin_type = BUILTIN_TYPES.get(t)
     if builtin_type:
       return builtin_type
@@ -257,7 +256,7 @@ def ParseType(t):
   if 'arg_dict' in t:
     return ArgDict.FromData(t.get('arg_dict'))
 
-  raise ValueError('Unknown value for type: ' + six.text_type(t))
+  raise ValueError('Unknown value for type: ' + str(t))
 
 
 class Choice(object):
@@ -265,7 +264,7 @@ class Choice(object):
 
   def __init__(self, data):
     self.arg_value = data['arg_value']
-    if isinstance(self.arg_value, six.string_types):
+    if isinstance(self.arg_value, str):
       # We always do a case insensitive comparison.
       self.arg_value = self.arg_value.lower()
     if 'enum_value' in data:
@@ -391,7 +390,7 @@ class _MapFieldType(usage_text.DefaultArgTypeWrapper):
     # NOTE: While repeating fields and messages are accounted for, repeating
     # maps are not. This is because repeating map fields are not allowed in
     # proto definitions. Result will never be a list of dictionaries.
-    for k, v in sorted(six.iteritems(parsed_arg_value)):
+    for k, v in sorted(parsed_arg_value.items()):
       message_instance = self.message_cls()
       _SetFieldInMessage(message_instance, self.key_spec, k)
       _SetFieldInMessage(message_instance, self.value_spec, v)
@@ -449,10 +448,6 @@ class ArgObject(arg_utils.ArgObjectType):
     # TODO(b/278780718) parse spec data that can be specifed by the user
     return cls()
 
-  def __init__(self, arg_type=None, help_text=None):
-    self.arg_type = arg_type
-    self.help_text = help_text
-
   def Action(self, field):
     """Returns the correct argument action.
 
@@ -466,20 +461,20 @@ class ArgObject(arg_utils.ArgObjectType):
       return arg_parsers.FlattenAction()
     return 'store'
 
-  def _GetFieldType(self, message, field_spec):
+  def _GetFieldType(self, message, field_spec, is_label_field=False):
     """Retrieves the the type of the field from messsage.
 
     Args:
       message: Apitools message class
       field_spec: SpecField, specifies the api field
+      is_label_field: bool, whether field is part of labels map field
 
     Returns:
       type function or apitools class for the message field
     """
     f = arg_utils.GetFieldFromMessage(message, field_spec.api_field)
-    arg_obj = ArgObject(
-        arg_type=field_spec.field_type, help_text=field_spec.help_text)
-    return arg_obj.GenerateType(f, is_root=False)
+    arg_obj = ArgObject()
+    return arg_obj.GenerateType(f, is_root=False, is_label_field=is_label_field)
 
   def _GenerateMapType(self, field, is_root=True):
     """Returns function that parses apitools map fields from string.
@@ -507,31 +502,21 @@ class ArgObject(arg_utils.ArgObjectType):
           ))
 
     # TODO(b/278780718) allow spec data to specify the key, value fields
-
-    # Add some default validation and help text for labels fields
-    if field.name == 'labels':
-      key_type = labels_util.KEY_FORMAT_VALIDATOR
-      key_help = labels_util.KEY_FORMAT_HELP
-      value_type = labels_util.VALUE_FORMAT_VALIDATOR
-      value_help = labels_util.VALUE_FORMAT_HELP
-    else:
-      key_type, key_help = None, None
-      value_type, value_help = None, None
-
     key_spec = SpecField.FromField(
-        arg_utils.GetFieldFromMessage(additional_props_field.type, 'key'),
-        field_type=key_type, help_text=key_help)
+        arg_utils.GetFieldFromMessage(additional_props_field.type, KEY))
     value_spec = SpecField.FromField(
-        arg_utils.GetFieldFromMessage(additional_props_field.type, 'value'),
-        field_type=value_type, help_text=value_help)
+        arg_utils.GetFieldFromMessage(additional_props_field.type, VALUE))
 
-    key_type = self._GetFieldType(additional_props_field.type, key_spec)
-    value_type = self._GetFieldType(additional_props_field.type, value_spec)
+    is_label_field = field.name == 'labels'
+    key_type = self._GetFieldType(
+        additional_props_field.type, key_spec, is_label_field=is_label_field)
+    value_type = self._GetFieldType(
+        additional_props_field.type, value_spec, is_label_field=is_label_field)
 
     arg_obj = arg_parsers.ArgObject(
         key_type=key_type,
         value_type=value_type,
-        help_text=self.help_text,
+        help_text=None,
         enable_shorthand=is_root)
     map_type = _MapFieldType(
         arg_obj, additional_props_field.type, key_spec, value_spec)
@@ -563,26 +548,40 @@ class ArgObject(arg_utils.ArgObjectType):
     spec = {f.arg_name: self._GetFieldType(field.type, f) for f in field_specs}
     required = [f.arg_name for f in field_specs if f.required]
     arg_obj = arg_parsers.ArgObject(spec=spec,
-                                    help_text=self.help_text,
+                                    help_text=None,
                                     required_keys=required,
                                     repeated=field.repeated,
                                     enable_shorthand=is_root)
 
     return _MessageFieldType(arg_obj, field.type, field_specs)
 
-  def _GenerateFieldType(self, field):
+  def _GenerateFieldType(self, field, is_label_field=False):
     """Returns function that parses apitools field from string.
 
     Args:
       field: apitools field instance
+      is_label_field: bool, whether or not the field is for a labels map field.
+        If true, supplies default validation and help text.
 
     Returns:
       type function that takes string like '1' or ['1'] and parses it
         into 1 or [1] depending on the apitools field type
     """
+    if is_label_field and field.name == KEY:
+      value_type = labels_util.KEY_FORMAT_VALIDATOR
+      default_help_text = labels_util.KEY_FORMAT_HELP
+    elif is_label_field and field.name == VALUE:
+      value_type = labels_util.VALUE_FORMAT_VALIDATOR
+      default_help_text = labels_util.VALUE_FORMAT_HELP
+    else:
+      value_type = None
+      default_help_text = None
+
     # TODO(b/278780718) allow spec data to specify the field type
     field_spec = SpecField.FromField(
-        field, help_text=self.help_text, field_type=self.arg_type)
+        field,
+        help_text=default_help_text,
+        field_type=value_type)
     arg_obj = arg_parsers.ArgObject(
         value_type=field_spec.field_type,
         help_text=field_spec.help_text,
@@ -591,13 +590,14 @@ class ArgObject(arg_utils.ArgObjectType):
     )
     return _FieldType(arg_obj, field, field_spec)
 
-  def GenerateType(self, field, is_root=True):
+  def GenerateType(self, field, is_root=True, is_label_field=False):
     """Generates an argparse type function to use to parse the argument.
 
     Args:
       field: apitools field instance we are generating ArgObject for
       is_root: bool, whether this is the first level of the ArgObject
         we are generating for.
+      is_label_field: bool, whether the field is for labels map field
 
     Returns:
         Type function that returns apitools message instance or list
@@ -607,9 +607,10 @@ class ArgObject(arg_utils.ArgObjectType):
     if field_type == arg_utils.FieldType.MAP:
       return self._GenerateMapType(field, is_root)
     # TODO(b/286379489): add parsing logic for cyclical fields
-    if field_type == arg_utils.FieldType.MESSAGE:
+    elif field_type == arg_utils.FieldType.MESSAGE:
       return self._GenerateMessageType(field, is_root)
-    return self._GenerateFieldType(field)
+    else:
+      return self._GenerateFieldType(field, is_label_field)
 
 
 class ArgDict(arg_utils.RepeatedMessageBindableType):

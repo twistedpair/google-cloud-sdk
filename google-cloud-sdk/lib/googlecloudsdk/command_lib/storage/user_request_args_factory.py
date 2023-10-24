@@ -91,37 +91,40 @@ class _UserResourceArgs(object):
 class _UserBucketArgs(_UserResourceArgs):
   """Contains user flag values affecting cloud bucket settings."""
 
-  def __init__(self,
-               acl_file_path=None,
-               acl_grants_to_add=None,
-               acl_grants_to_remove=None,
-               autoclass_terminal_storage_class=None,
-               cors_file_path=None,
-               default_encryption_key=None,
-               default_event_based_hold=None,
-               default_object_acl_file_path=None,
-               default_object_acl_grants_to_add=None,
-               default_object_acl_grants_to_remove=None,
-               default_storage_class=None,
-               enable_autoclass=None,
-               labels_file_path=None,
-               labels_to_append=None,
-               labels_to_remove=None,
-               lifecycle_file_path=None,
-               location=None,
-               log_bucket=None,
-               log_object_prefix=None,
-               placement=None,
-               public_access_prevention=None,
-               recovery_point_objective=None,
-               requester_pays=None,
-               retention_period=None,
-               retention_period_to_be_locked=False,
-               soft_delete_duration=None,
-               uniform_bucket_level_access=None,
-               versioning=None,
-               web_error_page=None,
-               web_main_page_suffix=None):
+  def __init__(
+      self,
+      acl_file_path=None,
+      acl_grants_to_add=None,
+      acl_grants_to_remove=None,
+      autoclass_terminal_storage_class=None,
+      cors_file_path=None,
+      default_encryption_key=None,
+      default_event_based_hold=None,
+      default_object_acl_file_path=None,
+      default_object_acl_grants_to_add=None,
+      default_object_acl_grants_to_remove=None,
+      default_storage_class=None,
+      enable_autoclass=None,
+      enable_per_object_retention=None,
+      labels_file_path=None,
+      labels_to_append=None,
+      labels_to_remove=None,
+      lifecycle_file_path=None,
+      location=None,
+      log_bucket=None,
+      log_object_prefix=None,
+      placement=None,
+      public_access_prevention=None,
+      recovery_point_objective=None,
+      requester_pays=None,
+      retention_period=None,
+      retention_period_to_be_locked=False,
+      soft_delete_duration=None,
+      uniform_bucket_level_access=None,
+      versioning=None,
+      web_error_page=None,
+      web_main_page_suffix=None,
+  ):
     """Initializes class, binding flag values to it."""
     super(_UserBucketArgs, self).__init__(
         acl_file_path, acl_grants_to_add, acl_grants_to_remove
@@ -137,6 +140,7 @@ class _UserBucketArgs(_UserResourceArgs):
     )
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
+    self.enable_per_object_retention = enable_per_object_retention
     self.labels_file_path = labels_file_path
     self.labels_to_append = labels_to_append
     self.labels_to_remove = labels_to_remove
@@ -174,6 +178,8 @@ class _UserBucketArgs(_UserResourceArgs):
         == other.default_object_acl_grants_to_remove
         and self.default_storage_class == other.default_storage_class
         and self.enable_autoclass == other.enable_autoclass
+        and self.enable_per_object_retention
+        == other.enable_per_object_retention
         and self.labels_file_path == other.labels_file_path
         and self.labels_to_append == other.labels_to_append
         and self.labels_to_remove == other.labels_to_remove
@@ -382,6 +388,9 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           ),
           default_storage_class=default_storage_class,
           enable_autoclass=getattr(args, 'enable_autoclass', None),
+          enable_per_object_retention=getattr(
+              args, 'enable_per_object_retention', None
+          ),
           labels_file_path=labels_file_path,
           labels_to_append=getattr(args, 'update_labels', None),
           labels_to_remove=getattr(args, 'remove_labels', None),
@@ -398,6 +407,7 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
           ),
           requester_pays=getattr(args, 'requester_pays', None),
           retention_period=retention_period,
+          # TODO(b/301295584): Not to use False as a default.
           retention_period_to_be_locked=getattr(
               args, 'lock_retention_period', False
           ),

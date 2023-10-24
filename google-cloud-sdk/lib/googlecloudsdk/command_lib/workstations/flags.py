@@ -23,7 +23,9 @@ import argparse
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
+from googlecloudsdk.core import properties
 
 
 def AddAsyncFlag(parser):
@@ -31,61 +33,80 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
-def LocationsAttributeConfig(help_text=''):
+def LocationsAttributeConfig(location_fallthrough=False):
   """Create a location attribute in resource argument.
 
   Args:
-    help_text: If set, overrides default help text for `--location`
+    location_fallthrough: If set, enables fallthroughs for the location
+      attribute.
 
   Returns:
     Location resource argument parameter config
   """
+  fallthroughs = (
+      [deps.PropertyFallthrough(properties.VALUES.workstations.region)]
+      if location_fallthrough
+      else []
+  )
   return concepts.ResourceParameterAttributeConfig(
       name='region',
-      help_text=help_text if help_text else
-      ('The location for the {resource}.'))
+      fallthroughs=fallthroughs,
+      help_text='The location for the {resource}.',
+  )
 
 
-def ClustersAttributeConfig(help_text=''):
+def ClustersAttributeConfig(cluster_fallthrough=False):
   """Create a cluster attribute in resource argument.
 
   Args:
-    help_text: If set, overrides default help text for `--cluster`
+    cluster_fallthrough: If set, enables fallthroughs for the cluster attribute.
 
   Returns:
     Cluster resource argument parameter config
   """
+  fallthroughs = (
+      [deps.PropertyFallthrough(properties.VALUES.workstations.cluster)]
+      if cluster_fallthrough
+      else []
+  )
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
-      help_text=help_text if help_text else ('The cluster for the {resource}.'))
+      fallthroughs=fallthroughs,
+      help_text='The cluster for the {resource}.',
+  )
 
 
-def ConfigsAttributeConfig(help_text=''):
+def ConfigsAttributeConfig(config_fallthrough=False):
   """Create a config attribute in resource argument.
 
   Args:
-    help_text: If set, overrides default help text for `config`
+    config_fallthrough: If set, enables fallthroughs for the config attribute.
 
   Returns:
     Config resource argument parameter config
   """
+  fallthroughs = (
+      [deps.PropertyFallthrough(properties.VALUES.workstations.config)]
+      if config_fallthrough
+      else []
+  )
   return concepts.ResourceParameterAttributeConfig(
       name='config',
-      help_text=help_text if help_text else ('The config for the {resource}.'))
+      fallthroughs=fallthroughs,
+      help_text='The config for the {resource}.',
+  )
 
 
-def WorkstationsAttributeConfig(help_text=''):
+def WorkstationsAttributeConfig():
   """Create a workstation attribute in resource argument.
-
-  Args:
-    help_text: If set, overrides default help text for `workstation`
 
   Returns:
     Workstation resource argument parameter config
   """
   return concepts.ResourceParameterAttributeConfig(
       name='workstation',
-      help_text=help_text if help_text else ('The workstation.'))
+      help_text='The workstation.',
+  )
 
 
 def AddConfigResourceArg(parser, api_version='v1beta', flag_anchor=False):
@@ -95,8 +116,8 @@ def AddConfigResourceArg(parser, api_version='v1beta', flag_anchor=False):
       resource_name='config',
       api_version=api_version,
       workstationConfigsId=ConfigsAttributeConfig(),
-      workstationClustersId=ClustersAttributeConfig(),
-      locationsId=LocationsAttributeConfig(),
+      workstationClustersId=ClustersAttributeConfig(cluster_fallthrough=True),
+      locationsId=LocationsAttributeConfig(location_fallthrough=True),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False,
   )
@@ -115,9 +136,9 @@ def AddWorkstationResourceArg(parser, api_version='v1beta'):
       resource_name='workstation',
       api_version=api_version,
       workstationsId=WorkstationsAttributeConfig(),
-      workstationConfigsId=ConfigsAttributeConfig(),
-      workstationClustersId=ClustersAttributeConfig(),
-      locationsId=LocationsAttributeConfig(),
+      workstationConfigsId=ConfigsAttributeConfig(config_fallthrough=True),
+      workstationClustersId=ClustersAttributeConfig(cluster_fallthrough=True),
+      locationsId=LocationsAttributeConfig(location_fallthrough=True),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
   )
   concept_parsers.ConceptParser.ForResource(

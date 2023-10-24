@@ -2028,7 +2028,8 @@ class GoogleCloudGkemulticloudV1AwsVolumeTemplate(_messages.Message):
       default value is provided. See the specific reference in the parent
       resource.
     throughput: Optional. The throughput that the volume supports, in MiB/s.
-      Only valid if volume_type is GP3.
+      Only valid if volume_type is GP3. If the volume_type is GP3 and this is
+      not speficied, it defaults to 125.
     volumeType: Optional. Type of the EBS volume. When unspecified, it
       defaults to GP2 volume.
   """

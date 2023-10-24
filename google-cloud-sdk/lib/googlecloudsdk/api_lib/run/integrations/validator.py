@@ -222,8 +222,11 @@ class Validator:
   def _ValidateProvidedParams(self, user_provided_params):
     """Checks that the user provided parameters exist in the mapping."""
     invalid_params = []
+    allowed_params = [
+        param.name for param in self.type_metadata.parameters
+    ]
     for param in user_provided_params:
-      if param not in [param.name for param in self.type_metadata.parameters]:
+      if param not in allowed_params:
         invalid_params.append(param)
 
     if invalid_params:

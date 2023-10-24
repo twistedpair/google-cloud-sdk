@@ -207,6 +207,28 @@ def process_log_config(target_bucket, log_bucket, log_object_prefix):
   return logging_value
 
 
+def process_object_retention(
+    existing_retention_settings, retain_until, retention_mode
+):
+  """Converts individual object retention settings to Apitools object."""
+  if (
+      retain_until == user_request_args_factory.CLEAR
+      or retention_mode == user_request_args_factory.CLEAR
+  ):
+    return None
+  if retain_until is None and retention_mode is None:
+    return existing_retention_settings
+
+  if existing_retention_settings is None:
+    messages = apis.GetMessagesModule('storage', 'v1')
+    retention_settings = messages.Object.RetentionValue()
+  else:
+    retention_settings = existing_retention_settings
+  retention_settings.retainUntilTime = retain_until
+  retention_settings.mode = retention_mode.value if retention_mode else None
+  return retention_settings
+
+
 def process_placement_config(regions):
   """Converts a list of regions to Apitools object."""
   messages = apis.GetMessagesModule('storage', 'v1')

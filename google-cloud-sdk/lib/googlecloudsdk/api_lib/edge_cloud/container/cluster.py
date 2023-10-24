@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import json
+
 from googlecloudsdk.api_lib.edge_cloud.container import util
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.edge_cloud.container import admin_users
@@ -46,7 +48,7 @@ def GetClusterCreateRequest(args, release_track):
   )
   PopulateClusterMessage(req, messages, args)
   if release_track == base.ReleaseTrack.ALPHA:
-    PopulateClusterAlphaMessage(req, args)
+    PopulateClusterAlphaMessage(req, messages, args)
   return req
 
 
@@ -173,11 +175,12 @@ def PopulateClusterMessage(req, messages, args):
       )
 
 
-def PopulateClusterAlphaMessage(req, args):
+def PopulateClusterAlphaMessage(req, messages, args):
   """Filled the Alpha cluster message from command arguments.
 
   Args:
     req: create cluster request message.
+    messages: message module of edgecontainer cluster.
     args: command line arguments.
   """
   if flags.FlagIsExplicitlySet(args, 'cluster_ipv6_cidr'):
@@ -185,6 +188,11 @@ def PopulateClusterAlphaMessage(req, args):
   if flags.FlagIsExplicitlySet(args, 'services_ipv6_cidr'):
     req.cluster.networking.servicesIpv6CidrBlocks = [args.services_ipv6_cidr]
   resource_args.SetSystemAddonsConfig(args, req)
+  if flags.FlagIsExplicitlySet(args, 'offline_reboot_ttl'):
+    req.cluster.survivabilityConfig = messages.SurvivabilityConfig()
+    req.cluster.survivabilityConfig.offlineRebootTtl = (
+        json.dumps(args.offline_reboot_ttl) + 's'
+    )
 
 
 def IsLCPCluster(args):

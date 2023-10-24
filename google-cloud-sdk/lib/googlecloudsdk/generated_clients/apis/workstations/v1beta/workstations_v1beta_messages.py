@@ -238,6 +238,16 @@ class CustomerEncryptionKey(_messages.Message):
   kmsKeyServiceAccount = _messages.StringField(2)
 
 
+class DomainConfig(_messages.Message):
+  r"""Configuration options for a custom domain.
+
+  Fields:
+    domain: Immutable. Domain used by Workstations for HTTP ingress.
+  """
+
+  domain = _messages.StringField(1)
+
+
 class EphemeralDirectory(_messages.Message):
   r"""An ephemeral directory which won't persist across workstation sessions.
   It is freshly created on every workstation start operation.
@@ -411,9 +421,10 @@ class GcePersistentDisk(_messages.Message):
       will update content in the ephemeral directory after the workstation is
       restarted. This field is mutable.
     sourceSnapshot: Optional. Name of the snapshot to use as the source for
-      the disk. Must be empty if source_image is set. Updating source_snapshot
-      will update content in the ephemeral directory after the workstation is
-      restarted. This field is mutable.
+      the disk. Must be empty if source_image is set. Must be empty if
+      read_only is false. Updating source_snapshot will update content in the
+      ephemeral directory after the workstation is restarted. This field is
+      mutable.
   """
 
   diskType = _messages.StringField(1)
@@ -1113,7 +1124,7 @@ class Workstation(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation and that are also propagated to the
       underlying Compute Engine resources.
-    name: Full name of this workstation.
+    name: Identifier. Full name of this workstation.
     reconciling: Output only. Indicates whether this workstation is currently
       being updated to match its intended state.
     startTime: Output only. Time when this workstation was most recently
@@ -1262,6 +1273,7 @@ class WorkstationCluster(_messages.Message):
     deleteTime: Output only. Time when this workstation cluster was soft-
       deleted.
     displayName: Optional. Human-readable name for this workstation cluster.
+    domainConfig: Optional. Configuration options for a custom domain.
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
@@ -1269,7 +1281,7 @@ class WorkstationCluster(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation cluster and that are also propagated
       to the underlying Compute Engine resources.
-    name: Full name of this workstation cluster.
+    name: Identifier. Full name of this workstation cluster.
     network: Immutable. Name of the Compute Engine network in which instances
       associated with this workstation cluster will be created.
     privateClusterConfig: Optional. Configuration for private workstation
@@ -1343,15 +1355,16 @@ class WorkstationCluster(_messages.Message):
   degraded = _messages.BooleanField(5)
   deleteTime = _messages.StringField(6)
   displayName = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 12)
-  reconciling = _messages.BooleanField(13)
-  subnetwork = _messages.StringField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  domainConfig = _messages.MessageField('DomainConfig', 8)
+  etag = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 13)
+  reconciling = _messages.BooleanField(14)
+  subnetwork = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class WorkstationConfig(_messages.Message):
@@ -1422,7 +1435,7 @@ class WorkstationConfig(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation configuration and that are also
       propagated to the underlying Compute Engine resources.
-    name: Full name of this workstation configuration.
+    name: Identifier. Full name of this workstation configuration.
     persistentDirectories: Optional. Directories to persist across workstation
       sessions.
     readinessChecks: Optional. Readiness checks to perform when starting a
@@ -1651,7 +1664,7 @@ class WorkstationsProjectsLocationsWorkstationClustersPatchRequest(_messages.Mes
     allowMissing: Optional. If set, and the workstation cluster is not found,
       a new workstation cluster will be created. In this situation,
       update_mask is ignored.
-    name: Full name of this workstation cluster.
+    name: Identifier. Full name of this workstation cluster.
     updateMask: Required. Mask that specifies which fields in the workstation
       cluster should be updated.
     validateOnly: Optional. If set, validate the request and preview the
@@ -1787,7 +1800,7 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsPatchReq
     allowMissing: Optional. If set and the workstation configuration is not
       found, a new workstation configuration will be created. In this
       situation, update_mask is ignored.
-    name: Full name of this workstation configuration.
+    name: Identifier. Full name of this workstation configuration.
     updateMask: Required. Mask specifying which fields in the workstation
       configuration should be updated.
     validateOnly: Optional. If set, validate the request and preview the
@@ -1965,7 +1978,7 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
     allowMissing: Optional. If set and the workstation configuration is not
       found, a new workstation configuration is created. In this situation,
       update_mask is ignored.
-    name: Full name of this workstation.
+    name: Identifier. Full name of this workstation.
     updateMask: Required. Mask specifying which fields in the workstation
       configuration should be updated.
     validateOnly: Optional. If set, validate the request and preview the

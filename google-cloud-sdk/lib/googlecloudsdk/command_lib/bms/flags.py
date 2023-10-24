@@ -335,28 +335,34 @@ def AddSerialConsoleSshKeyArgToParser(parser, positional=False, name=None):
   """Sets up an argument for the serial-console-ssh-key resource."""
   name = 'serial_console_ssh_key' if positional else '--serial-console-ssh-key'
   ssh_key_data = yaml_data.ResourceYAMLData.FromPath(
-      'bms.serial_console_ssh_key')
+      'bms.serial_console_ssh_key'
+  )
   resource_spec = concepts.ResourceSpec.FromYaml(ssh_key_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
       name=name,
       concept_spec=resource_spec,
       required=True,
       flag_name_overrides={'region': ''},
-      group_help='serial_console_ssh_key.')
+      group_help='serial_console_ssh_key.',
+  )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
-def AddSshKeyArgToParser(parser, positional=False, name=None):
+def AddSshKeyArgToParser(
+    parser, positional=False, name=None, required=True, plural=False
+):
   """Sets up an argument for the ssh-key resource."""
   name = 'ssh_key' if positional else '--ssh-key'
   ssh_key_data = yaml_data.ResourceYAMLData.FromPath('bms.ssh_key')
   resource_spec = concepts.ResourceSpec.FromYaml(ssh_key_data.GetData())
   presentation_spec = presentation_specs.ResourcePresentationSpec(
-      name=name,
+      name=name if not plural else f'{name}s',
       concept_spec=resource_spec,
-      required=True,
+      required=required,
       flag_name_overrides={'region': ''},
-      group_help='ssh_key.')
+      group_help='ssh_key.',
+      plural=plural,
+      )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
@@ -498,3 +504,16 @@ def AddNfsUpdateAllowedClientArgs(parser, hidden):
       '--clear-allowed-clients',
       action='store_true',
       help="""Removes all IP range reservations in the network.""")
+
+
+def AddKMSCryptoKeyVersionToParser(parser, hidden):
+  parser.add_argument(
+      '--kms-crypto-key-version',
+      type=str,
+      help="""
+      Resource ID of a KMS CryptoKeyVersion used to encrypt the initial password.
+
+      https://cloud.google.com/kms/docs/resource-hierarchy#key_versions
+      """,
+      hidden=hidden,
+  )

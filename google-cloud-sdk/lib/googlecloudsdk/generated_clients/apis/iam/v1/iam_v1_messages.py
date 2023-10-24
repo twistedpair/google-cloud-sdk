@@ -499,6 +499,55 @@ class GetPolicyOptions(_messages.Message):
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client(_messages.Message):
+  r"""Represents the OAuth 2.0 client credential configuration for retrieving
+  additional user attributes that are not present in the initial
+  authentication credentials from the identity provider, e.g. groups. See
+  https://datatracker.ietf.org/doc/html/rfc6749#section-4.4 for more details
+  on client credentials grant flow.
+
+  Enums:
+    AttributesTypeValueValuesEnum: Required. Represents the IdP and type of
+      claims that should be fetched.
+
+  Fields:
+    attributesType: Required. Represents the IdP and type of claims that
+      should be fetched.
+    clientId: Required. The OAuth 2.0 client ID for retrieving extra
+      attributes from the identity provider. Required to get the Access Token
+      using client credentials grant flow.
+    clientSecret: Required. The OAuth 2.0 client secret for retrieving extra
+      attributes from the identity provider. Required to get the Access Token
+      using client credentials grant flow.
+    issuerUri: Required. The OIDC identity provider's issuer URI. Must be a
+      valid URI using the 'https' scheme. Required to get the OIDC discovery
+      document.
+  """
+
+  class AttributesTypeValueValuesEnum(_messages.Enum):
+    r"""Required. Represents the IdP and type of claims that should be
+    fetched.
+
+    Values:
+      ATTRIBUTES_TYPE_UNSPECIFIED: No AttributesType specified.
+      AZURE_AD_GROUPS_MAIL: Used to get the user's group claims from the Azure
+        AD identity provider using configuration provided in
+        ExtraAttributesOAuth2Client and `mail` property of the
+        `microsoft.graph.group` object is used for claim mapping. See
+        https://learn.microsoft.com/en-
+        us/graph/api/resources/group?view=graph-rest-1.0#properties for more
+        details on `microsoft.graph.group` properties. The attributes obtained
+        from idntity provider are mapped to `assertion.groups`.
+    """
+    ATTRIBUTES_TYPE_UNSPECIFIED = 0
+    AZURE_AD_GROUPS_MAIL = 1
+
+  attributesType = _messages.EnumField('AttributesTypeValueValuesEnum', 1)
+  clientId = _messages.StringField(2)
+  clientSecret = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidcClientSecret', 3)
+  issuerUri = _messages.StringField(4)
+
+
 class GoogleIamAdminV1WorkforcePoolProviderOidc(_messages.Message):
   r"""Represents an OpenId Connect 1.0 identity provider.
 
@@ -3285,15 +3334,12 @@ class IdentityAssignment(_messages.Message):
       authorizes matched workloads to self select an identity within the
       parent's scope (e.g. within the namespace when the WorkloadSource is
       defined on a Namespace).
-    matchAll: Optional. Workload selector that matches all workloads from the
-      source.
     singleAttributeSelectors: Optional. Workload selector that matches
       workloads based on their attested attributes.
   """
 
   allowIdentitySelfSelection = _messages.BooleanField(1)
-  matchAll = _messages.BooleanField(2)
-  singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 3, repeated=True)
+  singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 2, repeated=True)
 
 
 class KeyData(_messages.Message):
@@ -5103,6 +5149,10 @@ class WorkforcePoolProvider(_messages.Message):
       32 characters.
     expireTime: Output only. Time after which the workload pool provider will
       be permanently purged and cannot be recovered.
+    extraAttributesOauth2Client: Optional. The configuration for OAuth 2.0
+      client used to get the additional user attributes. This should be used
+      when users can't get the desired claims in authentication credentials.
+      Currently this configuration is only supported with OIDC protocol.
     name: Output only. The resource name of the provider. Format: `locations/{
       location}/workforcePools/{workforce_pool_id}/providers/{provider_id}`
     oidc: An OpenId Connect 1.0 identity provider configuration.
@@ -5197,10 +5247,11 @@ class WorkforcePoolProvider(_messages.Message):
   disabled = _messages.BooleanField(4)
   displayName = _messages.StringField(5)
   expireTime = _messages.StringField(6)
-  name = _messages.StringField(7)
-  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 8)
-  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  extraAttributesOauth2Client = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderExtraAttributesOAuth2Client', 7)
+  name = _messages.StringField(8)
+  oidc = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderOidc', 9)
+  saml = _messages.MessageField('GoogleIamAdminV1WorkforcePoolProviderSaml', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class WorkforcePoolProviderKey(_messages.Message):
@@ -5698,14 +5749,11 @@ class WorkloadSource(_messages.Message):
   Each WorkloadSource may set at most 50 workload selectors.
 
   Fields:
-    conditionSet: The set of conditions that workloads must attest to be
-      matched by the policy.
     etag: Optional. The etag for this resource. If this is provided on update,
       it must match the server's etag.
     identityAssignments: Optional. Defines how a matched workload has its
       identity assigned. This option may only be set when the Workload Source
       is defined on a Namespace.
-    matchAll: Optional. Matches all workloads from the source.
     name: Output only. The resource name of the workload source. If ID of the
       WorkloadSource resource determines which workloads may be matched. The
       following formats are supported: - `project-{project_number}` matches
@@ -5714,47 +5762,10 @@ class WorkloadSource(_messages.Message):
       workload must attest in order to be matched by the policy.
   """
 
-  conditionSet = _messages.MessageField('WorkloadSourceConditionSet', 1)
-  etag = _messages.StringField(2)
-  identityAssignments = _messages.MessageField('IdentityAssignment', 3, repeated=True)
-  matchAll = _messages.BooleanField(4)
-  name = _messages.StringField(5)
-  singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 6, repeated=True)
-
-
-class WorkloadSourceCondition(_messages.Message):
-  r"""Defines a single condition under which a workload will match the policy.
-
-  Fields:
-    attribute: Required. The attribute key that will be matched. The following
-      attributes are supported: - `attached_service_account` matches workloads
-      with the references Google Cloud service account attached. The service
-      account should be referenced using its either its email address
-      (example: `service-account-id@project-id.iam.gserviceaccount.com`) or
-      unique ID (example: `123456789012345678901`). Service account email
-      addresses can be reused over time. You should use the service account's
-      unique ID if you don't want to match a service account that is deleted,
-      and then a new service account is created with the same name.
-    value: Required. The value that should exactly match the attribute of the
-      workload.
-  """
-
-  attribute = _messages.StringField(1)
-  value = _messages.StringField(2)
-
-
-class WorkloadSourceConditionSet(_messages.Message):
-  r"""The set of conditions that workloads must attest to be matched by the
-  policy.
-
-  Fields:
-    conditions: Required. The set of conditions that a workload must attest to
-      be matched by the policy. The workload is considered to match the policy
-      if at least one condition matches the workload. Each WorkloadSource may
-      set at most 50 conditions.
-  """
-
-  conditions = _messages.MessageField('WorkloadSourceCondition', 1, repeated=True)
+  etag = _messages.StringField(1)
+  identityAssignments = _messages.MessageField('IdentityAssignment', 2, repeated=True)
+  name = _messages.StringField(3)
+  singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 4, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

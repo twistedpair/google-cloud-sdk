@@ -287,8 +287,8 @@ def AutoscalingHighPriorityCpuTarget(required=False):
       required=required,
       type=int,
       help=(
-          'High priority CPU utilization target percentage for the autoscaled'
-          ' instance.'
+          'Specifies the target percentage of high-priority CPU the autoscaled'
+          ' instance can utilize.'
       ),
   )
 
@@ -298,7 +298,10 @@ def AutoscalingStorageTarget(required=False):
       '--autoscaling-storage-target',
       required=required,
       type=int,
-      help='Storage utilization target percentage for the autoscaled instance.',
+      help=(
+          'Specifies the target percentage of storage the autoscaled instance'
+          ' can utilize.'
+      ),
   )
 
 
@@ -318,7 +321,7 @@ def AddCapacityArgsForInstance(require_all_autoscaling_args, parser):
 
   # Autoscaling.
   autoscaling_config_group_parser = capacity_parser.add_argument_group(
-      hidden=True, help='Autoscaling'
+      help='Autoscaling'
   )
   AutoscalingHighPriorityCpuTarget(
       required=require_all_autoscaling_args

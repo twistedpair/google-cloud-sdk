@@ -1434,7 +1434,10 @@ class UpdateNodePoolOptions(object):
                enable_insecure_kubelet_readonly_port=None,
                resource_manager_tags=None,
                containerd_config_from_file=None,
-               secondary_boot_disks=None):
+               secondary_boot_disks=None,
+               machine_type=None,
+               disk_type=None,
+               disk_size_gb=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1474,6 +1477,9 @@ class UpdateNodePoolOptions(object):
     self.resource_manager_tags = resource_manager_tags
     self.containerd_config_from_file = containerd_config_from_file
     self.secondary_boot_disks = secondary_boot_disks
+    self.machine_type = machine_type
+    self.disk_type = disk_type
+    self.disk_size_gb = disk_size_gb
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1509,7 +1515,10 @@ class UpdateNodePoolOptions(object):
             self.windows_os_version is not None or
             self.accelerators is not None or
             self.resource_manager_tags is not None or
-            self.containerd_config_from_file is not None)
+            self.containerd_config_from_file is not None or
+            self.machine_type is not None or
+            self.disk_type is not None or
+            self.disk_size_gb is not None)
 
 
 class APIAdapter(object):
@@ -4635,6 +4644,12 @@ class APIAdapter(object):
     elif options.resource_manager_tags is not None:
       tags = options.resource_manager_tags
       update_request.resourceManagerTags = self._ResourceManagerTags(tags)
+    elif (options.machine_type is not None or
+          options.disk_type is not None or
+          options.disk_size_gb is not None):
+      update_request.machineType = options.machine_type
+      update_request.diskType = options.disk_type
+      update_request.diskSizeGb = options.disk_size_gb
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):

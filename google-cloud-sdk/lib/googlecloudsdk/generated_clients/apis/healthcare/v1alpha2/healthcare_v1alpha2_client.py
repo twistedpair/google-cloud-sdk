@@ -47,10 +47,6 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     self.projects_locations_datasets_consentStores = self.ProjectsLocationsDatasetsConsentStoresService(self)
     self.projects_locations_datasets_dataMapperWorkspaces = self.ProjectsLocationsDatasetsDataMapperWorkspacesService(self)
     self.projects_locations_datasets_dataProtectionStores = self.ProjectsLocationsDatasetsDataProtectionStoresService(self)
-    self.projects_locations_datasets_dicomStores_dicomWeb_studies_series_instances = self.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesService(self)
-    self.projects_locations_datasets_dicomStores_dicomWeb_studies_series = self.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService(self)
-    self.projects_locations_datasets_dicomStores_dicomWeb_studies = self.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService(self)
-    self.projects_locations_datasets_dicomStores_dicomWeb = self.ProjectsLocationsDatasetsDicomStoresDicomWebService(self)
     self.projects_locations_datasets_dicomStores = self.ProjectsLocationsDatasetsDicomStoresService(self)
     self.projects_locations_datasets_fhirStores = self.ProjectsLocationsDatasetsFhirStoresService(self)
     self.projects_locations_datasets_hl7V2Stores_messages = self.ProjectsLocationsDatasetsHl7V2StoresMessagesService(self)
@@ -1465,73 +1461,6 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
-
-  class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesService(base_api.BaseApiService):
-    """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies_series_instances resource."""
-
-    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb_studies_series_instances'
-
-    def __init__(self, client):
-      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def GetStorageInfo(self, request, global_params=None):
-      r"""GetStorageInfo returns the storage info of the specified resource.
-
-      Args:
-        request: (HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesGetStorageInfoRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (StorageInfo) The response message.
-      """
-      config = self.GetMethodConfig('GetStorageInfo')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetStorageInfo.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha2/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/dicomStores/{dicomStoresId}/dicomWeb/studies/{studiesId}/series/{seriesId}/instances/{instancesId}:getStorageInfo',
-        http_method='GET',
-        method_id='healthcare.projects.locations.datasets.dicomStores.dicomWeb.studies.series.instances.getStorageInfo',
-        ordered_params=['resource'],
-        path_params=['resource'],
-        query_params=[],
-        relative_path='v1alpha2/{+resource}:getStorageInfo',
-        request_field='',
-        request_type_name='HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesInstancesGetStorageInfoRequest',
-        response_type_name='StorageInfo',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService(base_api.BaseApiService):
-    """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies_series resource."""
-
-    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb_studies_series'
-
-    def __init__(self, client):
-      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService(base_api.BaseApiService):
-    """Service class for the projects_locations_datasets_dicomStores_dicomWeb_studies resource."""
-
-    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb_studies'
-
-    def __init__(self, client):
-      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresDicomWebStudiesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-  class ProjectsLocationsDatasetsDicomStoresDicomWebService(base_api.BaseApiService):
-    """Service class for the projects_locations_datasets_dicomStores_dicomWeb resource."""
-
-    _NAME = 'projects_locations_datasets_dicomStores_dicomWeb'
-
-    def __init__(self, client):
-      super(HealthcareV1alpha2.ProjectsLocationsDatasetsDicomStoresDicomWebService, self).__init__(client)
-      self._upload_configs = {
-          }
 
   class ProjectsLocationsDatasetsDicomStoresService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_dicomStores resource."""

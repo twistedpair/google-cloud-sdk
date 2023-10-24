@@ -60,6 +60,7 @@ class Cluster(_messages.Message):
   Enums:
     ReleaseChannelValueValuesEnum: Optional. The release channel a cluster is
       subscribed to.
+    StatusValueValuesEnum: Output only. The current status of the cluster.
 
   Messages:
     LabelsValue: Labels associated with this resource.
@@ -83,6 +84,9 @@ class Cluster(_messages.Message):
       data plane external load balancing.
     fleet: Required. Fleet configuration.
     labels: Labels associated with this resource.
+    maintenanceEvents: Output only. All the maintenance events scheduled for
+      the cluster, including the ones ongoing, planned for the future and done
+      in the past (up to 90 days).
     maintenancePolicy: Optional. Cluster-wide maintenance policy
       configuration.
     name: Required. The resource name of the cluster.
@@ -92,6 +96,7 @@ class Cluster(_messages.Message):
       nodes.
     port: Output only. The port number of the Kubernetes API server.
     releaseChannel: Optional. The release channel a cluster is subscribed to.
+    status: Output only. The current status of the cluster.
     systemAddonsConfig: Optional. The configuration of the system add-ons.
     targetVersion: Optional. The target cluster version. For example: "1.5.0".
     updateTime: Output only. The time when the cluster was last updated.
@@ -109,6 +114,26 @@ class Cluster(_messages.Message):
     RELEASE_CHANNEL_UNSPECIFIED = 0
     NONE = 1
     REGULAR = 2
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Output only. The current status of the cluster.
+
+    Values:
+      STATUS_UNSPECIFIED: Status unknown.
+      PROVISIONING: The cluster is being created.
+      RUNNING: The cluster is created and fully usable.
+      DELETING: The cluster is being deleted.
+      ERROR: The status indicates that some errors occurred while
+        reconciling/deleting the cluster.
+      RECONCILING: The cluster is undergoing some work such as version
+        upgrades, etc.
+    """
+    STATUS_UNSPECIFIED = 0
+    PROVISIONING = 1
+    RUNNING = 2
+    DELETING = 3
+    ERROR = 4
+    RECONCILING = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -145,15 +170,17 @@ class Cluster(_messages.Message):
   externalLoadBalancerIpv4AddressPools = _messages.StringField(9, repeated=True)
   fleet = _messages.MessageField('Fleet', 10)
   labels = _messages.MessageField('LabelsValue', 11)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 12)
-  name = _messages.StringField(13)
-  networking = _messages.MessageField('ClusterNetworking', 14)
-  nodeVersion = _messages.StringField(15)
-  port = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 17)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 18)
-  targetVersion = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 12, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 13)
+  name = _messages.StringField(14)
+  networking = _messages.MessageField('ClusterNetworking', 15)
+  nodeVersion = _messages.StringField(16)
+  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 20)
+  targetVersion = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class ClusterNetworking(_messages.Message):
@@ -326,6 +353,17 @@ class EdgecontainerProjectsLocationsClustersGenerateAccessTokenRequest(_messages
   cluster = _messages.StringField(1, required=True)
 
 
+class EdgecontainerProjectsLocationsClustersGenerateOfflineCredentialRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsClustersGenerateOfflineCredentialRequest
+  object.
+
+  Fields:
+    cluster: Required. The resource name of the cluster.
+  """
+
+  cluster = _messages.StringField(1, required=True)
+
+
 class EdgecontainerProjectsLocationsClustersGetRequest(_messages.Message):
   r"""A EdgecontainerProjectsLocationsClustersGetRequest object.
 
@@ -460,6 +498,19 @@ class EdgecontainerProjectsLocationsClustersPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
+
+
+class EdgecontainerProjectsLocationsClustersUpgradeRequest(_messages.Message):
+  r"""A EdgecontainerProjectsLocationsClustersUpgradeRequest object.
+
+  Fields:
+    name: Required. The resource name of the cluster.
+    upgradeClusterRequest: A UpgradeClusterRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  upgradeClusterRequest = _messages.MessageField('UpgradeClusterRequest', 2)
 
 
 class EdgecontainerProjectsLocationsGetRequest(_messages.Message):
@@ -678,6 +729,24 @@ class GenerateAccessTokenResponse(_messages.Message):
 
   accessToken = _messages.StringField(1)
   expireTime = _messages.StringField(2)
+
+
+class GenerateOfflineCredentialResponse(_messages.Message):
+  r"""An offline credential for a cluster.
+
+  Fields:
+    clientCertificate: Output only. Client certificate to authenticate to k8s
+      api-server.
+    clientKey: Output only. Client private key to authenticate to k8s api-
+      server.
+    expireTime: Output only. Timestamp at which this credential will expire.
+    userId: Output only. Client's identity.
+  """
+
+  clientCertificate = _messages.StringField(1)
+  clientKey = _messages.StringField(2)
+  expireTime = _messages.StringField(3)
+  userId = _messages.StringField(4)
 
 
 class Ingress(_messages.Message):
@@ -1048,6 +1117,85 @@ class Machine(_messages.Message):
   updateTime = _messages.StringField(6)
   version = _messages.StringField(7)
   zone = _messages.StringField(8)
+
+
+class MaintenanceEvent(_messages.Message):
+  r"""A Maintenance Event is an operation that could cause temporary
+  disruptions to the cluster workloads, including Google-driven or user-
+  initiated cluster upgrades, user-initiated cluster configuration changes
+  that require restarting nodes, etc.
+
+  Enums:
+    ScheduleValueValuesEnum: Output only. The schedule of the maintenance
+      event.
+    StateValueValuesEnum: Output only. The state of the maintenance event.
+    TypeValueValuesEnum: Output only. The type of the maintenance event.
+
+  Fields:
+    createTime: Output only. The time when the maintenance event request was
+      created.
+    endTime: Output only. The time when the maintenance event ended, either
+      successfully or not. If the maintenance event is split into multiple
+      maintenance windows, end_time is only updated when the whole flow ends.
+    operation: Output only. The operation for running the maintenance event.
+      Specified in the format projects/*/locations/*/operations/*. If the
+      maintenance event is split into multiple operations (e.g. due to
+      maintenance windows), the latest one is recorded.
+    schedule: Output only. The schedule of the maintenance event.
+    startTime: Output only. The time when the maintenance event started.
+    state: Output only. The state of the maintenance event.
+    targetVersion: Output only. The target version of the cluster.
+    type: Output only. The type of the maintenance event.
+    updateTime: Output only. The time when the maintenance event message was
+      updated.
+    uuid: Output only. UUID of the maintenance event.
+  """
+
+  class ScheduleValueValuesEnum(_messages.Enum):
+    r"""Output only. The schedule of the maintenance event.
+
+    Values:
+      SCHEDULE_UNSPECIFIED: Unspecified.
+      IMMEDIATELY: Immediately after receiving the request.
+    """
+    SCHEDULE_UNSPECIFIED = 0
+    IMMEDIATELY = 1
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the maintenance event.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified.
+      RECONCILING: The maintenance event is ongoing. The cluster might be
+        unusable.
+      SUCCEEDED: The maintenance event succeeded.
+      FAILED: The maintenance event failed.
+    """
+    STATE_UNSPECIFIED = 0
+    RECONCILING = 1
+    SUCCEEDED = 2
+    FAILED = 3
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the maintenance event.
+
+    Values:
+      TYPE_UNSPECIFIED: Unspecified.
+      USER_INITIATED_UPGRADE: Upgrade initiated by users.
+    """
+    TYPE_UNSPECIFIED = 0
+    USER_INITIATED_UPGRADE = 1
+
+  createTime = _messages.StringField(1)
+  endTime = _messages.StringField(2)
+  operation = _messages.StringField(3)
+  schedule = _messages.EnumField('ScheduleValueValuesEnum', 4)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  targetVersion = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
+  uuid = _messages.StringField(10)
 
 
 class MaintenancePolicy(_messages.Message):
@@ -1477,6 +1625,38 @@ class TimeWindow(_messages.Message):
 
   endTime = _messages.StringField(1)
   startTime = _messages.StringField(2)
+
+
+class UpgradeClusterRequest(_messages.Message):
+  r"""Upgrades a cluster.
+
+  Enums:
+    ScheduleValueValuesEnum: The schedule for the upgrade.
+
+  Fields:
+    requestId: A unique identifier for this request. Restricted to 36 ASCII
+      characters. A random UUID is recommended. This request is only
+      idempotent if `request_id` is provided.
+    schedule: The schedule for the upgrade.
+    targetVersion: Required. The version the cluster is going to be upgraded
+      to.
+  """
+
+  class ScheduleValueValuesEnum(_messages.Enum):
+    r"""The schedule for the upgrade.
+
+    Values:
+      SCHEDULE_UNSPECIFIED: Unspecified. The default is to upgrade the cluster
+        immediately which is the only option today.
+      IMMEDIATELY: The cluster is going to be upgraded immediately after
+        receiving the request.
+    """
+    SCHEDULE_UNSPECIFIED = 0
+    IMMEDIATELY = 1
+
+  requestId = _messages.StringField(1)
+  schedule = _messages.EnumField('ScheduleValueValuesEnum', 2)
+  targetVersion = _messages.StringField(3)
 
 
 class Version(_messages.Message):

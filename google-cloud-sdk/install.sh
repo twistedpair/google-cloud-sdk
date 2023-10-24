@@ -24,12 +24,28 @@ _cloudsdk_which() {
   which "$1" 2>/dev/null || command -v "$1" 2>/dev/null
 }
 
+order_python_no_check() {
+  selected_version=""
+  for python_version in "$@"
+  do
+    if [ -z "$selected_version" ]; then
+      if _cloudsdk_which $python_version > /dev/null; then
+        selected_version=$python_version
+      fi
+    fi
+  done
+  if [ -z "$selected_version" ]; then
+    selected_version=python
+  fi
+  echo $selected_version
+}
+
 order_python() {
   selected_version=""
   for python_version in "$@"
   do
     if [ -z "$selected_version" ]; then
-      if _cloudsdk_which $python_version > /dev/null && "$python_version" -c "import sys; print(sys.version)" > /dev/null; then
+      if "$python_version" -c "import sys; sys.exit(0 if ((3,8) <= (sys.version_info.major, sys.version_info.minor) <= (3,10)) else 1)" > /dev/null 2>&1; then
         selected_version=$python_version
       fi
     fi
@@ -117,7 +133,10 @@ setup_cloudsdk_python() {
           . "$GLOBAL_CONFIG/virtenv/bin/activate"
         fi
       fi
-      CLOUDSDK_PYTHON=$(order_python python3 python)
+      CLOUDSDK_PYTHON=$(order_python python3 python python3.10 python3.9 python3.8)
+      if [ -z "$CLOUDSDK_PYTHON" ]; then
+        CLOUDSDK_PYTHON=$(order_python_no_check python3 python)
+      fi
     fi
   fi
 }

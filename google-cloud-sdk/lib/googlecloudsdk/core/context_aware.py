@@ -173,8 +173,13 @@ def _GetCertificateConfigFile():
     six.raise_from(new_exc, caught_exc)
 
   # Check if the config file contains the ecp binary path.
-  # If ecp binary path is not in the config file, return None
-  if 'libs' not in cert_config or 'ecp' not in cert_config['libs']:
+  # If ecp binary path is not in the config file, or the path is an empty
+  # string, return None
+  if (
+      'libs' not in cert_config
+      or 'ecp' not in cert_config['libs']
+      or (not cert_config['libs']['ecp'])
+  ):
     return None
 
   # If ecp binary path is provided but the binary doesn't exist, throw

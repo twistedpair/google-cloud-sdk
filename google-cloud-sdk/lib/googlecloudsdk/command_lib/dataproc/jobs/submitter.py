@@ -47,13 +47,21 @@ class JobSubmitter(base.Command):
     parser.add_argument(
         '--driver-required-memory-mb',
         type=int,
-        hidden=True,
-        help=('The amount of memory in MB job driver is requesting.'))
+        help=(
+            'The memory allocation requested by the job driver in megabytes'
+            ' (MB) for execution on the driver node group (it is used only by'
+            ' clusters with a driver node group).'
+        ),
+    )
     parser.add_argument(
         '--driver-required-vcores',
         type=int,
-        hidden=True,
-        help=('The number of vCPUs job driver is requesting.'))
+        help=(
+            'The vCPU allocation requested by the job driver for execution on'
+            ' the driver node group (it is used only by clusters with a driver'
+            ' node group).'
+        ),
+    )
     cluster_placement = parser.add_mutually_exclusive_group(required=True)
     cluster_placement.add_argument(
         '--cluster', help='The Dataproc cluster to submit the job to.')

@@ -22,6 +22,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import contextlib
+import dataclasses
 import functools
 import random
 import string
@@ -393,7 +394,7 @@ class ServiceConditionPoller(ConditionPoller):
   """A ConditionPoller for services."""
 
   def __init__(self, getter, tracker, dependencies=None, serv=None):
-    super(ServiceConditionPoller, self).__init__(getter, tracker, dependencies)
+    super().__init__(getter, tracker, dependencies)
     self._resource_fail_type = serverless_exceptions.DeploymentFailedError
 
 
@@ -403,14 +404,14 @@ def _Nonce():
       random.choice(string.ascii_lowercase) for _ in range(_NONCE_LENGTH))
 
 
-class _NewRevisionNonceChange(config_changes_mod.ConfigChanger):
+@dataclasses.dataclass(frozen=True)
+class _NewRevisionNonceChange(config_changes_mod.TemplateConfigChanger):
   """Forces a new revision to get created by posting a random nonce label."""
 
-  def __init__(self, nonce):
-    self._nonce = nonce
+  nonce: str
 
   def Adjust(self, resource):
-    resource.template.labels[revision.NONCE_LABEL] = self._nonce
+    resource.template.labels[revision.NONCE_LABEL] = self.nonce
     resource.template.name = None
     return resource
 
@@ -422,7 +423,7 @@ class _NewRevisionForcingChange(config_changes_mod.RevisionNameChanges):
     """Adjust by revision name."""
     if revision.NONCE_LABEL in resource.template.labels:
       del resource.template.labels[revision.NONCE_LABEL]
-    return super(_NewRevisionForcingChange, self).Adjust(resource)
+    return super().Adjust(resource)
 
 
 def _IsDigest(url):
@@ -471,9 +472,7 @@ class ExecutionConditionPoller(ConditionPoller):
   """A ConditionPoller for jobs."""
 
   def __init__(self, getter, tracker, terminal_condition, dependencies=None):
-    super(ExecutionConditionPoller, self).__init__(
-        getter, tracker, dependencies
-    )
+    super().__init__(getter, tracker, dependencies)
     self._resource_fail_type = serverless_exceptions.ExecutionFailedError
     self._terminal_condition = terminal_condition
 
@@ -515,35 +514,33 @@ class ExecutionConditionPoller(ConditionPoller):
     return conditions
 
 
-class _SwitchToDigestChange(config_changes_mod.ConfigChanger):
+@dataclasses.dataclass(frozen=True)
+class _SwitchToDigestChange(config_changes_mod.TemplateConfigChanger):
   """Switches the configuration from by-tag to by-digest."""
 
-  def __init__(self, base_revision):
-    super(_SwitchToDigestChange, self).__init__(adjusts_template=True)
-    self._base_revision = base_revision
+  base_revision: revision.Revision
 
   def Adjust(self, resource):
-    if _IsDigest(self._base_revision.image):
+    if _IsDigest(self.base_revision.image):
       return resource
-    if not self._base_revision.image_digest:
+    if not self.base_revision.image_digest:
       return resource
 
-    resource.template.image = self._base_revision.image_digest
+    resource.template.image = self.base_revision.image_digest
     return resource
 
 
-class _AddDigestToImageChange(config_changes_mod.ConfigChanger):
+@dataclasses.dataclass(frozen=True)
+class _AddDigestToImageChange(config_changes_mod.TemplateConfigChanger):
   """Add image digest that comes from source build."""
 
-  def __init__(self, image_digest):
-    super(_AddDigestToImageChange, self).__init__(adjusts_template=True)
-    self._image_digest = image_digest
+  image_digest: str
 
   def Adjust(self, resource):
     if _IsDigest(resource.template.image):
       return resource
 
-    resource.template.image = resource.template.image + '@' + self._image_digest
+    resource.template.image = resource.template.image + '@' + self.image_digest
     return resource
 
 
@@ -1963,11 +1960,11 @@ class ServerlessOperations(object):
         arg_worker_pool=None,
         arg_dir=None,
         arg_revision=None,
-                arg_git_source_dir=None,
+        arg_git_source_dir=None,
         arg_git_source_revision=None,
         buildpack=build_pack,
         hide_logs=True,
-        client_tag='gcloudrun'
+        client_tag='gcloudrun',
     )
     tracker.CompleteStage(stages.UPLOAD_SOURCE)
     return build_messages, build_config

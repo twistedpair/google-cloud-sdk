@@ -371,3 +371,17 @@ def AddNodeLabels(parser):
       type=arg_parsers.ArgDict(),
       hidden=True,
   )
+
+
+def AddOfflineRebootTtL(parser):
+  parser.add_argument(
+      '--offline-reboot-ttl',
+      type=arg_parsers.Duration(),
+      help="""
+      Limits how long a machine can reboot offline(without connection to google)
+      , specified as a duration relative to the machine's most-recent connection
+      to google. The parameter should be a ISO 8601 duration string, for example
+      , "1dT1h2m3s".
+      """,
+      hidden=True,
+  )

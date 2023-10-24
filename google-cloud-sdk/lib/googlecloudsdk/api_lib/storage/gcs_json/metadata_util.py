@@ -166,6 +166,7 @@ def get_bucket_resource_from_metadata(metadata):
       logging_config=_message_to_dict(metadata.logging),
       metadata=metadata,
       metageneration=metadata.metageneration,
+      per_object_retention=_message_to_dict(metadata.objectRetention),
       project_number=metadata.projectNumber,
       public_access_prevention=getattr(
           metadata.iamConfiguration, 'publicAccessPrevention', None
@@ -262,6 +263,7 @@ def get_object_resource_from_metadata(metadata):
       metageneration=metadata.metageneration,
       noncurrent_time=metadata.timeDeleted,
       retention_expiration=metadata.retentionExpirationTime,
+      retention_settings=_message_to_dict(metadata.retention),
       size=metadata.size,
       soft_delete_time=metadata.softDeleteTime,
       storage_class=metadata.storageClass,
@@ -748,30 +750,45 @@ def update_object_metadata_from_request_config(
       object_metadata.kmsKeyName = resource_args.encryption_key.key
 
   # General metadata handling.
-  process_value_or_clear_flag(object_metadata, 'contentDisposition',
-                              resource_args.content_disposition)
-  process_value_or_clear_flag(object_metadata, 'contentLanguage',
-                              resource_args.content_language)
-  process_value_or_clear_flag(object_metadata, 'customTime',
-                              resource_args.custom_time)
-  process_value_or_clear_flag(object_metadata, 'contentType',
-                              resource_args.content_type)
-  process_value_or_clear_flag(object_metadata, 'md5Hash',
-                              resource_args.md5_hash)
-  process_value_or_clear_flag(object_metadata, 'storageClass',
-                              resource_args.storage_class)
+  process_value_or_clear_flag(
+      object_metadata, 'contentDisposition', resource_args.content_disposition
+  )
+  process_value_or_clear_flag(
+      object_metadata, 'contentLanguage', resource_args.content_language
+  )
+  process_value_or_clear_flag(
+      object_metadata, 'customTime', resource_args.custom_time
+  )
+  process_value_or_clear_flag(
+      object_metadata, 'contentType', resource_args.content_type
+  )
+  process_value_or_clear_flag(
+      object_metadata, 'md5Hash', resource_args.md5_hash
+  )
+  process_value_or_clear_flag(
+      object_metadata, 'storageClass', resource_args.storage_class
+  )
+
+  if resource_args.acl_file_path is not None:
+    object_metadata.acl = metadata_field_converters.process_acl_file(
+        resource_args.acl_file_path
+    )
+  object_metadata.acl = _get_list_with_added_and_removed_acl_grants(
+      object_metadata.acl, resource_args, is_bucket=False
+  )
 
   if resource_args.event_based_hold is not None:
     object_metadata.eventBasedHold = resource_args.event_based_hold
   if resource_args.temporary_hold is not None:
     object_metadata.temporaryHold = resource_args.temporary_hold
 
-  if resource_args.acl_file_path is not None:
-    object_metadata.acl = metadata_field_converters.process_acl_file(
-        resource_args.acl_file_path)
-  object_metadata.acl = (
-      _get_list_with_added_and_removed_acl_grants(
-          object_metadata.acl, resource_args, is_bucket=False))
+  object_metadata.retention = (
+      metadata_field_converters.process_object_retention(
+          object_metadata.retention,
+          resource_args.retain_until,
+          resource_args.retention_mode,
+      )
+  )
 
 
 def get_managed_folder_resource_from_metadata(metadata):

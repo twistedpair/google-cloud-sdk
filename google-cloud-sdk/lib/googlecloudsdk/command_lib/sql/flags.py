@@ -2107,7 +2107,6 @@ def AddSslMode(parser):
               ' client certificates.'
           ),
       },
-      hidden=True,
       required=False,
       default=None,
       help=help_text,

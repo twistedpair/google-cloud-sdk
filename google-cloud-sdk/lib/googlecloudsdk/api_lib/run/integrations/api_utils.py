@@ -20,7 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
-from typing import Any, Dict, List, Optional
+from typing import List, Optional
 
 from apitools.base.py import encoding as apitools_encoding
 from apitools.base.py import exceptions as apitools_exceptions
@@ -112,17 +112,6 @@ def ListApplications(
   return response
 
 
-def ApplicationToDict(
-    application: runapps_v1alpha1_messages.Application,
-) -> Dict[str, Any]:
-  """Converts application resource to a dictionary."""
-  app_dict = apitools_encoding.MessageToDict(application)
-  app_dict.setdefault(APP_DICT_CONFIG_KEY, {}).setdefault(
-      APP_CONFIG_DICT_RESOURCES_KEY, {}
-  )
-  return app_dict
-
-
 def GetApplicationStatus(
     client: runapps_v1alpha1_client.RunappsV1alpha1,
     app_ref: resources,
@@ -196,6 +185,10 @@ def PatchApplication(
   Returns:
     the LRO of this request.
   """
+  # API requires that only one of the resources or resourceList to be used
+  # in order to determine which shape the client is using.
+  # Thus unsetting the resources.
+  application.config.resources = None
   return client.projects_locations_applications.Patch(
       client.MESSAGES_MODULE.RunappsProjectsLocationsApplicationsPatchRequest(
           application=application,

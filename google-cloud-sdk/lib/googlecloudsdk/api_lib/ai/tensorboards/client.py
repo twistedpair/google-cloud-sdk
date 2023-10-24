@@ -43,9 +43,7 @@ class TensorboardsClient(object):
     self._version = version
 
   def Create(self, location_ref, args):
-    if self._version == constants.ALPHA_VERSION:
-      return self.CreateAlpha(location_ref, args)
-    elif self._version == constants.GA_VERSION:
+    if self._version == constants.GA_VERSION:
       return self.CreateGa(location_ref, args)
     else:
       return self.CreateBeta(location_ref, args)
@@ -90,27 +88,6 @@ class TensorboardsClient(object):
 
     return self._service.Create(request)
 
-  def CreateAlpha(self, location_ref, args):
-    """Create a new Tensorboard."""
-    kms_key_name = common_validation.GetAndValidateKmsKey(args)
-    labels = labels_util.ParseCreateArgs(
-        args,
-        self.messages.GoogleCloudAiplatformV1alpha1Tensorboard.LabelsValue)
-    tensorboard = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard(
-        displayName=args.display_name,
-        description=args.description,
-        labels=labels)
-
-    if kms_key_name is not None:
-      tensorboard.encryptionSpec = api_util.GetMessage(
-          'EncryptionSpec', self._version)(
-              kmsKeyName=kms_key_name)
-
-    request = self.messages.AiplatformProjectsLocationsTensorboardsCreateRequest(
-        parent=location_ref.RelativeName(),
-        googleCloudAiplatformV1alpha1Tensorboard=tensorboard)
-    return self._service.Create(request)
-
   def Get(self, tensorboard_ref):
     request = self.messages.AiplatformProjectsLocationsTensorboardsGetRequest(
         name=tensorboard_ref.RelativeName())
@@ -135,10 +112,7 @@ class TensorboardsClient(object):
 
   def Patch(self, tensorboard_ref, args):
     """Update a Tensorboard."""
-    if self._version == constants.ALPHA_VERSION:
-      tensorboard = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard()
-      labels_value = self.messages.GoogleCloudAiplatformV1alpha1Tensorboard.LabelsValue
-    elif self._version == constants.GA_VERSION:
+    if self._version == constants.GA_VERSION:
       tensorboard = self.messages.GoogleCloudAiplatformV1Tensorboard()
       labels_value = self.messages.GoogleCloudAiplatformV1Tensorboard.LabelsValue
     else:
@@ -168,12 +142,7 @@ class TensorboardsClient(object):
     if not update_mask:
       raise errors.NoFieldsSpecifiedError('No updates requested.')
 
-    if self._version == constants.ALPHA_VERSION:
-      req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(
-          name=tensorboard_ref.RelativeName(),
-          googleCloudAiplatformV1alpha1Tensorboard=tensorboard,
-          updateMask=','.join(update_mask))
-    elif self._version == constants.GA_VERSION:
+    if self._version == constants.GA_VERSION:
       req = self.messages.AiplatformProjectsLocationsTensorboardsPatchRequest(
           name=tensorboard_ref.RelativeName(),
           googleCloudAiplatformV1Tensorboard=tensorboard,

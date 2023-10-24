@@ -998,6 +998,16 @@ MAP = {
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.cloudkms.v1alpha1',
+                    client_classpath='cloudkms_v1alpha1_client.CloudkmsV1alpha1',
+                    base_url='https://cloudkms.googleapis.com/',
+                    messages_modulepath='cloudkms_v1alpha1_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'cloudquotas': {
         'v1':
@@ -2143,6 +2153,16 @@ MAP = {
                     client_classpath='iam_v2beta_client.IamV2beta',
                     base_url='https://iam.googleapis.com/',
                     messages_modulepath='iam_v2beta_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v3beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.iam.v3beta',
+                    client_classpath='iam_v3beta_client.IamV3beta',
+                    base_url='https://iam.googleapis.com/',
+                    messages_modulepath='iam_v3beta_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

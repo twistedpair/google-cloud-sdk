@@ -103,9 +103,7 @@ class PersistentResourcesClient(object):
                   enableCustomServiceAccount=True,
                   serviceAccount=service_account)))
 
-    if self._version == constants.ALPHA_VERSION:
-      raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
-    elif self._version == constants.BETA_VERSION:
+    if self._version == constants.BETA_VERSION:
       return self._service.Create(
           self._messages.AiplatformProjectsLocationsPersistentResourcesCreateRequest(
               parent=parent,
@@ -127,9 +125,7 @@ class PersistentResourcesClient(object):
       A Persistent Resource list response message.
 
     """
-    if self._version == constants.ALPHA_VERSION:
-      raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
-    elif self._version == constants.BETA_VERSION:
+    if self._version == constants.BETA_VERSION:
       return list_pager.YieldFromList(
           self._service,
           self._messages.AiplatformProjectsLocationsPersistentResourcesListRequest(
@@ -143,9 +139,7 @@ class PersistentResourcesClient(object):
       raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
 
   def Get(self, name):
-    if self._version == constants.ALPHA_VERSION:
-      raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
-    elif self._version == constants.BETA_VERSION:
+    if self._version == constants.BETA_VERSION:
       request = self._messages.AiplatformProjectsLocationsPersistentResourcesGetRequest(
           name=name
       )
@@ -154,9 +148,7 @@ class PersistentResourcesClient(object):
       raise errors.ArgumentError('Persistent Resource is unsupported in GA.')
 
   def Delete(self, name):
-    if self._version == constants.ALPHA_VERSION:
-      raise errors.ArgumentError('Persistent Resource is unsupported in Alpha.')
-    elif self._version == constants.BETA_VERSION:
+    if self._version == constants.BETA_VERSION:
       request = self._messages.AiplatformProjectsLocationsPersistentResourcesDeleteRequest(
           name=name
       )

@@ -337,8 +337,7 @@ class ModelMonitoringJobsClient(object):
     enable_anomaly_cloud_logging = False if args.anomaly_cloud_logging is None else args.anomaly_cloud_logging
 
     if (
-        self._version == constants.ALPHA_VERSION
-        or self._version == constants.BETA_VERSION
+        self._version == constants.BETA_VERSION
     ):
       job_spec.modelMonitoringAlertConfig = api_util.GetMessage(
           'ModelMonitoringAlertConfig', self._version)(
@@ -381,14 +380,7 @@ class ModelMonitoringJobsClient(object):
       job_spec.samplePredictInstance = encoding.PyValueToMessage(
           extra_types.JsonValue, instance_json)
 
-    if self._version == constants.ALPHA_VERSION:
-      return self._service.Create(
-          self.messages.
-          AiplatformProjectsLocationsModelDeploymentMonitoringJobsCreateRequest(
-              parent=location_ref.RelativeName(),
-              googleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob=job_spec
-          ))
-    elif self._version == constants.BETA_VERSION:
+    if self._version == constants.BETA_VERSION:
       return self._service.Create(
           self.messages.
           AiplatformProjectsLocationsModelDeploymentMonitoringJobsCreateRequest(
@@ -456,8 +448,7 @@ class ModelMonitoringJobsClient(object):
       update_mask.append('model_monitoring_alert_config.enable_logging')
 
     if (
-        self._version == constants.ALPHA_VERSION
-        or self._version == constants.BETA_VERSION
+        self._version == constants.BETA_VERSION
     ) and args.notification_channels:
       if args.emails or args.anomaly_cloud_logging is not None:
         model_monitoring_job_to_update.modelMonitoringAlertConfig.notificationChannels = (
@@ -505,12 +496,7 @@ class ModelMonitoringJobsClient(object):
     if not update_mask:
       raise errors.NoFieldsSpecifiedError('No updates requested.')
 
-    if self._version == constants.ALPHA_VERSION:
-      req = self.messages.AiplatformProjectsLocationsModelDeploymentMonitoringJobsPatchRequest(
-          name=model_monitoring_job_ref.RelativeName(),
-          googleCloudAiplatformV1alpha1ModelDeploymentMonitoringJob=model_monitoring_job_to_update,
-          updateMask=','.join(update_mask))
-    elif self._version == constants.BETA_VERSION:
+    if self._version == constants.BETA_VERSION:
       req = self.messages.AiplatformProjectsLocationsModelDeploymentMonitoringJobsPatchRequest(
           name=model_monitoring_job_ref.RelativeName(),
           googleCloudAiplatformV1beta1ModelDeploymentMonitoringJob=model_monitoring_job_to_update,

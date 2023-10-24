@@ -601,6 +601,14 @@ def AddVolumesFlags(parser, release_track):
       metavar='VOLUME',
       help='Removes volumes from the Cloud Run resource.',
   )
+  group.add_argument(
+      '--clear-volumes',
+      action='store_true',
+      help=(
+          'Remove all existing volumes from the Cloud Run resource, including'
+          ' volumes mounted as secrets'
+      ),
+  )
 
 
 def AddVolumeMountFlag():
@@ -619,7 +627,7 @@ def AddVolumeMountFlag():
       type=arg_parsers.ArgDict(
           required_keys=['volume', 'mount-path'], key_type=_LimitMountKeys
       ),
-      metavar='KEY=VALUE',
+      metavar='volume=NAME,mount-path=MOUNT_PATH',
       help=(
           'Adds a mount to the current container. Must contain the keys'
           ' `volume=NAME` and `mount-path=/PATH` where NAME is the name of a'
@@ -635,8 +643,20 @@ def RemoveVolumeMountFlag():
       '--remove-volume-mount',
       action=arg_parsers.UpdateAction,
       type=arg_parsers.ArgList(),
-      metavar='MOUNT',
-      help='Removes a mount from the current container.',
+      metavar='MOUNT_PATH',
+      help=(
+          'Removes the volume mounted at the specified path from the current'
+          ' container.'
+      ),
+  )
+
+
+def ClearVolumeMountsFlag():
+  """Returns container flag for clearing volume mounts."""
+  return base.Argument(
+      '--clear-volume-mounts',
+      action='store_true',
+      help='Remove all existing mounts from the current container.',
   )
 
 
@@ -1196,7 +1216,6 @@ def AddServiceMinInstancesFlag(parser):
           "or 'default' to remove any minimum. These instances will be divided "
           'among all Revisions receiving a percentage of traffic.'
       ),
-      hidden=True,
   )
 
 
@@ -1269,7 +1288,7 @@ def AddDefaultUrlFlag(parser):
   parser.add_argument(
       '--default-url',
       action=arg_parsers.StoreTrueFalseAction,
-      help=('enables the default url for a run service.'),
+      help='enables the default url for a run service.',
   )
 
 
@@ -1993,16 +2012,9 @@ def _CheckCloudSQLApiEnablement():
 
 def _GetTrafficChanges(args):
   """Returns a changes for traffic assignment based on the flags."""
-  # Check if args has tags changes again in case args does not include tags
-  # flags. Tags will launch in the alpha release track only.
-  if _HasTrafficTagsChanges(args):
-    update_tags = args.update_tags or args.set_tags
-    remove_tags = args.remove_tags
-    clear_other_tags = bool(args.set_tags) or args.clear_tags
-  else:
-    update_tags = None
-    remove_tags = None
-    clear_other_tags = False
+  update_tags = args.update_tags or args.set_tags or {}
+  remove_tags = args.remove_tags or []
+  clear_other_tags = bool(args.set_tags) or args.clear_tags
   by_tag = False
   if args.to_latest:
     # Mutually exclusive flag with to-revisions, to-tags
@@ -2016,7 +2028,11 @@ def _GetTrafficChanges(args):
     new_percentages = {}
 
   return config_changes.TrafficChanges(
-      new_percentages, by_tag, update_tags, remove_tags, clear_other_tags
+      new_percentages,
+      by_tag,
+      update_tags,
+      remove_tags,
+      clear_other_tags,
   )
 
 
@@ -2077,19 +2093,35 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     ) or properties.VALUES.core.project.Get(required=True)
     if _EnabledCloudSqlApiRequired(args):
       _CheckCloudSQLApiEnablement()
-    changes.append(config_changes.CloudSQLChanges(project, region, args))
+    changes.append(
+        config_changes.CloudSQLChanges.FromArgs(
+            project=project, region=region, args=args
+        )
+    )
 
   # we need to sandwich secrets changes between removing and adding volumes
   # because secrets changes can also impact volumes
   if (
       FlagIsExplicitlySet(args, 'remove_volume_mount')
       and args.remove_volume_mount
+  ) or (
+      FlagIsExplicitlySet(args, 'clear_volume_mounts')
+      and args.clear_volume_mounts
   ):
     changes.append(
-        config_changes.RemoveVolumeMountChange(args.remove_volume_mount)
+        config_changes.RemoveVolumeMountChange(
+            removed_mounts=args.remove_volume_mount,
+            clear_mounts=args.clear_volume_mounts,
+        )
     )
-  if FlagIsExplicitlySet(args, 'remove_volume') and args.remove_volume:
-    changes.append(config_changes.RemoveVolumeChange(args.remove_volume))
+  if (FlagIsExplicitlySet(args, 'remove_volume') and args.remove_volume) or (
+      FlagIsExplicitlySet(args, 'clear_volumes') and args.clear_volumes
+  ):
+    changes.append(
+        config_changes.RemoveVolumeChange(
+            args.remove_volume, args.clear_volumes
+        )
+    )
   if _HasSecretsChanges(args):
     changes.extend(_GetSecretsChanges(args))
   if FlagIsExplicitlySet(args, 'add_volume') and args.add_volume:
@@ -2098,7 +2130,9 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     )
 
   if FlagIsExplicitlySet(args, 'add_volume_mount') and args.add_volume_mount:
-    changes.append(config_changes.AddVolumeMountChange(args.add_volume_mount))
+    changes.append(
+        config_changes.AddVolumeMountChange(new_mounts=args.add_volume_mount)
+    )
   if _HasConfigMapsChanges(args):
     changes.extend(_GetConfigMapsChanges(args))
 
@@ -2250,7 +2284,9 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
 
   if FlagIsExplicitlySet(args, 'remove_containers'):
     changes.append(
-        config_changes.RemoveContainersChange(containers=args.remove_containers)
+        config_changes.RemoveContainersChange.FromContainerNames(
+            args.remove_containers
+        )
     )
 
   if FlagIsExplicitlySet(args, 'containers'):
@@ -2305,10 +2341,14 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
             container_args.args, container_name=container_name
         )
     )
-  if FlagIsExplicitlySet(container_args, 'remove_volume_mount'):
+  if FlagIsExplicitlySet(
+      container_args, 'remove_volume_mount'
+  ) or FlagIsExplicitlySet(container_args, 'clear_volume_mounts'):
     changes.append(
         config_changes.RemoveVolumeMountChange(
-            container_args.remove_volume_mount
+            removed_mounts=container_args.remove_volume_mount,
+            clear_mounts=container_args.clear_volume_mounts,
+            container_name=container_name
         )
     )
   if _HasSecretsChanges(container_args):
@@ -2317,7 +2357,10 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
     )
   if FlagIsExplicitlySet(container_args, 'add_volume_mount'):
     changes.append(
-        config_changes.AddVolumeMountChange(container_args.add_volume_mount)
+        config_changes.AddVolumeMountChange(
+            new_mounts=container_args.add_volume_mount,
+            container_name=container_name
+        )
     )
   return changes
 
@@ -2333,9 +2376,7 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if 'no_traffic' in args and args.no_traffic:
     changes.append(config_changes.NoTrafficChange())
   if 'concurrency' in args and args.concurrency:
-    changes.append(
-        config_changes.ConcurrencyChanges(concurrency=args.concurrency)
-    )
+    changes.append(config_changes.ConcurrencyChanges.FromFlag(args.concurrency))
   if 'timeout' in args and args.timeout:
     changes.append(config_changes.TimeoutChanges(timeout=args.timeout))
   if 'update_annotations' in args and args.update_annotations:
@@ -2468,8 +2509,6 @@ def GetRunJobConfigurationOverrides(args):
     overrides.append(
         config_changes.EnvVarLiteralChanges(
             updates=_StripKeys(getattr(args, 'update_env_vars', None) or {}),
-            removes=[],
-            clear_others=False,
         )
     )
   return overrides

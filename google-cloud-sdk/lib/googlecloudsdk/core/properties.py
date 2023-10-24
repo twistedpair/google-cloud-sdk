@@ -320,8 +320,7 @@ class _Sections(object):
       override properties for the Cloud SDK.
     app: Section, The section containing app properties for the Cloud SDK.
     auth: Section, The section containing auth properties for the Cloud SDK.
-    batch: Section, The section containing batch properties for the
-      Cloud SDK.
+    batch: Section, The section containing batch properties for the Cloud SDK.
     billing: Section, The section containing billing properties for the Cloud
       SDK.
     blueprints: Section, the section containing blueprints properties for the
@@ -444,10 +443,11 @@ class _Sections(object):
     transcoder: Section, The section containing transcoder properties for the
       Cloud SDK.
     vmware: Section, The section containing vmware properties for the Cloud SDK.
-    web3: Section, the section containing web3 properties for the
-      Cloud SDK.
+    web3: Section, the section containing web3 properties for the Cloud SDK.
     workflows: Section, The section containing workflows properties for the
       Cloud SDK.
+    workstations: Section, The section containing workstations properties for
+      the Cloud SDK.
   """
 
   class _ValueFlag(object):
@@ -536,6 +536,7 @@ class _Sections(object):
     self.vmware = _SectionVmware()
     self.web3 = _SectionWeb3()
     self.workflows = _SectionWorkflows()
+    self.workstations = _SectionWorkstations()
 
     sections = [
         self.access_context_manager,
@@ -614,6 +615,7 @@ class _Sections(object):
         self.vmware,
         self.web3,
         self.workflows,
+        self.workstations,
     ]
     self.__sections = {section.name: section for section in sections}
     self.__invocation_value_stack = [{}]
@@ -1118,6 +1120,7 @@ class _SectionApiClientOverrides(_Section):
     self.run = self._Add('run')
     self.scc = self._Add('securitycenter')
     self.cloudresourcemanager = self._Add('cloudresourcemanager')
+    self.workstations = self._Add('workstations')
 
 
 class _SectionApiEndpointOverrides(_Section):
@@ -1372,7 +1375,7 @@ class _SectionApiEndpointOverrides(_Section):
         validator=self.EndpointValidator)
 
   def GetDefaultEndpoint(self, api_name):
-    """Returns the BASE_URL for the repective api and version."""
+    """Returns the BASE_URL for the respective api and version."""
     api = apis_map.MAP.get(api_name)
     if api:
       for api_version in api:
@@ -3737,6 +3740,37 @@ class _SectionWorkflows(_Section):
         help_text='The default region to use when working with Cloud '
         'Workflows resources. When a `--location` flag is required '
         'but not provided, the command will fall back to this value, if set.')
+
+
+class _SectionWorkstations(_Section):
+  """Contains the properties for the 'workstations' section."""
+
+  def __init__(self):
+    super(_SectionWorkstations, self).__init__('workstations')
+    self.region = self._Add(
+        'region',
+        help_text=(
+            'Default region to use when working with Workstations resources.'
+            ' When a `--region` flag is required but not provided, the command'
+            ' will fall back to this value, if set.'
+        ),
+    )
+    self.cluster = self._Add(
+        'cluster',
+        help_text=(
+            'Default cluster to use when working with Workstations resources.'
+            ' When a `--cluster` flag is required but not provided, the command'
+            ' will fall back to this value, if set.'
+        ),
+    )
+    self.config = self._Add(
+        'config',
+        help_text=(
+            'Default configuration to use when working with Workstations '
+            'resources. When a `--config` flag is required but not '
+            'provided, the command will fall back to this value, if set.'
+        ),
+    )
 
 
 class _Property(object):

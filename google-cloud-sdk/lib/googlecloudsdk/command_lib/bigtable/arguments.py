@@ -335,15 +335,14 @@ class ArgAdder(object):
 
   def AddIsolation(self):
     """Add argument for isolating this app profile's traffic to parser."""
-    isolation_group = self.parser.add_mutually_exclusive_group(hidden=True)
+    isolation_group = self.parser.add_mutually_exclusive_group()
     standard_isolation_group = isolation_group.add_group(
         'Standard Isolation',
-        hidden=True,
     )
     choices = {
-        'PRIORITY_LOW': 'Requests will be treated with low priority.',
-        'PRIORITY_MEDIUM': 'Requests will be treated with medium priority.',
-        'PRIORITY_HIGH': 'Requests will be treated with high priority.',
+        'PRIORITY_LOW': 'Requests are treated with low priority.',
+        'PRIORITY_MEDIUM': 'Requests are treated with medium priority.',
+        'PRIORITY_HIGH': 'Requests are treated with high priority.',
     }
     standard_isolation_group.add_argument(
         '--priority',
@@ -351,11 +350,10 @@ class ArgAdder(object):
         choices=choices,
         default=None,
         help=(
-            'Specify the request priority. '
-            'If omitted, PRIORITY_HIGH will be used by default.'
+            'Specify the request priority. If not specified, the app profile'
+            ' uses PRIORITY_HIGH by default.'
         ),
-        hidden=True,
-    )  # TODO(b/249618888): Remove hidden=True for GA
+    )
     return self
 
   def AddInstanceDisplayName(self, required=False):

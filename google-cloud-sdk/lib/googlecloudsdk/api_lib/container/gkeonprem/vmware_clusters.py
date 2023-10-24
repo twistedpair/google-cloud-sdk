@@ -267,11 +267,12 @@ class ClustersClient(client.ClientBase):
 
   def _upgrade_policy(self, args: parser_extensions.Namespace):
     """Constructs proto message VmwareClusterUpgradePolicy."""
-    if '--upgrade-control-plane' not in args.GetSpecifiedArgNames():
+    if '--upgrade-policy' not in args.GetSpecifiedArgNames():
       return None
 
+    upgrade_policy = args.upgrade_policy
     return messages.VmwareClusterUpgradePolicy(
-        controlPlaneOnly=args.upgrade_control_plane,
+        controlPlaneOnly=upgrade_policy.get('control-plane-only', None),
     )
 
   def _enable_control_plane_v2(self, args: parser_extensions.Namespace):

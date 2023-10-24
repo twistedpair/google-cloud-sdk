@@ -847,6 +847,15 @@ DISABLE_HIGH_RESILIENCE = base.Argument(
     """
 )
 
+CLOUD_SQL_PREFERRED_ZONE = base.Argument(
+    '--cloud-sql-preferred-zone',
+    default=None,
+    action=V2ExclusiveStoreAction,
+    help="""\
+    Select cloud sql preferred zone, supported for Composer 2 Environments.
+    """,
+)
+
 DISABLE_VPC_CONNECTIVITY = base.Argument(
     '--disable-vpc-connectivity',
     default=None,
@@ -960,7 +969,6 @@ DISABLE_CLOUD_DATA_LINEAGE_INTEGRATION_FLAG = base.Argument(
 STORAGE_BUCKET_FLAG = base.Argument(
     '--storage-bucket',
     type=str,
-    hidden=True,
     action=V2ExclusiveStoreAction,
     help="""\
     Name of an exisiting Cloud Storage bucket to be used by the environment.

@@ -70,6 +70,18 @@ class IndexesClient(object):
     """Create a new index."""
     labels = labels_util.ParseCreateArgs(
         args, self.messages.GoogleCloudAiplatformV1beta1Index.LabelsValue)
+
+    index_update_method = None
+    if args.index_update_method:
+      if args.index_update_method == 'stream_update':
+        index_update_method = (
+            self.messages.GoogleCloudAiplatformV1beta1Index.
+            IndexUpdateMethodValueValuesEnum.STREAM_UPDATE)
+      else:
+        index_update_method = (
+            self.messages.GoogleCloudAiplatformV1beta1Index.
+            IndexUpdateMethodValueValuesEnum.BATCH_UPDATE)
+
     req = self.messages.AiplatformProjectsLocationsIndexesCreateRequest(
         parent=location_ref.RelativeName(),
         googleCloudAiplatformV1beta1Index=self.messages
@@ -77,20 +89,35 @@ class IndexesClient(object):
             displayName=args.display_name,
             description=args.description,
             metadata=self._ReadIndexMetadata(args.metadata_file),
-            labels=labels))
+            labels=labels,
+            indexUpdateMethod=index_update_method
+            ))
     return self._service.Create(req)
 
   def Create(self, location_ref, args):
     """Create a new v1 index."""
     labels = labels_util.ParseCreateArgs(
         args, self.messages.GoogleCloudAiplatformV1Index.LabelsValue)
+
+    index_update_method = None
+    if args.index_update_method:
+      if args.index_update_method == 'stream_update':
+        index_update_method = (
+            self.messages.GoogleCloudAiplatformV1Index
+            .IndexUpdateMethodValueValuesEnum.STREAM_UPDATE)
+      else:
+        index_update_method = (
+            self.messages.GoogleCloudAiplatformV1Index
+            .IndexUpdateMethodValueValuesEnum.BATCH_UPDATE
+        )
     req = self.messages.AiplatformProjectsLocationsIndexesCreateRequest(
         parent=location_ref.RelativeName(),
         googleCloudAiplatformV1Index=self.messages.GoogleCloudAiplatformV1Index(
             displayName=args.display_name,
             description=args.description,
             metadata=self._ReadIndexMetadata(args.metadata_file),
-            labels=labels))
+            labels=labels,
+            indexUpdateMethod=index_update_method))
     return self._service.Create(req)
 
   def PatchBeta(self, index_ref, args):

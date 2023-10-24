@@ -38,6 +38,7 @@ from googlecloudsdk.api_lib.containeranalysis import requests as ca_requests
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.artifacts import docker_util
+from googlecloudsdk.command_lib.artifacts import requests as ar_requests
 from googlecloudsdk.command_lib.artifacts import util
 from googlecloudsdk.command_lib.projects import util as project_util
 from googlecloudsdk.core import log
@@ -911,12 +912,25 @@ def ExportSbom(args):
     )
 
   uri = _RemovePrefix(args.uri, 'https://')
-  if not _IsARDockerImage(uri):
+  if _IsARDockerImage(uri):
+    artifact = _GetARDockerImage(uri)
+  elif _IsGCRImage(uri):
+    artifact = _GetGCRImage(uri)
+    messages = ar_requests.GetMessages()
+    settings = ar_requests.GetProjectSettings(artifact.project)
+    if (
+        settings.legacyRedirectionState
+        != messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED
+    ):
+      raise ar_exceptions.InvalidInputValueError(
+          'This command only supports Artifact Registry. You can enable'
+          ' redirection to use gcr.io repositories in Artifact Registry.'
+      )
+  else:
     raise ar_exceptions.InvalidInputValueError(
         '{} is not an Artifact Registry image.'.format(uri)
     )
 
-  artifact = _GetARDockerImage(uri)
   project = util.GetProject(args)
   if artifact.project:
     project = artifact.project

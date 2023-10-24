@@ -386,6 +386,14 @@ class _BaseInstances(object):
       if not settings.dataCacheConfig:
         settings.dataCacheConfig = sql_messages.DataCacheConfig()
       settings.dataCacheConfig.dataCacheEnabled = args.enable_data_cache
+
+    if args.IsSpecified('ssl_mode'):
+      if not settings.ipConfiguration:
+        settings.ipConfiguration = sql_messages.IpConfiguration()
+      settings.ipConfiguration.sslMode = _ParseSslMode(
+          sql_messages, args.ssl_mode
+      )
+
     # BETA args.
     if IsBetaOrNewer(release_track):
       if args.IsSpecified('storage_auto_increase_limit'):
@@ -412,13 +420,6 @@ class _BaseInstances(object):
       if args.replication_lag_max_seconds_for_recreate is not None:
         settings.replicationLagMaxSeconds = (
             args.replication_lag_max_seconds_for_recreate
-        )
-
-      if args.IsSpecified('ssl_mode'):
-        if not settings.ipConfiguration:
-          settings.ipConfiguration = sql_messages.IpConfiguration()
-        settings.ipConfiguration.sslMode = _ParseSslMode(
-            sql_messages, args.ssl_mode
         )
     return settings
 

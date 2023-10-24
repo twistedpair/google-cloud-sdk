@@ -56,6 +56,7 @@ S3_RESOURCE_WARNING_FIELDS = {
     'default_encryption_key': 'Setting Default Encryption Key',
     'default_event_based_hold': 'Setting Default Event Based Hold',
     'default_storage_class': 'Setting Default Storage Class',
+    'enable_per_object_retention': 'Enabling Object Retention',
     'event_based_hold': 'Setting Event-Based Holds',
     'placement': 'Setting Dual-Region for a Bucket',
     'preserve_acl': 'Preserving ACLs',
@@ -194,6 +195,8 @@ class _GcsBucketConfig(_BucketConfig):
     enable_autoclass (bool|None): Enable, disable, or don't do anything to the
       autoclass feature. Autoclass automatically changes object storage class
       based on usage.
+    enable_per_object_retention (bool|None): Enable the object retention for the
+      bucket.
     placement (list|None): Dual-region of bucket.
     public_access_prevention (bool|None): Blocks public access to bucket.
       See docs for specifics:
@@ -222,6 +225,7 @@ class _GcsBucketConfig(_BucketConfig):
       default_object_acl_grants_to_remove=None,
       default_storage_class=None,
       enable_autoclass=None,
+      enable_per_object_retention=None,
       labels_file_path=None,
       labels_to_append=None,
       labels_to_remove=None,
@@ -257,6 +261,7 @@ class _GcsBucketConfig(_BucketConfig):
     )
     self.default_storage_class = default_storage_class
     self.enable_autoclass = enable_autoclass
+    self.enable_per_object_retention = enable_per_object_retention
     self.placement = placement
     self.public_access_prevention = public_access_prevention
     self.recovery_point_objective = recovery_point_objective
@@ -281,6 +286,8 @@ class _GcsBucketConfig(_BucketConfig):
         == other.default_object_acl_grants_to_remove
         and self.default_storage_class == other.default_storage_class
         and self.enable_autoclass == other.enable_autoclass
+        and self.enable_per_object_retention
+        == other.enable_per_object_retention
         and self.placement == other.placement
         and self.public_access_prevention == other.public_access_prevention
         and self.recovery_point_objective == other.recovery_point_objective
@@ -635,6 +642,9 @@ def _get_request_config_resource_args(url,
               user_resource_args.default_storage_class)
           new_resource_args.enable_autoclass = (
               user_resource_args.enable_autoclass)
+          new_resource_args.enable_per_object_retention = (
+              user_resource_args.enable_per_object_retention
+          )
           new_resource_args.placement = user_resource_args.placement
           new_resource_args.public_access_prevention = (
               user_resource_args.public_access_prevention)
@@ -721,28 +731,34 @@ def _get_request_config_resource_args(url,
 
       new_resource_args.cache_control = user_resource_args.cache_control
       new_resource_args.content_disposition = (
-          user_resource_args.content_disposition)
+          user_resource_args.content_disposition
+      )
       new_resource_args.content_encoding = user_resource_args.content_encoding
       new_resource_args.content_language = user_resource_args.content_language
       new_resource_args.custom_fields_to_set = (
-          user_resource_args.custom_fields_to_set)
+          user_resource_args.custom_fields_to_set
+      )
       new_resource_args.custom_fields_to_remove = (
-          user_resource_args.custom_fields_to_remove)
+          user_resource_args.custom_fields_to_remove
+      )
       new_resource_args.custom_fields_to_update = (
-          user_resource_args.custom_fields_to_update)
+          user_resource_args.custom_fields_to_update
+      )
       new_resource_args.preserve_acl = user_resource_args.preserve_acl
 
       if user_resource_args.storage_class:
         # Currently, all providers require all caps storage classes.
         new_resource_args.storage_class = (
-            user_resource_args.storage_class.upper())
+            user_resource_args.storage_class.upper()
+        )
 
   if new_resource_args and user_resource_args:
     # Fields that apply to all resource types.
     new_resource_args.acl_file_path = user_resource_args.acl_file_path
     new_resource_args.acl_grants_to_add = user_resource_args.acl_grants_to_add
     new_resource_args.acl_grants_to_remove = (
-        user_resource_args.acl_grants_to_remove)
+        user_resource_args.acl_grants_to_remove
+    )
 
   return new_resource_args
 

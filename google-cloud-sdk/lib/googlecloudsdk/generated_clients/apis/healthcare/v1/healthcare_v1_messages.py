@@ -840,8 +840,8 @@ class DeidentifyConfig(_messages.Message):
       origin during de-identification. Using this option results in a
       significant reduction of throughput, and is not compatible with
       `LOCATION` or `ORGANIZATION_NAME` infoTypes. `LOCATION` must be excluded
-      within `TextConfig`, and must also be excluded within `ImageConfig` if
-      image redaction is required.
+      within TextConfig, and must also be excluded within ImageConfig if image
+      redaction is required.
   """
 
   dicom = _messages.MessageField('DicomConfig', 1)
@@ -1084,6 +1084,30 @@ class DicomStore(_messages.Message):
   name = _messages.StringField(2)
   notificationConfig = _messages.MessageField('NotificationConfig', 3)
   streamConfigs = _messages.MessageField('GoogleCloudHealthcareV1DicomStreamConfig', 4, repeated=True)
+
+
+class DicomStoreMetrics(_messages.Message):
+  r"""DicomStoreMetrics contains metrics describing a DICOM store.
+
+  Fields:
+    blobStorageSizeBytes: Total blob storage bytes for all instances in the
+      store.
+    instanceCount: Number of instances in the store.
+    name: Resource name of the DICOM store, of the form `projects/{project_id}
+      /locations/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_
+      id}`.
+    seriesCount: Number of series in the store.
+    structuredStorageSizeBytes: Total structured storage bytes for all
+      instances in the store.
+    studyCount: Number of studies in the store.
+  """
+
+  blobStorageSizeBytes = _messages.IntegerField(1)
+  instanceCount = _messages.IntegerField(2)
+  name = _messages.StringField(3)
+  seriesCount = _messages.IntegerField(4)
+  structuredStorageSizeBytes = _messages.IntegerField(5)
+  studyCount = _messages.IntegerField(6)
 
 
 class Empty(_messages.Message):
@@ -1350,46 +1374,45 @@ class ExportMessagesRequest(_messages.Message):
       the range `start_time` (inclusive) to `end_time` (exclusive) are
       exported.
     filter: Restricts messages exported to those matching a filter, only
-      applicable to PubsubDestination and GcsDestination. The following syntax
-      is available: * A string field value can be written as text inside
-      quotation marks, for example `"query text"`. The only valid relational
-      operation for text fields is equality (`=`), where text is searched
-      within the field, rather than having the field be equal to the text. For
-      example, `"Comment = great"` returns messages with `great` in the
-      comment field. * A number field value can be written as an integer, a
-      decimal, or an exponential. The valid relational operators for number
-      fields are the equality operator (`=`), along with the less than/greater
-      than operators (`<`, `<=`, `>`, `>=`). Note that there is no inequality
-      (`!=`) operator. You can prepend the `NOT` operator to an expression to
-      negate it. * A date field value must be written in the `yyyy-mm-dd`
-      format. Fields with date and time use the RFC3339 time format. Leading
-      zeros are required for one-digit months and days. The valid relational
-      operators for date fields are the equality operator (`=`) , along with
-      the less than/greater than operators (`<`, `<=`, `>`, `>=`). Note that
-      there is no inequality (`!=`) operator. You can prepend the `NOT`
-      operator to an expression to negate it. * Multiple field query
-      expressions can be combined in one query by adding `AND` or `OR`
-      operators between the expressions. If a boolean operator appears within
-      a quoted string, it is not treated as special, and is just another part
-      of the character string to be matched. You can prepend the `NOT`
-      operator to an expression to negate it. The following fields and
-      functions are available for filtering: * `message_type`, from the
-      MSH-9.1 field. For example, `NOT message_type = "ADT"`. * `send_date` or
-      `sendDate`, the `yyyy-mm-dd` date the message was sent in the dataset's
-      time_zone, from the MSH-7 segment. For example, `send_date <
-      "2017-01-02"`. * `send_time`, the timestamp when the message was sent,
-      using the RFC3339 time format for comparisons, from the MSH-7 segment.
-      For example, `send_time < "2017-01-02T00:00:00-05:00"`. * `create_time`,
-      the timestamp when the message was created in the HL7v2 store. Use the
-      RFC3339 time format for comparisons. For example, `create_time <
-      "2017-01-02T00:00:00-05:00"`. * `send_facility`, the care center that
-      the message came from, from the MSH-4 segment. For example,
-      `send_facility = "ABC"`. Note: The filter will be applied to every
-      message in the HL7v2 store whose `send_time` lies in the range defined
-      by the `start_time` and the `end_time`. Even if the filter only matches
-      a small set of messages, the export operation can still take a long time
-      to finish when a lot of messages are between the specified `start_time`
-      and `end_time` range.
+      applicable to PubsubDestination. The following syntax is available: * A
+      string field value can be written as text inside quotation marks, for
+      example `"query text"`. The only valid relational operation for text
+      fields is equality (`=`), where text is searched within the field,
+      rather than having the field be equal to the text. For example,
+      `"Comment = great"` returns messages with `great` in the comment field.
+      * A number field value can be written as an integer, a decimal, or an
+      exponential. The valid relational operators for number fields are the
+      equality operator (`=`), along with the less than/greater than operators
+      (`<`, `<=`, `>`, `>=`). Note that there is no inequality (`!=`)
+      operator. You can prepend the `NOT` operator to an expression to negate
+      it. * A date field value must be written in the `yyyy-mm-dd` format.
+      Fields with date and time use the RFC3339 time format. Leading zeros are
+      required for one-digit months and days. The valid relational operators
+      for date fields are the equality operator (`=`) , along with the less
+      than/greater than operators (`<`, `<=`, `>`, `>=`). Note that there is
+      no inequality (`!=`) operator. You can prepend the `NOT` operator to an
+      expression to negate it. * Multiple field query expressions can be
+      combined in one query by adding `AND` or `OR` operators between the
+      expressions. If a boolean operator appears within a quoted string, it is
+      not treated as special, and is just another part of the character string
+      to be matched. You can prepend the `NOT` operator to an expression to
+      negate it. The following fields and functions are available for
+      filtering: * `message_type`, from the MSH-9.1 field. For example, `NOT
+      message_type = "ADT"`. * `send_date` or `sendDate`, the `yyyy-mm-dd`
+      date the message was sent in the dataset's time_zone, from the MSH-7
+      segment. For example, `send_date < "2017-01-02"`. * `send_time`, the
+      timestamp when the message was sent, using the RFC3339 time format for
+      comparisons, from the MSH-7 segment. For example, `send_time <
+      "2017-01-02T00:00:00-05:00"`. * `create_time`, the timestamp when the
+      message was created in the HL7v2 store. Use the RFC3339 time format for
+      comparisons. For example, `create_time < "2017-01-02T00:00:00-05:00"`. *
+      `send_facility`, the care center that the message came from, from the
+      MSH-4 segment. For example, `send_facility = "ABC"`. Note: The filter
+      will be applied to every message in the HL7v2 store whose `send_time`
+      lies in the range defined by the `start_time` and the `end_time`. Even
+      if the filter only matches a small set of messages, the export operation
+      can still take a long time to finish when a lot of messages are between
+      the specified `start_time` and `end_time` range.
     gcsDestination: Export to a Cloud Storage destination.
     pubsubDestination: Export messages to a Pub/Sub topic.
     startTime: The start of the range in `send_time` (MSH.7, https://www.hl7.o
@@ -3001,6 +3024,32 @@ class HealthcareProjectsLocationsDatasetsDicomStoresDeleteRequest(_messages.Mess
   name = _messages.StringField(1, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesGetStudyMetricsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesGetStudyM
+  etricsRequest object.
+
+  Fields:
+    study: The study resource path. For example, `projects/{project_id}/locati
+      ons/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}/dic
+      omWeb/studies/{study_uid}`.
+  """
+
+  study = _messages.StringField(1, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesGetSeriesMetricsRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresDicomWebStudiesSeriesGet
+  SeriesMetricsRequest object.
+
+  Fields:
+    series: The series resource path. For example, `projects/{project_id}/loca
+      tions/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}/d
+      icomWeb/studies/{study_uid}/series/{series_uid}`.
+  """
+
+  series = _messages.StringField(1, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDicomStoresExportRequest object.
 
@@ -3014,6 +3063,18 @@ class HealthcareProjectsLocationsDatasetsDicomStoresExportRequest(_messages.Mess
 
   exportDicomDataRequest = _messages.MessageField('ExportDicomDataRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresGetDICOMStoreMetricsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsDicomStoresGetDICOMStoreMetricsRequest
+  object.
+
+  Fields:
+    name: The resource name of the DICOM store to get metrics for.
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class HealthcareProjectsLocationsDatasetsDicomStoresGetIamPolicyRequest(_messages.Message):
@@ -4091,6 +4152,20 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest(_messages.Mess
   name = _messages.StringField(2, required=True)
 
 
+class HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest(_messages.Message):
+  r"""A
+  HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest
+  object.
+
+  Fields:
+    name: The resource name of the HL7v2 store to get metrics for, in the
+      format `projects/{project_id}/locations/{location_id}/datasets/{dataset_
+      id}/hl7V2Stores/{hl7v2_store_id}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresGetIamPolicyRequest
   object.
@@ -4788,6 +4863,37 @@ class Hl7V2Store(_messages.Message):
   notificationConfigs = _messages.MessageField('Hl7V2NotificationConfig', 3, repeated=True)
   parserConfig = _messages.MessageField('ParserConfig', 4)
   rejectDuplicateMessage = _messages.BooleanField(5)
+
+
+class Hl7V2StoreMetric(_messages.Message):
+  r"""Count of messages and total storage size by type for a given HL7 store.
+
+  Fields:
+    count: The total count of HL7v2 messages in the store for the given
+      message type.
+    messageType: The Hl7v2 message type this metric applies to, such as `ADT`
+      or `ORU`.
+    structuredStorageSizeBytes: The total amount of structured storage used by
+      HL7v2 messages of this message type in the store.
+  """
+
+  count = _messages.IntegerField(1)
+  messageType = _messages.StringField(2)
+  structuredStorageSizeBytes = _messages.IntegerField(3)
+
+
+class Hl7V2StoreMetrics(_messages.Message):
+  r"""List of metrics for a given HL7v2 store.
+
+  Fields:
+    metrics: List of HL7v2 store metrics by message type.
+    name: The resource name of the HL7v2 store to get metrics for, in the
+      format `projects/{project_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_s
+      tore_id}`.
+  """
+
+  metrics = _messages.MessageField('Hl7V2StoreMetric', 1, repeated=True)
+  name = _messages.StringField(2)
 
 
 class HttpBody(_messages.Message):
@@ -6226,6 +6332,26 @@ class Segment(_messages.Message):
   setId = _messages.StringField(3)
 
 
+class SeriesMetrics(_messages.Message):
+  r"""SeriesMetrics contains metrics describing a DICOM series.
+
+  Fields:
+    blobStorageSizeBytes: Total blob storage bytes for all instances in the
+      series.
+    instanceCount: Number of instances in the series.
+    series: The series resource path. For example, `projects/{project_id}/loca
+      tions/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}/d
+      icomWeb/studies/{study_uid}/series/{series_uid}`.
+    structuredStorageSizeBytes: Total structured storage bytes for all
+      instances in the series.
+  """
+
+  blobStorageSizeBytes = _messages.IntegerField(1)
+  instanceCount = _messages.IntegerField(2)
+  series = _messages.StringField(3)
+  structuredStorageSizeBytes = _messages.IntegerField(4)
+
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -6466,6 +6592,28 @@ class StreamConfig(_messages.Message):
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1FhirBigQueryDestination', 1)
   deidentifiedStoreDestination = _messages.MessageField('DeidentifiedStoreDestination', 2)
   resourceTypes = _messages.StringField(3, repeated=True)
+
+
+class StudyMetrics(_messages.Message):
+  r"""StudyMetrics contains metrics describing a DICOM study.
+
+  Fields:
+    blobStorageSizeBytes: Total blob storage bytes for all instances in the
+      study.
+    instanceCount: Number of instances in the study.
+    seriesCount: Number of series in the study.
+    structuredStorageSizeBytes: Total structured storage bytes for all
+      instances in the study.
+    study: The study resource path. For example, `projects/{project_id}/locati
+      ons/{location_id}/datasets/{dataset_id}/dicomStores/{dicom_store_id}/dic
+      omWeb/studies/{study_uid}`.
+  """
+
+  blobStorageSizeBytes = _messages.IntegerField(1)
+  instanceCount = _messages.IntegerField(2)
+  seriesCount = _messages.IntegerField(3)
+  structuredStorageSizeBytes = _messages.IntegerField(4)
+  study = _messages.StringField(5)
 
 
 class TagFilterList(_messages.Message):

@@ -54,6 +54,7 @@ _BUCKET_DISPLAY_TITLES_AND_DEFAULTS = base.BucketDisplayTitlesAndDefaults(
     requester_pays=base.FieldDisplayTitleAndDefault(
         title='Requester Pays enabled', default=shim_format_util.NONE_STRING
     ),
+    per_object_retention=None,
     retention_policy=base.FieldDisplayTitleAndDefault(
         title='Retention Policy', default=None
     ),
@@ -130,6 +131,10 @@ _OBJECT_DISPLAY_TITLES_AND_DEFAULTS = base.ObjectDisplayTitlesAndDefaults(
     ),
     retention_expiration=base.FieldDisplayTitleAndDefault(
         title='Retention Expiration', default=None
+    ),
+    # Retention settings not supported in shimless gsutil.
+    retention_settings=base.FieldDisplayTitleAndDefault(
+        title='Retention Settings', default=None
     ),
     kms_key=base.FieldDisplayTitleAndDefault(title='KMS key', default=None),
     cache_control=base.FieldDisplayTitleAndDefault(

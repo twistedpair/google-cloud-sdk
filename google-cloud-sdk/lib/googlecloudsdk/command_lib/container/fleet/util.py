@@ -93,6 +93,13 @@ table(
 )
 """
 
+ROLLOUT_LIST_FORMAT = """
+table(
+    name.basename():label=NAME,
+    name.segment(3):label=LOCATION
+)
+"""
+
 
 def DefaultFleetID():
   """Returns 'default' to be used as a fallthrough hook in resources.yaml."""

@@ -364,8 +364,12 @@ class JsonClient(cloud_api.CloudApi):
     metadata_util.update_bucket_metadata_from_request_config(
         bucket_metadata, request_config)
 
+    resource_args = getattr(request_config, 'resource_args', None)
     request = self.messages.StorageBucketsInsertRequest(
         bucket=bucket_metadata,
+        enableObjectRetention=getattr(
+            resource_args, 'enable_per_object_retention', None,
+        ),
         project=properties.VALUES.core.project.GetOrFail(),
         projection=projection)
 
@@ -1040,19 +1044,33 @@ class JsonClient(cloud_api.CloudApi):
     if request_config.predefined_acl_string:
       predefined_acl = getattr(
           self.messages.StorageObjectsPatchRequest.PredefinedAclValueValuesEnum,
-          request_config.predefined_acl_string)
+          request_config.predefined_acl_string,
+      )
 
-    projection = self._get_projection(fields_scope,
-                                      self.messages.StorageObjectsPatchRequest)
+    projection = self._get_projection(
+        fields_scope, self.messages.StorageObjectsPatchRequest
+    )
 
     object_metadata = object_resource.metadata or (
         metadata_util.get_apitools_metadata_from_url(
-            object_resource.storage_url))
+            object_resource.storage_url
+        )
+    )
 
     metadata_util.update_object_metadata_from_request_config(
         object_metadata, request_config, posix_to_set=posix_to_set
     )
 
+    override_unlocked_retention = (
+        bool(
+            request_config.resource_args
+            and (
+                request_config.resource_args.retain_until
+                or request_config.resource_args.retention_mode
+            )
+        )
+        or None
+    )
     request = self.messages.StorageObjectsPatchRequest(
         bucket=bucket_name,
         object=object_name,
@@ -1060,8 +1078,10 @@ class JsonClient(cloud_api.CloudApi):
         generation=generation,
         ifGenerationMatch=request_config.precondition_generation_match,
         ifMetagenerationMatch=request_config.precondition_metageneration_match,
+        overrideUnlockedRetention=override_unlocked_retention,
         predefinedAcl=predefined_acl,
-        projection=projection)
+        projection=projection,
+    )
 
     updated_metadata = self.client.objects.Patch(request)
     return metadata_util.get_object_resource_from_metadata(updated_metadata)

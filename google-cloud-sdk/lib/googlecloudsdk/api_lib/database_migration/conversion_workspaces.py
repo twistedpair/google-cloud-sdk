@@ -242,6 +242,7 @@ class ConversionWorkspacesClient(object):
         commitId=args.commit_id,
         conversionWorkspace=conversion_workspace_ref,
         uncommitted=args.uncommitted,
+        view=self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.ViewValueValuesEnum.DATABASE_ENTITY_VIEW_FULL,
     )
     if args.IsKnownAndSpecified('tree_type'):
       describe_ddl_req.tree = self._GetTreeType(args.tree_type)
@@ -264,6 +265,7 @@ class ConversionWorkspacesClient(object):
         conversionWorkspace=conversion_workspace_ref,
         uncommitted=args.uncommitted,
         tree=self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.TreeValueValuesEnum.DRAFT_TREE,
+        view=self.messages.DatamigrationProjectsLocationsConversionWorkspacesDescribeDatabaseEntitiesRequest.ViewValueValuesEnum.DATABASE_ENTITY_VIEW_FULL,
     )
     if args.IsKnownAndSpecified('filter'):
       args.filter, server_filter = filter_rewrite.Rewriter().Rewrite(

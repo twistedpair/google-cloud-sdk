@@ -78,11 +78,7 @@ class CustomJobsClient(object):
     if labels:
       custom_job.labels = labels
 
-    if self._version == constants.ALPHA_VERSION:
-      return self._service.Create(
-          self._messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
-              parent=parent, googleCloudAiplatformV1alpha1CustomJob=custom_job))
-    elif self._version == constants.BETA_VERSION:
+    if self._version == constants.BETA_VERSION:
       return self._service.Create(
           self._messages.AiplatformProjectsLocationsCustomJobsCreateRequest(
               parent=parent, googleCloudAiplatformV1beta1CustomJob=custom_job))

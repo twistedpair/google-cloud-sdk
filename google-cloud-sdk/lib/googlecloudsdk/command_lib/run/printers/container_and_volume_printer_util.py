@@ -148,10 +148,17 @@ def _FormatVolumeMount(name, volume):
     return cp.Labeled([
         ('name', name),
         ('type', 'nfs'),
+        ('location', '{}:{}'.format(volume.nfs.server, volume.nfs.path)),
     ])
   elif volume.csi:
     if volume.csi.driver == 'gcsfuse.run.googleapis.com':
-      return cp.Labeled([('name', name), ('type', 'cloud-storage')])
+      bucket = None
+      for prop in volume.csi.volumeAttributes.additionalProperties:
+        if prop.key == 'bucketName':
+          bucket = prop.value
+      return cp.Labeled(
+          [('name', name), ('type', 'cloud-storage'), ('bucket', bucket)]
+      )
 
 
 def GetVolumes(record):
@@ -180,7 +187,11 @@ def _FormatVolume(volume):
       for prop in volume.csi.volumeAttributes.additionalProperties:
         if prop.key == 'bucketName':
           bucket = prop.value
-      return cp.Labeled([('type', 'cloud-storage'), ('bucket', bucket)])
+      return cp.Labeled([
+          ('type', 'cloud-storage'),
+          ('bucket', bucket),
+          ('read-only', volume.csi.readOnly),
+      ])
 
 
 def GetConfigMaps(container: container_resource.Container) -> cp.Table:

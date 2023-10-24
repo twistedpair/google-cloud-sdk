@@ -43,12 +43,11 @@ STORAGE_POOLS_LIST_FORMAT = """\
 ## Helper functions to add args / flags for Storage Pools gcloud commands ##
 
 
-def GetStoragePoolServiceLevelArg(messages, release_track, required=True):
+def GetStoragePoolServiceLevelArg(messages, required=True):
   """Adds a --service-level arg to the given parser.
 
   Args:
     messages: The messages module.
-    release_track: Either ALPHA, BETA, or GA
     required: bool, whether choice arg is required or not
 
   Returns:
@@ -69,15 +68,14 @@ def GetStoragePoolServiceLevelArg(messages, release_track, required=True):
                           The Extreme Service Level has a throughput per TiB of
                           allocated volume size of 128 MiB/s.""",
       ),
-  }
-  if release_track != base.ReleaseTrack.GA:
-    custom_mappings['STANDARD'] = (
-        'standard',
-        """
+      'STANDARD': (
+          'standard',
+          """
                           Standard Service Level for Cloud NetApp Storage Pool.
                           The Standard Service Level has a throughput per TiB of
                           allocated volume size of 128 MiB/s.""",
-    )
+      )
+  }
   service_level_arg = arg_utils.ChoiceEnumMapper(
       '--service-level',
       messages.StoragePool.ServiceLevelValueValuesEnum,
@@ -92,10 +90,10 @@ def GetStoragePoolServiceLevelArg(messages, release_track, required=True):
 
 
 def AddStoragePoolServiceLevelArg(
-    parser, release_track, messages, required=False
+    parser, messages, required=False
 ):
   GetStoragePoolServiceLevelArg(
-      messages, release_track, required=required
+      messages, required=required
   ).choice_arg.AddToParser(parser)
 
 
@@ -179,7 +177,7 @@ def AddStoragePoolCreateArgs(parser, release_track):
   labels_util.AddCreateLabelsFlags(parser)
   messages = netapp_api_util.GetMessagesModule(release_track=release_track)
   AddStoragePoolServiceLevelArg(
-      parser, release_track, messages=messages, required=True
+      parser, messages=messages, required=True
   )
   AddStoragePoolNetworkArg(parser)
   AddStoragePoolActiveDirectoryArg(parser)
