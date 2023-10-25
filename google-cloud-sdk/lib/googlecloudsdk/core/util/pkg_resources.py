@@ -86,12 +86,18 @@ def IsImportable(name, path):
 
   name_path = name.split('.')
   importer = pkgutil.get_importer(os.path.join(path, *name_path[:-1]))
-  return importer and importer.find_module(name_path[-1])
+  if not importer:
+    return False
+  find_spec_exists = hasattr(importer, 'find_spec')
+  # zipimporter did not add find_spec until 3.10.
+  find_method = importer.find_spec if find_spec_exists else importer.find_module  # pylint: disable=deprecated-method
+  return find_method(name_path[-1]) is not None
 
 
 def GetModuleFromPathLegacy(name_to_give, module_path):
   """Returns loaded module at given path under given name."""
   import imp  # pylint: disable=g-import-not-at-top,deprecated-module
+
   module_dir, module_name = os.path.split(module_path)
   try:
     result = imp.find_module(module_name, [module_dir])
@@ -114,10 +120,12 @@ def GetModuleFromPathNew(name_to_give, module_path):
 
   if os.path.isfile(os.path.join(module_path, '__init__.py')):
     spec = importlib.util.spec_from_file_location(
-        name_to_give, os.path.join(module_path, '__init__.py'))
+        name_to_give, os.path.join(module_path, '__init__.py')
+    )
   elif os.path.isfile(module_path + '.py'):
     spec = importlib.util.spec_from_file_location(
-        name_to_give, module_path + '.py')
+        name_to_give, module_path + '.py'
+    )
   else:
     # Ideally we could do e.g.:
     #   module_dir = os.path.dirname(module_path)
@@ -142,7 +150,7 @@ def GetModuleFromPath(name_to_give, module_path):
   Args:
     name_to_give: str, name to assign to loaded module
     module_path: str, python path to location of the module, this is either
-        filesystem path or path into egg or zip package
+      filesystem path or path into egg or zip package
 
   Returns:
     Imported module
@@ -152,7 +160,7 @@ def GetModuleFromPath(name_to_give, module_path):
   """
   # TODO(b/277791616): Replace this with just GetModuleFromPathNew and get rid
   # of GetModuleFromPathLegacy.
-  if sys.version_info < (3, 12):
+  if sys.version_info[:2] < (3, 12):
     return GetModuleFromPathLegacy(name_to_give, module_path)
   else:
     return GetModuleFromPathNew(name_to_give, module_path)
@@ -161,12 +169,14 @@ def GetModuleFromPath(name_to_give, module_path):
 def _GetModuleFromPathViaPkgutil(module_path, name_to_give):
   """Loads module by using pkgutil.get_importer mechanism."""
   importer = pkgutil.get_importer(os.path.dirname(module_path))
-  if importer:
-    module_name = os.path.basename(module_path)
+  if not importer:
+    raise ImportError('{0} not found'.format(module_path))
 
-    if importer.find_module(module_name):
-      return _LoadModule(importer, module_path, module_name, name_to_give)
-
+  find_spec_exists = hasattr(importer, 'find_spec')
+  find_method = importer.find_spec if find_spec_exists else importer.find_module  # pylint: disable=deprecated-method
+  module_name = os.path.basename(module_path)
+  if find_method(module_name):  # pylint: disable=deprecated-method
+    return _LoadModule(importer, module_path, module_name, name_to_give)
   raise ImportError('{0} not found'.format(module_path))
 
 
@@ -197,10 +207,11 @@ def _IterModules(file_list, extra_extensions, prefix=None):
     if not file_path.startswith(prefix):
       continue
 
-    file_path_parts = file_path[len(prefix):].split(os.sep)
+    file_path_parts = file_path[len(prefix) :].split(os.sep)
 
-    if (len(file_path_parts) == 2
-        and file_path_parts[1].startswith('__init__.py')):
+    if len(file_path_parts) == 2 and file_path_parts[1].startswith(
+        '__init__.py'
+    ):
       if file_path_parts[0] not in yielded:
         yielded.add(file_path_parts[0])
         yield file_path_parts[0], True
@@ -251,7 +262,8 @@ def ListPackage(path, extra_extensions=None):
     if hasattr(importer, '_files'):
       # pylint:disable=protected-access
       iter_modules = _IterModules(
-          importer._files, extra_extensions, importer.prefix)
+          importer._files, extra_extensions, importer.prefix
+      )
   packages, modules = [], []
   for name, ispkg in iter_modules:
     if ispkg:

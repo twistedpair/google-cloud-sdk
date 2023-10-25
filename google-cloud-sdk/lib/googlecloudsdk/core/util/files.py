@@ -228,6 +228,10 @@ def _HandleRemoveError(func, failed_path, exc_info):
   #
   # In python 3.3+, WindowsError is an alias of OSError and exc_info[0] can be
   # a subclass of OSError.
+  # In Python 3.12+ exc_info is an exception instance instead of a
+  # (typ, val, tb) triplet.
+  if not isinstance(exc_info, tuple):
+    exc_info = (type(exc_info), exc_info, exc_info.__traceback__)
   if (WindowsError and issubclass(exc_info[0], WindowsError) and
       getattr(exc_info[1], 'winerror', None) == 5):
     os.chmod(failed_path, stat.S_IWUSR)
@@ -254,7 +258,10 @@ def RmTree(path):
   # then any child unicode files will raise an exception. Coercing dir_path to
   # unicode makes shutil.rmtree() play nice with unicode.
   path = six.text_type(path)
-  shutil.rmtree(path, onerror=_HandleRemoveError)
+  if sys.version_info[:2] < (3, 12):
+    shutil.rmtree(path, onerror=_HandleRemoveError)
+  else:
+    shutil.rmtree(path, onexc=_HandleRemoveError)  # pylint: disable=unexpected-keyword-arg
   retries_left = NUM_RETRIES
   while os.path.isdir(path) and retries_left > 0:
     logging.debug('Waiting for directory to disappear: %s', path)

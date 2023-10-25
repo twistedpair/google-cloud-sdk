@@ -5,6 +5,22 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 452.0.1 (2023-10-25)
+
+### Google Cloud CLI
+
+* `gcloud` will prefer using a supported version of Python if one is available on PATH.
+  * This only affects environments where `gcloud` does not already manage a Python interpreter via bundled Python or virtualenv.
+  * Currently supported versions are 3.8, 3.9, 3.10.
+
+### Cloud Storage
+
+* Updated gsutil component to 5.27.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 452.0.0 (2023-10-24)
 
 ### AI

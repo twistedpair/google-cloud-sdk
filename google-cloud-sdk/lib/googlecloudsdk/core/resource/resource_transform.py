@@ -1188,7 +1188,7 @@ def TransformSlice(r, op=':', undefined=''):
 
   try:
     return list(r[slice(*ops)]) or undefined
-  except (TypeError, ValueError):
+  except (TypeError, ValueError, KeyError):
     return undefined
 
 
