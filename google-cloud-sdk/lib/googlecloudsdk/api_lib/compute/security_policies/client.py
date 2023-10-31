@@ -232,19 +232,6 @@ class SecurityPolicyRule(object):
     Returns:
       A tuple containing the resource collection, verb, and request.
     """
-    if src_ip_ranges:
-      matcher = self._messages.SecurityPolicyRuleMatcher(
-          versionedExpr=self._messages.SecurityPolicyRuleMatcher
-          .VersionedExprValueValuesEnum('SRC_IPS_V1'),
-          config=self._messages.SecurityPolicyRuleMatcherConfig(
-              srcIpRanges=src_ip_ranges))
-    elif expression:
-      matcher = self._messages.SecurityPolicyRuleMatcher(
-          expr=self._messages.Expr(expression=expression))
-
-    if expression_options:
-      matcher.exprOptions = expression_options
-
     if network_matcher:
       security_policy_rule = self._messages.SecurityPolicyRule(
           priority=self._ConvertPriorityToInt(self.ref.Name()),
@@ -254,6 +241,22 @@ class SecurityPolicyRule(object):
           preview=preview,
       )
     else:
+      if src_ip_ranges:
+        matcher = self._messages.SecurityPolicyRuleMatcher(
+            versionedExpr=self._messages.SecurityPolicyRuleMatcher.VersionedExprValueValuesEnum(
+                'SRC_IPS_V1'
+            ),
+            config=self._messages.SecurityPolicyRuleMatcherConfig(
+                srcIpRanges=src_ip_ranges
+            ),
+        )
+      else:
+        assert expression is not None
+        matcher = self._messages.SecurityPolicyRuleMatcher(
+            expr=self._messages.Expr(expression=expression)
+        )
+      if expression_options:
+        matcher.exprOptions = expression_options
       security_policy_rule = self._messages.SecurityPolicyRule(
           priority=self._ConvertPriorityToInt(self.ref.Name()),
           description=description,
@@ -261,6 +264,7 @@ class SecurityPolicyRule(object):
           match=matcher,
           preview=preview,
       )
+
     if redirect_options is not None:
       security_policy_rule.redirectOptions = redirect_options
     if request_headers_to_add is not None:
@@ -321,20 +325,6 @@ class SecurityPolicyRule(object):
     Returns:
       A tuple containing the resource collection, verb, and request.
     """
-    matcher = None
-    if src_ip_ranges:
-      matcher = self._messages.SecurityPolicyRuleMatcher(
-          versionedExpr=self._messages.SecurityPolicyRuleMatcher
-          .VersionedExprValueValuesEnum('SRC_IPS_V1'),
-          config=self._messages.SecurityPolicyRuleMatcherConfig(
-              srcIpRanges=src_ip_ranges))
-    elif expression:
-      matcher = self._messages.SecurityPolicyRuleMatcher(
-          expr=self._messages.Expr(expression=expression))
-
-    if expression_options:
-      matcher.exprOptions = expression_options
-
     if network_matcher:
       security_policy_rule = self._messages.SecurityPolicyRule(
           priority=self._ConvertPriorityToInt(self.ref.Name()),
@@ -344,6 +334,24 @@ class SecurityPolicyRule(object):
           preview=preview,
       )
     else:
+      matcher = None
+      if src_ip_ranges:
+        matcher = self._messages.SecurityPolicyRuleMatcher(
+            versionedExpr=self._messages.SecurityPolicyRuleMatcher.VersionedExprValueValuesEnum(
+                'SRC_IPS_V1'
+            ),
+            config=self._messages.SecurityPolicyRuleMatcherConfig(
+                srcIpRanges=src_ip_ranges
+            ),
+        )
+      elif expression:
+        matcher = self._messages.SecurityPolicyRuleMatcher(
+            expr=self._messages.Expr(expression=expression)
+        )
+      if expression_options:
+        if matcher is None:
+          matcher = self._messages.SecurityPolicyRuleMatcher()
+        matcher.exprOptions = expression_options
       security_policy_rule = self._messages.SecurityPolicyRule(
           priority=self._ConvertPriorityToInt(self.ref.Name()),
           description=description,
@@ -351,6 +359,7 @@ class SecurityPolicyRule(object):
           match=matcher,
           preview=preview,
       )
+
     if redirect_options is not None:
       security_policy_rule.redirectOptions = redirect_options
     if request_headers_to_add is not None:

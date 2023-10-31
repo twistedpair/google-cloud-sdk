@@ -378,6 +378,28 @@ def CreateInstanceDiagnoseRequest(args, messages):
           diagnosticConfig=diagnostic_config, timeoutMinutes=timeout_minutes))
 
 
+def CreateInstanceMigrateRequest(args, messages):
+  """"Create and return Migrate request."""
+  instance = GetInstanceResource(args).RelativeName()
+
+  def GetPostStartupScriptOption():
+    type_enum = None
+    if args.IsSpecified('post_startup_script_option'):
+      request_message = messages.MigrateInstanceRequest
+      type_enum = arg_utils.ChoiceEnumMapper(
+          arg_name='post-startup-script-option',
+          message_enum=request_message.PostStartupScriptOptionValueValuesEnum,
+          include_filter=lambda x: 'UNSPECIFIED' not in x).GetEnumForChoice(
+              arg_utils.EnumNameToChoice(args.post_startup_script_option))
+    return type_enum
+
+  return messages.NotebooksProjectsLocationsInstancesMigrateRequest(
+      name=instance,
+      migrateInstanceRequest=messages.MigrateInstanceRequest(
+          postStartupScriptOption=GetPostStartupScriptOption(),
+      ))
+
+
 def GetInstanceResource(args):
   return args.CONCEPTS.instance.Parse()
 
@@ -395,6 +417,7 @@ class OperationType(enum.Enum):
   ROLLBACK = (log.UpdatedResource, 'rolled back')
   DELETE = (log.DeletedResource, 'deleted')
   RESET = (log.ResetResource, 'reset')
+  MIGRATE = (log.UpdatedResource, 'migrated')
 
 
 def HandleLRO(operation,

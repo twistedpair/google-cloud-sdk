@@ -122,6 +122,8 @@ def GetParentFromResourceName(resource_name):
 
 def ConvertStateInput(state):
   """Convert state input to messages.Finding.StateValueValuesEnum object."""
+  if state:
+    state = state.upper()
   unspecified_state = messages.Finding.StateValueValuesEnum.STATE_UNSPECIFIED
   state_dict = {
       "ACTIVE": messages.Finding.StateValueValuesEnum.ACTIVE,
@@ -198,3 +200,13 @@ def ExtractSecurityMarksFromResponse(response, args):
         "filtered by Finding Name.")
   for finding_result in list_finding_response:
     return finding_result.finding.securityMarks
+
+
+def ValidateSourceAndFindingIdIfParentProvided(args):
+  """Validates that source and finding id are provided if parent is provided."""
+  if args.source is None:
+    raise errors.InvalidSCCInputError("--source flag must be provided.")
+  if "/" in args.finding:
+    raise errors.InvalidSCCInputError(
+        "Finding id must be provided, instead of the full resource name."
+    )

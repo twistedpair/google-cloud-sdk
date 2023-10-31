@@ -82,6 +82,12 @@ class IndexesClient(object):
             self.messages.GoogleCloudAiplatformV1beta1Index.
             IndexUpdateMethodValueValuesEnum.BATCH_UPDATE)
 
+    encryption_spec = None
+    if args.encryption_kms_key_name is not None:
+      encryption_spec = (
+          self.messages.GoogleCloudAiplatformV1beta1EncryptionSpec(
+              kmsKeyName=args.encryption_kms_key_name))
+
     req = self.messages.AiplatformProjectsLocationsIndexesCreateRequest(
         parent=location_ref.RelativeName(),
         googleCloudAiplatformV1beta1Index=self.messages
@@ -90,7 +96,8 @@ class IndexesClient(object):
             description=args.description,
             metadata=self._ReadIndexMetadata(args.metadata_file),
             labels=labels,
-            indexUpdateMethod=index_update_method
+            indexUpdateMethod=index_update_method,
+            encryptionSpec=encryption_spec
             ))
     return self._service.Create(req)
 
@@ -110,6 +117,13 @@ class IndexesClient(object):
             self.messages.GoogleCloudAiplatformV1Index
             .IndexUpdateMethodValueValuesEnum.BATCH_UPDATE
         )
+
+    encryption_spec = None
+    if args.encryption_kms_key_name is not None:
+      encryption_spec = (
+          self.messages.GoogleCloudAiplatformV1EncryptionSpec(
+              kmsKeyName=args.encryption_kms_key_name))
+
     req = self.messages.AiplatformProjectsLocationsIndexesCreateRequest(
         parent=location_ref.RelativeName(),
         googleCloudAiplatformV1Index=self.messages.GoogleCloudAiplatformV1Index(
@@ -117,7 +131,9 @@ class IndexesClient(object):
             description=args.description,
             metadata=self._ReadIndexMetadata(args.metadata_file),
             labels=labels,
-            indexUpdateMethod=index_update_method))
+            indexUpdateMethod=index_update_method,
+            encryptionSpec=encryption_spec
+            ))
     return self._service.Create(req)
 
   def PatchBeta(self, index_ref, args):

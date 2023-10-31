@@ -372,6 +372,48 @@ class CloudBuildMembershipSpec(_messages.Message):
   version = _messages.StringField(2)
 
 
+class ClusterStatus(_messages.Message):
+  r"""Metadata about the status of a clusters involved in the Rollout.
+
+  Enums:
+    StateValueValuesEnum: Optional. The high-level, machine-readable status of
+      this Rollout for the cluster.
+
+  Fields:
+    lastUpdateTime: Optional. The time this status and any related Rollout-
+      specific details for the cluster were updated.
+    membership: Output only. The name of the fleet Membership resource
+      associated to the updated cluster. Membership names are formatted as
+      projects//locations//memberships/.
+    reason: Optional. A human-readable description of the current status.
+    state: Optional. The high-level, machine-readable status of this Rollout
+      for the cluster.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Optional.
+
+    The high-level, machine-readable status of this Rollout for the cluster.
+
+    Values:
+      STATE_UNSPECIFIED: Unspecified state.
+      PENDING: The Rollout is pending for the cluster.
+      RUNNING: The Rollout is running for the cluster.
+      FAILED: The Rollout failed for the cluster.
+      SUCCEEDED: The Rollout succeeded for the cluster.
+    """
+    STATE_UNSPECIFIED = 0
+    PENDING = 1
+    RUNNING = 2
+    FAILED = 3
+    SUCCEEDED = 4
+
+  lastUpdateTime = _messages.StringField(1)
+  membership = _messages.StringField(2)
+  reason = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
+
+
 class ClusterUpgradeFleetSpec(_messages.Message):
   r"""**ClusterUpgrade**: The configuration for the fleet-level ClusterUpgrade
   feature.
@@ -2018,7 +2060,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -2433,6 +2474,21 @@ class FeatureState(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
+class FeatureUpdate(_messages.Message):
+  r"""Feature config to use for Rollout.
+
+  Fields:
+    binaryAuthorizationConfig: Optional. Configuration for Binary
+      Authorization.
+    securityPostureConfig: Optional. Configuration for Security Posture.
+  """
+
+  binaryAuthorizationConfig = _messages.MessageField(
+      'BinaryAuthorizationConfig', 1
+  )
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 2)
+
+
 class Fleet(_messages.Message):
   r"""Fleet contains the Fleet-wide metadata and configuration.
 
@@ -2636,12 +2692,10 @@ class FleetObservabilityMembershipSpec(_messages.Message):
   """
 
 
-
 class FleetObservabilityMembershipState(_messages.Message):
   r"""**FleetObservability**: Membership-specific Feature state for
   fleetobservability.
   """
-
 
 
 class FleetObservabilityRoutingConfig(_messages.Message):
@@ -3723,6 +3777,8 @@ class GkehubProjectsLocationsRolloutsListRequest(_messages.Message):
   r"""A GkehubProjectsLocationsRolloutsListRequest object.
 
   Fields:
+    filter: Optional. Lists Rollouts that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160.
     pageSize: The maximum number of rollout to return. The service may return
       fewer than this value. If unspecified, at most 50 rollouts will be
       returned. The maximum value is 1000; values above 1000 will be coerced
@@ -3735,9 +3791,10 @@ class GkehubProjectsLocationsRolloutsListRequest(_messages.Message):
       Format: projects/{project}/locations/{location}
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class GkehubProjectsLocationsScopesCreateRequest(_messages.Message):
@@ -4165,28 +4222,7 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
-class HelloWorldFeatureSpec(_messages.Message):
-  r"""**Hello World**: The Hub-wide input for the HelloWorld feature.
-
-  Fields:
-    customConfig: Custom config for the HelloWorld controller codelab. This
-      should be a textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
-      testing.
-  """
-
-  customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
-
-
-class HelloWorldFeatureState(_messages.Message):
-  r"""**Hello World**: An empty state left as an example Hub-wide Feature
-  state.
-  """
-
-
-
-class HelloWorldFeatureTest(_messages.Message):
+class HelloWorldFeatureSample(_messages.Message):
   r"""Represents message used in feature e2e create/mutate testing.
 
   Enums:
@@ -4280,6 +4316,27 @@ class HelloWorldFeatureTest(_messages.Message):
   third = _messages.EnumField('ThirdValueValuesEnum', 9)
 
 
+class HelloWorldFeatureSpec(_messages.Message):
+  r"""**Hello World**: The Hub-wide input for the HelloWorld feature.
+
+  Fields:
+    customConfig: Custom config for the HelloWorld controller codelab. This
+      should be a textpb string.
+    featureSample: Message to hold fields to use in feature e2e create/mutate
+      testing.
+  """
+
+  customConfig = _messages.StringField(1)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
+
+
+class HelloWorldFeatureState(_messages.Message):
+  r"""**Hello World**: An empty state left as an example Hub-wide Feature
+
+  state.
+  """
+
+
 class HelloWorldFooBar(_messages.Message):
   r"""Nested Message.
 
@@ -4298,12 +4355,12 @@ class HelloWorldMembershipSpec(_messages.Message):
   Fields:
     customConfig: Custom config for individual memberships. This should be a
       textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
+    featureSample: Message to hold fields to use in feature e2e create/mutate
       testing.
   """
 
   customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
 
 
 class HelloWorldMembershipState(_messages.Message):
@@ -4312,26 +4369,24 @@ class HelloWorldMembershipState(_messages.Message):
   """
 
 
-
 class HelloWorldScopeSpec(_messages.Message):
   r"""**Hello World**: The scope-specific input for HelloWorld feature.
 
   Fields:
     customConfig: Custom config for individual memberships. This should be a
       textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
+    featureSample: Message to hold fields to use in feature e2e create/mutate
       testing.
   """
 
   customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
 
 
 class HelloWorldScopeState(_messages.Message):
   r"""**Hello World**: An empty state left as an example scope-specific
   Feature state.
   """
-
 
 
 class IdentityServiceAuthMethod(_messages.Message):
@@ -5086,6 +5141,18 @@ class LogConfig(_messages.Message):
   dataAccess = _messages.MessageField('DataAccessOptions', 3)
 
 
+class ManagedRolloutConfig(_messages.Message):
+  r"""The configuration used for the Rollout.
+
+  Waves are assigned automatically.
+
+  Fields:
+    soakDuration: Optional. Soak time before starting the next wave.
+  """
+
+  soakDuration = _messages.StringField(1)
+
+
 class Membership(_messages.Message):
   r"""Membership contains information about a member cluster.
 
@@ -5285,9 +5352,6 @@ class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains information needed to contact a Kubernetes
   API, endpoint and any additional Kubernetes metadata.
 
-  Enums:
-    ModeValueValuesEnum: Immutable. The management mode of this membership.
-
   Fields:
     applianceCluster: Optional. Specific information for a GDC Edge Appliance
       cluster.
@@ -5302,7 +5366,6 @@ class MembershipEndpoint(_messages.Message):
       registered to one and only one Hub Membership. * Propagate Workload Pool
       Information available in the Membership Authority field. * Ensure proper
       initial configuration of default Hub Features.
-    mode: Immutable. The management mode of this membership.
     multiCloudCluster: Optional. Specific information for a GKE Multi-Cloud
       cluster.
     onPremCluster: Optional. Specific information for a GKE On-Prem cluster.
@@ -5310,25 +5373,14 @@ class MembershipEndpoint(_messages.Message):
       this field, it should have a nil "type" instead.
   """
 
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The management mode of this membership.
-
-    Values:
-      MODE_UNSPECIFIED: The mode is not set.
-      AUTOFLEET: Membership is being managed in autofleet mode.
-    """
-    MODE_UNSPECIFIED = 0
-    AUTOFLEET = 1
-
   applianceCluster = _messages.MessageField('ApplianceCluster', 1)
   edgeCluster = _messages.MessageField('EdgeCluster', 2)
   gkeCluster = _messages.MessageField('GkeCluster', 3)
   googleManaged = _messages.BooleanField(4)
   kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 5)
   kubernetesResource = _messages.MessageField('KubernetesResource', 6)
-  mode = _messages.EnumField('ModeValueValuesEnum', 7)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 8)
-  onPremCluster = _messages.MessageField('OnPremCluster', 9)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 7)
+  onPremCluster = _messages.MessageField('OnPremCluster', 8)
 
 
 class MembershipFeatureSpec(_messages.Message):
@@ -5659,10 +5711,38 @@ class Namespace(_messages.Message):
 
 
 class NamespaceActuationFeatureSpec(_messages.Message):
-  r"""An empty spec for actuation feature. This is required since Feature
-  proto requires a spec.
+  r"""An empty spec for actuation feature.
+
+  This is required since Feature proto requires a spec.
+
+  Enums:
+    ActuationModeValueValuesEnum: actuation_mode controls the behavior of the
+      controller
+
+  Fields:
+    actuationMode: actuation_mode controls the behavior of the controller
   """
 
+  class ActuationModeValueValuesEnum(_messages.Enum):
+    r"""actuation_mode controls the behavior of the controller
+
+    Values:
+      ACTUATION_MODE_UNSPECIFIED: ACTUATION_MODE_UNSPECIFIED is similar to
+        CREATE_AND_DELETE_IF_CREATED in the default controller behavior.
+      ACTUATION_MODE_CREATE_AND_DELETE_IF_CREATED:
+        ACTUATION_MODE_CREATE_AND_DELETE_IF_CREATED has the controller create
+        cluster namespaces for each fleet namespace and it deletes only the
+        ones it created, which are identified by a label.
+      ACTUATION_MODE_ADD_AND_REMOVE_FLEET_LABELS:
+        ACTUATION_MODE_ADD_AND_REMOVE_FLEET_LABELS has the controller only
+        apply labels to cluster namespaces to signal fleet namespace
+        enablement. It doesn't create or delete cluster namespaces.
+    """
+    ACTUATION_MODE_UNSPECIFIED = 0
+    ACTUATION_MODE_CREATE_AND_DELETE_IF_CREATED = 1
+    ACTUATION_MODE_ADD_AND_REMOVE_FLEET_LABELS = 2
+
+  actuationMode = _messages.EnumField('ActuationModeValueValuesEnum', 1)
 
 
 class NamespaceActuationFeatureState(_messages.Message):
@@ -5675,12 +5755,10 @@ class NamespaceActuationMembershipSpec(_messages.Message):
   """
 
 
-
 class NamespaceActuationMembershipState(_messages.Message):
   r"""**Namespace Actuation**: An empty state left as an example membership-
   specific Feature state.
   """
-
 
 
 class NamespaceLifecycleState(_messages.Message):
@@ -6624,7 +6702,6 @@ class RBACRoleBindingActuationFeatureState(_messages.Message):
   """
 
 
-
 class RBACRoleBindingActuationMembershipSpec(_messages.Message):
   r"""**RBAC RoleBinding Actuation**: The membership-specific input for
   RBACRoleBindingActuation feature.
@@ -6889,7 +6966,7 @@ class Role(_messages.Message):
 
 
 class Rollout(_messages.Message):
-  r"""Rollout contains the rollout metadata and configuration.
+  r"""Rollout contains the Rollout metadata and configuration.
 
   Enums:
     StateValueValuesEnum: Output only. State specifies various states of the
@@ -6899,14 +6976,18 @@ class Rollout(_messages.Message):
     LabelsValue: Optional. Labels for this Rollout.
 
   Fields:
+    clusterStatus: Output only. Metadata about the cluster status which are
+      part of the Rollout. Provided by the server.
     completeTime: Output only. The timestamp at which the Rollout was
       completed.
     createTime: Output only. The timestamp at which the Rollout was created.
     deleteTime: Output only. The timestamp at the Rollout was deleted.
     displayName: Optional. Human readable display name of the Rollout.
     etag: Output only. etag of the Rollout Ex. abc1234
+    feature: Optional. Feature config to use for Rollout.
     labels: Optional. Labels for this Rollout.
-    name: Identifier. The full, unique resource name of this rollout in the
+    managedRolloutConfig: Optional. The configuration used for the Rollout.
+    name: Identifier. The full, unique resource name of this Rollout in the
       format of `projects/{project}/locations/global/rollouts/{rollout}`.
     state: Output only. State specifies various states of the Rollout.
     uid: Output only. Google-generated UUID for this resource. This is unique
@@ -6921,8 +7002,16 @@ class Rollout(_messages.Message):
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.
+      RUNNING: The Rollout is running.
+      PAUSED: The Rollout is paused.
+      CANCELLED: The Rollout is in a failure terminal state.
+      COMPLETED: The Rollout is in a terminal state.
     """
     STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    PAUSED = 2
+    CANCELLED = 3
+    COMPLETED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6948,16 +7037,19 @@ class Rollout(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  completeTime = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  deleteTime = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  clusterStatus = _messages.MessageField('ClusterStatus', 1, repeated=True)
+  completeTime = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deleteTime = _messages.StringField(4)
+  displayName = _messages.StringField(5)
+  etag = _messages.StringField(6)
+  feature = _messages.MessageField('FeatureUpdate', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  managedRolloutConfig = _messages.MessageField('ManagedRolloutConfig', 9)
+  name = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uid = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class Rule(_messages.Message):
@@ -7980,7 +8072,6 @@ class WorkloadMigrationFeatureSpec(_messages.Message):
   r"""**WorkloadMigration**: The Hub-wide input for the WorkloadMigration
   feature. This is currently empty, but is used to restrict API visibility.
   """
-
 
 
 encoding.AddCustomJsonFieldMapping(

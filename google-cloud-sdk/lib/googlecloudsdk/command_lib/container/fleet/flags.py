@@ -42,6 +42,10 @@ _BINAUTHZ_GKE_POLICY_REGEX = (
     'projects/([^/]+)/platforms/gke/policies/([a-zA-Z0-9_-]+)'
 )
 
+_PREREQUISITE_OPTION_ERROR_MSG = """\
+Cannot specify --{opt} without --{prerequisite}.
+"""
+
 
 class FleetFlags:
   """Add flags to the fleet command surface."""
@@ -263,14 +267,19 @@ class FleetFlagParser:
       return message
     return None
 
-  def Fleet(self) -> fleet_messages.Fleet:
+  def Fleet(self, existing_fleet=None) -> fleet_messages.Fleet:
     """Fleet resource."""
     # TODO(b/290398654): Refactor to constructor style.
     fleet = self.messages.Fleet()
     fleet.name = util.FleetResourceName(self.Project())
     fleet.displayName = self._DisplayName()
     if self.release_track == base.ReleaseTrack.ALPHA:
-      fleet.defaultClusterConfig = self._DefaultClusterConfig()
+      if existing_fleet is not None:
+        fleet.defaultClusterConfig = self._DefaultClusterConfig(
+            existing_fleet.defaultClusterConfig
+        )
+      else:
+        fleet.defaultClusterConfig = self._DefaultClusterConfig()
     return fleet
 
   def _DisplayName(self) -> str:
@@ -344,10 +353,41 @@ class FleetFlagParser:
     return mapping[choice]
 
   def _BinaryAuthorizationConfig(
-      self) -> fleet_messages.BinaryAuthorizationConfig:
-    ret = self.messages.BinaryAuthorizationConfig()
-    ret.evaluationMode = self._EvaluationMode()
-    ret.policyBindings = self._PolicyBindings()
+      self, existing_binauthz=None
+  ) -> fleet_messages.BinaryAuthorizationConfig:
+    """Construct binauthz config from args."""
+    new_binauthz = self.messages.BinaryAuthorizationConfig()
+    new_binauthz.evaluationMode = self._EvaluationMode()
+    new_binauthz.policyBindings = self._PolicyBindings()
+
+    # Merge new with existing binauthz config.
+    if existing_binauthz is None:
+      ret = new_binauthz
+    else:
+      ret = existing_binauthz
+      if new_binauthz.evaluationMode is not None:
+        ret.evaluationMode = new_binauthz.evaluationMode
+      if new_binauthz.policyBindings is not None:
+        ret.policyBindings = new_binauthz.policyBindings
+
+    # Policy bindings only makes sense in the context of an evaluation mode.
+    if ret.policyBindings and not ret.evaluationMode:
+      raise exceptions.InvalidArgumentException(
+          '--binauthz-policy-bindings',
+          _PREREQUISITE_OPTION_ERROR_MSG.format(
+              prerequisite='binauthz-evaluation-mode',
+              opt='binauthz-policy-bindings',
+          )
+      )
+
+    # If evaluation mode is set to disabled, clear policy_bindings.
+    if ret.evaluationMode == (
+        fleet_messages
+        .BinaryAuthorizationConfig
+        .EvaluationModeValueValuesEnum
+        .DISABLED
+    ):
+      ret.policyBindings = []
     return self.TrimEmpty(ret)
 
   def _EvaluationMode(
@@ -378,15 +418,20 @@ class FleetFlagParser:
     """Parses --binauthz-policy-bindings."""
     policy_binding = self.args.binauthz_policy_bindings
     if policy_binding is not None:
-      return [
-          fleet_messages.PolicyBinding(name=policy_binding[0]['name'])
-      ]
+      return [fleet_messages.PolicyBinding(name=policy_binding['name'])]
     return []
 
-  def _DefaultClusterConfig(self) -> fleet_messages.DefaultClusterConfig:
+  def _DefaultClusterConfig(
+      self, existing_default_cluster_config=None
+  ) -> fleet_messages.DefaultClusterConfig:
     ret = self.messages.DefaultClusterConfig()
     ret.securityPostureConfig = self._SecurityPostureConfig()
-    ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig()
+    if existing_default_cluster_config is not None:
+      ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig(
+          existing_default_cluster_config.binaryAuthorizationConfig
+      )
+    else:
+      ret.binaryAuthorizationConfig = self._BinaryAuthorizationConfig()
     return self.TrimEmpty(ret)
 
   def OperationRef(self) -> resources.Resource:

@@ -30,6 +30,7 @@ from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alp
 
 BASELINE_APIS = ('runapps.googleapis.com',)
 LATEST_DEPLOYMENT_FIELD = 'latestDeployment'
+SERVICE_TYPE = 'service'
 _TYPE_METADATA = None
 
 

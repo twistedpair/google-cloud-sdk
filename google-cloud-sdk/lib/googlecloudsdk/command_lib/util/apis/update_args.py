@@ -60,7 +60,7 @@ class _ConvertValueType(usage_text.DefaultArgTypeWrapper):
 
   def __call__(self, arg_value):
     """Converts arg_value into type arg_type."""
-    value = super(_ConvertValueType, self).__call__(arg_value)
+    value = self.arg_type(arg_value)
     return arg_utils.ConvertValue(
         self.field,
         value,

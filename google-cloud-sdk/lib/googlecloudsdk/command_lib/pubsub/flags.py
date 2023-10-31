@@ -496,10 +496,22 @@ def AddPubsubExportConfigFlags(parser, is_update):
       'to publish messages to.',
       flag_name='pubsub-export-topic',
       positional=False,
-      required=False,
+      required=True,
   )
   resource_args.AddResourceArgs(
       pubsub_export_config_group, [pubsub_export_topic]
+  )
+  pubsub_export_config_group.add_argument(
+      '--pubsub-export-topic-region',
+      required=False,
+      help=(
+          'The Google Cloud region to which messages are published. For'
+          ' example, us-east1. Do not specify more than one region. If the'
+          ' region you specified is different from the region to which messages'
+          ' were published, egress fees are incurred. If the region is not'
+          ' specified, Pub/Sub uses the same region to which the messages were'
+          ' originally published on a best-effort basis.'
+      ),
   )
 
 

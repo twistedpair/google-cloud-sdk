@@ -1601,7 +1601,7 @@ class GkehubV1alpha(base_api.BaseApiClient):
         method_id='gkehub.projects.locations.rollouts.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken'],
         relative_path='v1alpha/{+parent}/rollouts',
         request_field='',
         request_type_name='GkehubProjectsLocationsRolloutsListRequest',

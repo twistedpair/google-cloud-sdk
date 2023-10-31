@@ -214,18 +214,21 @@ def process_object_retention(
   if (
       retain_until == user_request_args_factory.CLEAR
       or retention_mode == user_request_args_factory.CLEAR
+      or not any([existing_retention_settings, retain_until, retention_mode])
   ):
     return None
-  if retain_until is None and retention_mode is None:
-    return existing_retention_settings
 
   if existing_retention_settings is None:
     messages = apis.GetMessagesModule('storage', 'v1')
     retention_settings = messages.Object.RetentionValue()
   else:
     retention_settings = existing_retention_settings
-  retention_settings.retainUntilTime = retain_until
-  retention_settings.mode = retention_mode.value if retention_mode else None
+
+  if retain_until:
+    retention_settings.retainUntilTime = retain_until
+  if retention_mode:
+    retention_settings.mode = retention_mode.value
+
   return retention_settings
 
 

@@ -229,7 +229,10 @@ def ClusterUpgradeMessage(name,
   )
 
 
-def GetZoneOrRegion(args, ignore_property=False, required=True):
+def GetZoneOrRegion(args,
+                    ignore_property=False,
+                    required=True,
+                    is_autopilot=False):
   """Get a location (zone or region) from argument or property.
 
   Args:
@@ -237,6 +240,7 @@ def GetZoneOrRegion(args, ignore_property=False, required=True):
       command invocation.
     ignore_property: bool, if true, will get location only from argument.
     required: bool, if true, lack of zone will cause raise an exception.
+    is_autopilot: bool, if true, region property will take precedence over zone.
 
   Raises:
     MinimumArgumentException: if location if required and not provided.
@@ -250,6 +254,9 @@ def GetZoneOrRegion(args, ignore_property=False, required=True):
 
   if ignore_property:
     location_property = None
+  elif is_autopilot and properties.VALUES.compute.region.Get():
+    # region property if set takes precedence over zone when using autopilot.
+    location_property = properties.VALUES.compute.region.Get()
   elif properties.VALUES.compute.zone.Get():
     # zone property if set takes precedence over region.
     location_property = properties.VALUES.compute.zone.Get()

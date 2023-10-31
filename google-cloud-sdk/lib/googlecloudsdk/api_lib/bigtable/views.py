@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import copy
 import io
 import json
 import textwrap
@@ -28,6 +29,8 @@ from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.bigtable import util
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import yaml
+from googlecloudsdk.core.console import console_io
+from googlecloudsdk.core.resource import resource_diff
 from googlecloudsdk.core.util import edit
 import six
 
@@ -178,7 +181,7 @@ def ModifyUpdateViewRequest(original_ref, args, req):
   Returns:
     req: the real request to be sent to backend service.
   """
-
+  current_view = None
   # If args.definition_file is provided, the content in the file will be
   # automatically parsed as req.view.
   if not args.definition_file:
@@ -193,6 +196,36 @@ def ModifyUpdateViewRequest(original_ref, args, req):
     req = AddFieldToUpdateMask("subset_view", req)
   if req.view.deletionProtection is not None:
     req = AddFieldToUpdateMask("deletion_protection", req)
+
+  if args.interactive:
+    if current_view is None:
+      current_view = GetCurrentView(original_ref.RelativeName())
+
+    # This essentially merges the requested view to the original view
+    # based on the update mask.
+    new_view = copy.deepcopy(current_view)
+    if req.view.subsetView is not None:
+      new_view.subsetView = req.view.subsetView
+    if req.view.deletionProtection is not None:
+      new_view.deletionProtection = req.view.deletionProtection
+
+    # Get the diff between the original view and the new view.
+    buf = io.StringIO()
+    differ = resource_diff.ResourceDiff(original=current_view, changed=new_view)
+    differ.Print("default", out=buf)
+    if buf.getvalue():
+      console_io.PromptContinue(
+          message=(
+              "Difference between the current view and the new view:\n"
+          )
+          + buf.getvalue(),
+          cancel_on_no=True,
+      )
+    else:
+      console_io.PromptContinue(
+          message="The view will NOT change with this update.",
+          cancel_on_no=True,
+      )
 
   # The name field should be ignored and omitted from the request as it is
   # taken from the command line.

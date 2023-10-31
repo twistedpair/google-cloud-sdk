@@ -119,7 +119,7 @@ def GetModuleNameFromArgs(args, module_type: constants.CustomModuleType) -> str:
   parent = GetParentResourceNameFromArgs(args)
   module_id = GetModuleIdFromArgs(args)
 
-  return f'{parent}/locations/global/securityHealthAnalyticsCustomModules/{module_id}'
+  return f'{parent}/locations/global/{module_type}/{module_id}'
 
 
 def _ParseParent(parent: str) -> str:

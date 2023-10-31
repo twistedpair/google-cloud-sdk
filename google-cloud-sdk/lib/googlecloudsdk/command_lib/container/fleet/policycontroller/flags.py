@@ -18,9 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import argparse
-
 from apitools.base.protorpclite import messages
+from googlecloudsdk.api_lib.container.fleet.policycontroller import protos
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_extensions
@@ -29,6 +28,9 @@ from googlecloudsdk.command_lib.container.fleet.policycontroller import constant
 from googlecloudsdk.command_lib.container.fleet.policycontroller import exceptions
 from googlecloudsdk.command_lib.export import util
 from googlecloudsdk.core.console import console_io
+
+
+DEFAULT_BUNDLE_NAME = 'policy-essentials-v2022'
 
 
 def fleet_default_cfg_flag():
@@ -66,7 +68,9 @@ def no_fleet_default_cfg_flag(include_no: bool = False):
 
 def fleet_default_cfg_group():
   """Flag group for accepting a Fleet Default Configuration file."""
-  config_group = base.ArgumentGroup(mutex=True)
+  config_group = base.ArgumentGroup(
+      'Flags for setting Fleet Default Configuration files.', mutex=True
+  )
   config_group.AddArgument(fleet_default_cfg_flag())
   config_group.AddArgument(no_fleet_default_cfg_flag(True))
   return config_group
@@ -157,9 +161,15 @@ class PocoFlags:
 
   def add_log_denies_enabled(self):
     """Adds handling for log denies enablement."""
-    self.parser.add_argument(
+    group = self.parser.add_group('Log Denies flags.', mutex=True)
+    group.add_argument(
+        '--no-log-denies',
+        action='store_true',
+        help='If set, disable all log denies.',
+    )
+    group.add_argument(
         '--log-denies',
-        action=EnableDisableAction,
+        action='store_true',
         help=(
             'If set, log all denies and dry run failures. (To disable, use'
             ' --no-log-denies)'
@@ -214,20 +224,37 @@ class PocoFlags:
 
   def add_mutation(self):
     """Adds handling for mutation enablement."""
-    self.parser.add_argument(
+    group = self.parser.add_group('Mutation flags.', mutex=True)
+    group.add_argument(
+        '--no-mutation', action='store_true', help='Disables mutation support.'
+    )
+    group.add_argument(
         '--mutation',
-        action=EnableDisableAction,
+        action='store_true',
         help=(
             'If set, enable support for mutation. (To disable, use'
             ' --no-mutation)'
         ),
     )
 
+  def add_no_default_bundles(self):
+    self.parser.add_argument(
+        '--no-default-bundles',
+        action='store_true',
+        help='If set, skip installing the default bundle of policy-essentials.',
+    )
+
   def add_referential_rules(self):
     """Adds handling for referential rules enablement."""
-    self.parser.add_argument(
+    group = self.parser.add_group('Referential Rules flags.', mutex=True)
+    group.add_argument(
+        '--no-referential-rules',
+        action='store_true',
+        help='Disables referential rules support.',
+    )
+    group.add_argument(
         '--referential-rules',
-        action=EnableDisableAction,
+        action='store_true',
         help=(
             'If set, enable support for referential constraints. (To disable,'
             ' use --no-referential-rules)'
@@ -283,20 +310,26 @@ class PocoFlagParser:
     return hub_cfg
 
   def update_log_denies(self, hub_cfg: messages.Message) -> messages.Message:
-    if self.args.log_denies is not None:
-      hub_cfg.logDeniesEnabled = self.args.log_denies
+    if self.args.log_denies:
+      hub_cfg.logDeniesEnabled = True
+    if self.args.no_log_denies:
+      hub_cfg.logDeniesEnabled = False
     return hub_cfg
 
   def update_mutation(self, hub_cfg: messages.Message) -> messages.Message:
-    if self.args.mutation is not None:
-      hub_cfg.mutationEnabled = self.args.mutation
+    if self.args.mutation:
+      hub_cfg.mutationEnabled = True
+    if self.args.no_mutation:
+      hub_cfg.mutationEnabled = False
     return hub_cfg
 
   def update_referential_rules(
       self, hub_cfg: messages.Message
   ) -> messages.Message:
-    if self.args.referential_rules is not None:
-      hub_cfg.referentialRulesEnabled = self.args.referential_rules
+    if self.args.referential_rules:
+      hub_cfg.referentialRulesEnabled = True
+    if self.args.no_referential_rules:
+      hub_cfg.referentialRulesEnabled = False
     return hub_cfg
 
   @property
@@ -336,6 +369,42 @@ class PocoFlagParser:
       config = self.messages.PolicyControllerMonitoringConfig(backends=backends)
       hub_cfg.monitoring = config
 
+    return hub_cfg
+
+  @property
+  def bundle_message(self) -> messages.Message:
+    """Returns an reference to the BundlesValue class for this API channel."""
+    return self.messages.PolicyControllerPolicyContentSpec.BundlesValue
+
+  def update_default_bundles(
+      self, hub_cfg: messages.Message
+  ) -> messages.Message:
+    """Sets default bundles based on args.
+
+    This function assumes that the hub config is being initialized for the first
+    time.
+
+    Args:
+      hub_cfg: A 'PolicyControllerHubConfig' proto message.
+
+    Returns:
+      A modified hub_config, adding the default bundle; or unmodified if the
+      --no-default-bundles flag is specified.
+    """
+    if self.args.no_default_bundles:
+      return hub_cfg
+
+    policy_content_spec = self._get_policy_content(hub_cfg)
+    bundles = protos.additional_properties_to_dict(
+        policy_content_spec.bundles
+    )
+    bundles[DEFAULT_BUNDLE_NAME] = (
+        self.messages.PolicyControllerBundleInstallSpec()
+    )
+    policy_content_spec.bundles = protos.set_additional_properties(
+        self.bundle_message(), bundles
+    )
+    hub_cfg.policyContent = policy_content_spec
     return hub_cfg
 
   def is_feature_update(self) -> bool:
@@ -385,65 +454,3 @@ class PocoFlagParser:
     membership.origin = self.messages.Origin(
         type=self.messages.Origin.TypeValueValuesEnum.FLEET
     )
-
-
-class EnableDisableAction(argparse.Action):
-  """EnableDisableAction is an explicit enable/disable option pair.
-
-  This action is based on BooleanOptionalAction, is largely copied from the
-  Python 3.9 library. This is a workaround before the minimum supported version
-  of python is updated to 3.9 in gcloud, or the field mask bug is implemented
-  (b/233366392), whichever comes first.
-  """
-
-  def __init__(
-      self,
-      option_strings,
-      dest,
-      default=None,
-      type=None,  # pylint: disable=redefined-builtin
-      choices=None,
-      required=False,
-      help=None,  # pylint: disable=redefined-builtin
-      metavar=None,
-      const=None,
-  ):
-    self.__called = False
-    _option_strings = []  # pylint: disable=invalid-name
-    for option_string in option_strings:
-      prefix = ''
-      if option_string.startswith('--'):
-        option_string = option_string[2:]
-        prefix = '--'
-
-      _option_strings.append('{}{}'.format(prefix, option_string))
-      _option_strings.append('{}no-{}'.format(prefix, option_string))
-
-    if help is not None and default is not None:
-      help += ' (default: %(default)s)'
-
-    super(EnableDisableAction, self).__init__(
-        option_strings=_option_strings,
-        dest=dest,
-        nargs=0,
-        default=default,
-        type=type,
-        choices=choices,
-        required=required,
-        help=help,
-        metavar=metavar,
-        const=const,
-    )
-
-  def __call__(self, parser, namespace, values, option_string=None):
-    if self.__called:
-      raise exceptions.MutexError(
-          'Specify only one flag of: {}'.format(', '.join(self.option_strings))
-      )
-    self.__called = True
-
-    if option_string in self.option_strings:
-      setattr(namespace, self.dest, not option_string.startswith('--no-'))
-
-  def format_usage(self):
-    return ' | '.join(self.option_strings)

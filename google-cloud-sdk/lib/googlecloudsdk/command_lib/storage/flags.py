@@ -82,7 +82,6 @@ def add_autoclass_flags(parser):
       ' for objects based on access patterns.')
   autoclass_group.add_argument(
       '--autoclass-terminal-storage-class',
-      hidden=True,
       help='The storage class that objects in the bucket eventually'
       ' transition to if they are not read for a certain length of time.'
       ' Only valid if Autoclass is enabled.')
@@ -326,11 +325,13 @@ def add_encryption_flags(parser,
           ' specified encryption key can be a customer-supplied encryption key'
           ' (An RFC 4648 section 4 base64-encoded AES256 string), or a'
           ' customer-managed encryption key of the form `projects/{project}/'
-          'locations/{location}/keyRings/ {key-ring}/cryptoKeys/{crypto-key}`.'
+          'locations/{location}/keyRings/{key-ring}/cryptoKeys/{crypto-key}`.'
           ' The specified key also acts as a decryption key, which is useful'
-          ' when copying or moving encryted data to a new location. Using this'
+          ' when copying or moving encrypted data to a new location. Using this'
           ' flag in an `objects update` command triggers a rewrite of target'
-          ' objects.'))
+          ' objects.'
+      ),
+  )
   encryption_group.add_argument(
       '--decryption-keys',
       type=arg_parsers.ArgList(),
@@ -511,7 +512,8 @@ def add_dataset_config_create_update_flags(parser):
       '--skip-verification',
       action='store_true',
       help=(
-          'Skips failures from the verification phase before data is ingested.'
+          'Skips failures from the verification phase before data is ingested, '
+          'this flag can only move from unset to set.'
       ),
   )
   parser.add_argument(

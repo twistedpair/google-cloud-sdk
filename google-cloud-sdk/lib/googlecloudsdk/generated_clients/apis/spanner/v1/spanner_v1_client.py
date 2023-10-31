@@ -46,10 +46,12 @@ class SpannerV1(base_api.BaseApiClient):
     self.projects_instances_backups_operations = self.ProjectsInstancesBackupsOperationsService(self)
     self.projects_instances_backups = self.ProjectsInstancesBackupsService(self)
     self.projects_instances_databaseOperations = self.ProjectsInstancesDatabaseOperationsService(self)
+    self.projects_instances_databases_backupSchedules = self.ProjectsInstancesDatabasesBackupSchedulesService(self)
     self.projects_instances_databases_databaseRoles = self.ProjectsInstancesDatabasesDatabaseRolesService(self)
     self.projects_instances_databases_operations = self.ProjectsInstancesDatabasesOperationsService(self)
     self.projects_instances_databases_sessions = self.ProjectsInstancesDatabasesSessionsService(self)
     self.projects_instances_databases = self.ProjectsInstancesDatabasesService(self)
+    self.projects_instances_instancePartitionOperations = self.ProjectsInstancesInstancePartitionOperationsService(self)
     self.projects_instances_instancePartitions_operations = self.ProjectsInstancesInstancePartitionsOperationsService(self)
     self.projects_instances_instancePartitions = self.ProjectsInstancesInstancePartitionsService(self)
     self.projects_instances_operations = self.ProjectsInstancesOperationsService(self)
@@ -799,6 +801,151 @@ class SpannerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SpannerProjectsInstancesDatabaseOperationsListRequest',
         response_type_name='ListDatabaseOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesDatabasesBackupSchedulesService(base_api.BaseApiService):
+    """Service class for the projects_instances_databases_backupSchedules resource."""
+
+    _NAME = 'projects_instances_databases_backupSchedules'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstancesDatabasesBackupSchedulesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new backup schedule.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesBackupSchedulesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupSchedule) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/backupSchedules',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.backupSchedules.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['backupScheduleId'],
+        relative_path='v1/{+parent}/backupSchedules',
+        request_field='backupSchedule',
+        request_type_name='SpannerProjectsInstancesDatabasesBackupSchedulesCreateRequest',
+        response_type_name='BackupSchedule',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a backup schedule.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesBackupSchedulesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/backupSchedules/{backupSchedulesId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instances.databases.backupSchedules.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SpannerProjectsInstancesDatabasesBackupSchedulesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets backup schedule for the input schedule name.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesBackupSchedulesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupSchedule) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/backupSchedules/{backupSchedulesId}',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.backupSchedules.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SpannerProjectsInstancesDatabasesBackupSchedulesGetRequest',
+        response_type_name='BackupSchedule',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all the backup schedules for the database.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesBackupSchedulesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupSchedulesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/backupSchedules',
+        http_method='GET',
+        method_id='spanner.projects.instances.databases.backupSchedules.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/backupSchedules',
+        request_field='',
+        request_type_name='SpannerProjectsInstancesDatabasesBackupSchedulesListRequest',
+        response_type_name='ListBackupSchedulesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a backup schedule.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesBackupSchedulesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BackupSchedule) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}/backupSchedules/{backupSchedulesId}',
+        http_method='PATCH',
+        method_id='spanner.projects.instances.databases.backupSchedules.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='backupSchedule',
+        request_type_name='SpannerProjectsInstancesDatabasesBackupSchedulesPatchRequest',
+        response_type_name='BackupSchedule',
         supports_download=False,
     )
 
@@ -1757,6 +1904,43 @@ class SpannerV1(base_api.BaseApiClient):
         request_field='updateDatabaseDdlRequest',
         request_type_name='SpannerProjectsInstancesDatabasesUpdateDdlRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesInstancePartitionOperationsService(base_api.BaseApiService):
+    """Service class for the projects_instances_instancePartitionOperations resource."""
+
+    _NAME = 'projects_instances_instancePartitionOperations'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstancesInstancePartitionOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists instance partition long-running operations in the given instance. An instance partition operation has a name of the form `projects//instances//instancePartitions//operations/`. The long-running operation metadata field type `metadata.type_url` describes the type of the metadata. Operations returned include those that have completed/failed/canceled within the last 7 days, and pending operations. Operations returned are ordered by `operation.metadata.value.start_time` in descending order starting from the most recently started operation. Authorization requires `spanner.instancePartitionOperations.list` permission on the resource parent.
+
+      Args:
+        request: (SpannerProjectsInstancesInstancePartitionOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListInstancePartitionOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/instancePartitionOperations',
+        http_method='GET',
+        method_id='spanner.projects.instances.instancePartitionOperations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'instancePartitionDeadline', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/instancePartitionOperations',
+        request_field='',
+        request_type_name='SpannerProjectsInstancesInstancePartitionOperationsListRequest',
+        response_type_name='ListInstancePartitionOperationsResponse',
         supports_download=False,
     )
 

@@ -42,9 +42,8 @@ class ApphubV1alpha(base_api.BaseApiClient):
     self.projects_locations_applications_services = self.ProjectsLocationsApplicationsServicesService(self)
     self.projects_locations_applications_workloads = self.ProjectsLocationsApplicationsWorkloadsService(self)
     self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
-    self.projects_locations_global_serviceProjectAttachments = self.ProjectsLocationsGlobalServiceProjectAttachmentsService(self)
-    self.projects_locations_global = self.ProjectsLocationsGlobalService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_serviceProjectAttachments = self.ProjectsLocationsServiceProjectAttachmentsService(self)
     self.projects_locations_services = self.ProjectsLocationsServicesService(self)
     self.projects_locations_workloads = self.ProjectsLocationsWorkloadsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -396,7 +395,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
         method_id='apphub.projects.locations.applications.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['force', 'requestId'],
+        query_params=['requestId'],
         relative_path='v1alpha/{+name}',
         request_field='',
         request_type_name='ApphubProjectsLocationsApplicationsDeleteRequest',
@@ -428,6 +427,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsApplicationsGetRequest',
         response_type_name='Application',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (ApphubProjectsLocationsApplicationsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}:getIamPolicy',
+        http_method='GET',
+        method_id='apphub.projects.locations.applications.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1alpha/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsApplicationsGetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
@@ -485,158 +511,57 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsGlobalServiceProjectAttachmentsService(base_api.BaseApiService):
-    """Service class for the projects_locations_global_serviceProjectAttachments resource."""
-
-    _NAME = 'projects_locations_global_serviceProjectAttachments'
-
-    def __init__(self, client):
-      super(ApphubV1alpha.ProjectsLocationsGlobalServiceProjectAttachmentsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def Create(self, request, global_params=None):
-      r"""CreateServiceProjectAttachment attaches a service project to a host project.
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
 
       Args:
-        request: (ApphubProjectsLocationsGlobalServiceProjectAttachmentsCreateRequest) input message
+        request: (ApphubProjectsLocationsApplicationsSetIamPolicyRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (Operation) The response message.
+        (Policy) The response message.
       """
-      config = self.GetMethodConfig('Create')
+      config = self.GetMethodConfig('SetIamPolicy')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/serviceProjectAttachments',
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}:setIamPolicy',
         http_method='POST',
-        method_id='apphub.projects.locations.global.serviceProjectAttachments.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+parent}/serviceProjectAttachments',
-        request_field='serviceProjectAttachment',
-        request_type_name='ApphubProjectsLocationsGlobalServiceProjectAttachmentsCreateRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""DeleteServiceProjectAttachment detaches a service project attachment from a host project.
-
-      Args:
-        request: (ApphubProjectsLocationsGlobalServiceProjectAttachmentsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/serviceProjectAttachments/{serviceProjectAttachmentsId}',
-        http_method='DELETE',
-        method_id='apphub.projects.locations.global.serviceProjectAttachments.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId'],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsGlobalServiceProjectAttachmentsDeleteRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""GetServiceProjectAttachment gets a service project attachment for a host project.
-
-      Args:
-        request: (ApphubProjectsLocationsGlobalServiceProjectAttachmentsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ServiceProjectAttachment) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/serviceProjectAttachments/{serviceProjectAttachmentsId}',
-        http_method='GET',
-        method_id='apphub.projects.locations.global.serviceProjectAttachments.get',
-        ordered_params=['name'],
-        path_params=['name'],
+        method_id='apphub.projects.locations.applications.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsGlobalServiceProjectAttachmentsGetRequest',
-        response_type_name='ServiceProjectAttachment',
+        relative_path='v1alpha/{+resource}:setIamPolicy',
+        request_field='setIamPolicyRequest',
+        request_type_name='ApphubProjectsLocationsApplicationsSetIamPolicyRequest',
+        response_type_name='Policy',
         supports_download=False,
     )
 
-    def List(self, request, global_params=None):
-      r"""ListServiceProjectAttachments lists service projects attached to a host project.
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
       Args:
-        request: (ApphubProjectsLocationsGlobalServiceProjectAttachmentsListRequest) input message
+        request: (ApphubProjectsLocationsApplicationsTestIamPermissionsRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (ListServiceProjectAttachmentsResponse) The response message.
+        (TestIamPermissionsResponse) The response message.
       """
-      config = self.GetMethodConfig('List')
+      config = self.GetMethodConfig('TestIamPermissions')
       return self._RunMethod(
           config, request, global_params=global_params)
 
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global/serviceProjectAttachments',
-        http_method='GET',
-        method_id='apphub.projects.locations.global.serviceProjectAttachments.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/serviceProjectAttachments',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsGlobalServiceProjectAttachmentsListRequest',
-        response_type_name='ListServiceProjectAttachmentsResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsGlobalService(base_api.BaseApiService):
-    """Service class for the projects_locations_global resource."""
-
-    _NAME = 'projects_locations_global'
-
-    def __init__(self, client):
-      super(ApphubV1alpha.ProjectsLocationsGlobalService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def LookupServiceProjectAttachment(self, request, global_params=None):
-      r"""LookupServiceProjectAttachment looksup a service project attachment for a service project.
-
-      Args:
-        request: (ApphubProjectsLocationsGlobalLookupServiceProjectAttachmentRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (LookupServiceProjectAttachmentResponse) The response message.
-      """
-      config = self.GetMethodConfig('LookupServiceProjectAttachment')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    LookupServiceProjectAttachment.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/global:lookupServiceProjectAttachment',
-        http_method='GET',
-        method_id='apphub.projects.locations.global.lookupServiceProjectAttachment',
-        ordered_params=['name'],
-        path_params=['name'],
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/applications/{applicationsId}:testIamPermissions',
+        http_method='POST',
+        method_id='apphub.projects.locations.applications.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
         query_params=[],
-        relative_path='v1alpha/{+name}:lookupServiceProjectAttachment',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsGlobalLookupServiceProjectAttachmentRequest',
-        response_type_name='LookupServiceProjectAttachmentResponse',
+        relative_path='v1alpha/{+resource}:testIamPermissions',
+        request_field='testIamPermissionsRequest',
+        request_type_name='ApphubProjectsLocationsApplicationsTestIamPermissionsRequest',
+        response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -758,6 +683,124 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsServiceProjectAttachmentsService(base_api.BaseApiService):
+    """Service class for the projects_locations_serviceProjectAttachments resource."""
+
+    _NAME = 'projects_locations_serviceProjectAttachments'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsServiceProjectAttachmentsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""CreateServiceProjectAttachment attaches a service project to a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsServiceProjectAttachmentsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjectAttachments',
+        http_method='POST',
+        method_id='apphub.projects.locations.serviceProjectAttachments.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['requestId', 'serviceProjectAttachmentId'],
+        relative_path='v1alpha/{+parent}/serviceProjectAttachments',
+        request_field='serviceProjectAttachment',
+        request_type_name='ApphubProjectsLocationsServiceProjectAttachmentsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""DeleteServiceProjectAttachment detaches a service project attachment from a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsServiceProjectAttachmentsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjectAttachments/{serviceProjectAttachmentsId}',
+        http_method='DELETE',
+        method_id='apphub.projects.locations.serviceProjectAttachments.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsServiceProjectAttachmentsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetServiceProjectAttachment gets a service project attachment for a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsServiceProjectAttachmentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ServiceProjectAttachment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjectAttachments/{serviceProjectAttachmentsId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.serviceProjectAttachments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsServiceProjectAttachmentsGetRequest',
+        response_type_name='ServiceProjectAttachment',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListServiceProjectAttachments lists service projects attached to a host project.
+
+      Args:
+        request: (ApphubProjectsLocationsServiceProjectAttachmentsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListServiceProjectAttachmentsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/serviceProjectAttachments',
+        http_method='GET',
+        method_id='apphub.projects.locations.serviceProjectAttachments.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/serviceProjectAttachments',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsServiceProjectAttachmentsListRequest',
+        response_type_name='ListServiceProjectAttachmentsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsServicesService(base_api.BaseApiService):
     """Service class for the projects_locations_services resource."""
 
@@ -767,6 +810,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
       super(ApphubV1alpha.ProjectsLocationsServicesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def FindUnregistered(self, request, global_params=None):
+      r"""FindUnregisteredServices finds unregistered services for a given host project and location.
+
+      Args:
+        request: (ApphubProjectsLocationsServicesFindUnregisteredRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindUnregisteredServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('FindUnregistered')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FindUnregistered.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services:findUnregistered',
+        http_method='GET',
+        method_id='apphub.projects.locations.services.findUnregistered',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/services:findUnregistered',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsServicesFindUnregisteredRequest',
+        response_type_name='FindUnregisteredServicesResponse',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""GetService gets a service from App Hub Application.
@@ -831,6 +901,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
       super(ApphubV1alpha.ProjectsLocationsWorkloadsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def FindUnregistered(self, request, global_params=None):
+      r"""FindUnregisteredServices finds unregistered workloads for a given host project and location.
+
+      Args:
+        request: (ApphubProjectsLocationsWorkloadsFindUnregisteredRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindUnregisteredWorkloadsResponse) The response message.
+      """
+      config = self.GetMethodConfig('FindUnregistered')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FindUnregistered.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/workloads:findUnregistered',
+        http_method='GET',
+        method_id='apphub.projects.locations.workloads.findUnregistered',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/workloads:findUnregistered',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsWorkloadsFindUnregisteredRequest',
+        response_type_name='FindUnregisteredWorkloadsResponse',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""GetWorkload gets a workload from App Hub Application.
@@ -1001,6 +1098,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsListRequest',
         response_type_name='ListLocationsResponse',
+        supports_download=False,
+    )
+
+    def LookupServiceProjectAttachment(self, request, global_params=None):
+      r"""LookupServiceProjectAttachment looksup a service project attachment for a service project.
+
+      Args:
+        request: (ApphubProjectsLocationsLookupServiceProjectAttachmentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (LookupServiceProjectAttachmentResponse) The response message.
+      """
+      config = self.GetMethodConfig('LookupServiceProjectAttachment')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    LookupServiceProjectAttachment.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:lookupServiceProjectAttachment',
+        http_method='GET',
+        method_id='apphub.projects.locations.lookupServiceProjectAttachment',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:lookupServiceProjectAttachment',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsLookupServiceProjectAttachmentRequest',
+        response_type_name='LookupServiceProjectAttachmentResponse',
         supports_download=False,
     )
 

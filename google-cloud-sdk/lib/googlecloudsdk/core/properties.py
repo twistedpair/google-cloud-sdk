@@ -323,8 +323,6 @@ class _Sections(object):
     batch: Section, The section containing batch properties for the Cloud SDK.
     billing: Section, The section containing billing properties for the Cloud
       SDK.
-    blueprints: Section, the section containing blueprints properties for the
-      Cloud SDK.
     builds: Section, The section containing builds properties for the Cloud SDK.
     artifacts: Section, The section containing artifacts properties for the
       Cloud SDK.
@@ -386,8 +384,6 @@ class _Sections(object):
       Cloud SDK.
     functions: Section, The section containing functions properties for the
       Cloud SDK.
-    game_services: Section, The section containing gameservices properties for
-      the Cloud SDK.
     gcloudignore: Section, The section containing gcloudignore properties for
       the Cloud SDK.
     gkebackup: Section, The section containing gkebackup properties for the
@@ -395,6 +391,8 @@ class _Sections(object):
     gkehub: Section, The section containing gkehub properties for the Cloud SDK.
     healthcare: Section, The section containing healthcare properties for the
       Cloud SDK.
+    inframanager: Section, The section containing Infra Manager properties for
+      the Cloud SDK.
     interactive: Section, The section containing interactive properties for the
       Cloud SDK.
     kuberun: Section, The section containing kuberun properties for the Cloud
@@ -468,7 +466,6 @@ class _Sections(object):
     self.auth = _SectionAuth()
     self.batch = _SectionBatch()
     self.billing = _SectionBilling()
-    self.blueprints = _SectionBlueprints()
     self.builds = _SectionBuilds()
     self.code = _SectionCode()
     self.component_manager = _SectionComponentManager()
@@ -500,11 +497,11 @@ class _Sections(object):
     self.experimental = _SectionExperimental()
     self.filestore = _SectionFilestore()
     self.functions = _SectionFunctions()
-    self.game_services = _SectionGameServices()
     self.gcloudignore = _SectionGcloudignore()
     self.gkehub = _SectionGkeHub()
     self.gkebackup = _SectionGkebackup()
     self.healthcare = _SectionHealthcare()
+    self.inframanager = _SectionInfraManager()
     self.interactive = _SectionInteractive()
     self.kuberun = _SectionKubeRun()
     self.lifesciences = _SectionLifeSciences()
@@ -549,7 +546,6 @@ class _Sections(object):
         self.auth,
         self.batch,
         self.billing,
-        self.blueprints,
         self.builds,
         self.artifacts,
         self.code,
@@ -581,10 +577,10 @@ class _Sections(object):
         self.experimental,
         self.filestore,
         self.functions,
-        self.game_services,
         self.gcloudignore,
         self.gkebackup,
         self.healthcare,
+        self.inframanager,
         self.interactive,
         self.kuberun,
         self.lifesciences,
@@ -1162,7 +1158,6 @@ class _SectionApiEndpointOverrides(_Section):
     self.bigtableadmin = self._Add('bigtableadmin', command='gcloud bigtable')
     self.binaryauthorization = self._Add(
         'binaryauthorization', command='gcloud container binauthz', hidden=True)
-    self.blueprints = self._Add('config', command='gcloud blueprints')
     self.categorymanager = self._Add('categorymanager', hidden=True)
     self.certificatemanager = self._Add(
         'certificatemanager', command='gcloud certificate-manager')
@@ -1229,7 +1224,6 @@ class _SectionApiEndpointOverrides(_Section):
         'faultinjectiontesting', command='gcloud fault-injection')
     self.file = self._Add('file', command='gcloud filestore')
     self.firestore = self._Add('firestore', command='gcloud firestore')
-    self.gameservices = self._Add('gameservices', command='gcloud gamer')
     self.genomics = self._Add('genomics', command='gcloud genomics')
     self.gkebackup = self._Add('gkebackup', hidden=True)
     self.gkehub = self._Add('gkehub', hidden=True)
@@ -1665,26 +1659,6 @@ class _SectionBilling(_Section):
              `billing/quota_project` and `--billing-project` are specified,
              `--billing-project` takes precedence.
              """))
-
-
-class _SectionBlueprints(_Section):
-  """Contains the properties for the 'blueprints' section."""
-
-  def __init__(self):
-    super(_SectionBlueprints, self).__init__('blueprints', hidden=True)
-    self.location = self._Add(
-        'location',
-        default='us-central1',
-        help_text='The default region to use when working with'
-        'blueprints-related resources. When a `--location` flag is required '
-        'but not provided, the command will fall back to this value, if set.')
-
-    self.config_controller = self._Add(
-        'config_controller',
-        help_text='The default Config Controller instance to use when working '
-        'with blueprints-related resources. When a `--config-controller` flag '
-        'is required but not provided, the command will fall back to this '
-        'value, if set.')
 
 
 class _SectionBuilds(_Section):
@@ -2611,36 +2585,6 @@ class _SectionFunctions(_Section):
         'This property will be removed in a future release.')
 
 
-class _SectionGameServices(_Section):
-  """Contains the properties for the 'game_services' section."""
-
-  def __init__(self):
-    super(_SectionGameServices, self).__init__('game_services')
-    self.deployment = self._Add(
-        'default_deployment',
-        default='-',
-        help_text=('Default deployment to use when working with Cloud Game '
-                   'Services list configs. When a --deployment flag is '
-                   'required in a list command but not provided, the command '
-                   'will fall back to this value which envokes aggregated '
-                   'list from the backend.'))
-    self.location = self._Add(
-        'location',
-        default='global',
-        help_text=(
-            'Default location to use when working with Cloud Game Services '
-            'resources. When a `--location` flag is required but not provided, '
-            'the command will fall back to this value.'))
-    self.realm = self._Add(
-        'default_realm',
-        default='-',
-        help_text=(
-            'Default realm to use when working with Cloud Game Services list '
-            'clusters. When a --realm flag is required in a list command but '
-            'not provided, the command will fall back to this value which '
-            'envokes aggregated list from the backend.'))
-
-
 class _SectionGcloudignore(_Section):
   """Contains the properties for the 'gcloudignore' section."""
 
@@ -2724,6 +2668,19 @@ class _SectionHealthcare(_Section):
         'dataset',
         help_text='Default dataset to use when working with Cloud Healthcare '
         'resources. When a `--dataset` flag is required but not provided, the '
+        'command will fall back to this value, if set.')
+
+
+class _SectionInfraManager(_Section):
+  """Contains the properties for the 'infra-manager' section."""
+
+  def __init__(self):
+    super(_SectionInfraManager, self).__init__('infra-manager', hidden=True)
+    self.location = self._Add(
+        'location',
+        default=None,
+        help_text='The default region to use when working with Infra Manager '
+        'resources. When a `--location` flag is required but not provided, the '
         'command will fall back to this value, if set.')
 
 
@@ -2955,6 +2912,7 @@ class _SectionMlEngine(_Section):
                    'Cloud ML Engine local predict/train jobs. If not '
                    'specified, the default path is the one to the Python '
                    'interpreter found on system `PATH`.'))
+
 
 class _SectionMps(_Section):
   """Contains the properties for the 'mps' section."""

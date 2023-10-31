@@ -1376,7 +1376,6 @@ class ArgDict(ArgList):
     return None
 
 
-# NOTE: ArgObject is still being implemented. Not available for public use yet
 class ArgObject(ArgDict):
   """Catch all arg type that will accept a file, json, or ArgDict.
 
@@ -1559,6 +1558,13 @@ class ArgObject(ArgDict):
       json_value = arg_value
 
     return self._StringifyDictValues(json_value)
+
+  def _CheckRequiredKeys(self, arg_dict):
+    if isinstance(arg_dict, list):
+      for value in arg_dict:
+        super(ArgObject, self)._CheckRequiredKeys(value)
+    else:
+      super(ArgObject, self)._CheckRequiredKeys(arg_dict)
 
   def _ParseAndValidateJson(self, arg_value):
     result = self._Map(arg_value, self._ValidateKeyValue)

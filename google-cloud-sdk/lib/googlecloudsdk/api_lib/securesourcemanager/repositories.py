@@ -80,3 +80,58 @@ class RepositoriesClient(object):
         repositoryId=repository_ref.repositoriesId,
     )
     return self._service.Create(create_req)
+
+  def Describe(self, repository_ref):
+    """Get metadata for a Secure Source Manager repository.
+
+    Args:
+      repository_ref: a resource reference to
+        securesourcemanager.projects.locations.repositories.
+
+    Returns:
+    Description of repository.
+    """
+    get_req = self.messages.SecuresourcemanagerProjectsLocationsRepositoriesGetRequest(
+        name=repository_ref.RelativeName()
+    )
+    return self._service.Get(get_req)
+
+  def Delete(self, repository_ref, allow_missing):
+    """Delete a Secure Source Manager repository.
+
+    Args:
+      repository_ref: a Resource reference to a
+        securesourcemanager.projects.locations.repositories resource.
+      allow_missing: Optional. If set to true, and the repository is not found,
+        the request will succeed but no action will be taken on the server.
+
+    Returns:
+    Deleted Repository Resource.
+    """
+
+    delete_req = self.messages.SecuresourcemanagerProjectsLocationsRepositoriesDeleteRequest(
+        allowMissing=allow_missing, name=repository_ref.RelativeName()
+    )
+    return self._service.Delete(delete_req)
+
+  def List(self, location_ref, page_size, page_token):
+    """Lists repositories in a Secure Source Manager instance.
+
+    Args:
+      location_ref: a Resource reference to a
+        securesourcemanager.projects.locations resource.
+      page_size: Optional. Requested page size. Server may return fewer items
+        than requested. If unspecified, server will pick an appropriate default.
+      page_token: A token identifying a page of results the server should
+        return.
+
+    Returns:
+    List of repositories.
+    """
+    list_req = self.messages.SecuresourcemanagerProjectsLocationsRepositoriesListRequest(
+        pageSize=page_size,
+        pageToken=page_token,
+        parent=location_ref.RelativeName(),
+    )
+
+    return self._service.List(list_req)

@@ -33,6 +33,10 @@ FLEET_MESSAGE_TO_FLAGS = {
             'mode': '--security-posture',
             'vulnerability_mode': '--workload-vulnerability-scanning',
         },
+        'binary_authorization_config': {
+            'evaluation_mode': '--binauthz-evaluation-mode',
+            'policy_bindings': '--binauthz-policy-bindings',
+        },
     },
 }
 
@@ -124,3 +128,9 @@ def GetFleetUpdateMask(args):
       FLEET_MESSAGE_TO_FLAGS
   )
   return GetUpdateMask(args, fleet_flag_to_update_mask_paths)
+
+
+def HasBinauthzConfig(args) -> bool:
+  return args.IsKnownAndSpecified(
+      'binauthz_evaluation_mode'
+  ) or args.IsKnownAndSpecified('binauthz_policy_bindings')

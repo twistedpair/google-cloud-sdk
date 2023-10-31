@@ -18,6 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import re
+
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.core import properties
@@ -26,6 +28,16 @@ from googlecloudsdk.core import resources
 
 def AppendTrailingDot(name):
   return name if not name or name.endswith('.') else name + '.'
+
+
+# Camel case to snake case utils
+_first_cap_re = re.compile('(.)([A-Z][a-z0-9]+)')
+_all_cap_re = re.compile('([a-z0-9])([A-Z])')
+
+
+def CamelCaseToSnakeCase(name):
+  s1 = _first_cap_re.sub(r'\1_\2', name)
+  return _all_cap_re.sub(r'\1_\2', s1).upper()
 
 
 def GetRegistry(version):

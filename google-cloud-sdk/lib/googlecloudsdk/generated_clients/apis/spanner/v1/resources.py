@@ -95,6 +95,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_INSTANCES_DATABASES_BACKUPSCHEDULES = (
+      'projects.instances.databases.backupSchedules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/databases/'
+              '{databasesId}/backupSchedules/{backupSchedulesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_INSTANCES_DATABASES_OPERATIONS = (
       'projects.instances.databases.operations',
       '{+name}',

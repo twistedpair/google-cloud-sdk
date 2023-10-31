@@ -103,3 +103,8 @@ def GetParentFromNamedArguments(args):
         return args.project
     else:
       return "projects/" + args.project
+
+
+def CleanUpUserMaskInput(mask):
+  """Removes spaces from a field mask provided by user."""
+  return mask.replace(" ", "")

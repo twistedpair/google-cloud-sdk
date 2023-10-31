@@ -28,7 +28,8 @@ def MakeSnapshotArg(plural=False):
       name='snapshot_name',
       completer=compute_completers.RoutesCompleter,
       plural=plural,
-      global_collection='compute.snapshots')
+      global_collection='compute.snapshots',
+  )
 
 
 def AddChainArg(parser):
@@ -40,7 +41,9 @@ def AddChainArg(parser):
           Use this flag only if you are an advanced service owner who needs
           to create separate snapshot chains, for example, for chargeback tracking.
           When you describe your snapshot resource, this field is visible only
-          if it has a non-empty value."""))
+          if it has a non-empty value."""
+      ),
+  )
 
 
 def AddSourceDiskCsekKey(parser):
@@ -51,7 +54,8 @@ def AddSourceDiskCsekKey(parser):
       Path to the customer-supplied encryption key of the source disk.
       Required if the source disk is protected by a customer-supplied
       encryption key.
-      """)
+      """,
+  )
 
 
 def AddSourceInstantSnapshotCsekKey(parser):
@@ -73,7 +77,8 @@ def AddSnapshotType(parser):
       choices=snapshot_type_choices,
       help="""
               Type of snapshot. If a snapshot type is not specified, a STANDARD snapshot will be created.
-           """)
+           """,
+  )
 
 
 def AddMaxRetentionDays(parser):
@@ -81,7 +86,8 @@ def AddMaxRetentionDays(parser):
       '--max-retention-days',
       help="""
     Days for snapshot to live before being automatically deleted. If unspecified, the snapshot will live until manually deleted.
-    """)
+    """,
+  )
 
 
 SOURCE_DISK_ARG = compute_flags.ResourceArgument(
@@ -96,7 +102,24 @@ SOURCE_DISK_ARG = compute_flags.ResourceArgument(
     """,
     zonal_collection='compute.disks',
     regional_collection='compute.regionDisks',
-    required=False)
+    required=False,
+)
+
+SOURCE_DISK_FOR_RECOVERY_CHECKPOINT_ARG = compute_flags.ResourceArgument(
+    resource_name='source disk for recovery checkpoint',
+    name='--source-disk-for-recovery-checkpoint',
+    completer=compute_completers.DisksCompleter,
+    short_help="""
+    Source disk whose recovery checkpoint used to create the snapshot. To create a snapshot from the recovery
+    checkpoint of a source disk in a different project, specify the full path to the source disk.
+    For example:
+    projects/MY-PROJECT/regions/MY-REGION/disks/MY-DISK
+    """,
+    regional_collection='compute.regionDisks',
+    plural=False,
+    required=False,
+    scope_flags_usage=compute_flags.ScopeFlagsUsage.GENERATE_DEDICATED_SCOPE_FLAGS,
+)
 
 SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     resource_name='source instant snapshot',
@@ -110,4 +133,5 @@ SOURCE_INSTANT_SNAPSHOT_ARG = compute_flags.ResourceArgument(
     """,
     zonal_collection='compute.instantSnapshots',
     regional_collection='compute.regionInstantSnapshots',
-    required=False)
+    required=False,
+)

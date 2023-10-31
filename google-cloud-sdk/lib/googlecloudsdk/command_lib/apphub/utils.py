@@ -45,3 +45,8 @@ def GetGlobalTelemetryResourceRelativeName():
       GetProjectLocationResource(consts.Resource.GLOBAL_LOCATION).RelativeName()
       + consts.Telemetry.TELEMETRY_SUFFIX
   )
+
+
+def DefaultToGlobal():
+  """Returns 'global' to be used as a fallthrough hook in resources.yaml."""
+  return 'global'

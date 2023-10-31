@@ -26,6 +26,18 @@ from googlecloudsdk.command_lib.util.args import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 
 
+def _GetOrAddArgGroup(parser, help_text):
+  """Create a new arg group or return existing group with given help text."""
+  for arg in parser.arguments:
+    if arg.is_group and arg.help == help_text:
+      return arg
+  return parser.add_argument_group(help_text)
+
+
+def GetOrAddOptionGroup(parser):
+  return _GetOrAddArgGroup(parser, 'The analysis options.')
+
+
 def AddOrganizationArgs(parser, help_text):
   parser.add_argument(
       '--organization', metavar='ORGANIZATION_ID', help=help_text)
@@ -661,10 +673,28 @@ def AddAnalyzerAnalyzeServiceAccountImpersonationArgs(parser):
   parser.set_defaults(analyze_service_account_impersonation=False)
 
 
+def AddAnalyzerIncludeDenyPolicyAnalysisArgs(parser):
+  """Adds include deny policy analysis arg into options.
+
+  Args:
+    parser: the option group.
+  """
+
+  parser.add_argument(
+      '--include-deny-policy-analysis',
+      action='store_true',
+      help=(
+          'If true, the response will include analysis for deny policies.'
+          'This is a very expensive operation, because many derived queries '
+          'will be executed.'
+      ),
+  )
+  parser.set_defaults(include_deny_policy_analysis=False)
+
+
 def AddAnalyzerOptionsGroup(parser, is_sync):
   """Adds a group of options."""
-  options_group = parser.add_group(
-      mutex=False, required=False, help='The analysis options.')
+  options_group = GetOrAddOptionGroup(parser)
   AddAnalyzerExpandGroupsArgs(options_group)
   AddAnalyzerExpandRolesArgs(options_group)
   AddAnalyzerExpandResourcesArgs(options_group)
@@ -826,3 +856,106 @@ def AddQuerySystemBigQueryArgs(parser):
               returned.""",
       },
   ).AddToParser(bigquery_group)
+
+
+def AddDestinationGroup(parser):
+  destination_group = parser.add_group(
+      mutex=True,
+      required=True,
+      help='The destination path for writing IAM policy analysis results.',
+  )
+  AddGcsOutputPathArgs(destination_group)
+  AddBigQueryDestinationGroup(destination_group)
+
+
+def AddGcsOutputPathArgs(parser):
+  parser.add_argument(
+      '--gcs-output-path',
+      metavar='GCS_OUTPUT_PATH',
+      required=False,
+      type=arg_parsers.RegexpValidator(
+          r'^gs://.*',
+          '--gcs-output-path must be a Google Cloud Storage URI starting with '
+          '"gs://". For example, "gs://bucket_name/object_name".',
+      ),
+      help=(
+          'Google Cloud Storage URI where the results will be written. URI must'
+          ' start with "gs://". For example, "gs://bucket_name/object_name".'
+      ),
+  )
+
+
+def AddBigQueryDestinationGroup(parser):
+  bigquery_destination_group = parser.add_group(
+      mutex=False,
+      required=False,
+      help='BigQuery destination where the results will go.',
+  )
+  AddBigQueryDatasetArgs(bigquery_destination_group)
+  AddBigQueryTablePrefixArgs(bigquery_destination_group)
+  AddBigQueryPartitionKeyArgs(bigquery_destination_group)
+  AddBigQueryWriteDispositionArgs(bigquery_destination_group)
+
+
+def AddBigQueryDatasetArgs(parser):
+  parser.add_argument(
+      '--bigquery-dataset',
+      metavar='BIGQUERY_DATASET',
+      required=True,
+      type=arg_parsers.RegexpValidator(
+          r'^projects/[A-Za-z0-9\-]+/datasets/[\w]+',
+          '--bigquery-dataset must be a dataset relative name starting with '
+          '"projects/". For example, '
+          '"projects/project_id/datasets/dataset_id".',
+      ),
+      help=(
+          'BigQuery dataset where the results will be written. Must be a '
+          'dataset relative name starting with "projects/". For example, '
+          '"projects/project_id/datasets/dataset_id".'
+      ),
+  )
+
+
+def AddBigQueryTablePrefixArgs(parser):
+  parser.add_argument(
+      '--bigquery-table-prefix',
+      metavar='BIGQUERY_TABLE_PREFIX',
+      required=True,
+      type=arg_parsers.RegexpValidator(
+          r'[\w]+',
+          '--bigquery-table-prefix must be a BigQuery table name consists of '
+          'letters, numbers and underscores".',
+      ),
+      help=(
+          'The prefix of the BigQuery tables to which the analysis results '
+          'will be written. A table name consists of letters, numbers and '
+          'underscores".'
+      ),
+  )
+
+
+def AddBigQueryPartitionKeyArgs(parser):
+  parser.add_argument(
+      '--bigquery-partition-key',
+      choices=['PARTITION_KEY_UNSPECIFIED', 'REQUEST_TIME'],
+      help=(
+          'This enum determines the partition key column for the bigquery'
+          ' tables. Partitioning can improve query performance and reduce query'
+          ' cost by filtering partitions. Refer to'
+          ' https://cloud.google.com/bigquery/docs/partitioned-tables for'
+          ' details.'
+      ),
+  )
+
+
+def AddBigQueryWriteDispositionArgs(parser):
+  parser.add_argument(
+      '--bigquery-write-disposition',
+      metavar='BIGQUERY_WRITE_DISPOSITION',
+      help=(
+          'Specifies the action that occurs if the destination table or '
+          'partition already exists. The following values are supported: '
+          'WRITE_TRUNCATE, WRITE_APPEND and WRITE_EMPTY. The default value is '
+          'WRITE_APPEND.'
+      ),
+  )

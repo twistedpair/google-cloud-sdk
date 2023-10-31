@@ -341,7 +341,7 @@ class Argument(YAMLArgument):
         metavar=data.get('metavar'),
         completer=util.Hook.FromData(data, 'completer'),
         is_positional=is_positional,
-        type=util.ParseType(data.get('type')),
+        type=util.ParseType(data),
         choices=[util.Choice(d) for d in choices] if choices else None,
         default=data.get('default', arg_utils.UNSPECIFIED),
         fallback=util.Hook.FromData(data, 'fallback'),

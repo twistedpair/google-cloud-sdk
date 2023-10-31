@@ -20,11 +20,180 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
-from typing import List, Optional, Dict, Set
+from typing import Dict, List, Optional, Set
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
+
+
+class BindingData(object):
+  """Binding data that represent a binding.
+
+  Attributes:
+    from_id: the resource id the binding is configured from
+    to_id: the resource id the binding is pointing to
+    config: the binding config if available
+  """
+
+  def __init__(
+      self,
+      from_id: runapps_v1alpha1_messages.ResourceID,
+      to_id: runapps_v1alpha1_messages.ResourceID,
+      config: Optional[runapps_v1alpha1_messages.Binding.ConfigValue] = None,
+  ):
+    self.from_id = from_id
+    self.to_id = to_id
+    self.config = config
+
+
+class BindingFinder(object):
+  """A map of bindings to help processing binding information.
+
+  Attributes:
+    bindings: the list of bindings.
+  """
+
+  def __init__(
+      self,
+      all_resources: List[runapps_v1alpha1_messages.Resource],
+  ):
+    """Returns list of bindings between the given resources.
+
+    Args:
+      all_resources: the resources to look for bindings from.
+
+    Returns:
+      list of ResourceID of the bindings.
+    """
+    self.bindings = []
+    for res in all_resources:
+      bindings = FindBindingsRecursive(res)
+      for binding in bindings:
+        binding_data = BindingData(
+            from_id=res.id, to_id=binding.targetRef.id, config=binding.config
+        )
+        self.bindings.append(binding_data)
+
+  def GetAllBindings(self) -> List[runapps_v1alpha1_messages.ResourceID]:
+    """Returns all the bindings.
+
+    Returns:
+      the list of bindings
+    """
+    return self.bindings
+
+  def GetBinding(
+      self, res_id: runapps_v1alpha1_messages.ResourceID
+  ) -> List[BindingData]:
+    """Returns list of bindings that are associated with the res_id.
+
+    Args:
+      res_id: the ID that represents the resource.
+
+    Returns:
+      list of binding data
+    """
+    return [
+        b for b in self.bindings if b.from_id == res_id or b.to_id == res_id
+    ]
+
+  def GetIDsBindedTo(
+      self, res_id: runapps_v1alpha1_messages.ResourceID
+  ) -> List[runapps_v1alpha1_messages.ResourceID]:
+    """Returns list of resource IDs that are binded to the resource.
+
+    Args:
+      res_id: the ID that represents the resource.
+
+    Returns:
+      list of resource ID
+    """
+    return [
+        bid.from_id for bid in self.GetBinding(res_id) if bid.to_id == res_id
+    ]
+
+  def GetBindingIDs(
+      self, res_id: runapps_v1alpha1_messages.ResourceID
+  ) -> List[runapps_v1alpha1_messages.ResourceID]:
+    """Returns list of resource IDs that are binded to or from the resource.
+
+    Args:
+      res_id: the ID that represents the resource.
+
+    Returns:
+      list of resource ID
+    """
+    result = []
+    for bid in self.GetBinding(res_id):
+      if bid.from_id == res_id:
+        result.append(bid.to_id)
+      else:
+        result.append(bid.from_id)
+    return result
+
+
+def FindBindings(
+    resource: runapps_v1alpha1_messages.Resource,
+    target_type: Optional[str] = None,
+    target_name: Optional[str] = None,
+) -> List[runapps_v1alpha1_messages.Binding]:
+  """Returns list of bindings that match the target_type and target_name.
+
+  Args:
+    resource: the resource to look for bindings from.
+    target_type: the type of bindings to match. If empty, will match all types.
+    target_name: the name of the bindings to match. If empty, will match all
+      names.
+
+  Returns:
+    list of ResourceID of the bindings.
+  """
+  result = []
+  for binding in resource.bindings:
+    name_match = not target_name or binding.targetRef.id.name == target_name
+    type_match = not target_type or binding.targetRef.id.type == target_type
+    if name_match and type_match:
+      result.append(binding)
+  return result
+
+
+def FindBindingsRecursive(
+    resource: runapps_v1alpha1_messages.Resource,
+    target_type: Optional[str] = None,
+    target_name: Optional[str] = None,
+) -> List[runapps_v1alpha1_messages.Binding]:
+  """Find bindings from the given resource and its subresource.
+
+  Args:
+    resource: the resource to look for bindings from.
+    target_type: the type of bindings to match. If empty, will match all types.
+    target_name: the name of the bindings to match. If empty, will match all
+      names.
+
+  Returns:
+    list of ResourceID of the bindings.
+  """
+  svcs = FindBindings(resource, target_type, target_name)
+  if resource.subresources:
+    for subresource in resource.subresources:
+      svcs.extend(FindBindingsRecursive(subresource, target_type, target_name))
+  return svcs
+
+
+def RemoveBinding(
+    to_resource: runapps_v1alpha1_messages.Resource,
+    from_resource: runapps_v1alpha1_messages.Resource,
+):
+  """Remove a binding from a resource that's pointing to another resource.
+
+  Args:
+    to_resource: the resource this binding is pointing to.
+    from_resource: the resource this binding is configured from.
+  """
+  from_resource.bindings = [
+      x for x in from_resource.bindings if x.targetRef.id != to_resource.id
+  ]
 
 
 def GetComponentTypesFromSelectors(selectors) -> Set[str]:
@@ -182,23 +351,6 @@ class TypeKit(object):
     else:
       self._SetBinding(integration, workload, parameters)
 
-  def RemoveBinding(
-      self,
-      to_resource: runapps_v1alpha1_messages.Resource,
-      from_resource: runapps_v1alpha1_messages.Resource,
-  ):
-    """Remove a binding from a resource that's pointing to another resource.
-
-    Args:
-      to_resource: the resource this binding is pointing to.
-      from_resource: the resource this binding is configured from.
-    """
-    from_resource.bindings = [
-        x
-        for x in from_resource.bindings
-        if x.targetRef.id != to_resource.id
-    ]
-
   def UnbindServiceFromIntegration(
       self,
       integration: runapps_v1alpha1_messages.Resource,
@@ -211,9 +363,9 @@ class TypeKit(object):
       workload: the resource the workload.
     """
     if self._type_metadata.service_type == types_utils.ServiceType.INGRESS:
-      self.RemoveBinding(workload, integration)
+      RemoveBinding(workload, integration)
     else:
-      self.RemoveBinding(integration, workload)
+      RemoveBinding(integration, workload)
 
   def NewIntegrationName(
       self, appconfig: runapps_v1alpha1_messages.Config
@@ -295,64 +447,12 @@ class TypeKit(object):
       return [
           workload.id.name
           for workload in filtered_workloads
-          if self._FindBindings(workload, resource.id.type, resource.id.name)
+          if FindBindings(workload, resource.id.type, resource.id.name)
       ]
     return [
         res_id.targetRef.id.name
-        for res_id in self._FindBindingsRecursive(resource, workload_type)
+        for res_id in FindBindingsRecursive(resource, workload_type)
     ]
-
-  def _FindBindingsRecursive(
-      self,
-      resource: runapps_v1alpha1_messages.Resource,
-      target_type: Optional[str] = None,
-      target_name: Optional[str] = None,
-  ) -> List[runapps_v1alpha1_messages.Binding]:
-    """Find bindings from the given resource and its subresource.
-
-    Args:
-      resource: the resource to look for bindings from.
-      target_type: the type of bindings to match. If empty, will match all
-        types.
-      target_name: the name of the bindings to match. If empty, will match all
-        names.
-
-    Returns:
-      list of ResourceID of the bindings.
-    """
-    svcs = self._FindBindings(resource, target_type, target_name)
-    if resource.subresources:
-      for subresource in resource.subresources:
-        svcs.extend(
-            self._FindBindingsRecursive(subresource, target_type, target_name)
-        )
-    return svcs
-
-  def _FindBindings(
-      self,
-      resource: runapps_v1alpha1_messages.Resource,
-      target_type: Optional[str],
-      target_name: Optional[str],
-  ) -> List[runapps_v1alpha1_messages.Binding]:
-    """Returns list of bindings that match the target_type and target_name.
-
-    Args:
-      resource: the resource to look for bindings from.
-      target_type: the type of bindings to match. If empty, will match all
-        types.
-      target_name: the name of the bindings to match. If empty, will match all
-        names.
-
-    Returns:
-      list of ResourceID of the bindings.
-    """
-    result = []
-    for binding in resource.bindings:
-      if (not target_name or binding.targetRef.id.name == target_name) and (
-          not target_type or binding.targetRef.id.type == target_type
-      ):
-        result.append(binding)
-    return result
 
   def GetCreateComponentTypes(self, selectors):
     """Returns a list of component types included in a create/update deployment.

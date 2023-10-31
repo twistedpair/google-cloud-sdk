@@ -202,6 +202,21 @@ def ResetFieldInMessage(message, field_path):
     sub_message.reset(fields[-1])
 
 
+def GetChildFieldName(api_field):
+  """Gets the child field name from the api field.
+
+  If api field path is multiple levels deep, return the last field name.
+  i.e. 'x.y.z' would return 'z'
+
+  Args:
+    api_field: str, full api field path
+
+  Returns:
+    str, child api field
+  """
+  return api_field.rpartition('.')[-1]
+
+
 def _GetField(message, field_name):
   try:
     return message.field_by_name(field_name)
@@ -300,7 +315,6 @@ class ArgObjectType(object):
     Args:
       field: The apitools field instance.
     """
-    pass
 
   def Action(self, unused_repeated):
     """The argparse action to use for this argument.
@@ -327,13 +341,12 @@ class RepeatedMessageBindableType(object):
   type function at the point when the message it is being bound to is known.
   """
 
-  def GenerateType(self, message):
+  def GenerateType(self, field):
     """Generates an argparse type function to use to parse the argument.
 
     Args:
-      message: The apitools message class.
+      field: The apitools field instance.
     """
-    pass
 
   def Action(self):
     """The argparse action to use for this argument.
@@ -415,7 +428,7 @@ def GenerateFlagType(field, attributes, fix_bools=True):
       # can generate the message from the key/value pairs.
       if is_repeatable_message:
         action = flag_type.Action()
-        flag_type = flag_type.GenerateType(field.type)
+        flag_type = flag_type.GenerateType(field)
       # If a simple type was provided, just use a list of that type (even if it
       # is a message). The type function will be responsible for converting to
       # the correct value. If type is an ArgList or ArgDict, don't try to wrap

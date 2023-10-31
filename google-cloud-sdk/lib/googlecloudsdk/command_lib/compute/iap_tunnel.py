@@ -32,6 +32,8 @@ import threading
 
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket
 from googlecloudsdk.api_lib.compute import iap_tunnel_websocket_utils as utils
+from googlecloudsdk.api_lib.compute import sg_tunnel
+from googlecloudsdk.api_lib.compute import sg_tunnel_utils as sg_utils
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import http_proxy
@@ -101,9 +103,10 @@ def AddHostBasedTunnelArgs(parser, support_security_gateway=False):
       required=True,
       help=('Configures the region to use when connecting via IP address or '
             'FQDN.'))
-  # TODO(b/288931285): Add Security Gateway ExL support.
+
   if support_security_gateway:
     group_mutex = group.add_argument_group(mutex=True)
+    AddSecurityGatewayTunnelArgs(group_mutex.add_argument_group(hidden=True))
     group = group_mutex.add_argument_group()
   AddOnPremTunnelArgs(group)
 
@@ -124,6 +127,15 @@ def AddOnPremTunnelArgs(parser):
       required=False,
       help=('Configures the destination group to use when connecting via IP '
             'address or FQDN.'))
+
+
+def AddSecurityGatewayTunnelArgs(parser):
+  """Add arguments for the Security Gateway path."""
+  parser.add_argument(
+      '--security-gateway',
+      default=None,
+      required=True,
+      help='Configure the security gateway resource for connecting.')
 
 
 def AddProxyServerHelperArgs(parser):
@@ -586,42 +598,116 @@ class _StdinSocket(object):
     return b
 
 
-class _BaseIapTunnelHelper(object):
-  """Base helper class for starting IAP tunnel."""
+class SecurityGatewayTunnelHelper(object):
+  """Helper class for starting a Security Gateaway tunnel."""
 
-  def __init__(self, args, project):
+  def __init__(self, args, project, region, security_gateway, host, port):
+    # Re-use the same args as IAP to prevent adding more flags than necessary.
+    self._tunnel_url_override = args.iap_tunnel_url_override
+    self._ignore_certs = args.iap_tunnel_insecure_disable_websocket_cert_check
+
+    self._project = project
+    self._region = region
+    self._security_gateway = security_gateway
+    self._host = host
+    self._port = port
+
+    self._shutdown = False
+
+  def _InitiateConnection(self, local_conn,
+                          get_access_token_callback, user_agent):
+    del user_agent  # Unused.
+    sg_tunnel_target = self._GetTargetInfo()
+    new_sg_tunnel = sg_tunnel.SecurityGatewayTunnel(
+        sg_tunnel_target,
+        get_access_token_callback,
+        functools.partial(_SendLocalDataCallback, local_conn),
+        functools.partial(_CloseLocalConnectionCallback, local_conn),
+        self._ignore_certs)
+    new_sg_tunnel.InitiateConnection()
+    return new_sg_tunnel
+
+  def _GetTargetInfo(self):
+    proxy_info = http_proxy.GetHttpProxyInfo()
+    if callable(proxy_info):
+      proxy_info = proxy_info(method='https')
+    return sg_utils.SecurityGatewayTargetInfo(
+        project=self._project,
+        region=self._region,
+        security_gateway=self._security_gateway,
+        host=self._host,
+        port=self._port,
+        url_override=self._tunnel_url_override,
+        proxy_info=proxy_info,
+    )
+
+  def RunReceiveLocalData(self, local_conn, socket_address, user_agent):
+    """Receive data from provided local connection and send over HTTP CONNECT.
+
+    Args:
+      local_conn: A socket or _StdinSocket representing the local connection.
+      socket_address: A verbose loggable string describing where conn is
+        connected to.
+      user_agent: The user_agent of this connection
+    """
+    sg_conn = None
+    try:
+      sg_conn = self._InitiateConnection(
+          local_conn,
+          functools.partial(_GetAccessTokenCallback,
+                            store.LoadIfEnabled(use_google_auth=True)),
+          user_agent)
+      while not (self._shutdown or sg_conn.ShouldStop()):
+        data = local_conn.recv(utils.SUBPROTOCOL_MAX_DATA_FRAME_SIZE)
+        if not data:
+          log.warning('Local connection [%s] has closed.', socket_address)
+          break
+        sg_conn.Send(data)
+    except socket.error as e:
+      log.error('Error while transmitting local connection [%s]: %s ',
+                socket_address, e)
+    finally:
+      log.info('Terminating connection from local connection: [%s]',
+               socket_address)
+      if local_conn:
+        local_conn.shutdown(socket.SHUT_RD)
+        local_conn.close()
+      if sg_conn:
+        sg_conn.Close()
+        log.debug('Connection [%s] closed.', socket_address)
+
+  def Close(self):
+    # This is expected to be called from a separate thread than the one running
+    # RunReceiveLocalData.
+    self._shutdown = True
+
+
+class IAPWebsocketTunnelHelper(object):
+  """Helper class for starting an IAP WebSocket tunnel."""
+
+  def __init__(self, args, project,
+               zone=None, instance=None, interface=None, port=None,
+               region=None, network=None, host=None, dest_group=None):
     self._project = project
     self._iap_tunnel_url_override = args.iap_tunnel_url_override
     self._ignore_certs = args.iap_tunnel_insecure_disable_websocket_cert_check
 
-    self._zone = None
-    self._instance = None
-    self._interface = None
-    self._port = None
-    self._region = None
-    self._network = None
-    self._host = None
-    self._dest_group = None
-    self._port = None
-
-    # Means that a ctrl-c was seen in server mode (never true in Stdin mode).
-    self._shutdown = False
-
-  def ConfigureForInstance(self, zone, instance, interface, port):
     self._zone = zone
     self._instance = instance
     self._interface = interface
     self._port = port
-
-  def ConfigureForHost(self, region, network, host, port, dest_group):
     self._region = region
     self._network = network
     self._host = host
     self._dest_group = dest_group
-    self._port = port
 
-  def _InitiateWebSocketConnection(self, local_conn, get_access_token_callback,
-                                   user_agent):
+    self._shutdown = False
+
+  def Close(self):
+    self._shutdown = True
+
+  def _InitiateConnection(self, local_conn, get_access_token_callback,
+                          user_agent):
     tunnel_target = self._GetTunnelTargetInfo()
     new_websocket = iap_tunnel_websocket.IapTunnelWebSocket(
         tunnel_target, get_access_token_callback,
@@ -647,7 +733,7 @@ class _BaseIapTunnelHelper(object):
                                      host=self._host,
                                      dest_group=self._dest_group)
 
-  def _RunReceiveLocalData(self, conn, socket_address, user_agent):
+  def RunReceiveLocalData(self, conn, socket_address, user_agent):
     """Receive data from provided local connection and send over WebSocket.
 
     Args:
@@ -658,7 +744,7 @@ class _BaseIapTunnelHelper(object):
     """
     websocket_conn = None
     try:
-      websocket_conn = self._InitiateWebSocketConnection(
+      websocket_conn = self._InitiateConnection(
           conn,
           functools.partial(_GetAccessTokenCallback,
                             store.LoadIfEnabled(use_google_auth=True)),
@@ -689,12 +775,12 @@ class _BaseIapTunnelHelper(object):
         pass
 
 
-class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
+class IapTunnelProxyServerHelper():
   """Proxy server helper listens on a port for new local connections."""
 
-  def __init__(self, args, project, local_host, local_port,
-               should_test_connection):
-    super(IapTunnelProxyServerHelper, self).__init__(args, project)
+  def __init__(self, local_host, local_port,
+               should_test_connection, tunneler):
+    self._tunneler = tunneler
     self._local_host = local_host
     self._local_port = local_port
     self._should_test_connection = should_test_connection
@@ -728,19 +814,21 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
     finally:
       self._CloseServerSockets()
 
-    self._shutdown = True
+    self._tunneler.Close()
     self._CloseClientConnections()
     log.status.Print('Server shutdown complete.')
 
   def _TestConnection(self):
     log.status.Print('Testing if tunnel connection works.')
     user_agent = transport.MakeUserAgentString()
-    websocket_conn = self._InitiateWebSocketConnection(
+    # pylint: disable=protected-access
+    conn = self._tunneler._InitiateConnection(
         None,
         functools.partial(_GetAccessTokenCallback,
                           store.LoadIfEnabled(use_google_auth=True)),
         user_agent)
-    websocket_conn.Close()
+    # pylint: enable=protected-access
+    conn.Close()
 
   def _AcceptNewConnection(self):
     """Accept a new socket connection and start a new WebSocket tunnel."""
@@ -811,7 +899,8 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
   def _HandleNewConnection(self, conn, socket_address):
     try:
       user_agent = transport.MakeUserAgentString()
-      self._RunReceiveLocalData(conn, repr(socket_address), user_agent)
+      self._tunneler.RunReceiveLocalData(conn, repr(socket_address),
+                                         user_agent)
     except EnvironmentError as e:
       log.info('Socket error [%s] while receiving from client.',
                six.text_type(e))
@@ -819,8 +908,11 @@ class IapTunnelProxyServerHelper(_BaseIapTunnelHelper):
       log.exception('Error while receiving from client.')
 
 
-class IapTunnelStdinHelper(_BaseIapTunnelHelper):
+class IapTunnelStdinHelper():
   """Facilitates a connection that gets local data from stdin."""
+
+  def __init__(self, tunneler):
+    self._tunneler = tunneler
 
   def Run(self):
     """Executes the tunneling of data."""
@@ -832,6 +924,6 @@ class IapTunnelStdinHelper(_BaseIapTunnelHelper):
         # waiting for data in the stdin. This only affects MacOs + python 2.7.
         user_agent = transport.MakeUserAgentString()
 
-        self._RunReceiveLocalData(_StdinSocket(), 'stdin', user_agent)
+        self._tunneler.RunReceiveLocalData(_StdinSocket(), 'stdin', user_agent)
     except KeyboardInterrupt:
       log.info('Keyboard interrupt received.')

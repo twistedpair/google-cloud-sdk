@@ -20,7 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import io
-import pipes
+import shlex
 
 from googlecloudsdk.core.resource import resource_printer_base
 from googlecloudsdk.core.util import platforms
@@ -135,7 +135,7 @@ class ConfigPrinter(resource_printer_base.ResourcePrinter):
           self._PrintEnvExport(six.iteritems(v),
                                prefix=self._Prefix(prefix, name))
       else:
-        value = pipes.quote(six.text_type(value))
+        value = shlex.quote(six.text_type(value))
         self._out.write(self._env_command_format.format(
             name=prefix + name, value=value))
 

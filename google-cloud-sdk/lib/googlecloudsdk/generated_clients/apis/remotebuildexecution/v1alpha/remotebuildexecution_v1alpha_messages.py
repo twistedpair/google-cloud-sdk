@@ -1420,6 +1420,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
       docker_runtime values may be rejected if they are incompatible with the
       selected isolation.
     dockerSiblingContainers: Whether dockerSiblingContainers can be used.
+    dockerUlimits: Whether dockerUlimits are allowed to be set.
     linuxExecution: Defines how Linux actions are allowed to execute. DO NOT
       USE: Experimental / unlaunched feature.
     linuxIsolation: linux_isolation allows overriding the docker runtime used
@@ -1570,11 +1571,12 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Mess
   dockerRunAsRoot = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 9)
   dockerRuntime = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 10)
   dockerSiblingContainers = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 11)
-  linuxExecution = _messages.EnumField('LinuxExecutionValueValuesEnum', 12)
-  linuxIsolation = _messages.EnumField('LinuxIsolationValueValuesEnum', 13)
-  macExecution = _messages.EnumField('MacExecutionValueValuesEnum', 14)
-  vmVerification = _messages.EnumField('VmVerificationValueValuesEnum', 15)
-  windowsExecution = _messages.EnumField('WindowsExecutionValueValuesEnum', 16)
+  dockerUlimits = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature', 12)
+  linuxExecution = _messages.EnumField('LinuxExecutionValueValuesEnum', 13)
+  linuxIsolation = _messages.EnumField('LinuxIsolationValueValuesEnum', 14)
+  macExecution = _messages.EnumField('MacExecutionValueValuesEnum', 15)
+  vmVerification = _messages.EnumField('VmVerificationValueValuesEnum', 16)
+  windowsExecution = _messages.EnumField('WindowsExecutionValueValuesEnum', 17)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicyFeature(_messages.Message):

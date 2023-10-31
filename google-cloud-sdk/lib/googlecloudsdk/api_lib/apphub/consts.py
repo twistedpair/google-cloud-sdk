@@ -48,3 +48,17 @@ class UpdateTelemetry:
 
   WAIT_FOR_UPDATE_MESSAGE = 'Updating telemetry'
   UPDATE_TIMELIMIT_SEC = 60
+
+
+class AddServiceProject:
+
+  WAIT_FOR_ADD_MESSAGE = 'Adding service project'
+
+  ADD_TIMELIMIT_SEC = 60
+
+
+class RemoveServiceProject:
+  WAIT_FOR_REMOVE_MESSAGE = 'Removing service project'
+
+  REMOVE_TIMELIMIT_SEC = 60
+

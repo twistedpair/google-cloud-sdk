@@ -617,7 +617,8 @@ def AddVolumeMountFlag():
   def _LimitMountKeys(key):
     if key not in {'volume', 'mount-path'}:
       raise serverless_exceptions.ArgumentError(
-          'Key [{}] not recognized for dict arg'.format(key)
+          'Key [{}] not recognized for volume mount. Only keys "volume" and'
+          ' "mount-path" are supported'.format(key)
       )
     return key
 

@@ -60,7 +60,6 @@ def Args():
       base.Argument(
           "--remote-username",
           help="Remote Repository upstream registry username.",
-          hidden=True,
       ),
       base.Argument(
           "--remote-password-secret-version",
@@ -68,7 +67,6 @@ def Args():
           Secret Manager secret version that contains password for the
           remote repository upstream.
           """,
-          hidden=True,
       ),
   ]
 

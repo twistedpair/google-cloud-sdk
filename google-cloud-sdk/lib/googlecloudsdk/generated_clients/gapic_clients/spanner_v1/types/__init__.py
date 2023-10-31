@@ -25,6 +25,7 @@ from .mutation import (
 )
 from .query_plan import (
     PlanNode,
+    QueryAdvisorResult,
     QueryPlan,
 )
 from .result_set import (
@@ -76,6 +77,7 @@ __all__ = (
     'KeySet',
     'Mutation',
     'PlanNode',
+    'QueryAdvisorResult',
     'QueryPlan',
     'PartialResultSet',
     'ResultSet',

@@ -161,14 +161,37 @@ class Namespace(argparse.Namespace):
     return handler
 
   def GetSpecifiedArgNames(self):
-    """Returns the scrubbed names for args specified on the command line."""
+    """Returns the scrubbed names for args specified on the command line.
+
+    For example,
+
+      `$ {command} positional_value --foo=bar, --lorem-ipsum=hello`
+
+    returns ['POSITIONAL_NAME', '--foo', '--lorem-ipsum'].
+    """
     return sorted(self._specified_args.values())
 
   def GetSpecifiedArgs(self):
     """Gets the argument names and values that were actually specified.
 
+    For example,
+
+      `$ {command} positional_value --foo=bar, --lorem-ipsum=1,2,3`
+
+    returns
+      {
+        'POSITIONAL_NAME': 'positional_value'
+        '--foo': 'bar',
+        '--lorem-ipsum': [1,2,3],
+      }
+
+    In the returned dictionary, the keys are the specified arguments, including
+    positional argument names and flag names, in string type; the corresponding
+    values are the user-specified flag values, converted according to the type
+    defined by each flag.
+
     Returns:
-      {str: str}, A mapping of argument name to value.
+      {str: any}, A mapping of argument name to value.
     """
     return {
         name: getattr(self, dest, 'UNKNOWN')
@@ -176,7 +199,27 @@ class Namespace(argparse.Namespace):
     }
 
   def GetSpecifiedArgsDict(self):
-    """Returns the _specified_args dictionary."""
+    """Returns the _specified_args dictionary.
+
+    For example,
+
+      $ {command} positional_value --foo=bar, --lorem-ipsum=hello --async,
+
+    returns
+      {
+        'positional_name', 'POSITIONAL_NAME'
+        'foo': '--foo',
+        'lorem_ipsum': '--lorem-ipsum',
+        'async_': '--async',
+      }.
+
+    In the returned dictionary, the keys are destinations in the argparse
+    namespace object.
+
+    In the above example, the destination of `--async` is set to 'async_' in its
+    flag definition, other flags use underscore separated flag names as their
+    default destinations.
+    """
     return self._specified_args
 
   def IsSpecified(self, dest):

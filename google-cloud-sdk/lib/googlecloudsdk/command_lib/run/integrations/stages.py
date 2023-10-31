@@ -78,7 +78,7 @@ def _TypeToDescriptiveName(resource_type):
     string with readable type name.
   """
   metadata = types_utils.GetTypeMetadataByResourceType(resource_type)
-  if metadata:
+  if metadata and metadata.product:
     return metadata.product
   # TODO(b/306021971): remove this if service is added to metadata.
   elif resource_type == 'service':

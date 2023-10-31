@@ -43,11 +43,9 @@ class Client(object):
     self.client = apis.GetClientInstance(API_NAME, self.api_version)
     self.messages = apis.GetMessagesModule(API_NAME, self.api_version)
 
-  def YieldAttestations(self,
-                        note_ref,
-                        artifact_url=None,
-                        page_size=None,
-                        limit=None):
+  def YieldAttestations(
+      self, note_ref, artifact_url=None, page_size=None, limit=None
+  ):
     """Yields occurrences associated with given AA Note.
 
     Args:
@@ -68,9 +66,13 @@ class Client(object):
         request=(
             self.messages.ContaineranalysisProjectsNotesOccurrencesListRequest(
                 name=note_ref.RelativeName(),
-                filter=('has_suffix(resourceUrl, "{}")'.format(artifact_url)
-                        if artifact_url is not None else ''),
-            )),
+                filter=(
+                    'has_suffix(resourceUrl, "{}")'.format(artifact_url)
+                    if artifact_url is not None
+                    else ''
+                ),
+            )
+        ),
         field='occurrences',
         batch_size=page_size or 100,  # Default batch_size.
         batch_size_attribute='pageSize',
@@ -81,8 +83,10 @@ class Client(object):
     # ListNoteOccurrences, but filtering isn't implemented yet for the fields
     # we care about.
     def MatchesFilter(occurrence):
-      if (occurrence.kind !=
-          self.messages.Occurrence.KindValueValuesEnum.ATTESTATION):
+      if (
+          occurrence.kind
+          != self.messages.Occurrence.KindValueValuesEnum.ATTESTATION
+      ):
         return False
       return True
 
@@ -90,14 +94,16 @@ class Client(object):
       if MatchesFilter(occurrence):
         yield occurrence
 
-  def CreateAttestationOccurrence(self,
-                                  note_ref,
-                                  project_ref,
-                                  artifact_url,
-                                  public_key_id,
-                                  signature,
-                                  plaintext,
-                                  validation_callback=None):
+  def CreateAttestationOccurrence(
+      self,
+      note_ref,
+      project_ref,
+      artifact_url,
+      public_key_id,
+      signature,
+      plaintext,
+      validation_callback=None,
+  ):
     """Creates an Occurrence referencing given URL and Note.
 
     This only supports the AttestationOccurrence-type Occurrence, currently only
@@ -126,7 +132,8 @@ class Client(object):
         serializedPayload=plaintext,
         signatures=[
             self.messages.Signature(
-                publicKeyId=public_key_id, signature=signature),
+                publicKeyId=public_key_id, signature=signature
+            ),
         ],
     )
     occurrence = self.messages.Occurrence(

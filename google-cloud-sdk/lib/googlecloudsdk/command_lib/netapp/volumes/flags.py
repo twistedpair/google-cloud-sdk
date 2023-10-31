@@ -408,8 +408,7 @@ def AddVolumeSourceBackupArg(parser):
       flags.GetBackupResourceSpec(positional=False),
       flag_name_overrides={'location': ''},
       group_help='The source Backup to create the Volume from.',
-      hidden=True).AddToParser(
-          parser)
+  ).AddToParser(parser)
 
 
 def GetVolumeRestrictedActionsEnumFromArg(choice, messages):
@@ -469,8 +468,7 @@ whether or not scheduled backups are enabled on the volume.
   parser.add_argument(
       '--backup-config',
       type=arg_parsers.ArgDict(spec=backup_config_arg_spec),
-      help=backup_config_help,
-      hidden=True)
+      help=backup_config_help)
 
 ## Helper functions to combine Volumes args / flags for gcloud commands #
 

@@ -182,6 +182,28 @@ def _RenderAnalysisforAnalyzeIamPolicy(analysis,
 
     yield entry
 
+  for deny_analysis_result in analysis.denyAnalysisResults:
+    entry = {}
+
+    access_tuple = {
+        'resource': deny_analysis_result.accessTuple.resource,
+        'access': deny_analysis_result.accessTuple.access,
+        'identity': deny_analysis_result.accessTuple.identity,
+    }
+    entry['access_tuple'] = access_tuple
+
+    entry['deny_details'] = []
+    for detail in deny_analysis_result.denyDetails:
+      deny_detail = {}
+      deny_detail['deny_rule'] = detail.denyRule
+      deny_detail['resources'] = detail.resources
+      deny_detail['identities'] = detail.identities
+      deny_detail['accesses'] = detail.accesses
+      deny_detail['exception_identities'] = detail.exceptionIdentities
+      entry['deny_details'].append(deny_detail)
+
+    yield entry
+
 
 def _RenderResponseforAnalyzeIamPolicy(response,
                                        analyze_service_account_impersonation,
@@ -253,6 +275,12 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
 
   analyze_service_account_impersonation = args.analyze_service_account_impersonation if args.analyze_service_account_impersonation else None
 
+  include_deny_policy_analysis = (
+      args.include_deny_policy_analysis
+      if args.IsKnownAndSpecified('include_deny_policy_analysis')
+      else None
+  )
+
   output_resource_edges = None
   if args.output_resource_edges:
     if not args.show_response:
@@ -274,7 +302,7 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
     execution_timeout = str(args.execution_timeout) + 's'
 
   access_time = None
-  if args.IsSpecified('access_time'):
+  if args.IsKnownAndSpecified('access_time'):
     access_time = times.FormatDateTime(args.access_time)
 
   response = service.AnalyzeIamPolicy(
@@ -286,6 +314,7 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
           analysisQuery_options_expandGroups=expand_groups,
           analysisQuery_options_expandResources=expand_resources,
           analysisQuery_options_expandRoles=expand_roles,
+          analysisQuery_options_includeDenyPolicyAnalysis=include_deny_policy_analysis,
           analysisQuery_options_outputGroupEdges=output_group_edges,
           analysisQuery_options_outputResourceEdges=output_resource_edges,
           analysisQuery_resourceSelector_fullResourceName=full_resource_name,
@@ -293,7 +322,8 @@ def MakeAnalyzeIamPolicyHttpRequests(args,
           executionTimeout=execution_timeout,
           scope=parent,
           savedAnalysisQuery=saved_analysis_query,
-      ))
+      )
+  )
   if not args.show_response:
     return _RenderResponseforAnalyzeIamPolicy(
         response, analyze_service_account_impersonation, api_version)
@@ -339,10 +369,11 @@ class AnalyzeIamPolicyClient(object):
     AddCustomJsonFieldMapping('options', '_outputGroupEdges')
     AddCustomJsonFieldMapping('options', '_analyzeServiceAccountImpersonation')
 
-    if self.api_version == DEFAULT_API_VERSION and args.IsSpecified(
-        'access_time'):
-      AddCustomJsonFieldMapping('condition_context', '_accessTime')
+    if args.IsKnownAndSpecified('include_deny_policy_analysis'):
+      AddCustomJsonFieldMapping('options', '_includeDenyPolicyAnalysis')
 
+    if args.IsKnownAndSpecified('access_time'):
+      AddCustomJsonFieldMapping('condition_context', '_accessTime')
     return messages
 
 
@@ -820,10 +851,12 @@ class IamPolicyAnalysisLongrunningClient(object):
       options.outputGroupEdges = args.output_group_edges
     if args.analyze_service_account_impersonation:
       options.analyzeServiceAccountImpersonation = args.analyze_service_account_impersonation
+    if args.IsKnownAndSpecified('include_deny_policy_analysis'):
+      options.includeDenyPolicyAnalysis = args.include_deny_policy_analysis
 
     operation = None
     analysis_query.options = options
-    if args.IsSpecified('access_time'):
+    if args.IsKnownAndSpecified('access_time'):
       analysis_query.conditionContext = self.message_module.ConditionContext(
           accessTime=times.FormatDateTime(args.access_time))
     request = self.message_module.AnalyzeIamPolicyLongrunningRequest(

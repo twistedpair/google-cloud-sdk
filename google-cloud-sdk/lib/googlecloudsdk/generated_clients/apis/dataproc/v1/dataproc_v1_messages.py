@@ -69,7 +69,7 @@ class AppSummary(_messages.Message):
 
 
 class ApplicationAttemptInfo(_messages.Message):
-  r"""A ApplicationAttemptInfo object.
+  r"""Specific attempt of an application.
 
   Fields:
     appSparkVersion: A string attribute.
@@ -93,7 +93,7 @@ class ApplicationAttemptInfo(_messages.Message):
 
 
 class ApplicationEnvironmentInfo(_messages.Message):
-  r"""A ApplicationEnvironmentInfo object.
+  r"""Details about the Environment that the application is running in.
 
   Messages:
     ClasspathEntriesValue: A ClasspathEntriesValue object.
@@ -251,7 +251,7 @@ class ApplicationEnvironmentInfo(_messages.Message):
 
 
 class ApplicationInfo(_messages.Message):
-  r"""A ApplicationInfo object.
+  r"""High level information corresponding to an application.
 
   Fields:
     applicationId: A string attribute.
@@ -2260,6 +2260,20 @@ class DataprocProjectsRegionsClustersNodeGroupsListRequest(_messages.Message):
   parent = _messages.StringField(3, required=True)
 
 
+class DataprocProjectsRegionsClustersNodeGroupsRepairRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsRepairRequest object.
+
+  Fields:
+    name: Required. The name of the node group to resize. Format: projects/{pr
+      oject}/regions/{region}/clusters/{cluster}/nodeGroups/{nodeGroup}
+    repairNodeGroupRequest: A RepairNodeGroupRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  repairNodeGroupRequest = _messages.MessageField('RepairNodeGroupRequest', 2)
+
+
 class DataprocProjectsRegionsClustersNodeGroupsResizeRequest(_messages.Message):
   r"""A DataprocProjectsRegionsClustersNodeGroupsResizeRequest object.
 
@@ -3268,7 +3282,7 @@ class ExecutorPeakMetricsDistributions(_messages.Message):
 
 
 class ExecutorResourceRequest(_messages.Message):
-  r"""A ExecutorResourceRequest object.
+  r"""Resources used per executor used by the application.
 
   Fields:
     amount: A string attribute.
@@ -3284,7 +3298,7 @@ class ExecutorResourceRequest(_messages.Message):
 
 
 class ExecutorStageSummary(_messages.Message):
-  r"""A ExecutorStageSummary object.
+  r"""Executor resources consumed by a stage.
 
   Fields:
     diskBytesSpilled: A string attribute.
@@ -3330,7 +3344,7 @@ class ExecutorStageSummary(_messages.Message):
 
 
 class ExecutorSummary(_messages.Message):
-  r"""A ExecutorSummary object.
+  r"""Details about executors used by the application.
 
   Messages:
     AttributesValue: A AttributesValue object.
@@ -4236,7 +4250,7 @@ class InputMetricDistributions(_messages.Message):
 
 
 class InputMetrics(_messages.Message):
-  r"""A InputMetrics object.
+  r"""Metrics about the input data read by the task.
 
   Fields:
     bytesRead: A string attribute.
@@ -4648,7 +4662,7 @@ class Job(_messages.Message):
 
 
 class JobData(_messages.Message):
-  r"""A JobData object.
+  r"""Data corresponding to a spark job.
 
   Enums:
     StatusValueValuesEnum:
@@ -5235,10 +5249,14 @@ class ListJobsResponse(_messages.Message):
     nextPageToken: Optional. This token is included in the response if there
       are more results to fetch. To fetch additional results, provide this
       value as the page_token in a subsequent ListJobsRequest.
+    unreachable: Output only. List of jobs that could not be included in the
+      response. Attempting to get one of these resources may indicate why it
+      was not included in the list response.
   """
 
   jobs = _messages.MessageField('Job', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListNodeGroupsResponse(_messages.Message):
@@ -5707,12 +5725,14 @@ class NodeGroupOperationMetadata(_messages.Message):
       UPDATE: Update node group operation type.
       DELETE: Delete node group operation type.
       RESIZE: Resize node group operation type.
+      REPAIR: Repair node group operation type.
     """
     NODE_GROUP_OPERATION_TYPE_UNSPECIFIED = 0
     CREATE = 1
     UPDATE = 2
     DELETE = 3
     RESIZE = 4
+    REPAIR = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -6006,7 +6026,7 @@ class OutputMetricDistributions(_messages.Message):
 
 
 class OutputMetrics(_messages.Message):
-  r"""A OutputMetrics object.
+  r"""Metrics about the data written by the task.
 
   Fields:
     bytesWritten: A string attribute.
@@ -6212,7 +6232,7 @@ class Policy(_messages.Message):
 
 
 class PoolData(_messages.Message):
-  r"""A PoolData object.
+  r"""Pool Data
 
   Fields:
     name: A string attribute.
@@ -6285,7 +6305,7 @@ class PrestoJob(_messages.Message):
 
 
 class ProcessSummary(_messages.Message):
-  r"""A ProcessSummary object.
+  r"""Process Summary
 
   Messages:
     ProcessLogsValue: A ProcessLogsValue object.
@@ -6332,6 +6352,46 @@ class ProcessSummary(_messages.Message):
   processLogs = _messages.MessageField('ProcessLogsValue', 5)
   removeTime = _messages.StringField(6)
   totalCores = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+
+
+class PropertiesInfo(_messages.Message):
+  r"""Properties of the workload organized by origin.
+
+  Messages:
+    AutotuningPropertiesValue: Output only. Properties set by autotuning
+      engine.
+
+  Fields:
+    autotuningProperties: Output only. Properties set by autotuning engine.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AutotuningPropertiesValue(_messages.Message):
+    r"""Output only. Properties set by autotuning engine.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AutotuningPropertiesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AutotuningPropertiesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AutotuningPropertiesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueInfo attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ValueInfo', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  autotuningProperties = _messages.MessageField('AutotuningPropertiesValue', 1)
 
 
 class ProvisioningModelMix(_messages.Message):
@@ -6562,8 +6622,8 @@ class QueryList(_messages.Message):
   queries = _messages.StringField(1, repeated=True)
 
 
-class RDDDataDistribution(_messages.Message):
-  r"""A RDDDataDistribution object.
+class RddDataDistribution(_messages.Message):
+  r"""Details about RDD usage.
 
   Fields:
     address: A string attribute.
@@ -6586,24 +6646,25 @@ class RDDDataDistribution(_messages.Message):
   onHeapMemoryUsed = _messages.IntegerField(8)
 
 
-class RDDOperationClusterWrapper(_messages.Message):
-  r"""A RDDOperationClusterWrapper object.
+class RddOperationCluster(_messages.Message):
+  r"""A grouping of nodes representing higher level constructs (stage, job
+  etc.).
 
   Fields:
-    childClusters: A RDDOperationClusterWrapper attribute.
-    childNodes: A RDDOperationNode attribute.
+    childClusters: A RddOperationCluster attribute.
+    childNodes: A RddOperationNode attribute.
     name: A string attribute.
     rddClusterId: A string attribute.
   """
 
-  childClusters = _messages.MessageField('RDDOperationClusterWrapper', 1, repeated=True)
-  childNodes = _messages.MessageField('RDDOperationNode', 2, repeated=True)
+  childClusters = _messages.MessageField('RddOperationCluster', 1, repeated=True)
+  childNodes = _messages.MessageField('RddOperationNode', 2, repeated=True)
   name = _messages.StringField(3)
   rddClusterId = _messages.StringField(4)
 
 
-class RDDOperationEdge(_messages.Message):
-  r"""A RDDOperationEdge object.
+class RddOperationEdge(_messages.Message):
+  r"""A directed edge representing dependency between two RDDs.
 
   Fields:
     fromId: A integer attribute.
@@ -6614,26 +6675,27 @@ class RDDOperationEdge(_messages.Message):
   toId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
-class RDDOperationGraph(_messages.Message):
-  r"""A RDDOperationGraph object.
+class RddOperationGraph(_messages.Message):
+  r"""Graph representing RDD dependencies. Consists of edges and a root
+  cluster.
 
   Fields:
-    edges: A RDDOperationEdge attribute.
-    incomingEdges: A RDDOperationEdge attribute.
-    outgoingEdges: A RDDOperationEdge attribute.
-    rootCluster: A RDDOperationClusterWrapper attribute.
+    edges: A RddOperationEdge attribute.
+    incomingEdges: A RddOperationEdge attribute.
+    outgoingEdges: A RddOperationEdge attribute.
+    rootCluster: A RddOperationCluster attribute.
     stageId: A string attribute.
   """
 
-  edges = _messages.MessageField('RDDOperationEdge', 1, repeated=True)
-  incomingEdges = _messages.MessageField('RDDOperationEdge', 2, repeated=True)
-  outgoingEdges = _messages.MessageField('RDDOperationEdge', 3, repeated=True)
-  rootCluster = _messages.MessageField('RDDOperationClusterWrapper', 4)
+  edges = _messages.MessageField('RddOperationEdge', 1, repeated=True)
+  incomingEdges = _messages.MessageField('RddOperationEdge', 2, repeated=True)
+  outgoingEdges = _messages.MessageField('RddOperationEdge', 3, repeated=True)
+  rootCluster = _messages.MessageField('RddOperationCluster', 4)
   stageId = _messages.IntegerField(5)
 
 
-class RDDOperationNode(_messages.Message):
-  r"""A RDDOperationNode object.
+class RddOperationNode(_messages.Message):
+  r"""A node in the RDD operation graph. Corresponds to a single RDD.
 
   Enums:
     OutputDeterministicLevelValueValuesEnum:
@@ -6642,8 +6704,8 @@ class RDDOperationNode(_messages.Message):
     barrier: A boolean attribute.
     cached: A boolean attribute.
     callsite: A string attribute.
-    id: A integer attribute.
     name: A string attribute.
+    nodeId: A integer attribute.
     outputDeterministicLevel: A OutputDeterministicLevelValueValuesEnum
       attribute.
   """
@@ -6665,13 +6727,13 @@ class RDDOperationNode(_messages.Message):
   barrier = _messages.BooleanField(1)
   cached = _messages.BooleanField(2)
   callsite = _messages.StringField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  name = _messages.StringField(5)
+  name = _messages.StringField(4)
+  nodeId = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   outputDeterministicLevel = _messages.EnumField('OutputDeterministicLevelValueValuesEnum', 6)
 
 
-class RDDPartitionInfo(_messages.Message):
-  r"""A RDDPartitionInfo object.
+class RddPartitionInfo(_messages.Message):
+  r"""Information about RDD partitions.
 
   Fields:
     blockName: A string attribute.
@@ -6688,28 +6750,28 @@ class RDDPartitionInfo(_messages.Message):
   storageLevel = _messages.StringField(5)
 
 
-class RDDStorageInfo(_messages.Message):
-  r"""A RDDStorageInfo object.
+class RddStorageInfo(_messages.Message):
+  r"""Overall data about RDD storage.
 
   Fields:
-    dataDistribution: A RDDDataDistribution attribute.
+    dataDistribution: A RddDataDistribution attribute.
     diskUsed: A string attribute.
     memoryUsed: A string attribute.
     name: A string attribute.
     numCachedPartitions: A integer attribute.
     numPartitions: A integer attribute.
-    partitions: A RDDPartitionInfo attribute.
+    partitions: A RddPartitionInfo attribute.
     rddStorageId: A integer attribute.
     storageLevel: A string attribute.
   """
 
-  dataDistribution = _messages.MessageField('RDDDataDistribution', 1, repeated=True)
+  dataDistribution = _messages.MessageField('RddDataDistribution', 1, repeated=True)
   diskUsed = _messages.IntegerField(2)
   memoryUsed = _messages.IntegerField(3)
   name = _messages.StringField(4)
   numCachedPartitions = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   numPartitions = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  partitions = _messages.MessageField('RDDPartitionInfo', 7, repeated=True)
+  partitions = _messages.MessageField('RddPartitionInfo', 7, repeated=True)
   rddStorageId = _messages.IntegerField(8, variant=_messages.Variant.INT32)
   storageLevel = _messages.StringField(9)
 
@@ -6761,6 +6823,43 @@ class RepairClusterRequest(_messages.Message):
   nodePools = _messages.MessageField('NodePool', 3, repeated=True)
   parentOperationId = _messages.StringField(4)
   requestId = _messages.StringField(5)
+
+
+class RepairNodeGroupRequest(_messages.Message):
+  r"""A RepairNodeGroupRequest object.
+
+  Enums:
+    RepairActionValueValuesEnum: Required. Repair action to take on specified
+      resources of the node pool.
+
+  Fields:
+    instanceNames: Required. Name of instances to be repaired. These instances
+      must belong to specified node pool.
+    repairAction: Required. Repair action to take on specified resources of
+      the node pool.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two RepairNodeGroupRequest with the same ID, the second
+      request is ignored and the first google.longrunning.Operation created
+      and stored in the backend is returned.Recommendation: Set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  class RepairActionValueValuesEnum(_messages.Enum):
+    r"""Required. Repair action to take on specified resources of the node
+    pool.
+
+    Values:
+      REPAIR_ACTION_UNSPECIFIED: No action will be taken by default.
+      REPLACE: replace the specified list of nodes.
+    """
+    REPAIR_ACTION_UNSPECIFIED = 0
+    REPLACE = 1
+
+  instanceNames = _messages.StringField(1, repeated=True)
+  repairAction = _messages.EnumField('RepairActionValueValuesEnum', 2)
+  requestId = _messages.StringField(3)
 
 
 class RepositoryConfig(_messages.Message):
@@ -6856,7 +6955,8 @@ class ResourceInformation(_messages.Message):
 
 
 class ResourceProfileInfo(_messages.Message):
-  r"""A ResourceProfileInfo object.
+  r"""Resource profile that contains information about all the resources
+  required by executors and tasks.
 
   Messages:
     ExecutorResourcesValue: A ExecutorResourcesValue object.
@@ -6997,6 +7097,7 @@ class RuntimeInfo(_messages.Message):
       interfaces and APIs) to their URIs.
     outputUri: Output only. A URI pointing to the location of the stdout and
       stderr of the workload.
+    propertiesInfo: Optional. Properties of the workload organized by origin.
     publicKeys: Output only. The public keys used for sharing data with this
       workload.
   """
@@ -7031,21 +7132,8 @@ class RuntimeInfo(_messages.Message):
   diagnosticOutputUri = _messages.StringField(3)
   endpoints = _messages.MessageField('EndpointsValue', 4)
   outputUri = _messages.StringField(5)
-  publicKeys = _messages.MessageField('PublicKeys', 6)
-
-
-class SQLPlanMetric(_messages.Message):
-  r"""A SQLPlanMetric object.
-
-  Fields:
-    accumulatorId: A string attribute.
-    metricType: A string attribute.
-    name: A string attribute.
-  """
-
-  accumulatorId = _messages.IntegerField(1)
-  metricType = _messages.StringField(2)
-  name = _messages.StringField(3)
+  propertiesInfo = _messages.MessageField('PropertiesInfo', 6)
+  publicKeys = _messages.MessageField('PublicKeys', 7)
 
 
 class SecurityConfig(_messages.Message):
@@ -7473,10 +7561,9 @@ class ShuffleReadMetricDistributions(_messages.Message):
 
 
 class ShuffleReadMetrics(_messages.Message):
-  r"""A ShuffleReadMetrics object.
+  r"""Shuffle data read by the task.
 
   Fields:
-    bytesRead: A string attribute.
     fetchWaitTimeMillis: A string attribute.
     localBlocksFetched: A string attribute.
     localBytesRead: A string attribute.
@@ -7488,16 +7575,15 @@ class ShuffleReadMetrics(_messages.Message):
     shufflePushReadMetrics: A ShufflePushReadMetrics attribute.
   """
 
-  bytesRead = _messages.IntegerField(1)
-  fetchWaitTimeMillis = _messages.IntegerField(2)
-  localBlocksFetched = _messages.IntegerField(3)
-  localBytesRead = _messages.IntegerField(4)
-  recordsRead = _messages.IntegerField(5)
-  remoteBlocksFetched = _messages.IntegerField(6)
-  remoteBytesRead = _messages.IntegerField(7)
-  remoteBytesReadToDisk = _messages.IntegerField(8)
-  remoteReqsDuration = _messages.IntegerField(9)
-  shufflePushReadMetrics = _messages.MessageField('ShufflePushReadMetrics', 10)
+  fetchWaitTimeMillis = _messages.IntegerField(1)
+  localBlocksFetched = _messages.IntegerField(2)
+  localBytesRead = _messages.IntegerField(3)
+  recordsRead = _messages.IntegerField(4)
+  remoteBlocksFetched = _messages.IntegerField(5)
+  remoteBytesRead = _messages.IntegerField(6)
+  remoteBytesReadToDisk = _messages.IntegerField(7)
+  remoteReqsDuration = _messages.IntegerField(8)
+  shufflePushReadMetrics = _messages.MessageField('ShufflePushReadMetrics', 9)
 
 
 class ShuffleWriteMetricDistributions(_messages.Message):
@@ -7515,7 +7601,7 @@ class ShuffleWriteMetricDistributions(_messages.Message):
 
 
 class ShuffleWriteMetrics(_messages.Message):
-  r"""A ShuffleWriteMetrics object.
+  r"""Shuffle data written by task.
 
   Fields:
     bytesWritten: A string attribute.
@@ -7873,26 +7959,40 @@ class SparkJob(_messages.Message):
   properties = _messages.MessageField('PropertiesValue', 8)
 
 
-class SparkPlanGraphClusterWrapper(_messages.Message):
-  r"""A SparkPlanGraphClusterWrapper object.
+class SparkPlanGraph(_messages.Message):
+  r"""A graph used for storing information of an executionPlan of DataFrame.
+
+  Fields:
+    edges: A SparkPlanGraphEdge attribute.
+    executionId: A string attribute.
+    nodes: A SparkPlanGraphNodeWrapper attribute.
+  """
+
+  edges = _messages.MessageField('SparkPlanGraphEdge', 1, repeated=True)
+  executionId = _messages.IntegerField(2)
+  nodes = _messages.MessageField('SparkPlanGraphNodeWrapper', 3, repeated=True)
+
+
+class SparkPlanGraphCluster(_messages.Message):
+  r"""Represents a tree of spark plan.
 
   Fields:
     desc: A string attribute.
-    metrics: A SQLPlanMetric attribute.
+    metrics: A SqlPlanMetric attribute.
     name: A string attribute.
     nodes: A SparkPlanGraphNodeWrapper attribute.
     sparkPlanGraphClusterId: A string attribute.
   """
 
   desc = _messages.StringField(1)
-  metrics = _messages.MessageField('SQLPlanMetric', 2, repeated=True)
+  metrics = _messages.MessageField('SqlPlanMetric', 2, repeated=True)
   name = _messages.StringField(3)
   nodes = _messages.MessageField('SparkPlanGraphNodeWrapper', 4, repeated=True)
   sparkPlanGraphClusterId = _messages.IntegerField(5)
 
 
 class SparkPlanGraphEdge(_messages.Message):
-  r"""A SparkPlanGraphEdge object.
+  r"""Represents a directed edge in the spark plan tree from child to parent.
 
   Fields:
     fromId: A string attribute.
@@ -7904,45 +8004,31 @@ class SparkPlanGraphEdge(_messages.Message):
 
 
 class SparkPlanGraphNode(_messages.Message):
-  r"""A SparkPlanGraphNode object.
+  r"""Represents a node in the spark plan tree.
 
   Fields:
     desc: A string attribute.
-    metrics: A SQLPlanMetric attribute.
+    metrics: A SqlPlanMetric attribute.
     name: A string attribute.
     sparkPlanGraphNodeId: A string attribute.
   """
 
   desc = _messages.StringField(1)
-  metrics = _messages.MessageField('SQLPlanMetric', 2, repeated=True)
+  metrics = _messages.MessageField('SqlPlanMetric', 2, repeated=True)
   name = _messages.StringField(3)
   sparkPlanGraphNodeId = _messages.IntegerField(4)
 
 
 class SparkPlanGraphNodeWrapper(_messages.Message):
-  r"""A SparkPlanGraphNodeWrapper object.
+  r"""Wrapper user to represent either a node or a cluster.
 
   Fields:
-    cluster: A SparkPlanGraphClusterWrapper attribute.
+    cluster: A SparkPlanGraphCluster attribute.
     node: A SparkPlanGraphNode attribute.
   """
 
-  cluster = _messages.MessageField('SparkPlanGraphClusterWrapper', 1)
+  cluster = _messages.MessageField('SparkPlanGraphCluster', 1)
   node = _messages.MessageField('SparkPlanGraphNode', 2)
-
-
-class SparkPlanGraphWrapper(_messages.Message):
-  r"""A SparkPlanGraphWrapper object.
-
-  Fields:
-    edges: A SparkPlanGraphEdge attribute.
-    executionId: A string attribute.
-    nodes: A SparkPlanGraphNodeWrapper attribute.
-  """
-
-  edges = _messages.MessageField('SparkPlanGraphEdge', 1, repeated=True)
-  executionId = _messages.IntegerField(2)
-  nodes = _messages.MessageField('SparkPlanGraphNodeWrapper', 3, repeated=True)
 
 
 class SparkRBatch(_messages.Message):
@@ -8223,23 +8309,26 @@ class SparkStandaloneAutoscalingConfig(_messages.Message):
 
 
 class SparkWrapperObject(_messages.Message):
-  r"""A SparkWrapperObject object.
+  r"""LINT.IfChange Outer message that contains the data obtained from spark
+  listener, packaged with information that is required to process it.
 
   Fields:
     appSummary: A AppSummary attribute.
     applicationEnvironmentInfo: A ApplicationEnvironmentInfo attribute.
-    applicationId: Application Id created by Spark
+    applicationId: Application Id created by Spark.
     applicationInfo: A ApplicationInfo attribute.
-    eventTimestamp: VM Timestamp associated with the data object
+    eventTimestamp: VM Timestamp associated with the data object.
     executorStageSummary: A ExecutorStageSummary attribute.
     executorSummary: A ExecutorSummary attribute.
     jobData: A JobData attribute.
     poolData: A PoolData attribute.
     processSummary: A ProcessSummary attribute.
-    rddOperationGraph: A RDDOperationGraph attribute.
-    rddStorageInfo: A RDDStorageInfo attribute.
-    sparkPlanGraph: A SparkPlanGraphWrapper attribute.
+    rddOperationGraph: A RddOperationGraph attribute.
+    rddStorageInfo: A RddStorageInfo attribute.
+    resourceProfileInfo: A ResourceProfileInfo attribute.
+    sparkPlanGraph: A SparkPlanGraph attribute.
     speculationStageSummary: A SpeculationStageSummary attribute.
+    sqlExecutionUiData: A SqlExecutionUiData attribute.
     stageData: A StageData attribute.
     streamBlockData: A StreamBlockData attribute.
     streamingQueryData: A StreamingQueryData attribute.
@@ -8257,19 +8346,21 @@ class SparkWrapperObject(_messages.Message):
   jobData = _messages.MessageField('JobData', 8)
   poolData = _messages.MessageField('PoolData', 9)
   processSummary = _messages.MessageField('ProcessSummary', 10)
-  rddOperationGraph = _messages.MessageField('RDDOperationGraph', 11)
-  rddStorageInfo = _messages.MessageField('RDDStorageInfo', 12)
-  sparkPlanGraph = _messages.MessageField('SparkPlanGraphWrapper', 13)
-  speculationStageSummary = _messages.MessageField('SpeculationStageSummary', 14)
-  stageData = _messages.MessageField('StageData', 15)
-  streamBlockData = _messages.MessageField('StreamBlockData', 16)
-  streamingQueryData = _messages.MessageField('StreamingQueryData', 17)
-  streamingQueryProgress = _messages.MessageField('StreamingQueryProgress', 18)
-  taskData = _messages.MessageField('TaskData', 19)
+  rddOperationGraph = _messages.MessageField('RddOperationGraph', 11)
+  rddStorageInfo = _messages.MessageField('RddStorageInfo', 12)
+  resourceProfileInfo = _messages.MessageField('ResourceProfileInfo', 13)
+  sparkPlanGraph = _messages.MessageField('SparkPlanGraph', 14)
+  speculationStageSummary = _messages.MessageField('SpeculationStageSummary', 15)
+  sqlExecutionUiData = _messages.MessageField('SqlExecutionUiData', 16)
+  stageData = _messages.MessageField('StageData', 17)
+  streamBlockData = _messages.MessageField('StreamBlockData', 18)
+  streamingQueryData = _messages.MessageField('StreamingQueryData', 19)
+  streamingQueryProgress = _messages.MessageField('StreamingQueryProgress', 20)
+  taskData = _messages.MessageField('TaskData', 21)
 
 
 class SpeculationStageSummary(_messages.Message):
-  r"""A SpeculationStageSummary object.
+  r"""Details of the speculation task when speculative execution is enabled.
 
   Fields:
     numActiveTasks: A integer attribute.
@@ -8290,8 +8381,156 @@ class SpeculationStageSummary(_messages.Message):
   stageId = _messages.IntegerField(7)
 
 
+class SqlExecutionUiData(_messages.Message):
+  r"""SQL Execution Data
+
+  Messages:
+    JobsValue: A JobsValue object.
+    MetricValuesValue: A MetricValuesValue object.
+    ModifiedConfigsValue: A ModifiedConfigsValue object.
+
+  Fields:
+    completionTime: A string attribute.
+    description: A string attribute.
+    details: A string attribute.
+    errorMessage: A string attribute.
+    executionId: A string attribute.
+    jobs: A JobsValue attribute.
+    metricValues: A MetricValuesValue attribute.
+    metricValuesIsNull: A boolean attribute.
+    metrics: A SqlPlanMetric attribute.
+    modifiedConfigs: A ModifiedConfigsValue attribute.
+    physicalPlanDescription: A string attribute.
+    rootExecutionId: A string attribute.
+    stages: A string attribute.
+    submissionTime: A string attribute.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class JobsValue(_messages.Message):
+    r"""A JobsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a JobsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type JobsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a JobsValue object.
+
+      Enums:
+        ValueValueValuesEnum:
+
+      Fields:
+        key: Name of the additional property.
+        value: A ValueValueValuesEnum attribute.
+      """
+
+      class ValueValueValuesEnum(_messages.Enum):
+        r"""ValueValueValuesEnum enum type.
+
+        Values:
+          JOB_EXECUTION_STATUS_UNSPECIFIED: <no description>
+          JOB_EXECUTION_STATUS_RUNNING: <no description>
+          JOB_EXECUTION_STATUS_SUCCEEDED: <no description>
+          JOB_EXECUTION_STATUS_FAILED: <no description>
+          JOB_EXECUTION_STATUS_UNKNOWN: <no description>
+        """
+        JOB_EXECUTION_STATUS_UNSPECIFIED = 0
+        JOB_EXECUTION_STATUS_RUNNING = 1
+        JOB_EXECUTION_STATUS_SUCCEEDED = 2
+        JOB_EXECUTION_STATUS_FAILED = 3
+        JOB_EXECUTION_STATUS_UNKNOWN = 4
+
+      key = _messages.StringField(1)
+      value = _messages.EnumField('ValueValueValuesEnum', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetricValuesValue(_messages.Message):
+    r"""A MetricValuesValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetricValuesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetricValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetricValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ModifiedConfigsValue(_messages.Message):
+    r"""A ModifiedConfigsValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a ModifiedConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ModifiedConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ModifiedConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  completionTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  details = _messages.StringField(3)
+  errorMessage = _messages.StringField(4)
+  executionId = _messages.IntegerField(5)
+  jobs = _messages.MessageField('JobsValue', 6)
+  metricValues = _messages.MessageField('MetricValuesValue', 7)
+  metricValuesIsNull = _messages.BooleanField(8)
+  metrics = _messages.MessageField('SqlPlanMetric', 9, repeated=True)
+  modifiedConfigs = _messages.MessageField('ModifiedConfigsValue', 10)
+  physicalPlanDescription = _messages.StringField(11)
+  rootExecutionId = _messages.IntegerField(12)
+  stages = _messages.IntegerField(13, repeated=True)
+  submissionTime = _messages.StringField(14)
+
+
+class SqlPlanMetric(_messages.Message):
+  r"""Metrics related to SQL execution.
+
+  Fields:
+    accumulatorId: A string attribute.
+    metricType: A string attribute.
+    name: A string attribute.
+  """
+
+  accumulatorId = _messages.IntegerField(1)
+  metricType = _messages.StringField(2)
+  name = _messages.StringField(3)
+
+
 class StageData(_messages.Message):
-  r"""A StageData object.
+  r"""Data corresponding to a stage.
 
   Enums:
     StatusValueValuesEnum:
@@ -8304,7 +8543,6 @@ class StageData(_messages.Message):
 
   Fields:
     accumulatorUpdates: A AccumulableInfo attribute.
-    attemptId: A integer attribute.
     completionTime: A string attribute.
     description: A string attribute.
     details: A string attribute.
@@ -8329,10 +8567,11 @@ class StageData(_messages.Message):
     schedulingPool: A string attribute.
     shuffleMergersCount: A integer attribute.
     speculationSummary: A SpeculationStageSummary attribute.
+    stageAttemptId: A integer attribute.
     stageId: A string attribute.
+    stageMetrics: A StageMetrics attribute.
     status: A StatusValueValuesEnum attribute.
     submissionTime: A string attribute.
-    taskMetrics: A TaskMetrics attribute.
     taskMetricsDistributions: A TaskMetricDistributions attribute.
     tasks: A TasksValue attribute.
   """
@@ -8455,37 +8694,165 @@ class StageData(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accumulatorUpdates = _messages.MessageField('AccumulableInfo', 1, repeated=True)
-  attemptId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  completionTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  details = _messages.StringField(5)
-  executorMetricsDistributions = _messages.MessageField('ExecutorMetricsDistributions', 6)
-  executorSummary = _messages.MessageField('ExecutorSummaryValue', 7)
-  failureReason = _messages.StringField(8)
-  firstTaskLaunchedTime = _messages.StringField(9)
-  isShufflePushEnabled = _messages.BooleanField(10)
-  jobIds = _messages.IntegerField(11, repeated=True)
-  killedTasksSummary = _messages.MessageField('KilledTasksSummaryValue', 12)
-  locality = _messages.MessageField('LocalityValue', 13)
-  name = _messages.StringField(14)
-  numActiveTasks = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  numCompleteTasks = _messages.IntegerField(16, variant=_messages.Variant.INT32)
-  numCompletedIndices = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  numFailedTasks = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  numKilledTasks = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  numTasks = _messages.IntegerField(20, variant=_messages.Variant.INT32)
-  peakExecutorMetrics = _messages.MessageField('ExecutorMetrics', 21)
-  rddIds = _messages.IntegerField(22, repeated=True)
-  resourceProfileId = _messages.IntegerField(23, variant=_messages.Variant.INT32)
-  schedulingPool = _messages.StringField(24)
-  shuffleMergersCount = _messages.IntegerField(25, variant=_messages.Variant.INT32)
-  speculationSummary = _messages.MessageField('SpeculationStageSummary', 26)
+  completionTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  details = _messages.StringField(4)
+  executorMetricsDistributions = _messages.MessageField('ExecutorMetricsDistributions', 5)
+  executorSummary = _messages.MessageField('ExecutorSummaryValue', 6)
+  failureReason = _messages.StringField(7)
+  firstTaskLaunchedTime = _messages.StringField(8)
+  isShufflePushEnabled = _messages.BooleanField(9)
+  jobIds = _messages.IntegerField(10, repeated=True)
+  killedTasksSummary = _messages.MessageField('KilledTasksSummaryValue', 11)
+  locality = _messages.MessageField('LocalityValue', 12)
+  name = _messages.StringField(13)
+  numActiveTasks = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  numCompleteTasks = _messages.IntegerField(15, variant=_messages.Variant.INT32)
+  numCompletedIndices = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  numFailedTasks = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+  numKilledTasks = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  numTasks = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  peakExecutorMetrics = _messages.MessageField('ExecutorMetrics', 20)
+  rddIds = _messages.IntegerField(21, repeated=True)
+  resourceProfileId = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+  schedulingPool = _messages.StringField(23)
+  shuffleMergersCount = _messages.IntegerField(24, variant=_messages.Variant.INT32)
+  speculationSummary = _messages.MessageField('SpeculationStageSummary', 25)
+  stageAttemptId = _messages.IntegerField(26, variant=_messages.Variant.INT32)
   stageId = _messages.IntegerField(27)
-  status = _messages.EnumField('StatusValueValuesEnum', 28)
-  submissionTime = _messages.StringField(29)
-  taskMetrics = _messages.MessageField('TaskMetrics', 30)
+  stageMetrics = _messages.MessageField('StageMetrics', 28)
+  status = _messages.EnumField('StatusValueValuesEnum', 29)
+  submissionTime = _messages.StringField(30)
   taskMetricsDistributions = _messages.MessageField('TaskMetricDistributions', 31)
   tasks = _messages.MessageField('TasksValue', 32)
+
+
+class StageInputMetrics(_messages.Message):
+  r"""Metrics about the input read by the stage.
+
+  Fields:
+    bytesRead: A string attribute.
+    recordsRead: A string attribute.
+  """
+
+  bytesRead = _messages.IntegerField(1)
+  recordsRead = _messages.IntegerField(2)
+
+
+class StageMetrics(_messages.Message):
+  r"""Stage Level Aggregated Metrics
+
+  Fields:
+    diskBytesSpilled: A string attribute.
+    executorCpuTimeNanos: A string attribute.
+    executorDeserializeCpuTimeNanos: A string attribute.
+    executorDeserializeTimeMillis: A string attribute.
+    executorRunTimeMillis: A string attribute.
+    jvmGcTimeMillis: A string attribute.
+    memoryBytesSpilled: A string attribute.
+    peakExecutionMemoryBytes: A string attribute.
+    resultSerializationTimeMillis: A string attribute.
+    resultSize: A string attribute.
+    stageInputMetrics: A StageInputMetrics attribute.
+    stageOutputMetrics: A StageOutputMetrics attribute.
+    stageShuffleReadMetrics: A StageShuffleReadMetrics attribute.
+    stageShuffleWriteMetrics: A StageShuffleWriteMetrics attribute.
+  """
+
+  diskBytesSpilled = _messages.IntegerField(1)
+  executorCpuTimeNanos = _messages.IntegerField(2)
+  executorDeserializeCpuTimeNanos = _messages.IntegerField(3)
+  executorDeserializeTimeMillis = _messages.IntegerField(4)
+  executorRunTimeMillis = _messages.IntegerField(5)
+  jvmGcTimeMillis = _messages.IntegerField(6)
+  memoryBytesSpilled = _messages.IntegerField(7)
+  peakExecutionMemoryBytes = _messages.IntegerField(8)
+  resultSerializationTimeMillis = _messages.IntegerField(9)
+  resultSize = _messages.IntegerField(10)
+  stageInputMetrics = _messages.MessageField('StageInputMetrics', 11)
+  stageOutputMetrics = _messages.MessageField('StageOutputMetrics', 12)
+  stageShuffleReadMetrics = _messages.MessageField('StageShuffleReadMetrics', 13)
+  stageShuffleWriteMetrics = _messages.MessageField('StageShuffleWriteMetrics', 14)
+
+
+class StageOutputMetrics(_messages.Message):
+  r"""Metrics about the output written by the stage.
+
+  Fields:
+    bytesWritten: A string attribute.
+    recordsWritten: A string attribute.
+  """
+
+  bytesWritten = _messages.IntegerField(1)
+  recordsWritten = _messages.IntegerField(2)
+
+
+class StageShufflePushReadMetrics(_messages.Message):
+  r"""A StageShufflePushReadMetrics object.
+
+  Fields:
+    corruptMergedBlockChunks: A string attribute.
+    localMergedBlocksFetched: A string attribute.
+    localMergedBytesRead: A string attribute.
+    localMergedChunksFetched: A string attribute.
+    mergedFetchFallbackCount: A string attribute.
+    remoteMergedBlocksFetched: A string attribute.
+    remoteMergedBytesRead: A string attribute.
+    remoteMergedChunksFetched: A string attribute.
+    remoteMergedReqsDuration: A string attribute.
+  """
+
+  corruptMergedBlockChunks = _messages.IntegerField(1)
+  localMergedBlocksFetched = _messages.IntegerField(2)
+  localMergedBytesRead = _messages.IntegerField(3)
+  localMergedChunksFetched = _messages.IntegerField(4)
+  mergedFetchFallbackCount = _messages.IntegerField(5)
+  remoteMergedBlocksFetched = _messages.IntegerField(6)
+  remoteMergedBytesRead = _messages.IntegerField(7)
+  remoteMergedChunksFetched = _messages.IntegerField(8)
+  remoteMergedReqsDuration = _messages.IntegerField(9)
+
+
+class StageShuffleReadMetrics(_messages.Message):
+  r"""Shuffle data read for the stage.
+
+  Fields:
+    bytesRead: A string attribute.
+    fetchWaitTimeMillis: A string attribute.
+    localBlocksFetched: A string attribute.
+    localBytesRead: A string attribute.
+    recordsRead: A string attribute.
+    remoteBlocksFetched: A string attribute.
+    remoteBytesRead: A string attribute.
+    remoteBytesReadToDisk: A string attribute.
+    remoteReqsDuration: A string attribute.
+    stageShufflePushReadMetrics: A StageShufflePushReadMetrics attribute.
+  """
+
+  bytesRead = _messages.IntegerField(1)
+  fetchWaitTimeMillis = _messages.IntegerField(2)
+  localBlocksFetched = _messages.IntegerField(3)
+  localBytesRead = _messages.IntegerField(4)
+  recordsRead = _messages.IntegerField(5)
+  remoteBlocksFetched = _messages.IntegerField(6)
+  remoteBytesRead = _messages.IntegerField(7)
+  remoteBytesReadToDisk = _messages.IntegerField(8)
+  remoteReqsDuration = _messages.IntegerField(9)
+  stageShufflePushReadMetrics = _messages.MessageField('StageShufflePushReadMetrics', 10)
+
+
+class StageShuffleWriteMetrics(_messages.Message):
+  r"""Shuffle data written for the stage.
+
+  Fields:
+    bytesWritten: A string attribute.
+    recordsWritten: A string attribute.
+    writeTimeNanos: A string attribute.
+  """
+
+  bytesWritten = _messages.IntegerField(1)
+  recordsWritten = _messages.IntegerField(2)
+  writeTimeNanos = _messages.IntegerField(3)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -8764,7 +9131,7 @@ class StopClusterRequest(_messages.Message):
 
 
 class StreamBlockData(_messages.Message):
-  r"""A StreamBlockData object.
+  r"""Stream Block Data.
 
   Fields:
     deserialized: A boolean attribute.
@@ -8790,7 +9157,7 @@ class StreamBlockData(_messages.Message):
 
 
 class StreamingQueryData(_messages.Message):
-  r"""A StreamingQueryData object.
+  r"""Streaming
 
   Fields:
     endTimestamp: A string attribute.
@@ -8943,7 +9310,7 @@ class SubmitJobRequest(_messages.Message):
 
 
 class TaskData(_messages.Message):
-  r"""A TaskData object.
+  r"""Data corresponding to tasks created by spark.
 
   Messages:
     ExecutorLogsValue: A ExecutorLogsValue object.
@@ -9021,7 +9388,7 @@ class TaskData(_messages.Message):
 
 
 class TaskMetricDistributions(_messages.Message):
-  r"""A TaskMetricDistributions object.
+  r"""Distribution data of the task metrics according to selected quantiles.
 
   Fields:
     diskBytesSpilled: A number attribute.
@@ -9035,7 +9402,7 @@ class TaskMetricDistributions(_messages.Message):
     jvmGcTimeMillis: A number attribute.
     memoryBytesSpilled: A number attribute.
     outputMetrics: A OutputMetricDistributions attribute.
-    peakExecutionMemory: A number attribute.
+    peakExecutionMemoryBytes: A number attribute.
     quantiles: A number attribute.
     resultSerializationTimeMillis: A number attribute.
     resultSize: A number attribute.
@@ -9055,7 +9422,7 @@ class TaskMetricDistributions(_messages.Message):
   jvmGcTimeMillis = _messages.FloatField(9, repeated=True)
   memoryBytesSpilled = _messages.FloatField(10, repeated=True)
   outputMetrics = _messages.MessageField('OutputMetricDistributions', 11)
-  peakExecutionMemory = _messages.FloatField(12, repeated=True)
+  peakExecutionMemoryBytes = _messages.FloatField(12, repeated=True)
   quantiles = _messages.FloatField(13, repeated=True)
   resultSerializationTimeMillis = _messages.FloatField(14, repeated=True)
   resultSize = _messages.FloatField(15, repeated=True)
@@ -9065,7 +9432,7 @@ class TaskMetricDistributions(_messages.Message):
 
 
 class TaskMetrics(_messages.Message):
-  r"""A TaskMetrics object.
+  r"""Executor Task Metrics
 
   Fields:
     diskBytesSpilled: A string attribute.
@@ -9077,7 +9444,7 @@ class TaskMetrics(_messages.Message):
     jvmGcTimeMillis: A string attribute.
     memoryBytesSpilled: A string attribute.
     outputMetrics: A OutputMetrics attribute.
-    peakExecutionMemory: A string attribute.
+    peakExecutionMemoryBytes: A string attribute.
     resultSerializationTimeMillis: A string attribute.
     resultSize: A string attribute.
     shuffleReadMetrics: A ShuffleReadMetrics attribute.
@@ -9093,7 +9460,7 @@ class TaskMetrics(_messages.Message):
   jvmGcTimeMillis = _messages.IntegerField(7)
   memoryBytesSpilled = _messages.IntegerField(8)
   outputMetrics = _messages.MessageField('OutputMetrics', 9)
-  peakExecutionMemory = _messages.IntegerField(10)
+  peakExecutionMemoryBytes = _messages.IntegerField(10)
   resultSerializationTimeMillis = _messages.IntegerField(11)
   resultSize = _messages.IntegerField(12)
   shuffleReadMetrics = _messages.MessageField('ShuffleReadMetrics', 13)
@@ -9101,7 +9468,7 @@ class TaskMetrics(_messages.Message):
 
 
 class TaskResourceRequest(_messages.Message):
-  r"""A TaskResourceRequest object.
+  r"""Resources used per task created by the application.
 
   Fields:
     amount: A number attribute.
@@ -9285,6 +9652,10 @@ class UsageMetrics(_messages.Message):
   workload.
 
   Fields:
+    acceleratorType: Optional. Accelerator type being used, if any
+    milliAcceleratorSeconds: Optional. Accelerator usage in (milliAccelerator
+      x seconds) (see Dataproc Serverless pricing
+      (https://cloud.google.com/dataproc-serverless/pricing)).
     milliDcuSeconds: Optional. DCU (Dataproc Compute Units) usage in (milliDCU
       x seconds) (see Dataproc Serverless pricing
       (https://cloud.google.com/dataproc-serverless/pricing)).
@@ -9293,8 +9664,10 @@ class UsageMetrics(_messages.Message):
       serverless/pricing)).
   """
 
-  milliDcuSeconds = _messages.IntegerField(1)
-  shuffleStorageGbSeconds = _messages.IntegerField(2)
+  acceleratorType = _messages.StringField(1)
+  milliAcceleratorSeconds = _messages.IntegerField(2)
+  milliDcuSeconds = _messages.IntegerField(3)
+  shuffleStorageGbSeconds = _messages.IntegerField(4)
 
 
 class UsageSnapshot(_messages.Message):
@@ -9302,6 +9675,10 @@ class UsageSnapshot(_messages.Message):
   specified time.
 
   Fields:
+    acceleratorType: Optional. Accelerator type being used, if any
+    milliAccelerator: Optional. Milli (one-thousandth) accelerator. (see
+      Dataproc Serverless pricing (https://cloud.google.com/dataproc-
+      serverless/pricing))
     milliDcu: Optional. Milli (one-thousandth) Dataproc Compute Units (DCUs)
       (see Dataproc Serverless pricing (https://cloud.google.com/dataproc-
       serverless/pricing)).
@@ -9317,11 +9694,25 @@ class UsageSnapshot(_messages.Message):
     snapshotTime: Optional. The timestamp of the usage snapshot.
   """
 
-  milliDcu = _messages.IntegerField(1)
-  milliDcuPremium = _messages.IntegerField(2)
-  shuffleStorageGb = _messages.IntegerField(3)
-  shuffleStorageGbPremium = _messages.IntegerField(4)
-  snapshotTime = _messages.StringField(5)
+  acceleratorType = _messages.StringField(1)
+  milliAccelerator = _messages.IntegerField(2)
+  milliDcu = _messages.IntegerField(3)
+  milliDcuPremium = _messages.IntegerField(4)
+  shuffleStorageGb = _messages.IntegerField(5)
+  shuffleStorageGbPremium = _messages.IntegerField(6)
+  snapshotTime = _messages.StringField(7)
+
+
+class ValueInfo(_messages.Message):
+  r"""Annotatated property value.
+
+  Fields:
+    annotation: Annotation, comment or explanation why the property was set.
+    value: Property value.
+  """
+
+  annotation = _messages.StringField(1)
+  value = _messages.StringField(2)
 
 
 class ValueValidation(_messages.Message):

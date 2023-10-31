@@ -73,17 +73,6 @@ apis:
         customer:
           path: customer/{customerId}
   aiplatform:
-    v1alpha1:
-      discovery_doc: aiplatform_v1alpha1.json
-      resources:
-        projects.locations.models.operations:
-          path: projects/{projectsId}/locations/{locationsId}/models/{modelsId}/operations/{operationsId}
-        projects.locations.indexes.operations:
-          path: projects/{projectsId}/locations/{locationsId}/indexes/{indexesId}/operations/{operationsId}
-        projects.locations.endpoints.operations:
-          path: projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}/operations/{operationsId}
-        projects.locations.indexEndpoints.operations:
-          path: projects/{projectsId}/locations/{locationsId}/indexEndpoints/{indexEndpointsId}/operations/{operationsId}
     v1beta1:
       default: true
       discovery_doc: aiplatform_v1beta1.json
@@ -1447,14 +1436,6 @@ apis:
     v1:
       discovery_doc: recommender_v1.json
       default: true
-  gameservices:
-    v1alpha:
-      discovery_doc: gameservices_v1alpha.json
-    v1beta:
-      discovery_doc: gameservices_v1beta.json
-    v1:
-      discovery_doc: gameservices_v1.json
-      default: true
   translate:
     v3beta1:
       discovery_doc: translate_v3beta1.json
@@ -1778,9 +1759,6 @@ canonical_surfaces:
   firestore:
     name: firestore
     command: firestore
-  gameservices:
-    name: gameservices
-    command: gamer
   genomics:
     name: genomics
     command: genomics

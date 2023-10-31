@@ -37,3 +37,14 @@ operation:
     attribute_name: operation
     help: Secure Source Manager operation.
   disable_auto_completers: false
+
+repository:
+  name: repository
+  collection: securesourcemanager.projects.locations.repositories
+  attributes:
+  - *location
+  - &repository
+    parameter_name: repositoriesId
+    attribute_name: repository
+    help: Secure Source Manager repository.
+  disable_auto_completers: false

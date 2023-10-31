@@ -122,7 +122,8 @@ class SubscriptionsClient(object):
              cloud_storage_max_duration=None,
              cloud_storage_output_format=None,
              cloud_storage_write_metadata=None,
-             pubsub_export_topic=None):
+             pubsub_export_topic=None,
+             pubsub_export_topic_region=None):
     """Creates a Subscription.
 
     Args:
@@ -170,6 +171,8 @@ class SubscriptionsClient(object):
       cloud_storage_write_metadata (bool): Whether or not to write the
         subscription name and other metadata in the output.
       pubsub_export_topic (str): The Pubsub topic to which to publish messages.
+      pubsub_export_topic_region (str): The Cloud region to which to publish
+        messages.
 
     Returns:
       Subscription: the created subscription
@@ -198,7 +201,8 @@ class SubscriptionsClient(object):
             cloud_storage_file_suffix, cloud_storage_max_bytes,
             cloud_storage_max_duration, cloud_storage_output_format,
             cloud_storage_write_metadata),
-        pubsubExportConfig=self._PubsubExportConfig(pubsub_export_topic))
+        pubsubExportConfig=self._PubsubExportConfig(pubsub_export_topic,
+                                                    pubsub_export_topic_region))
     return self._service.Create(subscription)
 
   def Delete(self, subscription_ref):
@@ -412,16 +416,19 @@ class SubscriptionsClient(object):
       return cloud_storage_config
     return None
 
-  def _PubsubExportConfig(self, topic):
+  def _PubsubExportConfig(self, topic, region):
     """Builds PubsubExportConfig message from argument values.
 
     Args:
       topic (str): The Pubsub topic to which to publish messages.
+      region (str): The Cloud region to which to publish messages.
 
     Returns:
       PubsubExportConfig message or None
     """
-    return self.messages.PubSubExportConfig(topic=topic) if topic else None
+    if topic:
+      return self.messages.PubSubExportConfig(topic=topic, region=region)
+    return None
 
   def _HandleMessageRetentionUpdate(self, update_setting):
     if update_setting.value == DEFAULT_MESSAGE_RETENTION_VALUE:
@@ -482,6 +489,7 @@ class SubscriptionsClient(object):
             clear_cloud_storage_config=False,
             clear_push_no_wrapper_config=False,
             pubsub_export_topic=None,
+            pubsub_export_topic_region=None,
             clear_pubsub_export_config=False):
     """Updates a Subscription.
 
@@ -535,6 +543,8 @@ class SubscriptionsClient(object):
       clear_push_no_wrapper_config(bool): If set, clear the Push No Wrapper
         config from the subscription.
       pubsub_export_topic (str): The Pubsub topic to which to publish messages.
+      pubsub_export_topic_region (str): The Cloud region to which to publish
+        messages.
       clear_pubsub_export_config (bool): If set, clear the Pubsub export config
         from the subscription.
 
@@ -585,10 +595,9 @@ class SubscriptionsClient(object):
             else None),
         _SubscriptionUpdateSetting(
             'pubsubExportConfig',
-            CLEAR_PUBSUB_EXPORT_CONFIG_VALUE
-            if clear_pubsub_export_config
-            else self._PubsubExportConfig(pubsub_export_topic),
-        ),
+            CLEAR_PUBSUB_EXPORT_CONFIG_VALUE if clear_pubsub_export_config
+            else self._PubsubExportConfig(
+                pubsub_export_topic, pubsub_export_topic_region)),
     ]
     subscription = self.messages.Subscription(
         name=subscription_ref.RelativeName())

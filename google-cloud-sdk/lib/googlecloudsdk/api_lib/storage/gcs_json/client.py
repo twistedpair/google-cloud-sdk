@@ -1083,7 +1083,10 @@ class JsonClient(cloud_api.CloudApi):
         projection=projection,
     )
 
-    updated_metadata = self.client.objects.Patch(request)
+    with self.client.IncludeFields(
+        metadata_util.get_cleared_object_fields(request_config)
+    ):
+      updated_metadata = self.client.objects.Patch(request)
     return metadata_util.get_object_resource_from_metadata(updated_metadata)
 
   @error_util.catch_http_error_raise_gcs_api_error()
@@ -1434,7 +1437,7 @@ class JsonClient(cloud_api.CloudApi):
       preserve_acl = None
 
     with self._apitools_request_headers_context(
-        {'x-goog-gcs-idempotency-token': uuid.uuid4()}
+        {'x-goog-gcs-idempotency-token': uuid.uuid4().hex}
     ):
       operation = self.client.objects.BulkRestore(
           self.messages.StorageObjectsBulkRestoreRequest(

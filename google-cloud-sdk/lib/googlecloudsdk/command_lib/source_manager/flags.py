@@ -21,8 +21,23 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 
 
+def AddAllowMissing(
+    parser,
+    help_text="If set to true, and the repository is not found, the request will succeed but no action will be taken on the server.",
+):
+  parser.add_argument(
+      "--allow-missing",
+      dest="allow_missing",
+      required=False,
+      default=False,
+      help=help_text,
+      action="store_true",
+  )
+
+
 def AddInstance(
-    parser, help_text="The Cloud Git instance used to create the repo"
+    parser,
+    help_text="Secure Source Manager instance used to create the repo",
 ):
   parser.add_argument(
       "--instance", dest="instance", required=True, help=help_text
@@ -61,4 +76,17 @@ def AddIsPrivate(parser, help_text="Bool indicator for private instance."):
 def AddCAPool(parser, help_text="CA Pool path for private instance."):
   parser.add_argument(
       "--ca-pool", dest="ca_pool", required=False, help=help_text
+  )
+
+
+def AddPageToken(
+    parser,
+    help_text="Token identifying a page of results the server should return.",
+):
+  parser.add_argument(
+      "--page-token",
+      dest="page_token",
+      required=False,
+      default=None,
+      help=help_text,
   )

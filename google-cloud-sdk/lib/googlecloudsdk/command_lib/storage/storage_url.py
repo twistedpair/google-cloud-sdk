@@ -184,7 +184,7 @@ class FileUrl(StorageUrl):
     if '**' in removed_correct_double_wildcards_url_string:
       # Found a center '**' not in the format '/**/'.
       log.warning(
-          '** behavior is undefined if directly preceeded or followed by'
+          '** behavior is undefined if directly preceded or followed by'
           ' with characters other than / in the cloud and {} locally.'.format(
               os.sep))
 

@@ -52,12 +52,14 @@ class AcceleratorConfig(_messages.Message):
       V3: TPU v3.
       V4: TPU v4.
       V5LITE_POD: TPU v5lite pod.
+      V5P: TPU v5.
     """
     TYPE_UNSPECIFIED = 0
     V2 = 1
     V3 = 2
     V4 = 3
     V5LITE_POD = 4
+    V5P = 5
 
   topology = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)
@@ -464,6 +466,18 @@ class ListQueuedResourcesResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListReservationsResponse(_messages.Message):
+  r"""Response for ListReservations.
+
+  Fields:
+    nextPageToken: The next page token or empty if none.
+    reservations: The listed reservations.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  reservations = _messages.MessageField('Reservation', 2, repeated=True)
+
+
 class ListRuntimeVersionsResponse(_messages.Message):
   r"""Response for ListRuntimeVersions.
 
@@ -676,6 +690,8 @@ class NetworkConfig(_messages.Message):
     network: The name of the network for the TPU node. It must be a
       preexisting Google Compute Engine network. If none is provided,
       "default" will be used.
+    queueCount: Optional. Specifies networking queue count for TPU VM
+      instance's network interface.
     subnetwork: The name of the subnetwork for the TPU node. It must be a
       preexisting Google Compute Engine subnetwork. If none is provided,
       "default" will be used.
@@ -684,7 +700,8 @@ class NetworkConfig(_messages.Message):
   canIpForward = _messages.BooleanField(1)
   enableExternalIps = _messages.BooleanField(2)
   network = _messages.StringField(3)
-  subnetwork = _messages.StringField(4)
+  queueCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  subnetwork = _messages.StringField(5)
 
 
 class NetworkEndpoint(_messages.Message):
@@ -1085,6 +1102,7 @@ class QueuedResource(_messages.Message):
 
   Fields:
     bestEffort: The BestEffort tier.
+    createTime: Output only. The time when the QueuedResource was created.
     guaranteed: The Guaranteed tier.
     name: Output only. Immutable. The name of the QueuedResource.
     queueingPolicy: The queueing policy of the QueuedRequest.
@@ -1098,14 +1116,15 @@ class QueuedResource(_messages.Message):
   """
 
   bestEffort = _messages.MessageField('BestEffort', 1)
-  guaranteed = _messages.MessageField('Guaranteed', 2)
-  name = _messages.StringField(3)
-  queueingPolicy = _messages.MessageField('QueueingPolicy', 4)
-  reservationName = _messages.StringField(5)
-  spot = _messages.MessageField('Spot', 6)
-  state = _messages.MessageField('QueuedResourceState', 7)
-  tpu = _messages.MessageField('Tpu', 8)
-  trafficConfig = _messages.MessageField('TrafficConfig', 9)
+  createTime = _messages.StringField(2)
+  guaranteed = _messages.MessageField('Guaranteed', 3)
+  name = _messages.StringField(4)
+  queueingPolicy = _messages.MessageField('QueueingPolicy', 5)
+  reservationName = _messages.StringField(6)
+  spot = _messages.MessageField('Spot', 7)
+  state = _messages.MessageField('QueuedResourceState', 8)
+  tpu = _messages.MessageField('Tpu', 9)
+  trafficConfig = _messages.MessageField('TrafficConfig', 10)
 
 
 class QueuedResourceState(_messages.Message):
@@ -1240,6 +1259,20 @@ class Range(_messages.Message):
   end = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   start = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   step = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class Reservation(_messages.Message):
+  r"""A reservation describes the amount of a resource 'allotted' for a
+  defined period of time.
+
+  Fields:
+    name: The reservation name with the format:
+      projects/{projectID}/locations/{location}/reservations/{reservationID}
+    standard: A Standard attribute.
+  """
+
+  name = _messages.StringField(1)
+  standard = _messages.MessageField('Standard', 2)
 
 
 class ResetQueuedResourceRequest(_messages.Message):
@@ -1405,6 +1438,40 @@ class SrcSliceTraffic(_messages.Message):
 
   dstTraffic = _messages.MessageField('DstSliceTraffic', 1, repeated=True)
   sliceCoord = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class Standard(_messages.Message):
+  r"""A Standard object.
+
+  Enums:
+    CapacityUnitsValueValuesEnum:
+
+  Fields:
+    capacityUnits: A CapacityUnitsValueValuesEnum attribute.
+    interval: The start and end time of the reservation.
+    resourceType: The resource type of the reservation.
+    size: The size of the reservation, in the units specified in the
+      'capacity_units' field.
+    usage: A Usage attribute.
+  """
+
+  class CapacityUnitsValueValuesEnum(_messages.Enum):
+    r"""CapacityUnitsValueValuesEnum enum type.
+
+    Values:
+      CAPACITY_UNITS_UNSPECIFIED: The capacity units is not known/set.
+      CORES: The capacity unit is set to CORES.
+      CHIPS: The capacity unit is set to CHIPS.
+    """
+    CAPACITY_UNITS_UNSPECIFIED = 0
+    CORES = 1
+    CHIPS = 2
+
+  capacityUnits = _messages.EnumField('CapacityUnitsValueValuesEnum', 1)
+  interval = _messages.MessageField('Interval', 2)
+  resourceType = _messages.StringField(3)
+  size = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  usage = _messages.MessageField('Usage', 5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1902,6 +1969,21 @@ class TpuProjectsLocationsQueuedResourcesResetRequest(_messages.Message):
   resetQueuedResourceRequest = _messages.MessageField('ResetQueuedResourceRequest', 2)
 
 
+class TpuProjectsLocationsReservationsListRequest(_messages.Message):
+  r"""A TpuProjectsLocationsReservationsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of items to return.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent for reservations.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class TpuProjectsLocationsRuntimeVersionsGetRequest(_messages.Message):
   r"""A TpuProjectsLocationsRuntimeVersionsGetRequest object.
 
@@ -1949,6 +2031,17 @@ class TrafficConfig(_messages.Message):
   """
 
   anticipatedTrafficMatrix = _messages.MessageField('LogicalTrafficMatrix', 1)
+
+
+class Usage(_messages.Message):
+  r"""A Usage object.
+
+  Fields:
+    total: The real-time value of usage within the reservation, with the unit
+      specified in field capacity_units.
+  """
+
+  total = _messages.IntegerField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

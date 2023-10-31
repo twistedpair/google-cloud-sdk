@@ -70,7 +70,9 @@ class BulkRestoreObjectsTask(task.Task):
         user_request_args=self._user_request_args,
     )
 
-    api_factory.get_api(self._bucket_url.scheme).bulk_restore_objects(
+    created_operation = api_factory.get_api(
+        self._bucket_url.scheme
+    ).bulk_restore_objects(
         self._bucket_url,
         self._object_globs,
         request_config=request_config,
@@ -79,6 +81,7 @@ class BulkRestoreObjectsTask(task.Task):
         deleted_before_time=self._deleted_before_time,
     )
 
+    log.status.Print('Created: ' + created_operation.name)
     if task_status_queue:
       progress_callbacks.increment_count_callback(task_status_queue)
 

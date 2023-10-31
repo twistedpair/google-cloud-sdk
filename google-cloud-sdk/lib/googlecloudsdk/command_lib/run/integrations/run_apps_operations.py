@@ -47,7 +47,7 @@ from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alp
 import six
 
 
-_SERVICE_TYPE = 'service'
+types_utils.SERVICE_TYPE = 'service'
 
 _DEFAULT_APP_NAME = 'default'
 
@@ -169,7 +169,7 @@ class RunAppsOperations(object):
     with progress_tracker.StagedProgressTracker(
         'Applying Configuration...',
         stages_map.values(),
-        failure_message='Failed to apply configuration.'
+        failure_message='Failed to apply configuration.',
     ) as tracker:
       self.ApplyAppConfig(
           tracker=tracker,
@@ -476,14 +476,16 @@ class RunAppsOperations(object):
     services = [service] if service else []
     services.extend(services_in_params)
     for svc in services:
-      match_type_names.append({'type': _SERVICE_TYPE, 'name': svc})
+      match_type_names.append({'type': types_utils.SERVICE_TYPE, 'name': svc})
 
     for svc in services:
-      self.EnsureWorkloadResources(app.config, svc, _SERVICE_TYPE)
+      self.EnsureWorkloadResources(app.config, svc, types_utils.SERVICE_TYPE)
     self.CheckCloudRunServicesExistence(services)
 
     if service:
-      workload = self._FindResource(app.config, service, _SERVICE_TYPE)
+      workload = self._FindResource(
+          app.config, service, types_utils.SERVICE_TYPE
+      )
       typekit.BindServiceToIntegration(
           integration=resource,
           workload=workload,
@@ -566,12 +568,18 @@ class RunAppsOperations(object):
     match_type_names = typekit.GetCreateSelectors(name)
 
     for service in specified_services:
-      self.EnsureWorkloadResources(app.config, service, _SERVICE_TYPE)
+      self.EnsureWorkloadResources(
+          app.config, service, types_utils.SERVICE_TYPE
+      )
       # Specified services are always added to selector.
-      self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
+      self._AppendTypeMatcher(
+          match_type_names, types_utils.SERVICE_TYPE, service
+      )
 
     if add_service:
-      workload = self._FindResource(app.config, add_service, _SERVICE_TYPE)
+      workload = self._FindResource(
+          app.config, add_service, types_utils.SERVICE_TYPE
+      )
       typekit.BindServiceToIntegration(
           integration=existing_resource,
           workload=workload,
@@ -579,7 +587,7 @@ class RunAppsOperations(object):
 
     if remove_service:
       workload_res = self._FindResource(
-          app.config, remove_service, _SERVICE_TYPE
+          app.config, remove_service, types_utils.SERVICE_TYPE
       )
       if workload_res:
         typekit.UnbindServiceFromIntegration(
@@ -590,7 +598,7 @@ class RunAppsOperations(object):
           # remove_service missing will not lead to failure.
           # only add it to selector if it exists.
           self._AppendTypeMatcher(
-              match_type_names, _SERVICE_TYPE, remove_service
+              match_type_names, types_utils.SERVICE_TYPE, remove_service
           )
       else:
         raise exceptions.ServiceNotFoundError(
@@ -608,14 +616,16 @@ class RunAppsOperations(object):
         and remove_service is None
     ):
       ref_svcs = typekit.GetBindedWorkloads(
-          existing_resource, app.config.resourceList, _SERVICE_TYPE
+          existing_resource, app.config.resourceList, types_utils.SERVICE_TYPE
       )
       for service in ref_svcs:
         if service not in specified_services and self.GetCloudRunService(
             service
         ):
           # Non-specified services are only added to selector if it exists.
-          self._AppendTypeMatcher(match_type_names, _SERVICE_TYPE, service)
+          self._AppendTypeMatcher(
+              match_type_names, types_utils.SERVICE_TYPE, service
+          )
 
     deploy_message = typekit.GetDeployMessage()
 
@@ -664,29 +674,36 @@ class RunAppsOperations(object):
       raise exceptions.IntegrationNotFoundError(
           'Integration [{}] cannot be found'.format(name)
       )
-    typekit = typekits_util.GetTypeKitByResource(resource)
+    try:
+      typekit = typekits_util.GetTypeKitByResource(resource)
+    except exceptions.ArgumentError:
+      typekit = None
 
-    # TODO(b/222748706): revisit whether this apply to future ingress services.
-    services = []
-    if typekit.is_backing_service:
-      # Unbind services
-      services = typekit.GetBindedWorkloads(
-          resource, app.config.resourceList, _SERVICE_TYPE
+    bindings = base.BindingFinder(app.config.resourceList)
+    binded_from_resources = bindings.GetIDsBindedTo(resource.id)
+    unbind_match_type_names = []
+    for rid in binded_from_resources:
+      if rid.type == types_utils.SERVICE_TYPE:
+        if self.GetCloudRunService(rid.name):
+          # Only configure service to unbind if it exists
+          unbind_match_type_names.append(
+              {'type': types_utils.SERVICE_TYPE, 'name': rid.name}
+          )
+    if typekit:
+      delete_match_type_names = typekit.GetDeleteSelectors(name)
+      resource_stages = typekit.GetDeleteComponentTypes(
+          selectors=delete_match_type_names
       )
-    service_match_type_names = []
-    for service in services:
-      if self.GetCloudRunService(service):
-        # Only configure service to unbind if it exists
-        service_match_type_names.append(
-            {'type': _SERVICE_TYPE, 'name': service}
-        )
-    delete_match_type_names = typekit.GetDeleteSelectors(name)
-    resource_stages = typekit.GetDeleteComponentTypes(
-        selectors=delete_match_type_names
-    )
+    else:
+      delete_match_type_names = [{
+          'type': resource.id.type,
+          'name': resource.id.name,
+      }]
+      resource_stages = [resource.id.type]
+
     stages_map = stages.IntegrationDeleteStages(
         destroy_resource_types=resource_stages,
-        should_configure_service=bool(service_match_type_names),
+        should_configure_service=bool(unbind_match_type_names),
     )
 
     def StatusUpdate(tracker, operation, unused_status):
@@ -698,21 +715,20 @@ class RunAppsOperations(object):
         stages_map.values(),
         failure_message='Failed to delete integration.',
     ) as tracker:
-      if services:
-        for service in services:
-          workload = self._FindResource(app.config, service, _SERVICE_TYPE)
-          typekit.UnbindServiceFromIntegration(
-              integration=resource,
-              workload=workload,
+      if binded_from_resources:
+        for rid in binded_from_resources:
+          binded_res = self._FindResource(
+              app.config, rid.name, rid.type
           )
+          base.RemoveBinding(resource, binded_res)
         # TODO(b/222748706): refine message on failure.
-        if service_match_type_names:
+        if unbind_match_type_names:
           self.ApplyAppConfig(
               tracker=tracker,
               tracker_update_func=StatusUpdate,
               appname=_DEFAULT_APP_NAME,
               appconfig=app.config,
-              match_type_names=service_match_type_names,
+              match_type_names=unbind_match_type_names,
               intermediate_step=True,
               etag=app.etag,
           )
@@ -726,9 +742,10 @@ class RunAppsOperations(object):
       delete_selector = {'matchTypeNames': delete_match_type_names}
       self._UndeployResource(name, delete_selector, tracker, StatusUpdate)
 
-    type_metadata = types_utils.GetTypeMetadataByResource(resource)
-    integration_type = type_metadata.integration_type
-    return integration_type
+    if typekit:
+      return typekit.integration_type
+    else:
+      return resource.id.type
 
   def _UndeployResource(
       self, name, delete_selector, tracker, tracker_update_func=None
@@ -787,6 +804,7 @@ class RunAppsOperations(object):
       integration_type_filter: str,
       service_name_filter: str,
       region: str = None,
+      filter_for_type: Optional[str] = None,
   ):
     """Returns the list of integrations from the default applications.
 
@@ -803,6 +821,11 @@ class RunAppsOperations(object):
       region: GCP region. If not provided, then the region will be pulled from
         the flag or from the config.  Only '-', which is the global region has
         any effect here.
+      filter_for_type: the type to filter the list on. if given, the resources
+        of that type will not be included in the list, and will only show
+        binding to or from that type. if not given, all resources and bindings
+        will be shown. for example, for `run integrations list`, it would filter
+        for `service`.
 
     Returns:
       List of Dicts containing name, type, and services.
@@ -829,7 +852,10 @@ class RunAppsOperations(object):
     for app in apps:
       output.extend(
           self._ParseResourcesForList(
-              app, integration_type_filter, service_name_filter
+              app,
+              integration_type_filter,
+              service_name_filter,
+              filter_for_type,
           )
       )
     return output
@@ -839,6 +865,7 @@ class RunAppsOperations(object):
       app: runapps_v1alpha1_messages.Application,
       integration_type_filter: str,
       service_name_filter: str,
+      focus_workload: Optional[str] = None,
   ):
     """Helper function for ListIntegrations to parse relevant fields."""
     if app.config is None:
@@ -846,6 +873,10 @@ class RunAppsOperations(object):
     app_resources = app.config.resourceList
     if not app_resources:
       return []
+
+    bindings = base.BindingFinder(app_resources)
+    # cache deployment so we don't pull the same one multiple times.
+    deployment_cache = {}
 
     # Filter by type and/or service.
     output = []
@@ -855,29 +886,44 @@ class RunAppsOperations(object):
       try:
         typekit = typekits_util.GetTypeKitByResource(resource)
       except exceptions.ArgumentError:
-        # If no matching typekit, like service, skip over.
+        typekit = None
+
+      integration_type = (
+          typekit.integration_type if typekit else resource.id.type
+      )
+
+      # this will need to filter out other workload if we start supporting
+      # more than service
+      if integration_type == focus_workload:
         continue
 
       # TODO(b/217744072): Support Cloud SDK topic filtering.
       # Optionally filter by type.
       if (
           integration_type_filter
-          and typekit.integration_type != integration_type_filter
+          and integration_type != integration_type_filter
       ):
         continue
 
+      if focus_workload:
+        services = [
+            res_id.name
+            for res_id in bindings.GetBindingIDs(resource.id)
+            if res_id.type == types_utils.SERVICE_TYPE
+        ]
+      else:
+        services = [
+            '{}/{}'.format(res_id.type, res_id.name)
+            for res_id in bindings.GetBindingIDs(resource.id)
+        ]
+
       # Optionally filter by service.
-      services = typekit.GetBindedWorkloads(resource, app_resources)
       if service_name_filter and service_name_filter not in services:
         continue
 
-      status = (
-          self.messages.DeploymentStatus.StateValueValuesEnum.STATE_UNSPECIFIED
+      status = self._GetStatusFromLatestDeployment(
+          resource.latestDeployment, deployment_cache
       )
-      if resource.latestDeployment:
-        dep = api_utils.GetDeployment(self._client, resource.latestDeployment)
-        if dep:
-          status = dep.status.state
 
       # region is parsed from the name, which has the following form:
       # projects/<proj-name>/locations/<location>/applications/default'
@@ -887,7 +933,7 @@ class RunAppsOperations(object):
           integration_list_printer.Row(
               integration_name=resource.id.name,
               region=region,
-              integration_type=typekit.integration_type,
+              integration_type=integration_type,
               # sorting is done here to guarantee output for scenario tests
               services=','.join(sorted(services)),
               latest_deployment_status=six.text_type(status),
@@ -895,6 +941,52 @@ class RunAppsOperations(object):
       )
 
     return output
+
+  def GetBindingData(
+      self,
+  ) -> List[base.BindingData]:
+    """Return a list of bindings from the default application.
+
+    Returns:
+      The list of BindingData.
+    """
+    app = api_utils.GetApplication(
+        self._client, self.GetAppRef(_DEFAULT_APP_NAME)
+    )
+    if app is None or app.config is None or app.config.resourceList is None:
+      return []
+    app_resources = app.config.resourceList
+
+    bindings = base.BindingFinder(app_resources)
+    return bindings.GetAllBindings()
+
+  def _GetStatusFromLatestDeployment(
+      self,
+      deployment: str,
+      deployment_cache: {str, runapps_v1alpha1_messages.Deployment},
+  ) -> runapps_v1alpha1_messages.DeploymentStatus.StateValueValuesEnum:
+    """Get status from latest deployment.
+
+    Args:
+      deployment: the name of the latest deployment
+      deployment_cache: a map of cached deployments
+
+    Returns:
+      status of the latest deployment.
+    """
+    status = (
+        runapps_v1alpha1_messages.DeploymentStatus.StateValueValuesEnum.STATE_UNSPECIFIED
+    )
+    if not deployment:
+      return status
+    if deployment_cache.get(deployment):
+      status = deployment_cache[deployment].status.state
+    else:
+      dep = api_utils.GetDeployment(self._client, deployment)
+      if dep:
+        status = dep.status.state
+        deployment_cache[deployment] = dep
+    return status
 
   def GetDefaultApp(self) -> runapps_v1alpha1_messages.Application:
     """Returns the default application.

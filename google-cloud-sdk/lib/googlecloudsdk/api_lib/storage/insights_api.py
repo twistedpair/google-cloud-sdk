@@ -80,7 +80,7 @@ class InsightsApi:
       exclude_source_locations=None,
       auto_add_new_buckets=False,
       retention_period=None,
-      skip_verificatio=False,
+      skip_verification=False,
       identity_type=None,
       description=None,
   ):
@@ -88,35 +88,24 @@ class InsightsApi:
     # TODO(b/302428138) Implement the API layer methods
     raise NotImplementedError()
 
-  def create_dataset_config_link(
-      self, dataset_config_name, location, destination_project
-  ):
+  def create_dataset_config_link(self, dataset_config_relative_name):
     """Creates the dataset config link."""
     # TODO(b/302428138) Implement the API layer methods
     raise NotImplementedError()
 
-  def delete_dataset_config(
-      self,
-      dataset_config_name,
-      location,
-      destination_project,
-      auto_delete_link=False,
-      force=False,
-  ):
+  def delete_dataset_config(self, dataset_config_relative_name):
     """Deletes the dataset config."""
-    # TODO(b/302428138) Implement the API layer methods
-    raise NotImplementedError()
+    request = self.messages.StorageinsightsProjectsLocationsDatasetConfigsDeleteRequest(
+        name=dataset_config_relative_name
+    )
+    return self.client.projects_locations_datasetConfigs.Delete(request)
 
-  def delete_dataset_config_link(
-      self, dataset_config_name, location, destination_project
-  ):
+  def delete_dataset_config_link(self, dataset_config_relative_name):
     """Deletes the dataset config link."""
     # TODO(b/302428138) Implement the API layer methods
     raise NotImplementedError()
 
-  def get_dataset_config(
-      self, dataset_config_name, location, destination_project
-  ):
+  def get_dataset_config(self, dataset_config_relative_name):
     """Gets the dataset config."""
     # TODO(b/302428138) Implement the API layer methods
     raise NotImplementedError()
@@ -129,11 +118,9 @@ class InsightsApi:
 
   def update_dataset_config(
       self,
-      dataset_config_name,
-      location,
-      destination_project,
+      dataset_config_relative_name,
       retention_period=None,
-      skip_verificatio=False,
+      skip_verification=False,
       description=None,
   ):
     """Updates the dataset config."""
@@ -459,3 +446,30 @@ class InsightsApi:
         self.messages
         .StorageinsightsProjectsLocationsReportConfigsReportDetailsGetRequest(
             name=report_config_name))
+
+  def cancel_operation(self, operation_name):
+    self.client.projects_locations_operations.Cancel(
+        self.messages.StorageinsightsProjectsLocationsOperationsCancelRequest(
+            name=operation_name
+        )
+    )
+
+  def get_operation(self, operation_name):
+    return self.client.projects_locations_operations.Get(
+        self.messages.StorageinsightsProjectsLocationsOperationsGetRequest(
+            name=operation_name
+        )
+    )
+
+  def list_operations(self, parent_resource_name):
+    request = (
+        self.messages.StorageinsightsProjectsLocationsOperationsListRequest(
+            name=parent_resource_name,
+        )
+    )
+    return list_pager.YieldFromList(
+        self.client.projects_locations_operations,
+        request,
+        batch_size_attribute='pageSize',
+        field='operations',
+    )

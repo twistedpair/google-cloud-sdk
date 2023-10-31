@@ -188,6 +188,32 @@ class BackupInfo(_messages.Message):
   versionTime = _messages.StringField(4)
 
 
+class BackupSchedule(_messages.Message):
+  r"""BackupSchedule expresses the automated backup creation specification for
+  a Spanner database.
+
+  Fields:
+    cronSpec: Cron style schedule specification.
+    encryptionConfig: Optional. The encryption configuration that will be used
+      to encrypt the backup. If this field is not specified, the backup will
+      use the same encryption configuration as the database.
+    name: Identifier. Output only for the CreateBackupSchedule operation.
+      Required for the UpdateBackupSchedule operation. A globally unique
+      identifier for the backup schedule which cannot be changed. Values are
+      of the form
+      `projects//instances//databases//backupSchedules/a-z*[a-z0-9]` The final
+      segment of the name must be between 2 and 60 characters in length.
+    retentionDuration: Required. The retention duration of a backup that must
+      be at least 1 day and at most 365 days. The backup is eligible to be
+      automatically deleted once the retention period has elapsed.
+  """
+
+  cronSpec = _messages.MessageField('CrontabSpec', 1)
+  encryptionConfig = _messages.MessageField('CreateBackupEncryptionConfig', 2)
+  name = _messages.StringField(3)
+  retentionDuration = _messages.StringField(4)
+
+
 class BatchCreateSessionsRequest(_messages.Message):
   r"""The request for BatchCreateSessions.
 
@@ -529,6 +555,43 @@ class CopyBackupRequest(_messages.Message):
   sourceBackup = _messages.StringField(4)
 
 
+class CreateBackupEncryptionConfig(_messages.Message):
+  r"""Encryption configuration for the backup to create.
+
+  Enums:
+    EncryptionTypeValueValuesEnum: Required. The encryption type of the
+      backup.
+
+  Fields:
+    encryptionType: Required. The encryption type of the backup.
+    kmsKeyName: Optional. The Cloud KMS key that will be used to protect the
+      backup. This field should be set only when encryption_type is
+      `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`.
+  """
+
+  class EncryptionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The encryption type of the backup.
+
+    Values:
+      ENCRYPTION_TYPE_UNSPECIFIED: Unspecified. Do not use.
+      USE_DATABASE_ENCRYPTION: Use the same encryption configuration as the
+        database. This is the default option when encryption_config is empty.
+        For example, if the database is using `Customer_Managed_Encryption`,
+        the backup will be using the same Cloud KMS key as the database.
+      GOOGLE_DEFAULT_ENCRYPTION: Use Google default encryption.
+      CUSTOMER_MANAGED_ENCRYPTION: Use customer managed encryption. If
+        specified, `kms_key_name` must contain a valid Cloud KMS key.
+    """
+    ENCRYPTION_TYPE_UNSPECIFIED = 0
+    USE_DATABASE_ENCRYPTION = 1
+    GOOGLE_DEFAULT_ENCRYPTION = 2
+    CUSTOMER_MANAGED_ENCRYPTION = 3
+
+  encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
+  kmsKeyName = _messages.StringField(2)
+
+
 class CreateBackupMetadata(_messages.Message):
   r"""Metadata type for the operation returned by CreateBackup.
 
@@ -731,6 +794,38 @@ class CreateSessionRequest(_messages.Message):
   """
 
   session = _messages.MessageField('Session', 1)
+
+
+class CrontabSpec(_messages.Message):
+  r"""CrontabSpec can be used to specify the version timestamp and frequency
+  at which the backup should be created.
+
+  Fields:
+    creationWindow: Output only. Schedule backups will contain an externally
+      consistent copy of the database at the version timestamp specified in
+      `schedule_spec.cron_spec`. However, Spanner may not initiate the
+      creation of the scheduled backups at that version timestamp. Spanner
+      will initiate the creation of scheduled backups within the time window
+      bounded by the version_time specified in `schedule_spec.cron_spec` and
+      version_time + `creation_window`.
+    text: Required. Textual representation of the crontab. User can customize
+      the backup frequency and the backup version timestamp using the cron
+      expression. The version timestamp must be in UTC timzeone. The backup
+      will contain an externally consistent copy of the database at the
+      version timestamp. Allowed frequencies are 12 hour, 1 day, 1 week and 1
+      month. Examples of valid cron specifications: * `0 2/12 * * * ` : every
+      12 hours at (2, 14) hours past midnight in UTC. * `0 2,14 * * * ` :
+      every 12 hours at (2,14) hours past midnight in UTC. * `0 2 * * * ` :
+      once a day at 2 past midnight in UTC. * `0 2 * * 0 ` : once a week every
+      Sunday at 2 past midnight in UTC. * `0 2 8 * * ` : once a month on 8th
+      day at 2 past midnight in UTC.
+    timeZone: Output only. The time zone of the times in `CrontabSpec.text`.
+      Currently only UTC is supported.
+  """
+
+  creationWindow = _messages.StringField(1)
+  text = _messages.StringField(2)
+  timeZone = _messages.StringField(3)
 
 
 class Database(_messages.Message):
@@ -1419,6 +1514,21 @@ class IncludeReplicas(_messages.Message):
 
   autoFailoverDisabled = _messages.BooleanField(1)
   replicaSelections = _messages.MessageField('ReplicaSelection', 2, repeated=True)
+
+
+class IndexAdvice(_messages.Message):
+  r"""Recommendation to add new indexes to run queries more efficiently.
+
+  Fields:
+    ddl: Optional. DDL statements to add new indexes that will improve the
+      query.
+    improvementFactor: Optional. Estimated latency improvement factor. For
+      example if the query currently takes 500 ms to run and the estimated
+      latency with new indexes is 100 ms this field will be 5.
+  """
+
+  ddl = _messages.StringField(1, repeated=True)
+  improvementFactor = _messages.FloatField(2)
 
 
 class IndexedHotKey(_messages.Message):
@@ -2166,6 +2276,19 @@ class ListBackupOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListBackupSchedulesResponse(_messages.Message):
+  r"""The response for ListBackupSchedules.
+
+  Fields:
+    backupSchedules: The list of backup schedules for a database.
+    nextPageToken: `next_page_token` can be sent in a subsequent
+      ListBackupSchedules call to fetch more of the schedules.
+  """
+
+  backupSchedules = _messages.MessageField('BackupSchedule', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
 class ListBackupsResponse(_messages.Message):
   r"""The response for ListBackups.
 
@@ -2252,6 +2375,27 @@ class ListInstanceConfigsResponse(_messages.Message):
 
   instanceConfigs = _messages.MessageField('InstanceConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListInstancePartitionOperationsResponse(_messages.Message):
+  r"""The response for ListInstancePartitionOperations.
+
+  Fields:
+    nextPageToken: `next_page_token` can be sent in a subsequent
+      ListInstancePartitionOperations call to fetch more of the matching
+      metadata.
+    operations: The list of matching instance partition long-running
+      operations. Each operation's name will be prefixed by the instance
+      partition's name. The operation's metadata field type
+      `metadata.type_url` describes the type of the metadata.
+    unreachableInstancePartitions: The list of unreachable instance
+      partitions. It includes the names of instance partitions whose operation
+      metadata could not be retrieved within instance_partition_deadline.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  operations = _messages.MessageField('Operation', 2, repeated=True)
+  unreachableInstancePartitions = _messages.StringField(3, repeated=True)
 
 
 class ListInstancePartitionsResponse(_messages.Message):
@@ -3186,6 +3330,18 @@ class PrefixNode(_messages.Message):
   word = _messages.StringField(5)
 
 
+class QueryAdvisorResult(_messages.Message):
+  r"""Output of query advisor analysis.
+
+  Fields:
+    indexAdvice: Optional. Index Recommendation for a query. This is an
+      optional field and the recommendation will only be available when the
+      recommendation guarantees significant improvement in query performance.
+  """
+
+  indexAdvice = _messages.MessageField('IndexAdvice', 1, repeated=True)
+
+
 class QueryOptions(_messages.Message):
   r"""Query optimizer configuration.
 
@@ -3230,9 +3386,12 @@ class QueryPlan(_messages.Message):
     planNodes: The nodes in the query plan. Plan nodes are returned in pre-
       order starting with the plan root. Each PlanNode's `id` corresponds to
       its index in `plan_nodes`.
+    queryAdvice: Optional. The advices/recommendations for a query. Currently
+      this field will be serving index recommendations for a query.
   """
 
   planNodes = _messages.MessageField('PlanNode', 1, repeated=True)
+  queryAdvice = _messages.MessageField('QueryAdvisorResult', 2)
 
 
 class ReadOnly(_messages.Message):
@@ -4491,6 +4650,89 @@ class SpannerProjectsInstancesDatabaseOperationsListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class SpannerProjectsInstancesDatabasesBackupSchedulesCreateRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesBackupSchedulesCreateRequest object.
+
+  Fields:
+    backupSchedule: A BackupSchedule resource to be passed as the request
+      body.
+    backupScheduleId: Required. The Id to use for the backup schedule. The
+      `backup_schedule_id` appended to `parent` forms the full backup schedule
+      name of the form `projects//instances//databases//backupSchedules/`.
+    parent: Required. The name of the database that this backup schedule
+      applies to.
+  """
+
+  backupSchedule = _messages.MessageField('BackupSchedule', 1)
+  backupScheduleId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SpannerProjectsInstancesDatabasesBackupSchedulesDeleteRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesBackupSchedulesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the schedule to delete. Values are of the form
+      `projects//instances//databases//backupSchedules/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesDatabasesBackupSchedulesGetRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesBackupSchedulesGetRequest object.
+
+  Fields:
+    name: Required. The name of the schedule to retrieve. Values are of the
+      form `projects//instances//databases//backupSchedules/`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SpannerProjectsInstancesDatabasesBackupSchedulesListRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesBackupSchedulesListRequest object.
+
+  Fields:
+    pageSize: Optional. Number of backup schedules to be returned in the
+      response. If 0 or less, defaults to the server's maximum allowed page
+      size.
+    pageToken: Optional. If non-empty, `page_token` should contain a
+      next_page_token from a previous ListBackupSchedulesResponse to the same
+      `parent`.
+    parent: Required. Database is the parent resource whose backup schedules
+      should be listed. Values are of the form projects//instances//databases/
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class SpannerProjectsInstancesDatabasesBackupSchedulesPatchRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesBackupSchedulesPatchRequest object.
+
+  Fields:
+    backupSchedule: A BackupSchedule resource to be passed as the request
+      body.
+    name: Identifier. Output only for the CreateBackupSchedule operation.
+      Required for the UpdateBackupSchedule operation. A globally unique
+      identifier for the backup schedule which cannot be changed. Values are
+      of the form
+      `projects//instances//databases//backupSchedules/a-z*[a-z0-9]` The final
+      segment of the name must be between 2 and 60 characters in length.
+    updateMask: Required. A mask specifying which fields in the BackupSchedule
+      resource should be updated. This mask is relative to the BackupSchedule
+      resource, not to the request message. The field mask must always be
+      specified; this prevents any future fields from being erased
+      accidentally.
+  """
+
+  backupSchedule = _messages.MessageField('BackupSchedule', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SpannerProjectsInstancesDatabasesCreateRequest(_messages.Message):
   r"""A SpannerProjectsInstancesDatabasesCreateRequest object.
 
@@ -5023,6 +5265,57 @@ class SpannerProjectsInstancesGetRequest(_messages.Message):
 
   fieldMask = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
+
+
+class SpannerProjectsInstancesInstancePartitionOperationsListRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesInstancePartitionOperationsListRequest object.
+
+  Fields:
+    filter: Optional. An expression that filters the list of returned
+      operations. A filter expression consists of a field name, a comparison
+      operator, and a value for filtering. The value must be a string, a
+      number, or a boolean. The comparison operator must be one of: `<`, `>`,
+      `<=`, `>=`, `!=`, `=`, or `:`. Colon `:` is the contains operator.
+      Filter rules are not case sensitive. The following fields in the
+      Operation are eligible for filtering: * `name` - The name of the long-
+      running operation * `done` - False if the operation is in progress, else
+      true. * `metadata.@type` - the type of metadata. For example, the type
+      string for CreateInstancePartitionMetadata is `type.googleapis.com/googl
+      e.spanner.admin.instance.v1.CreateInstancePartitionMetadata`. *
+      `metadata.` - any field in metadata.value. `metadata.@type` must be
+      specified first, if filtering on metadata fields. * `error` - Error
+      associated with the long-running operation. * `response.@type` - the
+      type of response. * `response.` - any field in response.value. You can
+      combine multiple expressions by enclosing each expression in
+      parentheses. By default, expressions are combined with AND logic.
+      However, you can specify AND, OR, and NOT logic explicitly. Here are a
+      few examples: * `done:true` - The operation is complete. *
+      `(metadata.@type=` \ `type.googleapis.com/google.spanner.admin.instance.
+      v1.CreateInstancePartitionMetadata) AND` \
+      `(metadata.instance_partition.name:custom-instance-partition) AND` \
+      `(metadata.start_time < \"2021-03-28T14:50:00Z\") AND` \ `(error:*)` -
+      Return operations where: * The operation's metadata type is
+      CreateInstancePartitionMetadata. * The instance partition name contains
+      "custom-instance-partition". * The operation started before
+      2021-03-28T14:50:00Z. * The operation resulted in an error.
+    instancePartitionDeadline: Optional. Deadline used while retrieving
+      metadata for instance partition operations. Instance partitions whose
+      operation metadata cannot be retrieved within this deadline will be
+      added to unreachable in ListInstancePartitionOperationsResponse.
+    pageSize: Optional. Number of operations to be returned in the response.
+      If 0 or less, defaults to the server's maximum allowed page size.
+    pageToken: Optional. If non-empty, `page_token` should contain a
+      next_page_token from a previous ListInstancePartitionOperationsResponse
+      to the same `parent` and with the same `filter`.
+    parent: Required. The parent instance of the instance partition
+      operations. Values are of the form `projects//instances/`.
+  """
+
+  filter = _messages.StringField(1)
+  instancePartitionDeadline = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SpannerProjectsInstancesInstancePartitionsCreateRequest(_messages.Message):

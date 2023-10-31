@@ -927,6 +927,7 @@ class Cluster(_messages.Message):
       Resource usage export is disabled when this config unspecified.
     runtimeVulnerabilityInsightConfig: Enable/Disable RVI features for the
       cluster.
+    secretManagerConfig: Secret CSI driver configuration.
     securityPostureConfig: Enable/Disable Security Posture API features for
       the cluster.
     selfLink: [Output only] Server-defined URL for the resource.
@@ -1090,22 +1091,23 @@ class Cluster(_messages.Message):
   resourceLabels = _messages.MessageField('ResourceLabelsValue', 70)
   resourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 71)
   runtimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 72)
-  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 73)
-  selfLink = _messages.StringField(74)
-  servicesIpv4Cidr = _messages.StringField(75)
-  shieldedNodes = _messages.MessageField('ShieldedNodes', 76)
-  status = _messages.EnumField('StatusValueValuesEnum', 77)
-  statusMessage = _messages.StringField(78)
-  subnetwork = _messages.StringField(79)
-  tpuConfig = _messages.MessageField('TpuConfig', 80)
-  tpuIpv4CidrBlock = _messages.StringField(81)
-  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 82)
-  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 83)
-  workloadCertificates = _messages.MessageField('WorkloadCertificates', 84)
-  workloadConfig = _messages.MessageField('WorkloadConfig', 85)
-  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 86)
-  workloadMonitoringEnabledEap = _messages.BooleanField(87)
-  zone = _messages.StringField(88)
+  secretManagerConfig = _messages.MessageField('SecretManagerConfig', 73)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 74)
+  selfLink = _messages.StringField(75)
+  servicesIpv4Cidr = _messages.StringField(76)
+  shieldedNodes = _messages.MessageField('ShieldedNodes', 77)
+  status = _messages.EnumField('StatusValueValuesEnum', 78)
+  statusMessage = _messages.StringField(79)
+  subnetwork = _messages.StringField(80)
+  tpuConfig = _messages.MessageField('TpuConfig', 81)
+  tpuIpv4CidrBlock = _messages.StringField(82)
+  verticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 83)
+  workloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 84)
+  workloadCertificates = _messages.MessageField('WorkloadCertificates', 85)
+  workloadConfig = _messages.MessageField('WorkloadConfig', 86)
+  workloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 87)
+  workloadMonitoringEnabledEap = _messages.BooleanField(88)
+  zone = _messages.StringField(89)
 
 
 class ClusterAutoscaling(_messages.Message):
@@ -3930,6 +3932,8 @@ class NetworkConfig(_messages.Message):
       will be applied to the nodes to prevent sNAT on cluster internal
       traffic.
     dnsConfig: DNSConfig contains clusterDNS config for this cluster.
+    enableCiliumClusterwideNetworkPolicy: Whether
+      CiliumClusterWideNetworkPolicy is enabled on this cluster.
     enableFqdnNetworkPolicy: Whether FQDN Network Policy is enabled on this
       cluster.
     enableIntraNodeVisibility: Whether Intra-node visibility is enabled for
@@ -4019,18 +4023,19 @@ class NetworkConfig(_messages.Message):
   datapathProvider = _messages.EnumField('DatapathProviderValueValuesEnum', 1)
   defaultSnatStatus = _messages.MessageField('DefaultSnatStatus', 2)
   dnsConfig = _messages.MessageField('DNSConfig', 3)
-  enableFqdnNetworkPolicy = _messages.BooleanField(4)
-  enableIntraNodeVisibility = _messages.BooleanField(5)
-  enableL4ilbSubsetting = _messages.BooleanField(6)
-  enableMultiNetworking = _messages.BooleanField(7)
-  gatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 8)
-  inTransitEncryptionConfig = _messages.EnumField('InTransitEncryptionConfigValueValuesEnum', 9)
-  network = _messages.StringField(10)
-  networkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 11)
-  nodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 12)
-  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 13)
-  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 14)
-  subnetwork = _messages.StringField(15)
+  enableCiliumClusterwideNetworkPolicy = _messages.BooleanField(4)
+  enableFqdnNetworkPolicy = _messages.BooleanField(5)
+  enableIntraNodeVisibility = _messages.BooleanField(6)
+  enableL4ilbSubsetting = _messages.BooleanField(7)
+  enableMultiNetworking = _messages.BooleanField(8)
+  gatewayApiConfig = _messages.MessageField('GatewayAPIConfig', 9)
+  inTransitEncryptionConfig = _messages.EnumField('InTransitEncryptionConfigValueValuesEnum', 10)
+  network = _messages.StringField(11)
+  networkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 12)
+  nodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 13)
+  privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 14)
+  serviceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 15)
+  subnetwork = _messages.StringField(16)
 
 
 class NetworkPerformanceConfig(_messages.Message):
@@ -5831,6 +5836,16 @@ class SecondaryBootDisk(_messages.Message):
 
   diskImage = _messages.StringField(1)
   mode = _messages.EnumField('ModeValueValuesEnum', 2)
+
+
+class SecretManagerConfig(_messages.Message):
+  r"""SecretManagerConfig is config for secret manager enablement.
+
+  Fields:
+    enabled: A boolean attribute.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class SecurityBulletinEvent(_messages.Message):

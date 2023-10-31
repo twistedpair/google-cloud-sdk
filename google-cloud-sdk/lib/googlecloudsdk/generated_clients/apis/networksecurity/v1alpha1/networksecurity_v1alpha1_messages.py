@@ -429,12 +429,12 @@ class FirewallAttachment(_messages.Message):
     createTime: Output only. Create time stamp
     labels: Labels as key value pairs
     name: Output only. name of resource
-    natSubnetwork: Name of the subnet that is used to NAT the IP addresses of
-      the intercepted traffic in the attachment's VPC:
+    producerForwardingRuleName: Required. Name of the regional load balancer
+      which the intercepted traffic should be forwarded to: 'projects/{project
+      _id}/regions/{region}/forwardingRules/{forwardingRule}'
+    producerNatSubnetworkName: Required. Name of the subnet that is used to
+      NAT the IP addresses of the intercepted traffic in the attachment's VPC:
       'projects/{project_id}/{location}/subnetworks/{subnetwork_name}'
-    producerForwardingRule: Name of the regional load balancer which the
-      intercepted traffic should be forwarded to: 'projects/{project_id}/regio
-      ns/{region}/forwardingRules/{forwardingRule}'
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     state: Output only. Current state of the attachment.
@@ -484,8 +484,8 @@ class FirewallAttachment(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  natSubnetwork = _messages.StringField(4)
-  producerForwardingRule = _messages.StringField(5)
+  producerForwardingRuleName = _messages.StringField(4)
+  producerNatSubnetworkName = _messages.StringField(5)
   reconciling = _messages.BooleanField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
   updateTime = _messages.StringField(8)
@@ -4084,8 +4084,6 @@ class PartnerSSEGateway(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
-    partnerRnIlbIp: Optional. Partner's RN ILB IP
-    partnerScIlbIp: Optional. Partner's SC ILB IP
     partnerSseRealm: Output only. [Output Only] name of PartnerSSERealm owning
       the PartnerSSEGateway
     partnerVpcSubnetRange: Required. Subnet range of the partner_vpc
@@ -4127,16 +4125,14 @@ class PartnerSSEGateway(_messages.Message):
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
-  partnerRnIlbIp = _messages.StringField(4)
-  partnerScIlbIp = _messages.StringField(5)
-  partnerSseRealm = _messages.StringField(6)
-  partnerVpcSubnetRange = _messages.StringField(7)
-  sseBgpAsn = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  sseBgpIps = _messages.StringField(9, repeated=True)
-  sseGatewayReferenceId = _messages.StringField(10)
-  sseVpcSubnetRange = _messages.StringField(11)
-  sseVpcTargetIp = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  partnerSseRealm = _messages.StringField(4)
+  partnerVpcSubnetRange = _messages.StringField(5)
+  sseBgpAsn = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  sseBgpIps = _messages.StringField(7, repeated=True)
+  sseGatewayReferenceId = _messages.StringField(8)
+  sseVpcSubnetRange = _messages.StringField(9)
+  sseVpcTargetIp = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class PartnerSSERealm(_messages.Message):
@@ -4155,11 +4151,16 @@ class PartnerSSERealm(_messages.Message):
     name: name of resource
     pairingKey: Required. value of the key to establish global handshake from
       SSERealm
-    partnerVpc: Required. VPC owned by the partner to be peered with CDEN
-      sse_vpc in sse_project
+    partnerNetwork: Optional. Partner-owned network to be peered with CDEN's
+      sse_network in sse_project
+    partnerVpc: Optional. VPC owned by the partner to be peered with CDEN
+      sse_vpc in sse_project This field is deprecated. Use partner_network
+      instead.
+    sseNetwork: Output only. [Output only] CDEN-owned network to be peered
+      with partner_network
     sseProject: Output only. [Output only] CDEN owned project owning sse_vpc
     sseVpc: Output only. [Output only] CDEN owned VPC to be peered with
-      partner_vpc
+      partner_vpc This field is deprecated. Use sse_network instead.
     state: Output only. [Output Only] State of the realm. It can be either
       ATTACHED or UNATTACHED
     updateTime: Output only. [Output only] Update time stamp
@@ -4209,11 +4210,13 @@ class PartnerSSERealm(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   pairingKey = _messages.StringField(4)
-  partnerVpc = _messages.StringField(5)
-  sseProject = _messages.StringField(6)
-  sseVpc = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  partnerNetwork = _messages.StringField(5)
+  partnerVpc = _messages.StringField(6)
+  sseNetwork = _messages.StringField(7)
+  sseProject = _messages.StringField(8)
+  sseVpc = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
 
 
 class RemoveAddressGroupItemsRequest(_messages.Message):

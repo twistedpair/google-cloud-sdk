@@ -26,6 +26,7 @@ from .types.keys import KeyRange
 from .types.keys import KeySet
 from .types.mutation import Mutation
 from .types.query_plan import PlanNode
+from .types.query_plan import QueryAdvisorResult
 from .types.query_plan import QueryPlan
 from .types.result_set import PartialResultSet
 from .types.result_set import ResultSet
@@ -89,6 +90,7 @@ __all__ = (
 'PartitionReadRequest',
 'PartitionResponse',
 'PlanNode',
+'QueryAdvisorResult',
 'QueryPlan',
 'ReadRequest',
 'RequestOptions',

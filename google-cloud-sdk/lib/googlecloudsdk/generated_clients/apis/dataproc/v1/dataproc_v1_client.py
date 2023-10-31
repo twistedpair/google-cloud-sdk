@@ -1495,6 +1495,33 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Repair(self, request, global_params=None):
+      r"""Repair nodes in a node group.
+
+      Args:
+        request: (DataprocProjectsRegionsClustersNodeGroupsRepairRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Repair')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Repair.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/regions/{regionsId}/clusters/{clustersId}/nodeGroups/{nodeGroupsId}:repair',
+        http_method='POST',
+        method_id='dataproc.projects.regions.clusters.nodeGroups.repair',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:repair',
+        request_field='repairNodeGroupRequest',
+        request_type_name='DataprocProjectsRegionsClustersNodeGroupsRepairRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Resize(self, request, global_params=None):
       r"""Resizes a node group in a cluster. The returned Operation.metadata is NodeGroupOperationMetadata (https://cloud.google.com/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#nodegroupoperationmetadata).
 

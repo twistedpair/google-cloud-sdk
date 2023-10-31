@@ -54,6 +54,33 @@ class CloudtasksV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Buffer(self, request, global_params=None):
+      r"""Creates and buffers a new task without the need to explicitly define a Task message. The queue must have HTTP target. To create the task with a custom ID, use the following format and set TASK_ID to your desired ID: projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks/TASK_ID:buffer To create the task with an automatically generated ID, use the following format: projects/PROJECT_ID/locations/LOCATION_ID/queues/QUEUE_ID/tasks:buffer.
+
+      Args:
+        request: (CloudtasksProjectsLocationsQueuesTasksBufferRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BufferTaskResponse) The response message.
+      """
+      config = self.GetMethodConfig('Buffer')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Buffer.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/queues/{queuesId}/tasks/{taskId}:buffer',
+        http_method='POST',
+        method_id='cloudtasks.projects.locations.queues.tasks.buffer',
+        ordered_params=['queue', 'taskId'],
+        path_params=['queue', 'taskId'],
+        query_params=[],
+        relative_path='v2/{+queue}/tasks/{taskId}:buffer',
+        request_field='bufferTaskRequest',
+        request_type_name='CloudtasksProjectsLocationsQueuesTasksBufferRequest',
+        response_type_name='BufferTaskResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a task and adds it to a queue. Tasks cannot be updated after creation; there is no UpdateTask command. * The maximum task size is 100KB.
 

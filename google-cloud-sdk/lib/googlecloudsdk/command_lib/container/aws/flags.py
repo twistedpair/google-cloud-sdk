@@ -309,8 +309,9 @@ def _AddVolumeThroughput(parser, prefix):
       '--{}-volume-throughput'.format(prefix),
       type=int,
       help=(
-          'Throughput to provision for the {} volume, '
-          'in MiB/s. Only valid if the volume type is GP3.'.format(prefix)
+          'Throughput to provision for the {} volume, in MiB/s. Only valid '
+          'if the volume type is GP3. If volume type is GP3 and throughput '
+          'is not provided, it defaults to 125.'.format(prefix)
       ),
   )
 

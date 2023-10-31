@@ -69,14 +69,6 @@ class DefaultArgTypeWrapper(ArgTypeUsage):
       return self.arg_type.GetUsageHelpText(*args, **kwargs)
     return None
 
-  def __call__(self, arg_value):
-    """Converts arg_value into type arg_type."""
-    if self.arg_type:
-      return self.arg_type(arg_value)
-    else:
-      return arg_value
-
-
 ASCII_INDENT = '::\n'
 
 

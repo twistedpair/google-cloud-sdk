@@ -222,16 +222,6 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1alpha1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.aiplatform.v1alpha1',
-                    client_classpath='aiplatform_v1alpha1_client.AiplatformV1alpha1',
-                    base_url='https://aiplatform.googleapis.com/',
-                    messages_modulepath='aiplatform_v1alpha1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
         'v1beta1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -1895,38 +1885,6 @@ MAP = {
                     client_classpath='firestore_v1beta2_client.FirestoreV1beta2',
                     base_url='https://firestore.googleapis.com/',
                     messages_modulepath='firestore_v1beta2_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-    },
-    'gameservices': {
-        'v1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.gameservices.v1',
-                    client_classpath='gameservices_v1_client.GameservicesV1',
-                    base_url='https://gameservices.googleapis.com/',
-                    messages_modulepath='gameservices_v1_messages'),
-                default_version=True,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1alpha':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.gameservices.v1alpha',
-                    client_classpath='gameservices_v1alpha_client.GameservicesV1alpha',
-                    base_url='https://gameservices.googleapis.com/',
-                    messages_modulepath='gameservices_v1alpha_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1beta':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.gameservices.v1beta',
-                    client_classpath='gameservices_v1beta_client.GameservicesV1beta',
-                    base_url='https://gameservices.googleapis.com/',
-                    messages_modulepath='gameservices_v1beta_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

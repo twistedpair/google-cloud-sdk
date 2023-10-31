@@ -85,24 +85,75 @@ def ParseDeployConfig(messages, manifests, region):
       CUSTOM_TARGET_TYPE_KIND: [],
   }
   project = properties.VALUES.core.project.GetOrFail()
+  _ValidateConfig(manifests)
   for manifest in manifests:
-    if manifest.get('apiVersion') is None:
+    _ParseV1Config(
+        messages, manifest['kind'], manifest, project, region, resource_dict
+    )
+
+  return resource_dict
+
+
+def _ValidateConfig(manifests):
+  """Validates the manifests.
+
+  Args:
+     manifests: [str], the list of parsed resource yaml definitions.
+
+  Raises:
+    exceptions.CloudDeployConfigError, if there are errors in the manifests
+    (e.g. required field is missing, duplicate resource names).
+  """
+  resource_type_to_names = collections.defaultdict(list)
+  for manifest in manifests:
+    api_version = manifest.get('apiVersion')
+    if not api_version:
       raise exceptions.CloudDeployConfigError(
           'missing required field .apiVersion'
       )
-    if manifest.get('kind') is None:
+    resource_type = manifest.get('kind')
+    if resource_type is None:
       raise exceptions.CloudDeployConfigError('missing required field .kind')
     api_version = manifest['apiVersion']
-    if api_version in {API_VERSION_V1BETA1, API_VERSION_V1}:
-      _ParseV1Config(
-          messages, manifest['kind'], manifest, project, region, resource_dict
-      )
-    else:
+    if api_version not in {API_VERSION_V1BETA1, API_VERSION_V1}:
       raise exceptions.CloudDeployConfigError(
           'api version {} not supported'.format(api_version)
       )
+    metadata = manifest.get('metadata')
+    if not metadata or not metadata.get(NAME_FIELD):
+      raise exceptions.CloudDeployConfigError(
+          'missing required field .metadata.name in {}'.format(
+              manifest.get('kind')
+          )
+      )
+    # Populate a dictionary with resource_type: [names].
+    # E.g. [TARGET: "target1, target2"]
+    resource_type_to_names[resource_type].append(metadata.get(NAME_FIELD))
+  _CheckDuplicateResourceNames(resource_type_to_names)
 
-  return resource_dict
+
+def _CheckDuplicateResourceNames(resource_type_to_names):
+  """Checks if there are any duplicate resource names per resource type.
+
+  Args:
+     resource_type_to_names: dict[str,[str]], dict of resource type and names.
+
+  Raises:
+    exceptions.CloudDeployConfigError, if there are duplicate names for a given
+    resource type.
+  """
+  errors = []
+  for k, names in resource_type_to_names.items():
+    dups = set()
+    # For a given resource type, iterate through the resource names and check
+    # for duplicates.
+    for name in names:
+      if names.count(name) > 1:
+        dups.add(name)
+    if dups:
+      errors.append('{} has duplicate name(s): {}'.format(k, dups))
+  if errors:
+    raise exceptions.CloudDeployConfigError(errors)
 
 
 def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
@@ -125,10 +176,6 @@ def _ParseV1Config(messages, kind, manifest, project, region, resource_dict):
     incorrect.
   """
   metadata = manifest.get('metadata')
-  if not metadata or not metadata.get(NAME_FIELD):
-    raise exceptions.CloudDeployConfigError(
-        'missing required field .metadata.name in {}'.format(kind)
-    )
   if kind == DELIVERY_PIPELINE_KIND_V1BETA1:
     resource_type = deploy_util.ResourceType.DELIVERY_PIPELINE
     resource, resource_ref = _CreateDeliveryPipelineResource(

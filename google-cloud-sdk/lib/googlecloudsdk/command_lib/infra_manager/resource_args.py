@@ -38,7 +38,7 @@ def RevisionAttributeConfig():
 
 def LocationAttributeConfig():
   fallthroughs = [
-      deps.PropertyFallthrough(properties.VALUES.blueprints.location)
+      deps.PropertyFallthrough(properties.VALUES.inframanager.location)
   ]
   return concepts.ResourceParameterAttributeConfig(
       name='location',

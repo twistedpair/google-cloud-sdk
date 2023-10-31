@@ -19,9 +19,10 @@ from __future__ import division
 from __future__ import print_function
 from __future__ import unicode_literals
 
-from typing import List, Optional, Dict
+from typing import Dict, List, Optional
 
 from apitools.base.py import encoding
+from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.command_lib.run.integrations.typekits import base
 from googlecloudsdk.command_lib.runapps import exceptions
 from googlecloudsdk.generated_clients.apis.runapps.v1alpha1 import runapps_v1alpha1_messages
@@ -79,7 +80,9 @@ class DomainRoutingTypeKit(base.TypeKit):
       # If path already set to other service, remove it.
       self._RemovePath(domain_config, path)
 
-      bindings = self._FindBindings(domain_config, 'service', service)
+      bindings = base.FindBindings(
+          domain_config, types_utils.SERVICE_TYPE, service
+      )
       if bindings:
         binding = bindings[0]
         cfg = encoding.MessageToDict(binding.config)
@@ -102,19 +105,24 @@ class DomainRoutingTypeKit(base.TypeKit):
       url = parameters.get('remove-mapping')
       if ':' in url:
         raise exceptions.ArgumentError(
-            'Service notion not allowed in remove-mapping')
+            'Service notion not allowed in remove-mapping'
+        )
       domain, path = self._ParseDomainPath(url)
       domain_config = self._FindDomainConfig(resource.subresources, domain)
       if domain_config is None:
         raise exceptions.ArgumentError(
-            'Domain "{}" does not exist'.format(domain))
+            'Domain "{}" does not exist'.format(domain)
+        )
       if path == '/*':
         # Removing root route
         if len(domain_config.bindings) > 1:
           # If the root route is not the only route, it can't be removed.
           raise exceptions.ArgumentError(
-              ('Can not remove root route of domain "{}" '+
-               'because there are other routes configured.').format(domain))
+              (
+                  'Can not remove root route of domain "{}" '
+                  + 'because there are other routes configured.'
+              ).format(domain)
+          )
         else:
           # If it's the only route, delete the whole domain.
           resource.subresources.remove(domain_config)
@@ -126,13 +134,17 @@ class DomainRoutingTypeKit(base.TypeKit):
       domain_config = self._FindDomainConfig(resource.subresources, domain)
       if domain_config is None:
         raise exceptions.ArgumentError(
-            'Domain "{}" does not exist'.format(domain))
+            'Domain "{}" does not exist'.format(domain)
+        )
       resource.subresources.remove(domain_config)
 
     if not resource.subresources:
       raise exceptions.ArgumentError(
-          ('Can not remove the last domain. '+
-           'Use "gcloud run integrations delete custom-domains" instead.'))
+          (
+              'Can not remove the last domain. '
+              + 'Use "gcloud run integrations delete custom-domains" instead.'
+          )
+      )
 
     return services
 
@@ -154,7 +166,8 @@ class DomainRoutingTypeKit(base.TypeKit):
       service is not supported in DomainRouting integration.
     """
     raise exceptions.ArgumentError(
-        '--add-service is not supported in custom-domains integration')
+        '--add-service is not supported in custom-domains integration'
+    )
 
   def UnbindServiceFromIntegration(
       self,
@@ -172,7 +185,8 @@ class DomainRoutingTypeKit(base.TypeKit):
       service is not supported in DomainRouting integration.
     """
     raise exceptions.ArgumentError(
-        '--remove-service is not supported in custom-domains integration')
+        '--remove-service is not supported in custom-domains integration'
+    )
 
   def NewIntegrationName(
       self, appconfig: runapps_v1alpha1_messages.Config
@@ -218,8 +232,8 @@ class DomainRoutingTypeKit(base.TypeKit):
     mapping_parts = mapping.split(':')
     if len(mapping_parts) != 2:
       raise exceptions.ArgumentError(
-          'Mapping "{}" is not valid. Missing service notation.'.format(
-              mapping))
+          'Mapping "{}" is not valid. Missing service notation.'.format(mapping)
+      )
     url = mapping_parts[0]
     service = mapping_parts[1]
     return url, service

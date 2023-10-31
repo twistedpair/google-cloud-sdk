@@ -134,12 +134,16 @@ def Get(release_track, instance_relative_name):
           name=instance_relative_name))
 
 
-def Create(release_track, instance_name,
-           content,
-           location,
-           version,
-           target_location_configs,
-           fallback_url=None):
+def Create(
+    release_track,
+    instance_name,
+    content,
+    location,
+    version,
+    target_location_configs,
+    fallback_url=None,
+    mode=None,
+):
   """Create a new Immersive Stream for XR service instance.
 
   Args:
@@ -153,6 +157,7 @@ def Create(release_track, instance_name,
       target location configs to achieve
     fallback_url: string - A url to redirect users to when the instance is
       unable to provide the streaming experience
+    mode: string - The rendering mode supported by the service instance
 
   Returns:
     An Operation object which can be used to check on the progress of the
@@ -166,7 +171,9 @@ def Create(release_track, instance_name,
       content=content,
       contentBuildVersion=build_version,
       name=instance_name,
-      locationConfigs=target_location_configs)
+      locationConfigs=target_location_configs,
+      mode=mode,
+  )
   if fallback_url:
     stream_config = messages.StreamConfig(fallbackUri=fallback_url)
     instance.streamConfig = stream_config

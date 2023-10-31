@@ -729,12 +729,12 @@ def update_object_metadata_from_request_config(
   should_gzip_locally = get_should_gzip_locally(
       attributes_resource, request_config)
 
+  cache_control = get_cache_control(should_gzip_locally, resource_args)
+  process_value_or_clear_flag(object_metadata, 'cacheControl', cache_control)
+
   content_encoding = get_content_encoding(should_gzip_locally, resource_args)
   process_value_or_clear_flag(object_metadata, 'contentEncoding',
                               content_encoding)
-
-  cache_control = get_cache_control(should_gzip_locally, resource_args)
-  process_value_or_clear_flag(object_metadata, 'cacheControl', cache_control)
 
   if not resource_args:
     return
@@ -789,6 +789,37 @@ def update_object_metadata_from_request_config(
           resource_args.retention_mode,
       )
   )
+
+
+def get_cleared_object_fields(request_config):
+  """Gets a list of fields to be included in requests despite null values."""
+  cleared_fields = []
+  resource_args = request_config.resource_args
+  if not resource_args:
+    return cleared_fields
+
+  if resource_args.cache_control == user_request_args_factory.CLEAR:
+    cleared_fields.append('cacheControl')
+
+  if resource_args.content_disposition == user_request_args_factory.CLEAR:
+    cleared_fields.append('contentDisposition')
+
+  if resource_args.content_encoding == user_request_args_factory.CLEAR:
+    cleared_fields.append('contentEncoding')
+
+  if resource_args.content_language == user_request_args_factory.CLEAR:
+    cleared_fields.append('contentLanguage')
+
+  if resource_args.custom_time == user_request_args_factory.CLEAR:
+    cleared_fields.append('customTime')
+
+  if (
+      resource_args.retain_until == user_request_args_factory.CLEAR
+      or resource_args.retention_mode == user_request_args_factory.CLEAR
+  ):
+    cleared_fields.append('retention')
+
+  return cleared_fields
 
 
 def get_managed_folder_resource_from_metadata(metadata):

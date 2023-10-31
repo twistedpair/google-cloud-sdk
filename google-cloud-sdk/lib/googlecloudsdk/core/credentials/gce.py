@@ -28,6 +28,12 @@ from googlecloudsdk.core.util import retry
 from six.moves import urllib
 
 
+# Cloudtops are assigned a common service account in order to use some identity
+# management APIs in GCE. Unfortunately, gcloud reports this account. The shared
+# service account should be ignored. (see go/cloudtop-faq#miscellaneous)
+CLOUDTOP_COMMON_SERVICE_ACCOUNT = 'insecure-cloudtop-shared-user@cloudtop-prod.google.com.iam.gserviceaccount.com'
+
+
 class Error(Exception):
   """Exceptions for the gce module."""
 
@@ -126,9 +132,13 @@ class _GCEMetadata(object):
     if not self.connected:
       return None
 
-    return _ReadNoProxyWithCleanFailures(
+    account = _ReadNoProxyWithCleanFailures(
         gce_read.GOOGLE_GCE_METADATA_DEFAULT_ACCOUNT_URI,
-        http_errors_to_ignore=(404,))
+        http_errors_to_ignore=(404,),
+    )
+    if account == CLOUDTOP_COMMON_SERVICE_ACCOUNT:
+      return None
+    return account
 
   @_HandleMissingMetadataServer()
   def Project(self):
@@ -178,7 +188,7 @@ class _GCEMetadata(object):
     accounts = []
     for account_line in accounts_lines:
       account = account_line.strip('/')
-      if account == 'default':
+      if account == 'default' or account == CLOUDTOP_COMMON_SERVICE_ACCOUNT:
         continue
       accounts.append(account)
     return accounts

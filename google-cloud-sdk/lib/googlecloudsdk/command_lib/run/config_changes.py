@@ -1537,6 +1537,7 @@ class NetworkInterfacesChange(TemplateConfigChanger):
     return resource
 
 
+@dataclasses.dataclass(frozen=True)
 class ClearNetworkInterfacesChange(TemplateConfigChanger):
   """Clears a network interfaces annotation on the resource."""
 

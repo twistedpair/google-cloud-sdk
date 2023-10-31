@@ -43,6 +43,7 @@ class TpuV2alpha1(base_api.BaseApiClient):
     self.projects_locations_nodes = self.ProjectsLocationsNodesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_queuedResources = self.ProjectsLocationsQueuedResourcesService(self)
+    self.projects_locations_reservations = self.ProjectsLocationsReservationsService(self)
     self.projects_locations_runtimeVersions = self.ProjectsLocationsRuntimeVersionsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -624,6 +625,43 @@ class TpuV2alpha1(base_api.BaseApiClient):
         request_field='resetQueuedResourceRequest',
         request_type_name='TpuProjectsLocationsQueuedResourcesResetRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsReservationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_reservations resource."""
+
+    _NAME = 'projects_locations_reservations'
+
+    def __init__(self, client):
+      super(TpuV2alpha1.ProjectsLocationsReservationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the reservations for the given project in the given location.
+
+      Args:
+        request: (TpuProjectsLocationsReservationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListReservationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2alpha1/projects/{projectsId}/locations/{locationsId}/reservations',
+        http_method='GET',
+        method_id='tpu.projects.locations.reservations.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2alpha1/{+parent}/reservations',
+        request_field='',
+        request_type_name='TpuProjectsLocationsReservationsListRequest',
+        response_type_name='ListReservationsResponse',
         supports_download=False,
     )
 

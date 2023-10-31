@@ -22,6 +22,7 @@ import collections
 import enum
 import os
 
+from googlecloudsdk.command_lib.storage import flags
 from googlecloudsdk.core.util import debug_output
 
 
@@ -443,10 +444,16 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       preserve_acl = getattr(args, 'preserve_acl', None)
       retain_until = _get_value_or_clear_from_flag(
           args, 'clear_retention', 'retain_until')
-      retention_mode = _get_value_or_clear_from_flag(
-          args, 'clear_retention', 'retention_mode')
       storage_class = getattr(args, 'storage_class', None)
       temporary_hold = getattr(args, 'temporary_hold', None)
+
+      retention_mode_string = _get_value_or_clear_from_flag(
+          args, 'clear_retention', 'retention_mode'
+      )
+      if retention_mode_string in (None, CLEAR):
+        retention_mode = retention_mode_string
+      else:
+        retention_mode = flags.RetentionMode(retention_mode_string)
 
       resource_args = _UserObjectArgs(
           acl_file_path=getattr(args, 'acl_file', None),

@@ -19,3 +19,5 @@ import enum
 
 class CustomModuleType(str, enum.Enum):
   SHA = 'securityHealthAnalyticsCustomModules'
+  ETD = 'eventThreatDetectionCustomModules'
+  EFFECTIVE_ETD = 'effectiveEventThreatDetectionCustomModules'

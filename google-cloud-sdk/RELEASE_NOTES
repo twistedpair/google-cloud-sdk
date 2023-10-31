@@ -5,6 +5,91 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 453.0.0 (2023-10-31)
+
+### Breaking Changes
+
+*   **(Cloud Infrastructure Manager)** Removed support for `blueprints/location` property, in favor of `infra-manager/location` property.
+
+
+### AI
+
+* Added `--encryption-kms-key-name` flag to `gcloud ai indexes create` to support encryption spec.
+
+### Artifact Registry
+
+* Added `--remote-username` and `--remote-password-secret-version` flags for `artifacts repositories create` and `artifacts repositories update`.
+
+### Cloud Build
+
+* Renamed `Google Cloud Build` to `Cloud Build` in the help text of `gcloud builds` command group.
+
+### Cloud Infrastructure Manager
+
+*   Added `infra-manager/location` property to set the default Infra Manager region.
+
+### Cloud NetApp
+
+* Added `gcloud beta netapp backup-vaults backups` surface command, and made help text public.
+
+### Cloud Run
+
+* Added `--args`, `--task-timeout`, `--tasks` and `--update-env-vars` flags
+  to `gcloud run jobs execute` to allow executing a Cloud Run job with runtime overrides.
+* Promoted `--add-custom-audiences`, `--clear-custom-audiences`, `--remove-custom-audiences` and `--set-custom-audiences` flags of `gcloud run deploy`
+  and `gcloud run services update` to GA.
+
+### Cloud Storage
+
+*  Added `--autoclass-terminal-storage-class` flag to `gcloud storage buckets {create|update}` to set the terminal storage class for Autoclass buckets.
+* Updated gsutil component to 5.27.
+* Fixed broken `objects update` clear flags.
+
+### Cloud Tasks
+
+*   Added `gcloud tasks cmek-config` to [alpha|beta|GA]
+which enables creation of CMEK configuration for a given
+project in a particular location.
+
+### Cloud Workstations
+
+*   Added `--domain` flag to `gcloud beta workstations clusters`
+    to enable using custom domains.
+
+### Compute Engine
+
+* Promoted `--default-action-on-vm-failure` flag of `gcloud compute instance-groups managed <create | update>` to beta.
+* Promoted `--source-disk-for-recovery-checkpoint` and `--source-disk-for-recovery-checkpoint-region` flags of `gcloud compute snapshots create` to GA.
+
+### Database Migration
+
+* Added MySQL minor versions options when creating Cloud SQL connection profile using `gcloud database-migration connection-profiles create cloudsql` command.
+
+### GKE Hub
+
+* Added `policycontroller` group which provides configuration commands for
+  GKE Hub Policy Controller.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.25 to v1.0.0-beta.27. See <https://github.com/kptdev/kpt/releases/tag/v1.0.0-beta.27> and previous release notes for more details.
+
+### Kubernetes Engine
+
+*  Fixed issue where `gcloud container clusters create-auto` would prefer `compute/zone` over `compute/region` if both configs were set.
+  Now prioritizes using `compute/region`.
+
+### Notebooks
+
+* Added `gcloud notebooks runtimes migrate` command.
+  This command migrates a Google-Managed Notebook to a Workbench Instance.
+* Added `gcloud notebooks instances migrate` command.
+  This commands migrates a User-Managed Notebook to a Workbench Instance.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 452.0.1 (2023-10-25)
 
 ### Google Cloud CLI

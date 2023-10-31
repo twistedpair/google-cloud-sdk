@@ -92,7 +92,7 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
   load_balancer_target = apis.GetMessagesModule(
       'dns', api_version).RRSetRoutingPolicyLoadBalancerTarget()
   load_balancer_target.project = project
-  config = None
+  load_balancer_type = ''
   if len(forwarding_rule.split('@')) == 2:
     name, scope = forwarding_rule.split('@')
     if scope == 'global':
@@ -172,9 +172,7 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
       )
       and config.backendService
   ):
-    load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
-        'regionalL4ilb'
-    )
+    load_balancer_type = 'regionalL4ilb'
   # L7 ILBs will have a HTTPx proxy and load_balancing_scheme=INTERNAL_MANAGED.
   elif (
       config.loadBalancingScheme
@@ -187,13 +185,9 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
       )
   ):
     if '/regions/' in config.target:
-      load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
-          'regionalL7ilb'
-      )
+      load_balancer_type = 'regionalL7ilb'
     else:
-      load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
-          'globalL7ilb'
-      )
+      load_balancer_type = 'globalL7ilb'
   else:
     raise UnsupportedLoadBalancingScheme(
         'Only Regional internal passthrough Network load balancers and'
@@ -201,14 +195,10 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
         ' this time.'
     )
   load_balancer_target.ipAddress = config.IPAddress
-  if config.IPProtocol == (
-      compute_messages.ForwardingRule.IPProtocolValueValuesEnum('TCP')
-  ):
-    load_balancer_target.ipProtocol = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.IpProtocolValueValuesEnum(
-        'tcp')
-  else:
-    load_balancer_target.ipProtocol = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.IpProtocolValueValuesEnum(
-        'udp')
+  compute_tcp_enum = compute_messages.ForwardingRule.IPProtocolValueValuesEnum(
+      'TCP'
+  )
+  ip_protocol = 'tcp' if config.IPProtocol == compute_tcp_enum else 'udp'
   load_balancer_target.networkUrl = config.network
   if config.allPorts:
     load_balancer_target.port = '80'  # Any random port
@@ -216,6 +206,16 @@ def GetLoadBalancerTarget(forwarding_rule, api_version, project):
     load_balancer_target.port = config.portRange.split('-')[0]
   else:
     load_balancer_target.port = config.ports[0]
+  if api_version in ['dev', 'v2']:
+    load_balancer_type = util.CamelCaseToSnakeCase(load_balancer_type)
+    ip_protocol = util.CamelCaseToSnakeCase(ip_protocol)
+
+  load_balancer_target.ipProtocol = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.IpProtocolValueValuesEnum(
+      ip_protocol
+  )
+  load_balancer_target.loadBalancerType = dns_messages.RRSetRoutingPolicyLoadBalancerTarget.LoadBalancerTypeValueValuesEnum(
+      load_balancer_type
+  )
   return load_balancer_target
 
 

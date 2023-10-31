@@ -730,6 +730,21 @@ def AddDiagnoseInstanceFlags(api_version, parser):
   AddDiagnosticConfigFlags(parser, 'instance')
 
 
+def AddMigrateInstanceFlags(api_version, parser):
+  """Construct groups and arguments specific to the instance migration."""
+  post_startup_script_option_choices = [
+      'POST_STARTUP_SCRIPT_OPTION_UNSPECIFIED',
+      'POST_STARTUP_SCRIPT_OPTION_SKIP',
+      'POST_STARTUP_SCRIPT_OPTION_RERUN',
+      ]
+  AddInstanceResource(api_version, parser)
+  parser.add_argument(
+      '--post-startup-script-option',
+      help='// Specifies the behavior of post startup script during migration.',
+      choices=post_startup_script_option_choices,
+      default='POST_STARTUP_SCRIPT_OPTION_UNSPECIFIED')
+
+
 def AddDeleteRuntimeFlags(api_version, parser):
   AddRuntimeResource(api_version, parser)
 

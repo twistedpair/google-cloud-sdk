@@ -102,12 +102,12 @@ SOURCE_PROPERTIES_FLAG = base.Argument(
     type=arg_parsers.ArgDict(),
 )
 
-default_state_help = 'State is one of: [ACTIVE, INACTIVE].'
 
-
-def CreateStateFlag(help_text=default_state_help):
-  state_flag = base.Argument('--state', help=help_text)
-  return state_flag
+STATE_FLAG = base.ChoiceArgument(
+    '--state',
+    help_str='State is one of: [ACTIVE, INACTIVE].',
+    choices=['active', 'inactive', 'state-unspecified'],
+)
 
 
 def CreateFindingArg():

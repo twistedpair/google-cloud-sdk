@@ -21,7 +21,6 @@ from googlecloudsdk.api_lib.compute import metadata_utils
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
-from googlecloudsdk.command_lib.util.apis import arg_utils
 from googlecloudsdk.core import exceptions as sdk_core_exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
@@ -71,19 +70,17 @@ def CreateNodeSpec(ref, args, request):
   if request.queuedResource.tpu is None:
     request.queuedResource.tpu = tpu_messages.Tpu()
 
-  request.queuedResource.tpu.nodeSpec = []
-  node_spec = tpu_messages.NodeSpec()
+  if request.queuedResource.tpu.nodeSpec:
+    node_spec = request.queuedResource.tpu.nodeSpec[0]
+  else:
+    request.queuedResource.tpu.nodeSpec = []
+    node_spec = tpu_messages.NodeSpec()
+    node_spec.node = tpu_messages.Node()
+
   node_spec.parent = ref.Parent().RelativeName()
 
-  node_spec.node = tpu_messages.Node()
   if args.accelerator_type:
     node_spec.node.acceleratorType = args.accelerator_type
-  else:
-    node_spec.node.acceleratorConfig = tpu_messages.AcceleratorConfig()
-    node_spec.node.acceleratorConfig.topology = args.topology
-    node_spec.node.acceleratorConfig.type = arg_utils.ChoiceToEnum(
-        args.type, tpu_messages.AcceleratorConfig.TypeValueValuesEnum
-    )
 
   node_spec.node.runtimeVersion = args.runtime_version
   if args.data_disk:
