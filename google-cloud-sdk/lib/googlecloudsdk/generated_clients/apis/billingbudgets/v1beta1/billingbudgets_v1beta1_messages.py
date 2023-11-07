@@ -147,6 +147,9 @@ class GoogleCloudBillingBudgetsV1beta1Budget(_messages.Message):
   time period is configurable, with options such as month (default), quarter,
   year, or custom time period.
 
+  Enums:
+    OwnershipScopeValueValuesEnum:
+
   Fields:
     allUpdatesRule: Optional. Rules to apply to notifications sent based on
       budget spend and thresholds.
@@ -161,11 +164,29 @@ class GoogleCloudBillingBudgetsV1beta1Budget(_messages.Message):
     name: Output only. Resource name of the budget. The resource name implies
       the scope of a budget. Values are of the form
       `billingAccounts/{billingAccountId}/budgets/{budgetId}`.
+    ownershipScope: A OwnershipScopeValueValuesEnum attribute.
     thresholdRules: Optional. Rules that trigger alerts (notifications of
       thresholds being crossed) when spend exceeds the specified percentages
       of the budget. Optional for `pubsubTopic` notifications. Required if
       using email notifications.
   """
+
+  class OwnershipScopeValueValuesEnum(_messages.Enum):
+    r"""OwnershipScopeValueValuesEnum enum type.
+
+    Values:
+      OWNERSHIP_SCOPE_UNSPECIFIED: Unspecified ownership scope, same as
+        ALL_USERS.
+      ALL_USERS: The Budget is fully accessible to both billing account users
+        and resource users, provided that they have the required IAM
+        permissions.
+      BILLING_ACCOUNT: Only billing account users have full access to the
+        `Budget`, resource-level users have read-only access, provided that
+        they have the required IAM permissions.
+    """
+    OWNERSHIP_SCOPE_UNSPECIFIED = 0
+    ALL_USERS = 1
+    BILLING_ACCOUNT = 2
 
   allUpdatesRule = _messages.MessageField('GoogleCloudBillingBudgetsV1beta1AllUpdatesRule', 1)
   amount = _messages.MessageField('GoogleCloudBillingBudgetsV1beta1BudgetAmount', 2)
@@ -173,7 +194,8 @@ class GoogleCloudBillingBudgetsV1beta1Budget(_messages.Message):
   displayName = _messages.StringField(4)
   etag = _messages.StringField(5)
   name = _messages.StringField(6)
-  thresholdRules = _messages.MessageField('GoogleCloudBillingBudgetsV1beta1ThresholdRule', 7, repeated=True)
+  ownershipScope = _messages.EnumField('OwnershipScopeValueValuesEnum', 7)
+  thresholdRules = _messages.MessageField('GoogleCloudBillingBudgetsV1beta1ThresholdRule', 8, repeated=True)
 
 
 class GoogleCloudBillingBudgetsV1beta1BudgetAmount(_messages.Message):

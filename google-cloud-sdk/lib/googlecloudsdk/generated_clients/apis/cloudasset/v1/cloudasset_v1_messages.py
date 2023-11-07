@@ -56,11 +56,11 @@ class AnalyzeIamPolicyLongrunningRequest(_messages.Message):
       `analysis_query` and `saved_analysis_query` are provided, they will be
       merged together with the `saved_analysis_query` as base and the
       `analysis_query` as overrides. For more details of the merge behavior,
-      please refer to the [MergeFrom](https://developers.google.com/protocol-b
-      uffers/docs/reference/cpp/google.protobuf.message#Message.MergeFrom.deta
-      ils) doc. Note that you cannot override primitive fields with default
-      value, such as 0 or empty string, etc., because we use proto3, which
-      doesn't support field presence yet.
+      refer to the [MergeFrom](https://developers.google.com/protocol-buffers/
+      docs/reference/cpp/google.protobuf.message#Message.MergeFrom.details)
+      doc. Note that you cannot override primitive fields with default value,
+      such as 0 or empty string, etc., because we use proto3, which doesn't
+      support field presence yet.
   """
 
   analysisQuery = _messages.MessageField('IamPolicyAnalysisQuery', 1)
@@ -225,10 +225,10 @@ class Asset(_messages.Message):
   for more information.
 
   Fields:
-    accessLevel: Please also refer to the [access level user
+    accessLevel: Also refer to the [access level user
       guide](https://cloud.google.com/access-context-
       manager/docs/overview#access-levels).
-    accessPolicy: Please also refer to the [access policy user
+    accessPolicy: Also refer to the [access policy user
       guide](https://cloud.google.com/access-context-
       manager/docs/overview#access-policies).
     ancestors: The ancestry path of an asset in Google Cloud [resource
@@ -267,7 +267,7 @@ class Asset(_messages.Message):
       this field. The related assets of the asset of one relationship type.
       One asset only represents one type of relationship.
     resource: A representation of the resource.
-    servicePerimeter: Please also refer to the [service perimeter user
+    servicePerimeter: Also refer to the [service perimeter user
       guide](https://cloud.google.com/vpc-service-controls/docs/overview).
     updateTime: The last update timestamp of an asset. update_time is updated
       when create/update/delete operation is performed.
@@ -650,11 +650,11 @@ class CloudassetAnalyzeIamPolicyRequest(_messages.Message):
       `analysis_query` and `saved_analysis_query` are provided, they will be
       merged together with the `saved_analysis_query` as base and the
       `analysis_query` as overrides. For more details of the merge behavior,
-      please refer to the [MergeFrom](https://developers.google.com/protocol-b
-      uffers/docs/reference/cpp/google.protobuf.message#Message.MergeFrom.deta
-      ils) page. Note that you cannot override primitive fields with default
-      value, such as 0 or empty string, etc., because we use proto3, which
-      doesn't support field presence yet.
+      refer to the [MergeFrom](https://developers.google.com/protocol-buffers/
+      docs/reference/cpp/google.protobuf.message#Message.MergeFrom.details)
+      page. Note that you cannot override primitive fields with default value,
+      such as 0 or empty string, etc., because we use proto3, which doesn't
+      support field presence yet.
     scope: Required. The relative name of the root asset. Only resources and
       IAM policies within the scope will be analyzed. This can only be an
       organization number (such as "organizations/123"), a folder number (such
@@ -736,11 +736,14 @@ class CloudassetAnalyzeOrgPoliciesRequest(_messages.Message):
       policies for. The response only contains analyzed organization policies
       for the provided constraint.
     filter: The expression to filter
-      AnalyzeOrgPoliciesResponse.org_policy_results. The only supported field
-      is `consolidated_policy.attached_resource`, and the only supported
-      operator is `=`. Example: consolidated_policy.attached_resource="//cloud
-      resourcemanager.googleapis.com/folders/001" will return the org policy
-      results of"folders/001".
+      AnalyzeOrgPoliciesResponse.org_policy_results. Filtering is currently
+      available for bare literal values and the following fields: *
+      consolidated_policy.attached_resource *
+      consolidated_policy.rules.enforce When filtering by a specific field,
+      the only supported operator is `=`. For example, filtering by consolidat
+      ed_policy.attached_resource="//cloudresourcemanager.googleapis.com/folde
+      rs/001" will return all the Organization Policy results attached to
+      "folders/001".
     pageSize: The maximum number of items to return per page. If unspecified,
       AnalyzeOrgPoliciesResponse.org_policy_results will contain 20 items with
       a maximum of 200.
@@ -764,16 +767,27 @@ class CloudassetAnalyzeOrgPolicyGovernedAssetsRequest(_messages.Message):
     constraint: Required. The name of the constraint to analyze governed
       assets for. The analysis only contains analyzed organization policies
       for the provided constraint.
-    filter: The expression to filter the governed assets in result. The only
-      supported fields for governed resources are `governed_resource.project`
-      and `governed_resource.folders`. The only supported fields for governed
-      iam policies are `governed_iam_policy.project` and
-      `governed_iam_policy.folders`. The only supported operator is `=`.
-      Example 1: governed_resource.project="projects/12345678" filter will
-      return all governed resources under projects/12345678 including the
-      project ifself, if applicable. Example 2:
-      governed_iam_policy.folders="folders/12345678" filter will return all
-      governed iam policies under folders/12345678, if applicable.
+    filter: The expression to filter
+      AnalyzeOrgPolicyGovernedAssetsResponse.governed_assets. For governed
+      resources, filtering is currently available for bare literal values and
+      the following fields: * governed_resource.project *
+      governed_resource.folders * consolidated_policy.rules.enforce When
+      filtering by `governed_resource.project` or
+      `consolidated_policy.rules.enforce`, the only supported operator is `=`.
+      When filtering by `governed_resource.folders`, the supported operators
+      are `=` and `:`. For example, filtering by
+      `governed_resource.project="projects/12345678"` will return all the
+      governed resources under "projects/12345678", including the project
+      itself if applicable. For governed IAM policies, filtering is currently
+      available for bare literal values and the following fields: *
+      governed_iam_policy.project * governed_iam_policy.folders *
+      consolidated_policy.rules.enforce When filtering by
+      `governed_iam_policy.project` or `consolidated_policy.rules.enforce`,
+      the only supported operator is `=`. When filtering by
+      `governed_iam_policy.folders`, the supported operators are `=` and `:`.
+      For example, filtering by
+      `governed_iam_policy.folders:"folders/12345678"` will return all the
+      governed IAM policies under "folders/001".
     pageSize: The maximum number of items to return per page. If unspecified,
       AnalyzeOrgPolicyGovernedAssetsResponse.governed_assets will contain 100
       items with a maximum of 200.
@@ -798,10 +812,14 @@ class CloudassetAnalyzeOrgPolicyGovernedContainersRequest(_messages.Message):
     constraint: Required. The name of the constraint to analyze governed
       containers for. The analysis only contains organization policies for the
       provided constraint.
-    filter: The expression to filter the governed containers in result. The
-      only supported field is `parent`, and the only supported operator is
-      `=`. Example: parent="//cloudresourcemanager.googleapis.com/folders/001"
-      will return all containers under "folders/001".
+    filter: The expression to filter
+      AnalyzeOrgPolicyGovernedContainersResponse.governed_containers.
+      Filtering is currently available for bare literal values and the
+      following fields: * parent * consolidated_policy.rules.enforce When
+      filtering by a specific field, the only supported operator is `=`. For
+      example, filtering by
+      parent="//cloudresourcemanager.googleapis.com/folders/001" will return
+      all the containers under "folders/001".
     pageSize: The maximum number of items to return per page. If unspecified,
       AnalyzeOrgPolicyGovernedContainersResponse.governed_containers will
       contain 100 items with a maximum of 200.
@@ -827,11 +845,14 @@ class CloudassetAnalyzeOrgPolicyGovernedResourcesRequest(_messages.Message):
     constraint: Required. The name of the constraint to analyze governed
       resources for. The analysis only contains analyzed organization policies
       for the provided constraint.
-    filter: The expression to filter the governed resources in result. The
-      only supported fields are `project` and `folders`, and the only
-      supported operator is `=`. Example: project="projects/12345678" filter
-      will return all governed resources under projects/12345678 including the
-      project ifself, if applicable.
+    filter: The expression to filter
+      AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources. Filtering
+      is currently available for bare literal values and the following fields:
+      * project * folders * consolidated_policy.rules.enforce When filtering
+      by a specific field, the only supported operator is `=`. For example,
+      filtering by project="projects/12345678" will return all the governed
+      resources under "projects/12345678", including the project itself, if
+      applicable.
     pageSize: The maximum number of items to return per page. If unspecified,
       AnalyzeOrgPolicyGovernedResourcesResponse.governed_resources will
       contain 100 items with a maximum of 200.
@@ -1366,38 +1387,36 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       `prod`. * `labels.env:*` to find Google Cloud resources that have a
       label `env`. * `tagKeys:env` to find Google Cloud resources that have
       directly attached tags where the
-      [`TagKey`](https://cloud.google.com/resource-
-      manager/reference/rest/v3/tagKeys#resource:-tagkey) .`namespacedName`
-      contains `env`. * `tagValues:prod*` to find Google Cloud resources that
-      have directly attached tags where the
-      [`TagValue`](https://cloud.google.com/resource-
-      manager/reference/rest/v3/tagValues#resource:-tagvalue)
-      .`namespacedName` contains a word prefixed by `prod`. *
-      `tagValueIds=tagValues/123` to find Google Cloud resources that have
-      directly attached tags where the
-      [`TagValue`](https://cloud.google.com/resource-
-      manager/reference/rest/v3/tagValues#resource:-tagvalue) .`name` is
-      exactly `tagValues/123`. * `effectiveTagKeys:env` to find Google Cloud
-      resources that have directly attached or inherited tags where the
-      [`TagKey`](https://cloud.google.com/resource-
-      manager/reference/rest/v3/tagKeys#resource:-tagkey) .`namespacedName`
-      contains `env`. * `effectiveTagValues:prod*` to find Google Cloud
-      resources that have directly attached or inherited tags where the
-      [`TagValue`](https://cloud.google.com/resource-
-      manager/reference/rest/v3/tagValues#resource:-tagvalue)
-      .`namespacedName` contains a word prefixed by `prod`. *
-      `effectiveTagValueIds=tagValues/123` to find Google Cloud resources that
-      have directly attached or inherited tags where the
-      [`TagValue`](https://cloud.google.com/resource-
-      manager/reference/rest/v3/tagValues#resource:-tagvalue) .`name` is
-      exactly `tagValues/123`. * `kmsKey:key` to find Google Cloud resources
-      encrypted with a customer-managed encryption key whose name contains
-      `key` as a word. This field is deprecated. Please use the `kmsKeys`
-      field to retrieve Cloud KMS key information. * `kmsKeys:key` to find
-      Google Cloud resources encrypted with customer-managed encryption keys
-      whose name contains the word `key`. * `relationships:instance-group-1`
-      to find Google Cloud resources that have relationships with `instance-
-      group-1` in the related resource name. *
+      [`TagKey.namespacedName`](https://cloud.google.com/resource-
+      manager/reference/rest/v3/tagKeys#resource:-tagkey) contains `env`. *
+      `tagValues:prod*` to find Google Cloud resources that have directly
+      attached tags where the
+      [`TagValue.namespacedName`](https://cloud.google.com/resource-
+      manager/reference/rest/v3/tagValues#resource:-tagvalue) contains a word
+      prefixed by `prod`. * `tagValueIds=tagValues/123` to find Google Cloud
+      resources that have directly attached tags where the
+      [`TagValue.name`](https://cloud.google.com/resource-
+      manager/reference/rest/v3/tagValues#resource:-tagvalue) is exactly
+      `tagValues/123`. * `effectiveTagKeys:env` to find Google Cloud resources
+      that have directly attached or inherited tags where the
+      [`TagKey.namespacedName`](https://cloud.google.com/resource-
+      manager/reference/rest/v3/tagKeys#resource:-tagkey) contains `env`. *
+      `effectiveTagValues:prod*` to find Google Cloud resources that have
+      directly attached or inherited tags where the
+      [`TagValue.namespacedName`](https://cloud.google.com/resource-
+      manager/reference/rest/v3/tagValues#resource:-tagvalue) contains a word
+      prefixed by `prod`. * `effectiveTagValueIds=tagValues/123` to find
+      Google Cloud resources that have directly attached or inherited tags
+      where the [`TagValue.name`](https://cloud.google.com/resource-
+      manager/reference/rest/v3/tagValues#resource:-tagvalue) is exactly
+      `tagValues/123`. * `kmsKey:key` to find Google Cloud resources encrypted
+      with a customer-managed encryption key whose name contains `key` as a
+      word. This field is deprecated. Use the `kmsKeys` field to retrieve
+      Cloud KMS key information. * `kmsKeys:key` to find Google Cloud
+      resources encrypted with customer-managed encryption keys whose name
+      contains the word `key`. * `relationships:instance-group-1` to find
+      Google Cloud resources that have relationships with `instance-group-1`
+      in the related resource name. *
       `relationships:INSTANCE_TO_INSTANCEGROUP` to find Compute Engine
       instances that have relationships of type `INSTANCE_TO_INSTANCEGROUP`. *
       `relationships.INSTANCE_TO_INSTANCEGROUP:instance-group-1` to find
@@ -1405,7 +1424,7 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
       in the Compute Engine instance group resource name, for relationship
       type `INSTANCE_TO_INSTANCEGROUP`. * `sccSecurityMarks.key=value` to find
       Cloud resources that are attached with security marks whose key is `key`
-      and value is `value'. * `sccSecurityMarks.key:*` to find Cloud resources
+      and value is `value`. * `sccSecurityMarks.key:*` to find Cloud resources
       that are attached with security marks whose key is `key`. *
       `state:ACTIVE` to find Google Cloud resources whose state contains
       `ACTIVE` as a word. * `NOT state:ACTIVE` to find Google Cloud resources
@@ -5026,11 +5045,7 @@ class ResourceSearchResult(_messages.Message):
       relationship types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#supported_relationship_types).
     SccSecurityMarksValue: The actual content of Security Command Center
-      security marks associated with the asset. Note that both staging & prod
-      SecurityMarks are attached on prod resources. In CAS preprod/prod, both
-      staging & prod SecurityMarks are ingested and returned in the following
-      `security_marks` map. In that case, the prefix "staging." will be added
-      to the keys of all the staging marks. To search against SCC
+      security marks associated with the asset. To search against SCC
       SecurityMarks field: * Use a field query: - query by a given key value
       pair. Example: `sccSecurityMarks.foo=bar` - query by a given key's
       existence. Example: `sccSecurityMarks.foo:*`
@@ -5097,10 +5112,10 @@ class ResourceSearchResult(_messages.Message):
       nce/rest/v1/projects.locations.keyRings.cryptoKeys) name or [CryptoKeyVe
       rsion](https://cloud.google.com/kms/docs/reference/rest/v1/projects.loca
       tions.keyRings.cryptoKeys.cryptoKeyVersions) name. This field only
-      presents for the purpose of backward compatibility. Please use the
-      `kms_keys` field to retrieve Cloud KMS key information. This field is
-      available only when the resource's Protobuf contains it and will only be
-      populated for [these resource types](https://cloud.google.com/asset-
+      presents for the purpose of backward compatibility. Use the `kms_keys`
+      field to retrieve Cloud KMS key information. This field is available
+      only when the resource's Protobuf contains it and will only be populated
+      for [these resource types](https://cloud.google.com/asset-
       inventory/docs/legacy-field-
       names#resource_types_with_the_to_be_deprecated_kmskey_field) for
       backward compatible purposes. To search against the `kms_key`: * Use a
@@ -5169,14 +5184,10 @@ class ResourceSearchResult(_messages.Message):
       relationship types](https://cloud.google.com/asset-
       inventory/docs/supported-asset-types#supported_relationship_types).
     sccSecurityMarks: The actual content of Security Command Center security
-      marks associated with the asset. Note that both staging & prod
-      SecurityMarks are attached on prod resources. In CAS preprod/prod, both
-      staging & prod SecurityMarks are ingested and returned in the following
-      `security_marks` map. In that case, the prefix "staging." will be added
-      to the keys of all the staging marks. To search against SCC
-      SecurityMarks field: * Use a field query: - query by a given key value
-      pair. Example: `sccSecurityMarks.foo=bar` - query by a given key's
-      existence. Example: `sccSecurityMarks.foo:*`
+      marks associated with the asset. To search against SCC SecurityMarks
+      field: * Use a field query: - query by a given key value pair. Example:
+      `sccSecurityMarks.foo=bar` - query by a given key's existence. Example:
+      `sccSecurityMarks.foo:*`
     state: The state of this resource. Different resources types have
       different state definitions that are mapped from various fields of
       different resource types. This field is available only when the
@@ -5193,24 +5204,23 @@ class ResourceSearchResult(_messages.Message):
       Use a field query. Example: `state:RUNNING` * Use a free text query.
       Example: `RUNNING`
     tagKeys: This field is only present for the purpose of backward
-      compatibility. Please use the `tags` field instead. TagKey namespaced
-      names, in the format of {ORG_ID}/{TAG_KEY_SHORT_NAME}. To search against
-      the `tagKeys`: * Use a field query. Example: -
-      `tagKeys:"123456789/env*"` - `tagKeys="123456789/env"` - `tagKeys:"env"`
-      * Use a free text query. Example: - `env`
+      compatibility. Use the `tags` field instead. TagKey namespaced names, in
+      the format of {ORG_ID}/{TAG_KEY_SHORT_NAME}. To search against the
+      `tagKeys`: * Use a field query. Example: - `tagKeys:"123456789/env*"` -
+      `tagKeys="123456789/env"` - `tagKeys:"env"` * Use a free text query.
+      Example: - `env`
     tagValueIds: This field is only present for the purpose of backward
-      compatibility. Please use the `tags` field instead. TagValue IDs, in the
-      format of tagValues/{TAG_VALUE_ID}. To search against the `tagValueIds`:
-      * Use a field query. Example: - `tagValueIds="tagValues/456"` * Use a
-      free text query. Example: - `456`
+      compatibility. Use the `tags` field instead. TagValue IDs, in the format
+      of tagValues/{TAG_VALUE_ID}. To search against the `tagValueIds`: * Use
+      a field query. Example: - `tagValueIds="tagValues/456"` * Use a free
+      text query. Example: - `456`
     tagValues: This field is only present for the purpose of backward
-      compatibility. Please use the `tags` field instead. TagValue namespaced
-      names, in the format of
-      {ORG_ID}/{TAG_KEY_SHORT_NAME}/{TAG_VALUE_SHORT_NAME}. To search against
-      the `tagValues`: * Use a field query. Example: - `tagValues:"env"` -
-      `tagValues:"env/prod"` - `tagValues:"123456789/env/prod*"` -
-      `tagValues="123456789/env/prod"` * Use a free text query. Example: -
-      `prod`
+      compatibility. Use the `tags` field instead. TagValue namespaced names,
+      in the format of {ORG_ID}/{TAG_KEY_SHORT_NAME}/{TAG_VALUE_SHORT_NAME}.
+      To search against the `tagValues`: * Use a field query. Example: -
+      `tagValues:"env"` - `tagValues:"env/prod"` -
+      `tagValues:"123456789/env/prod*"` - `tagValues="123456789/env/prod"` *
+      Use a free text query. Example: - `prod`
     tags: The tags directly attached to this resource. To search against the
       `tags`: * Use a field query. Example: - `tagKeys:"123456789/env*"` -
       `tagKeys="123456789/env"` - `tagKeys:"env"` - `tagValues:"env"` -
@@ -5337,12 +5347,8 @@ class ResourceSearchResult(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class SccSecurityMarksValue(_messages.Message):
     r"""The actual content of Security Command Center security marks
-    associated with the asset. Note that both staging & prod SecurityMarks are
-    attached on prod resources. In CAS preprod/prod, both staging & prod
-    SecurityMarks are ingested and returned in the following `security_marks`
-    map. In that case, the prefix "staging." will be added to the keys of all
-    the staging marks. To search against SCC SecurityMarks field: * Use a
-    field query: - query by a given key value pair. Example:
+    associated with the asset. To search against SCC SecurityMarks field: *
+    Use a field query: - query by a given key value pair. Example:
     `sccSecurityMarks.foo=bar` - query by a given key's existence. Example:
     `sccSecurityMarks.foo:*`
 

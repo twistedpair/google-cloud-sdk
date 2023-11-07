@@ -692,6 +692,41 @@ class QuotaDetails(_messages.Message):
   value = _messages.IntegerField(1)
 
 
+class QuotaIncreaseEligibility(_messages.Message):
+  r"""Eligibility information regarding requesting increase adjustment of a
+  quota.
+
+  Enums:
+    IneligibilityReasonValueValuesEnum: The reason of why it is ineligible to
+      request increased value of the quota. If the is_eligible field is true,
+      it defaults to INELIGIBILITY_REASON_UNSPECIFIED.
+
+  Fields:
+    ineligibilityReason: The reason of why it is ineligible to request
+      increased value of the quota. If the is_eligible field is true, it
+      defaults to INELIGIBILITY_REASON_UNSPECIFIED.
+    isEligible: Whether a higher quota value can be requested for the quota.
+  """
+
+  class IneligibilityReasonValueValuesEnum(_messages.Enum):
+    r"""The reason of why it is ineligible to request increased value of the
+    quota. If the is_eligible field is true, it defaults to
+    INELIGIBILITY_REASON_UNSPECIFIED.
+
+    Values:
+      INELIGIBILITY_REASON_UNSPECIFIED: Default value when is_eligible is
+        true.
+      NO_BILLING_ACCOUNT: The container is not linked with a billing account.
+      OTHER: Other reasons.
+    """
+    INELIGIBILITY_REASON_UNSPECIFIED = 0
+    NO_BILLING_ACCOUNT = 1
+    OTHER = 2
+
+  ineligibilityReason = _messages.EnumField('IneligibilityReasonValueValuesEnum', 1)
+  isEligible = _messages.BooleanField(2)
+
+
 class QuotaInfo(_messages.Message):
   r"""QuotaInfo represents information about a particular quota for a given
   project, folder or organization.
@@ -700,8 +735,6 @@ class QuotaInfo(_messages.Message):
     ContainerTypeValueValuesEnum: The container type of the QuotaInfo.
 
   Fields:
-    allowsQuotaIncreaseRequest: Whether a higher quota value can be requested
-      for this quota.
     containerType: The container type of the QuotaInfo.
     dimensions: The dimensions the quota is defined on.
     dimensionsInfos: The collection of dimensions info ordered by their
@@ -723,6 +756,8 @@ class QuotaInfo(_messages.Message):
     quotaDisplayName: The display name of the quota.
     quotaId: The id of the quota, which is unquie within the service. Example:
       `CpusPerProjectPerRegion`
+    quotaIncreaseEligibility: Whether it is eligible to request a higher quota
+      value for this quota.
     refreshInterval: The reset time interval for the quota. Refresh interval
       applies to rate quota only. Example: "minute" for per minute, "day" for
       per day, or "10 seconds" for every 10 seconds.
@@ -753,19 +788,19 @@ class QuotaInfo(_messages.Message):
     FOLDER = 2
     ORGANIZATION = 3
 
-  allowsQuotaIncreaseRequest = _messages.BooleanField(1)
-  containerType = _messages.EnumField('ContainerTypeValueValuesEnum', 2)
-  dimensions = _messages.StringField(3, repeated=True)
-  dimensionsInfos = _messages.MessageField('DimensionsInfo', 4, repeated=True)
-  isConcurrent = _messages.BooleanField(5)
-  isFixed = _messages.BooleanField(6)
-  isPrecise = _messages.BooleanField(7)
-  metric = _messages.StringField(8)
-  metricDisplayName = _messages.StringField(9)
-  metricUnit = _messages.StringField(10)
-  name = _messages.StringField(11)
-  quotaDisplayName = _messages.StringField(12)
-  quotaId = _messages.StringField(13)
+  containerType = _messages.EnumField('ContainerTypeValueValuesEnum', 1)
+  dimensions = _messages.StringField(2, repeated=True)
+  dimensionsInfos = _messages.MessageField('DimensionsInfo', 3, repeated=True)
+  isConcurrent = _messages.BooleanField(4)
+  isFixed = _messages.BooleanField(5)
+  isPrecise = _messages.BooleanField(6)
+  metric = _messages.StringField(7)
+  metricDisplayName = _messages.StringField(8)
+  metricUnit = _messages.StringField(9)
+  name = _messages.StringField(10)
+  quotaDisplayName = _messages.StringField(11)
+  quotaId = _messages.StringField(12)
+  quotaIncreaseEligibility = _messages.MessageField('QuotaIncreaseEligibility', 13)
   refreshInterval = _messages.StringField(14)
   service = _messages.StringField(15)
   serviceRequestQuotaUri = _messages.StringField(16)
@@ -782,9 +817,11 @@ class QuotaPreference(_messages.Message):
       "zone", "network_id", and the value of the map entry is the dimension
       value. If a dimension is missing from the map of dimensions, the quota
       preference applies to all the dimension values except for those that
-      have other quota preferences configured for the specific value. Example:
-      {"provider", "Foo Inc"} where "provider" is a service specific
-      dimension.
+      have other quota preferences configured for the specific value. NOTE:
+      QuotaPreferences can only be applied across all values of "user" and
+      "resource" dimension. Do not set values for "user" or "resource" in the
+      dimension map. Example: {"provider", "Foo Inc"} where "provider" is a
+      service specific dimension.
 
   Fields:
     createTime: Output only. Create time stamp
@@ -793,14 +830,17 @@ class QuotaPreference(_messages.Message):
       "network_id", and the value of the map entry is the dimension value. If
       a dimension is missing from the map of dimensions, the quota preference
       applies to all the dimension values except for those that have other
-      quota preferences configured for the specific value. Example:
-      {"provider", "Foo Inc"} where "provider" is a service specific
-      dimension.
+      quota preferences configured for the specific value. NOTE:
+      QuotaPreferences can only be applied across all values of "user" and
+      "resource" dimension. Do not set values for "user" or "resource" in the
+      dimension map. Example: {"provider", "Foo Inc"} where "provider" is a
+      service specific dimension.
     etag: Optional. The current etag of the quota preference. If an etag is
       provided on update and does not match the current server's etag of the
       quota preference, the request will be blocked and an ABORTED error will
       be returned. See https://google.aip.dev/134#etags for more details on
       etags.
+    justification: The reason / justification for this quota preference.
     name: Required except in the CREATE requests. The resource name of the
       quota preference. The ID component following "locations/" must be
       "global". Example: `projects/123/locations/global/quotaPreferences/my-
@@ -823,8 +863,10 @@ class QuotaPreference(_messages.Message):
     "network_id", and the value of the map entry is the dimension value. If a
     dimension is missing from the map of dimensions, the quota preference
     applies to all the dimension values except for those that have other quota
-    preferences configured for the specific value. Example: {"provider", "Foo
-    Inc"} where "provider" is a service specific dimension.
+    preferences configured for the specific value. NOTE: QuotaPreferences can
+    only be applied across all values of "user" and "resource" dimension. Do
+    not set values for "user" or "resource" in the dimension map. Example:
+    {"provider", "Foo Inc"} where "provider" is a service specific dimension.
 
     Messages:
       AdditionalProperty: An additional property for a DimensionsValue object.
@@ -849,12 +891,13 @@ class QuotaPreference(_messages.Message):
   createTime = _messages.StringField(1)
   dimensions = _messages.MessageField('DimensionsValue', 2)
   etag = _messages.StringField(3)
-  name = _messages.StringField(4)
-  quotaConfig = _messages.MessageField('QuotaConfig', 5)
-  quotaId = _messages.StringField(6)
-  reconciling = _messages.BooleanField(7)
-  service = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  justification = _messages.StringField(4)
+  name = _messages.StringField(5)
+  quotaConfig = _messages.MessageField('QuotaConfig', 6)
+  quotaId = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  service = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
 
 
 class StandardQueryParameters(_messages.Message):

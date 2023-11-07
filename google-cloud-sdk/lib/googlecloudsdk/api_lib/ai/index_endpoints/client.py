@@ -369,10 +369,22 @@ class IndexEndpointsClient(object):
       automatic_resources.maxReplicaCount = args.max_replica_count
 
     deployed_index = self.messages.GoogleCloudAiplatformV1beta1DeployedIndex(
-        automaticResources=automatic_resources, id=args.deployed_index_id)
+        automaticResources=automatic_resources, id=args.deployed_index_id,
+        enableAccessLogging=args.enable_access_logging)
 
     if args.reserved_ip_ranges is not None:
       deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
+    if args.deployment_group is not None:
+      deployed_index.deploymentGroup = args.deployment_group
+
+    if args.audiences is not None and args.allowed_issuers is not None:
+      auth_provider = self.messages.GoogleCloudAiplatformV1beta1DeployedIndexAuthConfigAuthProvider()
+      auth_provider.audiences.extend(args.audiences)
+      auth_provider.allowedIssuers.extend(args.allowed_issuers)
+      deployed_index.deployedIndexAuthConfig = (
+          self.messages.GoogleCloudAiplatformV1beta1DeployedIndexAuthConfig(
+              authProvider=auth_provider))
 
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest(
         indexEndpoint=index_endpoint_ref.RelativeName(),
@@ -390,10 +402,22 @@ class IndexEndpointsClient(object):
       automatic_resources.maxReplicaCount = args.max_replica_count
 
     deployed_index = self.messages.GoogleCloudAiplatformV1DeployedIndex(
-        id=args.deployed_index_id, automaticResources=automatic_resources)
+        id=args.deployed_index_id, automaticResources=automatic_resources,
+        enableAccessLogging=args.enable_access_logging)
 
     if args.reserved_ip_ranges is not None:
       deployed_index.reservedIpRanges.extend(args.reserved_ip_ranges)
+
+    if args.deployment_group is not None:
+      deployed_index.deploymentGroup = args.deployment_group
+
+    if args.audiences is not None and args.allowed_issuers is not None:
+      auth_provider = self.messages.GoogleCloudAiplatformV1DeployedIndexAuthConfigAuthProvider()
+      auth_provider.audiences.extend(args.audiences)
+      auth_provider.allowedIssuers.extend(args.allowed_issuers)
+      deployed_index.deployedIndexAuthConfig = (
+          self.messages.GoogleCloudAiplatformV1DeployedIndexAuthConfig(
+              authProvider=auth_provider))
 
     request = self.messages.AiplatformProjectsLocationsIndexEndpointsMutateDeployedIndexRequest(
         indexEndpoint=index_endpoint_ref.RelativeName(),

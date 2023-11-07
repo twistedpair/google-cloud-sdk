@@ -625,7 +625,6 @@ def AddFailoverFlag(parser, show_negated_in_help=True):
   parser.add_argument(
       '--failover',
       required=False,
-      hidden=True,
       help='Whether the promote operation is a failover.',
       **kwargs
   )
@@ -2041,14 +2040,13 @@ def AddCascadableReplica(parser):
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--cascadable-replica',
-      hidden=True,
       required=False,
       help=(
-          'Specifies if a SQL Server replica is a cascadable replica. A'
-          ' cascadable replica is a SQL Server cross region replica that'
+          'Specifies whether a SQL Server replica is a cascadable replica. A'
+          ' cascadable replica is a SQL Server cross-region replica that'
           ' supports replica(s) under it. This flag only takes effect when the'
           ' `--master-instance-name` flag is set, and the replica under'
-          ' creation is cross region from the primary instance.'
+          ' creation is in a different region than the primary instance.'
       ),
       **kwargs
   )

@@ -41,6 +41,8 @@ class SpannerV1(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.projects_instanceConfigOperations = self.ProjectsInstanceConfigOperationsService(self)
     self.projects_instanceConfigs_operations = self.ProjectsInstanceConfigsOperationsService(self)
+    self.projects_instanceConfigs_ssdCaches_operations = self.ProjectsInstanceConfigsSsdCachesOperationsService(self)
+    self.projects_instanceConfigs_ssdCaches = self.ProjectsInstanceConfigsSsdCachesService(self)
     self.projects_instanceConfigs = self.ProjectsInstanceConfigsService(self)
     self.projects_instances_backupOperations = self.ProjectsInstancesBackupOperationsService(self)
     self.projects_instances_backups_operations = self.ProjectsInstancesBackupsOperationsService(self)
@@ -211,6 +213,215 @@ class SpannerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SpannerProjectsInstanceConfigsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstanceConfigsSsdCachesOperationsService(base_api.BaseApiService):
+    """Service class for the projects_instanceConfigs_ssdCaches_operations resource."""
+
+    _NAME = 'projects_instanceConfigs_ssdCaches_operations'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstanceConfigsSsdCachesOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (SpannerProjectsInstanceConfigsSsdCachesOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}/ssdCaches/{ssdCachesId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='spanner.projects.instanceConfigs.ssdCaches.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:cancel',
+        request_field='',
+        request_type_name='SpannerProjectsInstanceConfigsSsdCachesOperationsCancelRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (SpannerProjectsInstanceConfigsSsdCachesOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}/ssdCaches/{ssdCachesId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='spanner.projects.instanceConfigs.ssdCaches.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SpannerProjectsInstanceConfigsSsdCachesOperationsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (SpannerProjectsInstanceConfigsSsdCachesOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}/ssdCaches/{ssdCachesId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='spanner.projects.instanceConfigs.ssdCaches.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SpannerProjectsInstanceConfigsSsdCachesOperationsGetRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (SpannerProjectsInstanceConfigsSsdCachesOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}/ssdCaches/{ssdCachesId}/operations',
+        http_method='GET',
+        method_id='spanner.projects.instanceConfigs.ssdCaches.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SpannerProjectsInstanceConfigsSsdCachesOperationsListRequest',
+        response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsInstanceConfigsSsdCachesService(base_api.BaseApiService):
+    """Service class for the projects_instanceConfigs_ssdCaches resource."""
+
+    _NAME = 'projects_instanceConfigs_ssdCaches'
+
+    def __init__(self, client):
+      super(SpannerV1.ProjectsInstanceConfigsSsdCachesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets information about a particular SSD cache.
+
+      Args:
+        request: (SpannerProjectsInstanceConfigsSsdCachesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SsdCache) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}/ssdCaches/{ssdCachesId}',
+        http_method='GET',
+        method_id='spanner.projects.instanceConfigs.ssdCaches.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SpannerProjectsInstanceConfigsSsdCachesGetRequest',
+        response_type_name='SsdCache',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all SSD caches for a given instance configurations.
+
+      Args:
+        request: (SpannerProjectsInstanceConfigsSsdCachesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSsdCachesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}/ssdCaches',
+        http_method='GET',
+        method_id='spanner.projects.instanceConfigs.ssdCaches.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/ssdCaches',
+        request_field='',
+        request_type_name='SpannerProjectsInstanceConfigsSsdCachesListRequest',
+        response_type_name='ListSsdCachesResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates SSD cache. The returned long-running operation can be used to track the progress of updating the SSD cache. If the named SSD cache does not exist, returns `NOT_FOUND`. While the operation is pending: * Cancelling the operation sets its metadata's cancel_time. It terminates with a `CANCELLED` status. * All other attempts to modify the SSD cache are rejected. * Reading the SSD cache via the API continues to give the pre-request values. Upon completion of the returned operation: * The SSD cache's new values are readable via the API. The returned long-running operation will have a name of the format `/operations/` and can be used to track the SSD cache modification. The metadata field type is UpdateSsdCacheMetadata. The response field type is SsdCache, if successful. Authorization requires `spanner.ssdCaches.update` permission on the resource name.
+
+      Args:
+        request: (SpannerProjectsInstanceConfigsSsdCachesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instanceConfigs/{instanceConfigsId}/ssdCaches/{ssdCachesId}',
+        http_method='PATCH',
+        method_id='spanner.projects.instanceConfigs.ssdCaches.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='updateSsdCacheRequest',
+        request_type_name='SpannerProjectsInstanceConfigsSsdCachesPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

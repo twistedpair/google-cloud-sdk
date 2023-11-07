@@ -52,6 +52,16 @@ class Error(_messages.Message):
   stackTrace = _messages.MessageField('StackTrace', 3)
 
 
+class Exception(_messages.Message):
+  r"""Exception describes why the step entry failed.
+
+  Fields:
+    payload: Error message represented as a JSON string.
+  """
+
+  payload = _messages.StringField(1)
+
+
 class Execution(_messages.Message):
   r"""A running instance of a
   [Workflow](/workflows/docs/reference/rest/v1/projects.locations.workflows).
@@ -218,6 +228,43 @@ class ListExecutionsResponse(_messages.Message):
 
   executions = _messages.MessageField('Execution', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListStepEntriesResponse(_messages.Message):
+  r"""Response message for ExecutionHistory.ListStepEntries.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass this value
+      in the ListStepEntriesRequest.page_token field in the subsequent call to
+      `ListStepEntries` method to retrieve the next page of results.
+    stepEntries: The list of entries.
+    totalSize: Indicates the total number of StepEntries that matched the
+      request filter. For running executions, this number shows the number of
+      StepEntries that are executed thus far.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  stepEntries = _messages.MessageField('StepEntry', 2, repeated=True)
+  totalSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class NavigationInfo(_messages.Message):
+  r"""NavigationInfo describes what steps if any come before or after this
+  step, or what steps are parents or children of this step.
+
+  Fields:
+    children: Step entries that can be reached by "stepping into" e.g. a
+      subworkflow call.
+    next: The index of the next step in the current workflow, if any.
+    parent: The step entry, if any, that can be reached by "stepping out" of
+      the current workflow being executed.
+    previous: The index of the previous step in the current workflow, if any.
+  """
+
+  children = _messages.IntegerField(1, repeated=True)
+  next = _messages.IntegerField(2)
+  parent = _messages.IntegerField(3)
+  previous = _messages.IntegerField(4)
 
 
 class Position(_messages.Message):
@@ -452,6 +499,156 @@ class Step(_messages.Message):
   step = _messages.StringField(2)
 
 
+class StepEntry(_messages.Message):
+  r"""An StepEntry contains debugging information for a step transition in a
+  workflow execution.
+
+  Enums:
+    StateValueValuesEnum: Output only. The state of the step entry.
+    StepTypeValueValuesEnum: Output only. The type of the step this step entry
+      belongs to.
+
+  Fields:
+    createTime: Output only. The creation time of the step entry.
+    entryId: Output only. The numeric ID of this step entry, used for
+      navigation.
+    exception: Output only. The exception thrown by the step entry.
+    name: Output only. The full resource name of the step entry. Each step
+      entry has a unique entry ID, which is a monotonically increasing
+      counter. Step entry names have the format: `projects/{project}/locations
+      /{location}/workflows/{workflow}/executions/{execution}/stepEntries/{ste
+      p_entry}`.
+    navigationInfo: Output only. The NavigationInfo associated to this step.
+    routine: Output only. The name of the routine this step entry belongs to.
+      A routine name is the subworkflow name defined in the YAML source code.
+      The top level routine name is `main`.
+    state: Output only. The state of the step entry.
+    step: Output only. The name of the step this step entry belongs to.
+    stepEntryMetadata: Output only. The StepEntryMetadata associated to this
+      step.
+    stepType: Output only. The type of the step this step entry belongs to.
+    updateTime: Output only. The most recently updated time of the step entry.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of the step entry.
+
+    Values:
+      STATE_UNSPECIFIED: Invalid state.
+      STATE_IN_PROGRESS: The step entry is in progress.
+      STATE_SUCCEEDED: The step entry finished successfully.
+      STATE_FAILED: The step entry failed with an error.
+    """
+    STATE_UNSPECIFIED = 0
+    STATE_IN_PROGRESS = 1
+    STATE_SUCCEEDED = 2
+    STATE_FAILED = 3
+
+  class StepTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the step this step entry belongs to.
+
+    Values:
+      STEP_TYPE_UNSPECIFIED: Invalid step type.
+      STEP_ASSIGN: The step entry assigns new variable(s).
+      STEP_STD_LIB_CALL: The step entry calls a standard library routine.
+      STEP_CONNECTOR_CALL: The step entry calls a connector.
+      STEP_SUBWORKFLOW_CALL: The step entry calls a subworklfow.
+      STEP_CALL: The step entry calls a subworkflow/stdlib.
+      STEP_SWITCH: The step entry executes a switch-case block.
+      STEP_CONDITION: The step entry executes a condition inside a switch.
+      STEP_FOR: The step entry executes a for loop.
+      STEP_FOR_ITERATION: The step entry executes a iteration of a for loop.
+      STEP_PARALLEL_FOR: The step entry executes a parallel for loop.
+      STEP_PARALLEL_BRANCH: The step entry executes a series of parallel
+        branch(es).
+      STEP_PARALLEL_BRANCH_ENTRY: The step entry executes a branch of a
+        parallel branch.
+      STEP_TRY_RETRY_EXCEPT: The step entry executes a try/retry/except block.
+      STEP_TRY: The step entry executes the try part of a try/retry/except
+        block.
+      STEP_RETRY: The step entry executes the retry part of a try/retry/except
+        block.
+      STEP_EXCEPT: The step entry executes the except part of a
+        try/retry/except block.
+      STEP_RETURN: The step entry returns.
+      STEP_RAISE: The step entry raises an error.
+      STEP_GOTO: The step entry jumps to another step.
+    """
+    STEP_TYPE_UNSPECIFIED = 0
+    STEP_ASSIGN = 1
+    STEP_STD_LIB_CALL = 2
+    STEP_CONNECTOR_CALL = 3
+    STEP_SUBWORKFLOW_CALL = 4
+    STEP_CALL = 5
+    STEP_SWITCH = 6
+    STEP_CONDITION = 7
+    STEP_FOR = 8
+    STEP_FOR_ITERATION = 9
+    STEP_PARALLEL_FOR = 10
+    STEP_PARALLEL_BRANCH = 11
+    STEP_PARALLEL_BRANCH_ENTRY = 12
+    STEP_TRY_RETRY_EXCEPT = 13
+    STEP_TRY = 14
+    STEP_RETRY = 15
+    STEP_EXCEPT = 16
+    STEP_RETURN = 17
+    STEP_RAISE = 18
+    STEP_GOTO = 19
+
+  createTime = _messages.StringField(1)
+  entryId = _messages.IntegerField(2)
+  exception = _messages.MessageField('Exception', 3)
+  name = _messages.StringField(4)
+  navigationInfo = _messages.MessageField('NavigationInfo', 5)
+  routine = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  step = _messages.StringField(8)
+  stepEntryMetadata = _messages.MessageField('StepEntryMetadata', 9)
+  stepType = _messages.EnumField('StepTypeValueValuesEnum', 10)
+  updateTime = _messages.StringField(11)
+
+
+class StepEntryMetadata(_messages.Message):
+  r"""StepEntryMetadata contains metadata information about this step.
+
+  Enums:
+    ProgressTypeValueValuesEnum: Progress type of this step entry.
+
+  Fields:
+    progressNumber: Progress number represents the current state of the
+      current progress. eg: A step entry represents the 4th iteration in a
+      progress of PROGRESS_TYPE_FOR.
+    progressType: Progress type of this step entry.
+    threadId: Child thread id that this step entry belongs to.
+  """
+
+  class ProgressTypeValueValuesEnum(_messages.Enum):
+    r"""Progress type of this step entry.
+
+    Values:
+      PROGRESS_TYPE_UNSPECIFIED: Current step entry does not have any progress
+        data.
+      PROGRESS_TYPE_FOR: Current step entry is in progress of a FOR step.
+      PROGRESS_TYPE_SWITCH: Current step entry is in progress of a SWITCH
+        step.
+      PROGRESS_TYPE_RETRY: Current step entry is in progress of a RETRY step.
+      PROGRESS_TYPE_PARALLEL_FOR: Current step entry is in progress of a
+        PARALLEL FOR step.
+      PROGRESS_TYPE_PARALLEL_BRANCH: Current step entry is in progress of a
+        PARALLEL BRANCH step.
+    """
+    PROGRESS_TYPE_UNSPECIFIED = 0
+    PROGRESS_TYPE_FOR = 1
+    PROGRESS_TYPE_SWITCH = 2
+    PROGRESS_TYPE_RETRY = 3
+    PROGRESS_TYPE_PARALLEL_FOR = 4
+    PROGRESS_TYPE_PARALLEL_BRANCH = 5
+
+  progressNumber = _messages.IntegerField(1)
+  progressType = _messages.EnumField('ProgressTypeValueValuesEnum', 2)
+  threadId = _messages.StringField(3)
+
+
 class TriggerPubsubExecutionRequest(_messages.Message):
   r"""Request for the TriggerPubsubExecution method.
 
@@ -585,14 +782,18 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest(_message
       view.
 
   Fields:
-    filter: Optional. Filters applied to the [Executions.ListExecutions]
-      results. The following fields are supported for filtering: executionID,
-      state, startTime, endTime, duration, workflowRevisionID, stepName, and
-      label.
-    orderBy: Optional. The ordering applied to the [Executions.ListExecutions]
-      results. By default the ordering is based on descending start time. The
-      following fields are supported for order by: executionID, startTime,
-      endTime, duration, state, and workflowRevisionID.
+    filter: Optional. Filters applied to the `[Executions.ListExecutions]`
+      results. The following fields are supported for filtering:
+      `executionId`, `state`, `startTime`, `endTime`, `duration`,
+      `workflowRevisionId`, `stepName`, and `label`. For details, see AIP-160.
+      For example, if you are using the Google APIs Explorer:
+      `state="SUCCEEDED"` or `startTime>"2023-08-01" AND state="FAILED"`
+    orderBy: Optional. Comma-separated list of fields that specify the
+      ordering applied to the `[Executions.ListExecutions]` results. By
+      default the ordering is based on descending `startTime`. The following
+      fields are supported for ordering: `executionId`, `state`, `startTime`,
+      `endTime`, `duration`, and `workflowRevisionId`. For details, see
+      AIP-132.
     pageSize: Maximum number of executions to return per call. Max supported
       value depends on the selected Execution view: it's 1000 for BASIC and
       100 for FULL. The default value used if the field is not specified is
@@ -631,6 +832,60 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest(_message
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
   view = _messages.EnumField('ViewValueValuesEnum', 6)
+
+
+class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesGetRequest(_messages.Message):
+  r"""A
+  WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesGetRequest
+  object.
+
+  Fields:
+    name: Required. The name of the step entry to retrieve. Format: projects/{
+      project}/locations/{location}/workflows/{workflow}/executions/{execution
+      }/stepEntries/{step_entry}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesListRequest(_messages.Message):
+  r"""A
+  WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filters applied to the `[StepEntries.ListStepEntries]`
+      results. The following fields are supported for filtering: `entryId`,
+      `createTime`, `updateTime`, `routine`, `step`, `stepType`, `state`. For
+      details, see AIP-160. For example, if you are using the Google APIs
+      Explorer: `state="SUCCEEDED"` or `createTime>"2023-08-01" AND
+      state="FAILED"`
+    orderBy: Optional. Comma-separated list of fields that specify the
+      ordering applied to the `[StepEntries.ListStepEntries]` results. By
+      default the ordering is based on ascending `entryId`. The following
+      fields are supported for ordering: `entryId`, `createTime`,
+      `updateTime`, `routine`, `step`, `stepType`, `state`. For details, see
+      AIP-132.
+    pageSize: Optional. Number of step entries to return per call. The default
+      max is 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListStepEntries` call. Provide this to retrieve the subsequent page.
+      When paginating, all other parameters provided to `ListStepEntries` must
+      match the call that provided the page token.
+    parent: Required. Name of the workflow execution to list entries for.
+      Format: projects/{project}/locations/{location}/workflows/{workflow}/exe
+      cutions/{execution}/stepEntries/
+    skip: Optional. The number of step entries to skip. It can be used with or
+      without a pageToken. If used with a pageToken, then it indicates the
+      number of step entries to skip starting from the requested page.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  skip = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class WorkflowexecutionsProjectsLocationsWorkflowsTriggerPubsubExecutionRequest(_messages.Message):

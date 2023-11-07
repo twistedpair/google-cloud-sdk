@@ -24,6 +24,13 @@ DOCS_URL = 'https://developers.google.com/storage/docs/json_api/'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
+  ANYWHERECACHES = (
+      'anywhereCaches',
+      'b/{bucket}/anywhereCaches/{anywhereCacheId}',
+      {},
+      ['bucket', 'anywhereCacheId'],
+      True
+  )
   BUCKETACCESSCONTROLS = (
       'bucketAccessControls',
       'b/{bucket}/acl/{entity}',

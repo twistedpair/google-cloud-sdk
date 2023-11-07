@@ -67,6 +67,8 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_models = self.ProjectsLocationsModelsService(self)
     self.projects_locations_nasJobs_nasTrialDetails = self.ProjectsLocationsNasJobsNasTrialDetailsService(self)
     self.projects_locations_nasJobs = self.ProjectsLocationsNasJobsService(self)
+    self.projects_locations_notebookRuntimeTemplates = self.ProjectsLocationsNotebookRuntimeTemplatesService(self)
+    self.projects_locations_notebookRuntimes = self.ProjectsLocationsNotebookRuntimesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_pipelineJobs = self.ProjectsLocationsPipelineJobsService(self)
     self.projects_locations_publishers_models = self.ProjectsLocationsPublishersModelsService(self)
@@ -1341,6 +1343,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1RawPredictRequest',
         request_type_name='AiplatformProjectsLocationsEndpointsRawPredictRequest',
         response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+    def ServerStreamingPredict(self, request, global_params=None):
+      r"""Perform a server-side streaming online prediction request for Vertex LLM streaming.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsServerStreamingPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1StreamingPredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('ServerStreamingPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ServerStreamingPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:serverStreamingPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.serverStreamingPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:serverStreamingPredict',
+        request_field='googleCloudAiplatformV1StreamingPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsServerStreamingPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1StreamingPredictResponse',
         supports_download=False,
     )
 
@@ -4683,6 +4712,269 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsNotebookRuntimeTemplatesService(base_api.BaseApiService):
+    """Service class for the projects_locations_notebookRuntimeTemplates resource."""
+
+    _NAME = 'projects_locations_notebookRuntimeTemplates'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsNotebookRuntimeTemplatesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a NotebookRuntimeTemplate.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimeTemplatesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimeTemplates',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookRuntimeTemplates.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['notebookRuntimeTemplateId'],
+        relative_path='v1/{+parent}/notebookRuntimeTemplates',
+        request_field='googleCloudAiplatformV1NotebookRuntimeTemplate',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimeTemplatesCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a NotebookRuntimeTemplate.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimeTemplatesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimeTemplates/{notebookRuntimeTemplatesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.notebookRuntimeTemplates.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimeTemplatesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a NotebookRuntimeTemplate.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimeTemplatesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1NotebookRuntimeTemplate) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimeTemplates/{notebookRuntimeTemplatesId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.notebookRuntimeTemplates.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimeTemplatesGetRequest',
+        response_type_name='GoogleCloudAiplatformV1NotebookRuntimeTemplate',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NotebookRuntimeTemplates in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimeTemplatesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListNotebookRuntimeTemplatesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimeTemplates',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.notebookRuntimeTemplates.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1/{+parent}/notebookRuntimeTemplates',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimeTemplatesListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListNotebookRuntimeTemplatesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsNotebookRuntimesService(base_api.BaseApiService):
+    """Service class for the projects_locations_notebookRuntimes resource."""
+
+    _NAME = 'projects_locations_notebookRuntimes'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsNotebookRuntimesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Assign(self, request, global_params=None):
+      r"""Assigns a NotebookRuntime to a user for a particular Notebook file. This method will either returns an existing assignment or generates a new one.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesAssignRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Assign')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Assign.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes:assign',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookRuntimes.assign',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/notebookRuntimes:assign',
+        request_field='googleCloudAiplatformV1AssignNotebookRuntimeRequest',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesAssignRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a NotebookRuntime.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes/{notebookRuntimesId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.notebookRuntimes.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a NotebookRuntime.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1NotebookRuntime) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes/{notebookRuntimesId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.notebookRuntimes.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesGetRequest',
+        response_type_name='GoogleCloudAiplatformV1NotebookRuntime',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists NotebookRuntimes in a Location.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListNotebookRuntimesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.notebookRuntimes.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'readMask'],
+        relative_path='v1/{+parent}/notebookRuntimes',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListNotebookRuntimesResponse',
+        supports_download=False,
+    )
+
+    def Start(self, request, global_params=None):
+      r"""Starts a NotebookRuntime.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesStartRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Start')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Start.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes/{notebookRuntimesId}:start',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookRuntimes.start',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:start',
+        request_field='googleCloudAiplatformV1StartNotebookRuntimeRequest',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesStartRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -5034,6 +5326,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1RawPredictRequest',
         request_type_name='AiplatformProjectsLocationsPublishersModelsRawPredictRequest',
         response_type_name='GoogleApiHttpBody',
+        supports_download=False,
+    )
+
+    def ServerStreamingPredict(self, request, global_params=None):
+      r"""Perform a server-side streaming online prediction request for Vertex LLM streaming.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsServerStreamingPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1StreamingPredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('ServerStreamingPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ServerStreamingPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:serverStreamingPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.serverStreamingPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:serverStreamingPredict',
+        request_field='googleCloudAiplatformV1StreamingPredictRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsServerStreamingPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1StreamingPredictResponse',
         supports_download=False,
     )
 

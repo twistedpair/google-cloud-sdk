@@ -35,3 +35,21 @@ class SHACustomModuleClient(object):
         name=name
     )
     return self._client.Get(req)
+
+
+class EffectiveSHACustomModuleClient(object):
+  """Client for SHA effective custom module interaction with the Security Center Management API."""
+
+  def __init__(self):
+    self._client = apis.GetClientInstance(
+        'securitycentermanagement', 'v1'
+    ).projects_locations_effectiveSecurityHealthAnalyticsCustomModules
+
+  def Get(self,
+          name: str) -> messages.EffectiveSecurityHealthAnalyticsCustomModule:
+    """Get a SHA effective custom module."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsEffectiveSecurityHealthAnalyticsCustomModulesGetRequest(
+        name=name
+    )
+    return self._client.Get(req)

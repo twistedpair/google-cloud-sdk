@@ -127,7 +127,7 @@ class RolloutFlags:
         choices=['disabled', 'standard'],
         default=None,
         help=textwrap.dedent("""\
-          To apply basic security posture to the clusters of the fleet,
+          To apply standard security posture to clusters in the fleet,
 
             $ {command} --security-posture=standard
 
@@ -142,9 +142,9 @@ class RolloutFlags:
         choices=['disabled', 'standard', 'enterprise'],
         default=None,
         help=textwrap.dedent("""\
-            To apply basic vulnerability scanning to the clusters of the fleet,
+            To apply standard vulnerability scanning to clusters in the fleet,
 
-              $ {command} --workload-vulnerability-scanning=disabled
+              $ {command} --workload-vulnerability-scanning=standard
 
             """),
     )
@@ -259,7 +259,7 @@ class RolloutFlagParser:
   def _ManagedRolloutConfig(self) -> fleet_messages.ManagedRolloutConfig:
     managed_rollout_config = fleet_messages.ManagedRolloutConfig()
     managed_rollout_config.soakDuration = self._SoakDuration()
-    return managed_rollout_config
+    return self.TrimEmpty(managed_rollout_config)
 
   def _SoakDuration(self) -> str:
     """Parses --soak-duration.
@@ -270,6 +270,8 @@ class RolloutFlagParser:
     Returns:
       str, in standard duration format, in unit of seconds.
     """
+    if '--soak-duration' not in self.args.GetSpecifiedArgs():
+      return None
     return '{}s'.format(self.args.soak_duration)
 
   def _FeatureUpdate(self) -> fleet_messages.FeatureUpdate:

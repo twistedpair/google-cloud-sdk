@@ -128,7 +128,7 @@ class FleetFlags:
         default=None,
         hidden=True,
         help=textwrap.dedent("""\
-          To apply basic security posture to the clusters of the fleet,
+          To apply standard security posture to clusters in the fleet,
 
             $ {command} --security-posture=standard
 
@@ -144,9 +144,9 @@ class FleetFlags:
         default=None,
         hidden=True,
         help=textwrap.dedent("""\
-            To apply basic vulnerability scanning to the clusters of the fleet,
+            To apply standard vulnerability scanning to clusters in the fleet,
 
-              $ {command} --workload-vulnerability-scanning=disabled
+              $ {command} --workload-vulnerability-scanning=standard
 
             """),
     )
@@ -309,48 +309,32 @@ class FleetFlagParser:
       self,
   ) -> fleet_messages.SecurityPostureConfig.ModeValueValuesEnum:
     """Parses --security-posture."""
-    enum_type = self.messages.SecurityPostureConfig.ModeValueValuesEnum
+    if '--security-posture' not in self.args.GetSpecifiedArgs():
+      return None
+
+    enum_type = fleet_messages.SecurityPostureConfig.ModeValueValuesEnum
     mapping = {
         'disabled': enum_type.DISABLED,
         'standard': enum_type.BASIC,
     }
-    choice = self.args.security_posture
-
-    if choice is None:
-      return None
-
-    valid_options = ', '.join(sorted(list(mapping)))
-    if choice not in mapping:
-      return exceptions.InvalidArgumentException(
-          choice, 'expect [{}]'.format(valid_options)
-      )
-
-    return mapping[choice]
+    return mapping[self.args.security_posture]
 
   def _VulnerabilityModeValueValuesEnum(
       self,
   ) -> fleet_messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum:
     """Parses --workload-vulnerability-scanning."""
+    if '--workload-vulnerability-scanning' not in self.args.GetSpecifiedArgs():
+      return None
+
     enum_type = (
-        self.messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum
+        fleet_messages.SecurityPostureConfig.VulnerabilityModeValueValuesEnum
     )
     mapping = {
         'disabled': enum_type.VULNERABILITY_DISABLED,
         'standard': enum_type.VULNERABILITY_BASIC,
         'enterprise': enum_type.VULNERABILITY_ENTERPRISE,
     }
-    choice = self.args.workload_vulnerability_scanning
-
-    if choice is None:
-      return None
-
-    valid_options = ', '.join(sorted(list(mapping)))
-    if choice not in mapping:
-      return exceptions.InvalidArgumentException(
-          choice, 'expect [{}]'.format(valid_options)
-      )
-
-    return mapping[choice]
+    return mapping[self.args.workload_vulnerability_scanning]
 
   def _BinaryAuthorizationConfig(
       self, existing_binauthz=None
@@ -394,6 +378,9 @@ class FleetFlagParser:
       self,
   ) -> fleet_messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum:
     """Parses --binauthz-evaluation-mode."""
+    if '--binauthz-evaluation-mode' not in self.args.GetSpecifiedArgs():
+      return None
+
     enum_type = (
         self.messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum
     )
@@ -401,18 +388,7 @@ class FleetFlagParser:
         'DISABLED': enum_type.DISABLED,
         'POLICY_BINDINGS': enum_type.POLICY_BINDINGS,
     }
-    choice = self.args.binauthz_evaluation_mode
-
-    if choice is None:
-      return None
-
-    valid_options = ', '.join(sorted(list(mapping)))
-    if choice not in mapping:
-      return exceptions.InvalidArgumentException(
-          choice, 'expect [{}]'.format(valid_options)
-      )
-
-    return mapping[choice]
+    return mapping[self.args.binauthz_evaluation_mode]
 
   def _PolicyBindings(self) -> [fleet_messages.PolicyBinding]:
     """Parses --binauthz-policy-bindings."""

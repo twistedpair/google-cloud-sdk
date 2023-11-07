@@ -25,12 +25,14 @@ import os
 
 from google.auth import exceptions as google_auth_exceptions
 from google.auth.transport import _mtls_helper
+from googlecloudsdk.command_lib.auth import enterprise_certificate_config
+from googlecloudsdk.core import argv_utils
 from googlecloudsdk.core import config
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
-
+from googlecloudsdk.core.util import platforms
 import six
 
 
@@ -145,6 +147,78 @@ def EncryptedSSLCredentials(config_path):
   raise ConfigException()
 
 
+def _ShouldRepairECP(cert_config):
+  """Check if ECP binaries should be installed and the ECP config updated to point to them."""
+  # Skip repair if gcloud init is the command. This avoids mangling the wizard
+  # due to starting the component manager.
+  args = argv_utils.GetDecodedArgv()
+  if 'init' in args:
+    return False
+
+  if 'cert_configs' not in cert_config:
+    return False
+
+  if len(cert_config['cert_configs'].keys()) < 1:
+    return False
+
+  if 'libs' not in cert_config:
+    return False
+
+  expected_keys = set(['ecp', 'ecp_client', 'tls_offload'])
+  actual_keys = set(cert_config['libs'].keys())
+
+  if expected_keys == actual_keys:
+    return False
+
+  return True
+
+
+def _GetPlatform():
+  platform = platforms.Platform.Current()
+  if (
+      platform.operating_system == platforms.OperatingSystem.MACOSX
+      and platform.architecture == platforms.Architecture.x86_64
+  ):
+    if platforms.Platform.IsActuallyM1ArmArchitecture():
+      platform.architecture = platforms.Architecture.arm
+
+  return platform
+
+
+def _RepairECP(cert_config_file_path):
+  """Install ECP and update the ecp config to include the new binaries.
+
+  Args:
+    cert_config_file_path: The filepath of the active certificate config.
+
+  See go/gcloud-ecp-repair.
+  """
+  # Temporarily disable client certificate to avoid deadlock.
+  properties.VALUES.context_aware.use_client_certificate.Set(False)
+
+  # Update manager depends on Context Aware, so cannot import it at the top.
+  from googlecloudsdk.core.updater import update_manager  # pylint:disable=g-import-not-at-top
+
+  platform = _GetPlatform()
+  updater = update_manager.UpdateManager(
+      sdk_root=None, url=None, platform_filter=platform
+  )
+
+  already_installed = updater.EnsureInstalledAndRestart(
+      ['enterprise-certificate-proxy'],
+      'Device appears to be enrolled in Certificate Base Access but is missing'
+      ' criticial components. Installing enterprise-certificate-proxy and'
+      ' restarting gcloud.',
+  )
+
+  if already_installed:
+    enterprise_certificate_config.update_config(
+        enterprise_certificate_config.platform_to_config(platform),
+        output_file=cert_config_file_path,
+    )
+    properties.VALUES.context_aware.use_client_certificate.Set(True)
+
+
 def _GetCertificateConfigFile():
   """Validates and returns the certificate config file path."""
 
@@ -173,18 +247,13 @@ def _GetCertificateConfigFile():
     six.raise_from(new_exc, caught_exc)
 
   # Check if the config file contains the ecp binary path.
-  # If ecp binary path is not in the config file, or the path is an empty
-  # string, return None
-  if (
-      'libs' not in cert_config
-      or 'ecp' not in cert_config['libs']
-      or (not cert_config['libs']['ecp'])
-  ):
-    return None
-
   # If ecp binary path is provided but the binary doesn't exist, throw
   # exception
-  if not os.path.exists(cert_config['libs']['ecp']):
+  if (
+      'libs' in cert_config
+      and 'ecp' in cert_config['libs']
+      and not os.path.exists(cert_config['libs']['ecp'])
+  ):
     raise CertProvisionException(
         'Enterprise certificate provider (ECP) binary path'
         ' (cert_config["libs"]["ecp"]) specified in enterprise certificate'
@@ -196,6 +265,9 @@ def _GetCertificateConfigFile():
             file_path
         )
     )
+
+  if _ShouldRepairECP(cert_config):
+    _RepairECP(file_path)
 
   return file_path
 

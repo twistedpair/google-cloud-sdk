@@ -15,7 +15,7 @@ class RunV1alpha1(base_api.BaseApiClient):
   MTLS_BASE_URL = 'https://run.mtls.googleapis.com/'
 
   _PACKAGE = 'run'
-  _SCOPES = ['https://www.googleapis.com/auth/userinfo.email']
+  _SCOPES = ['https://www.googleapis.com/auth/cloud-platform']
   _VERSION = 'v1alpha1'
   _CLIENT_ID = 'CLIENT_ID'
   _CLIENT_SECRET = 'CLIENT_SECRET'

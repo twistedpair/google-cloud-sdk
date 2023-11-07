@@ -701,14 +701,14 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       compliant for this Assured Workload, but which are currently disallowed
       by the ResourceUsageRestriction org policy. Invoke
       RestrictAllowedResources endpoint to allow your project developers to
-      use these services in their environment."
+      use these services in their environment.
     createTime: Output only. Immutable. The Workload creation timestamp.
     displayName: Required. The user-assigned display name of the Workload.
       When present it must be between 4 to 30 characters. Allowed characters
       are: lowercase and uppercase letters, numbers, hyphen, and spaces.
       Example: My Workload
-    ekmProvisioningResponse: Optional. Represents the Ekm Provisioning State
-      of the given workload.
+    ekmProvisioningResponse: Output only. Represents the Ekm Provisioning
+      State of the given workload.
     enableSovereignControls: Optional. Indicates the sovereignty status of the
       given workload. Currently meant to be used by Europe/Canada customers.
     etag: Optional. ETag of the workload, it is calculated on the basis of the
@@ -732,6 +732,10 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
       folder resource which is a child of the Workload parent. If not
       specified all resources are created under the parent organization.
       Format: folders/{folder_id}
+    resourceMonitoringEnabled: Output only. Indicates whether resource
+      monitoring is enabled for workload or not. It is true when Resource feed
+      is subscribed to AWM topic and AWM Service Agent Role is binded to AW
+      Service Account for resource Assured workload.
     resourceSettings: Input only. Resource properties that are used to
       customize workload resources. These properties (such as custom project
       id) will be used to create workload resources if possible. This field is
@@ -872,10 +876,11 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
   partner = _messages.EnumField('PartnerValueValuesEnum', 14)
   partnerPermissions = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadPartnerPermissions', 15)
   provisionedResourcesParent = _messages.StringField(16)
-  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceSettings', 17, repeated=True)
-  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 18, repeated=True)
-  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse', 19)
-  violationNotificationsEnabled = _messages.BooleanField(20)
+  resourceMonitoringEnabled = _messages.BooleanField(17)
+  resourceSettings = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceSettings', 18, repeated=True)
+  resources = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadResourceInfo', 19, repeated=True)
+  saaEnrollmentResponse = _messages.MessageField('GoogleCloudAssuredworkloadsV1WorkloadSaaEnrollmentResponse', 20)
+  violationNotificationsEnabled = _messages.BooleanField(21)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadComplianceStatus(_messages.Message):

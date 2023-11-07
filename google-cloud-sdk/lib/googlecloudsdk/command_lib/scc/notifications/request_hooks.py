@@ -20,9 +20,7 @@ from __future__ import unicode_literals
 
 import re
 
-from googlecloudsdk.api_lib.scc import securitycenter_client as sc_client
-from googlecloudsdk.command_lib.scc.hooks import GetParentFromResourceName
-from googlecloudsdk.command_lib.scc.util import GetParentFromNamedArguments
+from googlecloudsdk.command_lib.scc import util
 from googlecloudsdk.core import exceptions as core_exceptions
 
 
@@ -30,41 +28,11 @@ class InvalidNotificationConfigError(core_exceptions.Error):
   """Exception raised for errors in the input."""
 
 
-def CreateNotificationReqHook(ref, args, req):
-  """Generate a notification config using organization and config id."""
-  del ref
-
-  parent = GetParentFromNamedArguments(args)
-  _ValidateMutexOnConfigIdAndParent(args, parent)
-  config = _GetNotificationConfigName(args)
-  req.parent = GetParentFromResourceName(config)
-  req.configId = _GetNotificationConfigId(config)
-  messages = sc_client.GetMessages("v1")
-
-  if args.filter is None:
-    streamingConfig = messages.StreamingConfig()
-    streamingConfig.filter = ""
-    req.notificationConfig.streamingConfig = streamingConfig
-
-  return req
-
-
-def DeleteNotificationReqHook(ref, args, req):
-  """Generate a notification config using organization and config id."""
-  del ref
-
-  parent = GetParentFromNamedArguments(args)
-  _ValidateMutexOnConfigIdAndParent(args, parent)
-  req.name = _GetNotificationConfigName(args)
-
-  return req
-
-
 def UpdateNotificationReqHook(ref, args, req):
   """Generate a notification config using organization and config id."""
   del ref
 
-  parent = GetParentFromNamedArguments(args)
+  parent = util.GetParentFromNamedArguments(args)
   _ValidateMutexOnConfigIdAndParent(args, parent)
   req.name = _GetNotificationConfigName(args)
 
@@ -99,7 +67,7 @@ def _GetNotificationConfigName(args):
     # Handle config id as full resource name
     return args.notificationConfigId
 
-  return GetParentFromNamedArguments(
+  return util.GetParentFromNamedArguments(
       args) + "/notificationConfigs/" + args.notificationConfigId
 
 

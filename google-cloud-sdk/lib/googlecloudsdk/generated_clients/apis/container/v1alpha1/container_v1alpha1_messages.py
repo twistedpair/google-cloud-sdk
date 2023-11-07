@@ -157,6 +157,7 @@ class AdvancedDatapathObservabilityConfig(_messages.Message):
 
   Fields:
     enableMetrics: Expose flow metrics on nodes
+    enableRelay: Enable Relay component
     relayMode: Method used to make Relay available
   """
 
@@ -175,7 +176,8 @@ class AdvancedDatapathObservabilityConfig(_messages.Message):
     EXTERNAL_LB = 3
 
   enableMetrics = _messages.BooleanField(1)
-  relayMode = _messages.EnumField('RelayModeValueValuesEnum', 2)
+  enableRelay = _messages.BooleanField(2)
+  relayMode = _messages.EnumField('RelayModeValueValuesEnum', 3)
 
 
 class AdvancedMachineFeatures(_messages.Message):
@@ -263,8 +265,7 @@ class Autopilot(_messages.Message):
   r"""Autopilot is the configuration for Autopilot settings on the cluster.
 
   Fields:
-    conversionStatus: ConversionStatus is the status of conversion between
-      Autopilot and standard.
+    conversionStatus: ConversionStatus shows conversion status.
     enabled: Enable Autopilot
     workloadPolicyConfig: Workload policy configuration for Autopilot.
   """
@@ -319,8 +320,7 @@ class AutopilotCompatibilityIssue(_messages.Message):
 
 
 class AutopilotConversionStatus(_messages.Message):
-  r"""AutopilotConversionStatus is the status of conversion between Autopilot
-  and standard.
+  r"""AutopilotConversionStatus represents conversion status.
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the conversion.
@@ -1428,6 +1428,7 @@ class ClusterUpdate(_messages.Message):
       resource usage.
     desiredRuntimeVulnerabilityInsightConfig: Enable/Disable RVI features for
       the cluster.
+    desiredSecretManagerConfig: Enable/Disable Secret Manager Config.
     desiredSecurityPostureConfig: Enable/Disable Security Posture API features
       for the cluster.
     desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
@@ -1593,23 +1594,24 @@ class ClusterUpdate(_messages.Message):
   desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 64)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 65)
   desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 66)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 67)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 68)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 69)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 70)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 71)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 72)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 73)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 74)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 75)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 76)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 77)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 78)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 79)
-  etag = _messages.StringField(80)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 81)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 82)
-  securityProfile = _messages.MessageField('SecurityProfile', 83)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 67)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 68)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 69)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 70)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 71)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 72)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 73)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 74)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 75)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 76)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 77)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 78)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 79)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 80)
+  etag = _messages.StringField(81)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 82)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 83)
+  securityProfile = _messages.MessageField('SecurityProfile', 84)
 
 
 class CompleteConvertToAutopilotRequest(_messages.Message):
@@ -3990,6 +3992,8 @@ class MonitoringComponentConfig(_messages.Message):
       DAEMONSET: DaemonSet
       DEPLOYMENT: Deployment
       STATEFULSET: Statefulset
+      CADVISOR: CADVISOR
+      KUBELET: KUBELET
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -4004,6 +4008,8 @@ class MonitoringComponentConfig(_messages.Message):
     DAEMONSET = 10
     DEPLOYMENT = 11
     STATEFULSET = 12
+    CADVISOR = 13
+    KUBELET = 14
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 
@@ -4799,20 +4805,7 @@ class NodePool(_messages.Message):
   specification, under the control of the cluster master. They may have a set
   of Kubernetes labels applied to them, which may be used to reference them
   during pod scheduling. They may also be resized up or down, to accommodate
-  the workload. These upgrade settings control the level of parallelism and
-  the level of disruption caused by an upgrade. maxUnavailable controls the
-  number of nodes that can be simultaneously unavailable. maxSurge controls
-  the number of additional nodes that can be added to the node pool
-  temporarily for the time of the upgrade to increase the number of available
-  nodes. (maxUnavailable + maxSurge) determines the level of parallelism (how
-  many nodes are being upgraded at the same time). Note: upgrades inevitably
-  introduce some disruption since workloads need to be moved from old nodes to
-  new, upgraded ones. Even if maxUnavailable=0, this holds true. (Disruption
-  stays within the limits of PodDisruptionBudget, if it is configured.) For
-  example, a 5-node pool is created with maxSurge set to 2 and maxUnavailable
-  set to 1. During an upgrade, GKE creates 2 upgraded nodes, then brings down
-  up to 3 existing nodes after the upgraded nodes are ready. GKE will only
-  bring down 1 node at a time.
+  the workload.
 
   Enums:
     StatusValueValuesEnum: [Output only] The status of the nodes in this pool
@@ -7158,23 +7151,37 @@ class UpdateNodePoolRequest(_messages.Message):
 
 
 class UpgradeSettings(_messages.Message):
-  r"""These upgrade settings configure the upgrade strategy for the node pool.
-  Use strategy to switch between the strategies applied to the node pool. If
-  the strategy is SURGE, use max_surge and max_unavailable to control the
-  level of parallelism and the level of disruption caused by upgrade. 1.
-  maxSurge controls the number of additional nodes that can be added to the
-  node pool temporarily for the time of the upgrade to increase the number of
-  available nodes. 2. maxUnavailable controls the number of nodes that can be
-  simultaneously unavailable. 3. (maxUnavailable + maxSurge) determines the
-  level of parallelism (how many nodes are being upgraded at the same time).
-  If the strategy is BLUE_GREEN, use blue_green_settings to configure the
-  blue-green upgrade related settings. 1. standard_rollout_policy is the
-  default policy. The policy is used to control the way blue pool gets
-  drained. The draining is executed in the batch mode. The batch size could be
-  specified as either percentage of the node pool size or the number of nodes.
-  batch_soak_duration is the soak time after each batch gets drained. 2.
-  node_pool_soak_duration is the soak time after all blue nodes are drained.
-  After this period, the blue pool nodes will be deleted.
+  r"""These upgrade settings control the level of parallelism and the level of
+  disruption caused by an upgrade. maxUnavailable controls the number of nodes
+  that can be simultaneously unavailable. maxSurge controls the number of
+  additional nodes that can be added to the node pool temporarily for the time
+  of the upgrade to increase the number of available nodes. (maxUnavailable +
+  maxSurge) determines the level of parallelism (how many nodes are being
+  upgraded at the same time). Note: upgrades inevitably introduce some
+  disruption since workloads need to be moved from old nodes to new, upgraded
+  ones. Even if maxUnavailable=0, this holds true. (Disruption stays within
+  the limits of PodDisruptionBudget, if it is configured.) For example, a
+  5-node pool is created with maxSurge set to 2 and maxUnavailable set to 1.
+  During an upgrade, GKE creates 2 upgraded nodes, then brings down up to 3
+  existing nodes after the upgraded nodes are ready. GKE will only bring down
+  1 node at a time. These upgrade settings configure the upgrade strategy for
+  the node pool. Use strategy to switch between the strategies applied to the
+  node pool. If the strategy is SURGE, use max_surge and max_unavailable to
+  control the level of parallelism and the level of disruption caused by
+  upgrade. 1. maxSurge controls the number of additional nodes that can be
+  added to the node pool temporarily for the time of the upgrade to increase
+  the number of available nodes. 2. maxUnavailable controls the number of
+  nodes that can be simultaneously unavailable. 3. (maxUnavailable + maxSurge)
+  determines the level of parallelism (how many nodes are being upgraded at
+  the same time). If the strategy is BLUE_GREEN, use blue_green_settings to
+  configure the blue-green upgrade related settings. 1.
+  standard_rollout_policy is the default policy. The policy is used to control
+  the way blue pool gets drained. The draining is executed in the batch mode.
+  The batch size could be specified as either percentage of the node pool size
+  or the number of nodes. batch_soak_duration is the soak time after each
+  batch gets drained. 2. node_pool_soak_duration is the soak time after all
+  blue nodes are drained. After this period, the blue pool nodes will be
+  deleted.
 
   Enums:
     StrategyValueValuesEnum: Update strategy of the node pool.

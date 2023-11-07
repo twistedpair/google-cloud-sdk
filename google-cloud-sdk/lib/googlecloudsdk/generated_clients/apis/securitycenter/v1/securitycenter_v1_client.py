@@ -45,6 +45,8 @@ class SecuritycenterV1(base_api.BaseApiClient):
     self.folders_eventThreatDetectionSettings_effectiveCustomModules = self.FoldersEventThreatDetectionSettingsEffectiveCustomModulesService(self)
     self.folders_eventThreatDetectionSettings = self.FoldersEventThreatDetectionSettingsService(self)
     self.folders_findings = self.FoldersFindingsService(self)
+    self.folders_locations_muteConfigs = self.FoldersLocationsMuteConfigsService(self)
+    self.folders_locations = self.FoldersLocationsService(self)
     self.folders_muteConfigs = self.FoldersMuteConfigsService(self)
     self.folders_notificationConfigs = self.FoldersNotificationConfigsService(self)
     self.folders_securityHealthAnalyticsSettings_customModules = self.FoldersSecurityHealthAnalyticsSettingsCustomModulesService(self)
@@ -60,6 +62,8 @@ class SecuritycenterV1(base_api.BaseApiClient):
     self.organizations_eventThreatDetectionSettings_effectiveCustomModules = self.OrganizationsEventThreatDetectionSettingsEffectiveCustomModulesService(self)
     self.organizations_eventThreatDetectionSettings = self.OrganizationsEventThreatDetectionSettingsService(self)
     self.organizations_findings = self.OrganizationsFindingsService(self)
+    self.organizations_locations_muteConfigs = self.OrganizationsLocationsMuteConfigsService(self)
+    self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations_muteConfigs = self.OrganizationsMuteConfigsService(self)
     self.organizations_notificationConfigs = self.OrganizationsNotificationConfigsService(self)
     self.organizations_operations = self.OrganizationsOperationsService(self)
@@ -84,6 +88,8 @@ class SecuritycenterV1(base_api.BaseApiClient):
     self.projects_eventThreatDetectionSettings_effectiveCustomModules = self.ProjectsEventThreatDetectionSettingsEffectiveCustomModulesService(self)
     self.projects_eventThreatDetectionSettings = self.ProjectsEventThreatDetectionSettingsService(self)
     self.projects_findings = self.ProjectsFindingsService(self)
+    self.projects_locations_muteConfigs = self.ProjectsLocationsMuteConfigsService(self)
+    self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_muteConfigs = self.ProjectsMuteConfigsService(self)
     self.projects_notificationConfigs = self.ProjectsNotificationConfigsService(self)
     self.projects_securityHealthAnalyticsSettings_customModules = self.ProjectsSecurityHealthAnalyticsSettingsCustomModulesService(self)
@@ -477,6 +483,107 @@ class SecuritycenterV1(base_api.BaseApiClient):
         response_type_name='Operation',
         supports_download=False,
     )
+
+  class FoldersLocationsMuteConfigsService(base_api.BaseApiService):
+    """Service class for the folders_locations_muteConfigs resource."""
+
+    _NAME = 'folders_locations_muteConfigs'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersLocationsMuteConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing mute config.
+
+      Args:
+        request: (SecuritycenterFoldersLocationsMuteConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='DELETE',
+        method_id='securitycenter.folders.locations.muteConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersLocationsMuteConfigsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a mute config.
+
+      Args:
+        request: (SecuritycenterFoldersLocationsMuteConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='GET',
+        method_id='securitycenter.folders.locations.muteConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersLocationsMuteConfigsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a mute config.
+
+      Args:
+        request: (SecuritycenterFoldersLocationsMuteConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='PATCH',
+        method_id='securitycenter.folders.locations.muteConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterFoldersLocationsMuteConfigsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+  class FoldersLocationsService(base_api.BaseApiService):
+    """Service class for the folders_locations resource."""
+
+    _NAME = 'folders_locations'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.FoldersLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class FoldersMuteConfigsService(base_api.BaseApiService):
     """Service class for the folders_muteConfigs resource."""
@@ -1896,6 +2003,107 @@ class SecuritycenterV1(base_api.BaseApiClient):
         response_type_name='Operation',
         supports_download=False,
     )
+
+  class OrganizationsLocationsMuteConfigsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_muteConfigs resource."""
+
+    _NAME = 'organizations_locations_muteConfigs'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsLocationsMuteConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing mute config.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsMuteConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='DELETE',
+        method_id='securitycenter.organizations.locations.muteConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsMuteConfigsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a mute config.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsMuteConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.locations.muteConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsLocationsMuteConfigsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a mute config.
+
+      Args:
+        request: (SecuritycenterOrganizationsLocationsMuteConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='PATCH',
+        method_id='securitycenter.organizations.locations.muteConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterOrganizationsLocationsMuteConfigsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_locations resource."""
+
+    _NAME = 'organizations_locations'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.OrganizationsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OrganizationsMuteConfigsService(base_api.BaseApiService):
     """Service class for the organizations_muteConfigs resource."""
@@ -3864,6 +4072,107 @@ class SecuritycenterV1(base_api.BaseApiClient):
         response_type_name='Operation',
         supports_download=False,
     )
+
+  class ProjectsLocationsMuteConfigsService(base_api.BaseApiService):
+    """Service class for the projects_locations_muteConfigs resource."""
+
+    _NAME = 'projects_locations_muteConfigs'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsLocationsMuteConfigsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing mute config.
+
+      Args:
+        request: (SecuritycenterProjectsLocationsMuteConfigsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='DELETE',
+        method_id='securitycenter.projects.locations.muteConfigs.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsLocationsMuteConfigsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a mute config.
+
+      Args:
+        request: (SecuritycenterProjectsLocationsMuteConfigsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='GET',
+        method_id='securitycenter.projects.locations.muteConfigs.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsLocationsMuteConfigsGetRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a mute config.
+
+      Args:
+        request: (SecuritycenterProjectsLocationsMuteConfigsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV1MuteConfig) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/muteConfigs/{muteConfigsId}',
+        http_method='PATCH',
+        method_id='securitycenter.projects.locations.muteConfigs.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudSecuritycenterV1MuteConfig',
+        request_type_name='SecuritycenterProjectsLocationsMuteConfigsPatchRequest',
+        response_type_name='GoogleCloudSecuritycenterV1MuteConfig',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the projects_locations resource."""
+
+    _NAME = 'projects_locations'
+
+    def __init__(self, client):
+      super(SecuritycenterV1.ProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsMuteConfigsService(base_api.BaseApiService):
     """Service class for the projects_muteConfigs resource."""

@@ -1847,7 +1847,10 @@ class Network(_messages.Message):
     state: The Network state.
     type: The type of this network.
     vlanId: The vlan id of the Network.
-    vrf: The vrf for the Network.
+    vrf: The Vrf for the Network. Use this only if a new Vrf needs to be
+      created.
+    vrfAttachment: Optional. The name of a pre-existing Vrf that the network
+      should be attached to. Format is `vrfs/{vrf}`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -1919,6 +1922,7 @@ class Network(_messages.Message):
   type = _messages.EnumField('TypeValueValuesEnum', 14)
   vlanId = _messages.StringField(15)
   vrf = _messages.MessageField('VRF', 16)
+  vrfAttachment = _messages.StringField(17)
 
 
 class NetworkAddress(_messages.Message):

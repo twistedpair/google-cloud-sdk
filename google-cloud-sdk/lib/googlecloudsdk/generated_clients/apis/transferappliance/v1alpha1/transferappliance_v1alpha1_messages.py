@@ -110,6 +110,8 @@ class Appliance(_messages.Message):
     onlineImportFeature: The online import configuration for this appliance.
     order: Output only. The order associated with the appliance. Format:
       projects/{project}/locations/{location}/orders/{order}
+    pickupInfo: Optional. Details of pickup information for the appliance's
+      return.
     projectSetupCompleted: Optional. Project setup completed is set to true
       after the customer successfully sets up the project using the Cloud
       Setup app or the Pantheon widget.
@@ -295,17 +297,18 @@ class Appliance(_messages.Message):
   onlineEnabled = _messages.BooleanField(22)
   onlineImportFeature = _messages.MessageField('OnlineImportFeature', 23)
   order = _messages.StringField(24)
-  projectSetupCompleted = _messages.BooleanField(25)
-  reconciling = _messages.BooleanField(26)
-  serialNumber = _messages.StringField(27)
-  sessionId = _messages.StringField(28)
-  shipmentInfo = _messages.MessageField('ShipmentInfo', 29)
-  state = _messages.EnumField('StateValueValuesEnum', 30)
-  stateChangeTime = _messages.StringField(31)
-  subscriptionInfo = _messages.MessageField('SubscriptionInfo', 32)
-  uid = _messages.StringField(33)
-  updateTime = _messages.StringField(34)
-  verificationState = _messages.EnumField('VerificationStateValueValuesEnum', 35)
+  pickupInfo = _messages.MessageField('PickupInfo', 25)
+  projectSetupCompleted = _messages.BooleanField(26)
+  reconciling = _messages.BooleanField(27)
+  serialNumber = _messages.StringField(28)
+  sessionId = _messages.StringField(29)
+  shipmentInfo = _messages.MessageField('ShipmentInfo', 30)
+  state = _messages.EnumField('StateValueValuesEnum', 31)
+  stateChangeTime = _messages.StringField(32)
+  subscriptionInfo = _messages.MessageField('SubscriptionInfo', 33)
+  uid = _messages.StringField(34)
+  updateTime = _messages.StringField(35)
+  verificationState = _messages.EnumField('VerificationStateValueValuesEnum', 36)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1242,6 +1245,35 @@ class Parameter(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.MessageField('Value', 2)
+
+
+class PickupInfo(_messages.Message):
+  r"""Message containing pickup information for a return of an appliance.
+  NextID: 8
+
+  Fields:
+    address: Required. The address to pick up the appliance from
+    contactName: Required. The name of the customer site contact.
+    phone: Required. The phone number of the customer site contact. Should be
+      given in E.164 format consisting of the country calling code (1 to 3
+      digits) and the subscriber number, with no additional spaces or
+      formatting, e.g. "15552220123".
+    pickupDate: Optional. Preferred pick up date requested by the customer.
+    pickupInstructions: Optional. Pickup instructions provided by the
+      customer.
+    pickupTimeslot: Optional. Preferred pick up time slot requested by the
+      customer.
+    shippingLabelEmail: Optional. Emails to include when sending shipping
+      labels.
+  """
+
+  address = _messages.MessageField('PostalAddress', 1)
+  contactName = _messages.StringField(2)
+  phone = _messages.StringField(3)
+  pickupDate = _messages.MessageField('Date', 4)
+  pickupInstructions = _messages.StringField(5)
+  pickupTimeslot = _messages.StringField(6)
+  shippingLabelEmail = _messages.StringField(7, repeated=True)
 
 
 class PostalAddress(_messages.Message):

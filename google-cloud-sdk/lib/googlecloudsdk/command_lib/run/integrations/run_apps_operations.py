@@ -22,7 +22,7 @@ from __future__ import unicode_literals
 import contextlib
 import datetime
 import json
-from typing import List, Optional
+from typing import List, MutableSequence, Optional
 
 from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.run import global_methods
@@ -1157,7 +1157,9 @@ class RunAppsOperations(object):
           )
       )
 
-  def _AppendTypeMatcher(self, type_matchers, res_type, res_name):
+  def _AppendTypeMatcher(
+      self, type_matchers: MutableSequence[base.Selector], res_type, res_name
+  ):
     for matcher in type_matchers:
       if matcher['type'] == res_type and matcher['name'] == res_name:
         return

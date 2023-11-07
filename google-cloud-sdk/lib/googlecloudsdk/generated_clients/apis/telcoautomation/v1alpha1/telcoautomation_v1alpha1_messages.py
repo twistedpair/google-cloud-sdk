@@ -35,11 +35,14 @@ class Blueprint(_messages.Message):
   package. A blueprint can be a) imported from TNA's public catalog b)
   modified as per a user's need c) proposed and approved. On approval, a
   revision of blueprint is created which can be used to create a deployment on
-  Orchestration Cluster.
+  Orchestration or Workload Cluster.
 
   Enums:
     ApprovalStateValueValuesEnum: Output only. Approval state of the blueprint
       (DRAFT, PROPOSED, APPROVED)
+    DeploymentLevelValueValuesEnum: Output only. DeploymentLevel of a
+      blueprint signifies where the blueprint will be applied. e.g.
+      [HYDRATION, SINGLE_DEPLOYMENT, MULTI_DEPLOYMENT]
 
   Messages:
     LabelsValue: Optional. Labels are key-value attributes that can be set on
@@ -49,6 +52,9 @@ class Blueprint(_messages.Message):
     approvalState: Output only. Approval state of the blueprint (DRAFT,
       PROPOSED, APPROVED)
     createTime: Output only. Blueprint creation time.
+    deploymentLevel: Output only. DeploymentLevel of a blueprint signifies
+      where the blueprint will be applied. e.g. [HYDRATION, SINGLE_DEPLOYMENT,
+      MULTI_DEPLOYMENT]
     displayName: Optional. Human readable name of a Blueprint.
     files: Optional. Files present in a blueprint. When invoking
       UpdateBlueprint API, only the modified files should be included in this.
@@ -65,6 +71,8 @@ class Blueprint(_messages.Message):
       created.
     revisionId: Output only. Immutable. The revision ID of the blueprint. A
       new revision is committed whenever a blueprint is approved.
+    rollbackSupport: Output only. Indicates if the deployment created from
+      this blueprint can be rolled back.
     sourceBlueprint: Required. Immutable. The public blueprint ID from which
       this blueprint was created.
     sourceProvider: Output only. Source provider is the author of a public
@@ -85,14 +93,39 @@ class Blueprint(_messages.Message):
         PROPOSED state.
       APPROVED: When a proposed blueprint is approved, it moves to APPROVED
         state. A new revision is committed. The latest committed revision can
-        be used to create a deployment on Orchestration Cluster. Edits to an
-        APPROVED blueprint changes its state back to DRAFT. The last committed
-        revision of a blueprint represents its latest APPROVED state.
+        be used to create a deployment on Orchestration or Workload Cluster.
+        Edits to an APPROVED blueprint changes its state back to DRAFT. The
+        last committed revision of a blueprint represents its latest APPROVED
+        state.
     """
     APPROVAL_STATE_UNSPECIFIED = 0
     DRAFT = 1
     PROPOSED = 2
     APPROVED = 3
+
+  class DeploymentLevelValueValuesEnum(_messages.Enum):
+    r"""Output only. DeploymentLevel of a blueprint signifies where the
+    blueprint will be applied. e.g. [HYDRATION, SINGLE_DEPLOYMENT,
+    MULTI_DEPLOYMENT]
+
+    Values:
+      DEPLOYMENT_LEVEL_UNSPECIFIED: Default unspecified deployment level.
+      HYDRATION: Blueprints at HYDRATION level cannot be used to create a
+        Deployment (A user cannot manually initate deployment of these
+        blueprints on orchestration or workload cluster). These blueprints
+        stay in a user's private catalog and are configured and deployed by
+        TNA automation.
+      SINGLE_DEPLOYMENT: Blueprints at SINGLE_DEPLOYMENT level can be a)
+        Modified in private catalog. b) Used to create a deployment on
+        orchestration cluster by the user, once approved.
+      MULTI_DEPLOYMENT: Blueprints at MULTI_DEPLOYMENT level can be a)
+        Modified in private catalog. b) Used to create a deployment on
+        orchestration cluster which will create further hydrated deployments.
+    """
+    DEPLOYMENT_LEVEL_UNSPECIFIED = 0
+    HYDRATION = 1
+    SINGLE_DEPLOYMENT = 2
+    MULTI_DEPLOYMENT = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -121,16 +154,18 @@ class Blueprint(_messages.Message):
 
   approvalState = _messages.EnumField('ApprovalStateValueValuesEnum', 1)
   createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  files = _messages.MessageField('File', 4, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  repository = _messages.StringField(7)
-  revisionCreateTime = _messages.StringField(8)
-  revisionId = _messages.StringField(9)
-  sourceBlueprint = _messages.StringField(10)
-  sourceProvider = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  deploymentLevel = _messages.EnumField('DeploymentLevelValueValuesEnum', 3)
+  displayName = _messages.StringField(4)
+  files = _messages.MessageField('File', 5, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  repository = _messages.StringField(8)
+  revisionCreateTime = _messages.StringField(9)
+  revisionId = _messages.StringField(10)
+  rollbackSupport = _messages.BooleanField(11)
+  sourceBlueprint = _messages.StringField(12)
+  sourceProvider = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -157,16 +192,17 @@ class ComputeDeploymentStatusResponse(_messages.Message):
   r"""Response object for `ComputeDeploymentStatus`.
 
   Enums:
-    StatusValueValuesEnum: Output only. Aggregated status of a deployment.
+    AggregatedStatusValueValuesEnum: Output only. Aggregated status of a
+      deployment.
 
   Fields:
+    aggregatedStatus: Output only. Aggregated status of a deployment.
     name: The name of the deployment.
     resourceStatuses: Output only. Resource level status details in
       deployments.
-    status: Output only. Aggregated status of a deployment.
   """
 
-  class StatusValueValuesEnum(_messages.Enum):
+  class AggregatedStatusValueValuesEnum(_messages.Enum):
     r"""Output only. Aggregated status of a deployment.
 
     Values:
@@ -174,27 +210,34 @@ class ComputeDeploymentStatusResponse(_messages.Message):
       STATUS_IN_PROGRESS: Under progress.
       STATUS_ACTIVE: Running and ready to serve traffic.
       STATUS_FAILED: Failed or stalled.
-      STATUS_PEERING: NFDeploy specific status.
+      STATUS_DELETING: Delete in progress.
+      STATUS_DELETED: Deleted deployment.
+      STATUS_PEERING: NFDeploy specific status. Peering in progress.
     """
     STATUS_UNSPECIFIED = 0
     STATUS_IN_PROGRESS = 1
     STATUS_ACTIVE = 2
     STATUS_FAILED = 3
-    STATUS_PEERING = 4
+    STATUS_DELETING = 4
+    STATUS_DELETED = 5
+    STATUS_PEERING = 6
 
-  name = _messages.StringField(1)
-  resourceStatuses = _messages.MessageField('ResourceStatus', 2, repeated=True)
-  status = _messages.EnumField('StatusValueValuesEnum', 3)
+  aggregatedStatus = _messages.EnumField('AggregatedStatusValueValuesEnum', 1)
+  name = _messages.StringField(2)
+  resourceStatuses = _messages.MessageField('ResourceStatus', 3, repeated=True)
 
 
 class Deployment(_messages.Message):
   r"""Deployment contains a collection of YAML files (This collection is also
   known as package) that can to applied on an orchestration cluster (GKE
-  cluster with TNA addons).
+  cluster with TNA addons) or a workload cluster.
 
   Enums:
+    DeploymentLevelValueValuesEnum: Output only. Attributes to where the
+      deployment can inflict changes. The value can only be
+      [SINGLE_DEPLOYMENT, MULTI_DEPLOYMENT].
     StateValueValuesEnum: Output only. State of the deployment (DRAFT,
-      APPLIED).
+      APPLIED, DELETING).
 
   Messages:
     LabelsValue: Optional. Labels are key-value attributes that can be set on
@@ -202,6 +245,9 @@ class Deployment(_messages.Message):
 
   Fields:
     createTime: Output only. Deployment creation time.
+    deploymentLevel: Output only. Attributes to where the deployment can
+      inflict changes. The value can only be [SINGLE_DEPLOYMENT,
+      MULTI_DEPLOYMENT].
     displayName: Optional. Human readable name of a Deployment.
     files: Optional. Files present in a deployment. When invoking
       UpdateDeployment API, only the modified files should be included in
@@ -216,16 +262,43 @@ class Deployment(_messages.Message):
       created.
     revisionId: Output only. Immutable. The revision ID of the deployment. A
       new revision is committed whenever a change in deployment is applied.
-    sourceBlueprintRevision: Required. Immutable. The blueprint revision from
-      which this deployment was created.
+    rollbackSupport: Output only. Indicates if the deployment can be rolled
+      back, exported from public blueprint.
+    sourceBlueprintRevision: Required. The blueprint revision from which this
+      deployment was created.
     sourceProvider: Output only. Source provider is the author of a public
       blueprint, from which this deployment is created.
-    state: Output only. State of the deployment (DRAFT, APPLIED).
+    state: Output only. State of the deployment (DRAFT, APPLIED, DELETING).
     updateTime: Output only. The timestamp when the deployment was updated.
+    workloadCluster: Optional. Immutable. The WorkloadCluster on which to
+      create the Deployment.
   """
 
+  class DeploymentLevelValueValuesEnum(_messages.Enum):
+    r"""Output only. Attributes to where the deployment can inflict changes.
+    The value can only be [SINGLE_DEPLOYMENT, MULTI_DEPLOYMENT].
+
+    Values:
+      DEPLOYMENT_LEVEL_UNSPECIFIED: Default unspecified deployment level.
+      HYDRATION: Blueprints at HYDRATION level cannot be used to create a
+        Deployment (A user cannot manually initate deployment of these
+        blueprints on orchestration or workload cluster). These blueprints
+        stay in a user's private catalog and are configured and deployed by
+        TNA automation.
+      SINGLE_DEPLOYMENT: Blueprints at SINGLE_DEPLOYMENT level can be a)
+        Modified in private catalog. b) Used to create a deployment on
+        orchestration cluster by the user, once approved.
+      MULTI_DEPLOYMENT: Blueprints at MULTI_DEPLOYMENT level can be a)
+        Modified in private catalog. b) Used to create a deployment on
+        orchestration cluster which will create further hydrated deployments.
+    """
+    DEPLOYMENT_LEVEL_UNSPECIFIED = 0
+    HYDRATION = 1
+    SINGLE_DEPLOYMENT = 2
+    MULTI_DEPLOYMENT = 3
+
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the deployment (DRAFT, APPLIED).
+    r"""Output only. State of the deployment (DRAFT, APPLIED, DELETING).
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.
@@ -235,14 +308,18 @@ class Deployment(_messages.Message):
         version.
       APPLIED: This state means that the contents (YAML files containing
         kubernetes resources) of the deployment have been applied to an
-        Orchestration Cluster. A revision is created when a deployment is
-        applied. This revision will represent the latest view of what is
-        applied on the cluster until the deployment is modified and applied
-        again, which will create a new revision.
+        Orchestration or Workload Cluster. A revision is created when a
+        deployment is applied. This revision will represent the latest view of
+        what is applied on the cluster until the deployment is modified and
+        applied again, which will create a new revision.
+      DELETING: A deployment in DELETING state has been marked for deletion.
+        Its deletion status can be queried using `ComputeDeploymentStatus`
+        API. No updates are allowed to a deployment in DELETING state.
     """
     STATE_UNSPECIFIED = 0
     DRAFT = 1
     APPLIED = 2
+    DELETING = 3
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -270,17 +347,20 @@ class Deployment(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  displayName = _messages.StringField(2)
-  files = _messages.MessageField('File', 3, repeated=True)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  repository = _messages.StringField(6)
-  revisionCreateTime = _messages.StringField(7)
-  revisionId = _messages.StringField(8)
-  sourceBlueprintRevision = _messages.StringField(9)
-  sourceProvider = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  deploymentLevel = _messages.EnumField('DeploymentLevelValueValuesEnum', 2)
+  displayName = _messages.StringField(3)
+  files = _messages.MessageField('File', 4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  repository = _messages.StringField(7)
+  revisionCreateTime = _messages.StringField(8)
+  revisionId = _messages.StringField(9)
+  rollbackSupport = _messages.BooleanField(10)
+  sourceBlueprintRevision = _messages.StringField(11)
+  sourceProvider = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  updateTime = _messages.StringField(14)
+  workloadCluster = _messages.StringField(15)
 
 
 class DiscardBlueprintChangesRequest(_messages.Message):
@@ -507,6 +587,18 @@ class HydratedDeployment(_messages.Message):
   name = _messages.StringField(2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   workloadCluster = _messages.StringField(4)
+
+
+class HydrationStatus(_messages.Message):
+  r"""Hydration status.
+
+  Fields:
+    siteVersion: Output only. SiteVersion Hydration is targeting.
+    status: Output only. Status.
+  """
+
+  siteVersion = _messages.MessageField('SiteVersion', 1)
+  status = _messages.StringField(2)
 
 
 class ListBlueprintRevisionsResponse(_messages.Message):
@@ -749,6 +841,37 @@ class MasterAuthorizedNetworksConfig(_messages.Message):
   cidrBlocks = _messages.MessageField('CidrBlock', 1, repeated=True)
 
 
+class NFDeploySiteStatus(_messages.Message):
+  r"""Per-Site Status.
+
+  Fields:
+    hydration: Output only. Hydration status.
+    pendingDeletion: Output only. If true, the Site Deletion is in progress.
+    site: Output only. Site id.
+    workload: Output only. Workload status.
+  """
+
+  hydration = _messages.MessageField('HydrationStatus', 1)
+  pendingDeletion = _messages.BooleanField(2)
+  site = _messages.StringField(3)
+  workload = _messages.MessageField('WorkloadStatus', 4)
+
+
+class NFDeployStatus(_messages.Message):
+  r"""Deployment status of NFDeploy.
+
+  Fields:
+    readyNfs: Output only. Total number of NFs targeted by this deployment
+      with a Ready Condition set.
+    sites: Output only. Per-Site Status.
+    targetedNfs: Output only. Total number of NFs targeted by this deployment
+  """
+
+  readyNfs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  sites = _messages.MessageField('NFDeploySiteStatus', 2, repeated=True)
+  targetedNfs = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -898,7 +1021,8 @@ class OrchestrationCluster(_messages.Message):
     createTime: Output only. [Output only] Create time stamp.
     labels: Labels as key value pairs.
     managementConfig: Management configuration of the underlying GKE cluster.
-    name: Name of the orchestration cluster.
+    name: Name of the orchestration cluster. The name of orchestration cluster
+      cannot be more than 24 characters.
     state: Output only. State of the Orchestration Cluster.
     tnaVersion: Output only. Provides the TNA version installed on the
       cluster.
@@ -969,21 +1093,25 @@ class PublicBlueprint(_messages.Message):
 
   Enums:
     DeploymentLevelValueValuesEnum: DeploymentLevel of a blueprint signifies
-      where the blueprint will be applied. e.g. [HYDRATION, DEPLOYMENT]
+      where the blueprint will be applied. e.g. [HYDRATION, SINGLE_DEPLOYMENT,
+      MULTI_DEPLOYMENT]
 
   Fields:
     deploymentLevel: DeploymentLevel of a blueprint signifies where the
-      blueprint will be applied. e.g. [HYDRATION, DEPLOYMENT]
+      blueprint will be applied. e.g. [HYDRATION, SINGLE_DEPLOYMENT,
+      MULTI_DEPLOYMENT]
     description: The description of the public blueprint.
     displayName: The display name of the public blueprint.
     name: Name of the public blueprint.
+    rollbackSupport: Output only. Indicates if the deployment created from
+      this blueprint can be rolled back.
     sourceProvider: Source provider is the author of a public blueprint. e.g.
       Google, vendors
   """
 
   class DeploymentLevelValueValuesEnum(_messages.Enum):
     r"""DeploymentLevel of a blueprint signifies where the blueprint will be
-    applied. e.g. [HYDRATION, DEPLOYMENT]
+    applied. e.g. [HYDRATION, SINGLE_DEPLOYMENT, MULTI_DEPLOYMENT]
 
     Values:
       DEPLOYMENT_LEVEL_UNSPECIFIED: Default unspecified deployment level.
@@ -992,19 +1120,24 @@ class PublicBlueprint(_messages.Message):
         blueprints on orchestration or workload cluster). These blueprints
         stay in a user's private catalog and are configured and deployed by
         TNA automation.
-      DEPLOYMENT: Blueprints at DEPLOYMENT level can be a) Modified in private
-        catalog. b) Used to create a deployment on orchestration cluster by
-        the user, once approved.
+      SINGLE_DEPLOYMENT: Blueprints at SINGLE_DEPLOYMENT level can be a)
+        Modified in private catalog. b) Used to create a deployment on
+        orchestration cluster by the user, once approved.
+      MULTI_DEPLOYMENT: Blueprints at MULTI_DEPLOYMENT level can be a)
+        Modified in private catalog. b) Used to create a deployment on
+        orchestration cluster which will create further hydrated deployments.
     """
     DEPLOYMENT_LEVEL_UNSPECIFIED = 0
     HYDRATION = 1
-    DEPLOYMENT = 2
+    SINGLE_DEPLOYMENT = 2
+    MULTI_DEPLOYMENT = 3
 
   deploymentLevel = _messages.EnumField('DeploymentLevelValueValuesEnum', 1)
   description = _messages.StringField(2)
   displayName = _messages.StringField(3)
   name = _messages.StringField(4)
-  sourceProvider = _messages.StringField(5)
+  rollbackSupport = _messages.BooleanField(5)
+  sourceProvider = _messages.StringField(6)
 
 
 class RejectBlueprintRequest(_messages.Message):
@@ -1026,6 +1159,7 @@ class ResourceStatus(_messages.Message):
     group: Group to which the resource belongs to.
     kind: Kind of the resource.
     name: Name of the resource.
+    nfDeployStatus: Output only. Detailed status of NFDeploy.
     resourceNamespace: Namespace of the resource.
     resourceType: Output only. Resource type.
     status: Output only. Status of the resource.
@@ -1037,12 +1171,12 @@ class ResourceStatus(_messages.Message):
 
     Values:
       RESOURCE_TYPE_UNSPECIFIED: Unspecified resource type.
-      NF_DEPLOY_CUSTOM_RESOURCE: User specified NF Deploy CR.
-      BLUEPRINT_CUSTOM_RESOURCE: CRs that are part of a blueprint.
+      NF_DEPLOY_RESOURCE: User specified NF Deploy CR.
+      DEPLOYMENT_RESOURCE: CRs that are part of a blueprint.
     """
     RESOURCE_TYPE_UNSPECIFIED = 0
-    NF_DEPLOY_CUSTOM_RESOURCE = 1
-    BLUEPRINT_CUSTOM_RESOURCE = 2
+    NF_DEPLOY_RESOURCE = 1
+    DEPLOYMENT_RESOURCE = 2
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""Output only. Status of the resource.
@@ -1052,21 +1186,26 @@ class ResourceStatus(_messages.Message):
       STATUS_IN_PROGRESS: Under progress.
       STATUS_ACTIVE: Running and ready to serve traffic.
       STATUS_FAILED: Failed or stalled.
-      STATUS_PEERING: NFDeploy specific status.
+      STATUS_DELETING: Delete in progress.
+      STATUS_DELETED: Deleted deployment.
+      STATUS_PEERING: NFDeploy specific status. Peering in progress.
     """
     STATUS_UNSPECIFIED = 0
     STATUS_IN_PROGRESS = 1
     STATUS_ACTIVE = 2
     STATUS_FAILED = 3
-    STATUS_PEERING = 4
+    STATUS_DELETING = 4
+    STATUS_DELETED = 5
+    STATUS_PEERING = 6
 
   group = _messages.StringField(1)
   kind = _messages.StringField(2)
   name = _messages.StringField(3)
-  resourceNamespace = _messages.StringField(4)
-  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 5)
-  status = _messages.EnumField('StatusValueValuesEnum', 6)
-  version = _messages.StringField(7)
+  nfDeployStatus = _messages.MessageField('NFDeployStatus', 4)
+  resourceNamespace = _messages.StringField(5)
+  resourceType = _messages.EnumField('ResourceTypeValueValuesEnum', 6)
+  status = _messages.EnumField('StatusValueValuesEnum', 7)
+  version = _messages.StringField(8)
 
 
 class RollbackDeploymentRequest(_messages.Message):
@@ -1105,6 +1244,20 @@ class SearchDeploymentRevisionsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class SiteVersion(_messages.Message):
+  r"""SiteVersion Hydration is targeting.
+
+  Fields:
+    nfType: Output only. NF vendor type.
+    nfVendor: Output only. NF vendor.
+    nfVersion: Output only. NF version.
+  """
+
+  nfType = _messages.StringField(1)
+  nfVendor = _messages.StringField(2)
+  nfVersion = _messages.StringField(3)
+
+
 class StandardManagementConfig(_messages.Message):
   r"""Configuration of the standard (GKE) cluster management.
 
@@ -1124,6 +1277,7 @@ class StandardManagementConfig(_messages.Message):
       multiple blocks. It cannot be set at the same time with the field
       man_block.
     masterIpv4CidrBlock: Optional. The /28 network that the masters will use.
+      It should be free within the network.
     network: Optional. Name of the VPC Network to put the GKE cluster and
       nodes in. The VPC will be created if it doesn't exist.
     servicesCidrBlock: Optional. The IP address range for the cluster service
@@ -1470,18 +1624,6 @@ class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteReque
   name = _messages.StringField(1, required=True)
 
 
-class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRevisionRequest(_messages.Message):
-  r"""A TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteR
-  evisionRequest object.
-
-  Fields:
-    name: Required. The name of the blueprint revision in the form
-      {blueprint_id}@{revision_id}.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDiscardRequest(_messages.Message):
   r"""A TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDiscard
   Request object.
@@ -1740,29 +1882,6 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsCreateRequ
   deployment = _messages.MessageField('Deployment', 1)
   deploymentId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
-
-
-class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRequest(_messages.Message):
-  r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDelete
-  Request object.
-
-  Fields:
-    name: Required. The name of deployment to delete.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRevisionRequest(_messages.Message):
-  r"""A TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDelete
-  RevisionRequest object.
-
-  Fields:
-    name: Required. The name of the deployment revision in the form
-      {deployment_id}@{revision_id}.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDiscardRequest(_messages.Message):
@@ -2046,6 +2165,18 @@ class TelcoautomationProjectsLocationsPublicBlueprintsListRequest(_messages.Mess
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class WorkloadStatus(_messages.Message):
+  r"""Workload status.
+
+  Fields:
+    siteVersion: Output only. SiteVersion running in the workload cluster.
+    status: Output only. Status.
+  """
+
+  siteVersion = _messages.MessageField('SiteVersion', 1)
+  status = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

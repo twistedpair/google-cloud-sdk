@@ -594,30 +594,6 @@ class ServerlessOperations(object):
     """Upload the code for the given deployable."""
     deployable.UploadFiles()
 
-  def _GetRoute(self, service_ref):
-    """Return the relevant Route from the server, or None if 404."""
-    messages = self.messages_module
-    # GET the Route
-    route_name = self._registry.Parse(
-        service_ref.servicesId,
-        params={
-            'namespacesId': service_ref.namespacesId,
-        },
-        collection='run.namespaces.routes',
-    ).RelativeName()
-    route_get_request = messages.RunNamespacesRoutesGetRequest(
-        name=route_name,
-    )
-
-    try:
-      with metrics.RecordDuration(metric_names.GET_ROUTE):
-        route_get_response = self._client.namespaces_routes.Get(
-            route_get_request
-        )
-      return route.Route(route_get_response, messages)
-    except api_exceptions.HttpNotFoundError:
-      return None
-
   def WaitForCondition(self, poller, max_wait_ms=0):
     """Wait for a configuration to be ready in latest revision.
 
@@ -651,27 +627,6 @@ class ServerlessOperations(object):
       raise serverless_exceptions.ConfigurationError(
           conditions.DescriptiveMessage()
       )
-
-  def GetActiveRevisions(self, service_ref):
-    """Return the actively serving revisions.
-
-    Args:
-      service_ref: the service Resource reference.
-
-    Returns:
-      {str, int}, A dict mapping revisionID to its traffic percentage target.
-
-    Raises:
-      serverless_exceptions.NoActiveRevisionsError: if no serving revisions
-        were found.
-    """
-    serv_route = self._GetRoute(service_ref)
-    active_revisions = serv_route.active_revisions
-
-    if len(active_revisions) < 1:
-      raise serverless_exceptions.NoActiveRevisionsError()
-
-    return serv_route.active_revisions
 
   def ListServices(self, namespace_ref):
     """Returns all services in the namespace."""

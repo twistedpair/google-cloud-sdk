@@ -4371,11 +4371,13 @@ class RepositoryEventConfig(_messages.Message):
       GITHUB: The SCM repo is GITHUB.
       GITHUB_ENTERPRISE: The SCM repo is GITHUB Enterprise.
       GITLAB_ENTERPRISE: The SCM repo is GITLAB Enterprise.
+      BITBUCKET_DATA_CENTER: The SCM repo is BITBUCKET Data Center.
     """
     REPOSITORY_TYPE_UNSPECIFIED = 0
     GITHUB = 1
     GITHUB_ENTERPRISE = 2
     GITLAB_ENTERPRISE = 3
+    BITBUCKET_DATA_CENTER = 4
 
   pullRequest = _messages.MessageField('PullRequestFilter', 1)
   push = _messages.MessageField('PushFilter', 2)

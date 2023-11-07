@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -41,6 +41,7 @@ __protobuf__ = proto.module(
         'ListSessionsResponse',
         'DeleteSessionRequest',
         'RequestOptions',
+        'DirectedReadOptions',
         'ExecuteSqlRequest',
         'ExecuteBatchDmlRequest',
         'ExecuteBatchDmlResponse',
@@ -380,6 +381,145 @@ class RequestOptions(proto.Message):
     )
 
 
+class DirectedReadOptions(proto.Message):
+    r"""The DirectedReadOptions can be used to indicate which replicas or
+    regions should be used for non-transactional reads or queries.
+
+    DirectedReadOptions may only be specified for a read-only
+    transaction, otherwise the API will return an ``INVALID_ARGUMENT``
+    error.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        include_replicas (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.DirectedReadOptions.IncludeReplicas):
+            Include_replicas indicates the order of replicas (as they
+            appear in this list) to process the request. If
+            auto_failover_disabled is set to true and all replicas are
+            exhausted without finding a healthy replica, Spanner will
+            wait for a replica in the list to become available, requests
+            may fail due to ``DEADLINE_EXCEEDED`` errors.
+
+            This field is a member of `oneof`_ ``replicas``.
+        exclude_replicas (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.DirectedReadOptions.ExcludeReplicas):
+            Exclude_replicas indicates that should be excluded from
+            serving requests. Spanner will not route requests to the
+            replicas in this list.
+
+            This field is a member of `oneof`_ ``replicas``.
+    """
+
+    class ReplicaSelection(proto.Message):
+        r"""The directed read replica selector. Callers must provide one or more
+        of the following fields for replica selection:
+
+        -  ``location`` - The location must be one of the regions within the
+           multi-region configuration of your database.
+        -  ``type`` - The type of the replica.
+
+        Some examples of using replica_selectors are:
+
+        -  ``location:us-east1`` --> The "us-east1" replica(s) of any
+           available type will be used to process the request.
+        -  ``type:READ_ONLY`` --> The "READ_ONLY" type replica(s) in nearest
+           . available location will be used to process the request.
+        -  ``location:us-east1 type:READ_ONLY`` --> The "READ_ONLY" type
+           replica(s) in location "us-east1" will be used to process the
+           request.
+
+        Attributes:
+            location (str):
+                The location or region of the serving
+                requests, e.g. "us-east1".
+            type_ (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.DirectedReadOptions.ReplicaSelection.Type):
+                The type of replica.
+        """
+        class Type(proto.Enum):
+            r"""Indicates the type of replica.
+
+            Values:
+                TYPE_UNSPECIFIED (0):
+                    Not specified.
+                READ_WRITE (1):
+                    Read-write replicas support both reads and
+                    writes.
+                READ_ONLY (2):
+                    Read-only replicas only support reads (not
+                    writes).
+            """
+            TYPE_UNSPECIFIED = 0
+            READ_WRITE = 1
+            READ_ONLY = 2
+
+        location: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+        type_: 'DirectedReadOptions.ReplicaSelection.Type' = proto.Field(
+            proto.ENUM,
+            number=2,
+            enum='DirectedReadOptions.ReplicaSelection.Type',
+        )
+
+    class IncludeReplicas(proto.Message):
+        r"""An IncludeReplicas contains a repeated set of
+        ReplicaSelection which indicates the order in which replicas
+        should be considered.
+
+        Attributes:
+            replica_selections (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.DirectedReadOptions.ReplicaSelection]):
+                The directed read replica selector.
+            auto_failover_disabled (bool):
+                If true, Spanner will not route requests to a replica
+                outside the include_replicas list when all of the specified
+                replicas are unavailable or unhealthy. Default value is
+                ``false``.
+        """
+
+        replica_selections: MutableSequence['DirectedReadOptions.ReplicaSelection'] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=1,
+            message='DirectedReadOptions.ReplicaSelection',
+        )
+        auto_failover_disabled: bool = proto.Field(
+            proto.BOOL,
+            number=2,
+        )
+
+    class ExcludeReplicas(proto.Message):
+        r"""An ExcludeReplicas contains a repeated set of
+        ReplicaSelection that should be excluded from serving requests.
+
+        Attributes:
+            replica_selections (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.DirectedReadOptions.ReplicaSelection]):
+                The directed read replica selector.
+        """
+
+        replica_selections: MutableSequence['DirectedReadOptions.ReplicaSelection'] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=1,
+            message='DirectedReadOptions.ReplicaSelection',
+        )
+
+    include_replicas: IncludeReplicas = proto.Field(
+        proto.MESSAGE,
+        number=1,
+        oneof='replicas',
+        message=IncludeReplicas,
+    )
+    exclude_replicas: ExcludeReplicas = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        oneof='replicas',
+        message=ExcludeReplicas,
+    )
+
+
 class ExecuteSqlRequest(proto.Message):
     r"""The request for [ExecuteSql][google.spanner.v1.Spanner.ExecuteSql]
     and
@@ -391,6 +531,7 @@ class ExecuteSqlRequest(proto.Message):
             should be performed.
         transaction (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.TransactionSelector):
             The transaction to use.
+
             For queries, if none is provided, the default is
             a temporary read-only transaction with strong
             concurrency.
@@ -400,6 +541,7 @@ class ExecuteSqlRequest(proto.Message):
             single-use transactions are not supported.  The
             caller must either supply an existing
             transaction ID or begin a new transaction.
+
             Partitioned DML requires an existing Partitioned
             DML transaction ID.
         sql (str):
@@ -470,6 +612,7 @@ class ExecuteSqlRequest(proto.Message):
             sequence number, the transaction may be aborted.
             Replays of previously handled requests will
             yield the same response as the first execution.
+
             Required for DML statements. Ignored for
             queries.
         query_options (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.ExecuteSqlRequest.QueryOptions):
@@ -477,6 +620,8 @@ class ExecuteSqlRequest(proto.Message):
             given query.
         request_options (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.RequestOptions):
             Common options for this request.
+        directed_read_options (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.DirectedReadOptions):
+            Directed read options for this request.
         data_boost_enabled (bool):
             If this is for a partitioned query and this field is set to
             ``true``, the request is executed with Spanner Data Boost
@@ -623,6 +768,11 @@ class ExecuteSqlRequest(proto.Message):
         number=11,
         message='RequestOptions',
     )
+    directed_read_options: 'DirectedReadOptions' = proto.Field(
+        proto.MESSAGE,
+        number=15,
+        message='DirectedReadOptions',
+    )
     data_boost_enabled: bool = proto.Field(
         proto.BOOL,
         number=16,
@@ -659,6 +809,7 @@ class ExecuteBatchDmlRequest(proto.Message):
             each request idempotent such that if the request
             is received multiple times, at most one will
             succeed.
+
             The sequence number must be monotonically
             increasing within the transaction. If a request
             arrives for the first time with an out-of-order
@@ -1136,6 +1287,8 @@ class ReadRequest(proto.Message):
             create this partition_token.
         request_options (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.RequestOptions):
             Common options for this request.
+        directed_read_options (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.DirectedReadOptions):
+            Directed read options for this request.
         data_boost_enabled (bool):
             If this is for a partitioned read and this field is set to
             ``true``, the request is executed with Spanner Data Boost
@@ -1188,6 +1341,11 @@ class ReadRequest(proto.Message):
         proto.MESSAGE,
         number=11,
         message='RequestOptions',
+    )
+    directed_read_options: 'DirectedReadOptions' = proto.Field(
+        proto.MESSAGE,
+        number=14,
+        message='DirectedReadOptions',
     )
     data_boost_enabled: bool = proto.Field(
         proto.BOOL,

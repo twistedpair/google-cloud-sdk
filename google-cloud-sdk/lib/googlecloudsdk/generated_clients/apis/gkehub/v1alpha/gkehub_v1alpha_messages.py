@@ -376,24 +376,24 @@ class ClusterStatus(_messages.Message):
   r"""Metadata about the status of a clusters involved in the Rollout.
 
   Enums:
-    StateValueValuesEnum: Optional. The high-level, machine-readable status of
-      this Rollout for the cluster.
+    StateValueValuesEnum: Optional. Output only. The high-level, machine-
+      readable status of this Rollout for the cluster.
 
   Fields:
-    lastUpdateTime: Optional. The time this status and any related Rollout-
-      specific details for the cluster were updated.
+    lastUpdateTime: Optional. Output only. The time this status and any
+      related Rollout-specific details for the cluster were updated.
     membership: Output only. The name of the fleet Membership resource
       associated to the updated cluster. Membership names are formatted as
       projects//locations//memberships/.
-    reason: Optional. A human-readable description of the current status.
-    state: Optional. The high-level, machine-readable status of this Rollout
-      for the cluster.
+    reason: Optional. Output only. A human-readable description of the current
+      status.
+    state: Optional. Output only. The high-level, machine-readable status of
+      this Rollout for the cluster.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Optional.
-
-    The high-level, machine-readable status of this Rollout for the cluster.
+    r"""Optional. Output only. The high-level, machine-readable status of this
+    Rollout for the cluster.
 
     Values:
       STATE_UNSPECIFIED: Unspecified state.
@@ -1120,11 +1120,13 @@ class ConfigManagementBinauthzState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   version = _messages.MessageField('ConfigManagementBinauthzVersion', 1)
   webhook = _messages.EnumField('WebhookValueValuesEnum', 2)
@@ -1212,11 +1214,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GitSyncValueValuesEnum(_messages.Enum):
     r"""Deployment state of the git-sync pod
@@ -1226,11 +1230,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class ImporterValueValuesEnum(_messages.Enum):
     r"""Deployment state of the importer pod
@@ -1240,11 +1246,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class MonitorValueValuesEnum(_messages.Enum):
     r"""Deployment state of the monitor pod
@@ -1254,11 +1262,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class ReconcilerManagerValueValuesEnum(_messages.Enum):
     r"""Deployment state of reconciler-manager pod
@@ -1268,11 +1278,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class RootReconcilerValueValuesEnum(_messages.Enum):
     r"""Deployment state of root-reconciler
@@ -1282,11 +1294,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class SyncerValueValuesEnum(_messages.Enum):
     r"""Deployment state of the syncer pod
@@ -1296,11 +1310,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   admissionWebhook = _messages.EnumField('AdmissionWebhookValueValuesEnum', 1)
   gitSync = _messages.EnumField('GitSyncValueValuesEnum', 2)
@@ -1402,11 +1418,13 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GatekeeperControllerManagerStateValueValuesEnum(_messages.Enum):
     r"""Status of gatekeeper-controller-manager pod.
@@ -1416,11 +1434,13 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GatekeeperMutationValueValuesEnum(_messages.Enum):
     r"""Status of the pod serving the mutation webhook.
@@ -1430,11 +1450,13 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   gatekeeperAudit = _messages.EnumField('GatekeeperAuditValueValuesEnum', 1)
   gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
@@ -1524,11 +1546,13 @@ class ConfigManagementHierarchyControllerDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class HncValueValuesEnum(_messages.Enum):
     r"""The deployment state for open source HNC (e.g. v0.7.0-hc.0)
@@ -1538,11 +1562,13 @@ class ConfigManagementHierarchyControllerDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   extension = _messages.EnumField('ExtensionValueValuesEnum', 1)
   hnc = _messages.EnumField('HncValueValuesEnum', 2)
@@ -1695,11 +1721,13 @@ class ConfigManagementOperatorState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   deploymentState = _messages.EnumField('DeploymentStateValueValuesEnum', 1)
   errors = _messages.MessageField('ConfigManagementInstallError', 2, repeated=True)
@@ -2058,6 +2086,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class Expr(_messages.Message):
@@ -2483,9 +2512,7 @@ class FeatureUpdate(_messages.Message):
     securityPostureConfig: Optional. Configuration for Security Posture.
   """
 
-  binaryAuthorizationConfig = _messages.MessageField(
-      'BinaryAuthorizationConfig', 1
-  )
+  binaryAuthorizationConfig = _messages.MessageField('BinaryAuthorizationConfig', 1)
   securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 2)
 
 
@@ -2692,10 +2719,12 @@ class FleetObservabilityMembershipSpec(_messages.Message):
   """
 
 
+
 class FleetObservabilityMembershipState(_messages.Message):
   r"""**FleetObservability**: Membership-specific Feature state for
   fleetobservability.
   """
+
 
 
 class FleetObservabilityRoutingConfig(_messages.Message):
@@ -3797,6 +3826,34 @@ class GkehubProjectsLocationsRolloutsListRequest(_messages.Message):
   parent = _messages.StringField(4, required=True)
 
 
+class GkehubProjectsLocationsRolloutsPauseRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsRolloutsPauseRequest object.
+
+  Fields:
+    name: Required. The name of the rollout to pause.
+      projects/{project}/locations/{location}/rollouts/{rollout}
+    pauseRolloutRequest: A PauseRolloutRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  pauseRolloutRequest = _messages.MessageField('PauseRolloutRequest', 2)
+
+
+class GkehubProjectsLocationsRolloutsResumeRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsRolloutsResumeRequest object.
+
+  Fields:
+    name: Required. The name of the rollout to resume.
+      projects/{project}/locations/{location}/rollouts/{rollout}
+    resumeRolloutRequest: A ResumeRolloutRequest resource to be passed as the
+      request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  resumeRolloutRequest = _messages.MessageField('ResumeRolloutRequest', 2)
+
+
 class GkehubProjectsLocationsScopesCreateRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesCreateRequest object.
 
@@ -4332,9 +4389,9 @@ class HelloWorldFeatureSpec(_messages.Message):
 
 class HelloWorldFeatureState(_messages.Message):
   r"""**Hello World**: An empty state left as an example Hub-wide Feature
-
   state.
   """
+
 
 
 class HelloWorldFooBar(_messages.Message):
@@ -4369,6 +4426,7 @@ class HelloWorldMembershipState(_messages.Message):
   """
 
 
+
 class HelloWorldScopeSpec(_messages.Message):
   r"""**Hello World**: The scope-specific input for HelloWorld feature.
 
@@ -4387,6 +4445,7 @@ class HelloWorldScopeState(_messages.Message):
   r"""**Hello World**: An empty state left as an example scope-specific
   Feature state.
   """
+
 
 
 class IdentityServiceAuthMethod(_messages.Message):
@@ -5142,9 +5201,8 @@ class LogConfig(_messages.Message):
 
 
 class ManagedRolloutConfig(_messages.Message):
-  r"""The configuration used for the Rollout.
-
-  Waves are assigned automatically.
+  r"""The configuration used for the Rollout. Waves are assigned
+  automatically.
 
   Fields:
     soakDuration: Optional. Soak time before starting the next wave.
@@ -5711,9 +5769,8 @@ class Namespace(_messages.Message):
 
 
 class NamespaceActuationFeatureSpec(_messages.Message):
-  r"""An empty spec for actuation feature.
-
-  This is required since Feature proto requires a spec.
+  r"""An empty spec for actuation feature. This is required since Feature
+  proto requires a spec.
 
   Enums:
     ActuationModeValueValuesEnum: actuation_mode controls the behavior of the
@@ -5755,10 +5812,12 @@ class NamespaceActuationMembershipSpec(_messages.Message):
   """
 
 
+
 class NamespaceActuationMembershipState(_messages.Message):
   r"""**Namespace Actuation**: An empty state left as an example membership-
   specific Feature state.
   """
+
 
 
 class NamespaceLifecycleState(_messages.Message):
@@ -5993,6 +6052,10 @@ class Origin(_messages.Message):
     USER = 3
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
+
+
+class PauseRolloutRequest(_messages.Message):
+  r"""Request message for pausing a rollout."""
 
 
 class Policy(_messages.Message):
@@ -6702,6 +6765,7 @@ class RBACRoleBindingActuationFeatureState(_messages.Message):
   """
 
 
+
 class RBACRoleBindingActuationMembershipSpec(_messages.Message):
   r"""**RBAC RoleBinding Actuation**: The membership-specific input for
   RBACRoleBindingActuation feature.
@@ -6932,6 +6996,10 @@ class ResourceQuotaLifecycleState(_messages.Message):
     UPDATING = 4
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
+class ResumeRolloutRequest(_messages.Message):
+  r"""Request message for resuming a rollout."""
 
 
 class Role(_messages.Message):
@@ -8072,6 +8140,7 @@ class WorkloadMigrationFeatureSpec(_messages.Message):
   r"""**WorkloadMigration**: The Hub-wide input for the WorkloadMigration
   feature. This is currently empty, but is used to restrict API visibility.
   """
+
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -178,18 +178,6 @@ def ParseJsonSbom(file_path):
   return res
 
 
-def _IsARDockerImage(uri):
-  return re.match(docker_util.DOCKER_REPO_REGEX, uri) is not None
-
-
-def _IsGCRImage(uri):
-  return (
-      re.match(docker_util.GCR_DOCKER_REPO_REGEX, uri) is not None
-      or re.match(docker_util.GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX, uri)
-      is not None
-  )
-
-
 def _GetARDockerImage(uri):
   """Retrieves metadata from the given AR docker image.
 
@@ -370,9 +358,9 @@ def ProcessArtifact(uri):
     An Artifact object with metadata of the given artifact.
   """
 
-  if _IsARDockerImage(uri):
+  if docker_util.IsARDockerImage(uri):
     return _GetARDockerImage(uri)
-  elif _IsGCRImage(uri):
+  elif docker_util.IsGCRImage(uri):
     return _GetGCRImage(uri)
   else:
     # Handle as normal docker containers
@@ -598,6 +586,7 @@ def _FindAvailableGCSBucket(default_bucket, project_id, location):
       project=project_id,
       location=location,
       check_ownership=True,
+      enable_uniform_level_access=True,
   )
 
   return bucket_name
@@ -672,7 +661,7 @@ def _CreateSbomRefNoteIfNotExists(project_id, sbom):
     sbom: SbomFile, metadata of the SBOM file.
 
   Returns:
-    A Note object for the targetting SBOM reference note.
+    A Note object for the targeting SBOM reference note.
   """
   client = ca_requests.GetClient()
   messages = ca_requests.GetMessages()
@@ -713,7 +702,7 @@ def _GenerateSbomRefOccurrence(artifact, sbom, note, storage):
   Args:
     artifact: Artifact, the artifact metadata SBOM file generated from.
     sbom: SbomFile, metadata of the SBOM file.
-    note: Note, the Note object we will use to attatch occurrence.
+    note: Note, the Note object we will use to attach occurrence.
     storage: str, the path that SBOM is stored remotely.
 
   Returns:
@@ -912,9 +901,9 @@ def ExportSbom(args):
     )
 
   uri = _RemovePrefix(args.uri, 'https://')
-  if _IsARDockerImage(uri):
+  if docker_util.IsARDockerImage(uri):
     artifact = _GetARDockerImage(uri)
-  elif _IsGCRImage(uri):
+  elif docker_util.IsGCRImage(uri):
     artifact = _GetGCRImage(uri)
     messages = ar_requests.GetMessages()
     settings = ar_requests.GetProjectSettings(artifact.project)

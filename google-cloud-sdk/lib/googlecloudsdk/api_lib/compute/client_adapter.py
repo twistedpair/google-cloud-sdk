@@ -50,17 +50,6 @@ def _ForceBatchRequest():
   return properties.VALUES.compute.force_batch_request.GetBool()
 
 
-def _IsSelectedRequest(request):
-  """Check if the request matches instances.SimulateMaintenanceEvent."""
-  service, method, _ = request
-  if (
-      type(service) is type(service.client.instances)
-      and method == 'SimulateMaintenanceEvent'
-  ):
-    return True
-  return False
-
-
 class ClientAdapter(object):
   """Encapsulates compute apitools interactions."""
   _API_NAME = 'compute'
@@ -174,11 +163,7 @@ class ClientAdapter(object):
       list of responses, matching list of requests. Some responses can be
         errors.
     """
-    if (
-        not _ForceBatchRequest()
-        and len(requests) == 1
-        and _IsSelectedRequest(requests[0])
-    ):
+    if not _ForceBatchRequest() and len(requests) == 1:
       responses = []
       errors = errors_to_collect if errors_to_collect is not None else []
       service, method, request_body = requests[0]

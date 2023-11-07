@@ -191,16 +191,16 @@ class UploadStream:
     # Above may perform seek, but repeating is harmless.
     return self._update_absolute_position(new_absolute_index)
 
-  def close(self):
+  def close(self, caught_error=False):
     """Closes the underlying stream."""
     if (self._progress_callback and not self._progress_updated_with_end_byte):
-      self._progress_callback(self._get_absolute_position())
+      if not caught_error:
+        self._progress_callback(self._get_absolute_position())
       self._progress_updated_with_end_byte = True
     return self._stream.close()
 
   def __enter__(self):
     return self
 
-  def __exit__(self, *unused_args):
-    self.close()
-
+  def __exit__(self, error_type, *unused_args):
+    self.close(caught_error=bool(error_type))

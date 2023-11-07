@@ -1359,6 +1359,100 @@ class FeatureError(_messages.Message):
   description = _messages.StringField(2)
 
 
+class FeatureSample(_messages.Message):
+  r"""Represents message used in feature e2e create/mutate testing.
+
+  Enums:
+    ThirdValueValuesEnum:
+
+  Messages:
+    FifthValue: A FifthValue object.
+    NinthValue: Map field.
+
+  Fields:
+    eighth: Repeated field.
+    fifth: A FifthValue attribute.
+    first: Singular scaler field.
+    fourth: Singular Message fields.
+    ninth: Map field.
+    second: Singular scaler field.
+    seventh: A string attribute.
+    sixth: A string attribute.
+    third: A ThirdValueValuesEnum attribute.
+  """
+
+  class ThirdValueValuesEnum(_messages.Enum):
+    r"""ThirdValueValuesEnum enum type.
+
+    Values:
+      BAR_UNSPECIFIED: <no description>
+      FIRST: <no description>
+      SECOND: <no description>
+    """
+    BAR_UNSPECIFIED = 0
+    FIRST = 1
+    SECOND = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FifthValue(_messages.Message):
+    r"""A FifthValue object.
+
+    Messages:
+      AdditionalProperty: An additional property for a FifthValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FifthValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NinthValue(_messages.Message):
+    r"""Map field.
+
+    Messages:
+      AdditionalProperty: An additional property for a NinthValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type NinthValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NinthValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A FooBar attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('FooBar', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  eighth = _messages.MessageField('FooBar', 1, repeated=True)
+  fifth = _messages.MessageField('FifthValue', 2)
+  first = _messages.StringField(3)
+  fourth = _messages.StringField(4)
+  ninth = _messages.MessageField('NinthValue', 5)
+  second = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  seventh = _messages.StringField(7)
+  sixth = _messages.IntegerField(8)
+  third = _messages.EnumField('ThirdValueValuesEnum', 9)
+
+
 class FeatureState(_messages.Message):
   r"""FeatureState describes the state of a Feature resource.
 
@@ -1516,100 +1610,6 @@ class FeatureStateDetails(_messages.Message):
   servicemeshFeatureState = _messages.MessageField('ServiceMeshFeatureState', 19)
   updateTime = _messages.StringField(20)
   workloadcertificateFeatureState = _messages.MessageField('WorkloadCertificateFeatureState', 21)
-
-
-class FeatureTest(_messages.Message):
-  r"""Represents message used in feature e2e create/mutate testing.
-
-  Enums:
-    ThirdValueValuesEnum:
-
-  Messages:
-    FifthValue: A FifthValue object.
-    NinthValue: Map field.
-
-  Fields:
-    eighth: Repeated field.
-    fifth: A FifthValue attribute.
-    first: Singular scaler field.
-    fourth: Singular Message fields.
-    ninth: Map field.
-    second: Singular scaler field.
-    seventh: A string attribute.
-    sixth: A string attribute.
-    third: A ThirdValueValuesEnum attribute.
-  """
-
-  class ThirdValueValuesEnum(_messages.Enum):
-    r"""ThirdValueValuesEnum enum type.
-
-    Values:
-      BAR_UNSPECIFIED: <no description>
-      FIRST: <no description>
-      SECOND: <no description>
-    """
-    BAR_UNSPECIFIED = 0
-    FIRST = 1
-    SECOND = 2
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class FifthValue(_messages.Message):
-    r"""A FifthValue object.
-
-    Messages:
-      AdditionalProperty: An additional property for a FifthValue object.
-
-    Fields:
-      additionalProperties: Properties of the object. Contains field @type
-        with type URL.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a FifthValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class NinthValue(_messages.Message):
-    r"""Map field.
-
-    Messages:
-      AdditionalProperty: An additional property for a NinthValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type NinthValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a NinthValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A FooBar attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('FooBar', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  eighth = _messages.MessageField('FooBar', 1, repeated=True)
-  fifth = _messages.MessageField('FifthValue', 2)
-  first = _messages.StringField(3)
-  fourth = _messages.StringField(4)
-  ninth = _messages.MessageField('NinthValue', 5)
-  second = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  seventh = _messages.StringField(7)
-  sixth = _messages.IntegerField(8)
-  third = _messages.EnumField('ThirdValueValuesEnum', 9)
 
 
 class FleetDefaultMemberConfig(_messages.Message):
@@ -2274,12 +2274,12 @@ class HelloWorldFeatureSpec(_messages.Message):
   Fields:
     customConfig: Custom config for the HelloWorld controller codelab. This
       should be a textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
+    featureSample: Message to hold fields to use in feature e2e create/mutate
       testing.
   """
 
   customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('FeatureTest', 2)
+  featureSample = _messages.MessageField('FeatureSample', 2)
 
 
 class HelloWorldFeatureState(_messages.Message):
@@ -2840,11 +2840,80 @@ class MultiClusterServiceDiscoveryFeatureState(_messages.Message):
 
 
 class NamespaceActuationFeatureSpec(_messages.Message):
-  r"""An empty spec for FNS actuation feature."""
+  r"""An empty spec for FNS actuation feature.
+
+  Enums:
+    ActuationModeValueValuesEnum: actuation_mode controls the behavior of the
+      controller
+
+  Messages:
+    MembershipConfigsValue: Map of Membership resource name to individual
+      configs. Membership resource names are in the format of
+      "projects/P/locations/L/memberships/M"
+
+  Fields:
+    actuationMode: actuation_mode controls the behavior of the controller
+    membershipConfigs: Map of Membership resource name to individual configs.
+      Membership resource names are in the format of
+      "projects/P/locations/L/memberships/M"
+  """
+
+  class ActuationModeValueValuesEnum(_messages.Enum):
+    r"""actuation_mode controls the behavior of the controller
+
+    Values:
+      ACTUATION_MODE_UNSPECIFIED: ACTUATION_MODE_UNSPECIFIED is similar to
+        CREATE_AND_DELETE_IF_CREATED in the default controller behavior.
+      ACTUATION_MODE_CREATE_AND_DELETE_IF_CREATED:
+        ACTUATION_MODE_CREATE_AND_DELETE_IF_CREATED has the controller create
+        cluster namespaces for each fleet namespace and it deletes only the
+        ones it created, which are identified by a label.
+      ACTUATION_MODE_ADD_AND_REMOVE_FLEET_LABELS:
+        ACTUATION_MODE_ADD_AND_REMOVE_FLEET_LABELS has the controller only
+        apply labels to cluster namespaces to signal fleet namespace
+        enablement. It doesn't create or delete cluster namespaces.
+    """
+    ACTUATION_MODE_UNSPECIFIED = 0
+    ACTUATION_MODE_CREATE_AND_DELETE_IF_CREATED = 1
+    ACTUATION_MODE_ADD_AND_REMOVE_FLEET_LABELS = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MembershipConfigsValue(_messages.Message):
+    r"""Map of Membership resource name to individual configs. Membership
+    resource names are in the format of "projects/P/locations/L/memberships/M"
+
+    Messages:
+      AdditionalProperty: An additional property for a MembershipConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        MembershipConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MembershipConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A NamespaceActuationMembershipSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('NamespaceActuationMembershipSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  actuationMode = _messages.EnumField('ActuationModeValueValuesEnum', 1)
+  membershipConfigs = _messages.MessageField('MembershipConfigsValue', 2)
 
 
 class NamespaceActuationFeatureState(_messages.Message):
   r"""NamespaceActuation Feature State."""
+
+
+class NamespaceActuationMembershipSpec(_messages.Message):
+  r"""NamespaceActuation Membership Feature Spec."""
 
 
 class OciConfig(_messages.Message):

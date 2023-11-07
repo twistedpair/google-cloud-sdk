@@ -80,7 +80,7 @@ class Instance(_messages.Message):
       characters being disallowed. For example, representing labels as the
       string: name + "_" + value would prove problematic if we were to allow
       "_" in a future release.
-    name: Output only. The resource name of the instance, in the format
+    name: Identifier. The resource name of the instance, in the format
       `projects/{project}/locations/{location}/instances/{instance_id}`
     network: Optional. Immutable. The name of the Google Compute Engine [VPC
       network](https://cloud.google.com/vpc/docs/vpc) to which the instance is
@@ -520,7 +520,7 @@ class ParallelstoreProjectsLocationsInstancesPatchRequest(_messages.Message):
 
   Fields:
     instance: A Instance resource to be passed as the request body.
-    name: Output only. The resource name of the instance, in the format
+    name: Identifier. The resource name of the instance, in the format
       `projects/{project}/locations/{location}/instances/{instance_id}`
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server

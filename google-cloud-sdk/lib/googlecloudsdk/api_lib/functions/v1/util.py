@@ -293,14 +293,6 @@ def ValidateRuntimeOrRaise(client, runtime, region):
   Returns:
     warning: None|str, the warning if deprecated
   """
-  if (
-      v2_util.GetCloudFunctionsApiEnv() is not v2_util.ApiEnv.PROD
-      and region != 'us-central1'
-  ):
-    region = 'us-central1'
-    log.warning(
-        'Non-prod env detected. Hard-wiring ListRuntimes call to us-central1.'
-    )
   response = client.ListRuntimes(
       region,
       query_filter='name={} AND environment={}'.format(

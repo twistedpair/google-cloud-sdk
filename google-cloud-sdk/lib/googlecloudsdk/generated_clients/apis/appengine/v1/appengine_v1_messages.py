@@ -431,6 +431,34 @@ class AppengineAppsGetRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class AppengineAppsListRuntimesRequest(_messages.Message):
+  r"""A AppengineAppsListRuntimesRequest object.
+
+  Enums:
+    EnvironmentValueValuesEnum: Optional. The environment of the Application.
+
+  Fields:
+    environment: Optional. The environment of the Application.
+    parent: Required. Name of the parent Application resource. Example:
+      apps/myapp.
+  """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""Optional. The environment of the Application.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Default value.
+      STANDARD: App Engine Standard.
+      FLEXIBLE: App Engine Flexible
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEXIBLE = 2
+
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class AppengineAppsLocationsGetRequest(_messages.Message):
   r"""A AppengineAppsLocationsGetRequest object.
 
@@ -1189,6 +1217,31 @@ class CreateVersionMetadataV1Beta(_messages.Message):
   cloudBuildId = _messages.StringField(1)
 
 
+class Date(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: A full date, with non-zero year, month, and
+  day values. A month and day, with a zero year (for example, an anniversary).
+  A year on its own, with a zero month and a zero day. A year and month, with
+  a zero day (for example, a credit card expiration date).Related types:
+  google.type.TimeOfDay google.type.DateTime google.protobuf.Timestamp
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class DebugInstanceRequest(_messages.Message):
   r"""Request message for Instances.DebugInstance.
 
@@ -1759,6 +1812,18 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListRuntimesResponse(_messages.Message):
+  r"""Response message for Applications.ListRuntimes.
+
+  Fields:
+    nextPageToken: Continuation token for fetching the next page of results.
+    runtimes: The runtimes available to the requested application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  runtimes = _messages.MessageField('Runtime', 2, repeated=True)
 
 
 class ListServicesResponse(_messages.Message):
@@ -2613,6 +2678,67 @@ class Resources(_messages.Message):
   volumes = _messages.MessageField('Volume', 5, repeated=True)
 
 
+class Runtime(_messages.Message):
+  r"""Runtime versions for App Engine.
+
+  Enums:
+    EnvironmentValueValuesEnum: The environment of the runtime.
+    StageValueValuesEnum: The stage of life this runtime is in, e.g., BETA,
+      GA, etc.
+
+  Fields:
+    decommissionedDate: Date when Runtime is decommissioned.
+    deprecationDate: Date when Runtime is deprecated.
+    endOfSupportDate: Date when Runtime is end of support.
+    environment: The environment of the runtime.
+    name: The name of the runtime, e.g., 'go113', 'nodejs12', etc.
+    stage: The stage of life this runtime is in, e.g., BETA, GA, etc.
+    warnings: Warning messages, e.g., a deprecation warning.
+  """
+
+  class EnvironmentValueValuesEnum(_messages.Enum):
+    r"""The environment of the runtime.
+
+    Values:
+      ENVIRONMENT_UNSPECIFIED: Default value.
+      STANDARD: App Engine Standard.
+      FLEXIBLE: App Engine Flexible
+    """
+    ENVIRONMENT_UNSPECIFIED = 0
+    STANDARD = 1
+    FLEXIBLE = 2
+
+  class StageValueValuesEnum(_messages.Enum):
+    r"""The stage of life this runtime is in, e.g., BETA, GA, etc.
+
+    Values:
+      RUNTIME_STAGE_UNSPECIFIED: Not specified.
+      DEVELOPMENT: The runtime is in development.
+      ALPHA: The runtime is in the Alpha stage.
+      BETA: The runtime is in the Beta stage.
+      GA: The runtime is generally available.
+      DEPRECATED: The runtime is deprecated.
+      DECOMMISSIONED: The runtime is no longer supported.
+      END_OF_SUPPORT: The runtime is end of support.
+    """
+    RUNTIME_STAGE_UNSPECIFIED = 0
+    DEVELOPMENT = 1
+    ALPHA = 2
+    BETA = 3
+    GA = 4
+    DEPRECATED = 5
+    DECOMMISSIONED = 6
+    END_OF_SUPPORT = 7
+
+  decommissionedDate = _messages.MessageField('Date', 1)
+  deprecationDate = _messages.MessageField('Date', 2)
+  endOfSupportDate = _messages.MessageField('Date', 3)
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 4)
+  name = _messages.StringField(5)
+  stage = _messages.EnumField('StageValueValuesEnum', 6)
+  warnings = _messages.StringField(7, repeated=True)
+
+
 class ScriptHandler(_messages.Message):
   r"""Executes a script to handle the request that matches the URL pattern.
 
@@ -3240,6 +3366,9 @@ class Version(_messages.Message):
       environment.Only returned in GET requests if view=FULL is set.
     EnvVariablesValue: Environment variables available to the application.Only
       returned in GET requests if view=FULL is set.
+    GeneratedCustomerMetadataValue: Additional Google Generated Customer
+      Metadata, this field won't be provided by default and can be requested
+      by setting the IncludeExtraData field in GetVersionRequest
 
   Fields:
     apiConfig: Serving configuration for Google Cloud Endpoints
@@ -3281,6 +3410,9 @@ class Version(_messages.Message):
     errorHandlers: Custom static error pages. Limited to 10KB per page.Only
       returned in GET requests if view=FULL is set.
     flexibleRuntimeSettings: Settings for App Engine flexible runtimes.
+    generatedCustomerMetadata: Additional Google Generated Customer Metadata,
+      this field won't be provided by default and can be requested by setting
+      the IncludeExtraData field in GetVersionRequest
     handlers: An ordered list of URL-matching patterns that should be applied
       to incoming requests. The first matching URL handles the request and
       other request handlers are not attempted.Only returned in GET requests
@@ -3470,6 +3602,34 @@ class Version(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GeneratedCustomerMetadataValue(_messages.Message):
+    r"""Additional Google Generated Customer Metadata, this field won't be
+    provided by default and can be requested by setting the IncludeExtraData
+    field in GetVersionRequest
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        GeneratedCustomerMetadataValue object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a GeneratedCustomerMetadataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   apiConfig = _messages.MessageField('ApiConfigHandler', 1)
   appEngineApis = _messages.BooleanField(2)
   automaticScaling = _messages.MessageField('AutomaticScaling', 3)
@@ -3487,30 +3647,31 @@ class Version(_messages.Message):
   envVariables = _messages.MessageField('EnvVariablesValue', 15)
   errorHandlers = _messages.MessageField('ErrorHandler', 16, repeated=True)
   flexibleRuntimeSettings = _messages.MessageField('FlexibleRuntimeSettings', 17)
-  handlers = _messages.MessageField('UrlMap', 18, repeated=True)
-  healthCheck = _messages.MessageField('HealthCheck', 19)
-  id = _messages.StringField(20)
-  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 21, repeated=True)
-  instanceClass = _messages.StringField(22)
-  libraries = _messages.MessageField('Library', 23, repeated=True)
-  livenessCheck = _messages.MessageField('LivenessCheck', 24)
-  manualScaling = _messages.MessageField('ManualScaling', 25)
-  name = _messages.StringField(26)
-  network = _messages.MessageField('Network', 27)
-  nobuildFilesRegex = _messages.StringField(28)
-  readinessCheck = _messages.MessageField('ReadinessCheck', 29)
-  resources = _messages.MessageField('Resources', 30)
-  runtime = _messages.StringField(31)
-  runtimeApiVersion = _messages.StringField(32)
-  runtimeChannel = _messages.StringField(33)
-  runtimeMainExecutablePath = _messages.StringField(34)
-  serviceAccount = _messages.StringField(35)
-  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 36)
-  threadsafe = _messages.BooleanField(37)
-  versionUrl = _messages.StringField(38)
-  vm = _messages.BooleanField(39)
-  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 40)
-  zones = _messages.StringField(41, repeated=True)
+  generatedCustomerMetadata = _messages.MessageField('GeneratedCustomerMetadataValue', 18)
+  handlers = _messages.MessageField('UrlMap', 19, repeated=True)
+  healthCheck = _messages.MessageField('HealthCheck', 20)
+  id = _messages.StringField(21)
+  inboundServices = _messages.EnumField('InboundServicesValueListEntryValuesEnum', 22, repeated=True)
+  instanceClass = _messages.StringField(23)
+  libraries = _messages.MessageField('Library', 24, repeated=True)
+  livenessCheck = _messages.MessageField('LivenessCheck', 25)
+  manualScaling = _messages.MessageField('ManualScaling', 26)
+  name = _messages.StringField(27)
+  network = _messages.MessageField('Network', 28)
+  nobuildFilesRegex = _messages.StringField(29)
+  readinessCheck = _messages.MessageField('ReadinessCheck', 30)
+  resources = _messages.MessageField('Resources', 31)
+  runtime = _messages.StringField(32)
+  runtimeApiVersion = _messages.StringField(33)
+  runtimeChannel = _messages.StringField(34)
+  runtimeMainExecutablePath = _messages.StringField(35)
+  serviceAccount = _messages.StringField(36)
+  servingStatus = _messages.EnumField('ServingStatusValueValuesEnum', 37)
+  threadsafe = _messages.BooleanField(38)
+  versionUrl = _messages.StringField(39)
+  vm = _messages.BooleanField(40)
+  vpcAccessConnector = _messages.MessageField('VpcAccessConnector', 41)
+  zones = _messages.StringField(42, repeated=True)
 
 
 class Volume(_messages.Message):

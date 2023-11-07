@@ -350,33 +350,6 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetOnboardingState(self, request, global_params=None):
-      r"""Retrieve the OnboardingState of a resource.
-
-      Args:
-        request: (SecuritycenterFoldersGetOnboardingStateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (OnboardingState) The response message.
-      """
-      config = self.GetMethodConfig('GetOnboardingState')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetOnboardingState.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta2/folders/{foldersId}/onboardingState',
-        http_method='GET',
-        method_id='securitycenter.folders.getOnboardingState',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta2/{+name}',
-        request_field='',
-        request_type_name='SecuritycenterFoldersGetOnboardingStateRequest',
-        response_type_name='OnboardingState',
-        supports_download=False,
-    )
-
     def GetRapidVulnerabilityDetectionSettings(self, request, global_params=None):
       r"""Get the RapidVulnerabilityDetectionSettings resource. In the returned settings response, a missing field only indicates that it was not explicitly set, so no assumption should be made about these fields. In other words, GetRapidVulnerabilityDetectionSettings does not calculate the effective service settings for the resource, which accounts for inherited settings and defaults. Instead, use CalculateRapidVulnerabilityDetectionSettings for this purpose.
 
@@ -957,33 +930,6 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterOrganizationsGetEventThreatDetectionSettingsRequest',
         response_type_name='EventThreatDetectionSettings',
-        supports_download=False,
-    )
-
-    def GetOnboardingState(self, request, global_params=None):
-      r"""Retrieve the OnboardingState of a resource.
-
-      Args:
-        request: (SecuritycenterOrganizationsGetOnboardingStateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (OnboardingState) The response message.
-      """
-      config = self.GetMethodConfig('GetOnboardingState')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetOnboardingState.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta2/organizations/{organizationsId}/onboardingState',
-        http_method='GET',
-        method_id='securitycenter.organizations.getOnboardingState',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta2/{+name}',
-        request_field='',
-        request_type_name='SecuritycenterOrganizationsGetOnboardingStateRequest',
-        response_type_name='OnboardingState',
         supports_download=False,
     )
 
@@ -1705,33 +1651,6 @@ class SecuritycenterV1beta2(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterProjectsGetEventThreatDetectionSettingsRequest',
         response_type_name='EventThreatDetectionSettings',
-        supports_download=False,
-    )
-
-    def GetOnboardingState(self, request, global_params=None):
-      r"""Retrieve the OnboardingState of a resource.
-
-      Args:
-        request: (SecuritycenterProjectsGetOnboardingStateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (OnboardingState) The response message.
-      """
-      config = self.GetMethodConfig('GetOnboardingState')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetOnboardingState.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta2/projects/{projectsId}/onboardingState',
-        http_method='GET',
-        method_id='securitycenter.projects.getOnboardingState',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1beta2/{+name}',
-        request_field='',
-        request_type_name='SecuritycenterProjectsGetOnboardingStateRequest',
-        response_type_name='OnboardingState',
         supports_download=False,
     )
 

@@ -24,3 +24,7 @@ from googlecloudsdk.core import exceptions as core_exceptions
 
 class InvalidSCCInputError(core_exceptions.Error):
   """Exception raised for errors in the input."""
+
+
+class InvalidNotificationConfigError(core_exceptions.Error):
+  """Exception raised for errors in the input of a NotificationConfig."""

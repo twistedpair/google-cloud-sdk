@@ -31,13 +31,12 @@ class ServiceProjectsClient(object):
     self.client = client or api_lib_utils.GetClientInstance()
     self.messages = messages or api_lib_utils.GetMessagesModule()
     self._sp_client = self.client.projects_locations_serviceProjectAttachments
-    self._lookup_client = self.client.projects_locations
+    self._project_locations_client = self.client.projects_locations
     self._poller = waiter.CloudOperationPoller(
         self._sp_client,
         self.client.projects_locations_operations,
     )
-    self._lookup_poller = waiter.CloudOperationPoller(
-        self._lookup_client,
+    self._remove_poller = waiter.CloudOperationPollerNoResources(
         self.client.projects_locations_operations,
     )
 
@@ -148,7 +147,7 @@ class ServiceProjectsClient(object):
       return operation
 
     remove_response = api_lib_utils.WaitForOperation(
-        self._poller,
+        self._remove_poller,
         operation,
         api_lib_consts.RemoveServiceProject.WAIT_FOR_REMOVE_MESSAGE,
         api_lib_consts.RemoveServiceProject.REMOVE_TIMELIMIT_SEC,
@@ -169,4 +168,22 @@ class ServiceProjectsClient(object):
         name='projects/' + service_project + '/locations/global'
     )
 
-    return self._lookup_client.LookupServiceProjectAttachment(lookup_req)
+    return self._project_locations_client.LookupServiceProjectAttachment(
+        lookup_req
+    )
+
+  def Detach(self, service_project):
+    """Detach a service project in the Project/location.
+
+    Args:
+      service_project: Service project id
+
+    Returns:
+      None
+    """
+    detach_req = self.messages.ApphubProjectsLocationsDetachServiceProjectAttachmentRequest(
+        name='projects/' + service_project + '/locations/global'
+    )
+    return self._project_locations_client.DetachServiceProjectAttachment(
+        detach_req
+    )

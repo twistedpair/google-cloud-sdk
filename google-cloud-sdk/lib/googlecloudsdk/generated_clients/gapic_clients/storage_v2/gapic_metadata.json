@@ -125,6 +125,11 @@
                 "read_object"
               ]
             },
+            "RestoreObject": {
+              "methods": [
+                "restore_object"
+              ]
+            },
             "RewriteObject": {
               "methods": [
                 "rewrite_object"
@@ -285,6 +290,11 @@
                 "read_object"
               ]
             },
+            "RestoreObject": {
+              "methods": [
+                "restore_object"
+              ]
+            },
             "RewriteObject": {
               "methods": [
                 "rewrite_object"
@@ -443,6 +453,11 @@
             "ReadObject": {
               "methods": [
                 "read_object"
+              ]
+            },
+            "RestoreObject": {
+              "methods": [
+                "restore_object"
               ]
             },
             "RewriteObject": {

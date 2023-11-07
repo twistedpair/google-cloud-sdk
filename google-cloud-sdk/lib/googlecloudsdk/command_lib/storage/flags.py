@@ -207,12 +207,6 @@ def add_object_metadata_flags(parser, allow_patch=False):
   metadata_group.add_argument(
       '--content-encoding', help='How content is encoded (e.g. ``gzip\'\').')
   metadata_group.add_argument(
-      '--content-md5',
-      metavar='MD5_DIGEST',
-      help=('Manually specified MD5 hash digest for the contents of an uploaded'
-            ' file. This flag cannot be used when uploading multiple files. The'
-            ' custom digest is used by the cloud provider for validation.'))
-  metadata_group.add_argument(
       '--content-language',
       help='Content\'s language (e.g. ``en\'\' signifies "English").')
   metadata_group.add_argument(
@@ -279,10 +273,6 @@ def add_object_metadata_flags(parser, allow_patch=False):
         '--clear-content-encoding',
         action='store_true',
         help='Clears content encoding.')
-    metadata_group.add_argument(
-        '--clear-content-md5',
-        action='store_true',
-        help='Clears object content MD5.')
     metadata_group.add_argument(
         '--clear-content-language',
         action='store_true',
@@ -482,30 +472,33 @@ def add_inventory_reports_flags(parser, require_create_flags=False):
     add_inventory_reports_metadata_fields_flag(parser, require_create_flags)
 
 
-def add_dataset_config_location_flag(parser):
+def add_dataset_config_location_flag(parser, is_required=True):
   """Adds the location flag for the dataset-config commands.
 
   Args:
     parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+    is_required (bool): True if location flag is a required field.
   """
   parser.add_argument(
       '--location',
       type=str,
-      required=True,
+      required=is_required,
       help='Provide location of the dataset config.',
   )
 
 
-def add_dataset_config_create_update_flags(parser):
+def add_dataset_config_create_update_flags(parser, is_update=False):
   """Adds the flags for the dataset-config create and update commands.
 
   Args:
     parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
+    is_update (bool): True if flags are for the dataset-configs update command.
   """
   parser.add_argument(
       '--retention-period-days',
       type=int,
       metavar='RETENTION_DAYS',
+      required=not is_update,
       help='Provide retention period for the config.',
   )
   parser.add_argument(
@@ -608,7 +601,6 @@ def add_soft_deleted_flag(parser):
   parser.add_argument(
       '--soft-deleted',
       action='store_true',
-      hidden=True,
       help=(
           'Displays soft-deleted objects only. Excludes live and noncurrent'
           ' objects.'
@@ -622,7 +614,6 @@ def add_soft_delete_flags(parser):
   parser.add_argument(
       '--exhaustive',
       action='store_true',
-      hidden=True,
       help=(
           'For features like soft delete, the API may return an empty list.'
           ' If present, continue querying. This may incur costs from repeated'
@@ -631,7 +622,6 @@ def add_soft_delete_flags(parser):
   )
   parser.add_argument(
       '--next-page-token',
-      hidden=True,
       help='Page token for resuming LIST calls.',
   )
 

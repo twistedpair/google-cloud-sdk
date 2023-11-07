@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 
 import io
 import re
-from typing import Optional
+from typing import Any, Optional
 
 from apitools.base.py import encoding
 from googlecloudsdk.command_lib.run.integrations.formatters import base
@@ -135,7 +135,7 @@ class DefaultFormatter(base.BaseFormatter):
 
     return message
 
-  def _PrintAsYaml(self, content: any) -> str:
+  def _PrintAsYaml(self, content: Any) -> str:
     buffer = io.StringIO()
     printer = yp.YamlPrinter(buffer)
     printer.Print(content)

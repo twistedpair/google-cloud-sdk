@@ -1648,14 +1648,18 @@ class RemoveContainersChange(TemplateConfigChanger):
 class ContainerDependenciesChange(TemplateConfigChanger):
   """Sets container dependencies.
 
-  Updates the dependencies of containers present in new_dependencies. The
-  dependencies of other containers will be left unchanged.
+  Updates container dependencies to add the dependencies in new_depencies.
+  Additionally, dependencies to or from a container which does not exist will be
+  removed.
 
   Attributes:
       new_dependencies: A map of containers to their updated dependencies.
+        Defaults to an empty map.
   """
 
-  new_dependencies: Mapping[str, Iterable[str]]
+  new_dependencies: Mapping[str, Iterable[str]] = dataclasses.field(
+      default_factory=dict
+  )
 
   def Adjust(
       self, resource: k8s_object.KubernetesObject

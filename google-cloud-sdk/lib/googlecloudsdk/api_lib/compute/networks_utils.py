@@ -56,11 +56,31 @@ def CreateNetworkResourceFromArgs(messages, network_ref, network_args,
     # If no subnet mode is specified, default to AUTO.
     network.autoCreateSubnetworks = True
 
-  if network_args.bgp_routing_mode:
-    network.routingConfig = messages.NetworkRoutingConfig()
-    network.routingConfig.routingMode = (
-        messages.NetworkRoutingConfig.RoutingModeValueValuesEnum(
-            network_args.bgp_routing_mode.upper()))
+  network.routingConfig = messages.NetworkRoutingConfig()
+  network.routingConfig.routingMode = (
+      messages.NetworkRoutingConfig.RoutingModeValueValuesEnum(
+          network_args.bgp_routing_mode.upper()
+      )
+  )
+
+  if getattr(network_args, 'bgp_best_path_selection_mode', None) is not None:
+    network.routingConfig.bgpBestPathSelectionMode = (
+        messages.NetworkRoutingConfig.BgpBestPathSelectionModeValueValuesEnum(
+            network_args.bgp_best_path_selection_mode
+        )
+    )
+
+  if getattr(network_args, 'bgp_bps_always_compare_med', None) is not None:
+    network.routingConfig.bgpAlwaysCompareMed = (
+        network_args.bgp_bps_always_compare_med
+    )
+
+  if getattr(network_args, 'bgp_bps_inter_region_cost', None) is not None:
+    network.routingConfig.bgpInterRegionCost = (
+        messages.NetworkRoutingConfig.BgpInterRegionCostValueValuesEnum(
+            network_args.bgp_bps_inter_region_cost
+        )
+    )
 
   if hasattr(network_args, 'mtu') and network_args.mtu is not None:
     network.mtu = network_args.mtu

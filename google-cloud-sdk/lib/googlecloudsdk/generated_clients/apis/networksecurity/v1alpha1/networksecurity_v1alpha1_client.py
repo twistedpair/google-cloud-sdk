@@ -3203,8 +3203,35 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def AttachAppNetwork(self, request, global_params=None):
+      r"""Attaches an app network to a SSEGateway.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseGatewaysAttachAppNetworkRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AttachAppNetwork')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AttachAppNetwork.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGateways/{sseGatewaysId}:attachAppNetwork',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.sseGateways.attachAppNetwork',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:attachAppNetwork',
+        request_field='attachAppNetworkRequest',
+        request_type_name='NetworksecurityProjectsLocationsSseGatewaysAttachAppNetworkRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def AttachAppVpc(self, request, global_params=None):
-      r"""Attaches an app VPC to a SSEGateway.
+      r"""Attaches an app VPC to a SSEGateway This RPC is deprecated. Use AttachAppNetwork instead.
 
       Args:
         request: (NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest) input message
@@ -3284,8 +3311,35 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DetachAppNetwork(self, request, global_params=None):
+      r"""Detaches an app network from a SSEGateway.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsSseGatewaysDetachAppNetworkRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DetachAppNetwork')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachAppNetwork.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGateways/{sseGatewaysId}:detachAppNetwork',
+        http_method='POST',
+        method_id='networksecurity.projects.locations.sseGateways.detachAppNetwork',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha1/{+name}:detachAppNetwork',
+        request_field='detachAppNetworkRequest',
+        request_type_name='NetworksecurityProjectsLocationsSseGatewaysDetachAppNetworkRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def DetachAppVpc(self, request, global_params=None):
-      r"""Detaches an app VPC from a SSEGateway.
+      r"""Detaches an app VPC from a SSEGateway This RPC is deprecated. Use DetachAppNetwork instead.
 
       Args:
         request: (NetworksecurityProjectsLocationsSseGatewaysDetachAppVpcRequest) input message

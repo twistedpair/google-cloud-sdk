@@ -389,6 +389,10 @@ class CloudWildcardIterator(WildcardIterator):
     else:
       self._object_state_for_listing = object_state
     self._soft_deleted = object_state is cloud_api.ObjectState.SOFT_DELETED
+    self._object_state_requires_expansion = (
+        self._object_state is cloud_api.ObjectState.LIVE_AND_NONCURRENT
+        or (self._soft_deleted and self._url.generation is None)
+    )
 
   def __iter__(self):
     if self._files_only and (self._url.is_provider() or self._url.is_bucket()):
@@ -490,7 +494,7 @@ class CloudWildcardIterator(WildcardIterator):
     """Fetch all objects for the given bucket that match the URL."""
     needs_further_expansion = (
         contains_wildcard(self._url.object_name)
-        or self._object_state is cloud_api.ObjectState.LIVE_AND_NONCURRENT
+        or self._object_state_requires_expansion
         or self._url.url_string.endswith(self._url.delimiter)
     )
     if not needs_further_expansion:

@@ -14,12 +14,6 @@
 # limitations under the License.
 """Provides common arguments for the Run command surface."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import print_function
-from __future__ import unicode_literals
-
-import argparse
 import enum
 import os
 import re
@@ -37,8 +31,6 @@ from googlecloudsdk.api_lib.services import exceptions as services_exceptions
 from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
-from googlecloudsdk.calliope import parser_arguments
-from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.functions.v2.deploy import env_vars_util
 from googlecloudsdk.command_lib.run import config_changes
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
@@ -58,6 +50,7 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
+
 
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
@@ -2289,6 +2282,8 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
             args.remove_containers
         )
     )
+    # Add an empty ContainerDependenciesChange to update dependencies.
+    changes.append(config_changes.ContainerDependenciesChange())
 
   if FlagIsExplicitlySet(args, 'containers'):
     for container_name, container_args in args.containers.items():
@@ -2349,7 +2344,7 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
         config_changes.RemoveVolumeMountChange(
             removed_mounts=container_args.remove_volume_mount,
             clear_mounts=container_args.clear_volume_mounts,
-            container_name=container_name
+            container_name=container_name,
         )
     )
   if _HasSecretsChanges(container_args):
@@ -2360,7 +2355,7 @@ def _GetContainerConfigurationChanges(container_args, container_name=None):
     changes.append(
         config_changes.AddVolumeMountChange(
             new_mounts=container_args.add_volume_mount,
-            container_name=container_name
+            container_name=container_name,
         )
     )
   return changes
@@ -3533,63 +3528,18 @@ def SourceAndImageFlags(image='gcr.io/cloudrun/hello:latest'):
   return group
 
 
-def ContainerFlag(container_parser):
-  """Create the --container flag for specifying containers.
+def ContainerFlag():
+  """Create a dummy --container flag for usage."""
 
-  Args:
-    container_parser: Function for creating per-container subparsers.
-
-  Returns:
-    An argument defining the --container flag.
-  """
   help_text = """
-      Specifies a container by name. The following container flags apply to the specified container.
-      """
+  Specifies a container by name. Flags following --container will apply to the specified container.
+  """
   return base.Argument(
       '--container',
       metavar='CONTAINER',
       dest='containers',
-      type=_CONTAINER_NAME_TYPE,
-      action=ContainersAction,
-      container_parser=container_parser,
       help=help_text,
   )
-
-
-def ContainerFlags(command, container_arg_group):
-  """Create the --container flag with the specified per-container args."""
-
-  def _CreateContainerParser():
-    container_parser = parser_arguments.ArgumentInterceptor(
-        parser=parser_extensions.ArgumentParser(calliope_command=command)
-    )
-    ContainerFlag(_CreateContainerParser).AddToParser(container_parser)
-    container_arg_group.AddToParser(container_parser)
-    return container_parser.parser
-
-  help_text = """
-    Container Flags
-
-    If the --container flag is not specified, container flags apply to the
-    primary container.
-
-    Multiple containers can specified using --container=<NAME> followed by the
-    container flags applying to that container. For example the following
-    command creates two containers, one using IMAGE-A and one using IMAGE-B:
-
-    $ {command} --container=A --image=IMAGE-A --container=B --image=IMAGE-B
-  """
-  # Create mutually exclusive group in top-level parser to prevent top-level
-  # container flags from being used with the --container flag.
-  containers_mutex_group = base.ArgumentGroup(
-      mutex=True, help=help_text, disable_default_heading=True
-  )
-  containers_group = base.ArgumentGroup()
-  containers_group.AddArgument(RemoveContainersFlag())
-  containers_group.AddArgument(ContainerFlag(_CreateContainerParser))
-  containers_mutex_group.AddArgument(containers_group)
-  containers_mutex_group.AddArgument(container_arg_group)
-  return containers_mutex_group
 
 
 def RemoveContainersFlag():
@@ -3653,45 +3603,3 @@ def AddDryRunFlag(parser):
           ' will not be applied.'
       ),
   )
-
-
-class ContainersAction(argparse.Action):
-  """Action which groups flag values per-container.
-
-  Attributes:
-    container_parser: Function which creates per-container subparsers.
-    container_arg_type: Type of the container arg value.
-  """
-
-  # pylint: disable=redefined-builtin
-  def __init__(self, container_parser, type=None, **kwargs):
-    if not callable(type):
-      raise argparse.ArgumentError(self, '%r is not callable' % type)
-    self.container_parser = container_parser
-    self.container_arg_type = type
-    super(ContainersAction, self).__init__(
-        nargs=argparse.PARSER, default={}, **kwargs
-    )
-
-  def __call__(self, parser, namespace, values, option_string):
-    container_name = values[0]
-    if self.container_arg_type:
-      container_name = self.container_arg_type(container_name)
-    args = values[1:]
-    containers = getattr(namespace, self.dest)
-    if container_name in containers:
-      # Use the existing container namespace if it exists.
-      container = containers[container_name]
-      parser = container._GetParser()
-    else:
-      # Create a new namespace to hold args for the container.
-      container = parser_extensions.Namespace()
-      containers[container_name] = container
-      parser = self.container_parser()
-      # Forward containers to the new namespace so that the parser can call into
-      # other container parsers.
-      setattr(container, self.dest, containers)
-
-    container = parser.parse_args(args, container)
-    # Cleanup forwarded containers in the container namespace.
-    delattr(container, self.dest)

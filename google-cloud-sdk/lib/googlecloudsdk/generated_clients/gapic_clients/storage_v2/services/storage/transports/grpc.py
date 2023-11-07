@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -640,6 +640,7 @@ class StorageGrpcTransport(StorageTransport):
         r"""Return a callable for the delete object method over gRPC.
 
         Deletes an object and its metadata.
+
         Deletions are normally permanent when versioning is
         disabled or whenever the generation parameter is used.
         However, if soft delete is enabled for the bucket,
@@ -665,12 +666,39 @@ class StorageGrpcTransport(StorageTransport):
         return self._stubs['delete_object']
 
     @property
+    def restore_object(self) -> Callable[
+            [storage.RestoreObjectRequest],
+            storage.Object]:
+        r"""Return a callable for the restore object method over gRPC.
+
+        Restores a soft-deleted object.
+
+        Returns:
+            Callable[[~.RestoreObjectRequest],
+                    ~.Object]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'restore_object' not in self._stubs:
+            self._stubs['restore_object'] = self.grpc_channel.unary_unary(
+                '/google.storage.v2.Storage/RestoreObject',
+                request_serializer=storage.RestoreObjectRequest.serialize,
+                response_deserializer=storage.Object.deserialize,
+            )
+        return self._stubs['restore_object']
+
+    @property
     def cancel_resumable_write(self) -> Callable[
             [storage.CancelResumableWriteRequest],
             storage.CancelResumableWriteResponse]:
         r"""Return a callable for the cancel resumable write method over gRPC.
 
         Cancels an in-progress resumable upload.
+
         Any attempts to write to the resumable upload after
         cancelling the upload will fail.
 

@@ -39,10 +39,48 @@ class OsloginV1beta(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.users_projects_locations = self.UsersProjectsLocationsService(self)
     self.users_projects_zones = self.UsersProjectsZonesService(self)
     self.users_projects = self.UsersProjectsService(self)
     self.users_sshPublicKeys = self.UsersSshPublicKeysService(self)
     self.users = self.UsersService(self)
+
+  class UsersProjectsLocationsService(base_api.BaseApiService):
+    """Service class for the users_projects_locations resource."""
+
+    _NAME = 'users_projects_locations'
+
+    def __init__(self, client):
+      super(OsloginV1beta.UsersProjectsLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def SignSshPublicKey(self, request, global_params=None):
+      r"""Signs an SSH public key for a user to authenticate to an instance.
+
+      Args:
+        request: (OsloginUsersProjectsLocationsSignSshPublicKeyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SignSshPublicKeyResponse) The response message.
+      """
+      config = self.GetMethodConfig('SignSshPublicKey')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SignSshPublicKey.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta/users/{usersId}/projects/{projectsId}/locations/{locationsId}:signSshPublicKey',
+        http_method='POST',
+        method_id='oslogin.users.projects.locations.signSshPublicKey',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta/{+parent}:signSshPublicKey',
+        request_field='signSshPublicKeyRequest',
+        request_type_name='OsloginUsersProjectsLocationsSignSshPublicKeyRequest',
+        response_type_name='SignSshPublicKeyResponse',
+        supports_download=False,
+    )
 
   class UsersProjectsZonesService(base_api.BaseApiService):
     """Service class for the users_projects_zones resource."""

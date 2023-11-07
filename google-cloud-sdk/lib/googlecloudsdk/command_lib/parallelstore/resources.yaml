@@ -48,3 +48,15 @@ instance:
     attribute_name: instance
     help: instances TBD
   disable_auto_completers: false
+operation:
+  name: operation
+  plural_name: operations
+  collection: parallelstore.projects.locations.operations
+  attributes:
+  - *project
+  - *location
+  - &operation
+    parameter_name: operationsId
+    attribute_name: operation
+    help: operations TBD
+  disable_auto_completers: false

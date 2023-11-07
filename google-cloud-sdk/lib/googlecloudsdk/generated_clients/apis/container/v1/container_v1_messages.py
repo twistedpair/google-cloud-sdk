@@ -145,6 +145,7 @@ class AdvancedDatapathObservabilityConfig(_messages.Message):
 
   Fields:
     enableMetrics: Expose flow metrics on nodes
+    enableRelay: Enable Relay component
     relayMode: Method used to make Relay available
   """
 
@@ -163,7 +164,8 @@ class AdvancedDatapathObservabilityConfig(_messages.Message):
     EXTERNAL_LB = 3
 
   enableMetrics = _messages.BooleanField(1)
-  relayMode = _messages.EnumField('RelayModeValueValuesEnum', 2)
+  enableRelay = _messages.BooleanField(2)
+  relayMode = _messages.EnumField('RelayModeValueValuesEnum', 3)
 
 
 class AdvancedMachineFeatures(_messages.Message):
@@ -296,8 +298,7 @@ class AutopilotCompatibilityIssue(_messages.Message):
 
 
 class AutopilotConversionStatus(_messages.Message):
-  r"""AutopilotConversionStatus is the status of conversion between Autopilot
-  and standard.
+  r"""AutopilotConversionStatus represents conversion status.
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the conversion.
@@ -1207,6 +1208,7 @@ class ClusterUpdate(_messages.Message):
       resource usage.
     desiredRuntimeVulnerabilityInsightConfig: Enable/Disable RVI features for
       the cluster.
+    desiredSecretManagerConfig: Enable/Disable Secret Manager Config.
     desiredSecurityPostureConfig: Enable/Disable Security Posture API features
       for the cluster.
     desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
@@ -1346,15 +1348,16 @@ class ClusterUpdate(_messages.Message):
   desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 50)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 51)
   desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 52)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 53)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 54)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 55)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 56)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 57)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 58)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 59)
-  etag = _messages.StringField(60)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 61)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 53)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 54)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 55)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 56)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 57)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 58)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 59)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 60)
+  etag = _messages.StringField(61)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 62)
 
 
 class CompleteConvertToAutopilotRequest(_messages.Message):
@@ -3360,6 +3363,8 @@ class MonitoringComponentConfig(_messages.Message):
       DAEMONSET: DaemonSet
       DEPLOYMENT: Deployment
       STATEFULSET: Statefulset
+      CADVISOR: CADVISOR
+      KUBELET: KUBELET
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -3373,6 +3378,8 @@ class MonitoringComponentConfig(_messages.Message):
     DAEMONSET = 9
     DEPLOYMENT = 10
     STATEFULSET = 11
+    CADVISOR = 12
+    KUBELET = 13
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 

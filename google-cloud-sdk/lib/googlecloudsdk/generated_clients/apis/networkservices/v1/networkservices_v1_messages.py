@@ -183,11 +183,11 @@ class CDNPolicy(_messages.Message):
       `0` (where `0` is "always revalidate") and <= `86400s` (1 day) You can
       set only the following status codes: - HTTP redirection (`300`, `301`,
       `302`, `307`, or `308`) - Client error (`400`, `403`, `404`, `405`,
-      `410`, or `451`) - Server error (`500`, `501`, `502`, `503`, or `504`)
-      When you specify an explicit `negative_caching_policy`, ensure that you
-      also specify a cache TTL for all response codes that you wish to cache.
-      The CDNPolicy doesn't apply any default negative caching when a policy
-      exists.
+      `410`, `421`, or `451`) - Server error (`500`, `501`, `502`, `503`, or
+      `504`) When you specify an explicit `negative_caching_policy`, ensure
+      that you also specify a cache TTL for all response codes that you wish
+      to cache. The CDNPolicy doesn't apply any default negative caching when
+      a policy exists.
 
   Fields:
     addSignatures: Optional. Enables signature generation or propagation on
@@ -247,11 +247,11 @@ class CDNPolicy(_messages.Message):
       `0` (where `0` is "always revalidate") and <= `86400s` (1 day) You can
       set only the following status codes: - HTTP redirection (`300`, `301`,
       `302`, `307`, or `308`) - Client error (`400`, `403`, `404`, `405`,
-      `410`, or `451`) - Server error (`500`, `501`, `502`, `503`, or `504`)
-      When you specify an explicit `negative_caching_policy`, ensure that you
-      also specify a cache TTL for all response codes that you wish to cache.
-      The CDNPolicy doesn't apply any default negative caching when a policy
-      exists.
+      `410`, `421`, or `451`) - Server error (`500`, `501`, `502`, `503`, or
+      `504`) When you specify an explicit `negative_caching_policy`, ensure
+      that you also specify a cache TTL for all response codes that you wish
+      to cache. The CDNPolicy doesn't apply any default negative caching when
+      a policy exists.
     signedRequestKeyset: Optional. The EdgeCacheKeyset containing the set of
       public keys used to validate signed requests at the edge. The following
       are both valid paths to an `EdgeCacheKeyset` resource: *
@@ -353,8 +353,8 @@ class CDNPolicy(_messages.Message):
     defined in `negative_caching`. - TTLs must be >= `0` (where `0` is "always
     revalidate") and <= `86400s` (1 day) You can set only the following status
     codes: - HTTP redirection (`300`, `301`, `302`, `307`, or `308`) - Client
-    error (`400`, `403`, `404`, `405`, `410`, or `451`) - Server error (`500`,
-    `501`, `502`, `503`, or `504`) When you specify an explicit
+    error (`400`, `403`, `404`, `405`, `410`, `421`, or `451`) - Server error
+    (`500`, `501`, `502`, `503`, or `504`) When you specify an explicit
     `negative_caching_policy`, ensure that you also specify a cache TTL for
     all response codes that you wish to cache. The CDNPolicy doesn't apply any
     default negative caching when a policy exists.
@@ -605,6 +605,34 @@ class CORSPolicy(_messages.Message):
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class Connection(_messages.Message):
+  r"""VPC connectivity information.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Required. VPC connection type.
+
+  Fields:
+    connectionType: Required. VPC connection type.
+    nccHub: Required. Reference to a [NCC](https://cloud.google.com/network-
+      connectivity-center) hub. References should have the following format:
+      `projects/{project}/locations/global/hubs/{hub}`.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. VPC connection type.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Unspecified connection type.
+      NCC: Connected by [NCC](https://cloud.google.com/network-connectivity-
+        center).
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    NCC = 1
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+  nccHub = _messages.StringField(2)
 
 
 class EdgeCacheKeyset(_messages.Message):
@@ -1734,7 +1762,8 @@ class HeaderMatch(_messages.Message):
     exactMatch: Optional. The value of the header must exactly match contents
       of `exact_match`. Only one of `exact_match`, prefix_match, suffix_match,
       or present_match must be set.
-    headerName: Required. The header name to match on.
+    headerName: Required. The header name to match on. The `:method` pseudo-
+      header may be used to match on the request HTTP method.
     invertMatch: Optional. If set to `false`, HeaderMatch is considered a
       match when the match criteria above are met. If set to `true`,
       `HeaderMatch` is considered a match when the match criteria above are
@@ -2573,6 +2602,22 @@ class ListMulticastDomainsResponse(_messages.Message):
   unreachable = _messages.StringField(3, repeated=True)
 
 
+class ListMulticastGroupConsumerActivationsResponse(_messages.Message):
+  r"""Message for response to listing MulticastGroupConsumerActivations
+
+  Fields:
+    multicastGroupConsumerActivations: The list of
+      MulticastGroupConsumerActivation
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  multicastGroupConsumerActivations = _messages.MessageField('MulticastGroupConsumerActivation', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListMulticastGroupDefinitionsResponse(_messages.Message):
   r"""Message for response to listing MulticastGroupDefinitions
 
@@ -2958,18 +3003,23 @@ class MulticastDomain(_messages.Message):
   r"""Message describing MulticastDomain object
 
   Messages:
-    LabelsValue: Labels as key value pairs
+    LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
-    labels: Labels as key value pairs
-    name: name of resource
-    updateTime: Output only. [Output only] Update time stamp
+    connection: Required. VPC connectivity type for this domain.
+    createTime: Output only. [Output only] Create time stamp.
+    description: Optional. Optional text description of the resource.
+    labels: Optional. Labels as key value pairs.
+    name: Name of the resource.
+    network: Required. URI of the multicast producer VPC network. The URI must
+      be in the following format:
+      `projects/{project}/global/networks/{network}`.
+    updateTime: Output only. [Output only] Update time stamp.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
-    r"""Labels as key value pairs
+    r"""Optional. Labels as key value pairs.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -2991,10 +3041,13 @@ class MulticastDomain(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  connection = _messages.MessageField('Connection', 1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class MulticastDomainActivation(_messages.Message):
@@ -3093,6 +3146,55 @@ class MulticastGroup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class MulticastGroupConsumerActivation(_messages.Message):
+  r"""Message describing MulticastGroupConsumerActivation object
+
+  Messages:
+    LabelsValue: Optional. Labels as key value pairs
+
+  Fields:
+    createTime: Output only. [Output only] Create time stamp
+    labels: Optional. Labels as key value pairs
+    multicastConsumerAssociation: Required. Reference to the domain
+      association in the same zone as the group activation.
+    multicastGroup: Required. Reference to the multicast group activated by
+      the producer in the same zone.
+    name: Identifier. name of resource
+    updateTime: Output only. [Output only] Update time stamp
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Labels as key value pairs
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  labels = _messages.MessageField('LabelsValue', 2)
+  multicastConsumerAssociation = _messages.StringField(3)
+  multicastGroup = _messages.StringField(4)
+  name = _messages.StringField(5)
+  updateTime = _messages.StringField(6)
 
 
 class MulticastGroupDefinition(_messages.Message):
@@ -4489,7 +4591,7 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
   Fields:
     multicastDomain: A MulticastDomain resource to be passed as the request
       body.
-    name: name of resource
+    name: Name of the resource.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -4509,6 +4611,128 @@ class NetworkservicesProjectsLocationsMulticastDomainsPatchRequest(_messages.Mes
   """
 
   multicastDomain = _messages.MessageField('MulticastDomain', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsCreat
+  eRequest object.
+
+  Fields:
+    multicastGroupConsumerActivation: A MulticastGroupConsumerActivation
+      resource to be passed as the request body.
+    multicastGroupConsumerActivationId: Required. Id of the requesting object
+      If auto-generating Id server-side, remove this field and
+      multicast_group_consumer_activation_id from the method_signature of
+      Create RPC
+    parent: Required. Value for parent.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  multicastGroupConsumerActivation = _messages.MessageField('MulticastGroupConsumerActivation', 1)
+  multicastGroupConsumerActivationId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsDelet
+  eRequest object.
+
+  Fields:
+    name: Required. Name of the resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsGetRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsGetRequest
+  object.
+
+  Fields:
+    name: Required. Name of the resource
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsListRequest(_messages.Message):
+  r"""A
+  NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Parent value for
+      ListMulticastGroupConsumerActivationsRequest
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsMulticastGroupConsumerActivationsPatch
+  Request object.
+
+  Fields:
+    multicastGroupConsumerActivation: A MulticastGroupConsumerActivation
+      resource to be passed as the request body.
+    name: Identifier. name of resource
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Field mask is used to specify the fields to be
+      overwritten in the MulticastGroupConsumerActivation resource by the
+      update. The fields specified in the update_mask are relative to the
+      resource, not the full request. A field will be overwritten if it is in
+      the mask. If the user does not provide a mask then all fields will be
+      overwritten.
+  """
+
+  multicastGroupConsumerActivation = _messages.MessageField('MulticastGroupConsumerActivation', 1)
   name = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
@@ -5184,9 +5408,12 @@ class NetworkservicesProjectsLocationsWasmPluginsPatchRequest(_messages.Message)
       `projects/{project}/locations/{location}/wasmPlugins/{wasm_plugin}`.
     updateMask: Optional. Used to specify the fields to be overwritten in the
       `WasmPlugin` resource by the update. The fields specified in the
-      update_mask are relative to the resource, not the full request. A field
-      is overwritten if it is in the mask. If you don't specify a mask, then
-      all fields are overwritten.
+      `update_mask` field are relative to the resource, not the full request.
+      An omitted `update_mask` field is treated as an implied `update_mask`
+      field equivalent to all fields that are populated (that have a non-empty
+      value). The `update_mask` field supports a special value `*`, which
+      means that each field in the given `WasmPlugin` resource (including the
+      empty ones) replaces the current value.
     wasmPlugin: A WasmPlugin resource to be passed as the request body.
   """
 

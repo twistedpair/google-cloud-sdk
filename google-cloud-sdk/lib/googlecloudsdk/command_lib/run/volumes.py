@@ -194,24 +194,28 @@ class _InMemoryVolume(_VolumeType):
 
   @classmethod
   def required_fields(cls):
+    return {}
+
+  @classmethod
+  def optional_fields(cls):
     return {
         'size-limit': (
             'A quantity representing the maximum amount of memory allocated to'
             ' this volume, such as "512Mi" or "3G". Data stored in an in-memory'
             ' volume consumes the memory allocation of the container that wrote'
-            ' the data.'
+            ' the data. If size-limit is not specified, the maximum size will'
+            ' be half the total memory limit of all containers.'
         )
     }
 
   @classmethod
-  def optional_fields(cls):
-    return {}
-
-  @classmethod
   def fill_volume(cls, volume, new_vol, messages):
-    src = messages.EmptyDirVolumeSource(
-        medium='Memory', sizeLimit=volume['size-limit']
-    )
+    if 'size-limit' in volume:
+      src = messages.EmptyDirVolumeSource(
+          medium='Memory', sizeLimit=volume['size-limit']
+      )
+    else:
+      src = messages.EmptyDirVolumeSource(medium='Memory')
     new_vol.emptyDir = src
 
 

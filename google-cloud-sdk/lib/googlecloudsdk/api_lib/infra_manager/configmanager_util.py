@@ -358,3 +358,25 @@ def UnlockDeployment(
           name=deployment_full_name,
       )
   )
+
+
+def ListRevisions(deployment_full_name):
+  """Lists all revisions for a deployment.
+
+  Args:
+    deployment_full_name: the fully qualified name of the deployment, e.g.
+      "projects/p/locations/l/deployments/d".
+
+  Returns:
+    (ListRevisionsResponse) The response message.
+
+  Raises:
+    HttpNotFoundError: if the deployment doesn't exist.
+  """
+  client = GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  return client.projects_locations_deployments_revisions.List(
+      messages.ConfigProjectsLocationsDeploymentsRevisionsListRequest(
+          parent=deployment_full_name
+      )
+  )

@@ -330,7 +330,7 @@ class IamV3beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List method for the folders_locations_policyBindings service.
+      r"""Lists policy bindings.
 
       Args:
         request: (IamFoldersLocationsPolicyBindingsListRequest) input message
@@ -731,7 +731,7 @@ class IamV3beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List method for the organizations_locations_policyBindings service.
+      r"""Lists policy bindings.
 
       Args:
         request: (IamOrganizationsLocationsPolicyBindingsListRequest) input message
@@ -1277,7 +1277,7 @@ class IamV3beta(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""List method for the projects_locations_policyBindings service.
+      r"""Lists policy bindings.
 
       Args:
         request: (IamProjectsLocationsPolicyBindingsListRequest) input message

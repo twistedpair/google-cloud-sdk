@@ -229,6 +229,22 @@ class Category(_messages.Message):
   usageType = _messages.StringField(4)
 
 
+class CloudbillingBillingAccountsCreateRequest(_messages.Message):
+  r"""A CloudbillingBillingAccountsCreateRequest object.
+
+  Fields:
+    billingAccount: A BillingAccount resource to be passed as the request
+      body.
+    parent: Optional. The parent to create a billing account from. Format: -
+      organizations/{organization_id} eg organizations/12345678 -
+      billingAccounts/{billing_account_id} eg
+      `billingAccounts/012345-567890-ABCDEF`
+  """
+
+  billingAccount = _messages.MessageField('BillingAccount', 1)
+  parent = _messages.StringField(2)
+
+
 class CloudbillingBillingAccountsGetIamPolicyRequest(_messages.Message):
   r"""A CloudbillingBillingAccountsGetIamPolicyRequest object.
 
@@ -281,11 +297,32 @@ class CloudbillingBillingAccountsListRequest(_messages.Message):
     pageToken: A token identifying a page of results to return. This should be
       a `next_page_token` value returned from a previous `ListBillingAccounts`
       call. If unspecified, the first page of results is returned.
+    parent: Optional. The parent resource to list billing accounts from.
+      Format: - organizations/{organization_id} eg organizations/12345678 -
+      billingAccounts/{billing_account_id} eg
+      `billingAccounts/012345-567890-ABCDEF`
   """
 
   filter = _messages.StringField(1)
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+
+
+class CloudbillingBillingAccountsMoveRequest(_messages.Message):
+  r"""A CloudbillingBillingAccountsMoveRequest object.
+
+  Fields:
+    moveBillingAccountRequest: A MoveBillingAccountRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the billing account to move. Must be
+      of the form `billingAccounts/{billing_account_id}`. The specified
+      billing account cannot be a subaccount, since a subaccount always
+      belongs to the same organization as its parent account.
+  """
+
+  moveBillingAccountRequest = _messages.MessageField('MoveBillingAccountRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudbillingBillingAccountsPatchRequest(_messages.Message):
@@ -340,6 +377,49 @@ class CloudbillingBillingAccountsSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
+class CloudbillingBillingAccountsSubAccountsCreateRequest(_messages.Message):
+  r"""A CloudbillingBillingAccountsSubAccountsCreateRequest object.
+
+  Fields:
+    billingAccount: A BillingAccount resource to be passed as the request
+      body.
+    parent: Optional. The parent to create a billing account from. Format: -
+      organizations/{organization_id} eg organizations/12345678 -
+      billingAccounts/{billing_account_id} eg
+      `billingAccounts/012345-567890-ABCDEF`
+  """
+
+  billingAccount = _messages.MessageField('BillingAccount', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudbillingBillingAccountsSubAccountsListRequest(_messages.Message):
+  r"""A CloudbillingBillingAccountsSubAccountsListRequest object.
+
+  Fields:
+    filter: Options for how to filter the returned billing accounts. This only
+      supports filtering for
+      [subaccounts](https://cloud.google.com/billing/docs/concepts) under a
+      single provided parent billing account. (e.g.
+      "master_billing_account=billingAccounts/012345-678901-ABCDEF"). Boolean
+      algebra and other fields are not currently supported.
+    pageSize: Requested page size. The maximum page size is 100; this is also
+      the default.
+    pageToken: A token identifying a page of results to return. This should be
+      a `next_page_token` value returned from a previous `ListBillingAccounts`
+      call. If unspecified, the first page of results is returned.
+    parent: Optional. The parent resource to list billing accounts from.
+      Format: - organizations/{organization_id} eg organizations/12345678 -
+      billingAccounts/{billing_account_id} eg
+      `billingAccounts/012345-567890-ABCDEF`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class CloudbillingBillingAccountsTestIamPermissionsRequest(_messages.Message):
   r"""A CloudbillingBillingAccountsTestIamPermissionsRequest object.
 
@@ -354,6 +434,66 @@ class CloudbillingBillingAccountsTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class CloudbillingOrganizationsBillingAccountsCreateRequest(_messages.Message):
+  r"""A CloudbillingOrganizationsBillingAccountsCreateRequest object.
+
+  Fields:
+    billingAccount: A BillingAccount resource to be passed as the request
+      body.
+    parent: Optional. The parent to create a billing account from. Format: -
+      organizations/{organization_id} eg organizations/12345678 -
+      billingAccounts/{billing_account_id} eg
+      `billingAccounts/012345-567890-ABCDEF`
+  """
+
+  billingAccount = _messages.MessageField('BillingAccount', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class CloudbillingOrganizationsBillingAccountsListRequest(_messages.Message):
+  r"""A CloudbillingOrganizationsBillingAccountsListRequest object.
+
+  Fields:
+    filter: Options for how to filter the returned billing accounts. This only
+      supports filtering for
+      [subaccounts](https://cloud.google.com/billing/docs/concepts) under a
+      single provided parent billing account. (e.g.
+      "master_billing_account=billingAccounts/012345-678901-ABCDEF"). Boolean
+      algebra and other fields are not currently supported.
+    pageSize: Requested page size. The maximum page size is 100; this is also
+      the default.
+    pageToken: A token identifying a page of results to return. This should be
+      a `next_page_token` value returned from a previous `ListBillingAccounts`
+      call. If unspecified, the first page of results is returned.
+    parent: Optional. The parent resource to list billing accounts from.
+      Format: - organizations/{organization_id} eg organizations/12345678 -
+      billingAccounts/{billing_account_id} eg
+      `billingAccounts/012345-567890-ABCDEF`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class CloudbillingOrganizationsBillingAccountsMoveRequest(_messages.Message):
+  r"""A CloudbillingOrganizationsBillingAccountsMoveRequest object.
+
+  Fields:
+    destinationParent: Required. The resource name of the Organization to
+      reparent the billing account under. Must be of the form
+      `organizations/{organization_id}`.
+    name: Required. The resource name of the billing account to move. Must be
+      of the form `billingAccounts/{billing_account_id}`. The specified
+      billing account cannot be a subaccount, since a subaccount always
+      belongs to the same organization as its parent account.
+  """
+
+  destinationParent = _messages.StringField(1, required=True)
+  name = _messages.StringField(2, required=True)
 
 
 class CloudbillingProjectsGetBillingInfoRequest(_messages.Message):
@@ -579,6 +719,18 @@ class Money(_messages.Message):
   currencyCode = _messages.StringField(1)
   nanos = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   units = _messages.IntegerField(3)
+
+
+class MoveBillingAccountRequest(_messages.Message):
+  r"""Request message for `MoveBillingAccount` RPC.
+
+  Fields:
+    destinationParent: Required. The resource name of the Organization to
+      reparent the billing account under. Must be of the form
+      `organizations/{organization_id}`.
+  """
+
+  destinationParent = _messages.StringField(1)
 
 
 class Policy(_messages.Message):

@@ -201,6 +201,37 @@ class AuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
+class BinaryAuthorizationConfig(_messages.Message):
+  r"""BinaryAuthorizationConfig defines the fleet level configuration of
+  binary authorization feature.
+
+  Enums:
+    EvaluationModeValueValuesEnum: Optional. Mode of operation for binauthz
+      policy evaluation.
+
+  Fields:
+    evaluationMode: Optional. Mode of operation for binauthz policy
+      evaluation.
+    policyBindings: Optional. Binauthz policies that apply to this cluster.
+  """
+
+  class EvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Mode of operation for binauthz policy evaluation.
+
+    Values:
+      EVALUATION_MODE_UNSPECIFIED: Default value
+      DISABLED: Disable BinaryAuthorization
+      POLICY_BINDINGS: Use Binary Authorization with the policies specified in
+        policy_bindings.
+    """
+    EVALUATION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    POLICY_BINDINGS = 2
+
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 1)
+  policyBindings = _messages.MessageField('PolicyBinding', 2, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -340,13 +371,15 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
     configmanagement: Config Management-specific spec.
     helloworld: Hello World-specific spec.
     identityservice: Identity Service-specific spec.
+    mesh: Anthos Service Mesh-specific spec
     policycontroller: Policy Controller spec.
   """
 
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
   helloworld = _messages.MessageField('HelloWorldMembershipSpec', 2)
   identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 3)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 4)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 4)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 5)
 
 
 class Condition(_messages.Message):
@@ -1386,6 +1419,21 @@ class DataAccessOptions(_messages.Message):
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
+class DefaultClusterConfig(_messages.Message):
+  r"""DefaultClusterConfig describes the default cluster configurations to be
+  applied to all clusters born-in-fleet.
+
+  Fields:
+    binaryAuthorizationConfig: Enable/Disable binary authorization features
+      for the cluster.
+    securityPostureConfig: Enable/Disable Security Posture features for the
+      cluster.
+  """
+
+  binaryAuthorizationConfig = _messages.MessageField('BinaryAuthorizationConfig', 1)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 2)
+
+
 class DeleteReferenceRequest(_messages.Message):
   r"""The DeleteReferenceRequest request.
 
@@ -1810,6 +1858,8 @@ class Fleet(_messages.Message):
 
   Fields:
     createTime: Output only. When the Fleet was created.
+    defaultClusterConfig: The default cluster configurations to apply across
+      the fleet.
     deleteTime: Output only. When the Fleet was deleted.
     displayName: Optional. A user-assigned display name of the Fleet. When
       present, it must be between 4 to 30 characters. Allowed characters are:
@@ -1852,13 +1902,14 @@ class Fleet(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.MessageField('FleetLifecycleState', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  defaultClusterConfig = _messages.MessageField('DefaultClusterConfig', 2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  state = _messages.MessageField('FleetLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class FleetLifecycleState(_messages.Message):
@@ -3442,28 +3493,7 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
-class HelloWorldFeatureSpec(_messages.Message):
-  r"""**Hello World**: The Hub-wide input for the HelloWorld feature.
-
-  Fields:
-    customConfig: Custom config for the HelloWorld controller codelab. This
-      should be a textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
-      testing.
-  """
-
-  customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
-
-
-class HelloWorldFeatureState(_messages.Message):
-  r"""**Hello World**: An empty state left as an example Hub-wide Feature
-  state.
-  """
-
-
-
-class HelloWorldFeatureTest(_messages.Message):
+class HelloWorldFeatureSample(_messages.Message):
   r"""Represents message used in feature e2e create/mutate testing.
 
   Enums:
@@ -3557,6 +3587,27 @@ class HelloWorldFeatureTest(_messages.Message):
   third = _messages.EnumField('ThirdValueValuesEnum', 9)
 
 
+class HelloWorldFeatureSpec(_messages.Message):
+  r"""**Hello World**: The Hub-wide input for the HelloWorld feature.
+
+  Fields:
+    customConfig: Custom config for the HelloWorld controller codelab. This
+      should be a textpb string.
+    featureSample: Message to hold fields to use in feature e2e create/mutate
+      testing.
+  """
+
+  customConfig = _messages.StringField(1)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
+
+
+class HelloWorldFeatureState(_messages.Message):
+  r"""**Hello World**: An empty state left as an example Hub-wide Feature
+  state.
+  """
+
+
+
 class HelloWorldFooBar(_messages.Message):
   r"""Nested Message.
 
@@ -3575,12 +3626,12 @@ class HelloWorldMembershipSpec(_messages.Message):
   Fields:
     customConfig: Custom config for individual memberships. This should be a
       textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
+    featureSample: Message to hold fields to use in feature e2e create/mutate
       testing.
   """
 
   customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
 
 
 class HelloWorldMembershipState(_messages.Message):
@@ -3596,12 +3647,12 @@ class HelloWorldScopeSpec(_messages.Message):
   Fields:
     customConfig: Custom config for individual memberships. This should be a
       textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
+    featureSample: Message to hold fields to use in feature e2e create/mutate
       testing.
   """
 
   customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
 
 
 class HelloWorldScopeState(_messages.Message):
@@ -4528,9 +4579,6 @@ class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains information needed to contact a Kubernetes
   API, endpoint and any additional Kubernetes metadata.
 
-  Enums:
-    ModeValueValuesEnum: Immutable. The management mode of this membership.
-
   Fields:
     applianceCluster: Optional. Specific information for a GDC Edge Appliance
       cluster.
@@ -4545,7 +4593,6 @@ class MembershipEndpoint(_messages.Message):
       registered to one and only one Hub Membership. * Propagate Workload Pool
       Information available in the Membership Authority field. * Ensure proper
       initial configuration of default Hub Features.
-    mode: Immutable. The management mode of this membership.
     multiCloudCluster: Optional. Specific information for a GKE Multi-Cloud
       cluster.
     onPremCluster: Optional. Specific information for a GKE On-Prem cluster.
@@ -4553,25 +4600,14 @@ class MembershipEndpoint(_messages.Message):
       this field, it should have a nil "type" instead.
   """
 
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The management mode of this membership.
-
-    Values:
-      MODE_UNSPECIFIED: The mode is not set.
-      AUTOFLEET: Membership is being managed in autofleet mode.
-    """
-    MODE_UNSPECIFIED = 0
-    AUTOFLEET = 1
-
   applianceCluster = _messages.MessageField('ApplianceCluster', 1)
   edgeCluster = _messages.MessageField('EdgeCluster', 2)
   gkeCluster = _messages.MessageField('GkeCluster', 3)
   googleManaged = _messages.BooleanField(4)
   kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 5)
   kubernetesResource = _messages.MessageField('KubernetesResource', 6)
-  mode = _messages.EnumField('ModeValueValuesEnum', 7)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 8)
-  onPremCluster = _messages.MessageField('OnPremCluster', 9)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 7)
+  onPremCluster = _messages.MessageField('OnPremCluster', 8)
 
 
 class MembershipFeatureSpec(_messages.Message):
@@ -5205,6 +5241,18 @@ class Policy(_messages.Message):
   etag = _messages.BytesField(3)
   rules = _messages.MessageField('Rule', 4, repeated=True)
   version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+
+
+class PolicyBinding(_messages.Message):
+  r"""Binauthz policy that applies to this cluster.
+
+  Fields:
+    name: The relative resource name of the binauthz platform policy to audit.
+      GKE platform policies have the following format:
+      `projects/{project_number}/platforms/gke/policies/{policy_id}`.
+  """
+
+  name = _messages.StringField(1)
 
 
 class PolicyControllerBundleInstallSpec(_messages.Message):
@@ -6219,6 +6267,55 @@ class ScopeLifecycleState(_messages.Message):
     UPDATING = 4
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
+class SecurityPostureConfig(_messages.Message):
+  r"""SecurityPostureConfig defines the flags needed to enable/disable
+  features for the Security Posture API.
+
+  Enums:
+    ModeValueValuesEnum: Sets which mode to use for Security Posture features.
+    VulnerabilityModeValueValuesEnum: Sets which mode to use for vulnerability
+      scanning.
+
+  Fields:
+    mode: Sets which mode to use for Security Posture features.
+    vulnerabilityMode: Sets which mode to use for vulnerability scanning.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for Security Posture features.
+
+    Values:
+      MODE_UNSPECIFIED: Default value not specified.
+      DISABLED: Disables Security Posture features on the cluster.
+      BASIC: Applies Security Posture features on the cluster.
+      ENTERPRISE: Applies the Security Posture off cluster Enterprise level
+        features.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASIC = 2
+    ENTERPRISE = 3
+
+  class VulnerabilityModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for vulnerability scanning.
+
+    Values:
+      VULNERABILITY_MODE_UNSPECIFIED: Default value not specified.
+      VULNERABILITY_DISABLED: Disables vulnerability scanning on the cluster.
+      VULNERABILITY_BASIC: Applies basic vulnerability scanning on the
+        cluster.
+      VULNERABILITY_ENTERPRISE: Applies the Security Posture's vulnerability
+        on cluster Enterprise level features.
+    """
+    VULNERABILITY_MODE_UNSPECIFIED = 0
+    VULNERABILITY_DISABLED = 1
+    VULNERABILITY_BASIC = 2
+    VULNERABILITY_ENTERPRISE = 3
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  vulnerabilityMode = _messages.EnumField('VulnerabilityModeValueValuesEnum', 2)
 
 
 class ServiceMeshControlPlaneManagement(_messages.Message):

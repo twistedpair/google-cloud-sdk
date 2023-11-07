@@ -181,6 +181,20 @@ class Empty(_messages.Message):
 
 
 
+class Entry(_messages.Message):
+  r"""A single replacement configuration.
+
+  Fields:
+    caseSensitive: Whether the search is case sensitive.
+    replace: What to replace with. Max length is 100 characters.
+    search: What to replace. Max length is 100 characters.
+  """
+
+  caseSensitive = _messages.BooleanField(1)
+  replace = _messages.StringField(2)
+  search = _messages.StringField(3)
+
+
 class ListCustomClassesResponse(_messages.Message):
   r"""Message returned to the client by the `ListCustomClasses` method.
 
@@ -689,6 +703,10 @@ class RecognitionConfig(_messages.Message):
     speechContexts: Array of SpeechContext. A means to provide context to
       assist the speech recognition. For more information, see [speech
       adaptation](https://cloud.google.com/speech-to-text/docs/adaptation).
+    transcriptNormalization: Optional. Use transcription normalization to
+      automatically replace parts of the transcript with phrases of your
+      choosing. For StreamingRecognize, this normalization only applies to
+      stable partial transcripts (stability > 0.8) and final transcripts.
     useEnhanced: Set to true to use an enhanced model for speech recognition.
       If `use_enhanced` is set to true and the `model` field is not set, then
       an appropriate enhanced model is chosen if an enhanced model exists for
@@ -732,6 +750,10 @@ class RecognitionConfig(_messages.Message):
         as specified in RFC 5574. In other words, each RTP header is replaced
         with a single byte containing the block length. Only Speex wideband is
         supported. `sample_rate_hertz` must be 16000.
+      MP3: MP3 audio. MP3 encoding is a Beta feature and only available in
+        v1p1beta1. Support all standard MP3 bitrates (which range from 32-320
+        kbps). When using this encoding, `sample_rate_hertz` has to match the
+        sample rate of the file being used.
       WEBM_OPUS: Opus encoded audio frames in WebM container
         ([OggOpus](https://wiki.xiph.org/OggOpus)). `sample_rate_hertz` must
         be one of 8000, 12000, 16000, 24000, or 48000.
@@ -744,7 +766,8 @@ class RecognitionConfig(_messages.Message):
     AMR_WB = 5
     OGG_OPUS = 6
     SPEEX_WITH_HEADER_BYTE = 7
-    WEBM_OPUS = 8
+    MP3 = 8
+    WEBM_OPUS = 9
 
   adaptation = _messages.MessageField('SpeechAdaptation', 1)
   alternativeLanguageCodes = _messages.StringField(2, repeated=True)
@@ -764,7 +787,8 @@ class RecognitionConfig(_messages.Message):
   profanityFilter = _messages.BooleanField(16)
   sampleRateHertz = _messages.IntegerField(17, variant=_messages.Variant.INT32)
   speechContexts = _messages.MessageField('SpeechContext', 18, repeated=True)
-  useEnhanced = _messages.BooleanField(19)
+  transcriptNormalization = _messages.MessageField('TranscriptNormalization', 19)
+  useEnhanced = _messages.BooleanField(20)
 
 
 class RecognitionMetadata(_messages.Message):
@@ -1383,6 +1407,22 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class TranscriptNormalization(_messages.Message):
+  r"""Transcription normalization configuration. Use transcription
+  normalization to automatically replace parts of the transcript with phrases
+  of your choosing. For StreamingRecognize, this normalization only applies to
+  stable partial transcripts (stability > 0.8) and final transcripts.
+
+  Fields:
+    entries: A list of replacement entries. We will perform replacement with
+      one entry at a time. For example, the second entry in ["cat" => "dog",
+      "mountain cat" => "mountain dog"] will never be applied because we will
+      always process the first entry before it. At most 100 entries.
+  """
+
+  entries = _messages.MessageField('Entry', 1, repeated=True)
 
 
 class TranscriptOutputConfig(_messages.Message):

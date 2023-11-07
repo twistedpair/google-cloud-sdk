@@ -242,21 +242,24 @@ def CreateOnHostMaintenanceMessage(messages, maintenance_policy):
   return on_host_maintenance
 
 
-def CreateSchedulingMessage(messages,
-                            maintenance_policy,
-                            preemptible,
-                            restart_on_failure,
-                            node_affinities=None,
-                            min_node_cpu=None,
-                            location_hint=None,
-                            maintenance_freeze_duration=None,
-                            maintenance_interval=None,
-                            provisioning_model=None,
-                            instance_termination_action=None,
-                            host_error_timeout_seconds=None,
-                            max_run_duration=None,
-                            termination_time=None,
-                            local_ssd_recovery_timeout=None):
+def CreateSchedulingMessage(
+    messages,
+    maintenance_policy,
+    preemptible,
+    restart_on_failure,
+    node_affinities=None,
+    min_node_cpu=None,
+    location_hint=None,
+    maintenance_freeze_duration=None,
+    maintenance_interval=None,
+    provisioning_model=None,
+    instance_termination_action=None,
+    host_error_timeout_seconds=None,
+    max_run_duration=None,
+    termination_time=None,
+    local_ssd_recovery_timeout=None,
+    availability_domain=None,
+):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
   # makes sense, since no-restart-on-failure is defined as "store-true", and
@@ -317,6 +320,10 @@ def CreateSchedulingMessage(messages,
 
   if host_error_timeout_seconds:
     scheduling.hostErrorTimeoutSeconds = host_error_timeout_seconds
+
+  if availability_domain:
+    scheduling.availabilityDomain = availability_domain
+
   return scheduling
 
 
@@ -628,6 +635,12 @@ def GetScheduling(args,
   if not skip_defaults or args.IsKnownAndSpecified('restart_on_failure'):
     restart_on_failure = args.restart_on_failure
 
+  availability_domain = None
+  if args.IsKnownAndSpecified('availability_domain') and hasattr(
+      args, 'availability_domain'
+  ):
+    availability_domain = args.availability_domain
+
   if (skip_defaults and not IsAnySpecified(
       args, 'instance_termination_action', 'maintenance_policy', 'preemptible',
       'provisioning_model') and not restart_on_failure and
@@ -651,7 +664,9 @@ def GetScheduling(args,
       host_error_timeout_seconds=host_error_timeout_seconds,
       max_run_duration=max_run_duration,
       termination_time=termination_time,
-      local_ssd_recovery_timeout=local_ssd_recovery_timeout)
+      local_ssd_recovery_timeout=local_ssd_recovery_timeout,
+      availability_domain=availability_domain,
+  )
 
 
 def GetServiceAccounts(args, client, skip_defaults):

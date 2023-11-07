@@ -111,8 +111,34 @@ class AddressGroup(_messages.Message):
   updateTime = _messages.StringField(9)
 
 
+class AttachAppNetworkRequest(_messages.Message):
+  r"""Request used by the AttachAppNetwork method.
+
+  Fields:
+    peerNetwork: Required. URL of the peer network to attach. It can be either
+      full URL or partial URL. The peer network may belong to a different
+      project. If the partial URL does not contain project, it is assumed that
+      the peer network is in the same project as the current network.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  peerNetwork = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class AttachAppVPCRequest(_messages.Message):
-  r"""Request used by the AttachAppVPC method.
+  r"""Request used by the AttachAppVPC method. This request and its RPC are
+  deprecated. Use AttachAppNetwork instead.
 
   Fields:
     peerNetwork: Required. URL of the peer network to attach. It can be either
@@ -346,8 +372,34 @@ class Destination(_messages.Message):
   ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.UINT32)
 
 
+class DetachAppNetworkRequest(_messages.Message):
+  r"""Request used by the DetachAppNetwork method.
+
+  Fields:
+    peerNetwork: Required. URL of the peer network to detach. It can be either
+      full URL or partial URL. The peer network may belong to a different
+      project. If the partial URL does not contain project, it is assumed that
+      the peer network is in the same project as the current network.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  peerNetwork = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class DetachAppVPCRequest(_messages.Message):
-  r"""Request used by the DetachAppVPC method.
+  r"""Request used by the DetachAppVPC method. This request and its RPC are
+  deprecated. Use DetachAppNetwork instead.
 
   Fields:
     peerNetwork: Required. URL of the peer network to detach. It can be either
@@ -3582,6 +3634,22 @@ class NetworksecurityProjectsLocationsSseGatewayReferencesListRequest(_messages.
   parent = _messages.StringField(5, required=True)
 
 
+class NetworksecurityProjectsLocationsSseGatewaysAttachAppNetworkRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewaysAttachAppNetworkRequest
+  object.
+
+  Fields:
+    attachAppNetworkRequest: A AttachAppNetworkRequest resource to be passed
+      as the request body.
+    name: Required. Name of the SSEGateway which will hold the attached
+      network. Must be in the format
+      `projects/*/locations/{location}/sseGateways/*`.
+  """
+
+  attachAppNetworkRequest = _messages.MessageField('AttachAppNetworkRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest object.
 
@@ -3644,6 +3712,21 @@ class NetworksecurityProjectsLocationsSseGatewaysDeleteRequest(_messages.Message
 
   name = _messages.StringField(1, required=True)
   requestId = _messages.StringField(2)
+
+
+class NetworksecurityProjectsLocationsSseGatewaysDetachAppNetworkRequest(_messages.Message):
+  r"""A NetworksecurityProjectsLocationsSseGatewaysDetachAppNetworkRequest
+  object.
+
+  Fields:
+    detachAppNetworkRequest: A DetachAppNetworkRequest resource to be passed
+      as the request body.
+    name: Required. Name of the SSEGateway which holds the detached network.
+      Must be in the format `projects/*/locations/{location}/sseGateways/*`.
+  """
+
+  detachAppNetworkRequest = _messages.MessageField('DetachAppNetworkRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class NetworksecurityProjectsLocationsSseGatewaysDetachAppVpcRequest(_messages.Message):
@@ -4086,15 +4169,23 @@ class PartnerSSEGateway(_messages.Message):
     name: Immutable. name of resource
     partnerSseRealm: Output only. [Output Only] name of PartnerSSERealm owning
       the PartnerSSEGateway
-    partnerVpcSubnetRange: Required. Subnet range of the partner_vpc
+    partnerSubnetRange: Optional. Subnet range of the partner-owned subnet.
+    partnerVpcSubnetRange: Optional. Subnet range of the partner_vpc This
+      field is deprecated. Use partner_subnet_range instead.
     sseBgpAsn: Output only. [Output Only] ASN of SSE BGP
     sseBgpIps: Output only. [Output Only] IP of SSE BGP
     sseGatewayReferenceId: Required. ID of the SSEGatewayReference that pairs
       with this PartnerSSEGateway
-    sseVpcSubnetRange: Output only. [Output Only] Subnet range of the subnet
+    sseSubnetRange: Output only. [Output Only] Subnet range of the subnet
       where partner traffic is routed.
+    sseTargetIp: Output only. [Output Only] Target IP where partner traffic is
+      routed.
+    sseVpcSubnetRange: Output only. [Output Only] Subnet range of the subnet
+      where partner traffic is routed. This field is deprecated. Use
+      sse_subnet_range instead.
     sseVpcTargetIp: Output only. [Output Only] This is the IP where the
-      partner traffic should be routed to.
+      partner traffic should be routed to. This field is deprecated. Use
+      sse_target_ip instead.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -4126,13 +4217,16 @@ class PartnerSSEGateway(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 2)
   name = _messages.StringField(3)
   partnerSseRealm = _messages.StringField(4)
-  partnerVpcSubnetRange = _messages.StringField(5)
-  sseBgpAsn = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  sseBgpIps = _messages.StringField(7, repeated=True)
-  sseGatewayReferenceId = _messages.StringField(8)
-  sseVpcSubnetRange = _messages.StringField(9)
-  sseVpcTargetIp = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  partnerSubnetRange = _messages.StringField(5)
+  partnerVpcSubnetRange = _messages.StringField(6)
+  sseBgpAsn = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  sseBgpIps = _messages.StringField(8, repeated=True)
+  sseGatewayReferenceId = _messages.StringField(9)
+  sseSubnetRange = _messages.StringField(10)
+  sseTargetIp = _messages.StringField(11)
+  sseVpcSubnetRange = _messages.StringField(12)
+  sseVpcTargetIp = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class PartnerSSERealm(_messages.Message):
@@ -4267,30 +4361,56 @@ class SSEGateway(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs
 
   Fields:
+    appFacingNetwork: Output only. [Output only] SSE-owned network which the
+      app network should peer with.
+    appFacingSubnetRange: Optional. Subnet range of the SSE-owned subnet where
+      app traffic is routed. Defaults to "100.64.1.0/24" if unspecified. The
+      CIDR suffix should be less than or equal to 24.
+    appFacingTargetIp: Optional. Target IP where app traffic is routed.
+      Defaults to "100.64.1.253" if unspecified.
+    appNetworks: Optional. List of app networks which are attached to this
+      gateway.
     appTrafficTargetIp: Optional. This is the IP where the app traffic should
-      be routed to. Default value is set to "100.64.1.253".
+      be routed to. Default value is set to "100.64.1.253". This field is
+      deprecated. Use app_facing_target_ip instead.
     appTrafficVpc: Output only. [Output only] This is the name of the VPC the
-      app_vpc should peer with.
+      app_vpc should peer with. This field is deprecated. Use
+      app_facing_network instead.
     appTrafficVpcSubnetRange: Optional. Subnet range of the subnet where app
       traffic is routed. Default value is set to "100.64.1.0/24". User defined
-      subnet range CIDR suffix should be less than or equal to 24.
+      subnet range CIDR suffix should be less than or equal to 24. This field
+      is deprecated. Use app_facing_subnet_range instead.
     appVpc: Optional. name of VPC where the app runs
-    appVpcs: Optional. name of VPCs where the app runs
+    appVpcs: Optional. name of VPCs where the app runs This field is
+      deprecated. Use app_networks instead.
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
     sseProject: Output only. [Output Only] The project owning app_traffic_vpc
       and user_traffic_vpc
     sseRealm: Required. name of SSERealm owning the SSEGateway
+    untrustedFacingNetwork: Output only. [Output only] SSE-owned network which
+      the untrusted network should peer with.
+    untrustedFacingSubnetRange: Optional. Subnet range of the SSE-owned subnet
+      where untrusted traffic is routed. Defaults to "100.64.2.0/24" if
+      unspecified. The CIDR suffix should be less than or equal to 24.
+    untrustedFacingTargetIp: Optional. Target IP where untrusted traffic is
+      routed. Default value is set to "100.64.2.253".
+    untrustedNetwork: Optional. Customer-owned network where untrusted users
+      land.
     updateTime: Output only. [Output only] Update time stamp
     userTrafficTargetIp: Optional. This is the IP where the customer traffic
-      should be routed to. Default value is set to "100.64.2.253".
+      should be routed to. Default value is set to "100.64.2.253". This field
+      is deprecated. Use untrusted_facing_target_ip instead.
     userTrafficVpc: Output only. [Output only] This is the name of the VPC the
-      user_vpc should peer with.
+      user_vpc should peer with. This field is deprecated. Use
+      untrusted_facing_network instead.
     userTrafficVpcSubnetRange: Optional. Subnet range of the subnet where user
       traffic is routed. Default value is set to "100.64.2.0/24". User defined
-      subnet range CIDR suffix should less than or equal to 24.
-    userVpc: Required. name of VPC owned by the customer
+      subnet range CIDR suffix should less than or equal to 24. This field is
+      deprecated. Use untrusted_facing_subnet_range instead.
+    userVpc: Optional. name of VPC owned by the customer This field is
+      deprecated. Use untrusted_network instead.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4317,21 +4437,29 @@ class SSEGateway(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  appTrafficTargetIp = _messages.StringField(1)
-  appTrafficVpc = _messages.StringField(2)
-  appTrafficVpcSubnetRange = _messages.StringField(3)
-  appVpc = _messages.StringField(4)
-  appVpcs = _messages.StringField(5, repeated=True)
-  createTime = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  sseProject = _messages.StringField(9)
-  sseRealm = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
-  userTrafficTargetIp = _messages.StringField(12)
-  userTrafficVpc = _messages.StringField(13)
-  userTrafficVpcSubnetRange = _messages.StringField(14)
-  userVpc = _messages.StringField(15)
+  appFacingNetwork = _messages.StringField(1)
+  appFacingSubnetRange = _messages.StringField(2)
+  appFacingTargetIp = _messages.StringField(3)
+  appNetworks = _messages.StringField(4, repeated=True)
+  appTrafficTargetIp = _messages.StringField(5)
+  appTrafficVpc = _messages.StringField(6)
+  appTrafficVpcSubnetRange = _messages.StringField(7)
+  appVpc = _messages.StringField(8)
+  appVpcs = _messages.StringField(9, repeated=True)
+  createTime = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  name = _messages.StringField(12)
+  sseProject = _messages.StringField(13)
+  sseRealm = _messages.StringField(14)
+  untrustedFacingNetwork = _messages.StringField(15)
+  untrustedFacingSubnetRange = _messages.StringField(16)
+  untrustedFacingTargetIp = _messages.StringField(17)
+  untrustedNetwork = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  userTrafficTargetIp = _messages.StringField(20)
+  userTrafficVpc = _messages.StringField(21)
+  userTrafficVpcSubnetRange = _messages.StringField(22)
+  userVpc = _messages.StringField(23)
 
 
 class SSEGatewayReference(_messages.Message):

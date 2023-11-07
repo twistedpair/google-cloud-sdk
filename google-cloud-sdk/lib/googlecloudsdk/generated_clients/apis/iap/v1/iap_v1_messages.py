@@ -845,7 +845,7 @@ class ReauthSettings(_messages.Message):
   Enums:
     MethodValueValuesEnum: Reauth method requested.
     PolicyTypeValueValuesEnum: How IAP determines the effective policy in
-      cases of hierarchial policies. Policies are merged from higher in the
+      cases of hierarchical policies. Policies are merged from higher in the
       hierarchy to lower in the hierarchy.
 
   Fields:
@@ -853,7 +853,7 @@ class ReauthSettings(_messages.Message):
       reauthenticate again.
     method: Reauth method requested.
     policyType: How IAP determines the effective policy in cases of
-      hierarchial policies. Policies are merged from higher in the hierarchy
+      hierarchical policies. Policies are merged from higher in the hierarchy
       to lower in the hierarchy.
   """
 
@@ -874,7 +874,7 @@ class ReauthSettings(_messages.Message):
     ENROLLED_SECOND_FACTORS = 4
 
   class PolicyTypeValueValuesEnum(_messages.Enum):
-    r"""How IAP determines the effective policy in cases of hierarchial
+    r"""How IAP determines the effective policy in cases of hierarchical
     policies. Policies are merged from higher in the hierarchy to lower in the
     hierarchy.
 

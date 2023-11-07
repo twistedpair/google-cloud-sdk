@@ -723,7 +723,9 @@ class WorkflowsProjectsLocationsWorkflowsListRequest(_messages.Message):
   r"""A WorkflowsProjectsLocationsWorkflowsListRequest object.
 
   Fields:
-    filter: Filter to restrict results to specific workflows.
+    filter: Filter to restrict results to specific workflows. For details, see
+      AIP-160. For example, if you are using the Google APIs Explorer:
+      `state="SUCCEEDED"` or `createTime>"2023-08-01" AND state="FAILED"`
     orderBy: Comma-separated list of fields that specify the order of the
       results. Default sorting order for a field is ascending. To specify
       descending order for a field, append a "desc" suffix. If not specified,

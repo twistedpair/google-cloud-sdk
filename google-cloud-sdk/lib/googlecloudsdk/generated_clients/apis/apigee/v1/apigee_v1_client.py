@@ -1758,7 +1758,7 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates an appGroup. This API replaces the existing appGroup details with those specified in the request. Include or exclude any existing details that you want to retain or delete, respectively. Note that the state of the AppGroup should be updated using `action`, and not via AppGroup. **Note**: OAuth access tokens and Key Management Service (KMS) entities (apps, developers, and API products) are cached for 180 seconds (current default). Any custom attributes associated with these entities are cached for at least 180 seconds after the entity is accessed at runtime. Therefore, an `ExpiresIn` element on the OAuthV2 policy won't be able to expire an access token in less than 180 seconds.
+      r"""Updates an AppGroup. This API replaces the existing AppGroup details with those specified in the request. Include or exclude any existing details that you want to retain or delete, respectively. Note that the state of the AppGroup should be updated using `action`, and not via AppGroup.
 
       Args:
         request: (ApigeeOrganizationsAppgroupsUpdateRequest) input message
@@ -8766,13 +8766,13 @@ class ApigeeV1(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates a new category on the portal.
+      r"""Creates a new API category.
 
       Args:
         request: (ApigeeOrganizationsSitesApicategoriesCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudApigeeV1ApiCategory) The response message.
+        (GoogleCloudApigeeV1ApiCategoryResponse) The response message.
       """
       config = self.GetMethodConfig('Create')
       return self._RunMethod(
@@ -8786,14 +8786,14 @@ class ApigeeV1(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=[],
         relative_path='v1/{+parent}/apicategories',
-        request_field='googleCloudApigeeV1ApiCategoryData',
+        request_field='googleCloudApigeeV1ApiCategory',
         request_type_name='ApigeeOrganizationsSitesApicategoriesCreateRequest',
-        response_type_name='GoogleCloudApigeeV1ApiCategory',
+        response_type_name='GoogleCloudApigeeV1ApiCategoryResponse',
         supports_download=False,
     )
 
     def Delete(self, request, global_params=None):
-      r"""Deletes a category from the portal.
+      r"""Deletes an API category.
 
       Args:
         request: (ApigeeOrganizationsSitesApicategoriesDeleteRequest) input message
@@ -8820,13 +8820,13 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Gets a category on the portal.
+      r"""Gets an API category.
 
       Args:
         request: (ApigeeOrganizationsSitesApicategoriesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudApigeeV1ApiCategory) The response message.
+        (GoogleCloudApigeeV1ApiCategoryResponse) The response message.
       """
       config = self.GetMethodConfig('Get')
       return self._RunMethod(
@@ -8842,12 +8842,12 @@ class ApigeeV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ApigeeOrganizationsSitesApicategoriesGetRequest',
-        response_type_name='GoogleCloudApigeeV1ApiCategory',
+        response_type_name='GoogleCloudApigeeV1ApiCategoryResponse',
         supports_download=False,
     )
 
     def List(self, request, global_params=None):
-      r"""Lists the categories on the portal.
+      r"""Returns the API categories associated with a portal.
 
       Args:
         request: (ApigeeOrganizationsSitesApicategoriesListRequest) input message
@@ -8874,13 +8874,13 @@ class ApigeeV1(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a category on the portal.
+      r"""Updates an API category.
 
       Args:
-        request: (GoogleCloudApigeeV1ApiCategoryData) input message
+        request: (GoogleCloudApigeeV1ApiCategory) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
-        (GoogleCloudApigeeV1ApiCategory) The response message.
+        (GoogleCloudApigeeV1ApiCategoryResponse) The response message.
       """
       config = self.GetMethodConfig('Patch')
       return self._RunMethod(
@@ -8895,8 +8895,8 @@ class ApigeeV1(base_api.BaseApiClient):
         query_params=[],
         relative_path='v1/{+name}',
         request_field='<request>',
-        request_type_name='GoogleCloudApigeeV1ApiCategoryData',
-        response_type_name='GoogleCloudApigeeV1ApiCategory',
+        request_type_name='GoogleCloudApigeeV1ApiCategory',
+        response_type_name='GoogleCloudApigeeV1ApiCategoryResponse',
         supports_download=False,
     )
 

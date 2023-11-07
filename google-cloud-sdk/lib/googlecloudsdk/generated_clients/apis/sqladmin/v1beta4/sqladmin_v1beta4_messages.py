@@ -64,10 +64,14 @@ class ApiWarning(_messages.Message):
       MAX_RESULTS_EXCEEDS_LIMIT: Warning when user provided maxResults
         parameter exceeds the limit. The returned result set may be
         incomplete.
+      COMPROMISED_CREDENTIALS: Warning when user tries to create/update a user
+        with credentials that have previously been compromised by a public
+        data breach.
     """
     SQL_API_WARNING_CODE_UNSPECIFIED = 0
     REGION_UNREACHABLE = 1
     MAX_RESULTS_EXCEEDS_LIMIT = 2
+    COMPROMISED_CREDENTIALS = 3
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -460,6 +464,7 @@ class ConnectSettings(_messages.Message):
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       POSTGRES_15: The database version is PostgreSQL 15.
+      POSTGRES_16: The database version is PostgreSQL 16.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -514,27 +519,28 @@ class ConnectSettings(_messages.Message):
     POSTGRES_13 = 13
     POSTGRES_14 = 14
     POSTGRES_15 = 15
-    MYSQL_8_0 = 16
-    MYSQL_8_0_18 = 17
-    MYSQL_8_0_26 = 18
-    MYSQL_8_0_27 = 19
-    MYSQL_8_0_28 = 20
-    MYSQL_8_0_29 = 21
-    MYSQL_8_0_30 = 22
-    MYSQL_8_0_31 = 23
-    MYSQL_8_0_32 = 24
-    MYSQL_8_0_33 = 25
-    MYSQL_8_0_34 = 26
-    MYSQL_8_0_35 = 27
-    MYSQL_8_0_36 = 28
-    SQLSERVER_2019_STANDARD = 29
-    SQLSERVER_2019_ENTERPRISE = 30
-    SQLSERVER_2019_EXPRESS = 31
-    SQLSERVER_2019_WEB = 32
-    SQLSERVER_2022_STANDARD = 33
-    SQLSERVER_2022_ENTERPRISE = 34
-    SQLSERVER_2022_EXPRESS = 35
-    SQLSERVER_2022_WEB = 36
+    POSTGRES_16 = 16
+    MYSQL_8_0 = 17
+    MYSQL_8_0_18 = 18
+    MYSQL_8_0_26 = 19
+    MYSQL_8_0_27 = 20
+    MYSQL_8_0_28 = 21
+    MYSQL_8_0_29 = 22
+    MYSQL_8_0_30 = 23
+    MYSQL_8_0_31 = 24
+    MYSQL_8_0_32 = 25
+    MYSQL_8_0_33 = 26
+    MYSQL_8_0_34 = 27
+    MYSQL_8_0_35 = 28
+    MYSQL_8_0_36 = 29
+    SQLSERVER_2019_STANDARD = 30
+    SQLSERVER_2019_ENTERPRISE = 31
+    SQLSERVER_2019_EXPRESS = 32
+    SQLSERVER_2019_WEB = 33
+    SQLSERVER_2022_STANDARD = 34
+    SQLSERVER_2022_ENTERPRISE = 35
+    SQLSERVER_2022_EXPRESS = 36
+    SQLSERVER_2022_WEB = 37
 
   backendType = _messages.EnumField('BackendTypeValueValuesEnum', 1)
   databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 2)
@@ -675,8 +681,8 @@ class DatabaseInstance(_messages.Message):
       proactive database wellness job for OutOfDisk issues. * Writers: * the
       proactive database wellness job for OOD. * Readers: * the proactive
       database wellness job
-    primaryDnsName: Output only. The dns name of the primary instance in a
-      replication group.
+    primaryDnsName: Output only. DEPRECATED: please use write_endpoint
+      instead.
     project: The project ID of the project containing the Cloud SQL instance.
       The Google apps domain is prefixed if applicable.
     pscServiceAttachmentLink: Output only. The link to service attachment of
@@ -708,6 +714,8 @@ class DatabaseInstance(_messages.Message):
     state: The current serving state of the Cloud SQL instance.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
+    writeEndpoint: Output only. The dns name of the primary instance in a
+      replication group.
   """
 
   class BackendTypeValueValuesEnum(_messages.Enum):
@@ -751,6 +759,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       POSTGRES_15: The database version is PostgreSQL 15.
+      POSTGRES_16: The database version is PostgreSQL 16.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -805,27 +814,28 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_13 = 13
     POSTGRES_14 = 14
     POSTGRES_15 = 15
-    MYSQL_8_0 = 16
-    MYSQL_8_0_18 = 17
-    MYSQL_8_0_26 = 18
-    MYSQL_8_0_27 = 19
-    MYSQL_8_0_28 = 20
-    MYSQL_8_0_29 = 21
-    MYSQL_8_0_30 = 22
-    MYSQL_8_0_31 = 23
-    MYSQL_8_0_32 = 24
-    MYSQL_8_0_33 = 25
-    MYSQL_8_0_34 = 26
-    MYSQL_8_0_35 = 27
-    MYSQL_8_0_36 = 28
-    SQLSERVER_2019_STANDARD = 29
-    SQLSERVER_2019_ENTERPRISE = 30
-    SQLSERVER_2019_EXPRESS = 31
-    SQLSERVER_2019_WEB = 32
-    SQLSERVER_2022_STANDARD = 33
-    SQLSERVER_2022_ENTERPRISE = 34
-    SQLSERVER_2022_EXPRESS = 35
-    SQLSERVER_2022_WEB = 36
+    POSTGRES_16 = 16
+    MYSQL_8_0 = 17
+    MYSQL_8_0_18 = 18
+    MYSQL_8_0_26 = 19
+    MYSQL_8_0_27 = 20
+    MYSQL_8_0_28 = 21
+    MYSQL_8_0_29 = 22
+    MYSQL_8_0_30 = 23
+    MYSQL_8_0_31 = 24
+    MYSQL_8_0_32 = 25
+    MYSQL_8_0_33 = 26
+    MYSQL_8_0_34 = 27
+    MYSQL_8_0_35 = 28
+    MYSQL_8_0_36 = 29
+    SQLSERVER_2019_STANDARD = 30
+    SQLSERVER_2019_ENTERPRISE = 31
+    SQLSERVER_2019_EXPRESS = 32
+    SQLSERVER_2019_WEB = 33
+    SQLSERVER_2022_STANDARD = 34
+    SQLSERVER_2022_ENTERPRISE = 35
+    SQLSERVER_2022_EXPRESS = 36
+    SQLSERVER_2022_WEB = 37
 
   class InstalledVersionValueValuesEnum(_messages.Enum):
     r"""Stores the current database version including minor version such as
@@ -850,6 +860,7 @@ class DatabaseInstance(_messages.Message):
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       POSTGRES_15: The database version is PostgreSQL 15.
+      POSTGRES_16: The database version is PostgreSQL 16.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -904,27 +915,28 @@ class DatabaseInstance(_messages.Message):
     POSTGRES_13 = 13
     POSTGRES_14 = 14
     POSTGRES_15 = 15
-    MYSQL_8_0 = 16
-    MYSQL_8_0_18 = 17
-    MYSQL_8_0_26 = 18
-    MYSQL_8_0_27 = 19
-    MYSQL_8_0_28 = 20
-    MYSQL_8_0_29 = 21
-    MYSQL_8_0_30 = 22
-    MYSQL_8_0_31 = 23
-    MYSQL_8_0_32 = 24
-    MYSQL_8_0_33 = 25
-    MYSQL_8_0_34 = 26
-    MYSQL_8_0_35 = 27
-    MYSQL_8_0_36 = 28
-    SQLSERVER_2019_STANDARD = 29
-    SQLSERVER_2019_ENTERPRISE = 30
-    SQLSERVER_2019_EXPRESS = 31
-    SQLSERVER_2019_WEB = 32
-    SQLSERVER_2022_STANDARD = 33
-    SQLSERVER_2022_ENTERPRISE = 34
-    SQLSERVER_2022_EXPRESS = 35
-    SQLSERVER_2022_WEB = 36
+    POSTGRES_16 = 16
+    MYSQL_8_0 = 17
+    MYSQL_8_0_18 = 18
+    MYSQL_8_0_26 = 19
+    MYSQL_8_0_27 = 20
+    MYSQL_8_0_28 = 21
+    MYSQL_8_0_29 = 22
+    MYSQL_8_0_30 = 23
+    MYSQL_8_0_31 = 24
+    MYSQL_8_0_32 = 25
+    MYSQL_8_0_33 = 26
+    MYSQL_8_0_34 = 27
+    MYSQL_8_0_35 = 28
+    MYSQL_8_0_36 = 29
+    SQLSERVER_2019_STANDARD = 30
+    SQLSERVER_2019_ENTERPRISE = 31
+    SQLSERVER_2019_EXPRESS = 32
+    SQLSERVER_2019_WEB = 33
+    SQLSERVER_2022_STANDARD = 34
+    SQLSERVER_2022_ENTERPRISE = 35
+    SQLSERVER_2022_EXPRESS = 36
+    SQLSERVER_2022_WEB = 37
 
   class InstanceTypeValueValuesEnum(_messages.Enum):
     r"""The instance type.
@@ -1056,6 +1068,7 @@ class DatabaseInstance(_messages.Message):
   sqlNetworkArchitecture = _messages.EnumField('SqlNetworkArchitectureValueValuesEnum', 39)
   state = _messages.EnumField('StateValueValuesEnum', 40)
   suspensionReason = _messages.EnumField('SuspensionReasonValueListEntryValuesEnum', 41, repeated=True)
+  writeEndpoint = _messages.StringField(42)
 
 
 class DatabasesListResponse(_messages.Message):
@@ -1068,6 +1081,20 @@ class DatabasesListResponse(_messages.Message):
 
   items = _messages.MessageField('Database', 1, repeated=True)
   kind = _messages.StringField(2)
+
+
+class DemoteContext(_messages.Message):
+  r"""This context is used to demote an existing standalone instance to be a
+  Cloud SQL read replica for an external database server.
+
+  Fields:
+    kind: This is always `sql#demoteContext`.
+    sourceRepresentativeInstanceName: Required. The name of the instance which
+      acts as an on-premises primary instance in the replication setup.
+  """
+
+  kind = _messages.StringField(1)
+  sourceRepresentativeInstanceName = _messages.StringField(2)
 
 
 class DemoteMasterConfiguration(_messages.Message):
@@ -1315,6 +1342,7 @@ class ExportContext(_messages.Message):
 
     Fields:
       mysqlExportOptions: Options for exporting from MySQL.
+      parallel: Optional. Whether or not the export should be parallel.
       schemaOnly: Export only schemas.
       tables: Tables to export, or that were exported, from the specified
         database. If you specify tables, specify one and only one database.
@@ -1337,9 +1365,10 @@ class ExportContext(_messages.Message):
       masterData = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
     mysqlExportOptions = _messages.MessageField('MysqlExportOptionsValue', 1)
-    schemaOnly = _messages.BooleanField(2)
-    tables = _messages.StringField(3, repeated=True)
-    threads = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+    parallel = _messages.BooleanField(2)
+    schemaOnly = _messages.BooleanField(3)
+    tables = _messages.StringField(4, repeated=True)
+    threads = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
   bakExportOptions = _messages.MessageField('BakExportOptionsValue', 1)
   csvExportOptions = _messages.MessageField('CsvExportOptionsValue', 2)
@@ -1423,6 +1452,7 @@ class Flag(_messages.Message):
       POSTGRES_13: The database version is PostgreSQL 13.
       POSTGRES_14: The database version is PostgreSQL 14.
       POSTGRES_15: The database version is PostgreSQL 15.
+      POSTGRES_16: The database version is PostgreSQL 16.
       MYSQL_8_0: The database version is MySQL 8.
       MYSQL_8_0_18: The database major version is MySQL 8.0 and the minor
         version is 18.
@@ -1477,27 +1507,28 @@ class Flag(_messages.Message):
     POSTGRES_13 = 13
     POSTGRES_14 = 14
     POSTGRES_15 = 15
-    MYSQL_8_0 = 16
-    MYSQL_8_0_18 = 17
-    MYSQL_8_0_26 = 18
-    MYSQL_8_0_27 = 19
-    MYSQL_8_0_28 = 20
-    MYSQL_8_0_29 = 21
-    MYSQL_8_0_30 = 22
-    MYSQL_8_0_31 = 23
-    MYSQL_8_0_32 = 24
-    MYSQL_8_0_33 = 25
-    MYSQL_8_0_34 = 26
-    MYSQL_8_0_35 = 27
-    MYSQL_8_0_36 = 28
-    SQLSERVER_2019_STANDARD = 29
-    SQLSERVER_2019_ENTERPRISE = 30
-    SQLSERVER_2019_EXPRESS = 31
-    SQLSERVER_2019_WEB = 32
-    SQLSERVER_2022_STANDARD = 33
-    SQLSERVER_2022_ENTERPRISE = 34
-    SQLSERVER_2022_EXPRESS = 35
-    SQLSERVER_2022_WEB = 36
+    POSTGRES_16 = 16
+    MYSQL_8_0 = 17
+    MYSQL_8_0_18 = 18
+    MYSQL_8_0_26 = 19
+    MYSQL_8_0_27 = 20
+    MYSQL_8_0_28 = 21
+    MYSQL_8_0_29 = 22
+    MYSQL_8_0_30 = 23
+    MYSQL_8_0_31 = 24
+    MYSQL_8_0_32 = 25
+    MYSQL_8_0_33 = 26
+    MYSQL_8_0_34 = 27
+    MYSQL_8_0_35 = 28
+    MYSQL_8_0_36 = 29
+    SQLSERVER_2019_STANDARD = 30
+    SQLSERVER_2019_ENTERPRISE = 31
+    SQLSERVER_2019_EXPRESS = 32
+    SQLSERVER_2019_WEB = 33
+    SQLSERVER_2022_STANDARD = 34
+    SQLSERVER_2022_ENTERPRISE = 35
+    SQLSERVER_2022_EXPRESS = 36
+    SQLSERVER_2022_WEB = 37
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""The type of the flag. Flags are typed to being `BOOLEAN`, `STRING`,
@@ -1643,10 +1674,14 @@ class ImportContext(_messages.Message):
         bring database online without downloading Bak content only one of
         "no_recovery" and "recovery_only" can be true otherwise error will
         return. Applies only to Cloud SQL for SQL Server.
-      stopAt: Optional. StopAt keyword for transaction log import, Applies to
-        Cloud SQL for SQL Server only
-      stopAtMark: Optional. StopAtMark keyword for transaction log import,
-        Applies to Cloud SQL for SQL Server only
+      stopAt: Optional. The timestamp when the import should stop. This
+        timestamp is in the [RFC 3339](https://tools.ietf.org/html/rfc3339)
+        format (for example, `2023-10-01T16:19:00.094`). This field is
+        equivalent to the STOPAT keyword and applies to Cloud SQL for SQL
+        Server only.
+      stopAtMark: Optional. The marked transaction where the import should
+        stop. This field is equivalent to the STOPATMARK keyword and applies
+        to Cloud SQL for SQL Server only.
       striped: Whether or not the backup set being restored is striped.
         Applies only to Cloud SQL for SQL Server.
     """
@@ -1719,10 +1754,12 @@ class ImportContext(_messages.Message):
     r"""Options for importing data from SQL statements.
 
     Fields:
+      parallel: Optional. Whether or not the import should be parallel.
       threads: The number of threads to use for parallel import.
     """
 
-    threads = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+    parallel = _messages.BooleanField(1)
+    threads = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
   bakImportOptions = _messages.MessageField('BakImportOptionsValue', 1)
   csvImportOptions = _messages.MessageField('CsvImportOptionsValue', 2)
@@ -1793,6 +1830,19 @@ class InstancesDemoteMasterRequest(_messages.Message):
   """
 
   demoteMasterContext = _messages.MessageField('DemoteMasterContext', 1)
+
+
+class InstancesDemoteRequest(_messages.Message):
+  r"""This request is used to demote an existing standalone instance to be a
+  Cloud SQL read replica for an external database server.
+
+  Fields:
+    demoteContext: Required. This context is used to demote an existing
+      standalone instance to be a Cloud SQL read replica for an external
+      database server.
+  """
+
+  demoteContext = _messages.MessageField('DemoteContext', 1)
 
 
 class InstancesExportRequest(_messages.Message):
@@ -1912,15 +1962,22 @@ class IpConfiguration(_messages.Message):
   r"""IP Management configuration.
 
   Enums:
-    SslModeValueValuesEnum: Specify how SSL should be enforced in DB
-      connections. This flag is only supported for PostgreSQL. When used with
-      `require_ssl`, the valid value pairs are:
-      ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED, require_ssl=false;
-      ssl_mode=ENCRYPTED_ONLY, require_ssl=false;
-      ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED, require_ssl=true; And the
-      `ssl_mode` always takes effect in this case. LINT.ThenChange(//depot/goo
-      gle3/java/com/google/storage/speckle/boss/admin/actions/InstanceUpdateAc
-      tion.java:update_api_temp_fix)
+    SslModeValueValuesEnum: Specify how SSL/TLS is enforced in database
+      connections. This flag is supported only for PostgreSQL. Use the legacy
+      `require_ssl` flag for enforcing SSL/TLS in MySQL and SQL Server. But,
+      for PostgreSQL, use the `ssl_mode` flag instead of the legacy
+      `require_ssl` flag. To avoid the conflict between those flags in
+      PostgreSQL, only the following value pairs are valid: *
+      `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false` *
+      `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
+      `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
+      Note that the value of `ssl_mode` gets priority over the value of the
+      legacy `require_ssl`. For example, for the pair
+      `ssl_mode=ENCRYPTED_ONLY, require_ssl=false`, the
+      `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL connection", while the
+      `require_ssl=false` means "both non-SSL and SSL connections are
+      allowed". The database respects `ssl_mode` in this case and only accepts
+      SSL connections.
 
   Fields:
     allocatedIpRange: The name of the allocated ip range for the private ip
@@ -1940,40 +1997,61 @@ class IpConfiguration(_messages.Message):
       `/projects/myProject/global/networks/default`. This setting can be
       updated, but it cannot be removed after it is set.
     pscConfig: PSC settings for this instance.
-    requireSsl: Whether SSL connections over IP are enforced or not.
+    requireSsl: Whether SSL/TLS connections over IP are enforced. If set to
+      false, then allow both non-SSL/non-TLS and SSL/TLS connections. For
+      SSL/TLS connections, the client certificate won't be verified. If set to
+      true, then only allow connections encrypted with SSL/TLS and with valid
+      client certificates. If you want to enforce SSL/TLS without enforcing
+      the requirement for valid client certificates, then use the `ssl_mode`
+      flag instead of the legacy `require_ssl` flag.
     reservedIpRange: This field is deprecated and will be removed from a
       future version of the API.
-    sslMode: Specify how SSL should be enforced in DB connections. This flag
-      is only supported for PostgreSQL. When used with `require_ssl`, the
-      valid value pairs are: ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED,
-      require_ssl=false; ssl_mode=ENCRYPTED_ONLY, require_ssl=false;
-      ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED, require_ssl=true; And the
-      `ssl_mode` always takes effect in this case. LINT.ThenChange(//depot/goo
-      gle3/java/com/google/storage/speckle/boss/admin/actions/InstanceUpdateAc
-      tion.java:update_api_temp_fix)
+    sslMode: Specify how SSL/TLS is enforced in database connections. This
+      flag is supported only for PostgreSQL. Use the legacy `require_ssl` flag
+      for enforcing SSL/TLS in MySQL and SQL Server. But, for PostgreSQL, use
+      the `ssl_mode` flag instead of the legacy `require_ssl` flag. To avoid
+      the conflict between those flags in PostgreSQL, only the following value
+      pairs are valid: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
+      `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
+      * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
+      Note that the value of `ssl_mode` gets priority over the value of the
+      legacy `require_ssl`. For example, for the pair
+      `ssl_mode=ENCRYPTED_ONLY, require_ssl=false`, the
+      `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL connection", while the
+      `require_ssl=false` means "both non-SSL and SSL connections are
+      allowed". The database respects `ssl_mode` in this case and only accepts
+      SSL connections.
   """
 
   class SslModeValueValuesEnum(_messages.Enum):
-    r"""Specify how SSL should be enforced in DB connections. This flag is
-    only supported for PostgreSQL. When used with `require_ssl`, the valid
-    value pairs are: ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED,
-    require_ssl=false; ssl_mode=ENCRYPTED_ONLY, require_ssl=false;
-    ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED, require_ssl=true; And the
-    `ssl_mode` always takes effect in this case. LINT.ThenChange(//depot/googl
-    e3/java/com/google/storage/speckle/boss/admin/actions/InstanceUpdateAction
-    .java:update_api_temp_fix)
+    r"""Specify how SSL/TLS is enforced in database connections. This flag is
+    supported only for PostgreSQL. Use the legacy `require_ssl` flag for
+    enforcing SSL/TLS in MySQL and SQL Server. But, for PostgreSQL, use the
+    `ssl_mode` flag instead of the legacy `require_ssl` flag. To avoid the
+    conflict between those flags in PostgreSQL, only the following value pairs
+    are valid: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
+    `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
+    `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true` Note
+    that the value of `ssl_mode` gets priority over the value of the legacy
+    `require_ssl`. For example, for the pair `ssl_mode=ENCRYPTED_ONLY,
+    require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL
+    connection", while the `require_ssl=false` means "both non-SSL and SSL
+    connections are allowed". The database respects `ssl_mode` in this case
+    and only accepts SSL connections.
 
     Values:
-      SSL_MODE_UNSPECIFIED: SSL mode is unknown.
-      ALLOW_UNENCRYPTED_AND_ENCRYPTED: Allow non-SSL and SSL connections. For
-        SSL connections, client certificate will not be verified. When this
-        value is used, `require_ssl` must be false or unset.
+      SSL_MODE_UNSPECIFIED: The SSL mode is unknown.
+      ALLOW_UNENCRYPTED_AND_ENCRYPTED: Allow non-SSL/non-TLS and SSL/TLS
+        connections. For SSL/TLS connections, the client certificate won't be
+        verified. When this value is used, the legacy `require_ssl` flag must
+        be false or cleared to avoid the conflict between values of two flags.
       ENCRYPTED_ONLY: Only allow connections encrypted with SSL/TLS. When this
-        value is used, `require_ssl` must be false or unset.
+        value is used, the legacy `require_ssl` flag must be false or cleared
+        to avoid the conflict between values of two flags.
       TRUSTED_CLIENT_CERTIFICATE_REQUIRED: Only allow connections encrypted
         with SSL/TLS and with valid client certificates. When this value is
-        used, `require_ssl` must be true or unset. This option doesn't work
-        with SQL Server.
+        used, the legacy `require_ssl` flag must be true or cleared to avoid
+        the conflict between values of two flags.
     """
     SSL_MODE_UNSPECIFIED = 0
     ALLOW_UNENCRYPTED_AND_ENCRYPTED = 1
@@ -2209,6 +2287,7 @@ class Operation(_messages.Message):
     StatusValueValuesEnum: The status of an operation.
 
   Fields:
+    apiWarning: An Admin API warning message.
     backupContext: The context for backup operation, if applicable.
     endTime: The time this operation finished in UTC timezone in [RFC
       3339](https://tools.ietf.org/html/rfc3339) format, for example
@@ -2350,22 +2429,23 @@ class Operation(_messages.Message):
     RUNNING = 2
     DONE = 3
 
-  backupContext = _messages.MessageField('BackupContext', 1)
-  endTime = _messages.StringField(2)
-  error = _messages.MessageField('OperationErrors', 3)
-  exportContext = _messages.MessageField('ExportContext', 4)
-  importContext = _messages.MessageField('ImportContext', 5)
-  insertTime = _messages.StringField(6)
-  kind = _messages.StringField(7)
-  name = _messages.StringField(8)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 9)
-  selfLink = _messages.StringField(10)
-  startTime = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
-  targetId = _messages.StringField(13)
-  targetLink = _messages.StringField(14)
-  targetProject = _messages.StringField(15)
-  user = _messages.StringField(16)
+  apiWarning = _messages.MessageField('ApiWarning', 1)
+  backupContext = _messages.MessageField('BackupContext', 2)
+  endTime = _messages.StringField(3)
+  error = _messages.MessageField('OperationErrors', 4)
+  exportContext = _messages.MessageField('ExportContext', 5)
+  importContext = _messages.MessageField('ImportContext', 6)
+  insertTime = _messages.StringField(7)
+  kind = _messages.StringField(8)
+  name = _messages.StringField(9)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 10)
+  selfLink = _messages.StringField(11)
+  startTime = _messages.StringField(12)
+  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  targetId = _messages.StringField(14)
+  targetLink = _messages.StringField(15)
+  targetProject = _messages.StringField(16)
+  user = _messages.StringField(17)
 
 
 class OperationError(_messages.Message):
@@ -2456,8 +2536,8 @@ class PasswordValidationPolicy(_messages.Message):
 
   Fields:
     complexity: The complexity of the password.
-    disallowCompromisedCredentials: Disallow credentials that have been
-      compromised by a data breach. This flag is only supported for MySQL.
+    disallowCompromisedCredentials: Optional. Disallow credentials that have
+      been previously compromised by a public data breach.
     disallowUsernameSubstring: Disallow username as a part of the password.
     enablePasswordPolicy: Whether the password policy is enabled or not.
     minLength: Minimum number of characters allowed.
@@ -3172,6 +3252,11 @@ class SqlExternalSyncSettingError(_messages.Message):
       MYSQL_PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE: The replication user is
         missing parallel import specific privileges. (e.g. LOCK TABLES) for
         MySQL.
+      LOCAL_INFILE_OFF: The global variable local_infile is off on external
+        server replica.
+      TURN_ON_PITR_AFTER_PROMOTE: This code instructs customers to turn on
+        point-in-time recovery manually for the instance after promoting the
+        Cloud SQL for PostgreSQL instance.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3208,6 +3293,8 @@ class SqlExternalSyncSettingError(_messages.Message):
     INVALID_FILE_INFO = 32
     UNSUPPORTED_DATABASE_SETTINGS = 33
     MYSQL_PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE = 34
+    LOCAL_INFILE_OFF = 35
+    TURN_ON_PITR_AFTER_PROMOTE = 36
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -3288,6 +3375,22 @@ class SqlInstancesDemoteMasterRequest(_messages.Message):
 
   instance = _messages.StringField(1, required=True)
   instancesDemoteMasterRequest = _messages.MessageField('InstancesDemoteMasterRequest', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesDemoteRequest(_messages.Message):
+  r"""A SqlInstancesDemoteRequest object.
+
+  Fields:
+    instance: Required. The name of the Cloud SQL instance.
+    instancesDemoteRequest: A InstancesDemoteRequest resource to be passed as
+      the request body.
+    project: Required. The project ID of the project that contains the
+      instance.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesDemoteRequest = _messages.MessageField('InstancesDemoteRequest', 2)
   project = _messages.StringField(3, required=True)
 
 

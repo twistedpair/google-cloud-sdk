@@ -984,8 +984,8 @@ class CloudtasksProjectsLocationsUpdateCmekConfigRequest(_messages.Message):
 
 
 class CmekConfig(_messages.Message):
-  r"""CMEK, or Customer Managed Encryption Keys, enables GCP products to put
-  control over encryption and key management in their customer's hands.
+  r"""Describes the customer-managed encryption key (CMEK) configuration
+  associated with a project and location.
 
   Fields:
     kmsKey: Resource name of the Cloud KMS key, of the form `projects/PROJECT_

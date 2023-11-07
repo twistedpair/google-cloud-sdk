@@ -64,18 +64,26 @@ COMPARE_DURATION_FLAG = base.Argument(
       for information on supported duration formats.""",
 )
 
+EVENT_TIME_FLAG_NOT_REQUIRED = base.Argument(
+    '--event-time',
+    help="""Time at which the event took place. For example, if the finding
+  represents an open firewall it would capture the time the open firewall
+  was detected. If event-time is not provided, it will default to UTC
+  version of NOW. See `$ gcloud topic datetimes` for information on
+  supported time formats.""",
+    required=False,
+)
 
-def CreateEventTimeFlag(required=False):
-  event_time_flag = base.Argument(
-      '--event-time',
-      help="""Time at which the event took place. For example, if the finding
-    represents an open firewall it would capture the time the open firewall
-    was detected. If event-time is not provided, it will default to UTC
-    version of NOW. See `$ gcloud topic datetimes` for information on
-    supported time formats.""",
-      required=required,
-  )
-  return event_time_flag
+
+EVENT_TIME_FLAG_REQUIRED = base.Argument(
+    '--event-time',
+    help="""Time at which the event took place. For example, if the finding
+  represents an open firewall it would capture the time the open firewall
+  was detected. If event-time is not provided, it will default to UTC
+  version of NOW. See `$ gcloud topic datetimes` for information on
+  supported time formats.""",
+    required=True,
+)
 
 
 EXTERNAL_URI_FLAG = base.Argument(

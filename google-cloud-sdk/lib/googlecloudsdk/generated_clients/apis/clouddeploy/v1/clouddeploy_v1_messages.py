@@ -4748,9 +4748,6 @@ class RetryAttempt(_messages.Message):
 
   Fields:
     attempt: Output only. The index of this retry attempt.
-    jobId: Output only. The job ID for the Job to retry.
-    phaseId: Output only. The phase ID of the phase that includes the job
-      being retried.
     state: Output only. Valid state of this retry action.
     stateDesc: Output only. Description of the state of the Retry.
     wait: Output only. How long the operation will be paused.
@@ -4777,11 +4774,9 @@ class RetryAttempt(_messages.Message):
     REPAIR_STATE_SKIPPED = 6
 
   attempt = _messages.IntegerField(1)
-  jobId = _messages.StringField(2)
-  phaseId = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
-  stateDesc = _messages.StringField(5)
-  wait = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  stateDesc = _messages.StringField(3)
+  wait = _messages.StringField(4)
 
 
 class RetryJobRequest(_messages.Message):
@@ -4815,6 +4810,9 @@ class RetryPhase(_messages.Message):
     attempts: Output only. Detail of a retry action.
     backoffMode: Output only. The pattern of how the wait time of the retry
       attempt is calculated.
+    jobId: Output only. The job ID for the Job to retry.
+    phaseId: Output only. The phase ID of the phase that includes the job
+      being retried.
     totalAttempts: Output only. The number of attempts that have been made.
   """
 
@@ -4833,7 +4831,9 @@ class RetryPhase(_messages.Message):
 
   attempts = _messages.MessageField('RetryAttempt', 1, repeated=True)
   backoffMode = _messages.EnumField('BackoffModeValueValuesEnum', 2)
-  totalAttempts = _messages.IntegerField(3)
+  jobId = _messages.StringField(3)
+  phaseId = _messages.StringField(4)
+  totalAttempts = _messages.IntegerField(5)
 
 
 class Rollback(_messages.Message):

@@ -40,7 +40,10 @@ class CloudbillingV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.billingAccounts_projects = self.BillingAccountsProjectsService(self)
+    self.billingAccounts_subAccounts = self.BillingAccountsSubAccountsService(self)
     self.billingAccounts = self.BillingAccountsService(self)
+    self.organizations_billingAccounts = self.OrganizationsBillingAccountsService(self)
+    self.organizations = self.OrganizationsService(self)
     self.projects = self.ProjectsService(self)
     self.services_skus = self.ServicesSkusService(self)
     self.services = self.ServicesService(self)
@@ -82,6 +85,70 @@ class CloudbillingV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class BillingAccountsSubAccountsService(base_api.BaseApiService):
+    """Service class for the billingAccounts_subAccounts resource."""
+
+    _NAME = 'billingAccounts_subAccounts'
+
+    def __init__(self, client):
+      super(CloudbillingV1.BillingAccountsSubAccountsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""This method creates [billing subaccounts](https://cloud.google.com/billing/docs/concepts#subaccounts). Google Cloud resellers should use the Channel Services APIs, [accounts.customers.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers/create) and [accounts.customers.entitlements.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers.entitlements/create). When creating a subaccount, the current authenticated user must have the `billing.accounts.update` IAM permission on the parent account, which is typically given to billing account [administrators](https://cloud.google.com/billing/docs/how-to/billing-access). This method will return an error if the parent account has not been provisioned for subaccounts.
+
+      Args:
+        request: (CloudbillingBillingAccountsSubAccountsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BillingAccount) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/billingAccounts/{billingAccountsId}/subAccounts',
+        http_method='POST',
+        method_id='cloudbilling.billingAccounts.subAccounts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/subAccounts',
+        request_field='billingAccount',
+        request_type_name='CloudbillingBillingAccountsSubAccountsCreateRequest',
+        response_type_name='BillingAccount',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the billing accounts that the current authenticated user has permission to [view](https://cloud.google.com/billing/docs/how-to/billing-access).
+
+      Args:
+        request: (CloudbillingBillingAccountsSubAccountsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBillingAccountsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/billingAccounts/{billingAccountsId}/subAccounts',
+        http_method='GET',
+        method_id='cloudbilling.billingAccounts.subAccounts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/subAccounts',
+        request_field='',
+        request_type_name='CloudbillingBillingAccountsSubAccountsListRequest',
+        response_type_name='ListBillingAccountsResponse',
+        supports_download=False,
+    )
+
   class BillingAccountsService(base_api.BaseApiService):
     """Service class for the billingAccounts resource."""
 
@@ -96,7 +163,7 @@ class CloudbillingV1(base_api.BaseApiClient):
       r"""This method creates [billing subaccounts](https://cloud.google.com/billing/docs/concepts#subaccounts). Google Cloud resellers should use the Channel Services APIs, [accounts.customers.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers/create) and [accounts.customers.entitlements.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers.entitlements/create). When creating a subaccount, the current authenticated user must have the `billing.accounts.update` IAM permission on the parent account, which is typically given to billing account [administrators](https://cloud.google.com/billing/docs/how-to/billing-access). This method will return an error if the parent account has not been provisioned for subaccounts.
 
       Args:
-        request: (BillingAccount) input message
+        request: (CloudbillingBillingAccountsCreateRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (BillingAccount) The response message.
@@ -110,10 +177,10 @@ class CloudbillingV1(base_api.BaseApiClient):
         method_id='cloudbilling.billingAccounts.create',
         ordered_params=[],
         path_params=[],
-        query_params=[],
+        query_params=['parent'],
         relative_path='v1/billingAccounts',
-        request_field='<request>',
-        request_type_name='BillingAccount',
+        request_field='billingAccount',
+        request_type_name='CloudbillingBillingAccountsCreateRequest',
         response_type_name='BillingAccount',
         supports_download=False,
     )
@@ -190,11 +257,38 @@ class CloudbillingV1(base_api.BaseApiClient):
         method_id='cloudbilling.billingAccounts.list',
         ordered_params=[],
         path_params=[],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'pageSize', 'pageToken', 'parent'],
         relative_path='v1/billingAccounts',
         request_field='',
         request_type_name='CloudbillingBillingAccountsListRequest',
         response_type_name='ListBillingAccountsResponse',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Changes which parent organization a billing account belongs to.
+
+      Args:
+        request: (CloudbillingBillingAccountsMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BillingAccount) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/billingAccounts/{billingAccountsId}:move',
+        http_method='POST',
+        method_id='cloudbilling.billingAccounts.move',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:move',
+        request_field='moveBillingAccountRequest',
+        request_type_name='CloudbillingBillingAccountsMoveRequest',
+        response_type_name='BillingAccount',
         supports_download=False,
     )
 
@@ -278,6 +372,107 @@ class CloudbillingV1(base_api.BaseApiClient):
         response_type_name='TestIamPermissionsResponse',
         supports_download=False,
     )
+
+  class OrganizationsBillingAccountsService(base_api.BaseApiService):
+    """Service class for the organizations_billingAccounts resource."""
+
+    _NAME = 'organizations_billingAccounts'
+
+    def __init__(self, client):
+      super(CloudbillingV1.OrganizationsBillingAccountsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""This method creates [billing subaccounts](https://cloud.google.com/billing/docs/concepts#subaccounts). Google Cloud resellers should use the Channel Services APIs, [accounts.customers.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers/create) and [accounts.customers.entitlements.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers.entitlements/create). When creating a subaccount, the current authenticated user must have the `billing.accounts.update` IAM permission on the parent account, which is typically given to billing account [administrators](https://cloud.google.com/billing/docs/how-to/billing-access). This method will return an error if the parent account has not been provisioned for subaccounts.
+
+      Args:
+        request: (CloudbillingOrganizationsBillingAccountsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BillingAccount) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/billingAccounts',
+        http_method='POST',
+        method_id='cloudbilling.organizations.billingAccounts.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/billingAccounts',
+        request_field='billingAccount',
+        request_type_name='CloudbillingOrganizationsBillingAccountsCreateRequest',
+        response_type_name='BillingAccount',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the billing accounts that the current authenticated user has permission to [view](https://cloud.google.com/billing/docs/how-to/billing-access).
+
+      Args:
+        request: (CloudbillingOrganizationsBillingAccountsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBillingAccountsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/billingAccounts',
+        http_method='GET',
+        method_id='cloudbilling.organizations.billingAccounts.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/billingAccounts',
+        request_field='',
+        request_type_name='CloudbillingOrganizationsBillingAccountsListRequest',
+        response_type_name='ListBillingAccountsResponse',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Changes which parent organization a billing account belongs to.
+
+      Args:
+        request: (CloudbillingOrganizationsBillingAccountsMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (BillingAccount) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/billingAccounts/{billingAccountsId}:move',
+        http_method='GET',
+        method_id='cloudbilling.organizations.billingAccounts.move',
+        ordered_params=['destinationParent', 'name'],
+        path_params=['destinationParent', 'name'],
+        query_params=[],
+        relative_path='v1/{+destinationParent}/{+name}:move',
+        request_field='',
+        request_type_name='CloudbillingOrganizationsBillingAccountsMoveRequest',
+        response_type_name='BillingAccount',
+        supports_download=False,
+    )
+
+  class OrganizationsService(base_api.BaseApiService):
+    """Service class for the organizations resource."""
+
+    _NAME = 'organizations'
+
+    def __init__(self, client):
+      super(CloudbillingV1.OrganizationsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsService(base_api.BaseApiService):
     """Service class for the projects resource."""

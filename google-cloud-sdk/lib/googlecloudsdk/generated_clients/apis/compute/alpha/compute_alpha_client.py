@@ -6834,7 +6834,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.instances.delete',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=['requestId'],
+        query_params=['noGracefulShutdown', 'requestId'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}',
         request_field='',
         request_type_name='ComputeInstancesDeleteRequest',
@@ -6864,6 +6864,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/deleteAccessConfig',
         request_field='',
         request_type_name='ComputeInstancesDeleteAccessConfigRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DeleteNetworkInterface(self, request, global_params=None):
+      r"""Deletes one network interface from an active instance. InstancesDeleteNetworkInterfaceRequest indicates: - instance from which to delete, using project+zone+resource_id fields; - network interface to be deleted, using network_interface_name field; Only VLAN interface deletion is supported for now.
+
+      Args:
+        request: (ComputeInstancesDeleteNetworkInterfaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteNetworkInterface')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteNetworkInterface.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.deleteNetworkInterface',
+        ordered_params=['project', 'zone', 'instance', 'networkInterfaceName'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['networkInterfaceName', 'requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/deleteNetworkInterface',
+        request_field='',
+        request_type_name='ComputeInstancesDeleteNetworkInterfaceRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -7848,7 +7874,7 @@ class ComputeAlpha(base_api.BaseApiClient):
         method_id='compute.instances.stop',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=['discardLocalSsd', 'requestId'],
+        query_params=['discardLocalSsd', 'noGracefulShutdown', 'requestId'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/stop',
         request_field='',
         request_type_name='ComputeInstancesStopRequest',
@@ -8843,7 +8869,7 @@ class ComputeAlpha(base_api.BaseApiClient):
     )
 
     def GetDiagnostics(self, request, global_params=None):
-      r"""Returns the interconnectDiagnostics for the specified Interconnect.
+      r"""Returns the interconnectDiagnostics for the specified Interconnect. In the event of a global outage, do not use this API to make decisions about where to redirect your network traffic. Unlike a VLAN attachment, which is regional, a Cloud Interconnect connection is a global resource. A global outage can prevent this API from functioning properly.
 
       Args:
         request: (ComputeInterconnectsGetDiagnosticsRequest) input message

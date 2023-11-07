@@ -3608,6 +3608,9 @@ class Job(_messages.Message):
     runtimeUpdatableParams: This field may ONLY be modified at runtime using
       the projects.jobs.update method to adjust job behavior. This field has
       no effect when specified at job creation.
+    satisfiesPzi: Output only. Reserved for future use. This field is set only
+      in responses from the server; it is ignored if it is set in any
+      requests.
     satisfiesPzs: Reserved for future use. This field is set only in responses
       from the server; it is ignored if it is set in any requests.
     stageStates: This field may be mutated by the Cloud Dataflow service;
@@ -3866,14 +3869,15 @@ class Job(_messages.Message):
   replacedByJobId = _messages.StringField(16)
   requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 17)
   runtimeUpdatableParams = _messages.MessageField('RuntimeUpdatableParams', 18)
-  satisfiesPzs = _messages.BooleanField(19)
-  stageStates = _messages.MessageField('ExecutionStageState', 20, repeated=True)
-  startTime = _messages.StringField(21)
-  steps = _messages.MessageField('Step', 22, repeated=True)
-  stepsLocation = _messages.StringField(23)
-  tempFiles = _messages.StringField(24, repeated=True)
-  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 25)
-  type = _messages.EnumField('TypeValueValuesEnum', 26)
+  satisfiesPzi = _messages.BooleanField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  stageStates = _messages.MessageField('ExecutionStageState', 21, repeated=True)
+  startTime = _messages.StringField(22)
+  steps = _messages.MessageField('Step', 23, repeated=True)
+  stepsLocation = _messages.StringField(24)
+  tempFiles = _messages.StringField(25, repeated=True)
+  transformNameMapping = _messages.MessageField('TransformNameMappingValue', 26)
+  type = _messages.EnumField('TypeValueValuesEnum', 27)
 
 
 class JobExecutionDetails(_messages.Message):

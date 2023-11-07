@@ -11130,6 +11130,25 @@ class GoogleCloudDialogflowV2DtmfParameters(_messages.Message):
   acceptsDtmfInput = _messages.BooleanField(1)
 
 
+class GoogleCloudDialogflowV2EncryptionSpec(_messages.Message):
+  r"""A customer-managed encryption key specification that can be applied to
+  all created resources (e.g. Conversation).
+
+  Fields:
+    kmsKey: Required. The name of customer-managed encryption key that is used
+      to secure a resource and its sub-resources. If empty, the resource is
+      secured by the default Google encryption key. Only the key in the same
+      location as this resource is allowed to be used for encryption. Format:
+      `projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{
+      key}`
+    name: Immutable. The resource name of the encryption key specification
+      resource. Format: projects/{project}/locations/{location}/encryptionSpec
+  """
+
+  kmsKey = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2EntityType(_messages.Message):
   r"""Each intent parameter has a type, called the entity type, which dictates
   exactly how data from an end-user expression is extracted. Dialogflow
@@ -12281,6 +12300,30 @@ class GoogleCloudDialogflowV2ImportDocumentsResponse(_messages.Message):
   """
 
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2InitializeEncryptionSpecMetadata(_messages.Message):
+  r"""Metadata for initializing a location-level encryption specification.
+
+  Fields:
+    request: Output only. The original request for initialization.
+  """
+
+  request = _messages.MessageField('GoogleCloudDialogflowV2InitializeEncryptionSpecRequest', 1)
+
+
+class GoogleCloudDialogflowV2InitializeEncryptionSpecRequest(_messages.Message):
+  r"""The request to initialize a location-level encryption specification.
+
+  Fields:
+    encryptionSpec: Required. The encryption spec used for CMEK encryption. It
+      is required that the kms key is in the same region as the endpoint. The
+      same key will be used for all provisioned resources, if encryption is
+      available. If the kms_key_name is left empty, no encryption will be
+      enforced.
+  """
+
+  encryptionSpec = _messages.MessageField('GoogleCloudDialogflowV2EncryptionSpec', 1)
 
 
 class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
@@ -15820,6 +15863,25 @@ class GoogleCloudDialogflowV2beta1DialogflowAssistAnswer(_messages.Message):
   queryResult = _messages.MessageField('GoogleCloudDialogflowV2beta1QueryResult', 3)
 
 
+class GoogleCloudDialogflowV2beta1EncryptionSpec(_messages.Message):
+  r"""A customer-managed encryption key specification that can be applied to
+  all created resources (e.g. Conversation).
+
+  Fields:
+    kmsKey: Required. The name of customer-managed encryption key that is used
+      to secure a resource and its sub-resources. If empty, the resource is
+      secured by the default Google encryption key. Only the key in the same
+      location as this resource is allowed to be used for encryption. Format:
+      `projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{
+      key}`
+    name: Immutable. The resource name of the encryption key specification
+      resource. Format: projects/{project}/locations/{location}/encryptionSpec
+  """
+
+  kmsKey = _messages.StringField(1)
+  name = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
   r"""Each intent parameter has a type, called the entity type, which dictates
   exactly how data from an end-user expression is extracted. Dialogflow
@@ -16105,6 +16167,30 @@ class GoogleCloudDialogflowV2beta1ImportDocumentsResponse(_messages.Message):
   """
 
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
+
+
+class GoogleCloudDialogflowV2beta1InitializeEncryptionSpecMetadata(_messages.Message):
+  r"""Metadata for initializing a location-level encryption specification.
+
+  Fields:
+    request: Output only. The original request for initialization.
+  """
+
+  request = _messages.MessageField('GoogleCloudDialogflowV2beta1InitializeEncryptionSpecRequest', 1)
+
+
+class GoogleCloudDialogflowV2beta1InitializeEncryptionSpecRequest(_messages.Message):
+  r"""The request to initialize a location-level encryption specification.
+
+  Fields:
+    encryptionSpec: Required. The encryption spec used for CMEK encryption. It
+      is required that the kms key is in the same region as the endpoint. The
+      same key will be used for all provisioned resources, if encryption is
+      available. If the kms_key_name is left empty, no encryption will be
+      enforced.
+  """
+
+  encryptionSpec = _messages.MessageField('GoogleCloudDialogflowV2beta1EncryptionSpec', 1)
 
 
 class GoogleCloudDialogflowV2beta1Intent(_messages.Message):

@@ -1609,6 +1609,60 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Pause(self, request, global_params=None):
+      r"""Pause a running Rollout. The rollout will not be started on new clusters, however the rollout running on the cluster will be allowed to finish.
+
+      Args:
+        request: (GkehubProjectsLocationsRolloutsPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/rollouts/{rolloutsId}:pause',
+        http_method='POST',
+        method_id='gkehub.projects.locations.rollouts.pause',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:pause',
+        request_field='pauseRolloutRequest',
+        request_type_name='GkehubProjectsLocationsRolloutsPauseRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resume a paused Rollout. The rollout will be resumed and allowed to be started on clusters.
+
+      Args:
+        request: (GkehubProjectsLocationsRolloutsResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/rollouts/{rolloutsId}:resume',
+        http_method='POST',
+        method_id='gkehub.projects.locations.rollouts.resume',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:resume',
+        request_field='resumeRolloutRequest',
+        request_type_name='GkehubProjectsLocationsRolloutsResumeRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsScopesNamespacesResourcequotasService(base_api.BaseApiService):
     """Service class for the projects_locations_scopes_namespaces_resourcequotas resource."""
 

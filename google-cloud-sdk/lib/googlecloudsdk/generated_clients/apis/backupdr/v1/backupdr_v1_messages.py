@@ -573,6 +573,11 @@ class ManagementServer(_messages.Message):
     state: Output only. The ManagementServer state.
     type: Required. The type of the ManagementServer resource.
     updateTime: Output only. The time when the instance was updated.
+    workforceIdentityBasedManagementUri: Output only. The hostnames of the
+      exposed AGM endpoints for both types of user i.e. 1p and 3p, used to
+      connect AGM/RM UI.
+    workforceIdentityBasedOauth2ClientId: Output only. The OAuth client IDs
+      for both types of user i.e. 1p and 3p.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -648,6 +653,8 @@ class ManagementServer(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 9)
   type = _messages.EnumField('TypeValueValuesEnum', 10)
   updateTime = _messages.StringField(11)
+  workforceIdentityBasedManagementUri = _messages.MessageField('WorkforceIdentityBasedManagementURI', 12)
+  workforceIdentityBasedOauth2ClientId = _messages.MessageField('WorkforceIdentityBasedOAuth2ClientID', 13)
 
 
 class ManagementURI(_messages.Message):
@@ -1093,6 +1100,35 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class WorkforceIdentityBasedManagementURI(_messages.Message):
+  r"""ManagementURI depending on the Workforce Identity i.e. either 1p or 3p.
+
+  Fields:
+    firstPartyManagementUri: Output only. First party Management URI for
+      Google Identities.
+    thirdPartyManagementUri: Output only. Third party Management URI for
+      External Identity Providers.
+  """
+
+  firstPartyManagementUri = _messages.StringField(1)
+  thirdPartyManagementUri = _messages.StringField(2)
+
+
+class WorkforceIdentityBasedOAuth2ClientID(_messages.Message):
+  r"""OAuth Client ID depending on the Workforce Identity i.e. either 1p or
+  3p,
+
+  Fields:
+    firstPartyOauth2ClientId: Output only. First party OAuth Client ID for
+      Google Identities.
+    thirdPartyOauth2ClientId: Output only. Third party OAuth Client ID for
+      External Identity Providers.
+  """
+
+  firstPartyOauth2ClientId = _messages.StringField(1)
+  thirdPartyOauth2ClientId = _messages.StringField(2)
 
 
 encoding.AddCustomJsonFieldMapping(

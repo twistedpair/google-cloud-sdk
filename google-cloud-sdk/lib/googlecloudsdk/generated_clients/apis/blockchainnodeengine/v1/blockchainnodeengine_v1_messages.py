@@ -413,6 +413,7 @@ class EthereumDetails(_messages.Message):
       MAINNET: The Ethereum Mainnet.
       TESTNET_GOERLI_PRATER: The Ethereum Testnet based on Goerli protocol.
       TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
+        See https://github.com/eth-clients/sepolia.
     """
     NETWORK_UNSPECIFIED = 0
     MAINNET = 1

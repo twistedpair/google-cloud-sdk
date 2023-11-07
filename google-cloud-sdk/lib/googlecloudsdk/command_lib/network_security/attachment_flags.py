@@ -89,7 +89,8 @@ def AddProjectArg(parser, help_text="Project of the attachment"):
 
 
 def AddProducerForwardingRuleArg(
-    parser, help_text="Forwarding rule attachment points to"
+    parser,
+    help_text="Path of a forwarding rule that points to a backend with GENEVE-capable VMs."
 ):
   parser.add_argument(
       "--producer-forwarding-rule", required=True, help=help_text

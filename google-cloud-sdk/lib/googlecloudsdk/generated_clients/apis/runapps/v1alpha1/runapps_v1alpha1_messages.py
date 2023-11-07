@@ -229,13 +229,6 @@ class Binding(_messages.Message):
       either specific to the binding or clarify *how* the binding works. The
       configuration has an associated typekit-specified JSONSchema
       (https://json-schema.org/) that defines the expected shape.
-    configVersion: Optional. Config version denotes the JSON schema version
-      used to create the resource as specified in the config field. If this is
-      not provided then it will default to the latest version as specified by
-      the Typekit. The scheme used for the version is semantic versioning. A
-      valid version would be in the form of MAJOR.MINOR.PATCH, for example:
-      "1.0.0". If an invalid version is chosen then a validation error will be
-      returned.
     targetRef: TargetRef describes the target resource.
   """
 
@@ -267,8 +260,7 @@ class Binding(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   config = _messages.MessageField('ConfigValue', 1)
-  configVersion = _messages.StringField(2)
-  targetRef = _messages.MessageField('ResourceRef', 3)
+  targetRef = _messages.MessageField('ResourceRef', 2)
 
 
 class BindingStatus(_messages.Message):
@@ -371,10 +363,14 @@ class CloudRunServiceConfig(_messages.Message):
   r"""Message for Cloud Run service configs.
 
   Fields:
+    config: Configuration for the service.
+    image: The container image to deploy the service with.
     resources: Bindings to other resources.
   """
 
-  resources = _messages.MessageField('ServiceResourceBindingConfig', 1, repeated=True)
+  config = _messages.MessageField('ServiceSettingsConfig', 1)
+  image = _messages.StringField(2)
+  resources = _messages.MessageField('ServiceResourceBindingConfig', 3, repeated=True)
 
 
 class CloudSqlConfig(_messages.Message):
@@ -460,7 +456,7 @@ class Config(_messages.Message):
 
 
 class Deployment(_messages.Message):
-  r"""Message describing Deployment object Next tag: 14
+  r"""Message describing Deployment object Next tag: 15
 
   Messages:
     AnnotationsValue: Unstructured key value map that may be set by external
@@ -495,6 +491,8 @@ class Deployment(_messages.Message):
     name: Output only. Canonical name of resource
     reconciling: Output only. Indicates whether the resource's reconciliation
       is still in progress.
+    serviceAccount: Optional. The service account that will be used to actuate
+      the deployment.
     status: Output only. The status of the deployment
     updateTime: Output only. Update time stamp
   """
@@ -563,8 +561,9 @@ class Deployment(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 9)
   name = _messages.StringField(10)
   reconciling = _messages.BooleanField(11)
-  status = _messages.MessageField('DeploymentStatus', 12)
-  updateTime = _messages.StringField(13)
+  serviceAccount = _messages.StringField(12)
+  status = _messages.MessageField('DeploymentStatus', 13)
+  updateTime = _messages.StringField(14)
 
 
 class DeploymentOperationMetadata(_messages.Message):
@@ -1175,13 +1174,6 @@ class Resource(_messages.Message):
     config: Configuration is the typekit-specified set of fields that define
       the resource. The configuration has an associated typekit-specified
       JSONSchema (https://json-schema.org/) that defines the expected shape.
-    configVersion: Optional. Config version denotes the JSON schema version
-      used to create the resource as specified in the config field. If this is
-      not provided then it will default to the latest version as specified by
-      the Typekit. The scheme used for the version is semantic versioning. A
-      valid version would be in the form of MAJOR.MINOR.PATCH, for example:
-      "1.0.0". If an invalid version is chosen then a validation error will be
-      returned.
     id: Resource ID describes the resource that's bound.
     latestDeployment: Output only. The deployment name for the most recent
       deployment that has been triggered for a given resource. If a resource
@@ -1219,10 +1211,9 @@ class Resource(_messages.Message):
 
   bindings = _messages.MessageField('Binding', 1, repeated=True)
   config = _messages.MessageField('ConfigValue', 2)
-  configVersion = _messages.StringField(3)
-  id = _messages.MessageField('ResourceID', 4)
-  latestDeployment = _messages.StringField(5)
-  subresources = _messages.MessageField('Resource', 6, repeated=True)
+  id = _messages.MessageField('ResourceID', 3)
+  latestDeployment = _messages.StringField(4)
+  subresources = _messages.MessageField('Resource', 5, repeated=True)
 
 
 class ResourceComponentStatus(_messages.Message):
@@ -1818,12 +1809,9 @@ class Selector(_messages.Message):
       Use '*' or empty string for wildcard either the name or the type. E.g.
       type='service' name='' will match all services. type='*' name='default'
       will match all resources named as 'default'.
-    notTypeNames: not_type_names excludes the names + types. If a type+name is
-      in this list as well as match_type_names, it will not be selected.
   """
 
   matchTypeNames = _messages.MessageField('TypedName', 1, repeated=True)
-  notTypeNames = _messages.MessageField('TypedName', 2, repeated=True)
 
 
 class ServiceResourceBindingConfig(_messages.Message):
@@ -1869,6 +1857,59 @@ class ServiceResourceBindingConfig(_messages.Message):
 
   binding_config = _messages.MessageField('BindingConfigValue', 1)
   ref = _messages.StringField(2)
+
+
+class ServiceSettingsConfig(_messages.Message):
+  r"""Message for Cloud Run Service settings config. Next tag: 6
+
+  Messages:
+    EnvVarsValue: Key-value pairs to set as environment variables. Note that
+      integration bindings will add/update the list of final env vars that are
+      deployed to a service.
+
+  Fields:
+    args: Comma-separated arguments passed to the command run by the container
+      image.
+    cmd: Entrypoint for the container image.
+    concurrency: The maximum number of concurrent requests allowed per
+      container instance.
+    cpu: Set a CPU limit in Kubernetes cpu units.
+    env_vars: Key-value pairs to set as environment variables. Note that
+      integration bindings will add/update the list of final env vars that are
+      deployed to a service.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvVarsValue(_messages.Message):
+    r"""Key-value pairs to set as environment variables. Note that integration
+    bindings will add/update the list of final env vars that are deployed to a
+    service.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvVarsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvVarsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvVarsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  args = _messages.StringField(1, repeated=True)
+  cmd = _messages.StringField(2, repeated=True)
+  concurrency = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  cpu = _messages.StringField(4)
+  env_vars = _messages.MessageField('EnvVarsValue', 5)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -2019,6 +2060,8 @@ encoding.AddCustomJsonFieldMapping(
     RouterConfig, 'dns_zone', 'dns-zone')
 encoding.AddCustomJsonFieldMapping(
     ServiceResourceBindingConfig, 'binding_config', 'binding-config')
+encoding.AddCustomJsonFieldMapping(
+    ServiceSettingsConfig, 'env_vars', 'env-vars')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

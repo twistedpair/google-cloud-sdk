@@ -1412,6 +1412,7 @@ class Finding(_messages.Message):
       compromise](https://en.wikipedia.org/wiki/Indicator_of_compromise).
     kernelRootkit: Signature of the kernel rootkit.
     kubernetes: Kubernetes resources associated with the finding.
+    loadBalancers: The load balancers associated with the finding.
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
     moduleName: Unique identifier of the module which generated the finding.
@@ -1436,6 +1437,8 @@ class Finding(_messages.Message):
       "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
       "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     nextSteps: Steps to address the finding.
+    orgPolicies: Contains information about the org policies associated with
+      the finding.
     parent: The relative resource name of the source the finding belongs to.
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
@@ -1677,24 +1680,26 @@ class Finding(_messages.Message):
   indicator = _messages.MessageField('Indicator', 21)
   kernelRootkit = _messages.MessageField('KernelRootkit', 22)
   kubernetes = _messages.MessageField('Kubernetes', 23)
-  mitreAttack = _messages.MessageField('MitreAttack', 24)
-  moduleName = _messages.StringField(25)
-  mute = _messages.EnumField('MuteValueValuesEnum', 26)
-  muteAnnotation = _messages.StringField(27)
-  muteInitiator = _messages.StringField(28)
-  muteUpdateTime = _messages.StringField(29)
-  name = _messages.StringField(30)
-  nextSteps = _messages.StringField(31)
-  parent = _messages.StringField(32)
-  parentDisplayName = _messages.StringField(33)
-  processes = _messages.MessageField('Process', 34, repeated=True)
-  resourceName = _messages.StringField(35)
-  securityMarks = _messages.MessageField('SecurityMarks', 36)
-  securityPosture = _messages.MessageField('SecurityPosture', 37)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 38)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 39)
-  state = _messages.EnumField('StateValueValuesEnum', 40)
-  vulnerability = _messages.MessageField('Vulnerability', 41)
+  loadBalancers = _messages.MessageField('LoadBalancer', 24, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 25)
+  moduleName = _messages.StringField(26)
+  mute = _messages.EnumField('MuteValueValuesEnum', 27)
+  muteAnnotation = _messages.StringField(28)
+  muteInitiator = _messages.StringField(29)
+  muteUpdateTime = _messages.StringField(30)
+  name = _messages.StringField(31)
+  nextSteps = _messages.StringField(32)
+  orgPolicies = _messages.MessageField('OrgPolicy', 33, repeated=True)
+  parent = _messages.StringField(34)
+  parentDisplayName = _messages.StringField(35)
+  processes = _messages.MessageField('Process', 36, repeated=True)
+  resourceName = _messages.StringField(37)
+  securityMarks = _messages.MessageField('SecurityMarks', 38)
+  securityPosture = _messages.MessageField('SecurityPosture', 39)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 40)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 41)
+  state = _messages.EnumField('StateValueValuesEnum', 42)
+  vulnerability = _messages.MessageField('Vulnerability', 43)
 
 
 class Folder(_messages.Message):
@@ -1990,7 +1995,10 @@ class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
     name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
-      "projects/{project}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}" "organizations/{organizat
+      ion}/locations/global/muteConfigs/{mute_config}"
+      "folders/{folder}/locations/global/muteConfigs/{mute_config}"
+      "projects/{project}/locations/global/muteConfigs/{mute_config}"
     updateTime: Output only. The most recent time at which the mute config was
       updated. This field is set by the server and will be ignored if provided
       on config creation or update.
@@ -2073,8 +2081,8 @@ class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
 
 
 class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
-  r"""A resource value config is a mapping configuration of user's tag values
-  to resource values. Used by the attack path simulation.
+  r"""A resource value config (RVC) is a mapping configuration of user's
+  resources to resource values. Used in Attack path simulations.
 
   Enums:
     ResourceValueValueValuesEnum: Required. Resource value level this
@@ -2951,6 +2959,7 @@ class Kubernetes(_messages.Message):
       contains node pool information for each node, when it is available.
     nodes: Provides Kubernetes [node](https://cloud.google.com/kubernetes-
       engine/docs/concepts/cluster-architecture#nodes) information.
+    objects: Kubernetes objects related to the finding.
     pods: Kubernetes [Pods](https://cloud.google.com/kubernetes-
       engine/docs/concepts/pod) associated with the finding. This field
       contains Pod records for each container that is owned by a Pod.
@@ -2963,8 +2972,9 @@ class Kubernetes(_messages.Message):
   bindings = _messages.MessageField('GoogleCloudSecuritycenterV1Binding', 2, repeated=True)
   nodePools = _messages.MessageField('NodePool', 3, repeated=True)
   nodes = _messages.MessageField('Node', 4, repeated=True)
-  pods = _messages.MessageField('Pod', 5, repeated=True)
-  roles = _messages.MessageField('Role', 6, repeated=True)
+  objects = _messages.MessageField('Object', 5, repeated=True)
+  pods = _messages.MessageField('Pod', 6, repeated=True)
+  roles = _messages.MessageField('Role', 7, repeated=True)
 
 
 class Label(_messages.Message):
@@ -3282,6 +3292,17 @@ class ListValuedResourcesResponse(_messages.Message):
   nextPageToken = _messages.StringField(1)
   totalSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   valuedResources = _messages.MessageField('ValuedResource', 3, repeated=True)
+
+
+class LoadBalancer(_messages.Message):
+  r"""Contains information related to the load balancer associated with the
+  finding.
+
+  Fields:
+    name: The name of the load balancer associated with the finding.
+  """
+
+  name = _messages.StringField(1)
 
 
 class MemoryHashSignature(_messages.Message):
@@ -3617,6 +3638,30 @@ class NotificationConfig(_messages.Message):
   streamingConfig = _messages.MessageField('StreamingConfig', 5)
 
 
+class Object(_messages.Message):
+  r"""Kubernetes object related to the finding, uniquely identified by GKNN.
+  Used if the object Kind is not one of Pod, Node, NodePool, Binding, or
+  AccessReview.
+
+  Fields:
+    containers: Pod containers associated with this finding, if any.
+    group: Kubernetes object group, such as "policy.k8s.io/v1".
+    kind: Kubernetes object kind, such as "Namespace".
+    name: Kubernetes object name. For details see
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/.
+    ns: Kubernetes object namespace. Must be a valid DNS label. Named "ns" to
+      avoid collision with C++ namespace keyword. For details see
+      https://kubernetes.io/docs/tasks/administer-cluster/namespaces/.
+  """
+
+  containers = _messages.MessageField('Container', 1, repeated=True)
+  group = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  name = _messages.StringField(4)
+  ns = _messages.StringField(5)
+
+
 class Operation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -3723,6 +3768,17 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OrgPolicy(_messages.Message):
+  r"""Contains information about the org policies associated with the finding.
+
+  Fields:
+    name: The resource name of the org policy. Example:
+      "organizations/{organization_id}/policies/{constraint_name}"
+  """
+
+  name = _messages.StringField(1)
 
 
 class OrganizationSettings(_messages.Message):
@@ -4443,6 +4499,61 @@ class SecuritycenterFoldersFindingsBulkMuteRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class SecuritycenterFoldersLocationsMuteConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterFoldersLocationsMuteConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to delete. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersLocationsMuteConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterFoldersLocationsMuteConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to retrieve. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterFoldersLocationsMuteConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterFoldersLocationsMuteConfigsPatchRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    name: This field will be ignored if provided on config creation. Format
+      "organizations/{organization}/muteConfigs/{mute_config}"
+      "folders/{folder}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}" "organizations/{organizat
+      ion}/locations/global/muteConfigs/{mute_config}"
+      "folders/{folder}/locations/global/muteConfigs/{mute_config}"
+      "projects/{project}/locations/global/muteConfigs/{mute_config}"
+    updateMask: The list of fields to be updated. If empty all mutable fields
+      will be updated.
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SecuritycenterFoldersMuteConfigsCreateRequest(_messages.Message):
   r"""A SecuritycenterFoldersMuteConfigsCreateRequest object.
 
@@ -4470,8 +4581,11 @@ class SecuritycenterFoldersMuteConfigsDeleteRequest(_messages.Message):
   Fields:
     name: Required. Name of the mute config to delete. Its format is
       organizations/{organization}/muteConfigs/{config_id},
-      folders/{folder}/muteConfigs/{config_id}, or
-      projects/{project}/muteConfigs/{config_id}
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4483,8 +4597,11 @@ class SecuritycenterFoldersMuteConfigsGetRequest(_messages.Message):
   Fields:
     name: Required. Name of the mute config to retrieve. Its format is
       organizations/{organization}/muteConfigs/{config_id},
-      folders/{folder}/muteConfigs/{config_id}, or
-      projects/{project}/muteConfigs/{config_id}
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -4522,7 +4639,10 @@ class SecuritycenterFoldersMuteConfigsPatchRequest(_messages.Message):
     name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
-      "projects/{project}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}" "organizations/{organizat
+      ion}/locations/global/muteConfigs/{mute_config}"
+      "folders/{folder}/locations/global/muteConfigs/{mute_config}"
+      "projects/{project}/locations/global/muteConfigs/{mute_config}"
     updateMask: The list of fields to be updated. If empty all mutable fields
       will be updated.
   """
@@ -5476,6 +5596,61 @@ class SecuritycenterOrganizationsGetOrganizationSettingsRequest(_messages.Messag
   name = _messages.StringField(1, required=True)
 
 
+class SecuritycenterOrganizationsLocationsMuteConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsMuteConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to delete. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsLocationsMuteConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsMuteConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to retrieve. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterOrganizationsLocationsMuteConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterOrganizationsLocationsMuteConfigsPatchRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    name: This field will be ignored if provided on config creation. Format
+      "organizations/{organization}/muteConfigs/{mute_config}"
+      "folders/{folder}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}" "organizations/{organizat
+      ion}/locations/global/muteConfigs/{mute_config}"
+      "folders/{folder}/locations/global/muteConfigs/{mute_config}"
+      "projects/{project}/locations/global/muteConfigs/{mute_config}"
+    updateMask: The list of fields to be updated. If empty all mutable fields
+      will be updated.
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SecuritycenterOrganizationsMuteConfigsCreateRequest(_messages.Message):
   r"""A SecuritycenterOrganizationsMuteConfigsCreateRequest object.
 
@@ -5503,8 +5678,11 @@ class SecuritycenterOrganizationsMuteConfigsDeleteRequest(_messages.Message):
   Fields:
     name: Required. Name of the mute config to delete. Its format is
       organizations/{organization}/muteConfigs/{config_id},
-      folders/{folder}/muteConfigs/{config_id}, or
-      projects/{project}/muteConfigs/{config_id}
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5516,8 +5694,11 @@ class SecuritycenterOrganizationsMuteConfigsGetRequest(_messages.Message):
   Fields:
     name: Required. Name of the mute config to retrieve. Its format is
       organizations/{organization}/muteConfigs/{config_id},
-      folders/{folder}/muteConfigs/{config_id}, or
-      projects/{project}/muteConfigs/{config_id}
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -5555,7 +5736,10 @@ class SecuritycenterOrganizationsMuteConfigsPatchRequest(_messages.Message):
     name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
-      "projects/{project}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}" "organizations/{organizat
+      ion}/locations/global/muteConfigs/{mute_config}"
+      "folders/{folder}/locations/global/muteConfigs/{mute_config}"
+      "projects/{project}/locations/global/muteConfigs/{mute_config}"
     updateMask: The list of fields to be updated. If empty all mutable fields
       will be updated.
   """
@@ -6767,6 +6951,61 @@ class SecuritycenterProjectsFindingsBulkMuteRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class SecuritycenterProjectsLocationsMuteConfigsDeleteRequest(_messages.Message):
+  r"""A SecuritycenterProjectsLocationsMuteConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to delete. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsLocationsMuteConfigsGetRequest(_messages.Message):
+  r"""A SecuritycenterProjectsLocationsMuteConfigsGetRequest object.
+
+  Fields:
+    name: Required. Name of the mute config to retrieve. Its format is
+      organizations/{organization}/muteConfigs/{config_id},
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecuritycenterProjectsLocationsMuteConfigsPatchRequest(_messages.Message):
+  r"""A SecuritycenterProjectsLocationsMuteConfigsPatchRequest object.
+
+  Fields:
+    googleCloudSecuritycenterV1MuteConfig: A
+      GoogleCloudSecuritycenterV1MuteConfig resource to be passed as the
+      request body.
+    name: This field will be ignored if provided on config creation. Format
+      "organizations/{organization}/muteConfigs/{mute_config}"
+      "folders/{folder}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}" "organizations/{organizat
+      ion}/locations/global/muteConfigs/{mute_config}"
+      "folders/{folder}/locations/global/muteConfigs/{mute_config}"
+      "projects/{project}/locations/global/muteConfigs/{mute_config}"
+    updateMask: The list of fields to be updated. If empty all mutable fields
+      will be updated.
+  """
+
+  googleCloudSecuritycenterV1MuteConfig = _messages.MessageField('GoogleCloudSecuritycenterV1MuteConfig', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SecuritycenterProjectsMuteConfigsCreateRequest(_messages.Message):
   r"""A SecuritycenterProjectsMuteConfigsCreateRequest object.
 
@@ -6794,8 +7033,11 @@ class SecuritycenterProjectsMuteConfigsDeleteRequest(_messages.Message):
   Fields:
     name: Required. Name of the mute config to delete. Its format is
       organizations/{organization}/muteConfigs/{config_id},
-      folders/{folder}/muteConfigs/{config_id}, or
-      projects/{project}/muteConfigs/{config_id}
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6807,8 +7049,11 @@ class SecuritycenterProjectsMuteConfigsGetRequest(_messages.Message):
   Fields:
     name: Required. Name of the mute config to retrieve. Its format is
       organizations/{organization}/muteConfigs/{config_id},
-      folders/{folder}/muteConfigs/{config_id}, or
-      projects/{project}/muteConfigs/{config_id}
+      folders/{folder}/muteConfigs/{config_id},
+      projects/{project}/muteConfigs/{config_id},
+      organizations/{organization}/locations/global/muteConfigs/{config_id},
+      folders/{folder}/locations/global/muteConfigs/{config_id}, or
+      projects/{project}/locations/global/muteConfigs/{config_id}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -6846,7 +7091,10 @@ class SecuritycenterProjectsMuteConfigsPatchRequest(_messages.Message):
     name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
-      "projects/{project}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}" "organizations/{organizat
+      ion}/locations/global/muteConfigs/{mute_config}"
+      "folders/{folder}/locations/global/muteConfigs/{mute_config}"
+      "projects/{project}/locations/global/muteConfigs/{mute_config}"
     updateMask: The list of fields to be updated. If empty all mutable fields
       will be updated.
   """

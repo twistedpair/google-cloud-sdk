@@ -26,7 +26,7 @@ def AddAuthProviderCmdPath(parser):
       '--auth-provider-cmd-path',
       help="""
       Path to the gcloud executable for the auth provider field in kubeconfig.
-      """
+      """,
   )
 
 
@@ -38,7 +38,7 @@ def AddAdminUsers(parser):
       cluster-admin initially. This currently supports exactly one admin. If
       not set, the account issuing the creation request will be used by
       default.
-      """
+      """,
   )
 
 
@@ -49,7 +49,7 @@ def AddClusterIPV4CIDR(parser):
       help="""
       All pods in the cluster are assigned an RFC1918 IPv4 address from this
       block. This field cannot be changed after creation.
-      """
+      """,
   )
 
 
@@ -60,21 +60,21 @@ def AddServicesIPV4CIDR(parser):
       help="""
       All services in the cluster are assigned an RFC1918 IPv4 address from
       this block. This field cannot be changed after creation.
-      """
+      """,
   )
 
 
 def AddDefaultMaxPodsPerNode(parser):
   parser.add_argument(
       '--default-max-pods-per-node',
-      help='The default maximum number of pods per node.'
+      help='The default maximum number of pods per node.',
   )
 
 
 def AddFleetProject(parser):
   parser.add_argument(
       '--fleet-project',
-      help='Name of the Fleet host project where the cluster is registered.'
+      help='Name of the Fleet host project where the cluster is registered.',
   )
 
 
@@ -90,7 +90,7 @@ def AddLabels(parser):
       (-), underscores (```_```), lowercase characters, and numbers. Values must
       contain only hyphens (-), underscores (```_```), lowercase characters, and
       numbers.
-      """
+      """,
   )
 
 
@@ -101,7 +101,7 @@ def AddMaintenanceWindowRecurrence(parser):
       An RFC 5545 (https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
         recurrence rule for how the cluster maintenance window recurs. They go
         on for the span of time between the start and the end time.
-      """
+      """,
   )
 
 
@@ -112,7 +112,7 @@ def AddMaintenanceWindowEnd(parser):
       End time of the recurring cluster maintenance window in the RFC 3339
       (https://www.ietf.org/rfc/rfc3339.txt) format. E.g.
       "2021-01-01T00:00:00Z" or "2021-01-01T00:00:00-05:00"
-      """
+      """,
   )
 
 
@@ -123,7 +123,7 @@ def AddMaintenanceWindowStart(parser):
       Start time of the recurring cluster maintenance window in the RFC 3339
       (https://www.ietf.org/rfc/rfc3339.txt) format. E.g.
       "2021-01-01T00:00:00Z" or "2021-01-01T00:00:00-05:00"
-      """
+      """,
   )
 
 
@@ -133,7 +133,7 @@ def AddClusterIPV6CIDR(parser):
       help="""
       If specified, all pods in the cluster are assigned an RFC4193 IPv6 address
       from this block. This field cannot be changed after creation.
-      """
+      """,
   )
 
 
@@ -143,7 +143,7 @@ def AddServicesIPV6CIDR(parser):
       help="""
       If specified, all services in the cluster are assigned an RFC4193 IPv6
       address from this block. This field cannot be changed after creation.
-      """
+      """,
   )
 
 
@@ -157,7 +157,7 @@ def AddControlPlaneKMSKey(parser):
       `roles/cloudkms.cryptoKeyEncrypterDecrypter` on the key.
 
       If not provided, a Google-managed key will be used by default.
-      """
+      """,
   )
 
 
@@ -179,7 +179,7 @@ def AddSystemAddonsConfig(parser):
           }
         }
       }
-      """
+      """,
   )
 
 
@@ -202,13 +202,32 @@ def AddExternalLbIpv4AddressPools(parser):
   )
 
 
+def AddExternalLbIpv6AddressPools(parser):
+  parser.add_argument(
+      '--external-lb-ipv6-address-pools',
+      type=arg_parsers.ArgList(),
+      metavar='EXTERNAL_LB_IPV6_ADDRESS',
+      help="""
+      IPv6 address pools that are used for data plane load balancing of
+      local control plane clusters. Existing pools cannot be updated
+      after cluster creation; only adding new pools is allowed.
+      Each address pool must be specified as one of the following
+      two types of values:
+        1. A IPv6 address range, for example, "2001:db8::1-2001:db8::a". A range that contains a single IP (e.g. "2001:db8::1-2001:db8::1") is allowed.
+        2. A IPv6 CIDR block, for example, "2001:db8::/120"
+      Use comma when specifying multiple address pools, for example:
+        --external-lb-ipv6-address-pools 2001:db8::1-2001:db8::a,2001:db8::/120
+      """,
+  )
+
+
 def AddControlPlaneNodeLocation(parser):
   parser.add_argument(
       '--control-plane-node-location',
       help="""
       Google Edge Cloud zone where the local control plane nodes
       will be created.
-      """
+      """,
   )
 
 
@@ -220,7 +239,7 @@ def AddControlPlaneNodeCount(parser):
       a single-node control plane or use three to create a high availability
       control plane.
       Any other numbers of nodes will not be accepted.
-      """
+      """,
   )
 
 
@@ -232,7 +251,7 @@ def AddControlPlaneMachineFilter(parser):
       local control plane nodes.
       The filtering language accepts strings like "name=<name>",
       and is documented here: [AIP-160](https://google.aip.dev/160).
-      """
+      """,
   )
 
 
@@ -247,7 +266,7 @@ def AddControlPlaneSharedDeploymentPolicy(parser):
       deployed on control plane nodes. Instead, it can only be deployed on
       worker nodes. By default, this value is DISALLOWED. The input is case
       insensitive.
-      """
+      """,
   )
 
 
@@ -256,7 +275,7 @@ def AddLROMaximumTimeout(parser):
       '--lro-timeout',
       help="""
       Overwrite the default LRO maximum timeout.
-      """
+      """,
   )
 
 
@@ -265,7 +284,7 @@ def AddVersion(parser):
       '--version',
       help="""
       Target cluster version. For example: "1.5.0".
-      """
+      """,
   )
 
 
@@ -281,7 +300,7 @@ def AddReleaseChannel(parser):
       Additionally, if the REGULAR channel is used, a specific target version
       cannot be set with the 'version' flag. If left unspecified, the release
       channel will default to REGULAR.
-      """
+      """,
   )
 
 
@@ -291,7 +310,7 @@ def AddUpgradeVersion(parser):
       required=True,
       help="""
       Target cluster version to upgrade to. For example: "1.5.1".
-      """
+      """,
   )
 
 
@@ -302,7 +321,7 @@ def AddUpgradeSchedule(parser):
       help="""
       Schedule to upgrade a cluster after the request is acknowledged by Google.
       Support values: IMMEDIATELY.
-      """
+      """,
   )
 
 

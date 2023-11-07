@@ -1297,6 +1297,21 @@ class AiplatformProjectsLocationsEdgeDevicesOperationsWaitRequest(_messages.Mess
   timeout = _messages.StringField(2)
 
 
+class AiplatformProjectsLocationsEndpointsComputeTokensRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsComputeTokensRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to get lists of
+      tokens and token ids.
+    googleCloudAiplatformV1beta1ComputeTokensRequest: A
+      GoogleCloudAiplatformV1beta1ComputeTokensRequest resource to be passed
+      as the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1ComputeTokensRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ComputeTokensRequest', 2)
+
+
 class AiplatformProjectsLocationsEndpointsCountTokensRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsCountTokensRequest object.
 
@@ -6300,6 +6315,21 @@ class AiplatformProjectsLocationsPersistentResourcesPatchRequest(_messages.Messa
   updateMask = _messages.StringField(3)
 
 
+class AiplatformProjectsLocationsPipelineJobsBatchDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPipelineJobsBatchDeleteRequest object.
+
+  Fields:
+    googleCloudAiplatformV1beta1BatchDeletePipelineJobsRequest: A
+      GoogleCloudAiplatformV1beta1BatchDeletePipelineJobsRequest resource to
+      be passed as the request body.
+    parent: Required. The name of the PipelineJobs' parent resource. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1beta1BatchDeletePipelineJobsRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1BatchDeletePipelineJobsRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsPipelineJobsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsPipelineJobsCancelRequest object.
 
@@ -6470,6 +6500,22 @@ class AiplatformProjectsLocationsPipelineJobsOperationsWaitRequest(_messages.Mes
 
   name = _messages.StringField(1, required=True)
   timeout = _messages.StringField(2)
+
+
+class AiplatformProjectsLocationsPublishersModelsComputeTokensRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPublishersModelsComputeTokensRequest
+  object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to get lists of
+      tokens and token ids.
+    googleCloudAiplatformV1beta1ComputeTokensRequest: A
+      GoogleCloudAiplatformV1beta1ComputeTokensRequest resource to be passed
+      as the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1ComputeTokensRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1ComputeTokensRequest', 2)
 
 
 class AiplatformProjectsLocationsPublishersModelsCountTokensRequest(_messages.Message):
@@ -8954,6 +9000,18 @@ class GoogleCloudAiplatformV1beta1BatchDedicatedResources(_messages.Message):
   startingReplicaCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class GoogleCloudAiplatformV1beta1BatchDeletePipelineJobsRequest(_messages.Message):
+  r"""Request message for PipelineService.BatchDeletePipelineJobs.
+
+  Fields:
+    names: Required. The names of the PipelineJobs to delete. A maximum of 32
+      PipelineJobs can be deleted in a batch. Format:
+      `projects/{project}/locations/{location}/pipelineJobs/{pipelineJob}`
+  """
+
+  names = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1BatchImportEvaluatedAnnotationsRequest(_messages.Message):
   r"""Request message for ModelService.BatchImportEvaluatedAnnotations
 
@@ -9667,6 +9725,31 @@ class GoogleCloudAiplatformV1beta1CompletionStats(_messages.Message):
   successfulForecastPointCount = _messages.IntegerField(4)
 
 
+class GoogleCloudAiplatformV1beta1ComputeTokensRequest(_messages.Message):
+  r"""Request message for ComputeTokens RPC call.
+
+  Fields:
+    instances: Required. The instances that are the input to token computing
+      API call. Schema is identical to the prediction schema of the text
+      model, even for the non-text models, like chat models, or Codey models.
+  """
+
+  instances = _messages.MessageField('extra_types.JsonValue', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ComputeTokensResponse(_messages.Message):
+  r"""Response message for ComputeTokens RPC call.
+
+  Fields:
+    tokensInfo: Lists of tokens info from the input. A ComputeTokensRequest
+      could have multiple instances with a prompt in each instance. We also
+      need to return lists of tokens info for the request with multiple
+      instances.
+  """
+
+  tokensInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1TokensInfo', 1, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1ContainerRegistryDestination(_messages.Message):
   r"""The Container Registry location for the container image.
 
@@ -10079,6 +10162,19 @@ class GoogleCloudAiplatformV1beta1CreateMetadataStoreOperationMetadata(_messages
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1beta1CreateNotebookExecutionJobOperationMetadata(_messages.Message):
+  r"""Metadata information for NotebookService.CreateNotebookExecutionJob.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    progressMessage: A human-readable message that shows the intermediate
+      progress details of NotebookRuntime.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+  progressMessage = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1beta1CreateNotebookRuntimeTemplateOperationMetadata(_messages.Message):
   r"""Metadata information for NotebookService.CreateNotebookRuntimeTemplate.
 
@@ -10447,6 +10543,10 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
       of on-demand short-live machines. The network and CMEK configs on the
       job should be consistent with those on the PersistentResource,
       otherwise, the job will be rejected.
+    protectedArtifactLocationId: The ID of the location to store protected
+      artifacts. e.g. us-central1. Populate only when the location is
+      different than CustomJob location. List of supported locations:
+      https://cloud.google.com/vertex-ai/docs/general/locations
     reservedIpRanges: Optional. A list of names for the reserved ip ranges
       under the VPC network that can be used for this job. If set, we will
       deploy the job within the provided ip ranges. Otherwise, the job will be
@@ -10473,11 +10573,12 @@ class GoogleCloudAiplatformV1beta1CustomJobSpec(_messages.Message):
   experimentRun = _messages.StringField(5)
   network = _messages.StringField(6)
   persistentResourceId = _messages.StringField(7)
-  reservedIpRanges = _messages.StringField(8, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 9)
-  serviceAccount = _messages.StringField(10)
-  tensorboard = _messages.StringField(11)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 12, repeated=True)
+  protectedArtifactLocationId = _messages.StringField(8)
+  reservedIpRanges = _messages.StringField(9, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1beta1Scheduling', 10)
+  serviceAccount = _messages.StringField(11)
+  tensorboard = _messages.StringField(12)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1beta1WorkerPoolSpec', 13, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1DataItem(_messages.Message):
@@ -11224,16 +11325,16 @@ class GoogleCloudAiplatformV1beta1DeployedIndex(_messages.Message):
     createTime: Output only. Timestamp when the DeployedIndex was created.
     dedicatedResources: Optional. A description of resources that are
       dedicated to the DeployedIndex, and that need a higher degree of manual
-      configuration. If min_replica_count is not set, the default value is 2
-      (we don't provide SLA when min_replica_count=1). If max_replica_count is
-      not set, the default value is min_replica_count. The max allowed replica
-      count is 1000. Available machine types for SMALL shard: e2-standard-2
-      and all machine types available for MEDIUM and LARGE shard. Available
-      machine types for MEDIUM shard: e2-standard-16 and all machine types
-      available for LARGE shard. Available machine types for LARGE shard:
-      e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are
-      still available, but we recommend e2-standard-16 and e2-highmem-16 for
-      cost efficiency.
+      configuration. The field min_replica_count must be set to a value
+      strictly greater than 0, or else validation will fail. We don't provide
+      SLA when min_replica_count=1. If max_replica_count is not set, the
+      default value is min_replica_count. The max allowed replica count is
+      1000. Available machine types for SMALL shard: e2-standard-2 and all
+      machine types available for MEDIUM and LARGE shard. Available machine
+      types for MEDIUM shard: e2-standard-16 and all machine types available
+      for LARGE shard. Available machine types for LARGE shard: e2-highmem-16,
+      n2d-standard-32. n1-standard-16 and n1-standard-32 are still available,
+      but we recommend e2-standard-16 and e2-highmem-16 for cost efficiency.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -12234,7 +12335,20 @@ class GoogleCloudAiplatformV1beta1Execution(_messages.Message):
 class GoogleCloudAiplatformV1beta1ExplainRequest(_messages.Message):
   r"""Request message for PredictionService.Explain.
 
+  Messages:
+    ConcurrentExplanationSpecOverrideValue: Optional. This field is the same
+      as the one above, but supports multiple explanations to occur in
+      parallel. The key can be any string. Each override will be run against
+      the model, then its explanations will be grouped together. Note - these
+      explanations are run **In Addition** to the default Explanation in the
+      deployed model.
+
   Fields:
+    concurrentExplanationSpecOverride: Optional. This field is the same as the
+      one above, but supports multiple explanations to occur in parallel. The
+      key can be any string. Each override will be run against the model, then
+      its explanations will be grouped together. Note - these explanations are
+      run **In Addition** to the default Explanation in the deployed model.
     deployedModelId: If specified, this ExplainRequest will be served by the
       chosen DeployedModel, overriding Endpoint.traffic_split.
     explanationSpecOverride: If specified, overrides the explanation_spec of
@@ -12255,16 +12369,56 @@ class GoogleCloudAiplatformV1beta1ExplainRequest(_messages.Message):
       PredictSchemata's parameters_schema_uri.
   """
 
-  deployedModelId = _messages.StringField(1)
-  explanationSpecOverride = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpecOverride', 2)
-  instances = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
-  parameters = _messages.MessageField('extra_types.JsonValue', 4)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConcurrentExplanationSpecOverrideValue(_messages.Message):
+    r"""Optional. This field is the same as the one above, but supports
+    multiple explanations to occur in parallel. The key can be any string.
+    Each override will be run against the model, then its explanations will be
+    grouped together. Note - these explanations are run **In Addition** to the
+    default Explanation in the deployed model.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ConcurrentExplanationSpecOverrideValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ConcurrentExplanationSpecOverrideValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConcurrentExplanationSpecOverrideValue
+      object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1beta1ExplanationSpecOverride
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpecOverride', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  concurrentExplanationSpecOverride = _messages.MessageField('ConcurrentExplanationSpecOverrideValue', 1)
+  deployedModelId = _messages.StringField(2)
+  explanationSpecOverride = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpecOverride', 3)
+  instances = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
+  parameters = _messages.MessageField('extra_types.JsonValue', 5)
 
 
 class GoogleCloudAiplatformV1beta1ExplainResponse(_messages.Message):
   r"""Response message for PredictionService.Explain.
 
+  Messages:
+    ConcurrentExplanationsValue: This field stores the results of the
+      explanations run in parallel with The default explanation
+      strategy/method.
+
   Fields:
+    concurrentExplanations: This field stores the results of the explanations
+      run in parallel with The default explanation strategy/method.
     deployedModelId: ID of the Endpoint's DeployedModel that served this
       explanation.
     explanations: The explanations of the Model's PredictResponse.predictions.
@@ -12273,9 +12427,50 @@ class GoogleCloudAiplatformV1beta1ExplainResponse(_messages.Message):
       Same as PredictResponse.predictions.
   """
 
-  deployedModelId = _messages.StringField(1)
-  explanations = _messages.MessageField('GoogleCloudAiplatformV1beta1Explanation', 2, repeated=True)
-  predictions = _messages.MessageField('extra_types.JsonValue', 3, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConcurrentExplanationsValue(_messages.Message):
+    r"""This field stores the results of the explanations run in parallel with
+    The default explanation strategy/method.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ConcurrentExplanationsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ConcurrentExplanationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConcurrentExplanationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          GoogleCloudAiplatformV1beta1ExplainResponseConcurrentExplanation
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplainResponseConcurrentExplanation', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  concurrentExplanations = _messages.MessageField('ConcurrentExplanationsValue', 1)
+  deployedModelId = _messages.StringField(2)
+  explanations = _messages.MessageField('GoogleCloudAiplatformV1beta1Explanation', 3, repeated=True)
+  predictions = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1ExplainResponseConcurrentExplanation(_messages.Message):
+  r"""This message is a wrapper grouping Concurrent Explanations.
+
+  Fields:
+    explanations: The explanations of the Model's PredictResponse.predictions.
+      It has the same number of elements as instances to be explained.
+  """
+
+  explanations = _messages.MessageField('GoogleCloudAiplatformV1beta1Explanation', 1, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1Explanation(_messages.Message):
@@ -13208,6 +13403,9 @@ class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
       (Legacy). Timestamp when this EntityType was most recently updated.
     valueType: Immutable. Only applicable for Vertex AI Feature Store
       (Legacy). Type of Feature value.
+    versionColumnName: Only applicable for Vertex AI Feature Store. The name
+      of the BigQuery Table/View columnn hosting data for this version. If no
+      value is provided, will use feature_id.
   """
 
   class ValueTypeValueValuesEnum(_messages.Enum):
@@ -13279,6 +13477,7 @@ class GoogleCloudAiplatformV1beta1Feature(_messages.Message):
   name = _messages.StringField(9)
   updateTime = _messages.StringField(10)
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 11)
+  versionColumnName = _messages.StringField(12)
 
 
 class GoogleCloudAiplatformV1beta1FeatureGroup(_messages.Message):
@@ -13472,6 +13671,11 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStore(_messages.Message):
       keys are prefixed with "aiplatform.googleapis.com/" and are immutable.
     name: Output only. Name of the FeatureOnlineStore. Format: `projects/{proj
       ect}/locations/{location}/featureOnlineStores/{featureOnlineStore}`
+    optimized: Contains settings for the Optimized store that will be created
+      to serve featureValues for all FeatureViews under this
+      FeatureOnlineStore. When choose Optimized storage type, need to set
+      PrivateServiceConnectConfig.enable_private_service_connect to use
+      private endpoint. Otherwise will use public endpoint by default.
     state: Output only. State of the featureOnlineStore.
     updateTime: Output only. Timestamp when this FeatureOnlineStore was last
       updated.
@@ -13533,8 +13737,9 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStore(_messages.Message):
   etag = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  updateTime = _messages.StringField(9)
+  optimized = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureOnlineStoreOptimized', 8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtable(_messages.Message):
@@ -13570,14 +13775,25 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStoreBigtableAutoScaling(_message
 
 
 class GoogleCloudAiplatformV1beta1FeatureOnlineStoreDedicatedServingEndpoint(_messages.Message):
-  r"""The dedicated serving endpoint for this FeatureOnlineStore.
+  r"""The dedicated serving endpoint for this FeatureOnlineStore. Only need to
+  set when you choose Optimized storage type or enable EmbeddingManagement.
+  Will use public endpoint by default.
 
   Fields:
+    privateServiceConnectConfig: Optional. Private service connect config. If
+      PrivateServiceConnectConfig.enable_private_service_connect set to true,
+      customers will use private service connection to send request.
+      Otherwise, the connection will set to public endpoint.
     publicEndpointDomainName: Output only. This field will be populated with
       the domain name to use for this FeatureOnlineStore
+    serviceAttachment: Output only. The name of the service attachment
+      resource. Populated if private service connect is enabled and after
+      FeatureViewSync is created.
   """
 
-  publicEndpointDomainName = _messages.StringField(1)
+  privateServiceConnectConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig', 1)
+  publicEndpointDomainName = _messages.StringField(2)
+  serviceAttachment = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1FeatureOnlineStoreEmbeddingManagement(_messages.Message):
@@ -13590,6 +13806,10 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStoreEmbeddingManagement(_message
   """
 
   enabled = _messages.BooleanField(1)
+
+
+class GoogleCloudAiplatformV1beta1FeatureOnlineStoreOptimized(_messages.Message):
+  r"""Optimized storage type to replace lightning"""
 
 
 class GoogleCloudAiplatformV1beta1FeatureSelector(_messages.Message):
@@ -14590,17 +14810,6 @@ class GoogleCloudAiplatformV1beta1GenericOperationMetadata(_messages.Message):
   updateTime = _messages.StringField(3)
 
 
-class GoogleCloudAiplatformV1beta1GenieSource(_messages.Message):
-  r"""Contains information about the source of the models generated from
-  Generative AI Studio.
-
-  Fields:
-    baseModelUri: Required. The public base model URI.
-  """
-
-  baseModelUri = _messages.StringField(1)
-
-
 class GoogleCloudAiplatformV1beta1HyperparameterTuningJob(_messages.Message):
   r"""Represents a HyperparameterTuningJob. A HyperparameterTuningJob has a
   Study specification and multiple CustomJobs with identical CustomJob
@@ -15154,6 +15363,10 @@ class GoogleCloudAiplatformV1beta1IndexDatapoint(_messages.Message):
     datapointId: Required. Unique identifier of the datapoint.
     featureVector: Required. Feature embedding vector. An array of numbers
       with the length of [NearestNeighborSearchConfig.dimensions].
+    numericRestricts: Optional. List of Restrict of the datapoint, used to
+      perform "restricted searches" where boolean rule are used to filter the
+      subset of the database eligible for matching. This uses numeric
+      comparisons.
     restricts: Optional. List of Restrict of the datapoint, used to perform
       "restricted searches" where boolean rule are used to filter the subset
       of the database eligible for matching. This uses categorical tokens.
@@ -15163,7 +15376,8 @@ class GoogleCloudAiplatformV1beta1IndexDatapoint(_messages.Message):
   crowdingTag = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexDatapointCrowdingTag', 1)
   datapointId = _messages.StringField(2)
   featureVector = _messages.FloatField(3, repeated=True, variant=_messages.Variant.FLOAT)
-  restricts = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexDatapointRestriction', 4, repeated=True)
+  numericRestricts = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexDatapointNumericRestriction', 4, repeated=True)
+  restricts = _messages.MessageField('GoogleCloudAiplatformV1beta1IndexDatapointRestriction', 5, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1IndexDatapointCrowdingTag(_messages.Message):
@@ -15180,6 +15394,50 @@ class GoogleCloudAiplatformV1beta1IndexDatapointCrowdingTag(_messages.Message):
   """
 
   crowdingAttribute = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1beta1IndexDatapointNumericRestriction(_messages.Message):
+  r"""This field allows restricts to be based on numeric comparisons rather
+  than categorical tokens.
+
+  Enums:
+    OpValueValuesEnum: This MUST be specified for queries and must NOT be
+      specified for datapoints.
+
+  Fields:
+    namespace: The namespace of this restriction. e.g.: cost.
+    op: This MUST be specified for queries and must NOT be specified for
+      datapoints.
+    valueDouble: Represents 64 bit float.
+    valueFloat: Represents 32 bit float.
+    valueInt: Represents 64 bit integer.
+  """
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""This MUST be specified for queries and must NOT be specified for
+    datapoints.
+
+    Values:
+      OPERATOR_UNSPECIFIED: Default value of the enum.
+      LESS: Datapoints are eligible iff their value is < the query's.
+      LESS_EQUAL: Datapoints are eligible iff their value is <= the query's.
+      EQUAL: Datapoints are eligible iff their value is == the query's.
+      GREATER_EQUAL: Datapoints are eligible iff their value is >= the
+        query's.
+      GREATER: Datapoints are eligible iff their value is > the query's.
+    """
+    OPERATOR_UNSPECIFIED = 0
+    LESS = 1
+    LESS_EQUAL = 2
+    EQUAL = 3
+    GREATER_EQUAL = 4
+    GREATER = 5
+
+  namespace = _messages.StringField(1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  valueDouble = _messages.FloatField(3)
+  valueFloat = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  valueInt = _messages.IntegerField(5)
 
 
 class GoogleCloudAiplatformV1beta1IndexDatapointRestriction(_messages.Message):
@@ -16615,9 +16873,6 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
       for requesting explanation by setting explanation_spec of
       DeployModelRequest.deployed_model and for batch explanation by setting
       explanation_spec of BatchPredictionJob.
-    generatedModelSource: Optional. Used to specify the source of the Model
-      Garden model or Genie models. Only present for models created or tuned
-      from Model Garden and Genie.
     labels: The labels with user-defined metadata to organize your Models.
       Label keys and values can be no longer than 64 characters (Unicode
       codepoints), can only contain lowercase letters, numeric characters,
@@ -16772,26 +17027,25 @@ class GoogleCloudAiplatformV1beta1Model(_messages.Message):
   encryptionSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1EncryptionSpec', 7)
   etag = _messages.StringField(8)
   explanationSpec = _messages.MessageField('GoogleCloudAiplatformV1beta1ExplanationSpec', 9)
-  generatedModelSource = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelGeneratedModelSource', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  metadata = _messages.MessageField('extra_types.JsonValue', 12)
-  metadataArtifact = _messages.StringField(13)
-  metadataSchemaUri = _messages.StringField(14)
-  modelSourceInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelSourceInfo', 15)
-  name = _messages.StringField(16)
-  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelOriginalModelInfo', 17)
-  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 18)
-  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 19, repeated=True)
-  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 20, repeated=True)
-  supportedInputStorageFormats = _messages.StringField(21, repeated=True)
-  supportedOutputStorageFormats = _messages.StringField(22, repeated=True)
-  trainingPipeline = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  versionAliases = _messages.StringField(25, repeated=True)
-  versionCreateTime = _messages.StringField(26)
-  versionDescription = _messages.StringField(27)
-  versionId = _messages.StringField(28)
-  versionUpdateTime = _messages.StringField(29)
+  labels = _messages.MessageField('LabelsValue', 10)
+  metadata = _messages.MessageField('extra_types.JsonValue', 11)
+  metadataArtifact = _messages.StringField(12)
+  metadataSchemaUri = _messages.StringField(13)
+  modelSourceInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelSourceInfo', 14)
+  name = _messages.StringField(15)
+  originalModelInfo = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelOriginalModelInfo', 16)
+  predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1beta1PredictSchemata', 17)
+  supportedDeploymentResourcesTypes = _messages.EnumField('SupportedDeploymentResourcesTypesValueListEntryValuesEnum', 18, repeated=True)
+  supportedExportFormats = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelExportFormat', 19, repeated=True)
+  supportedInputStorageFormats = _messages.StringField(20, repeated=True)
+  supportedOutputStorageFormats = _messages.StringField(21, repeated=True)
+  trainingPipeline = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  versionAliases = _messages.StringField(24, repeated=True)
+  versionCreateTime = _messages.StringField(25)
+  versionDescription = _messages.StringField(26)
+  versionId = _messages.StringField(27)
+  versionUpdateTime = _messages.StringField(28)
 
 
 class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
@@ -17549,30 +17803,6 @@ class GoogleCloudAiplatformV1beta1ModelExportFormat(_messages.Message):
 
   exportableContents = _messages.EnumField('ExportableContentsValueListEntryValuesEnum', 1, repeated=True)
   id = _messages.StringField(2)
-
-
-class GoogleCloudAiplatformV1beta1ModelGardenSource(_messages.Message):
-  r"""Contains information about the source of the models generated from Model
-  Garden.
-
-  Fields:
-    publicModelName: Required. The model garden source model resource name.
-  """
-
-  publicModelName = _messages.StringField(1)
-
-
-class GoogleCloudAiplatformV1beta1ModelGeneratedModelSource(_messages.Message):
-  r"""Used to specify the source of the Model Garden model or Genie models.
-  Only present for models created or tuned from Model Garden and Genie.
-
-  Fields:
-    genieSource: Information about the base model of Genie models.
-    modelGardenSource: Source information of Model Garden models.
-  """
-
-  genieSource = _messages.MessageField('GoogleCloudAiplatformV1beta1GenieSource', 1)
-  modelGardenSource = _messages.MessageField('GoogleCloudAiplatformV1beta1ModelGardenSource', 2)
 
 
 class GoogleCloudAiplatformV1beta1ModelMonitoringAlertConfig(_messages.Message):
@@ -25303,7 +25533,7 @@ class GoogleCloudAiplatformV1beta1StringArray(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1Study(_messages.Message):
-  r"""A message representing a Study.
+  r"""A message representing a Study. Next id: 12
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a Study.
@@ -25371,6 +25601,8 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
       supported by the Vertex AI Vizier service. Not supported by
       HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
+    studyStoppingConfig: Conditions for automated stopping of a Study. Enable
+      automated stopping by configuring at least one condition.
     transferLearningConfig: The configuration info/options for transfer
       learning. Currently supported for Vertex AI Vizier service, not
       HyperParameterTuningJob
@@ -25432,7 +25664,8 @@ class GoogleCloudAiplatformV1beta1StudySpec(_messages.Message):
   metrics = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecMetricSpec', 7, repeated=True)
   observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 8)
   parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecParameterSpec', 9, repeated=True)
-  transferLearningConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig', 10)
+  studyStoppingConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecStudyStoppingConfig', 10)
+  transferLearningConfig = _messages.MessageField('GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig', 11)
 
 
 class GoogleCloudAiplatformV1beta1StudySpecConvexAutomatedStoppingSpec(_messages.Message):
@@ -25788,6 +26021,58 @@ class GoogleCloudAiplatformV1beta1StudySpecParameterSpecIntegerValueSpec(_messag
   minValue = _messages.IntegerField(3)
 
 
+class GoogleCloudAiplatformV1beta1StudySpecStudyStoppingConfig(_messages.Message):
+  r"""The configuration (stopping conditions) for automated stopping of a
+  Study. Conditions include trial budgets, time budgets, and convergence
+  detection.
+
+  Fields:
+    maxDurationNoProgress: If the objective value has not improved for this
+      much time, stop the study. WARNING: Effective only for single-objective
+      studies.
+    maxNumTrials: If there are more than this many trials, stop the study.
+    maxNumTrialsNoProgress: If the objective value has not improved for this
+      many consecutive trials, stop the study. WARNING: Effective only for
+      single-objective studies.
+    maximumRuntimeConstraint: If the specified time or duration has passed,
+      stop the study.
+    minNumTrials: If there are fewer than this many COMPLETED trials, do not
+      stop the study.
+    minimumRuntimeConstraint: Each "stopping rule" in this proto specifies an
+      "if" condition. Before Vizier would generate a new suggestion, it first
+      checks each specified stopping rule, from top to bottom in this list.
+      Note that the first few rules (e.g. minimum_runtime_constraint,
+      min_num_trials) will prevent other stopping rules from being evaluated
+      until they are met. For example, setting `min_num_trials=5` and
+      `always_stop_after= 1 hour` means that the Study will ONLY stop after it
+      has 5 COMPLETED trials, even if more than an hour has passed since its
+      creation. It follows the first applicable rule (whose "if" condition is
+      satisfied) to make a stopping decision. If none of the specified rules
+      are applicable, then Vizier decides that the study should not stop. If
+      Vizier decides that the study should stop, the study enters STOPPING
+      state (or STOPPING_ASAP if should_stop_asap = true). IMPORTANT: The
+      automatic study state transition happens precisely as described above;
+      that is, deleting trials or updating StudyConfig NEVER automatically
+      moves the study state back to ACTIVE. If you want to _resume_ a Study
+      that was stopped, 1) change the stopping conditions if necessary, 2)
+      activate the study, and then 3) ask for suggestions. If the specified
+      time or duration has not passed, do not stop the study.
+    shouldStopAsap: If true, a Study enters STOPPING_ASAP whenever it would
+      normally enters STOPPING state. The bottom line is: set to true if you
+      want to interrupt on-going evaluations of Trials as soon as the study
+      stopping condition is met. (Please see Study.State documentation for the
+      source of truth).
+  """
+
+  maxDurationNoProgress = _messages.StringField(1)
+  maxNumTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxNumTrialsNoProgress = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maximumRuntimeConstraint = _messages.MessageField('GoogleCloudAiplatformV1beta1StudyTimeConstraint', 4)
+  minNumTrials = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minimumRuntimeConstraint = _messages.MessageField('GoogleCloudAiplatformV1beta1StudyTimeConstraint', 6)
+  shouldStopAsap = _messages.BooleanField(7)
+
+
 class GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig(_messages.Message):
   r"""This contains flag for manually disabling transfer learning for a study.
   The names of prior studies being used for transfer learning (if any) are
@@ -25802,6 +26087,19 @@ class GoogleCloudAiplatformV1beta1StudySpecTransferLearningConfig(_messages.Mess
 
   disableTransferLearning = _messages.BooleanField(1)
   priorStudyNames = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudAiplatformV1beta1StudyTimeConstraint(_messages.Message):
+  r"""Time-based Constraint for Study
+
+  Fields:
+    endTime: Compares the wallclock time to this time. Must use UTC timezone.
+    maxDuration: Counts the wallclock time passed since the creation of this
+      Study.
+  """
+
+  endTime = _messages.StringField(1)
+  maxDuration = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1beta1SuggestTrialsMetadata(_messages.Message):
@@ -26515,6 +26813,19 @@ class GoogleCloudAiplatformV1beta1TimestampSplit(_messages.Message):
   testFraction = _messages.FloatField(2)
   trainingFraction = _messages.FloatField(3)
   validationFraction = _messages.FloatField(4)
+
+
+class GoogleCloudAiplatformV1beta1TokensInfo(_messages.Message):
+  r"""Tokens info with a list of tokens and the corresponding list of token
+  ids.
+
+  Fields:
+    tokenIds: A list of token ids from the input.
+    tokens: A list of tokens from the input.
+  """
+
+  tokenIds = _messages.IntegerField(1, repeated=True)
+  tokens = _messages.BytesField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1beta1TrainingConfig(_messages.Message):

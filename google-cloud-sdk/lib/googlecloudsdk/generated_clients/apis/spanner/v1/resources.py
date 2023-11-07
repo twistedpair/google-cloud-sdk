@@ -52,6 +52,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_INSTANCECONFIGS_SSDCACHES = (
+      'projects.instanceConfigs.ssdCaches',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instanceConfigs/{instanceConfigsId}/'
+              'ssdCaches/{ssdCachesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_INSTANCECONFIGS_SSDCACHES_OPERATIONS = (
+      'projects.instanceConfigs.ssdCaches.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instanceConfigs/{instanceConfigsId}/'
+              'ssdCaches/{ssdCachesId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_INSTANCES = (
       'projects.instances',
       '{+name}',

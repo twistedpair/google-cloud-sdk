@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -42,6 +42,7 @@ __protobuf__ = proto.module(
         'ListNotificationConfigsResponse',
         'ComposeObjectRequest',
         'DeleteObjectRequest',
+        'RestoreObjectRequest',
         'CancelResumableWriteRequest',
         'CancelResumableWriteResponse',
         'ReadObjectRequest',
@@ -755,6 +756,107 @@ class DeleteObjectRequest(proto.Message):
     )
 
 
+class RestoreObjectRequest(proto.Message):
+    r"""Message for restoring an object. ``bucket``, ``object``, and
+    ``generation`` **must** be set.
+
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        bucket (str):
+            Required. Name of the bucket in which the
+            object resides.
+        object_ (str):
+            Required. The name of the object to restore.
+        generation (int):
+            Required. The specific revision of the object
+            to restore.
+        if_generation_match (int):
+            Makes the operation conditional on whether
+            the object's current generation matches the
+            given value. Setting to 0 makes the operation
+            succeed only if there are no live versions of
+            the object.
+
+            This field is a member of `oneof`_ ``_if_generation_match``.
+        if_generation_not_match (int):
+            Makes the operation conditional on whether
+            the object's live generation does not match the
+            given value. If no live object exists, the
+            precondition fails. Setting to 0 makes the
+            operation succeed only if there is a live
+            version of the object.
+
+            This field is a member of `oneof`_ ``_if_generation_not_match``.
+        if_metageneration_match (int):
+            Makes the operation conditional on whether
+            the object's current metageneration matches the
+            given value.
+
+            This field is a member of `oneof`_ ``_if_metageneration_match``.
+        if_metageneration_not_match (int):
+            Makes the operation conditional on whether
+            the object's current metageneration does not
+            match the given value.
+
+            This field is a member of `oneof`_ ``_if_metageneration_not_match``.
+        copy_source_acl (bool):
+            If false or unset, the bucket's default
+            object ACL will be used. If true, copy the
+            source object's access controls. Return an error
+            if bucket has UBLA enabled.
+
+            This field is a member of `oneof`_ ``_copy_source_acl``.
+        common_object_request_params (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.CommonObjectRequestParams):
+            A set of parameters common to Storage API
+            requests concerning an object.
+    """
+
+    bucket: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    object_: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    generation: int = proto.Field(
+        proto.INT64,
+        number=3,
+    )
+    if_generation_match: int = proto.Field(
+        proto.INT64,
+        number=4,
+        optional=True,
+    )
+    if_generation_not_match: int = proto.Field(
+        proto.INT64,
+        number=5,
+        optional=True,
+    )
+    if_metageneration_match: int = proto.Field(
+        proto.INT64,
+        number=6,
+        optional=True,
+    )
+    if_metageneration_not_match: int = proto.Field(
+        proto.INT64,
+        number=7,
+        optional=True,
+    )
+    copy_source_acl: bool = proto.Field(
+        proto.BOOL,
+        number=9,
+        optional=True,
+    )
+    common_object_request_params: 'CommonObjectRequestParams' = proto.Field(
+        proto.MESSAGE,
+        number=8,
+        message='CommonObjectRequestParams',
+    )
+
+
 class CancelResumableWriteRequest(proto.Message):
     r"""Message for canceling an in-progress resumable upload. ``upload_id``
     **must** be set.
@@ -926,6 +1028,11 @@ class GetObjectRequest(proto.Message):
             If present, selects a specific revision of
             this object (as opposed to the latest version,
             the default).
+        soft_deleted (bool):
+            If true, return the soft-deleted version of
+            this object.
+
+            This field is a member of `oneof`_ ``_soft_deleted``.
         if_generation_match (int):
             Makes the operation conditional on whether
             the object's current generation matches the
@@ -979,6 +1086,11 @@ class GetObjectRequest(proto.Message):
     generation: int = proto.Field(
         proto.INT64,
         number=3,
+    )
+    soft_deleted: bool = proto.Field(
+        proto.BOOL,
+        number=11,
+        optional=True,
     )
     if_generation_match: int = proto.Field(
         proto.INT64,
@@ -1505,6 +1617,10 @@ class ListObjectsRequest(proto.Message):
             lexicographic_start is also set, the objects listed have
             names between lexicographic_start (inclusive) and
             lexicographic_end (exclusive).
+        soft_deleted (bool):
+            Optional. If true, only list all soft-deleted
+            versions of the object. Soft delete policy is
+            required to set this option.
         match_glob (str):
             Optional. Filter results to objects and prefixes that match
             this glob pattern. See `List Objects Using
@@ -1553,6 +1669,10 @@ class ListObjectsRequest(proto.Message):
     lexicographic_end: str = proto.Field(
         proto.STRING,
         number=11,
+    )
+    soft_deleted: bool = proto.Field(
+        proto.BOOL,
+        number=12,
     )
     match_glob: str = proto.Field(
         proto.STRING,
@@ -2566,6 +2686,10 @@ class Bucket(proto.Message):
             there is no configuration, the Autoclass feature
             will be disabled and have no effect on the
             bucket.
+        soft_delete_policy (googlecloudsdk.generated_clients.gapic_clients.storage_v2.types.Bucket.SoftDeletePolicy):
+            Optional. The bucket's soft delete policy.
+            The soft delete policy prevents soft-deleted
+            objects from being permanently deleted.
     """
 
     class Billing(proto.Message):
@@ -2936,6 +3060,40 @@ class Bucket(proto.Message):
             message=duration_pb2.Duration,
         )
 
+    class SoftDeletePolicy(proto.Message):
+        r"""Soft delete policy properties of a bucket.
+
+        .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+        Attributes:
+            retention_duration (google.protobuf.duration_pb2.Duration):
+                The period of time that soft-deleted objects
+                in the bucket must be retained and cannot be
+                permanently deleted. The duration must be
+                greater than or equal to 7 days and less than 1
+                year.
+
+                This field is a member of `oneof`_ ``_retention_duration``.
+            effective_time (google.protobuf.timestamp_pb2.Timestamp):
+                Time from which the policy was effective.
+                This is service-provided.
+
+                This field is a member of `oneof`_ ``_effective_time``.
+        """
+
+        retention_duration: duration_pb2.Duration = proto.Field(
+            proto.MESSAGE,
+            number=1,
+            optional=True,
+            message=duration_pb2.Duration,
+        )
+        effective_time: timestamp_pb2.Timestamp = proto.Field(
+            proto.MESSAGE,
+            number=2,
+            optional=True,
+            message=timestamp_pb2.Timestamp,
+        )
+
     class Versioning(proto.Message):
         r"""Properties of a bucket related to versioning.
         For more on Cloud Storage versioning, see
@@ -3176,6 +3334,11 @@ class Bucket(proto.Message):
         proto.MESSAGE,
         number=28,
         message=Autoclass,
+    )
+    soft_delete_policy: SoftDeletePolicy = proto.Field(
+        proto.MESSAGE,
+        number=31,
+        message=SoftDeletePolicy,
     )
 
 
@@ -3420,6 +3583,7 @@ class NotificationConfig(proto.Message):
         topic (str):
             Required. The Pub/Sub topic to which this
             subscription publishes. Formatted as:
+
             '//pubsub.googleapis.com/projects/{project-identifier}/topics/{my-topic}'
         etag (str):
             The etag of the NotificationConfig.

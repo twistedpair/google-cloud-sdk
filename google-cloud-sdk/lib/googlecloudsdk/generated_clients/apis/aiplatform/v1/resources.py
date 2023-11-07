@@ -336,6 +336,28 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_NOTEBOOKRUNTIMETEMPLATES = (
+      'projects.locations.notebookRuntimeTemplates',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'notebookRuntimeTemplates/{notebookRuntimeTemplatesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_NOTEBOOKRUNTIMES = (
+      'projects.locations.notebookRuntimes',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'notebookRuntimes/{notebookRuntimesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

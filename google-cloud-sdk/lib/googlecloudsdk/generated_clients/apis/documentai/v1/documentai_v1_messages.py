@@ -985,12 +985,12 @@ class GoogleCloudDocumentaiUiv1beta3ImportProcessorVersionResponse(_messages.Mes
 
 
 class GoogleCloudDocumentaiUiv1beta3ResyncDatasetMetadata(_messages.Message):
-  r"""The metadata proto of ResyncDataset method.
+  r"""The metadata proto of `ResyncDataset` method.
 
   Fields:
     commonMetadata: The basic metadata of the long-running operation.
     datasetResyncStatuses: The list of dataset resync statuses. Not checked
-      when `dataset_documents` is specified in ResyncRequest.
+      when ResyncDatasetRequest.dataset_documents is specified.
     individualDocumentResyncStatuses: The list of document resync statuses.
       The same document could have multiple
       `individual_document_resync_statuses` if it has multiple
@@ -1012,7 +1012,7 @@ class GoogleCloudDocumentaiUiv1beta3ResyncDatasetMetadataDatasetResyncStatus(_me
   Fields:
     datasetInconsistencyType: The type of the inconsistency of the dataset.
     status: The status of resyncing the dataset with regards to the detected
-      inconsistency. Empty if `validate_only` is true in the request.
+      inconsistency. Empty if ResyncDatasetRequest.validate_only is `true`.
   """
 
   class DatasetInconsistencyTypeValueValuesEnum(_messages.Enum):
@@ -1041,7 +1041,7 @@ class GoogleCloudDocumentaiUiv1beta3ResyncDatasetMetadataIndividualDocumentResyn
     documentId: The document identifier.
     documentInconsistencyType: The type of document inconsistency.
     status: The status of resyncing the document with regards to the detected
-      inconsistency. Empty if `validate_only` is true in the request.
+      inconsistency. Empty if ResyncDatasetRequest.validate_only is `true`.
   """
 
   class DocumentInconsistencyTypeValueValuesEnum(_messages.Enum):
@@ -5798,8 +5798,8 @@ class GoogleCloudDocumentaiV1beta3Dataset(_messages.Message):
       updating dataset.
 
   Fields:
-    documentWarehouseConfig: Optional. Document AI Warehouse-based dataset
-      configuration.
+    documentWarehouseConfig: Optional. Derepcated. Warehouse-based dataset
+      configuration is not supported today.
     gcsManagedConfig: Optional. User-managed Cloud Storage dataset
       configuration. Use this configuration if the dataset documents are
       stored under a user-managed Cloud Storage location.

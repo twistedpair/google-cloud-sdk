@@ -55,7 +55,7 @@ class CloudVpn(_messages.Message):
 
 
 class Cluster(_messages.Message):
-  r"""A Google Distributed Cloud Edge Kubernetes cluster. Next: 25
+  r"""A Google Distributed Cloud Edge Kubernetes cluster.
 
   Enums:
     ReleaseChannelValueValuesEnum: Optional. The release channel a cluster is
@@ -80,8 +80,10 @@ class Cluster(_messages.Message):
       in this cluster. If unspecified, the Kubernetes default value will be
       used.
     endpoint: Output only. The IP address of the Kubernetes API server.
-    externalLoadBalancerIpv4AddressPools: Optional. Address pools for cluster
-      data plane external load balancing.
+    externalLoadBalancerIpv4AddressPools: Optional. IPv4 address pools for
+      cluster data plane external load balancing.
+    externalLoadBalancerIpv6AddressPools: Optional. IPv6 address pools for
+      cluster data plane external load balancing.
     fleet: Required. Fleet configuration.
     labels: Labels associated with this resource.
     maintenanceEvents: Output only. All the maintenance events scheduled for
@@ -168,19 +170,20 @@ class Cluster(_messages.Message):
   defaultMaxPodsPerNode = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   endpoint = _messages.StringField(8)
   externalLoadBalancerIpv4AddressPools = _messages.StringField(9, repeated=True)
-  fleet = _messages.MessageField('Fleet', 10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 12, repeated=True)
-  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 13)
-  name = _messages.StringField(14)
-  networking = _messages.MessageField('ClusterNetworking', 15)
-  nodeVersion = _messages.StringField(16)
-  port = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 18)
-  status = _messages.EnumField('StatusValueValuesEnum', 19)
-  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 20)
-  targetVersion = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  externalLoadBalancerIpv6AddressPools = _messages.StringField(10, repeated=True)
+  fleet = _messages.MessageField('Fleet', 11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  maintenanceEvents = _messages.MessageField('MaintenanceEvent', 13, repeated=True)
+  maintenancePolicy = _messages.MessageField('MaintenancePolicy', 14)
+  name = _messages.StringField(15)
+  networking = _messages.MessageField('ClusterNetworking', 16)
+  nodeVersion = _messages.StringField(17)
+  port = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 19)
+  status = _messages.EnumField('StatusValueValuesEnum', 20)
+  systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 21)
+  targetVersion = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class ClusterNetworking(_messages.Message):
@@ -1713,6 +1716,7 @@ class VpnConnection(_messages.Message):
       multiple NAT IPs, the customer needs to configure NAT such that only one
       external IP maps to the GMEC Anthos cluster. This is empty if NAT is not
       used.
+    router: Optional. The VPN connection Cloud Router name.
     updateTime: Output only. The time when the VPN connection was last
       updated.
     vpc: The network ID of VPC to connect to.
@@ -1764,9 +1768,10 @@ class VpnConnection(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   natGatewayIp = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
-  vpc = _messages.StringField(10)
-  vpcProject = _messages.MessageField('VpcProject', 11)
+  router = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+  vpc = _messages.StringField(11)
+  vpcProject = _messages.MessageField('VpcProject', 12)
 
 
 class ZoneMetadata(_messages.Message):

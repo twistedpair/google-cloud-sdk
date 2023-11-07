@@ -270,14 +270,18 @@ class ContactSettings(_messages.Message):
         available. When setting this option, you must also provide a
         `PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field
         of the request.
-      PRIVATE_CONTACT_DATA: None of the data from `ContactSettings` is
-        publicly available. Instead, proxy contact data is published for your
-        domain. Email sent to the proxy email address is forwarded to the
-        registrant's email address. Cloud Domains provides this privacy proxy
-        service at no additional cost.
-      REDACTED_CONTACT_DATA: Some data from `ContactSettings` is publicly
-        available. The actual information redacted depends on the domain. For
-        details, see [the registration privacy
+      PRIVATE_CONTACT_DATA: Deprecated: For more information, see [Cloud
+        Domains feature deprecation](https://cloud.google.com/domains/docs/dep
+        recations/feature-deprecations) None of the data from
+        `ContactSettings` is publicly available. Instead, proxy contact data
+        is published for your domain. Email sent to the proxy email address is
+        forwarded to the registrant's email address. Cloud Domains provides
+        this privacy proxy service at no additional cost.
+      REDACTED_CONTACT_DATA: The organization name (if provided) and limited
+        non-identifying data from `ContactSettings` is available to the public
+        (e.g. country and state). The remaining data is marked as `REDACTED
+        FOR PRIVACY` in the WHOIS database. The actual information redacted
+        depends on the domain. For details, see [the registration privacy
         article](https://support.google.com/domains/answer/3251242).
     """
     CONTACT_PRIVACY_UNSPECIFIED = 0
@@ -315,7 +319,10 @@ class DnsSettings(_messages.Message):
     customDns: An arbitrary DNS provider identified by its name servers.
     glueRecords: The list of glue records for this `Registration`. Commonly
       empty.
-    googleDomainsDns: The free DNS zone provided by [Google
+    googleDomainsDns: Deprecated: For more information, see [Cloud Domains
+      feature
+      deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+      deprecations) The free DNS zone provided by [Google
       Domains](https://domains.google/).
   """
 
@@ -833,7 +840,11 @@ class DsRecord(_messages.Message):
 
 
 class ExportRegistrationRequest(_messages.Message):
-  r"""Request for the `ExportRegistration` method."""
+  r"""Deprecated: For more information, see [Cloud Domains feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations) Request for the `ExportRegistration` method.
+  """
+
 
 
 class Expr(_messages.Message):
@@ -896,9 +907,11 @@ class GlueRecord(_messages.Message):
 
 
 class GoogleDomainsDns(_messages.Message):
-  r"""Configuration for using the free DNS zone provided by Google Domains as
-  a `Registration`'s `dns_provider`. You cannot configure the DNS zone itself
-  using the API. To configure the DNS zone, go to [Google
+  r"""Deprecated: For more information, see [Cloud Domains feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations) Configuration for using the free DNS zone provided by Google
+  Domains as a `Registration`'s `dns_provider`. You cannot configure the DNS
+  zone itself using the API. To configure the DNS zone, go to [Google
   Domains](https://domains.google/).
 
   Enums:
@@ -940,7 +953,9 @@ class GoogleDomainsDns(_messages.Message):
 
 
 class ImportDomainRequest(_messages.Message):
-  r"""Request for the `ImportDomain` method.
+  r"""Deprecated: For more information, see [Cloud Domains feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations) Request for the `ImportDomain` method.
 
   Messages:
     LabelsValue: Set of labels associated with the `Registration`.
@@ -1588,14 +1603,18 @@ class RegisterParameters(_messages.Message):
         available. When setting this option, you must also provide a
         `PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field
         of the request.
-      PRIVATE_CONTACT_DATA: None of the data from `ContactSettings` is
-        publicly available. Instead, proxy contact data is published for your
-        domain. Email sent to the proxy email address is forwarded to the
-        registrant's email address. Cloud Domains provides this privacy proxy
-        service at no additional cost.
-      REDACTED_CONTACT_DATA: Some data from `ContactSettings` is publicly
-        available. The actual information redacted depends on the domain. For
-        details, see [the registration privacy
+      PRIVATE_CONTACT_DATA: Deprecated: For more information, see [Cloud
+        Domains feature deprecation](https://cloud.google.com/domains/docs/dep
+        recations/feature-deprecations) None of the data from
+        `ContactSettings` is publicly available. Instead, proxy contact data
+        is published for your domain. Email sent to the proxy email address is
+        forwarded to the registrant's email address. Cloud Domains provides
+        this privacy proxy service at no additional cost.
+      REDACTED_CONTACT_DATA: The organization name (if provided) and limited
+        non-identifying data from `ContactSettings` is available to the public
+        (e.g. country and state). The remaining data is marked as `REDACTED
+        FOR PRIVACY` in the WHOIS database. The actual information redacted
+        depends on the domain. For details, see [the registration privacy
         article](https://support.google.com/domains/answer/3251242).
     """
     CONTACT_PRIVACY_UNSPECIFIED = 0
@@ -1619,15 +1638,20 @@ class Registration(_messages.Message):
   `RetrieveRegisterParameters` to ensure availability and obtain information
   like pricing, which is needed to build a call to `RegisterDomain`. Another
   way to create a new `Registration` is to transfer an existing domain from
-  another registrar. First, go to the current registrar to unlock the domain
-  for transfer and retrieve the domain's transfer authorization code. Then
-  call `RetrieveTransferParameters` to confirm that the domain is unlocked and
-  to get values needed to build a call to `TransferDomain`. Finally, you can
+  another registrar (Deprecated: For more information, see [Cloud Domains
+  feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations)). First, go to the current registrar to unlock the domain for
+  transfer and retrieve the domain's transfer authorization code. Then call
+  `RetrieveTransferParameters` to confirm that the domain is unlocked and to
+  get values needed to build a call to `TransferDomain`. Finally, you can
   create a new `Registration` by importing an existing domain managed with
-  [Google Domains](https://domains.google/). First, call
-  `RetrieveImportableDomains` to list domains to which the calling user has
-  sufficient access. Then call `ImportDomain` on any domain names you want to
-  use with Cloud Domains.
+  [Google Domains](https://domains.google/) (Deprecated: For more information,
+  see [Cloud Domains feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations)). First, call `RetrieveImportableDomains` to list domains to
+  which the calling user has sufficient access. Then call `ImportDomain` on
+  any domain names you want to use with Cloud Domains.
 
   Enums:
     IssuesValueListEntryValuesEnum:
@@ -1635,8 +1659,11 @@ class Registration(_messages.Message):
       registration failed. Only set for domains in REGISTRATION_FAILED state.
     StateValueValuesEnum: Output only. The state of the `Registration`
     SupportedPrivacyValueListEntryValuesEnum:
-    TransferFailureReasonValueValuesEnum: Output only. The reason the domain
-      transfer failed. Only set for domains in TRANSFER_FAILED state.
+    TransferFailureReasonValueValuesEnum: Output only. Deprecated: For more
+      information, see [Cloud Domains feature
+      deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+      deprecations) The reason the domain transfer failed. Only set for
+      domains in TRANSFER_FAILED state.
 
   Messages:
     LabelsValue: Set of labels associated with the `Registration`.
@@ -1675,8 +1702,11 @@ class Registration(_messages.Message):
     state: Output only. The state of the `Registration`
     supportedPrivacy: Output only. Set of options for the
       `contact_settings.privacy` field that this `Registration` supports.
-    transferFailureReason: Output only. The reason the domain transfer failed.
-      Only set for domains in TRANSFER_FAILED state.
+    transferFailureReason: Output only. Deprecated: For more information, see
+      [Cloud Domains feature
+      deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+      deprecations) The reason the domain transfer failed. Only set for
+      domains in TRANSFER_FAILED state.
   """
 
   class IssuesValueListEntryValuesEnum(_messages.Enum):
@@ -1761,14 +1791,18 @@ class Registration(_messages.Message):
         available. When setting this option, you must also provide a
         `PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field
         of the request.
-      PRIVATE_CONTACT_DATA: None of the data from `ContactSettings` is
-        publicly available. Instead, proxy contact data is published for your
-        domain. Email sent to the proxy email address is forwarded to the
-        registrant's email address. Cloud Domains provides this privacy proxy
-        service at no additional cost.
-      REDACTED_CONTACT_DATA: Some data from `ContactSettings` is publicly
-        available. The actual information redacted depends on the domain. For
-        details, see [the registration privacy
+      PRIVATE_CONTACT_DATA: Deprecated: For more information, see [Cloud
+        Domains feature deprecation](https://cloud.google.com/domains/docs/dep
+        recations/feature-deprecations) None of the data from
+        `ContactSettings` is publicly available. Instead, proxy contact data
+        is published for your domain. Email sent to the proxy email address is
+        forwarded to the registrant's email address. Cloud Domains provides
+        this privacy proxy service at no additional cost.
+      REDACTED_CONTACT_DATA: The organization name (if provided) and limited
+        non-identifying data from `ContactSettings` is available to the public
+        (e.g. country and state). The remaining data is marked as `REDACTED
+        FOR PRIVACY` in the WHOIS database. The actual information redacted
+        depends on the domain. For details, see [the registration privacy
         article](https://support.google.com/domains/answer/3251242).
     """
     CONTACT_PRIVACY_UNSPECIFIED = 0
@@ -1777,8 +1811,11 @@ class Registration(_messages.Message):
     REDACTED_CONTACT_DATA = 3
 
   class TransferFailureReasonValueValuesEnum(_messages.Enum):
-    r"""Output only. The reason the domain transfer failed. Only set for
-    domains in TRANSFER_FAILED state.
+    r"""Output only. Deprecated: For more information, see [Cloud Domains
+    feature
+    deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+    deprecations) The reason the domain transfer failed. Only set for domains
+    in TRANSFER_FAILED state.
 
     Values:
       TRANSFER_FAILURE_REASON_UNSPECIFIED: Transfer failure unspecified.
@@ -1859,7 +1896,9 @@ class ResetAuthorizationCodeRequest(_messages.Message):
 
 
 class RetrieveImportableDomainsResponse(_messages.Message):
-  r"""Response for the `RetrieveImportableDomains` method.
+  r"""Deprecated: For more information, see [Cloud Domains feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations) Response for the `RetrieveImportableDomains` method.
 
   Fields:
     domains: A list of domains that the calling user manages in Google
@@ -1885,7 +1924,9 @@ class RetrieveRegisterParametersResponse(_messages.Message):
 
 
 class RetrieveTransferParametersResponse(_messages.Message):
-  r"""Response for the `RetrieveTransferParameters` method.
+  r"""Deprecated: For more information, see [Cloud Domains feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations) Response for the `RetrieveTransferParameters` method.
 
   Fields:
     transferParameters: Parameters to use when calling the `TransferDomain`
@@ -2061,7 +2102,9 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class TransferDomainRequest(_messages.Message):
-  r"""Request for the `TransferDomain` method.
+  r"""Deprecated: For more information, see [Cloud Domains feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations) Request for the `TransferDomain` method.
 
   Enums:
     ContactNoticesValueListEntryValuesEnum:
@@ -2105,7 +2148,10 @@ class TransferDomainRequest(_messages.Message):
 
 
 class TransferParameters(_messages.Message):
-  r"""Parameters required to transfer a domain from another registrar.
+  r"""Deprecated: For more information, see [Cloud Domains feature
+  deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
+  deprecations) Parameters required to transfer a domain from another
+  registrar.
 
   Enums:
     SupportedPrivacyValueListEntryValuesEnum:
@@ -2137,14 +2183,18 @@ class TransferParameters(_messages.Message):
         available. When setting this option, you must also provide a
         `PUBLIC_CONTACT_DATA_ACKNOWLEDGEMENT` in the `contact_notices` field
         of the request.
-      PRIVATE_CONTACT_DATA: None of the data from `ContactSettings` is
-        publicly available. Instead, proxy contact data is published for your
-        domain. Email sent to the proxy email address is forwarded to the
-        registrant's email address. Cloud Domains provides this privacy proxy
-        service at no additional cost.
-      REDACTED_CONTACT_DATA: Some data from `ContactSettings` is publicly
-        available. The actual information redacted depends on the domain. For
-        details, see [the registration privacy
+      PRIVATE_CONTACT_DATA: Deprecated: For more information, see [Cloud
+        Domains feature deprecation](https://cloud.google.com/domains/docs/dep
+        recations/feature-deprecations) None of the data from
+        `ContactSettings` is publicly available. Instead, proxy contact data
+        is published for your domain. Email sent to the proxy email address is
+        forwarded to the registrant's email address. Cloud Domains provides
+        this privacy proxy service at no additional cost.
+      REDACTED_CONTACT_DATA: The organization name (if provided) and limited
+        non-identifying data from `ContactSettings` is available to the public
+        (e.g. country and state). The remaining data is marked as `REDACTED
+        FOR PRIVACY` in the WHOIS database. The actual information redacted
+        depends on the domain. For details, see [the registration privacy
         article](https://support.google.com/domains/answer/3251242).
     """
     CONTACT_PRIVACY_UNSPECIFIED = 0

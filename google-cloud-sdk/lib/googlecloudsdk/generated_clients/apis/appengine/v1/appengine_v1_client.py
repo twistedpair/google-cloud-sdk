@@ -1132,6 +1132,33 @@ class AppengineV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListRuntimes(self, request, global_params=None):
+      r"""Lists all the available runtimes for the application.
+
+      Args:
+        request: (AppengineAppsListRuntimesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRuntimesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListRuntimes')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListRuntimes.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/apps/{appsId}:listRuntimes',
+        http_method='GET',
+        method_id='appengine.apps.listRuntimes',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['environment'],
+        relative_path='v1/{+parent}:listRuntimes',
+        request_field='',
+        request_type_name='AppengineAppsListRuntimesRequest',
+        response_type_name='ListRuntimesResponse',
+        supports_download=False,
+    )
+
     def Patch(self, request, global_params=None):
       r"""Updates the specified Application resource. You can update the following fields: auth_domain - Google authentication domain for controlling user access to the application. default_cookie_expiration - Cookie expiration policy for the application. iap - Identity-Aware Proxy properties for the application.
 

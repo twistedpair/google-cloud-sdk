@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -448,6 +448,7 @@ class SpannerRestTransport(SpannerTransport):
     """REST backend transport for Spanner.
 
     Cloud Spanner API
+
     The Cloud Spanner API can be used to manage sessions and execute
     transactions on data stored in Cloud Spanner databases.
 

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,6 +40,7 @@ from .types.spanner import BeginTransactionRequest
 from .types.spanner import CommitRequest
 from .types.spanner import CreateSessionRequest
 from .types.spanner import DeleteSessionRequest
+from .types.spanner import DirectedReadOptions
 from .types.spanner import ExecuteBatchDmlRequest
 from .types.spanner import ExecuteBatchDmlResponse
 from .types.spanner import ExecuteSqlRequest
@@ -74,6 +75,7 @@ __all__ = (
 'CommitResponse',
 'CreateSessionRequest',
 'DeleteSessionRequest',
+'DirectedReadOptions',
 'ExecuteBatchDmlRequest',
 'ExecuteBatchDmlResponse',
 'ExecuteSqlRequest',

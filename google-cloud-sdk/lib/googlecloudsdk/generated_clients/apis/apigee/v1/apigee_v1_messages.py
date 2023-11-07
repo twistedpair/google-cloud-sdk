@@ -784,7 +784,7 @@ class ApigeeOrganizationsAppgroupsUpdateRequest(_messages.Message):
   r"""A ApigeeOrganizationsAppgroupsUpdateRequest object.
 
   Fields:
-    action: Activate or de-activate the appGroup by setting the action as
+    action: Activate or de-activate the AppGroup by setting the action as
       `active` or `inactive`. The `Content-Type` header must be set to
       `application/octet-stream`, with empty body.
     googleCloudApigeeV1AppGroup: A GoogleCloudApigeeV1AppGroup resource to be
@@ -4685,13 +4685,13 @@ class ApigeeOrganizationsSitesApicategoriesCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsSitesApicategoriesCreateRequest object.
 
   Fields:
-    googleCloudApigeeV1ApiCategoryData: A GoogleCloudApigeeV1ApiCategoryData
-      resource to be passed as the request body.
+    googleCloudApigeeV1ApiCategory: A GoogleCloudApigeeV1ApiCategory resource
+      to be passed as the request body.
     parent: Required. Name of the portal. Use the following structure in your
       request: `organizations/{org}/sites/{site}`
   """
 
-  googleCloudApigeeV1ApiCategoryData = _messages.MessageField('GoogleCloudApigeeV1ApiCategoryData', 1)
+  googleCloudApigeeV1ApiCategory = _messages.MessageField('GoogleCloudApigeeV1ApiCategory', 1)
   parent = _messages.StringField(2, required=True)
 
 
@@ -5124,28 +5124,12 @@ class GoogleCloudApigeeV1AnalyticsConfig(_messages.Message):
 
 
 class GoogleCloudApigeeV1ApiCategory(_messages.Message):
-  r"""the Api category resource wrapped with response status, error_code etc.
+  r"""`ApiCategory` represents an API category. [Catalog items](/apigee/docs/r
+  eference/apis/apigee/rest/v1/organizations.sites.apidocs) can be tagged with
+  API categories; users viewing the API catalog in the portal will have the
+  option to browse the catalog by category.
 
   Fields:
-    data: Details of category.
-    errorCode: ID that can be used to find errors in the log files.
-    message: Description of the operation.
-    requestId: ID that can be used to find request details in the log files.
-    status: Status of the operation.
-  """
-
-  data = _messages.MessageField('GoogleCloudApigeeV1ApiCategoryData', 1)
-  errorCode = _messages.StringField(2)
-  message = _messages.StringField(3)
-  requestId = _messages.StringField(4)
-  status = _messages.StringField(5)
-
-
-class GoogleCloudApigeeV1ApiCategoryData(_messages.Message):
-  r"""the Api category resource.
-
-  Fields:
-    gcpResource: GCP name of api category resource.
     id: ID of the category (a UUID).
     name: Name of the category.
     siteId: Name of the portal.
@@ -5153,11 +5137,28 @@ class GoogleCloudApigeeV1ApiCategoryData(_messages.Message):
       epoch.
   """
 
-  gcpResource = _messages.StringField(1)
-  id = _messages.StringField(2)
-  name = _messages.StringField(3)
-  siteId = _messages.StringField(4)
-  updateTime = _messages.IntegerField(5)
+  id = _messages.StringField(1)
+  name = _messages.StringField(2)
+  siteId = _messages.StringField(3)
+  updateTime = _messages.IntegerField(4)
+
+
+class GoogleCloudApigeeV1ApiCategoryResponse(_messages.Message):
+  r"""The API category resource wrapped with response status, error_code, etc.
+
+  Fields:
+    data: The API category resource.
+    errorCode: Unique error code for the request, if any.
+    message: Description of the operation.
+    requestId: Unique ID of the request.
+    status: Status of the operation.
+  """
+
+  data = _messages.MessageField('GoogleCloudApigeeV1ApiCategory', 1)
+  errorCode = _messages.StringField(2)
+  message = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+  status = _messages.StringField(5)
 
 
 class GoogleCloudApigeeV1ApiProduct(_messages.Message):
@@ -6568,10 +6569,10 @@ class GoogleCloudApigeeV1DeleteResponse(_messages.Message):
   r"""Response for certain delete operations.
 
   Fields:
-    errorCode: ID that can be used to find errors in the log files.
+    errorCode: Unique error code for the request, if any.
     gcpResource: Google Cloud name of deleted resource.
     message: Description of the operation.
-    requestId: ID that can be used to find request details in the log files.
+    requestId: Unique ID of the request.
     status: Status of the operation.
   """
 
@@ -8209,17 +8210,17 @@ class GoogleCloudApigeeV1KeystoreConfig(_messages.Message):
 
 
 class GoogleCloudApigeeV1ListApiCategoriesResponse(_messages.Message):
-  r"""the response for ListApiCategoriesRequest.
+  r"""The response for `ListApiCategoriesRequest`.
 
   Fields:
-    data: Details of categories.
-    errorCode: ID that can be used to find errors in the log files.
+    data: The API category resources.
+    errorCode: Unique error code for the request, if any.
     message: Description of the operation.
-    requestId: ID that can be used to find request details in the log files.
+    requestId: Unique ID of the request.
     status: Status of the operation.
   """
 
-  data = _messages.MessageField('GoogleCloudApigeeV1ApiCategoryData', 1, repeated=True)
+  data = _messages.MessageField('GoogleCloudApigeeV1ApiCategory', 1, repeated=True)
   errorCode = _messages.StringField(2)
   message = _messages.StringField(3)
   requestId = _messages.StringField(4)

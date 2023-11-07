@@ -13,6 +13,16 @@ from apitools.base.py import extra_types
 package = 'authztoolkit'
 
 
+class AnthosServiceMesh(_messages.Message):
+  r"""Message describing AnthosServiceMesh based workload object.
+
+  Fields:
+    serviceAccount: Immutable. workload ID = IAM Service account
+  """
+
+  serviceAccount = _messages.StringField(1)
+
+
 class AuthztoolkitProjectsLocationsGetRequest(_messages.Message):
   r"""A AuthztoolkitProjectsLocationsGetRequest object.
 
@@ -169,7 +179,7 @@ class AuthztoolkitProjectsLocationsPoliciesBindingsListRequest(_messages.Message
       requested. The maximum allowed value is 50, values above this will be
       coerced to 50. Default value: 50
     pageToken: Next page token, received from a previous bindings.list call.
-      When paginating, all other input parameters (except page_size) provided
+      When paginating, all other input parameters (except page_token) provided
       to bindings.list call must remain the same.
     parent: Required. Parent value for ListBindingsRequest
   """
@@ -289,7 +299,7 @@ class AuthztoolkitProjectsLocationsPoliciesListRequest(_messages.Message):
       requested. The maximum allowed value is 50, values above this will be
       coerced to 50. Default value: 50
     pageToken: Next page token, received from a previous policies.list call.
-      When paginating, all other input parameters (except page_size) provided
+      When paginating, all other input parameters (except page_token) provided
       to policies.list call must remain the same.
     parent: Required. Parent value for ListPoliciesRequest
   """
@@ -336,7 +346,8 @@ class AuthztoolkitProjectsLocationsTargetAssociationsCreateRequest(_messages.Mes
   r"""A AuthztoolkitProjectsLocationsTargetAssociationsCreateRequest object.
 
   Fields:
-    parent: Required. Value for parent.
+    parent: Required. Value for parent. Example:
+      projects/{project)/locations/{location}
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -350,9 +361,8 @@ class AuthztoolkitProjectsLocationsTargetAssociationsCreateRequest(_messages.Mes
       not supported (00000000-0000-0000-0000-000000000000).
     targetAssociation: A TargetAssociation resource to be passed as the
       request body.
-    targetAssociationId: Required. Id of the requesting object If auto-
-      generating Id server-side, remove this field and target_association_id
-      from the method_signature of Create RPC
+    targetAssociationId: Required. The unique ID of the TargetAssociation to
+      be created.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -397,12 +407,24 @@ class AuthztoolkitProjectsLocationsTargetAssociationsListRequest(_messages.Messa
   r"""A AuthztoolkitProjectsLocationsTargetAssociationsListRequest object.
 
   Fields:
-    filter: Optional. Filtering results
-    orderBy: Optional. Hint for how to order the results
+    filter: Optional. Query filter. Filters must adhere to the following
+      rules: * Boolean values must be unquoted "true" or "false" string
+      literals. * String values must be double-quoted. * Wildcard
+      character("*") is limited to use with the has operator (":"), and can be
+      used only at the end of a string literal. * Timestamps must be quoted
+      strings in the RFC3339 format. Example :
+      filter=create_time>"2022-05-09T22:28:28Z" Filters support logical
+      operators - AND, OR, NOT (Note: OR has higher precedence than AND)
+    orderBy: Optional. Criteria for ordering results. Currently supported
+      fields for ordering - name and create_time. Example: order_by="name
+      desc,create_time desc".
     pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
+      than requested. The maximum allowed value is 50, values above this will
+      be coerced to 50. Default value: 50
+    pageToken: Optional. Next page token, received from a previous
+      targetAssociations.list call. When paginating, all other input
+      parameters (except page_token) provided to targetAssociations.list call
+      must remain the same.
     parent: Required. Parent value for ListTargetAssociationsRequest
   """
 
@@ -562,13 +584,15 @@ class ListPoliciesResponse(_messages.Message):
 
 
 class ListTargetAssociationsResponse(_messages.Message):
-  r"""Message for response to listing TargetAssociations
+  r"""Response returned by targetAssociations.list method.
 
   Fields:
-    nextPageToken: A token identifying a page of results the server should
-      return.
+    nextPageToken: Next page token. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters (except page_size) provided
+      to targetAssociations.list must match the call that provided the page
+      token.
     targetAssociations: The list of TargetAssociation
-    unreachable: Locations that could not be reached.
+    unreachable: Represents missing potential additional resources.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -813,6 +837,18 @@ class Policy(_messages.Message):
   updateTime = _messages.StringField(5)
 
 
+class PolicyConfig(_messages.Message):
+  r"""Message describing PolicyConfig object consisting of policy name and its
+  configurations.
+
+  Fields:
+    policy: Required. Full policy name. Example:
+      projects/{project}/locations/{location}/policies/{policy}
+  """
+
+  policy = _messages.StringField(1)
+
+
 class Rule(_messages.Message):
   r"""Rule is a set of conditions that are evaluated for each incoming
   authorization request.
@@ -987,14 +1023,27 @@ class TargetAssociation(_messages.Message):
   r"""Message describing TargetAssociation object
 
   Fields:
+    asmWorkload: Immutable. AnthosServiceMesh based workload. PEP
+      configuration would not be handled by AuthZaas.
     createTime: Output only. [Output only] Create time stamp
+    displayName: Required. An arbitrary user-provided name for
+      TargetAssociation. The display name should adhere to the following
+      format. * Must be 6 to 63 characters in length. * Can only contain
+      lowercase letters, numbers, and hyphens. * Must start with a letter.
     name: Identifier. name of resource
+    policies: Optional. List of policies with full policy name and its
+      configuration
+    tdWorkload: Immutable. Traffic Director based workloads.
     updateTime: Output only. [Output only] Update time stamp
   """
 
-  createTime = _messages.StringField(1)
-  name = _messages.StringField(2)
-  updateTime = _messages.StringField(3)
+  asmWorkload = _messages.MessageField('AnthosServiceMesh', 1)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  name = _messages.StringField(4)
+  policies = _messages.MessageField('PolicyConfig', 5, repeated=True)
+  tdWorkload = _messages.MessageField('TrafficDirector', 6)
+  updateTime = _messages.StringField(7)
 
 
 class To(_messages.Message):
@@ -1012,6 +1061,16 @@ class To(_messages.Message):
   methods = _messages.StringField(2, repeated=True)
   paths = _messages.StringField(3, repeated=True)
   ports = _messages.IntegerField(4, repeated=True, variant=_messages.Variant.INT32)
+
+
+class TrafficDirector(_messages.Message):
+  r"""Message describing Traffic Director based workload object.
+
+  Fields:
+    serviceAccount: Immutable. workload ID = IAM Service account
+  """
+
+  serviceAccount = _messages.StringField(1)
 
 
 class TrafficDirectorTarget(_messages.Message):

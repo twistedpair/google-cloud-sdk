@@ -1054,6 +1054,8 @@ class UpdateClusterOptions(object):
       enable_multi_networking=None,
       containerd_config_from_file=None,
       autoprovisioning_resource_manager_tags=None,
+      convert_to_autopilot=None,
+      convert_to_standard=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1193,6 +1195,8 @@ class UpdateClusterOptions(object):
     self.autoprovisioning_resource_manager_tags = (
         autoprovisioning_resource_manager_tags
     )
+    self.convert_to_autopilot = convert_to_autopilot
+    self.convert_to_standard = convert_to_standard
 
 
 class SetMasterAuthOptions(object):
@@ -5534,6 +5538,14 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy)
 
+    if options.convert_to_autopilot is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAutopilot=self.messages.Autopilot(enabled=True))
+
+    if options.convert_to_standard is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAutopilot=self.messages.Autopilot(enabled=False))
+
     if not update:
       # if reached here, it's possible:
       # - someone added update flags but not handled
@@ -5580,6 +5592,33 @@ class V1Beta1Adapter(V1Adapter):
                                         cluster_ref.clusterId),
             update=update))
     return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def CompleteConvertToAutopilot(self, cluster_ref):
+    """Commmit the Autopilot conversion operation.
+
+    Args:
+      cluster_ref: cluster resource to commit conversion.
+
+    Returns:
+      The operation to be executed.
+
+    Raises:
+      exceptions.HttpException: if cluster cannot be found or caller is missing
+        permissions. Will attempt to find similar clusters in other zones for a
+        more useful error if the user has list permissions.
+    """
+    try:
+      op = self.client.projects_locations_clusters.CompleteConvertToAutopilot(
+          self.messages.ContainerProjectsLocationsClustersCompleteConvertToAutopilotRequest(
+              name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref
+                                          .zone, cluster_ref.clusterId)))
+      return self.ParseOperation(op.name, cluster_ref.zone)
+    except apitools_exceptions.HttpNotFoundError as error:
+      api_error = exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
+      # Cluster couldn't be found, maybe user got the location wrong?
+      self.CheckClusterOtherZones(cluster_ref, api_error)
+    except apitools_exceptions.HttpError as error:
+      raise exceptions.HttpException(error, util.HTTP_ERROR_FORMAT)
 
   def CreateClusterAutoscalingCommon(self, cluster_ref, options, for_update):
     """Create cluster's autoscaling configuration.
@@ -6087,6 +6126,14 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     if options.enable_fqdn_network_policy is not None:
       update = self.messages.ClusterUpdate(
           desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy)
+
+    if options.convert_to_autopilot is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAutopilot=self.messages.Autopilot(enabled=True))
+
+    if options.convert_to_standard is not None:
+      update = self.messages.ClusterUpdate(
+          desiredAutopilot=self.messages.Autopilot(enabled=False))
 
     if not update:
       # if reached here, it's possible:
@@ -6746,6 +6793,18 @@ def _GetMonitoringConfig(options, messages):
   adv_obs = None
   config = messages.MonitoringConfig()
 
+  if options.enable_managed_prometheus is not None:
+    prom = messages.ManagedPrometheusConfig(
+        enabled=options.enable_managed_prometheus)
+    config.managedPrometheusConfig = prom
+
+  # Disable flag only on cluster updates, check first.
+  if hasattr(options, 'disable_managed_prometheus'):
+    if options.disable_managed_prometheus is not None:
+      prom = messages.ManagedPrometheusConfig(
+          enabled=(not options.disable_managed_prometheus))
+      config.managedPrometheusConfig = prom
+
   if options.monitoring is not None:
     # TODO(b/195524749): Validate the input in flags.py after Control Plane
     # Signals is GA.
@@ -6758,7 +6817,9 @@ def _GetMonitoringConfig(options, messages):
     if NONE in options.monitoring:
       if len(options.monitoring) > 1:
         raise util.Error('Cannot include other values when None is specified.')
-      return messages.MonitoringConfig(componentConfig=comp)
+      else:
+        config.componentConfig = comp
+        return config
     if SYSTEM not in options.monitoring:
       raise util.Error(
           'Must include system monitoring if any monitoring is enabled.')
@@ -6808,24 +6869,6 @@ def _GetMonitoringConfig(options, messages):
           .EnableComponentsValueListEntryValuesEnum.STATEFULSET)
 
     config.componentConfig = comp
-
-  if options.enable_managed_prometheus is not None:
-    prom = messages.ManagedPrometheusConfig(
-        enabled=options.enable_managed_prometheus)
-    # The v1 MonitoringConfig does not have this field, as it is currently in
-    # beta. Guard against that here.
-    if hasattr(config, 'managedPrometheusConfig'):
-      config.managedPrometheusConfig = prom
-
-  # Disable flag only on cluster updates, check first.
-  if hasattr(options, 'disable_managed_prometheus'):
-    if options.disable_managed_prometheus is not None:
-      prom = messages.ManagedPrometheusConfig(
-          enabled=(not options.disable_managed_prometheus))
-      # The v1 MonitoringConfig does not have this field, as it is currently in
-      # beta. Guard against that here.
-      if hasattr(config, 'managedPrometheusConfig'):
-        config.managedPrometheusConfig = prom
 
   if options.enable_dataplane_v2_metrics:
     adv_obs = messages.AdvancedDatapathObservabilityConfig(

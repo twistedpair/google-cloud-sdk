@@ -521,6 +521,7 @@ class ScanConfigError(_messages.Message):
         For example, we do not provide findings of the given finding type.
       UNSUPPORTED_URL_SCHEME: The URL scheme of one or more of the supplied
         URLs is not supported.
+      CLOUD_ASSET_INVENTORY_ASSET_NOT_FOUND: CAI is not able to list assets.
     """
     CODE_UNSPECIFIED = 0
     OK = 1
@@ -564,6 +565,7 @@ class ScanConfigError(_messages.Message):
     UNSUPPORTED_FILTER = 39
     UNSUPPORTED_FINDING_TYPE = 40
     UNSUPPORTED_URL_SCHEME = 41
+    CLOUD_ASSET_INVENTORY_ASSET_NOT_FOUND = 42
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   fieldName = _messages.StringField(2)

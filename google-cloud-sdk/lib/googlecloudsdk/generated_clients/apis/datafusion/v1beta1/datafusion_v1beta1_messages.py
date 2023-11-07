@@ -799,7 +799,7 @@ class Instance(_messages.Message):
       Fusion instance.
     p4ServiceAccount: Output only. P4 service account for the customer
       project.
-    platformVersion: Optional. Current version of Data Fusion platform.
+    patchRevision: Optional. Current patch revision of the Data Fusion.
     privateInstance: Specifies whether the Data Fusion instance should be
       private. If set to true, all Data Fusion nodes will have private IP
       addresses and will not be able to access the public internet.
@@ -953,7 +953,7 @@ class Instance(_messages.Message):
   networkConfig = _messages.MessageField('NetworkConfig', 18)
   options = _messages.MessageField('OptionsValue', 19)
   p4ServiceAccount = _messages.StringField(20)
-  platformVersion = _messages.StringField(21)
+  patchRevision = _messages.StringField(21)
   privateInstance = _messages.BooleanField(22)
   satisfiesPzs = _messages.BooleanField(23)
   serviceAccount = _messages.StringField(24)
@@ -1148,19 +1148,58 @@ class NetworkConfig(_messages.Message):
   latency while accessing the customer resources from managed Data Fusion
   instance nodes, as well as access to the customer on-prem resources.
 
+  Enums:
+    ConnectionTypeValueValuesEnum: Optional. Type of connection for
+      establishing private IP connectivity between the Data Fusion customer
+      project VPC and the corresponding tenant project from a predefined list
+      of available connection modes. If this field is unspecified for a
+      private instance, VPC peering is used.
+
   Fields:
-    ipAllocation: The IP range in CIDR notation to use for the managed Data
-      Fusion instance nodes. This range must not overlap with any other ranges
-      used in the Data Fusion instance network.
-    network: Name of the network in the customer project with which the Tenant
-      Project will be peered for executing pipelines. In case of shared VPC
-      where the network resides in another host project the network should
-      specified in the form of projects/{host-project-
-      id}/global/networks/{network}
+    connectionType: Optional. Type of connection for establishing private IP
+      connectivity between the Data Fusion customer project VPC and the
+      corresponding tenant project from a predefined list of available
+      connection modes. If this field is unspecified for a private instance,
+      VPC peering is used.
+    ipAllocation: Optional. The IP range in CIDR notation to use for the
+      managed Data Fusion instance nodes. This range must not overlap with any
+      other ranges used in the Data Fusion instance network. This is required
+      only when using connection type VPC_PEERING. Format: a.b.c.d/22 Example:
+      192.168.0.0/22
+    network: Optional. Name of the network in the customer project with which
+      the Tenant Project will be peered for executing pipelines. This is
+      required only when using connection type VPC peering. In case of shared
+      VPC where the network resides in another host project the network should
+      specified in the form of projects/{project-
+      id}/global/networks/{network}. This is only required for connectivity
+      type VPC_PEERING.
+    privateServiceConnectConfig: Optional. Configuration for Private Service
+      Connect. This is required only when using connection type
+      PRIVATE_SERVICE_CONNECT_INTERFACES.
   """
 
-  ipAllocation = _messages.StringField(1)
-  network = _messages.StringField(2)
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Type of connection for establishing private IP connectivity
+    between the Data Fusion customer project VPC and the corresponding tenant
+    project from a predefined list of available connection modes. If this
+    field is unspecified for a private instance, VPC peering is used.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: No specific connection type was requested,
+        the default value of VPC_PEERING is chosen.
+      VPC_PEERING: Requests the use of VPC peerings for connecting the
+        consumer and tenant projects.
+      PRIVATE_SERVICE_CONNECT_INTERFACES: Requests the use of Private Service
+        Connect Interfaces for connecting the consumer and tenant projects.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    VPC_PEERING = 1
+    PRIVATE_SERVICE_CONNECT_INTERFACES = 2
+
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
+  ipAllocation = _messages.StringField(2)
+  network = _messages.StringField(3)
+  privateServiceConnectConfig = _messages.MessageField('PrivateServiceConnectConfig', 4)
 
 
 class Operation(_messages.Message):
@@ -1411,6 +1450,36 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class PrivateServiceConnectConfig(_messages.Message):
+  r"""Configuration for using Private Service Connect to establish
+  connectivity between the Data Fusion consumer project and the corresponding
+  tenant project.
+
+  Fields:
+    effectiveUnreachableCidrBlock: Output only. The CIDR block to which the
+      CDF instance can't route traffic to in the consumer project VPC. The
+      size of this block is /25. The format of this field is governed by RFC
+      4632. Example: 240.0.0.0/25
+    networkAttachment: Required. The reference to the network attachment used
+      to establish private connectivity. It will be of the form
+      projects/{project-id}/regions/{region}/networkAttachments/{network-
+      attachment-id}.
+    unreachableCidrBlock: Optional. Input only. The CIDR block to which the
+      CDF instance can't route traffic to in the consumer project VPC. The
+      size of this block should be at least /25. This range should not overlap
+      with the primary address range of any subnetwork used by the network
+      attachment. This range can be used for other purposes in the consumer
+      VPC as long as there is no requirement for CDF to reach destinations
+      using these addresses. If this value is not provided, the server chooses
+      a non RFC 1918 address range. The format of this field is governed by
+      RFC 4632. Example: 192.168.0.0/25
+  """
+
+  effectiveUnreachableCidrBlock = _messages.StringField(1)
+  networkAttachment = _messages.StringField(2)
+  unreachableCidrBlock = _messages.StringField(3)
 
 
 class RemoveIamPolicyRequest(_messages.Message):

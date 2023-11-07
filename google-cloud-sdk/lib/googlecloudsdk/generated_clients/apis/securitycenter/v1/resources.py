@@ -45,6 +45,24 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_LOCATIONS = (
+      'folders.locations',
+      'folders/{foldersId}/locations/{locationsId}',
+      {},
+      ['foldersId', 'locationsId'],
+      True
+  )
+  FOLDERS_LOCATIONS_MUTECONFIGS = (
+      'folders.locations.muteConfigs',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/locations/{locationsId}/muteConfigs/'
+              '{muteConfigsId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_MUTECONFIGS = (
       'folders.muteConfigs',
       '{+name}',
@@ -147,6 +165,24 @@ class Collections(enum.Enum):
       'organizations/{organizationsId}/findings/{findingId}',
       {},
       ['organizationsId', 'findingId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS = (
+      'organizations.locations',
+      'organizations/{organizationsId}/locations/{locationsId}',
+      {},
+      ['organizationsId', 'locationsId'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_MUTECONFIGS = (
+      'organizations.locations.muteConfigs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'muteConfigs/{muteConfigsId}',
+      },
+      ['name'],
       True
   )
   ORGANIZATIONS_MUTECONFIGS = (
@@ -260,6 +296,24 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/eventThreatDetectionSettings/'
               'effectiveCustomModules/{effectiveCustomModulesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS = (
+      'projects.locations',
+      'projects/{projectsId}/locations/{locationsId}',
+      {},
+      ['projectsId', 'locationsId'],
+      True
+  )
+  PROJECTS_LOCATIONS_MUTECONFIGS = (
+      'projects.locations.muteConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/muteConfigs/'
+              '{muteConfigsId}',
       },
       ['name'],
       True

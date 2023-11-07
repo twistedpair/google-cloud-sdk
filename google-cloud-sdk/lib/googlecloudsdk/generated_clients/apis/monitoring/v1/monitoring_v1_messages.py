@@ -828,6 +828,33 @@ class Empty(_messages.Message):
 
 
 
+class ErrorReportingPanel(_messages.Message):
+  r"""A widget that displays a list of error groups.
+
+  Fields:
+    projectNames: The resource name of the Google Cloud Platform project.
+      Written as projects/{projectID} or projects/{projectNumber}, where
+      {projectID} and {projectNumber} can be found in the Google Cloud console
+      (https://support.google.com/cloud/answer/6158840).Examples: projects/my-
+      project-123, projects/5551234.
+    services: An identifier of the service, such as the name of the
+      executable, job, or Google App Engine service name. This field is
+      expected to have a low number of values that are relatively stable over
+      time, as opposed to version, which can be changed whenever new code is
+      deployed.Contains the service name for error reports extracted from
+      Google App Engine logs or default if the App Engine default service is
+      used.
+    versions: Represents the source code version that the developer provided,
+      which could represent a version label or a Git SHA-1 hash, for example.
+      For App Engine standard environment, the version is set to the version
+      of the app.
+  """
+
+  projectNames = _messages.StringField(1, repeated=True)
+  services = _messages.StringField(2, repeated=True)
+  versions = _messages.StringField(3, repeated=True)
+
+
 class Field(_messages.Message):
   r"""A single field of a message type.
 
@@ -1788,10 +1815,6 @@ class PieChart(_messages.Message):
     dataSets: Required. The queries for the chart's data.
     showLabels: Optional. Indicates whether or not the pie chart should show
       slices' labels
-    showTotal: Optional. Indicates whether or not donut chart should show the
-      total in the middle
-    sliceAggregatedThreshold: Optional. If slices's values are smaller than
-      this value, they will be combined into other category
   """
 
   class ChartTypeValueValuesEnum(_messages.Enum):
@@ -1811,8 +1834,6 @@ class PieChart(_messages.Message):
   chartType = _messages.EnumField('ChartTypeValueValuesEnum', 1)
   dataSets = _messages.MessageField('PieChartDataSet', 2, repeated=True)
   showLabels = _messages.BooleanField(3)
-  showTotal = _messages.BooleanField(4)
-  sliceAggregatedThreshold = _messages.FloatField(5, variant=_messages.Variant.FLOAT)
 
 
 class PieChartDataSet(_messages.Message):
@@ -2697,6 +2718,9 @@ class Widget(_messages.Message):
     collapsibleGroup: A widget that groups the other widgets. All widgets that
       are within the area spanned by the grouping widget are considered member
       widgets.
+    errorReportingPanel: A widget that displays a list of error groups.
+    id: Optional. The widget id. Ids may be made up of alphanumerics, dashes
+      and underscores. Widget ids are optional.
     incidentList: A widget that shows list of incidents.
     logsPanel: A widget that shows a stream of logs.
     pieChart: A widget that displays timeseries data as a pie chart.
@@ -2711,14 +2735,16 @@ class Widget(_messages.Message):
   alertChart = _messages.MessageField('AlertChart', 1)
   blank = _messages.MessageField('Empty', 2)
   collapsibleGroup = _messages.MessageField('CollapsibleGroup', 3)
-  incidentList = _messages.MessageField('IncidentList', 4)
-  logsPanel = _messages.MessageField('LogsPanel', 5)
-  pieChart = _messages.MessageField('PieChart', 6)
-  scorecard = _messages.MessageField('Scorecard', 7)
-  text = _messages.MessageField('Text', 8)
-  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 9)
-  title = _messages.StringField(10)
-  xyChart = _messages.MessageField('XyChart', 11)
+  errorReportingPanel = _messages.MessageField('ErrorReportingPanel', 4)
+  id = _messages.StringField(5)
+  incidentList = _messages.MessageField('IncidentList', 6)
+  logsPanel = _messages.MessageField('LogsPanel', 7)
+  pieChart = _messages.MessageField('PieChart', 8)
+  scorecard = _messages.MessageField('Scorecard', 9)
+  text = _messages.MessageField('Text', 10)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 11)
+  title = _messages.StringField(12)
+  xyChart = _messages.MessageField('XyChart', 13)
 
 
 class XyChart(_messages.Message):

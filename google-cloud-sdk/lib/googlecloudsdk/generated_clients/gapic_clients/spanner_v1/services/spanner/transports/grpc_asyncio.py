@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -37,6 +37,7 @@ class SpannerGrpcAsyncIOTransport(SpannerTransport):
     """gRPC AsyncIO backend transport for Spanner.
 
     Cloud Spanner API
+
     The Cloud Spanner API can be used to manage sessions and execute
     transactions on data stored in Cloud Spanner databases.
 
@@ -285,6 +286,7 @@ class SpannerGrpcAsyncIOTransport(SpannerTransport):
         r"""Return a callable for the batch create sessions method over gRPC.
 
         Creates multiple new sessions.
+
         This API can be used to initialize a session cache on
         the clients. See https://goo.gl/TgSFN2 for best
         practices on session cache management.

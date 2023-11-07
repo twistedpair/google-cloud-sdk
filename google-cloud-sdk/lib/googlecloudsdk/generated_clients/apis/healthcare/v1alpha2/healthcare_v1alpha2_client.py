@@ -2286,7 +2286,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def GetHL7v2StoreMetrics(self, request, global_params=None):
-      r"""Gets metrics asssociated with the HL7v2 store.
+      r"""Gets metrics associated with the HL7v2 store.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest) input message

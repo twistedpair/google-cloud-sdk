@@ -249,6 +249,28 @@ CEL filter expression for the trigger. See https://cloud.google.com/build/docs/f
   )
 
 
+def AddFilterArgForUpdate(flag_config):
+  """Adds trigger filter flag arg.
+
+  Args:
+    flag_config: argparse argument group. Trigger filter flag will be added to
+      this config.
+  """
+  filter_arg = flag_config.add_mutually_exclusive_group()
+  filter_arg.add_argument(
+      '--subscription-filter',
+      default=None,
+      help=("""\
+CEL filter expression for the trigger. See https://cloud.google.com/build/docs/filter-build-events-using-cel for more details.
+"""),
+  )
+  filter_arg.add_argument(
+      '--clear-subscription-filter',
+      action='store_true',
+      help='Clear existing subscription filter.',
+  )
+
+
 def AddSubstitutions(argument_group):
   """Adds a substituion flag to the given argument group.
 

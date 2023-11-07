@@ -1302,14 +1302,23 @@ class LocationConfig(_messages.Message):
   r"""Deployment configuration of an instance in a given location.
 
   Fields:
+    autoscalingBuffer: Optional. The amount of available capacity the
+      autoscaler works to maintain at all times.
+    autoscalingMinCapacity: Optional. The minimum capacity the autoscaler will
+      maintain.
     capacity: The maximum number of concurrent streaming sessions that the
       instance can support in this location.
+    enableAutoscaling: Optional. Whether autoscaling is enabled in this
+      location.
     location: The location in which the instance is deployed. We only use
       region for now.
   """
 
-  capacity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  location = _messages.StringField(2)
+  autoscalingBuffer = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  autoscalingMinCapacity = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  capacity = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  enableAutoscaling = _messages.BooleanField(4)
+  location = _messages.StringField(5)
 
 
 class Money(_messages.Message):
@@ -1710,7 +1719,7 @@ class StreamContent(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: Labels as key value pairs
     lifecycleState: Output only. Current state of the content.
-    name: name of resource
+    name: Identifier. name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -1775,9 +1784,9 @@ class StreamInstance(_messages.Message):
     locationConfigs: Deployment configuration of the instance by locations
       (only regions are supported now). Map keys are regions in the string
       form.
-    mode: Immutable. The XR mode this instance supports. Default value is "ar"
+    mode: Optional. The XR mode this instance supports. Default value is "ar"
       which supports both 3D and AR experiences.
-    name: name of resource
+    name: Identifier. name of resource
     realmConfigs: Deployment configuration of the instance in realms. Note
       that this is not defined as a map for enum types (Realm) cannot be used
       as key.
@@ -2031,7 +2040,7 @@ class StreamProjectsLocationsStreamContentsPatchRequest(_messages.Message):
   r"""A StreamProjectsLocationsStreamContentsPatchRequest object.
 
   Fields:
-    name: name of resource
+    name: Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2141,7 +2150,7 @@ class StreamProjectsLocationsStreamInstancesPatchRequest(_messages.Message):
   r"""A StreamProjectsLocationsStreamInstancesPatchRequest object.
 
   Fields:
-    name: name of resource
+    name: Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The

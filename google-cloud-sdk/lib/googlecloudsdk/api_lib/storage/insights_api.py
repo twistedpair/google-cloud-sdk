@@ -39,7 +39,10 @@ def _get_unescaped_ascii(string):
       'unicode-escape') if string is not None else None
 
 
-def _get_parent_string(project, location):
+def _get_parent_string(
+    project,
+    location,
+):
   return 'projects/{}/locations/{}'.format(project, location.lower())
 
 
@@ -72,26 +75,150 @@ class InsightsApi:
       dataset_config_name,
       location,
       destination_project,
-      source_projects,
+      source_projects_list,
       organization_number,
-      include_buckets=None,
-      exclude_buckets=None,
+      retention_period,
+      include_buckets_prefix_regex_list=None,
+      exclude_buckets_prefix_regex_list=None,
+      include_buckets_name_list=None,
+      exclude_buckets_name_list=None,
       include_source_locations=None,
       exclude_source_locations=None,
       auto_add_new_buckets=False,
-      retention_period=None,
       skip_verification=False,
       identity_type=None,
       description=None,
   ):
-    """Creates a dataset config."""
-    # TODO(b/302428138) Implement the API layer methods
-    raise NotImplementedError()
+    """Creates a dataset config.
+
+    Args:
+      dataset_config_name (str): Name for the dataset config being created.
+      location (str): The location where insights data will be stored in a GCS
+        managed BigQuery instance.
+      destination_project (str): The project in which the dataset config is
+        being created and by extension the insights data will be stored.
+      source_projects_list (list[int]): List of source project numbers. Insights
+        data is to be collected for buckets that belong to these projects.
+      organization_number (int): Organization number of the organization to
+        which all source projects must belong.
+      retention_period (int): No of days for which insights data is to be
+        retained in BigQuery instance.
+      include_buckets_prefix_regex_list (list[str]): List of bucket prefix regex
+        patterns which are to be included for insights processing from the
+        source projects. We can either use included or excluded bucket
+        parameters.
+      exclude_buckets_prefix_regex_list (list[str]): List of bucket prefix regex
+        patterns which are to be excluded from insights processing from the
+        source projects. We can either use included or excluded bucket
+        parameters.
+      include_buckets_name_list (list[str]): List of bucket names which are to
+        be included for insights processing from the source projects. We can
+        either use included or excluded bucket parameters.
+      exclude_buckets_name_list (list[str]): List of bucket names which are to
+        be excluded from insights processing from the source projects. We can
+        either use included or excluded bucket parameters.
+      include_source_locations (list[str]): List of bucket locations which are
+        to be included for insights processing from the source projects. We can
+        either use included or excluded location parameters.
+      exclude_source_locations (list[str]): List of bucket locations which are
+        to be excluded from insights processing from the source projects. We can
+        either use included or excluded location parameters.
+      auto_add_new_buckets (bool): If True, auto includes any new buckets added
+        to source projects that satisfy the include/exclude criterias.
+      skip_verification (bool): If True, skips verification of dataset config
+        during creation.
+      identity_type (str): Option for how permissions need to be setup for a
+        given dataset config. Default option is IDENTITY_TYPE_PER_CONFIG.
+      description (str): Human readable description text for the given dataset
+        config.
+
+    Returns:
+      An instance of Operation message
+    """
+    if identity_type is not None:
+      identity_type_enum = self.messages.Identity.TypeValueValuesEnum(
+          identity_type.upper()
+      )
+      identity_type = self.messages.Identity(type=identity_type_enum)
+    else:
+      identity_type = self.messages.Identity(
+          type=self.messages.Identity.TypeValueValuesEnum.IDENTITY_TYPE_PER_CONFIG
+      )
+
+    source_projects = self.messages.SourceProjects(
+        projectNumbers=source_projects_list
+    )
+
+    dataset_config = self.messages.DatasetConfig(
+        description=description,
+        identity=identity_type,
+        includeNewlyCreatedBuckets=auto_add_new_buckets,
+        name=dataset_config_name,
+        organizationNumber=organization_number,
+        retentionPeriodDays=retention_period,
+        skipVerificationAndIngest=skip_verification,
+        sourceProjects=source_projects,
+    )
+
+    # Exclude and Include options are marked as mutex flags,
+    # hence we can make the below assumption about only being available
+    if exclude_buckets_name_list or exclude_buckets_prefix_regex_list:
+      excluded_storage_buckets = [
+          self.messages.CloudStorageBucket(bucketName=excluded_name)
+          for excluded_name in exclude_buckets_name_list or []
+      ]
+      excluded_storage_buckets += [
+          self.messages.CloudStorageBucket(bucketPrefixRegex=excluded_regex)
+          for excluded_regex in exclude_buckets_prefix_regex_list or []
+      ]
+      dataset_config.excludeCloudStorageBuckets = (
+          self.messages.CloudStorageBuckets(
+              cloudStorageBuckets=excluded_storage_buckets
+          )
+      )
+
+    if include_buckets_name_list or include_buckets_prefix_regex_list:
+      included_storage_buckets = [
+          self.messages.CloudStorageBucket(bucketName=included_name)
+          for included_name in include_buckets_name_list or []
+      ]
+      included_storage_buckets += [
+          self.messages.CloudStorageBucket(bucketPrefixRegex=included_regex)
+          for included_regex in include_buckets_prefix_regex_list or []
+      ]
+      dataset_config.includeCloudStorageBuckets = (
+          self.messages.CloudStorageBuckets(
+              cloudStorageBuckets=included_storage_buckets
+          )
+      )
+
+    if exclude_source_locations:
+      dataset_config.excludeCloudStorageLocations = (
+          self.messages.CloudStorageLocations(
+              locations=exclude_source_locations
+          )
+      )
+
+    if include_source_locations:
+      dataset_config.includeCloudStorageLocations = (
+          self.messages.CloudStorageLocations(
+              locations=include_source_locations
+          )
+      )
+
+    create_request = self.messages.StorageinsightsProjectsLocationsDatasetConfigsCreateRequest(
+        datasetConfig=dataset_config,
+        datasetConfigId=dataset_config_name,
+        parent=_get_parent_string(destination_project, location),
+    )
+    return self.client.projects_locations_datasetConfigs.Create(create_request)
 
   def create_dataset_config_link(self, dataset_config_relative_name):
     """Creates the dataset config link."""
-    # TODO(b/302428138) Implement the API layer methods
-    raise NotImplementedError()
+    request = self.messages.StorageinsightsProjectsLocationsDatasetConfigsLinkDatasetRequest(
+        name=dataset_config_relative_name
+    )
+    return self.client.projects_locations_datasetConfigs.LinkDataset(request)
 
   def delete_dataset_config(self, dataset_config_relative_name):
     """Deletes the dataset config."""
@@ -102,30 +229,107 @@ class InsightsApi:
 
   def delete_dataset_config_link(self, dataset_config_relative_name):
     """Deletes the dataset config link."""
-    # TODO(b/302428138) Implement the API layer methods
-    raise NotImplementedError()
+    request = self.messages.StorageinsightsProjectsLocationsDatasetConfigsUnlinkDatasetRequest(
+        name=dataset_config_relative_name
+    )
+    return self.client.projects_locations_datasetConfigs.UnlinkDataset(request)
 
   def get_dataset_config(self, dataset_config_relative_name):
     """Gets the dataset config."""
-    # TODO(b/302428138) Implement the API layer methods
-    raise NotImplementedError()
+    return self.client.projects_locations_datasetConfigs.Get(
+        self.messages.StorageinsightsProjectsLocationsDatasetConfigsGetRequest(
+            name=dataset_config_relative_name
+        )
+    )
 
-  def list_dataset_config(
-      self, destination_project, location=None, page_size=None
+  def list_dataset_config(self, location=None, page_size=None):
+    """Lists the dataset configs.
+
+    Args:
+      location (str): The location where insights data will be stored in a GCS
+        managed BigQuery instance.
+      page_size (int|None): Number of items per request to be returned.
+
+    Returns:
+      List of dataset configs.
+    """
+    if location is not None:
+      parent = _get_parent_string(
+          properties.VALUES.core.project.Get(), location
+      )
+    else:
+      parent = _get_parent_string(properties.VALUES.core.project.Get(), '-')
+
+    return list_pager.YieldFromList(
+        self.client.projects_locations_datasetConfigs,
+        self.messages.StorageinsightsProjectsLocationsDatasetConfigsListRequest(
+            parent=parent
+        ),
+        batch_size=page_size if page_size is not None else PAGE_SIZE,
+        batch_size_attribute='pageSize',
+        field='datasetConfigs',
+    )
+
+  def _get_dataset_config_update_mask(
+      self, retention_period=None, skip_verification=None, description=None
   ):
-    # TODO(b/302428138) Implement the API layer methods
-    raise NotImplementedError()
+    """Returns the update_mask list."""
+    update_mask = []
+    if retention_period is not None:
+      update_mask.append('retentionPeriodDays')
+    # skip_verification=False can't lead to metadata changes!
+    if skip_verification:
+      update_mask.append('skipVerificationAndIngest')
+    if description is not None:
+      update_mask.append('description')
+    return update_mask
 
   def update_dataset_config(
       self,
       dataset_config_relative_name,
       retention_period=None,
-      skip_verification=False,
+      skip_verification=None,
       description=None,
   ):
-    """Updates the dataset config."""
-    # TODO(b/302428138) Implement the API layer methods
-    raise NotImplementedError()
+    """Updates the dataset config.
+
+    Args:
+      dataset_config_relative_name (str): The relative name of the dataset
+        config to be modified.
+      retention_period (int): No of days for which insights data is to be
+        retained in BigQuery instance.
+      skip_verification (bool): If True, skips verification of dataset config
+        during creation.
+      description (str): Human readable description text for the given dataset
+        config.
+
+    Returns:
+      An instance of Operation message.
+    """
+
+    # Only the fields present in the mask will be updated.
+    update_mask = self._get_dataset_config_update_mask(
+        retention_period, skip_verification, description
+    )
+
+    if not update_mask:
+      raise errors.InsightApiError(
+          'Nothing to update for dataset config: {}'.format(
+              dataset_config_relative_name
+          )
+      )
+
+    dataset_config = self.messages.DatasetConfig(
+        retentionPeriodDays=retention_period,
+        skipVerificationAndIngest=skip_verification,
+        description=description,
+    )
+    request = self.messages.StorageinsightsProjectsLocationsDatasetConfigsPatchRequest(
+        name=dataset_config_relative_name,
+        datasetConfig=dataset_config,
+        updateMask=','.join(update_mask),
+    )
+    return self.client.projects_locations_datasetConfigs.Patch(request)
 
   def _get_report_format_options(
       self, csv_separator, csv_delimiter, csv_header, parquet

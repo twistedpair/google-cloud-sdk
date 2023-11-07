@@ -95,7 +95,7 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
   def _CreateFlag(
       self, arg_name, flag_prefix=None, flag_type=None, action=None,
-      help_text=None
+      metavar=None, help_text=None
   ):
     """Creates a flag.
 
@@ -104,17 +104,22 @@ class UpdateArgumentGenerator(six.with_metaclass(abc.ABCMeta, object)):
       flag_prefix: Prefix | None, prefix for the flag name
       flag_type: func, type that flag is used to convert user input
       action: str, flag action
-      help_text: str,
+      metavar: str, user specified metavar for flag
+      help_text: str, flag help text
 
     Returns:
       base.Argument with correct params
     """
-    arg = base.Argument(
-        arg_utils.GetFlagName(arg_name, flag_prefix and flag_prefix.value),
-        action=action, help=help_text
-    )
-    if action != 'store_true':
-      arg.kwargs['type'] = flag_type
+    flag_name = arg_utils.GetFlagName(
+        arg_name, flag_prefix and flag_prefix.value)
+    arg = base.Argument(flag_name, action=action, help=help_text)
+
+    if action == 'store_true':
+      return arg
+
+    arg.kwargs['type'] = flag_type
+    if flag_metavar := arg_utils.GetMetavar(metavar, flag_type, flag_name):
+      arg.kwargs['metavar'] = flag_metavar
     return arg
 
   # DEFAULT FLAGS GENERATED
@@ -321,6 +326,7 @@ class UpdateBasicArgumentGenerator(UpdateArgumentGenerator):
         repeated=arg_data.repeated,
         processor=arg_data.processor,
         choices=arg_data.choices,
+        metavar=arg_data.metavar,
     )
 
   def __init__(
@@ -335,6 +341,7 @@ class UpdateBasicArgumentGenerator(UpdateArgumentGenerator):
       repeated=False,
       processor=None,
       choices=None,
+      metavar=None,
   ):
     super(UpdateBasicArgumentGenerator, self).__init__()
     self.arg_name = format_util.NormalizeFormat(arg_name)
@@ -347,6 +354,7 @@ class UpdateBasicArgumentGenerator(UpdateArgumentGenerator):
     self.repeated = repeated
     self.processor = processor
     self.choices = choices
+    self.metavar = metavar
 
   def GetArgFromNamespace(self, namespace, arg):
     if arg is None:
@@ -382,6 +390,7 @@ class UpdateDefaultArgumentGenerator(UpdateBasicArgumentGenerator):
     return self._CreateBasicFlag(
         flag_type=_ConvertValueType(self),
         action=self.action,
+        metavar=self.metavar,
         help_text='Set {} to new value.'.format(self.arg_name),
     )
 
@@ -417,6 +426,7 @@ class UpdateListArgumentGenerator(UpdateBasicArgumentGenerator):
     return self._CreateBasicFlag(
         flag_type=_ConvertValueType(self),
         action=self.action,
+        metavar=self.metavar,
         help_text='Set {} to new value.'.format(self.arg_name),
     )
 
@@ -515,6 +525,7 @@ class UpdateMapArgumentGenerator(UpdateBasicArgumentGenerator):
     return self._CreateBasicFlag(
         flag_type=_ConvertValueType(self),
         action=self.action,
+        metavar=self.metavar,
         help_text='Set {} to new value.'.format(self.arg_name),
     )
 

@@ -1365,6 +1365,9 @@ apis:
       discovery_doc: tpu_v1.json
     v2alpha1:
       discovery_doc: tpu_v2alpha1.json
+      resources:
+        projects.locations.reservations:
+          path: projects/{projectId}/locations/{locationId}/reservations/{reservationId}
     v2:
       discovery_doc: tpu_v2.json
   videointelligence:

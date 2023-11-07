@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -229,6 +229,14 @@ class StorageRestInterceptor:
                 logging.log(f"Received response: {response}")
                 return response
 
+            def pre_restore_object(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_restore_object(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
             def pre_rewrite_object(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -433,13 +441,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("CancelResumableWrite")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.CancelResumableWriteRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -452,13 +453,6 @@ class StorageRestTransport(StorageTransport):
     class _ComposeObject(StorageRestStub):
         def __hash__(self):
             return hash("ComposeObject")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.ComposeObjectRequest, *,
@@ -473,13 +467,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("CreateBucket")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.CreateBucketRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -492,13 +479,6 @@ class StorageRestTransport(StorageTransport):
     class _CreateHmacKey(StorageRestStub):
         def __hash__(self):
             return hash("CreateHmacKey")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.CreateHmacKeyRequest, *,
@@ -513,13 +493,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("CreateNotificationConfig")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.CreateNotificationConfigRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -532,13 +505,6 @@ class StorageRestTransport(StorageTransport):
     class _DeleteBucket(StorageRestStub):
         def __hash__(self):
             return hash("DeleteBucket")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.DeleteBucketRequest, *,
@@ -553,13 +519,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("DeleteHmacKey")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.DeleteHmacKeyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -572,13 +531,6 @@ class StorageRestTransport(StorageTransport):
     class _DeleteNotificationConfig(StorageRestStub):
         def __hash__(self):
             return hash("DeleteNotificationConfig")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.DeleteNotificationConfigRequest, *,
@@ -593,13 +545,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("DeleteObject")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.DeleteObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -612,13 +557,6 @@ class StorageRestTransport(StorageTransport):
     class _GetBucket(StorageRestStub):
         def __hash__(self):
             return hash("GetBucket")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.GetBucketRequest, *,
@@ -633,13 +571,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("GetHmacKey")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.GetHmacKeyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -652,13 +583,6 @@ class StorageRestTransport(StorageTransport):
     class _GetIamPolicy(StorageRestStub):
         def __hash__(self):
             return hash("GetIamPolicy")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: iam_policy_pb2.GetIamPolicyRequest, *,
@@ -673,13 +597,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("GetNotificationConfig")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.GetNotificationConfigRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -692,13 +609,6 @@ class StorageRestTransport(StorageTransport):
     class _GetObject(StorageRestStub):
         def __hash__(self):
             return hash("GetObject")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.GetObjectRequest, *,
@@ -713,13 +623,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("GetServiceAccount")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.GetServiceAccountRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -732,13 +635,6 @@ class StorageRestTransport(StorageTransport):
     class _ListBuckets(StorageRestStub):
         def __hash__(self):
             return hash("ListBuckets")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.ListBucketsRequest, *,
@@ -753,13 +649,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("ListHmacKeys")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.ListHmacKeysRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -772,13 +661,6 @@ class StorageRestTransport(StorageTransport):
     class _ListNotificationConfigs(StorageRestStub):
         def __hash__(self):
             return hash("ListNotificationConfigs")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.ListNotificationConfigsRequest, *,
@@ -793,13 +675,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("ListObjects")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.ListObjectsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -812,13 +687,6 @@ class StorageRestTransport(StorageTransport):
     class _LockBucketRetentionPolicy(StorageRestStub):
         def __hash__(self):
             return hash("LockBucketRetentionPolicy")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.LockBucketRetentionPolicyRequest, *,
@@ -833,13 +701,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("QueryWriteStatus")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.QueryWriteStatusRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -853,13 +714,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("ReadObject")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.ReadObjectRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -869,16 +723,22 @@ class StorageRestTransport(StorageTransport):
             raise NotImplementedError(
                 "Method ReadObject is not available over REST transport"
             )
+    class _RestoreObject(StorageRestStub):
+        def __hash__(self):
+            return hash("RestoreObject")
+
+        def __call__(self,
+                request: storage.RestoreObjectRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> storage.Object:
+            raise NotImplementedError(
+                "Method RestoreObject is not available over REST transport"
+            )
     class _RewriteObject(StorageRestStub):
         def __hash__(self):
             return hash("RewriteObject")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.RewriteObjectRequest, *,
@@ -893,13 +753,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("SetIamPolicy")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: iam_policy_pb2.SetIamPolicyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -912,13 +765,6 @@ class StorageRestTransport(StorageTransport):
     class _StartResumableWrite(StorageRestStub):
         def __hash__(self):
             return hash("StartResumableWrite")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.StartResumableWriteRequest, *,
@@ -933,13 +779,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("TestIamPermissions")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: iam_policy_pb2.TestIamPermissionsRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -952,13 +791,6 @@ class StorageRestTransport(StorageTransport):
     class _UpdateBucket(StorageRestStub):
         def __hash__(self):
             return hash("UpdateBucket")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.UpdateBucketRequest, *,
@@ -973,13 +805,6 @@ class StorageRestTransport(StorageTransport):
         def __hash__(self):
             return hash("UpdateHmacKey")
 
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
-
         def __call__(self,
                 request: storage.UpdateHmacKeyRequest, *,
                 retry: OptionalRetry=gapic_v1.method.DEFAULT,
@@ -992,13 +817,6 @@ class StorageRestTransport(StorageTransport):
     class _UpdateObject(StorageRestStub):
         def __hash__(self):
             return hash("UpdateObject")
-
-        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
-        }
-
-        @classmethod
-        def _get_unset_required_fields(cls, message_dict):
-            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
 
         def __call__(self,
                 request: storage.UpdateObjectRequest, *,
@@ -1206,6 +1024,14 @@ class StorageRestTransport(StorageTransport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._ReadObject(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def restore_object(self) -> Callable[
+            [storage.RestoreObjectRequest],
+            storage.Object]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._RestoreObject(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def rewrite_object(self) -> Callable[

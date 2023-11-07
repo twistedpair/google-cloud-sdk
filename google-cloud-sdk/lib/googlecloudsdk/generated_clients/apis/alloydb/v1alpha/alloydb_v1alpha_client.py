@@ -871,6 +871,33 @@ class AlloydbV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Switchover(self, request, global_params=None):
+      r"""Switches the role of PRIMARY and SECONDARY cluster without any data loss. This promotes the SECONDARY cluster to PRIMARY and sets up original PRIMARY cluster to replicate from this newly promoted cluster.
+
+      Args:
+        request: (AlloydbProjectsLocationsClustersSwitchoverRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Switchover')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Switchover.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/clusters/{clustersId}:switchover',
+        http_method='POST',
+        method_id='alloydb.projects.locations.clusters.switchover',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:switchover',
+        request_field='switchoverClusterRequest',
+        request_type_name='AlloydbProjectsLocationsClustersSwitchoverRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

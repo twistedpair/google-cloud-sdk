@@ -42,10 +42,10 @@ class ApphubV1alpha(base_api.BaseApiClient):
     self.projects_locations_applications_services = self.ProjectsLocationsApplicationsServicesService(self)
     self.projects_locations_applications_workloads = self.ProjectsLocationsApplicationsWorkloadsService(self)
     self.projects_locations_applications = self.ProjectsLocationsApplicationsService(self)
+    self.projects_locations_discoveredServices = self.ProjectsLocationsDiscoveredServicesService(self)
+    self.projects_locations_discoveredWorkloads = self.ProjectsLocationsDiscoveredWorkloadsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_serviceProjectAttachments = self.ProjectsLocationsServiceProjectAttachmentsService(self)
-    self.projects_locations_services = self.ProjectsLocationsServicesService(self)
-    self.projects_locations_workloads = self.ProjectsLocationsWorkloadsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
 
@@ -141,7 +141,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListServices lists registered services for a given host project, location and directory or lists discovered services for a given host project and location.
+      r"""ListServices lists registered services for a given host project, location and application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsServicesListRequest) input message
@@ -565,6 +565,188 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsDiscoveredServicesService(base_api.BaseApiService):
+    """Service class for the projects_locations_discoveredServices resource."""
+
+    _NAME = 'projects_locations_discoveredServices'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsDiscoveredServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def FindUnregistered(self, request, global_params=None):
+      r"""FindUnregisteredServices finds unregistered services for a given host project and location.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindUnregisteredServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('FindUnregistered')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FindUnregistered.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredServices:findUnregistered',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredServices.findUnregistered',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/discoveredServices:findUnregistered',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest',
+        response_type_name='FindUnregisteredServicesResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetDiscoveredService gets a discovered service from App Hub.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiscoveredService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredServices/{discoveredServicesId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredServices.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredServicesGetRequest',
+        response_type_name='DiscoveredService',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListDiscoveredServices lists discovered services for a given host project and location.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDiscoveredServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredServices',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredServices.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/discoveredServices',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredServicesListRequest',
+        response_type_name='ListDiscoveredServicesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsDiscoveredWorkloadsService(base_api.BaseApiService):
+    """Service class for the projects_locations_discoveredWorkloads resource."""
+
+    _NAME = 'projects_locations_discoveredWorkloads'
+
+    def __init__(self, client):
+      super(ApphubV1alpha.ProjectsLocationsDiscoveredWorkloadsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def FindUnregistered(self, request, global_params=None):
+      r"""FindUnregisteredWorkloads finds unregistered workloads for a given host project and location.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredWorkloadsFindUnregisteredRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindUnregisteredWorkloadsResponse) The response message.
+      """
+      config = self.GetMethodConfig('FindUnregistered')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    FindUnregistered.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredWorkloads:findUnregistered',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredWorkloads.findUnregistered',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/discoveredWorkloads:findUnregistered',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsFindUnregisteredRequest',
+        response_type_name='FindUnregisteredWorkloadsResponse',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""GetDiscoveredWorkload gets a discovered workload from App Hub.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredWorkloadsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DiscoveredWorkload) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredWorkloads/{discoveredWorkloadsId}',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredWorkloads.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsGetRequest',
+        response_type_name='DiscoveredWorkload',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""ListDiscoveredWorkloads lists discovered workloads for a given host project and location.
+
+      Args:
+        request: (ApphubProjectsLocationsDiscoveredWorkloadsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListDiscoveredWorkloadsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/discoveredWorkloads',
+        http_method='GET',
+        method_id='apphub.projects.locations.discoveredWorkloads.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/discoveredWorkloads',
+        request_field='',
+        request_type_name='ApphubProjectsLocationsDiscoveredWorkloadsListRequest',
+        response_type_name='ListDiscoveredWorkloadsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -801,188 +983,6 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class ProjectsLocationsServicesService(base_api.BaseApiService):
-    """Service class for the projects_locations_services resource."""
-
-    _NAME = 'projects_locations_services'
-
-    def __init__(self, client):
-      super(ApphubV1alpha.ProjectsLocationsServicesService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def FindUnregistered(self, request, global_params=None):
-      r"""FindUnregisteredServices finds unregistered services for a given host project and location.
-
-      Args:
-        request: (ApphubProjectsLocationsServicesFindUnregisteredRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FindUnregisteredServicesResponse) The response message.
-      """
-      config = self.GetMethodConfig('FindUnregistered')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    FindUnregistered.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services:findUnregistered',
-        http_method='GET',
-        method_id='apphub.projects.locations.services.findUnregistered',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/services:findUnregistered',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsServicesFindUnregisteredRequest',
-        response_type_name='FindUnregisteredServicesResponse',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""GetService gets a service from App Hub Application.
-
-      Args:
-        request: (ApphubProjectsLocationsServicesGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Service) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services/{servicesId}',
-        http_method='GET',
-        method_id='apphub.projects.locations.services.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsServicesGetRequest',
-        response_type_name='Service',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""ListServices lists registered services for a given host project, location and directory or lists discovered services for a given host project and location.
-
-      Args:
-        request: (ApphubProjectsLocationsServicesListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListServicesResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/services',
-        http_method='GET',
-        method_id='apphub.projects.locations.services.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/services',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsServicesListRequest',
-        response_type_name='ListServicesResponse',
-        supports_download=False,
-    )
-
-  class ProjectsLocationsWorkloadsService(base_api.BaseApiService):
-    """Service class for the projects_locations_workloads resource."""
-
-    _NAME = 'projects_locations_workloads'
-
-    def __init__(self, client):
-      super(ApphubV1alpha.ProjectsLocationsWorkloadsService, self).__init__(client)
-      self._upload_configs = {
-          }
-
-    def FindUnregistered(self, request, global_params=None):
-      r"""FindUnregisteredServices finds unregistered workloads for a given host project and location.
-
-      Args:
-        request: (ApphubProjectsLocationsWorkloadsFindUnregisteredRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (FindUnregisteredWorkloadsResponse) The response message.
-      """
-      config = self.GetMethodConfig('FindUnregistered')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    FindUnregistered.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/workloads:findUnregistered',
-        http_method='GET',
-        method_id='apphub.projects.locations.workloads.findUnregistered',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/workloads:findUnregistered',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsWorkloadsFindUnregisteredRequest',
-        response_type_name='FindUnregisteredWorkloadsResponse',
-        supports_download=False,
-    )
-
-    def Get(self, request, global_params=None):
-      r"""GetWorkload gets a workload from App Hub Application.
-
-      Args:
-        request: (ApphubProjectsLocationsWorkloadsGetRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Workload) The response message.
-      """
-      config = self.GetMethodConfig('Get')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/workloads/{workloadsId}',
-        http_method='GET',
-        method_id='apphub.projects.locations.workloads.get',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsWorkloadsGetRequest',
-        response_type_name='Workload',
-        supports_download=False,
-    )
-
-    def List(self, request, global_params=None):
-      r"""ListWorkloads lists workloads for a given host project, location and application.
-
-      Args:
-        request: (ApphubProjectsLocationsWorkloadsListRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (ListWorkloadsResponse) The response message.
-      """
-      config = self.GetMethodConfig('List')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    List.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/workloads',
-        http_method='GET',
-        method_id='apphub.projects.locations.workloads.list',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['filter', 'orderBy', 'pageSize', 'pageToken'],
-        relative_path='v1alpha/{+parent}/workloads',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsWorkloadsListRequest',
-        response_type_name='ListWorkloadsResponse',
-        supports_download=False,
-    )
-
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -992,6 +992,33 @@ class ApphubV1alpha(base_api.BaseApiClient):
       super(ApphubV1alpha.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def DetachServiceProjectAttachment(self, request, global_params=None):
+      r"""DetachServiceProjectAttachment detaches a service project attachment from host project, if exists.
+
+      Args:
+        request: (ApphubProjectsLocationsDetachServiceProjectAttachmentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (DetachServiceProjectAttachmentResponse) The response message.
+      """
+      config = self.GetMethodConfig('DetachServiceProjectAttachment')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DetachServiceProjectAttachment.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}:detachServiceProjectAttachment',
+        http_method='POST',
+        method_id='apphub.projects.locations.detachServiceProjectAttachment',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}:detachServiceProjectAttachment',
+        request_field='detachServiceProjectAttachmentRequest',
+        request_type_name='ApphubProjectsLocationsDetachServiceProjectAttachmentRequest',
+        response_type_name='DetachServiceProjectAttachmentResponse',
+        supports_download=False,
+    )
 
     def Get(self, request, global_params=None):
       r"""Gets information about a location.
@@ -1102,7 +1129,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def LookupServiceProjectAttachment(self, request, global_params=None):
-      r"""LookupServiceProjectAttachment looksup a service project attachment for a service project.
+      r"""LookupServiceProjectAttachment looks up a service project attachment for a service project.
 
       Args:
         request: (ApphubProjectsLocationsLookupServiceProjectAttachmentRequest) input message

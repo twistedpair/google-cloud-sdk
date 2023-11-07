@@ -1433,7 +1433,7 @@ class Organization(_messages.Message):
     creationTime: Timestamp when the Organization was created. Assigned by the
       server.
     displayName: A human-readable string that refers to the Organization in
-      the GCP Console UI. This string is set by the server and cannot be
+      the Google Cloud console. This string is set by the server and cannot be
       changed. The string will be set to the primary domain (for example,
       "google.com") of the G Suite customer that owns the organization.
     lifecycleState: The organization's current lifecycle state. Assigned by

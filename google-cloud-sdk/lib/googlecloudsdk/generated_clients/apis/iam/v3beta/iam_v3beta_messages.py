@@ -344,7 +344,9 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
 
   Enums:
     PolicyKindValueValuesEnum: Immutable. The kind of the policy to attach in
-      this binding.
+      this binding: + When the policy is empty, this field must be set. + When
+      the policy is set, this field + can be left empty and will be set to the
+      policy kind, or + must set to the input policy kind
 
   Messages:
     AnnotationsValue: Optional. User defined annotations. See
@@ -367,15 +369,20 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
       than or equal to 63 characters.
     etag: Optional. The etag for the policy binding. If this is provided on
       update, it must match the server's etag.
-    name: The resource name of the policy binding. The binding parent is the
-      closest CRM resource (i.e., Project, Folder or Organization) to the
-      binding target. Format: `projects/{project_id}/locations/{location}/poli
-      cyBindings/{policy_binding_id}` `projects/{project_number}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` `folders/{folder_id}/locatio
-      ns/{location}/policyBindings/{policy_binding_id}` `organizations/{organi
-      zation_id}/locations/{location}/policyBindings/{policy_binding_id}`
+    name: Identifier. The resource name of the policy binding. The binding
+      parent is the closest CRM resource (i.e., Project, Folder or
+      Organization) to the binding target. Format: `projects/{project_id}/loca
+      tions/{location}/policyBindings/{policy_binding_id}` `projects/{project_
+      number}/locations/{location}/policyBindings/{policy_binding_id}` `folder
+      s/{folder_id}/locations/{location}/policyBindings/{policy_binding_id}` `
+      organizations/{organization_id}/locations/{location}/policyBindings/{pol
+      icy_binding_id}`
     policy: Optional. The resource name of the policy to be bound.
-    policyKind: Immutable. The kind of the policy to attach in this binding.
+    policyKind: Immutable. The kind of the policy to attach in this binding: +
+      When the policy is empty, this field must be set. + When the policy is
+      set, this field + can be left empty and will be set to the policy kind,
+      or + must set to the input policy kind
+    policyUid: Output only. The globally unique ID of the policy to be bound.
     target: Immutable. The full resource name of the resource to which the
       policy will be bound. Immutable once set.
     uid: Output only. Immutable. The globally unique ID of the policy binding.
@@ -385,7 +392,10 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
   """
 
   class PolicyKindValueValuesEnum(_messages.Enum):
-    r"""Immutable. The kind of the policy to attach in this binding.
+    r"""Immutable. The kind of the policy to attach in this binding: + When
+    the policy is empty, this field must be set. + When the policy is set,
+    this field + can be left empty and will be set to the policy kind, or +
+    must set to the input policy kind
 
     Values:
       POLICY_KIND_UNSPECIFIED: Unspecified policy kind; Not a valid state
@@ -429,13 +439,14 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
   name = _messages.StringField(6)
   policy = _messages.StringField(7)
   policyKind = _messages.EnumField('PolicyKindValueValuesEnum', 8)
-  target = _messages.StringField(9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  policyUid = _messages.StringField(9)
+  target = _messages.StringField(10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
-  r"""An IAM principal access boundary policy resource. Next ID: 9
+  r"""An IAM principal access boundary policy resource.
 
   Messages:
     AnnotationsValue: Optional. User defined annotations. See
@@ -448,14 +459,14 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
       and size limitations
     createTime: Output only. The time when the principal access boundary
       policy was created.
-    details: Optional. The details for the principal access boundary policy
+    details: Optional. The details for the principal access boundary policy.
     displayName: Optional. The description of the principal access boundary
       policy. Must be less than or equal to 63 characters.
     etag: Optional. The etag for the principal access boundary. If this is
       provided on update, it must match the server's etag.
     name: Required. The resource name of the principal access boundary policy.
-      Format: `organizations/{organization_id}/locations/{location}/principalA
-      ccessBoundaryPolicies/{policy_id}`
+      The following format is supported: `organizations/{organization_id}/loca
+      tions/{location}/principalAccessBoundaryPolicies/{policy_id}`
     uid: Output only. The globally unique ID of the principal access boundary
       policy.
     updateTime: Output only. The time when the principal access boundary
@@ -504,9 +515,17 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
 
   Fields:
     rules: Required. A list of principal access boundary policy rules.
+    staticEnforcementVersionNumber: A specific version number. This will need
+      to be manually updated to newer versions as they become available in
+      order to keep maximum protection.
+    useLatestEnforcementVersion: Use the latest officially released version
+      number. This will automatically increase in scope as more services are
+      included in enforcemment.
   """
 
   rules = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicyRule', 1, repeated=True)
+  staticEnforcementVersionNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  useLatestEnforcementVersion = _messages.BooleanField(3)
 
 
 class GoogleIamV3betaPrincipalAccessBoundaryPolicyRule(_messages.Message):
@@ -996,13 +1015,14 @@ class IamFoldersLocationsPolicyBindingsPatchRequest(_messages.Message):
   Fields:
     googleIamV3betaPolicyBinding: A GoogleIamV3betaPolicyBinding resource to
       be passed as the request body.
-    name: The resource name of the policy binding. The binding parent is the
-      closest CRM resource (i.e., Project, Folder or Organization) to the
-      binding target. Format: `projects/{project_id}/locations/{location}/poli
-      cyBindings/{policy_binding_id}` `projects/{project_number}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` `folders/{folder_id}/locatio
-      ns/{location}/policyBindings/{policy_binding_id}` `organizations/{organi
-      zation_id}/locations/{location}/policyBindings/{policy_binding_id}`
+    name: Identifier. The resource name of the policy binding. The binding
+      parent is the closest CRM resource (i.e., Project, Folder or
+      Organization) to the binding target. Format: `projects/{project_id}/loca
+      tions/{location}/policyBindings/{policy_binding_id}` `projects/{project_
+      number}/locations/{location}/policyBindings/{policy_binding_id}` `folder
+      s/{folder_id}/locations/{location}/policyBindings/{policy_binding_id}` `
+      organizations/{organization_id}/locations/{location}/policyBindings/{pol
+      icy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
@@ -1268,13 +1288,14 @@ class IamOrganizationsLocationsPolicyBindingsPatchRequest(_messages.Message):
   Fields:
     googleIamV3betaPolicyBinding: A GoogleIamV3betaPolicyBinding resource to
       be passed as the request body.
-    name: The resource name of the policy binding. The binding parent is the
-      closest CRM resource (i.e., Project, Folder or Organization) to the
-      binding target. Format: `projects/{project_id}/locations/{location}/poli
-      cyBindings/{policy_binding_id}` `projects/{project_number}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` `folders/{folder_id}/locatio
-      ns/{location}/policyBindings/{policy_binding_id}` `organizations/{organi
-      zation_id}/locations/{location}/policyBindings/{policy_binding_id}`
+    name: Identifier. The resource name of the policy binding. The binding
+      parent is the closest CRM resource (i.e., Project, Folder or
+      Organization) to the binding target. Format: `projects/{project_id}/loca
+      tions/{location}/policyBindings/{policy_binding_id}` `projects/{project_
+      number}/locations/{location}/policyBindings/{policy_binding_id}` `folder
+      s/{folder_id}/locations/{location}/policyBindings/{policy_binding_id}` `
+      organizations/{organization_id}/locations/{location}/policyBindings/{pol
+      icy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
@@ -1381,8 +1402,8 @@ class IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesPatchRequest(_mess
       GoogleIamV3betaPrincipalAccessBoundaryPolicy resource to be passed as
       the request body.
     name: Required. The resource name of the principal access boundary policy.
-      Format: `organizations/{organization_id}/locations/{location}/principalA
-      ccessBoundaryPolicies/{policy_id}`
+      The following format is supported: `organizations/{organization_id}/loca
+      tions/{location}/principalAccessBoundaryPolicies/{policy_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.
@@ -1648,13 +1669,14 @@ class IamProjectsLocationsPolicyBindingsPatchRequest(_messages.Message):
   Fields:
     googleIamV3betaPolicyBinding: A GoogleIamV3betaPolicyBinding resource to
       be passed as the request body.
-    name: The resource name of the policy binding. The binding parent is the
-      closest CRM resource (i.e., Project, Folder or Organization) to the
-      binding target. Format: `projects/{project_id}/locations/{location}/poli
-      cyBindings/{policy_binding_id}` `projects/{project_number}/locations/{lo
-      cation}/policyBindings/{policy_binding_id}` `folders/{folder_id}/locatio
-      ns/{location}/policyBindings/{policy_binding_id}` `organizations/{organi
-      zation_id}/locations/{location}/policyBindings/{policy_binding_id}`
+    name: Identifier. The resource name of the policy binding. The binding
+      parent is the closest CRM resource (i.e., Project, Folder or
+      Organization) to the binding target. Format: `projects/{project_id}/loca
+      tions/{location}/policyBindings/{policy_binding_id}` `projects/{project_
+      number}/locations/{location}/policyBindings/{policy_binding_id}` `folder
+      s/{folder_id}/locations/{location}/policyBindings/{policy_binding_id}` `
+      organizations/{organization_id}/locations/{location}/policyBindings/{pol
+      icy_binding_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.

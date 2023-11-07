@@ -2737,6 +2737,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def ComputeTokens(self, request, global_params=None):
+      r"""Return a list of tokens based on the input text.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsComputeTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ComputeTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:computeTokens',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.computeTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:computeTokens',
+        request_field='googleCloudAiplatformV1beta1ComputeTokensRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsComputeTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ComputeTokensResponse',
+        supports_download=False,
+    )
+
     def CountTokens(self, request, global_params=None):
       r"""Perform a token counting.
 
@@ -10935,6 +10962,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchDelete(self, request, global_params=None):
+      r"""Batch deletes PipelineJobs The Operation is atomic. If it fails, none of the PipelineJobs are deleted. If it succeeds, all of the PipelineJobs are deleted.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsBatchDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchDelete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchDelete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/pipelineJobs:batchDelete',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.pipelineJobs.batchDelete',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/pipelineJobs:batchDelete',
+        request_field='googleCloudAiplatformV1beta1BatchDeletePipelineJobsRequest',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsBatchDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def Cancel(self, request, global_params=None):
       r"""Cancels a PipelineJob. Starts asynchronous cancellation on the PipelineJob. The server makes a best effort to cancel the pipeline, but success is not guaranteed. Clients can use PipelineService.GetPipelineJob or other methods to check whether the cancellation succeeded or whether the pipeline completed despite cancellation. On successful cancellation, the PipelineJob is not deleted; instead it becomes a pipeline with a PipelineJob.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`, and PipelineJob.state is set to `CANCELLED`.
 
@@ -11079,6 +11133,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsLocationsPublishersModelsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def ComputeTokens(self, request, global_params=None):
+      r"""Return a list of tokens based on the input text.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsComputeTokensRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1ComputeTokensResponse) The response message.
+      """
+      config = self.GetMethodConfig('ComputeTokens')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ComputeTokens.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:computeTokens',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.computeTokens',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:computeTokens',
+        request_field='googleCloudAiplatformV1beta1ComputeTokensRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsComputeTokensRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1ComputeTokensResponse',
+        supports_download=False,
+    )
 
     def CountTokens(self, request, global_params=None):
       r"""Perform a token counting.

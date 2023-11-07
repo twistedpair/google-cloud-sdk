@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -48,6 +48,7 @@ from .client import SpannerClient
 
 class SpannerAsyncClient:
     """Cloud Spanner API
+
     The Cloud Spanner API can be used to manage sessions and execute
     transactions on data stored in Cloud Spanner databases.
     """
@@ -329,6 +330,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                predicate=retries.if_ex
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> spanner.BatchCreateSessionsResponse:
         r"""Creates multiple new sessions.
+
         This API can be used to initialize a session cache on
         the clients. See https://goo.gl/TgSFN2 for best
         practices on session cache management.
@@ -2043,7 +2045,7 @@ initial=0.25,maximum=32.0,multiplier=1.3,                predicate=retries.if_ex
         # Done; return the response.
         return response
 
-    async def __aenter__(self):
+    async def __aenter__(self) -> "SpannerAsyncClient":
         return self
 
     async def __aexit__(self, exc_type, exc, tb):

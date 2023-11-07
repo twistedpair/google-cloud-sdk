@@ -554,36 +554,41 @@ def AddMigDefaultActionOnVmFailure(parser):
 def AddStandbyPolicyFlags(parser):
   """Add flags required for setting standby policy."""
   standby_policy_mode_choices = {
-      'manual': 'MIG does not automatically stop/start or suspend/resume VMs.',
+      'manual': (
+          'MIG does not automatically resume or start VMs in the standby pool'
+          ' when the group scales out.'
+      ),
       'scale-out-pool': (
-          'MIG automatically resumes and starts VMs when it scales out, and'
-          ' replenishes the standby pool afterwards.'
+          'MIG automatically resumes or starts VMs in the standby pool when the'
+          ' group scales out, and replenishes the standby pool afterwards.'
       ),
   }
   parser.add_argument(
       '--standby-policy-mode',
       type=str,
       choices=standby_policy_mode_choices,
-      help=(
-          'Defines behaviour of using instances from standby pool to resize'
-          ' MIG.'
-      ),
+      help=("""\
+          Defines how a MIG resumes or starts VMs from a standby pool when the\
+          group scales out. The default mode is ``manual''.
+      """),
   )
   parser.add_argument(
       '--standby-policy-initial-delay',
       type=int,
       help=(
-          'Specifies the initialization delay for stopping/suspending'
-          ' instances.'
+          'Specifies the number of seconds that the MIG should wait before'
+          ' suspending or stopping a VM. The initial delay gives the'
+          ' initialization script the time to prepare your VM for a quick scale'
+          ' out.'
       ),
   )
   parser.add_argument(
       '--suspended-size',
       type=int,
-      help='Specifies the number of suspended instances.',
+      help='Specifies the target size of suspended VMs in the group.',
   )
   parser.add_argument(
       '--stopped-size',
       type=int,
-      help='Specifies the number of stopped instances.',
+      help='Specifies the target size of stopped VMs in the group.',
   )

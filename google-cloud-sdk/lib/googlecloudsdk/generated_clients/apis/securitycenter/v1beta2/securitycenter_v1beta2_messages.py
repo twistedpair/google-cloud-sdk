@@ -1047,6 +1047,7 @@ class Finding(_messages.Message):
       compromise](https://en.wikipedia.org/wiki/Indicator_of_compromise).
     kernelRootkit: Signature of the kernel rootkit.
     kubernetes: Kubernetes resources associated with the finding.
+    loadBalancers: The load balancers associated with the finding.
     mitreAttack: MITRE ATT&CK tactics and techniques related to this finding.
       See: https://attack.mitre.org
     moduleName: Unique identifier of the module which generated the finding.
@@ -1067,6 +1068,8 @@ class Finding(_messages.Message):
       "folders/{folder_id}/sources/{source_id}/findings/{finding_id}",
       "projects/{project_id}/sources/{source_id}/findings/{finding_id}".
     nextSteps: Steps to address the finding.
+    orgPolicies: Contains information about the org policies associated with
+      the finding.
     parent: The relative resource name of the source the finding belongs to.
       See: https://cloud.google.com/apis/design/resource_names#relative_resour
       ce_name This field is immutable after creation time. For example:
@@ -1308,23 +1311,25 @@ class Finding(_messages.Message):
   indicator = _messages.MessageField('Indicator', 21)
   kernelRootkit = _messages.MessageField('KernelRootkit', 22)
   kubernetes = _messages.MessageField('Kubernetes', 23)
-  mitreAttack = _messages.MessageField('MitreAttack', 24)
-  moduleName = _messages.StringField(25)
-  mute = _messages.EnumField('MuteValueValuesEnum', 26)
-  muteInitiator = _messages.StringField(27)
-  muteUpdateTime = _messages.StringField(28)
-  name = _messages.StringField(29)
-  nextSteps = _messages.StringField(30)
-  parent = _messages.StringField(31)
-  parentDisplayName = _messages.StringField(32)
-  processes = _messages.MessageField('Process', 33, repeated=True)
-  resourceName = _messages.StringField(34)
-  securityMarks = _messages.MessageField('SecurityMarks', 35)
-  securityPosture = _messages.MessageField('SecurityPosture', 36)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 37)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 38)
-  state = _messages.EnumField('StateValueValuesEnum', 39)
-  vulnerability = _messages.MessageField('Vulnerability', 40)
+  loadBalancers = _messages.MessageField('LoadBalancer', 24, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 25)
+  moduleName = _messages.StringField(26)
+  mute = _messages.EnumField('MuteValueValuesEnum', 27)
+  muteInitiator = _messages.StringField(28)
+  muteUpdateTime = _messages.StringField(29)
+  name = _messages.StringField(30)
+  nextSteps = _messages.StringField(31)
+  orgPolicies = _messages.MessageField('OrgPolicy', 32, repeated=True)
+  parent = _messages.StringField(33)
+  parentDisplayName = _messages.StringField(34)
+  processes = _messages.MessageField('Process', 35, repeated=True)
+  resourceName = _messages.StringField(36)
+  securityMarks = _messages.MessageField('SecurityMarks', 37)
+  securityPosture = _messages.MessageField('SecurityPosture', 38)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 39)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 40)
+  state = _messages.EnumField('StateValueValuesEnum', 41)
+  vulnerability = _messages.MessageField('Vulnerability', 42)
 
 
 class Folder(_messages.Message):
@@ -1588,7 +1593,10 @@ class GoogleCloudSecuritycenterV1MuteConfig(_messages.Message):
     name: This field will be ignored if provided on config creation. Format
       "organizations/{organization}/muteConfigs/{mute_config}"
       "folders/{folder}/muteConfigs/{mute_config}"
-      "projects/{project}/muteConfigs/{mute_config}"
+      "projects/{project}/muteConfigs/{mute_config}" "organizations/{organizat
+      ion}/locations/global/muteConfigs/{mute_config}"
+      "folders/{folder}/locations/global/muteConfigs/{mute_config}"
+      "projects/{project}/locations/global/muteConfigs/{mute_config}"
     updateTime: Output only. The most recent time at which the mute config was
       updated. This field is set by the server and will be ignored if provided
       on config creation or update.
@@ -1671,8 +1679,8 @@ class GoogleCloudSecuritycenterV1ResourceSelector(_messages.Message):
 
 
 class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
-  r"""A resource value config is a mapping configuration of user's tag values
-  to resource values. Used by the attack path simulation.
+  r"""A resource value config (RVC) is a mapping configuration of user's
+  resources to resource values. Used in Attack path simulations.
 
   Enums:
     ResourceValueValueValuesEnum: Required. Resource value level this
@@ -2291,6 +2299,7 @@ class Kubernetes(_messages.Message):
       contains node pool information for each node, when it is available.
     nodes: Provides Kubernetes [node](https://cloud.google.com/kubernetes-
       engine/docs/concepts/cluster-architecture#nodes) information.
+    objects: Kubernetes objects related to the finding.
     pods: Kubernetes [Pods](https://cloud.google.com/kubernetes-
       engine/docs/concepts/pod) associated with the finding. This field
       contains Pod records for each container that is owned by a Pod.
@@ -2303,8 +2312,9 @@ class Kubernetes(_messages.Message):
   bindings = _messages.MessageField('GoogleCloudSecuritycenterV1Binding', 2, repeated=True)
   nodePools = _messages.MessageField('NodePool', 3, repeated=True)
   nodes = _messages.MessageField('Node', 4, repeated=True)
-  pods = _messages.MessageField('Pod', 5, repeated=True)
-  roles = _messages.MessageField('Role', 6, repeated=True)
+  objects = _messages.MessageField('Object', 5, repeated=True)
+  pods = _messages.MessageField('Pod', 6, repeated=True)
+  roles = _messages.MessageField('Role', 7, repeated=True)
 
 
 class Label(_messages.Message):
@@ -2321,6 +2331,17 @@ class Label(_messages.Message):
 
   name = _messages.StringField(1)
   value = _messages.StringField(2)
+
+
+class LoadBalancer(_messages.Message):
+  r"""Contains information related to the load balancer associated with the
+  finding.
+
+  Fields:
+    name: The name of the load balancer associated with the finding.
+  """
+
+  name = _messages.StringField(1)
 
 
 class MemoryHashSignature(_messages.Message):
@@ -2628,42 +2649,39 @@ class NodePool(_messages.Message):
   nodes = _messages.MessageField('Node', 2, repeated=True)
 
 
-class OnboardingState(_messages.Message):
-  r"""Resource capturing onboarding information for a given CRM resource.
-
-  Enums:
-    OnboardingLevelValueValuesEnum: Describes the level a given organization,
-      folder, or project is onboarded with SCC. If the resource wasn't
-      onboarded, NOT_FOUND would have been thrown.
+class Object(_messages.Message):
+  r"""Kubernetes object related to the finding, uniquely identified by GKNN.
+  Used if the object Kind is not one of Pod, Node, NodePool, Binding, or
+  AccessReview.
 
   Fields:
-    name: The resource name of the OnboardingState. Format:
-      organizations/{organization}/onboardingState Format:
-      folders/{folder}/onboardingState Format:
-      projects/{project}/onboardingState
-    onboardingLevel: Describes the level a given organization, folder, or
-      project is onboarded with SCC. If the resource wasn't onboarded,
-      NOT_FOUND would have been thrown.
+    containers: Pod containers associated with this finding, if any.
+    group: Kubernetes object group, such as "policy.k8s.io/v1".
+    kind: Kubernetes object kind, such as "Namespace".
+    name: Kubernetes object name. For details see
+      https://kubernetes.io/docs/concepts/overview/working-with-
+      objects/names/.
+    ns: Kubernetes object namespace. Must be a valid DNS label. Named "ns" to
+      avoid collision with C++ namespace keyword. For details see
+      https://kubernetes.io/docs/tasks/administer-cluster/namespaces/.
   """
 
-  class OnboardingLevelValueValuesEnum(_messages.Enum):
-    r"""Describes the level a given organization, folder, or project is
-    onboarded with SCC. If the resource wasn't onboarded, NOT_FOUND would have
-    been thrown.
+  containers = _messages.MessageField('Container', 1, repeated=True)
+  group = _messages.StringField(2)
+  kind = _messages.StringField(3)
+  name = _messages.StringField(4)
+  ns = _messages.StringField(5)
 
-    Values:
-      ONBOARDING_LEVEL_UNSPECIFIED: Unused.
-      ONBOARDING_LEVEL_PROJECT: This resource is onboarded at the project
-        level. Only possible for projects.
-      ONBOARDING_LEVEL_ORGANIZATION: This resource is onboarded at the
-        organization level. Possible for organizations, folders, and projects.
-    """
-    ONBOARDING_LEVEL_UNSPECIFIED = 0
-    ONBOARDING_LEVEL_PROJECT = 1
-    ONBOARDING_LEVEL_ORGANIZATION = 2
+
+class OrgPolicy(_messages.Message):
+  r"""Contains information about the org policies associated with the finding.
+
+  Fields:
+    name: The resource name of the org policy. Example:
+      "organizations/{organization_id}/policies/{constraint_name}"
+  """
 
   name = _messages.StringField(1)
-  onboardingLevel = _messages.EnumField('OnboardingLevelValueValuesEnum', 2)
 
 
 class Pod(_messages.Message):
@@ -2848,7 +2866,7 @@ class Role(_messages.Message):
 
 
 class SecurityCenterSettings(_messages.Message):
-  r"""Resource capturing the settings for Security Center.
+  r"""Resource capturing the settings for Security Center. Next ID: 12
 
   Fields:
     logSinkProject: The resource name of the project to send logs to. This
@@ -3104,18 +3122,6 @@ class SecuritycenterFoldersGetEventThreatDetectionSettingsRequest(_messages.Mess
       Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuritycenterFoldersGetOnboardingStateRequest(_messages.Message):
-  r"""A SecuritycenterFoldersGetOnboardingStateRequest object.
-
-  Fields:
-    name: Required. The name of the OnboardingState to retrieve. Formats: *
-      organizations/{organization}/onboardingState *
-      folders/{folder}/onboardingState * projects/{project}/onboardingState
   """
 
   name = _messages.StringField(1, required=True)
@@ -3429,18 +3435,6 @@ class SecuritycenterOrganizationsGetEventThreatDetectionSettingsRequest(_message
       Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuritycenterOrganizationsGetOnboardingStateRequest(_messages.Message):
-  r"""A SecuritycenterOrganizationsGetOnboardingStateRequest object.
-
-  Fields:
-    name: Required. The name of the OnboardingState to retrieve. Formats: *
-      organizations/{organization}/onboardingState *
-      folders/{folder}/onboardingState * projects/{project}/onboardingState
   """
 
   name = _messages.StringField(1, required=True)
@@ -3769,18 +3763,6 @@ class SecuritycenterProjectsGetEventThreatDetectionSettingsRequest(_messages.Mes
       Formats: * organizations/{organization}/eventThreatDetectionSettings *
       folders/{folder}/eventThreatDetectionSettings *
       projects/{project}/eventThreatDetectionSettings
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuritycenterProjectsGetOnboardingStateRequest(_messages.Message):
-  r"""A SecuritycenterProjectsGetOnboardingStateRequest object.
-
-  Fields:
-    name: Required. The name of the OnboardingState to retrieve. Formats: *
-      organizations/{organization}/onboardingState *
-      folders/{folder}/onboardingState * projects/{project}/onboardingState
   """
 
   name = _messages.StringField(1, required=True)

@@ -182,8 +182,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Messag
     googleDevtoolsArtifactregistryV1alpha1Repository: A
       GoogleDevtoolsArtifactregistryV1alpha1Repository resource to be passed
       as the request body.
-    name: The name of the repository, for example: "projects/p1/locations/us-
-      central1/repositories/repo1".
+    name: The name of the repository, for example: `projects/p1/locations/us-
+      central1/repositories/repo1`.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
@@ -462,8 +462,8 @@ class GoogleDevtoolsArtifactregistryV1alpha1Repository(_messages.Message):
       Label keys must begin with a lowercase letter and may only contain
       lowercase letters, numeric characters, underscores, and dashes.
     mode: Optional. The mode of the repository.
-    name: The name of the repository, for example: "projects/p1/locations/us-
-      central1/repositories/repo1".
+    name: The name of the repository, for example: `projects/p1/locations/us-
+      central1/repositories/repo1`.
     satisfiesPzs: Output only. If set, the repository satisfies physical zone
       separation.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in

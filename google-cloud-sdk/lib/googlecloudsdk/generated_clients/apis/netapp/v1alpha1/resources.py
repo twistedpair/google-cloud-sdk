@@ -52,6 +52,39 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_BACKUPPOLICIES = (
+      'projects.locations.backupPolicies',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backupPolicies/'
+              '{backupPoliciesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BACKUPVAULTS = (
+      'projects.locations.backupVaults',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backupVaults/'
+              '{backupVaultsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_BACKUPVAULTS_BACKUPS = (
+      'projects.locations.backupVaults.backups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/backupVaults/'
+              '{backupVaultsId}/backups/{backupsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_KMSCONFIGS = (
       'projects.locations.kmsConfigs',
       '{+name}',

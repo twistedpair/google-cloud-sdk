@@ -1319,9 +1319,13 @@ class CheckConsistencyRequest(_messages.Message):
   Fields:
     consistencyToken: Required. The token created using
       GenerateConsistencyToken for the Table.
+    standardReadRemoteWrites: Checks that reads using an app profile with
+      `StandardIsolation` can see all writes committed before the token was
+      created, even if the read and write target different clusters.
   """
 
   consistencyToken = _messages.StringField(1)
+  standardReadRemoteWrites = _messages.MessageField('StandardReadRemoteWrites', 2)
 
 
 class CheckConsistencyResponse(_messages.Message):
@@ -1490,9 +1494,9 @@ class ColumnFamily(_messages.Message):
       at most 500 bytes. NOTE: Garbage collection executes opportunistically
       in the background, and so it's possible for reads to return a cell even
       if it matches the active GC expression for its family.
-    stats: Only available with STATS_VIEW, this includes summary statistics
-      about column family contents. For statistics over an entire table, see
-      TableStats above.
+    stats: Output only. Only available with STATS_VIEW, this includes summary
+      statistics about column family contents. For statistics over an entire
+      table, see TableStats above.
   """
 
   gcRule = _messages.MessageField('GcRule', 1)
@@ -2990,6 +2994,13 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+class StandardReadRemoteWrites(_messages.Message):
+  r"""Checks that all writes before the consistency token was generated is
+  replicated in every cluster and readable.
+  """
+
+
+
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -3132,10 +3143,10 @@ class Table(_messages.Message):
     restoreInfo: Output only. If this table was restored from another data
       source (e.g. a backup), this field will be populated with information
       about the restore.
-    stats: Only available with STATS_VIEW, this includes summary statistics
-      about the entire table contents. For statistics about a specific column
-      family, see ColumnFamilyStats in the mapped ColumnFamily collection
-      above.
+    stats: Output only. Only available with STATS_VIEW, this includes summary
+      statistics about the entire table contents. For statistics about a
+      specific column family, see ColumnFamilyStats in the mapped ColumnFamily
+      collection above.
   """
 
   class GranularityValueValuesEnum(_messages.Enum):

@@ -376,33 +376,6 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def DeleteRevision(self, request, global_params=None):
-      r"""Deletes the specified revision of the blueprint.
-
-      Args:
-        request: (TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRevisionRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Blueprint) The response message.
-      """
-      config = self.GetMethodConfig('DeleteRevision')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    DeleteRevision.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/blueprints/{blueprintsId}:deleteRevision',
-        http_method='DELETE',
-        method_id='telcoautomation.projects.locations.orchestrationClusters.blueprints.deleteRevision',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:deleteRevision',
-        request_field='',
-        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsDeleteRevisionRequest',
-        response_type_name='Blueprint',
-        supports_download=False,
-    )
-
     def Discard(self, request, global_params=None):
       r"""Discards the changes in a blueprint and reverts the blueprint to the last approved blueprint revision. No changes take place if a blueprint does not have revisions.
 
@@ -824,60 +797,6 @@ class TelcoautomationV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+parent}/deployments',
         request_field='deployment',
         request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsCreateRequest',
-        response_type_name='Deployment',
-        supports_download=False,
-    )
-
-    def Delete(self, request, global_params=None):
-      r"""Deletes a deployment and all its revisions.
-
-      Args:
-        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Empty) The response message.
-      """
-      config = self.GetMethodConfig('Delete')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Delete.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments/{deploymentsId}',
-        http_method='DELETE',
-        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.delete',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}',
-        request_field='',
-        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRequest',
-        response_type_name='Empty',
-        supports_download=False,
-    )
-
-    def DeleteRevision(self, request, global_params=None):
-      r"""Deletes the specified revision of the deployment.
-
-      Args:
-        request: (TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRevisionRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Deployment) The response message.
-      """
-      config = self.GetMethodConfig('DeleteRevision')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    DeleteRevision.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/orchestrationClusters/{orchestrationClustersId}/deployments/{deploymentsId}:deleteRevision',
-        http_method='DELETE',
-        method_id='telcoautomation.projects.locations.orchestrationClusters.deployments.deleteRevision',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:deleteRevision',
-        request_field='',
-        request_type_name='TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsDeleteRevisionRequest',
         response_type_name='Deployment',
         supports_download=False,
     )

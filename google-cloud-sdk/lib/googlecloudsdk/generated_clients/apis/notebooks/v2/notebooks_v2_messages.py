@@ -204,6 +204,21 @@ class CheckInstanceUpgradabilityResponse(_messages.Message):
   upgradeable = _messages.BooleanField(4)
 
 
+class Config(_messages.Message):
+  r"""Response for getting WbI configurations in a location
+
+  Fields:
+    availableImages: Output only. The list of available images to create a
+      WbI.
+    defaultValues: Output only. The default values for configuration.
+    supportedValues: Output only. The supported values for configuration.
+  """
+
+  availableImages = _messages.MessageField('ImageRelease', 1, repeated=True)
+  defaultValues = _messages.MessageField('DefaultValues', 2)
+  supportedValues = _messages.MessageField('SupportedValues', 3)
+
+
 class ContainerImage(_messages.Message):
   r"""Definition of a container image for starting a notebook instance with
   the environment installed in a container.
@@ -274,6 +289,17 @@ class DataDisk(_messages.Message):
   diskSizeGb = _messages.IntegerField(2)
   diskType = _messages.EnumField('DiskTypeValueValuesEnum', 3)
   kmsKey = _messages.StringField(4)
+
+
+class DefaultValues(_messages.Message):
+  r"""DefaultValues represents the default configuration values.
+
+  Fields:
+    machineType: Output only. The default machine type used by the backend if
+      not provided by the user.
+  """
+
+  machineType = _messages.StringField(1)
 
 
 class DiagnoseInstanceRequest(_messages.Message):
@@ -534,6 +560,19 @@ class GceSetup(_messages.Message):
   vmImage = _messages.MessageField('VmImage', 14)
 
 
+class ImageRelease(_messages.Message):
+  r"""ConfigImage represents an image release available to create a WbI
+
+  Fields:
+    imageName: Output only. The name of the image of the form workbench-
+      instances-vYYYYmmdd--
+    releaseName: Output only. The release of the image of the form m123
+  """
+
+  imageName = _messages.StringField(1)
+  releaseName = _messages.StringField(2)
+
+
 class Instance(_messages.Message):
   r"""The definition of a notebook instance.
 
@@ -574,6 +613,8 @@ class Instance(_messages.Message):
     proxyUri: Output only. The proxy endpoint that is used to access the
       Jupyter notebook.
     state: Output only. The state of this instance.
+    thirdPartyProxyUrl: Output only. The workforce pools proxy endpoint that
+      is used to access the Jupyter notebook.
     updateTime: Output only. Instance update time.
     upgradeHistory: Output only. The upgrade history of this instance.
   """
@@ -691,8 +732,9 @@ class Instance(_messages.Message):
   name = _messages.StringField(10)
   proxyUri = _messages.StringField(11)
   state = _messages.EnumField('StateValueValuesEnum', 12)
-  updateTime = _messages.StringField(13)
-  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 14, repeated=True)
+  thirdPartyProxyUrl = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  upgradeHistory = _messages.MessageField('UpgradeHistoryEntry', 15, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -916,6 +958,16 @@ class NotebooksProjectsLocationsInstancesDiagnoseRequest(_messages.Message):
 
   diagnoseInstanceRequest = _messages.MessageField('DiagnoseInstanceRequest', 1)
   name = _messages.StringField(2, required=True)
+
+
+class NotebooksProjectsLocationsInstancesGetConfigRequest(_messages.Message):
+  r"""A NotebooksProjectsLocationsInstancesGetConfigRequest object.
+
+  Fields:
+    name: Required. Format: `projects/{project_id}/locations/{location}`
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class NotebooksProjectsLocationsInstancesGetIamPolicyRequest(_messages.Message):
@@ -1607,6 +1659,18 @@ class Status(_messages.Message):
 
 class StopInstanceRequest(_messages.Message):
   r"""Request for stopping a notebook instance"""
+
+
+class SupportedValues(_messages.Message):
+  r"""SupportedValues represents the values supported by the configuration.
+
+  Fields:
+    acceleratorTypes: Output only. The accelerator types supported by WbI.
+    machineTypes: Output only. The machine types supported by WbI.
+  """
+
+  acceleratorTypes = _messages.StringField(1, repeated=True)
+  machineTypes = _messages.StringField(2, repeated=True)
 
 
 class TestIamPermissionsRequest(_messages.Message):

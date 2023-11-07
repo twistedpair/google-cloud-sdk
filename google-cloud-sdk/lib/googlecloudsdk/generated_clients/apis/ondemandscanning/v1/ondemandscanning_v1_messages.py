@@ -1754,6 +1754,12 @@ class PackageData(_messages.Message):
     hashDigest: HashDigest stores the SHA512 hash digest of the jar file if
       the package is of type Maven. This field will be unset for non Maven
       packages.
+    licenses: The list of licenses found that are related to a given package.
+      Note that licenses may also be stored on the BinarySourceInfo. If there
+      is no BinarySourceInfo (because there's no concept of source vs binary),
+      then it will be stored here, while if there are BinarySourceInfos, it
+      will be stored there, as one source can have multiple binaries with
+      different licenses.
     maintainer: The maintainer of the package.
     os: The OS affected by a vulnerability Used to generate the cpe_uri for OS
       packages
@@ -1795,15 +1801,16 @@ class PackageData(_messages.Message):
   dependencyChain = _messages.MessageField('LanguagePackageDependency', 5, repeated=True)
   fileLocation = _messages.MessageField('FileLocation', 6, repeated=True)
   hashDigest = _messages.StringField(7)
-  maintainer = _messages.MessageField('Maintainer', 8)
-  os = _messages.StringField(9)
-  osVersion = _messages.StringField(10)
-  package = _messages.StringField(11)
-  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 12)
-  patchedCve = _messages.StringField(13, repeated=True)
-  sourceVersion = _messages.MessageField('PackageVersion', 14)
-  unused = _messages.StringField(15)
-  version = _messages.StringField(16)
+  licenses = _messages.StringField(8, repeated=True)
+  maintainer = _messages.MessageField('Maintainer', 9)
+  os = _messages.StringField(10)
+  osVersion = _messages.StringField(11)
+  package = _messages.StringField(12)
+  packageType = _messages.EnumField('PackageTypeValueValuesEnum', 13)
+  patchedCve = _messages.StringField(14, repeated=True)
+  sourceVersion = _messages.MessageField('PackageVersion', 15)
+  unused = _messages.StringField(16)
+  version = _messages.StringField(17)
 
 
 class PackageIssue(_messages.Message):
@@ -1922,12 +1929,18 @@ class PackageVersion(_messages.Message):
   r"""A PackageVersion object.
 
   Fields:
+    licenses: The licenses associated with this package. Note that this has to
+      go on the PackageVersion level, because we can have cases with images
+      with the same source having different licences. E.g. in Alpine, musl and
+      musl-utils both have the same origin musl, but have different sets of
+      licenses.
     name: A string attribute.
     version: A string attribute.
   """
 
-  name = _messages.StringField(1)
-  version = _messages.StringField(2)
+  licenses = _messages.StringField(1, repeated=True)
+  name = _messages.StringField(2)
+  version = _messages.StringField(3)
 
 
 class ProjectRepoId(_messages.Message):
@@ -3078,6 +3091,7 @@ class VulnerabilityOccurrence(_messages.Message):
       effective severity on the PackageIssue level. In the case where multiple
       PackageIssues have differing effective severities, this field should be
       the highest severity for any of the PackageIssues.
+    extraDetails: Occurrence-specific extra details about the vulnerability.
     fixAvailable: Output only. Whether at least one of the affected packages
       has a fix available.
     longDescription: Output only. A detailed description of this
@@ -3156,14 +3170,15 @@ class VulnerabilityOccurrence(_messages.Message):
   cvssVersion = _messages.EnumField('CvssVersionValueValuesEnum', 3)
   cvssv3 = _messages.MessageField('CVSS', 4)
   effectiveSeverity = _messages.EnumField('EffectiveSeverityValueValuesEnum', 5)
-  fixAvailable = _messages.BooleanField(6)
-  longDescription = _messages.StringField(7)
-  packageIssue = _messages.MessageField('PackageIssue', 8, repeated=True)
-  relatedUrls = _messages.MessageField('RelatedUrl', 9, repeated=True)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 10)
-  shortDescription = _messages.StringField(11)
-  type = _messages.StringField(12)
-  vexAssessment = _messages.MessageField('VexAssessment', 13)
+  extraDetails = _messages.StringField(6)
+  fixAvailable = _messages.BooleanField(7)
+  longDescription = _messages.StringField(8)
+  packageIssue = _messages.MessageField('PackageIssue', 9, repeated=True)
+  relatedUrls = _messages.MessageField('RelatedUrl', 10, repeated=True)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 11)
+  shortDescription = _messages.StringField(12)
+  type = _messages.StringField(13)
+  vexAssessment = _messages.MessageField('VexAssessment', 14)
 
 
 class WindowsUpdate(_messages.Message):

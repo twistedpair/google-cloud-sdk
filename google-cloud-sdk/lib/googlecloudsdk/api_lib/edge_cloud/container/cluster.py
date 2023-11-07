@@ -128,9 +128,7 @@ def PopulateClusterMessage(req, messages, args):
       )
   if flags.FlagIsExplicitlySet(args, 'control_plane_kms_key'):
     req.cluster.controlPlaneEncryption = messages.ControlPlaneEncryption()
-    req.cluster.controlPlaneEncryption.kmsKey = (
-        args.control_plane_kms_key
-    )
+    req.cluster.controlPlaneEncryption.kmsKey = args.control_plane_kms_key
   admin_users.SetAdminUsers(messages, args, req)
   fleet.SetFleetProjectPath(GetClusterReference(args), args, req)
 
@@ -141,16 +139,15 @@ def PopulateClusterMessage(req, messages, args):
   if flags.FlagIsExplicitlySet(args, 'version'):
     req.cluster.targetVersion = args.version
   if flags.FlagIsExplicitlySet(args, 'release_channel'):
-    req.cluster.releaseChannel = (
-        messages.Cluster.ReleaseChannelValueValuesEnum(
-            args.release_channel.upper()
-        )
+    req.cluster.releaseChannel = messages.Cluster.ReleaseChannelValueValuesEnum(
+        args.release_channel.upper()
     )
   if (
       flags.FlagIsExplicitlySet(args, 'control_plane_node_location')
       or flags.FlagIsExplicitlySet(args, 'control_plane_node_count')
       or flags.FlagIsExplicitlySet(args, 'control_plane_machine_filter')
   ):
+    # creating an LCP cluster.
     req.cluster.controlPlane = messages.ControlPlane()
     req.cluster.controlPlane.local = messages.Local()
     if flags.FlagIsExplicitlySet(args, 'control_plane_node_location'):
@@ -187,6 +184,10 @@ def PopulateClusterAlphaMessage(req, messages, args):
     req.cluster.networking.clusterIpv6CidrBlocks = [args.cluster_ipv6_cidr]
   if flags.FlagIsExplicitlySet(args, 'services_ipv6_cidr'):
     req.cluster.networking.servicesIpv6CidrBlocks = [args.services_ipv6_cidr]
+  if flags.FlagIsExplicitlySet(args, 'external_lb_ipv6_address_pools'):
+    req.cluster.externalLoadBalancerIpv6AddressPools = (
+        args.external_lb_ipv6_address_pools
+    )
   resource_args.SetSystemAddonsConfig(args, req)
   if flags.FlagIsExplicitlySet(args, 'offline_reboot_ttl'):
     req.cluster.survivabilityConfig = messages.SurvivabilityConfig()

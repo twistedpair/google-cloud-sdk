@@ -183,11 +183,23 @@ def ArgsForClusterRef(
       ),
   )
   parser.add_argument(
-      '--secondary-worker-required-registration-fraction',
-      help=('The fraction of secondary worker nodes to successfully report '
-            'for cluster create/update success. Defaults to 0.0001.'),
+      '--min-secondary-worker-fraction',
+      help=(
+          'Minimum fraction of secondary worker nodes required to create the'
+          ' cluster. If it is not met, cluster creation will fail. Must be a'
+          ' decimal value between 0 and 1. The number of required secondary'
+          ' workers is calculated by ceil(min-secondary-worker-fraction *'
+          ' num_secondary_workers). Defaults to 0.0001.'
+      ),
       type=float,
+  )
+  parser.add_argument(
+      '--kms-key',
+      type=str,
       hidden=True,
+      help="""\
+          The KMS key to use for PD disk encryption for all instances in the cluster and encrypt sensitive data in the jobs that run on the cluster.
+          """,
   )
 
   if alpha:
@@ -1305,10 +1317,9 @@ def GetClusterConfig(
 
   if hasattr(args.CONCEPTS, 'kms_key'):
     kms_ref = args.CONCEPTS.kms_key.Parse()
+    encryption_config = dataproc.messages.EncryptionConfig()
     if kms_ref:
-      encryption_config = dataproc.messages.EncryptionConfig()
       encryption_config.gcePdKmsKeyName = kms_ref.RelativeName()
-      cluster_config.encryptionConfig = encryption_config
     else:
       # Did user use any gce-pd-kms-key flags?
       for keyword in [
@@ -1321,6 +1332,10 @@ def GetClusterConfig(
           raise exceptions.ArgumentError(
               '--gce-pd-kms-key was not fully specified.'
           )
+    if args.kms_key:
+      encryption_config.kmsKey = args.kms_key
+    if encryption_config.gcePdKmsKeyName or encryption_config.kmsKey:
+      cluster_config.encryptionConfig = encryption_config
 
   # Secondary worker group is optional. However, users may specify
   # future pVMs configuration at creation time.
@@ -1343,8 +1358,8 @@ def GetClusterConfig(
       or args.worker_min_cpu_platform is not None
       or args.secondary_worker_type == 'non-preemptible'
       or args.secondary_worker_type == 'spot'
-      or args.secondary_worker_required_registration_fraction is not None
       or args.secondary_worker_machine_types is not None
+      or args.min_secondary_worker_fraction is not None
   ):
     instance_flexibility_policy = GetInstanceFlexibilityPolicy(
         dataproc, args, alpha
@@ -1642,10 +1657,10 @@ def GetStartupConfig(dataproc, args):
   Returns:
     startup_config: Startup config of the secondary worker group.
   """
-  if args.secondary_worker_required_registration_fraction is None:
+  if args.min_secondary_worker_fraction is None:
     return None
   return dataproc.messages.StartupConfig(
-      requiredRegistrationFraction=args.secondary_worker_required_registration_fraction
+      requiredRegistrationFraction=args.min_secondary_worker_fraction
   )
 
 

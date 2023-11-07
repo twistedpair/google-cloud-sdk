@@ -15,23 +15,23 @@ package = 'speech'
 
 
 class AccessMetadata(_messages.Message):
-  r"""The metadata related to access associated with the location for a given
-  region. This can occur if the org policy for the given project disallows a
-  particular region.
+  r"""The access metadata for a particular region. This can be applied if the
+  org policy for the given project disallows a particular region.
 
   Enums:
-    ConstraintTypeValueValuesEnum: Describes the type of constraint that
-      occurred.
+    ConstraintTypeValueValuesEnum: Describes the different types of
+      constraints that are applied.
 
   Fields:
-    constraintType: Describes the type of constraint that occurred.
+    constraintType: Describes the different types of constraints that are
+      applied.
   """
 
   class ConstraintTypeValueValuesEnum(_messages.Enum):
-    r"""Describes the type of constraint that occurred.
+    r"""Describes the different types of constraints that are applied.
 
     Values:
-      CONSTRAINT_TYPE_UNSPECIFIED: Unspecified constraint occurred.
+      CONSTRAINT_TYPE_UNSPECIFIED: Unspecified constraint applied.
       RESOURCE_LOCATIONS_ORG_POLICY_CREATE_CONSTRAINT: The project's org
         policy disallows the given region.
     """
@@ -64,7 +64,7 @@ class AutoDetectDecodingConfig(_messages.Message):
   an rfc4867.5 header. * FLAC: FLAC frames in the "native FLAC" container
   format. * MP3: MPEG audio frames with optional (ignored) ID3 metadata. *
   OGG_OPUS: Opus audio frames in an Ogg container. * WEBM_OPUS: Opus audio
-  frames in a WebM container.
+  frames in a WebM container. * M4A: M4A audio format.
   """
 
 
@@ -97,17 +97,23 @@ class BatchRecognizeFileResult(_messages.Message):
   r"""Final results for a single file.
 
   Fields:
+    cloudStorageResult: Recognition results written to Cloud Storage. This is
+      populated only when GcsOutputConfig is set in the
+      RecognitionOutputConfig.
     error: Error if one was encountered.
-    metadata: A RecognitionResponseMetadata attribute.
-    transcript: The transcript for the audio file. This is populated only when
+    inlineResult: Recognition results. This is populated only when
       InlineOutputConfig is set in the RecognitionOutputConfig.
-    uri: The Cloud Storage URI to which recognition results were written.
+    metadata: A RecognitionResponseMetadata attribute.
+    transcript: Deprecated. Use `inline_result.transcript` instead.
+    uri: Deprecated. Use `cloud_storage_result.native_format_uri` instead.
   """
 
-  error = _messages.MessageField('Status', 1)
-  metadata = _messages.MessageField('RecognitionResponseMetadata', 2)
-  transcript = _messages.MessageField('BatchRecognizeResults', 3)
-  uri = _messages.StringField(4)
+  cloudStorageResult = _messages.MessageField('CloudStorageResult', 1)
+  error = _messages.MessageField('Status', 2)
+  inlineResult = _messages.MessageField('InlineResult', 3)
+  metadata = _messages.MessageField('RecognitionResponseMetadata', 4)
+  transcript = _messages.MessageField('BatchRecognizeResults', 5)
+  uri = _messages.StringField(6)
 
 
 class BatchRecognizeMetadata(_messages.Message):
@@ -284,6 +290,16 @@ class ClassItem(_messages.Message):
   """
 
   value = _messages.StringField(1)
+
+
+class CloudStorageResult(_messages.Message):
+  r"""Final results written to Cloud Storage.
+
+  Fields:
+    uri: The Cloud Storage URI to which recognition results were written.
+  """
+
+  uri = _messages.StringField(1)
 
 
 class Config(_messages.Message):
@@ -594,6 +610,16 @@ class GcsOutputConfig(_messages.Message):
 
 class InlineOutputConfig(_messages.Message):
   r"""Output configurations for inline response."""
+
+
+class InlineResult(_messages.Message):
+  r"""Final results returned inline in the recognition response.
+
+  Fields:
+    transcript: The transcript for the audio file.
+  """
+
+  transcript = _messages.MessageField('BatchRecognizeResults', 1)
 
 
 class LanguageMetadata(_messages.Message):

@@ -155,6 +155,7 @@ class AdvancedDatapathObservabilityConfig(_messages.Message):
 
   Fields:
     enableMetrics: Expose flow metrics on nodes
+    enableRelay: Enable Relay component
     relayMode: Method used to make Relay available
   """
 
@@ -173,7 +174,8 @@ class AdvancedDatapathObservabilityConfig(_messages.Message):
     EXTERNAL_LB = 3
 
   enableMetrics = _messages.BooleanField(1)
-  relayMode = _messages.EnumField('RelayModeValueValuesEnum', 2)
+  enableRelay = _messages.BooleanField(2)
+  relayMode = _messages.EnumField('RelayModeValueValuesEnum', 3)
 
 
 class AdvancedMachineFeatures(_messages.Message):
@@ -261,8 +263,7 @@ class Autopilot(_messages.Message):
   r"""Autopilot is the configuration for Autopilot settings on the cluster.
 
   Fields:
-    conversionStatus: ConversionStatus is the status of conversion between
-      Autopilot and standard.
+    conversionStatus: ConversionStatus shows conversion status.
     enabled: Enable Autopilot
     workloadPolicyConfig: Workload policy configuration for Autopilot.
   """
@@ -317,8 +318,7 @@ class AutopilotCompatibilityIssue(_messages.Message):
 
 
 class AutopilotConversionStatus(_messages.Message):
-  r"""AutopilotConversionStatus is the status of conversion between Autopilot
-  and standard.
+  r"""AutopilotConversionStatus represents conversion status.
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the conversion.
@@ -1362,6 +1362,7 @@ class ClusterUpdate(_messages.Message):
       resource usage.
     desiredRuntimeVulnerabilityInsightConfig: Enable/Disable RVI features for
       the cluster.
+    desiredSecretManagerConfig: Enable/Disable Secret Manager Config.
     desiredSecurityPostureConfig: Enable/Disable Security Posture API features
       for the cluster.
     desiredServiceExternalIpsConfig: ServiceExternalIPsConfig specifies the
@@ -1524,21 +1525,22 @@ class ClusterUpdate(_messages.Message):
   desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 61)
   desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 62)
   desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 63)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 64)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 65)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 66)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 67)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 68)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 69)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 70)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 71)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 72)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 73)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 74)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 75)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 76)
-  etag = _messages.StringField(77)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 78)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 64)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 65)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 66)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 67)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 68)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 69)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 70)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 71)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 72)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 73)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 74)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 75)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 76)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 77)
+  etag = _messages.StringField(78)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 79)
 
 
 class CompleteConvertToAutopilotRequest(_messages.Message):
@@ -3877,6 +3879,8 @@ class MonitoringComponentConfig(_messages.Message):
       DAEMONSET: DaemonSet
       DEPLOYMENT: Deployment
       STATEFULSET: Statefulset
+      CADVISOR: CADVISOR
+      KUBELET: KUBELET
     """
     COMPONENT_UNSPECIFIED = 0
     SYSTEM_COMPONENTS = 1
@@ -3891,6 +3895,8 @@ class MonitoringComponentConfig(_messages.Message):
     DAEMONSET = 10
     DEPLOYMENT = 11
     STATEFULSET = 12
+    CADVISOR = 13
+    KUBELET = 14
 
   enableComponents = _messages.EnumField('EnableComponentsValueListEntryValuesEnum', 1, repeated=True)
 
@@ -4665,21 +4671,7 @@ class NodePool(_messages.Message):
   specification, under the control of the cluster master. They may have a set
   of Kubernetes labels applied to them, which may be used to reference them
   during pod scheduling. They may also be resized up or down, to accommodate
-  the workload. These upgrade settings control the level of parallelism and
-  the level of disruption caused by an upgrade. maxUnavailable controls the
-  number of nodes that can be simultaneously unavailable. maxSurge controls
-  the number of additional nodes that can be added to the node pool
-  temporarily for the time of the upgrade to increase the number of available
-  nodes. (maxUnavailable + maxSurge) determines the level of parallelism (how
-  many nodes are being upgraded at the same time). Note: upgrades inevitably
-  introduce some disruption since workloads need to be moved from old nodes to
-  new, upgraded ones. Even if maxUnavailable=0, this holds true. (Disruption
-  stays within the limits of PodDisruptionBudget, if it is configured.)
-  Consider a hypothetical node pool with 5 nodes having maxSurge=2,
-  maxUnavailable=1. This means the upgrade process upgrades 3 nodes
-  simultaneously. It creates 2 additional (upgraded) nodes, then it brings
-  down 3 old (not yet upgraded) nodes at the same time. This ensures that
-  there are always at least 4 nodes available.
+  the workload.
 
   Enums:
     StatusValueValuesEnum: [Output only] The status of the nodes in this pool
@@ -7112,10 +7104,24 @@ class UpgradeEvent(_messages.Message):
 
 
 class UpgradeSettings(_messages.Message):
-  r"""These upgrade settings configure the upgrade strategy for the node pool.
-  Use strategy to switch between the strategies applied to the node pool. If
-  the strategy is SURGE, use max_surge and max_unavailable to control the
-  level of parallelism and the level of disruption caused by upgrade. 1.
+  r"""These upgrade settings control the level of parallelism and the level of
+  disruption caused by an upgrade. maxUnavailable controls the number of nodes
+  that can be simultaneously unavailable. maxSurge controls the number of
+  additional nodes that can be added to the node pool temporarily for the time
+  of the upgrade to increase the number of available nodes. (maxUnavailable +
+  maxSurge) determines the level of parallelism (how many nodes are being
+  upgraded at the same time). Note: upgrades inevitably introduce some
+  disruption since workloads need to be moved from old nodes to new, upgraded
+  ones. Even if maxUnavailable=0, this holds true. (Disruption stays within
+  the limits of PodDisruptionBudget, if it is configured.) Consider a
+  hypothetical node pool with 5 nodes having maxSurge=2, maxUnavailable=1.
+  This means the upgrade process upgrades 3 nodes simultaneously. It creates 2
+  additional (upgraded) nodes, then it brings down 3 old (not yet upgraded)
+  nodes at the same time. This ensures that there are always at least 4 nodes
+  available. These upgrade settings configure the upgrade strategy for the
+  node pool. Use strategy to switch between the strategies applied to the node
+  pool. If the strategy is SURGE, use max_surge and max_unavailable to control
+  the level of parallelism and the level of disruption caused by upgrade. 1.
   maxSurge controls the number of additional nodes that can be added to the
   node pool temporarily for the time of the upgrade to increase the number of
   available nodes. 2. maxUnavailable controls the number of nodes that can be

@@ -472,8 +472,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Messag
   r"""A ArtifactregistryProjectsLocationsRepositoriesPatchRequest object.
 
   Fields:
-    name: The name of the repository, for example: "projects/p1/locations/us-
-      central1/repositories/repo1".
+    name: The name of the repository, for example: `projects/p1/locations/us-
+      central1/repositories/repo1`.
     repository: A Repository resource to be passed as the request body.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -1288,8 +1288,8 @@ class Repository(_messages.Message):
       lowercase letters, numeric characters, underscores, and dashes.
     mavenConfig: Maven repository config contains repository level
       configuration for the repositories of maven type.
-    name: The name of the repository, for example: "projects/p1/locations/us-
-      central1/repositories/repo1".
+    name: The name of the repository, for example: `projects/p1/locations/us-
+      central1/repositories/repo1`.
     satisfiesPzs: Output only. If set, the repository satisfies physical zone
       separation.
     sizeBytes: Output only. The size, in bytes, of all artifact storage in

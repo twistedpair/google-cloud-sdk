@@ -517,6 +517,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Demote(self, request, global_params=None):
+      r"""Demotes an existing standalone instance to be a Cloud SQL read replica for an external database server.
+
+      Args:
+        request: (SqlInstancesDemoteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Demote')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Demote.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.demote',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/demote',
+        request_field='instancesDemoteRequest',
+        request_type_name='SqlInstancesDemoteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def DemoteMaster(self, request, global_params=None):
       r"""Demotes the stand-alone instance to be a Cloud SQL read replica for an external database server.
 

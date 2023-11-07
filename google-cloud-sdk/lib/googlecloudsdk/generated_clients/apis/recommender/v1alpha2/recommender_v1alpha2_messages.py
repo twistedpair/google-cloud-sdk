@@ -116,11 +116,14 @@ class GoogleCloudRecommenderV1alpha2CostProjection(_messages.Message):
       indicate increase. See google.type.Money documentation for
       positive/negative units. A user's permissions may affect whether the
       cost is computed using list prices or custom contract prices.
+    costInLocalCurrency: The approximate cost savings in the billing account's
+      local currency.
     duration: Duration for which this cost applies.
   """
 
   cost = _messages.MessageField('GoogleTypeMoney', 1)
-  duration = _messages.StringField(2)
+  costInLocalCurrency = _messages.MessageField('GoogleTypeMoney', 2)
+  duration = _messages.StringField(3)
 
 
 class GoogleCloudRecommenderV1alpha2Impact(_messages.Message):

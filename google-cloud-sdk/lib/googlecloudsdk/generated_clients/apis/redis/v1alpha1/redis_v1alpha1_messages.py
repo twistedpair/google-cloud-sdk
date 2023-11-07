@@ -63,9 +63,13 @@ class CertificateAuthority(_messages.Message):
 
   Fields:
     managedServerCa: A ManagedCertificateAuthority attribute.
+    name: Identifier. Unique name of the resource in this scope including
+      project, location and cluster using the form: `projects/{project}/locati
+      ons/{location}/clusters/{cluster}/certificateAuthority`
   """
 
   managedServerCa = _messages.MessageField('ManagedCertificateAuthority', 1)
+  name = _messages.StringField(2)
 
 
 class Cluster(_messages.Message):
@@ -308,7 +312,7 @@ class InputConfig(_messages.Message):
 
 
 class Instance(_messages.Message):
-  r"""A Memorystore for Redis instance. next id = 44
+  r"""A Memorystore for Redis instance. next id = 45
 
   Enums:
     ConnectModeValueValuesEnum: Optional. The network connect mode of the
@@ -418,6 +422,9 @@ class Instance(_messages.Message):
       If not provided, the service will choose an unused /29 block, for
       example, 10.0.0.0/29 or 192.168.0.0/29. For READ_REPLICAS_ENABLED the
       default block size is /28.
+    satisfiesPzs: Optional. Output only. Reserved for future use. Zone
+      Separation compliance state of the instance. Field name and
+      documentation is obfuscated according to go/zs-resource-status.
     secondaryIpRange: Optional. Additional IP range for node placement.
       Required when enabling read replicas on an existing instance. For
       DIRECT_PEERING mode value must be a CIDR range of size /28, or "auto".
@@ -619,13 +626,14 @@ class Instance(_messages.Message):
   redisVersion = _messages.StringField(26)
   replicaCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
   reservedIpRange = _messages.StringField(28)
-  secondaryIpRange = _messages.StringField(29)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 30, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 31)
-  statusMessage = _messages.StringField(32)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 33, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 34)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 35)
+  satisfiesPzs = _messages.BooleanField(29)
+  secondaryIpRange = _messages.StringField(30)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 31, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 32)
+  statusMessage = _messages.StringField(33)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 34, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 35)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 36)
 
 
 class InstanceAuthString(_messages.Message):

@@ -154,6 +154,11 @@ class AddSubnetworkRequest(_messages.Message):
       where {project} is a project number, such as `12345`. {network} is the
       name of a VPC network in the project.
     description: Optional. Description of the subnet.
+    internalRange: Optional. The url of an Internal Range. Eg:
+      `projects//locations/global/internalRanges/`. If specified, it means
+      that the subnetwork cidr will be created using the combination of
+      requested_address/ip_prefix_length. Note that the subnet cidr has to be
+      within the cidr range of this Internal Range.
     ipPrefixLength: Required. The prefix length of the subnet's IP address
       range. Use CIDR range notation, such as `29` to provision a subnet with
       an `x.x.x.x/29` CIDR range. The IP address range is drawn from a pool of
@@ -209,18 +214,19 @@ class AddSubnetworkRequest(_messages.Message):
   consumer = _messages.StringField(4)
   consumerNetwork = _messages.StringField(5)
   description = _messages.StringField(6)
-  ipPrefixLength = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  outsideAllocationPublicIpRange = _messages.StringField(8)
-  privateIpv6GoogleAccess = _messages.StringField(9)
-  purpose = _messages.StringField(10)
-  region = _messages.StringField(11)
-  requestedAddress = _messages.StringField(12)
-  requestedRanges = _messages.StringField(13, repeated=True)
-  role = _messages.StringField(14)
-  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 15, repeated=True)
-  subnetwork = _messages.StringField(16)
-  subnetworkUsers = _messages.StringField(17, repeated=True)
-  useCustomComputeIdempotencyWindow = _messages.BooleanField(18)
+  internalRange = _messages.StringField(7)
+  ipPrefixLength = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  outsideAllocationPublicIpRange = _messages.StringField(9)
+  privateIpv6GoogleAccess = _messages.StringField(10)
+  purpose = _messages.StringField(11)
+  region = _messages.StringField(12)
+  requestedAddress = _messages.StringField(13)
+  requestedRanges = _messages.StringField(14, repeated=True)
+  role = _messages.StringField(15)
+  secondaryIpRangeSpecs = _messages.MessageField('SecondaryIpRangeSpec', 16, repeated=True)
+  subnetwork = _messages.StringField(17)
+  subnetworkUsers = _messages.StringField(18, repeated=True)
+  useCustomComputeIdempotencyWindow = _messages.BooleanField(19)
 
 
 class Api(_messages.Message):
@@ -3755,6 +3761,26 @@ class ServicenetworkingServicesProjectsGlobalNetworksGetRequest(_messages.Messag
   name = _messages.StringField(2, required=True)
 
 
+class ServicenetworkingServicesProjectsGlobalNetworksGetVpcServiceControlsRequest(_messages.Message):
+  r"""A
+  ServicenetworkingServicesProjectsGlobalNetworksGetVpcServiceControlsRequest
+  object.
+
+  Fields:
+    name: Required. Name of the VPC Service Controls config to retrieve in the
+      format:
+      `services/{service}/projects/{project}/global/networks/{network}`.
+      {service} is the peering service that is managing connectivity for the
+      service producer's organization. For Google services that support this
+      functionality, this value is `servicenetworking.googleapis.com`.
+      {project} is a project number e.g. `12345` that contains the service
+      consumer's VPC network. {network} is the name of the service consumer's
+      VPC network.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsCreateRequest(_messages.Message):
   r"""A
   ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsCreateRequest
@@ -4367,6 +4393,20 @@ class ValidateConsumerConfigResponse(_messages.Message):
   existingSubnetworkCandidates = _messages.MessageField('Subnetwork', 1, repeated=True)
   isValid = _messages.BooleanField(2)
   validationError = _messages.EnumField('ValidationErrorValueValuesEnum', 3)
+
+
+class VpcServiceControls(_messages.Message):
+  r"""Response for the get VPC Service Controls request.
+
+  Fields:
+    enabled: Output only. Indicates whether the VPC Service Controls are
+      enabled or disabled for the connection. If the consumer called the
+      EnableVpcServiceControls method, then this is true. If the consumer
+      called DisableVpcServiceControls, then this is false. The default is
+      false.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -148,12 +148,16 @@ class BigQueryConfig(_messages.Message):
       NOT_FOUND: Cannot write to the BigQuery table because it does not exist.
       SCHEMA_MISMATCH: Cannot write to the BigQuery table due to a schema
         mismatch.
+      IN_TRANSIT_LOCATION_RESTRICTION: Cannot write to the destination because
+        enforce_in_transit is set to true and the destination locations are
+        not in the allowed regions.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     PERMISSION_DENIED = 2
     NOT_FOUND = 3
     SCHEMA_MISMATCH = 4
+    IN_TRANSIT_LOCATION_RESTRICTION = 5
 
   dropUnknownFields = _messages.BooleanField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -268,11 +272,15 @@ class CloudStorageConfig(_messages.Message):
         permission denied errors.
       NOT_FOUND: Cannot write to the Cloud Storage bucket because it does not
         exist.
+      IN_TRANSIT_LOCATION_RESTRICTION: Cannot write to the destination because
+        enforce_in_transit is set to true and the destination locations are
+        not in the allowed regions.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     PERMISSION_DENIED = 2
     NOT_FOUND = 3
+    IN_TRANSIT_LOCATION_RESTRICTION = 4
 
   avroConfig = _messages.MessageField('AvroConfig', 1)
   bucket = _messages.StringField(2)
@@ -550,12 +558,12 @@ class MessageStoragePolicy(_messages.Message):
   r"""A policy constraining the storage of messages published to the topic.
 
   Fields:
-    allowedPersistenceRegions: Optional. A list of IDs of GCP regions where
-      messages that are published to the topic may be persisted in storage.
-      Messages published by publishers running in non-allowed GCP regions (or
-      running outside of GCP altogether) will be routed for storage in one of
-      the allowed regions. An empty list means that no regions are allowed,
-      and is not a valid configuration.
+    allowedPersistenceRegions: Optional. A list of IDs of Google Cloud regions
+      where messages that are published to the topic may be persisted in
+      storage. Messages published by publishers running in non-allowed Google
+      Cloud regions (or running outside of Google Cloud altogether) are routed
+      for storage in one of the allowed regions. An empty list means that no
+      regions are allowed, and is not a valid configuration.
     enforceInTransit: Optional. If true, `allowed_persistence_regions` is also
       used to enforce in-transit guarantees for messages. That is, Pub/Sub
       will fail Publish operations on this topic and subscribe operations on
@@ -743,12 +751,16 @@ class PubSubExportConfig(_messages.Message):
       NOT_FOUND: Cannot write to the destination because it does not exist.
       SCHEMA_MISMATCH: Cannot write to the destination due to a schema
         mismatch.
+      IN_TRANSIT_LOCATION_RESTRICTION: Cannot write to the destination because
+        enforce_in_transit is set to true and the destination locations are
+        not in the allowed regions.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     PERMISSION_DENIED = 2
     NOT_FOUND = 3
     SCHEMA_MISMATCH = 4
+    IN_TRANSIT_LOCATION_RESTRICTION = 5
 
   region = _messages.StringField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -782,11 +794,15 @@ class PubSubLiteExportConfig(_messages.Message):
       PERMISSION_DENIED: Cannot write to the destination because of permission
         denied errors.
       NOT_FOUND: Cannot write to the destination because it does not exist.
+      IN_TRANSIT_LOCATION_RESTRICTION: Cannot write to the destination because
+        enforce_in_transit is set to true and the destination locations are
+        not in the allowed regions.
     """
     STATE_UNSPECIFIED = 0
     ACTIVE = 1
     PERMISSION_DENIED = 2
     NOT_FOUND = 3
+    IN_TRANSIT_LOCATION_RESTRICTION = 4
 
   state = _messages.EnumField('StateValueValuesEnum', 1)
   topic = _messages.StringField(2)
@@ -909,8 +925,8 @@ class PubsubProjectsSchemasCreateRequest(_messages.Message):
     schema: A Schema resource to be passed as the request body.
     schemaId: The ID to use for the schema, which will become the final
       component of the schema's resource name. See
-      https://cloud.google.com/pubsub/docs/admin#resource_names for resource
-      name constraints.
+      https://cloud.google.com/pubsub/docs/pubsub-basics#resource_names for
+      resource name constraints.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -1169,8 +1185,8 @@ class PubsubProjectsSnapshotsCreateRequest(_messages.Message):
       provided in the request, the server will assign a random name for this
       snapshot on the same project as the subscription. Note that for REST API
       requests, you must specify a name. See the [resource name
-      rules](https://cloud.google.com/pubsub/docs/admin#resource_names).
-      Format is `projects/{project}/snapshots/{snap}`.
+      rules](https://cloud.google.com/pubsub/docs/pubsub-
+      basics#resource_names). Format is `projects/{project}/snapshots/{snap}`.
   """
 
   createSnapshotRequest = _messages.MessageField('CreateSnapshotRequest', 1)

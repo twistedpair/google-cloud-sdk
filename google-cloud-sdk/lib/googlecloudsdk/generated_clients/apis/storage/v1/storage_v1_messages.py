@@ -15,6 +15,57 @@ from apitools.base.py import extra_types
 package = 'storage'
 
 
+class AnywhereCache(_messages.Message):
+  r"""An Anywhere Cache instance.
+
+  Fields:
+    admissionPolicy: The cache-level entry admission policy.
+    anywhereCacheId: The ID of the Anywhere cache instance.
+    bucket: The name of the bucket containing this cache instance.
+    createTime: The creation time of the cache instance in RFC 3339 format.
+    id: The ID of the resource, including the project number, bucket name and
+      anywhere cache ID.
+    kind: The kind of item this is. For Anywhere Cache, this is always
+      storage#anywhereCache.
+    pendingUpdate: True if the cache instance has an active Update long-
+      running operation.
+    selfLink: The link to this cache instance.
+    state: The current state of the cache instance.
+    ttl: The TTL of all cache entries in whole seconds. e.g., "7200s".
+    updateTime: The modification time of the cache instance metadata in RFC
+      3339 format.
+  """
+
+  admissionPolicy = _messages.StringField(1)
+  anywhereCacheId = _messages.StringField(2)
+  bucket = _messages.StringField(3)
+  createTime = _message_types.DateTimeField(4)
+  id = _messages.StringField(5)
+  kind = _messages.StringField(6, default='storage#anywhereCache')
+  pendingUpdate = _messages.BooleanField(7)
+  selfLink = _messages.StringField(8)
+  state = _messages.StringField(9)
+  ttl = _messages.StringField(10)
+  updateTime = _message_types.DateTimeField(11)
+
+
+class AnywhereCaches(_messages.Message):
+  r"""A list of Anywhere Caches.
+
+  Fields:
+    items: The list of items.
+    kind: The kind of item this is. For lists of Anywhere Caches, this is
+      always storage#anywhereCaches.
+    nextPageToken: The continuation token, used to page through large result
+      sets. Provide this value in a subsequent request to return the next page
+      of results.
+  """
+
+  items = _messages.MessageField('AnywhereCache', 1, repeated=True)
+  kind = _messages.StringField(2, default='storage#anywhereCaches')
+  nextPageToken = _messages.StringField(3)
+
+
 class Bucket(_messages.Message):
   r"""A bucket.
 
@@ -1587,6 +1638,70 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(7)
   uploadType = _messages.StringField(8)
   userIp = _messages.StringField(9)
+
+
+class StorageAnywhereCachesDisableRequest(_messages.Message):
+  r"""A StorageAnywhereCachesDisableRequest object.
+
+  Fields:
+    anywhereCacheId: The ID of requested Anywhere Cache instance.
+    bucket: Name of the partent bucket
+  """
+
+  anywhereCacheId = _messages.StringField(1, required=True)
+  bucket = _messages.StringField(2, required=True)
+
+
+class StorageAnywhereCachesGetRequest(_messages.Message):
+  r"""A StorageAnywhereCachesGetRequest object.
+
+  Fields:
+    anywhereCacheId: The ID of requested Anywhere Cache instance.
+    bucket: Name of the partent bucket
+  """
+
+  anywhereCacheId = _messages.StringField(1, required=True)
+  bucket = _messages.StringField(2, required=True)
+
+
+class StorageAnywhereCachesListRequest(_messages.Message):
+  r"""A StorageAnywhereCachesListRequest object.
+
+  Fields:
+    bucket: Name of the partent bucket
+    pageSize: Maximum number of items return in a single page of responses.
+      Maximum 1000.
+    pageToken: A previously-returned page token representing part of the
+      larger set of results to view.
+  """
+
+  bucket = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
+class StorageAnywhereCachesPauseRequest(_messages.Message):
+  r"""A StorageAnywhereCachesPauseRequest object.
+
+  Fields:
+    anywhereCacheId: The ID of requested Anywhere Cache instance.
+    bucket: Name of the partent bucket
+  """
+
+  anywhereCacheId = _messages.StringField(1, required=True)
+  bucket = _messages.StringField(2, required=True)
+
+
+class StorageAnywhereCachesResumeRequest(_messages.Message):
+  r"""A StorageAnywhereCachesResumeRequest object.
+
+  Fields:
+    anywhereCacheId: The ID of requested Anywhere Cache instance.
+    bucket: Name of the partent bucket
+  """
+
+  anywhereCacheId = _messages.StringField(1, required=True)
+  bucket = _messages.StringField(2, required=True)
 
 
 class StorageBucketAccessControlsDeleteRequest(_messages.Message):

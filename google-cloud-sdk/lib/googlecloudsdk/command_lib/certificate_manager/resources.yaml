@@ -68,7 +68,6 @@ trustConfig:
     attribute_name: trust_config
     help: Certificate Manager Trust Config
 
-
 certificateIssuanceConfig:
   name: certificateIssuanceConfig
   collection: certificatemanager.projects.locations.certificateIssuanceConfigs

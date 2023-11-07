@@ -159,9 +159,11 @@ class Container(_messages.Message):
       images), but you can create your own [custom container
       images](https://cloud.google.com/workstations/docs/custom-container-
       images). If using a private image, the `host.gceInstance.serviceAccount`
-      field must be specified in the workstation configuration and must have
-      permission to pull the specified image. Otherwise, the image must be
-      publicly accessible.
+      field must be specified in the workstation configuration. If using a
+      custom container image, the service account must have [Artifact Registry
+      Reader](https://cloud.google.com/artifact-registry/docs/access-
+      control#roles) permission to pull the specified image. Otherwise, the
+      image must be publicly accessible.
     runAsUser: Optional. If set, overrides the USER specified in the image
       with the given uid.
     workingDir: Optional. If set, overrides the default DIR specified by the
@@ -332,10 +334,11 @@ class GceInstance(_messages.Message):
       Cloud Workstations VMs created with this configuration. When specified,
       be sure that the service account has `logginglogEntries.create`
       permission on the project so it can write logs out to Cloud Logging. If
-      using a custom container image, the service account must have
-      permissions to pull the specified image. If you as the administrator
-      want to be able to `ssh` into the underlying VM, you need to set this
-      value to a service account for which you have the
+      using a custom container image, the service account must have [Artifact
+      Registry Reader](https://cloud.google.com/artifact-registry/docs/access-
+      control#roles) permission to pull the specified image. If you as the
+      administrator want to be able to `ssh` into the underlying VM, you need
+      to set this value to a service account for which you have the
       `iam.serviceAccounts.actAs` permission. Conversely, if you don't want
       anyone to be able to `ssh` into the underlying VM, use a service account
       where no one has that permission. If not set, VMs run with a service
@@ -1127,6 +1130,8 @@ class Workstation(_messages.Message):
 
   Messages:
     AnnotationsValue: Optional. Client-specified annotations.
+    EnvValue: Optional. Environment variables passed to the workstation
+      container's entrypoint.
     LabelsValue: Optional.
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation and that are also propagated to the
@@ -1137,6 +1142,8 @@ class Workstation(_messages.Message):
     createTime: Output only. Time when this workstation was created.
     deleteTime: Output only. Time when this workstation was soft-deleted.
     displayName: Optional. Human-readable name for this workstation.
+    env: Optional. Environment variables passed to the workstation container's
+      entrypoint.
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
@@ -1149,7 +1156,7 @@ class Workstation(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation and that are also propagated to the
       underlying Compute Engine resources.
-    name: Full name of this workstation.
+    name: Identifier. Full name of this workstation.
     reconciling: Output only. Indicates whether this workstation is currently
       being updated to match its intended state.
     startTime: Output only. Time when this workstation was most recently
@@ -1205,6 +1212,31 @@ class Workstation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class EnvValue(_messages.Message):
+    r"""Optional. Environment variables passed to the workstation container's
+    entrypoint.
+
+    Messages:
+      AdditionalProperty: An additional property for a EnvValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type EnvValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a EnvValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. [Labels](https://cloud.google.com/workstations/docs/label-
     resources) that are applied to the workstation and that are also
@@ -1234,15 +1266,16 @@ class Workstation(_messages.Message):
   createTime = _messages.StringField(2)
   deleteTime = _messages.StringField(3)
   displayName = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  host = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  startTime = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  env = _messages.MessageField('EnvValue', 5)
+  etag = _messages.StringField(6)
+  host = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  reconciling = _messages.BooleanField(10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class WorkstationCluster(_messages.Message):
@@ -1279,7 +1312,7 @@ class WorkstationCluster(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation cluster and that are also propagated
       to the underlying Compute Engine resources.
-    name: Full name of this workstation cluster.
+    name: Identifier. Full name of this workstation cluster.
     network: Immutable. Name of the Compute Engine network in which instances
       associated with this workstation cluster will be created.
     privateClusterConfig: Optional. Configuration for private workstation
@@ -1425,7 +1458,7 @@ class WorkstationConfig(_messages.Message):
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation configuration and that are also
       propagated to the underlying Compute Engine resources.
-    name: Full name of this workstation configuration.
+    name: Identifier. Full name of this workstation configuration.
     persistentDirectories: Optional. Directories to persist across workstation
       sessions.
     readinessChecks: Optional. Readiness checks to perform when starting a
@@ -1682,7 +1715,7 @@ class WorkstationsProjectsLocationsWorkstationClustersPatchRequest(_messages.Mes
     allowMissing: Optional. If set, and the workstation cluster is not found,
       a new workstation cluster will be created. In this situation,
       update_mask is ignored.
-    name: Full name of this workstation cluster.
+    name: Identifier. Full name of this workstation cluster.
     updateMask: Required. Mask that specifies which fields in the workstation
       cluster should be updated.
     validateOnly: Optional. If set, validate the request and preview the
@@ -1818,7 +1851,7 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsPatchReq
     allowMissing: Optional. If set and the workstation configuration is not
       found, a new workstation configuration will be created. In this
       situation, update_mask is ignored.
-    name: Full name of this workstation configuration.
+    name: Identifier. Full name of this workstation configuration.
     updateMask: Required. Mask specifying which fields in the workstation
       configuration should be updated.
     validateOnly: Optional. If set, validate the request and preview the
@@ -1996,7 +2029,7 @@ class WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsWorkstat
     allowMissing: Optional. If set and the workstation configuration is not
       found, a new workstation configuration is created. In this situation,
       update_mask is ignored.
-    name: Full name of this workstation.
+    name: Identifier. Full name of this workstation.
     updateMask: Required. Mask specifying which fields in the workstation
       configuration should be updated.
     validateOnly: Optional. If set, validate the request and preview the

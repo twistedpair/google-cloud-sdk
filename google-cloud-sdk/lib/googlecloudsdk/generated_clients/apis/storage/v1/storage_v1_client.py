@@ -39,6 +39,7 @@ class StorageV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.anywhereCache = self.AnywhereCacheService(self)
     self.bucketAccessControls = self.BucketAccessControlsService(self)
     self.buckets = self.BucketsService(self)
     self.channels = self.ChannelsService(self)
@@ -51,6 +52,198 @@ class StorageV1(base_api.BaseApiClient):
     self.projects_hmacKeys = self.ProjectsHmacKeysService(self)
     self.projects_serviceAccount = self.ProjectsServiceAccountService(self)
     self.projects = self.ProjectsService(self)
+
+  class AnywhereCacheService(base_api.BaseApiService):
+    """Service class for the anywhereCache resource."""
+
+    _NAME = 'anywhereCache'
+
+    def __init__(self, client):
+      super(StorageV1.AnywhereCacheService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Disable(self, request, global_params=None):
+      r"""Disables an Anywhere Cache instance.
+
+      Args:
+        request: (StorageAnywhereCachesDisableRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnywhereCache) The response message.
+      """
+      config = self.GetMethodConfig('Disable')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Disable.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.anywhereCaches.disable',
+        ordered_params=['bucket', 'anywhereCacheId'],
+        path_params=['anywhereCacheId', 'bucket'],
+        query_params=[],
+        relative_path='b/{bucket}/anywhereCaches/{anywhereCacheId}/disable',
+        request_field='',
+        request_type_name='StorageAnywhereCachesDisableRequest',
+        response_type_name='AnywhereCache',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Returns the metadata of an Anywhere Cache instance.
+
+      Args:
+        request: (StorageAnywhereCachesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnywhereCache) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='storage.anywhereCaches.get',
+        ordered_params=['bucket', 'anywhereCacheId'],
+        path_params=['anywhereCacheId', 'bucket'],
+        query_params=[],
+        relative_path='b/{bucket}/anywhereCaches/{anywhereCacheId}',
+        request_field='',
+        request_type_name='StorageAnywhereCachesGetRequest',
+        response_type_name='AnywhereCache',
+        supports_download=False,
+    )
+
+    def Insert(self, request, global_params=None):
+      r"""Creates an Anywhere Cache instance.
+
+      Args:
+        request: (AnywhereCache) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Insert')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Insert.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.anywhereCaches.insert',
+        ordered_params=['bucket'],
+        path_params=['bucket'],
+        query_params=[],
+        relative_path='b/{bucket}/anywhereCaches',
+        request_field='<request>',
+        request_type_name='AnywhereCache',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Returns a list of Anywhere Cache instances of the bucket matching the criteria.
+
+      Args:
+        request: (StorageAnywhereCachesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnywhereCaches) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='storage.anywhereCaches.list',
+        ordered_params=['bucket'],
+        path_params=['bucket'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='b/{bucket}/anywhereCache',
+        request_field='',
+        request_type_name='StorageAnywhereCachesListRequest',
+        response_type_name='AnywhereCaches',
+        supports_download=False,
+    )
+
+    def Pause(self, request, global_params=None):
+      r"""Pauses an Anywhere Cache instance.
+
+      Args:
+        request: (StorageAnywhereCachesPauseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnywhereCache) The response message.
+      """
+      config = self.GetMethodConfig('Pause')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Pause.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.anywhereCaches.pause',
+        ordered_params=['bucket', 'anywhereCacheId'],
+        path_params=['anywhereCacheId', 'bucket'],
+        query_params=[],
+        relative_path='b/{bucket}/anywhereCaches/{anywhereCacheId}/pause',
+        request_field='',
+        request_type_name='StorageAnywhereCachesPauseRequest',
+        response_type_name='AnywhereCache',
+        supports_download=False,
+    )
+
+    def Resume(self, request, global_params=None):
+      r"""Resumes a paused or disabled Anywhere Cache instance.
+
+      Args:
+        request: (StorageAnywhereCachesResumeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AnywhereCache) The response message.
+      """
+      config = self.GetMethodConfig('Resume')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Resume.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='storage.anywhereCaches.resume',
+        ordered_params=['bucket', 'anywhereCacheId'],
+        path_params=['anywhereCacheId', 'bucket'],
+        query_params=[],
+        relative_path='b/{bucket}/anywhereCaches/{anywhereCacheId}/resume',
+        request_field='',
+        request_type_name='StorageAnywhereCachesResumeRequest',
+        response_type_name='AnywhereCache',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates the config(ttl and admissionPolicy) of an Anywhere Cache instance.
+
+      Args:
+        request: (AnywhereCache) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='PATCH',
+        method_id='storage.anywhereCaches.update',
+        ordered_params=['bucket', 'anywhereCacheId'],
+        path_params=['anywhereCacheId', 'bucket'],
+        query_params=[],
+        relative_path='b/{bucket}/anywhereCaches/{anywhereCacheId}',
+        request_field='<request>',
+        request_type_name='AnywhereCache',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
 
   class BucketAccessControlsService(base_api.BaseApiService):
     """Service class for the bucketAccessControls resource."""

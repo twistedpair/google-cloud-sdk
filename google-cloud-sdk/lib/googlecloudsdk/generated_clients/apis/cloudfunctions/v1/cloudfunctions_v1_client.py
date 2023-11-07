@@ -271,7 +271,7 @@ class CloudfunctionsV1(base_api.BaseApiClient):
         method_id='cloudfunctions.projects.locations.functions.get',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=[],
+        query_params=['versionId'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='CloudfunctionsProjectsLocationsFunctionsGetRequest',

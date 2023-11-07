@@ -568,7 +568,7 @@ class StreamContent(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     labels: Labels as key value pairs
     lifecycleState: Output only. Current state of the content.
-    name: name of resource
+    name: Identifier. name of resource
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -631,9 +631,9 @@ class StreamInstance(_messages.Message):
     locationConfigs: Deployment configuration of the instance by locations
       (only regions are supported now). Map keys are regions in the string
       form.
-    mode: Immutable. The XR mode this instance supports. Default value is "ar"
+    mode: Optional. The XR mode this instance supports. Default value is "ar"
       which supports both 3D and AR experiences.
-    name: name of resource
+    name: Identifier. name of resource
     realmConfigs: Deployment configuration of the instance in realms. Note
       that this is not defined as a map for enum types (Realm) cannot be used
       as key.
@@ -883,7 +883,7 @@ class StreamProjectsLocationsStreamContentsPatchRequest(_messages.Message):
   r"""A StreamProjectsLocationsStreamContentsPatchRequest object.
 
   Fields:
-    name: name of resource
+    name: Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -993,7 +993,7 @@ class StreamProjectsLocationsStreamInstancesPatchRequest(_messages.Message):
   r"""A StreamProjectsLocationsStreamInstancesPatchRequest object.
 
   Fields:
-    name: name of resource
+    name: Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The

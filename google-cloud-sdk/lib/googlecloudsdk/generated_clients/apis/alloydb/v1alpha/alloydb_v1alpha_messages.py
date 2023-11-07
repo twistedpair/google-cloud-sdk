@@ -660,6 +660,20 @@ class AlloydbProjectsLocationsClustersRestoreRequest(_messages.Message):
   restoreClusterRequest = _messages.MessageField('RestoreClusterRequest', 2)
 
 
+class AlloydbProjectsLocationsClustersSwitchoverRequest(_messages.Message):
+  r"""A AlloydbProjectsLocationsClustersSwitchoverRequest object.
+
+  Fields:
+    name: Required. The name of the resource. For the required format, see the
+      comment on the Cluster.name field
+    switchoverClusterRequest: A SwitchoverClusterRequest resource to be passed
+      as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  switchoverClusterRequest = _messages.MessageField('SwitchoverClusterRequest', 2)
+
+
 class AlloydbProjectsLocationsClustersUsersCreateRequest(_messages.Message):
   r"""A AlloydbProjectsLocationsClustersUsersCreateRequest object.
 
@@ -1274,6 +1288,8 @@ class Cluster(_messages.Message):
     networkConfig: A NetworkConfig attribute.
     primaryConfig: Output only. Cross Region replication config specific to
       PRIMARY cluster.
+    pscConfig: Optional. The configuration for Private Service Connect (PSC)
+      for the cluster.
     reconciling: Output only. Reconciling
       (https://google.aip.dev/128#reconciliation). Set to true if the current
       state of Cluster does not match the user's intended state, and the
@@ -1429,13 +1445,14 @@ class Cluster(_messages.Message):
   network = _messages.StringField(18)
   networkConfig = _messages.MessageField('NetworkConfig', 19)
   primaryConfig = _messages.MessageField('PrimaryConfig', 20)
-  reconciling = _messages.BooleanField(21)
-  satisfiesPzs = _messages.BooleanField(22)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 23)
-  sslConfig = _messages.MessageField('SslConfig', 24)
-  state = _messages.EnumField('StateValueValuesEnum', 25)
-  uid = _messages.StringField(26)
-  updateTime = _messages.StringField(27)
+  pscConfig = _messages.MessageField('PscConfig', 21)
+  reconciling = _messages.BooleanField(22)
+  satisfiesPzs = _messages.BooleanField(23)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 24)
+  sslConfig = _messages.MessageField('SslConfig', 25)
+  state = _messages.EnumField('StateValueValuesEnum', 26)
+  uid = _messages.StringField(27)
+  updateTime = _messages.StringField(28)
 
 
 class ConnectionInfo(_messages.Message):
@@ -2214,16 +2231,6 @@ class ListUsersResponse(_messages.Message):
   users = _messages.MessageField('User', 3, repeated=True)
 
 
-class LocationMetadata(_messages.Message):
-  r"""The metadata message associated with a particular location.
-
-  Fields:
-    supportsPzs: Output only. Reserved for future use.
-  """
-
-  supportsPzs = _messages.BooleanField(1)
-
-
 class MachineConfig(_messages.Message):
   r"""MachineConfig describes the configuration of a machine.
 
@@ -2482,6 +2489,18 @@ class PromoteClusterRequest(_messages.Message):
   etag = _messages.StringField(1)
   requestId = _messages.StringField(2)
   validateOnly = _messages.BooleanField(3)
+
+
+class PscConfig(_messages.Message):
+  r"""PscConfig contains PSC related configuration at a cluster level. NEXT
+  ID: 2
+
+  Fields:
+    pscEnabled: Optional. Create an instance that allows connections from
+      Private Service Connect endpoints to the instance.
+  """
+
+  pscEnabled = _messages.BooleanField(1)
 
 
 class QuantityBasedExpiry(_messages.Message):
@@ -2909,7 +2928,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Messag
     feedTimestamp: Required. Timestamp when feed is generated.
     feedType: Required. Type feed to be ingested into condor
     resourceHealthSignalData: More feed data would be added in subsequent CLs
-    resourceId: Required. Primary key associated with the Resource
+    resourceId: Primary key associated with the Resource. resource_id is
+      available in individual feed level as well.
     resourceMetadata: A
       StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata attribute.
   """
@@ -2941,9 +2961,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
   Enums:
     ProviderValueValuesEnum: Cloud provider name. Ex:
       GCP/AWS/Azure/OnPrem/SelfManaged
-    SignalClassValueValuesEnum: The class of the signal, such as if it's a
-      THREAT or VULNERABILITY.
-    SignalTypeValueValuesEnum: Type of signal, for example,
+    SignalClassValueValuesEnum: Required. The class of the signal, such as if
+      it's a THREAT or VULNERABILITY.
+    SignalTypeValueValuesEnum: Required. Type of signal, for example,
       `AVAILABLE_IN_MULTIPLE_ZONES`, `LOGGING_MOST_ERRORS`, etc.
     StateValueValuesEnum:
 
@@ -2959,27 +2979,28 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       compliance standards. If a database resource does not have automated
       backup enable, it will violate these following industry standards.
     description: Description associated with signal
-    eventTime: The last time at which the event described by this signal took
-      place
+    eventTime: Required. The last time at which the event described by this
+      signal took place
     externalUri: The external-uri of the signal, using which more information
       about this signal can be obtained. In GCP, this will take user to SCC
       page to get more details about signals.
-    name: The name of the signal, ex: PUBLIC_SQL_INSTANCE,
+    name: Required. The name of the signal, ex: PUBLIC_SQL_INSTANCE,
       SQL_LOG_ERROR_VERBOSITY etc.
     provider: Cloud provider name. Ex: GCP/AWS/Azure/OnPrem/SelfManaged
     resourceContainer: Closest parent container of this resource. In GCP,
       'container' refers to a Cloud Resource Manager project. It must be
       resource name of a Cloud Resource Manager project with the format of
-      "provider//", such as "gcp/projects/123".
-    resourceName: Database resource name associated with the signal. Resource
-      name to follow CAIS resource_name format as noted here go/condor-common-
-      datamodel
-    signalClass: The class of the signal, such as if it's a THREAT or
-      VULNERABILITY.
-    signalId: Unique identifier for the signal. This is an unique id which
-      would be mainatined by partner to identify a signal.
-    signalType: Type of signal, for example, `AVAILABLE_IN_MULTIPLE_ZONES`,
-      `LOGGING_MOST_ERRORS`, etc.
+      "provider//", such as "gcp/projects/123". For GCP provided resources,
+      number should be project number.
+    resourceName: Required. Database resource name associated with the signal.
+      Resource name to follow CAIS resource_name format as noted here
+      go/condor-common-datamodel
+    signalClass: Required. The class of the signal, such as if it's a THREAT
+      or VULNERABILITY.
+    signalId: Required. Unique identifier for the signal. This is an unique id
+      which would be mainatined by partner to identify a signal.
+    signalType: Required. Type of signal, for example,
+      `AVAILABLE_IN_MULTIPLE_ZONES`, `LOGGING_MOST_ERRORS`, etc.
     state: A StateValueValuesEnum attribute.
   """
 
@@ -3009,7 +3030,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     PROVIDER_OTHER = 6
 
   class SignalClassValueValuesEnum(_messages.Enum):
-    r"""The class of the signal, such as if it's a THREAT or VULNERABILITY.
+    r"""Required. The class of the signal, such as if it's a THREAT or
+    VULNERABILITY.
 
     Values:
       CLASS_UNSPECIFIED: Unspecified signal class.
@@ -3030,11 +3052,19 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     ERROR = 5
 
   class SignalTypeValueValuesEnum(_messages.Enum):
-    r"""Type of signal, for example, `AVAILABLE_IN_MULTIPLE_ZONES`,
+    r"""Required. Type of signal, for example, `AVAILABLE_IN_MULTIPLE_ZONES`,
     `LOGGING_MOST_ERRORS`, etc.
 
     Values:
       SIGNAL_TYPE_UNSPECIFIED: Unspecified.
+      SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER: Represents if a
+        resource is protected by automatic failover. Checks for resources that
+        are configured to have redundancy within a region that enables
+        automatic failover.
+      SIGNAL_TYPE_GROUP_NOT_REPLICATING_ACROSS_REGIONS: Represents if a group
+        is replicating across regions. Checks for resources that are
+        configured to have redundancy, and ongoing replication, across
+        regions.
       SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES: Represents if the resource
         is available in multiple zones or not.
       SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS: Represents if a resource
@@ -3049,6 +3079,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         resource failed.
       SIGNAL_TYPE_LAST_BACKUP_OLD: Represents if the last backup of a resource
         is older than some threshold value.
+      SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_2_0: Represents if a resource
+        violates CIS GCP Foundation 2.0.
       SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3: Represents if a resource
         violates CIS GCP Foundation 1.3.
       SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2: Represents if a resource
@@ -3063,9 +3095,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         ISO-27001.
       SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1: Represents if a resource violates
         PCI-DSS v3.2.1.
-      SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING: Represents if
-        log_checkpoints database flag for a Cloud SQL for PostgreSQL instance
-        is not set to on.
+      SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING:
+        LINT.IfChange(scc_signals) Represents if log_checkpoints database flag
+        for a Cloud SQL for PostgreSQL instance is not set to on.
       SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED: Represents if the log_duration
         database flag for a Cloud SQL for PostgreSQL instance is not set to
         on.
@@ -3149,53 +3181,60 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED: Represents if the 3625
         (trace flag) database flag for a Cloud SQL for SQL Server instance is
         not set to on.
+      SIGNAL_TYPE_PUBLIC_IP_ENABLED: Represents if public IP is enabled. LINT.
+        ThenChange(//depot/google3/storage/databasecenter/ingestion/borgjob/me
+        ssage_adapter/health_signal_feed/health_signal_mapping.h)
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
-    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES = 1
-    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS = 2
-    SIGNAL_TYPE_NO_PROMOTABLE_REPLICA = 3
-    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 4
-    SIGNAL_TYPE_SHORT_BACKUP_RETENTION = 5
-    SIGNAL_TYPE_LAST_BACKUP_FAILED = 6
-    SIGNAL_TYPE_LAST_BACKUP_OLD = 7
-    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3 = 8
-    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2 = 9
-    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1 = 10
-    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0 = 11
-    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 12
-    SIGNAL_TYPE_VIOLATES_ISO_27001 = 13
-    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 14
-    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 15
-    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 16
-    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 17
-    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 18
-    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 19
-    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 20
-    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 21
-    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 22
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 23
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 24
-    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 25
-    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 26
-    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 27
-    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 28
-    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 29
-    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 30
-    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 31
-    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 32
-    SIGNAL_TYPE_NO_ROOT_PASSWORD = 33
-    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 34
-    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 35
-    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 36
-    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 37
-    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 38
-    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 39
-    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 40
-    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 41
-    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 42
-    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 43
-    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 44
-    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 45
+    SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
+    SIGNAL_TYPE_GROUP_NOT_REPLICATING_ACROSS_REGIONS = 2
+    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_ZONES = 3
+    SIGNAL_TYPE_NOT_AVAILABLE_IN_MULTIPLE_REGIONS = 4
+    SIGNAL_TYPE_NO_PROMOTABLE_REPLICA = 5
+    SIGNAL_TYPE_NO_AUTOMATED_BACKUP_POLICY = 6
+    SIGNAL_TYPE_SHORT_BACKUP_RETENTION = 7
+    SIGNAL_TYPE_LAST_BACKUP_FAILED = 8
+    SIGNAL_TYPE_LAST_BACKUP_OLD = 9
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_2_0 = 10
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_3 = 11
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_2 = 12
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_1 = 13
+    SIGNAL_TYPE_VIOLATES_CIS_GCP_FOUNDATION_1_0 = 14
+    SIGNAL_TYPE_VIOLATES_NIST_800_53 = 15
+    SIGNAL_TYPE_VIOLATES_ISO_27001 = 16
+    SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1 = 17
+    SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING = 18
+    SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED = 19
+    SIGNAL_TYPE_VERBOSE_ERROR_LOGGING = 20
+    SIGNAL_TYPE_QUERY_LOCK_WAITS_NOT_LOGGED = 21
+    SIGNAL_TYPE_LOGGING_MOST_ERRORS = 22
+    SIGNAL_TYPE_LOGGING_ONLY_CRITICAL_ERRORS = 23
+    SIGNAL_TYPE_MINIMAL_ERROR_LOGGING = 24
+    SIGNAL_TYPE_QUERY_STATISTICS_LOGGED = 25
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_CLIENT_HOSTNAME = 26
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PARSER_STATISTICS = 27
+    SIGNAL_TYPE_EXCESSIVE_LOGGING_OF_PLANNER_STATISTICS = 28
+    SIGNAL_TYPE_NOT_LOGGING_ONLY_DDL_STATEMENTS = 29
+    SIGNAL_TYPE_LOGGING_QUERY_STATISTICS = 30
+    SIGNAL_TYPE_NOT_LOGGING_TEMPORARY_FILES = 31
+    SIGNAL_TYPE_CONNECTION_MAX_NOT_CONFIGURED = 32
+    SIGNAL_TYPE_USER_OPTIONS_CONFIGURED = 33
+    SIGNAL_TYPE_EXPOSED_TO_PUBLIC_ACCESS = 34
+    SIGNAL_TYPE_UNENCRYPTED_CONNECTIONS = 35
+    SIGNAL_TYPE_NO_ROOT_PASSWORD = 36
+    SIGNAL_TYPE_WEAK_ROOT_PASSWORD = 37
+    SIGNAL_TYPE_ENCRYPTION_KEY_NOT_CUSTOMER_MANAGED = 38
+    SIGNAL_TYPE_SERVER_AUTHENTICATION_NOT_REQUIRED = 39
+    SIGNAL_TYPE_EXPOSED_BY_OWNERSHIP_CHAINING = 40
+    SIGNAL_TYPE_EXPOSED_TO_EXTERNAL_SCRIPTS = 41
+    SIGNAL_TYPE_EXPOSED_TO_LOCAL_DATA_LOADS = 42
+    SIGNAL_TYPE_CONNECTION_ATTEMPTS_NOT_LOGGED = 43
+    SIGNAL_TYPE_DISCONNECTIONS_NOT_LOGGED = 44
+    SIGNAL_TYPE_LOGGING_EXCESSIVE_STATEMENT_INFO = 45
+    SIGNAL_TYPE_EXPOSED_TO_REMOTE_ACCESS = 46
+    SIGNAL_TYPE_DATABASE_NAMES_EXPOSED = 47
+    SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED = 48
+    SIGNAL_TYPE_PUBLIC_IP_ENABLED = 49
 
   class StateValueValuesEnum(_messages.Enum):
     r"""StateValueValuesEnum enum type.
@@ -3343,7 +3382,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
       resource. It must be resource name of a Cloud Resource Manager project
-      with the format of "provider//", such as "gcp/projects/123".
+      with the format of "provider//", such as "gcp/projects/123". For GCP
+      provided resources, number should be project number.
     resourceName: Required. Different from DatabaseResourceId.unique_id, a
       resource name can be reused over time. That is, after a resource named
       "ABC" is deleted, the name "ABC" can be used to to create a new resource
@@ -3666,6 +3706,30 @@ class SupportedDatabaseFlag(_messages.Message):
   stringRestrictions = _messages.MessageField('StringRestrictions', 6)
   supportedDbVersions = _messages.EnumField('SupportedDbVersionsValueListEntryValuesEnum', 7, repeated=True)
   valueType = _messages.EnumField('ValueTypeValueValuesEnum', 8)
+
+
+class SwitchoverClusterRequest(_messages.Message):
+  r"""Message for switching over to a cluster
+
+  Fields:
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, performs request validation (e.g.
+      permission checks and any other type of validation), but do not actually
+      execute the delete.
+  """
+
+  requestId = _messages.StringField(1)
+  validateOnly = _messages.BooleanField(2)
 
 
 class TimeBasedRetention(_messages.Message):

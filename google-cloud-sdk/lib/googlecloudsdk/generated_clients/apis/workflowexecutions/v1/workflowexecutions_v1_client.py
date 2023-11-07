@@ -40,6 +40,7 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_workflows_executions_callbacks = self.ProjectsLocationsWorkflowsExecutionsCallbacksService(self)
+    self.projects_locations_workflows_executions_stepEntries = self.ProjectsLocationsWorkflowsExecutionsStepEntriesService(self)
     self.projects_locations_workflows_executions = self.ProjectsLocationsWorkflowsExecutionsService(self)
     self.projects_locations_workflows = self.ProjectsLocationsWorkflowsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
@@ -79,6 +80,70 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCallbacksListRequest',
         response_type_name='ListCallbacksResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsWorkflowsExecutionsStepEntriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_workflows_executions_stepEntries resource."""
+
+    _NAME = 'projects_locations_workflows_executions_stepEntries'
+
+    def __init__(self, client):
+      super(WorkflowexecutionsV1.ProjectsLocationsWorkflowsExecutionsStepEntriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a step entry.
+
+      Args:
+        request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (StepEntry) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}/stepEntries/{stepEntriesId}',
+        http_method='GET',
+        method_id='workflowexecutions.projects.locations.workflows.executions.stepEntries.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesGetRequest',
+        response_type_name='StepEntry',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists step entries for the corresponding workflow execution. Returned entries are ordered by their create_time.
+
+      Args:
+        request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListStepEntriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/workflows/{workflowsId}/executions/{executionsId}/stepEntries',
+        http_method='GET',
+        method_id='workflowexecutions.projects.locations.workflows.executions.stepEntries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'orderBy', 'pageSize', 'pageToken', 'skip'],
+        relative_path='v1/{+parent}/stepEntries',
+        request_field='',
+        request_type_name='WorkflowexecutionsProjectsLocationsWorkflowsExecutionsStepEntriesListRequest',
+        response_type_name='ListStepEntriesResponse',
         supports_download=False,
     )
 

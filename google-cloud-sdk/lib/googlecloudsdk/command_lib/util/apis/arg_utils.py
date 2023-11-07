@@ -448,20 +448,19 @@ def GenerateFlagType(field, attributes, fix_bools=True):
   return (flag_type, action)
 
 
-def _GetMetavar(attributes, flag_type, flag_name):
+def GetMetavar(specified_metavar, flag_type, flag_name):
   """Gets the metavar for specific flag.
 
   Args:
-    attributes: yaml_arg_schema.Argument, The attributes to use to
-      generate the arg.
+    specified_metavar: str, metavar that is specified by user.
     flag_type: (str)->None, type function of the flag.
     flag_name: str, name of the flag
 
   Returns:
     str | None, the flag's metavar
   """
-  if attributes.metavar:
-    metavar = attributes.metavar
+  if specified_metavar:
+    metavar = specified_metavar
   elif isinstance(flag_type, arg_parsers.ArgDict):
     # TODO(b/295545497): Update the default to KEY=VALUE for non-spec ArgDict
     metavar = None
@@ -473,7 +472,8 @@ def _GetMetavar(attributes, flag_type, flag_name):
 
   if metavar:
     return resource_property.ConvertToAngrySnakeCase(metavar.replace('-', '_'))
-  return None
+  else:
+    return None
 
 
 def GenerateFlag(field, attributes, fix_bools=True, category=None):
@@ -523,7 +523,7 @@ def GenerateFlag(field, attributes, fix_bools=True, category=None):
   if action != 'store_true':
     # For this special action type, it won't accept a bunch of the common
     # kwargs, so we can only add them if not generating a boolean flag.
-    metavar = _GetMetavar(attributes, flag_type, name)
+    metavar = GetMetavar(attributes.metavar, flag_type, name)
     if metavar:
       arg.kwargs['metavar'] = metavar
     arg.kwargs['type'] = flag_type

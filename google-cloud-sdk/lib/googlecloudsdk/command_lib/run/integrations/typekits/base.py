@@ -20,7 +20,7 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import re
-from typing import Dict, List, Optional, Set
+from typing import Dict, Iterable, List, Optional, Set, TypedDict
 
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.run.integrations import types_utils
@@ -196,7 +196,19 @@ def RemoveBinding(
   ]
 
 
-def GetComponentTypesFromSelectors(selectors) -> Set[str]:
+class Selector(TypedDict):
+  """Selects components by type.
+
+  Attributes:
+    type: Component type to select.
+    name: Integration name.
+  """
+
+  type: str
+  name: str
+
+
+def GetComponentTypesFromSelectors(selectors: Iterable[Selector]) -> Set[str]:
   """Returns a list of component types included in a create/update deployment.
 
   Args:
@@ -207,12 +219,7 @@ def GetComponentTypesFromSelectors(selectors) -> Set[str]:
     hidden resource types that should be called out as part of the deployment
     progress output.
   """
-  if not selectors:
-    return {}
-  rtypes = set()
-  for type_name in selectors:
-    rtypes.add(type_name['type'])
-  return rtypes
+  return {type_name['type'] for type_name in selectors}
 
 
 class TypeKit(object):
@@ -396,7 +403,7 @@ class TypeKit(object):
       name = '{}-{}'.format(name, count)
     return name
 
-  def GetCreateSelectors(self, integration_name):
+  def GetCreateSelectors(self, integration_name) -> List[Selector]:
     """Returns create selectors for given integration and service.
 
     Args:
@@ -408,7 +415,7 @@ class TypeKit(object):
 
     return [{'type': self.resource_type, 'name': integration_name}]
 
-  def GetDeleteSelectors(self, integration_name):
+  def GetDeleteSelectors(self, integration_name) -> List[Selector]:
     """Returns selectors for deleting the integration.
 
     Args:
@@ -454,7 +461,7 @@ class TypeKit(object):
         for res_id in FindBindingsRecursive(resource, workload_type)
     ]
 
-  def GetCreateComponentTypes(self, selectors):
+  def GetCreateComponentTypes(self, selectors: Iterable[Selector]):
     """Returns a list of component types included in a create/update deployment.
 
     Args:
@@ -467,7 +474,7 @@ class TypeKit(object):
     """
     return GetComponentTypesFromSelectors(selectors)
 
-  def GetDeleteComponentTypes(self, selectors):
+  def GetDeleteComponentTypes(self, selectors: Iterable[Selector]):
     """Returns a list of component types included in a delete deployment.
 
     Args:

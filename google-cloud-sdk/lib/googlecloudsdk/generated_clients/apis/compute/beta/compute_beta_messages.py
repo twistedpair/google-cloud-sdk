@@ -4070,24 +4070,25 @@ class BackendService(_messages.Message):
   Enums:
     CompressionModeValueValuesEnum: Compress text responses using Brotli or
       gzip compression, based on the client's Accept-Encoding header.
-    IpAddressSelectionPolicyValueValuesEnum: Specifies preference of traffic
-      to the backend (from the proxy and from the client for proxyless gRPC).
-      The possible values are: - IPV4_ONLY: Only send IPv4 traffic to the
-      backends of the Backend Service (Instance Group, Managed Instance Group,
-      Network Endpoint Group) regardless of traffic from the client to the
-      proxy. Only IPv4 health-checks are used to check the health of the
-      backends. This is the default setting. - PREFER_IPV6: Prioritize the
-      connection to the endpoints IPv6 address over its IPv4 address (provided
-      there is a healthy IPv6 address). - IPV6_ONLY: Only send IPv6 traffic to
-      the backends of the Backend Service (Instance Group, Managed Instance
-      Group, Network Endpoint Group) regardless of traffic from the client to
-      the proxy. Only IPv6 health-checks are used to check the health of the
-      backends. This field is applicable to either: - Advanced Global External
-      HTTPS Load Balancing (load balancing scheme EXTERNAL_MANAGED), -
-      Regional External HTTPS Load Balancing, - Internal TCP Proxy (load
-      balancing scheme INTERNAL_MANAGED), - Regional Internal HTTPS Load
-      Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic Director
-      with Envoy proxies and proxyless gRPC (load balancing scheme
+    IpAddressSelectionPolicyValueValuesEnum: Specifies a preference for
+      traffic sent from the proxy to the backend (or from the client to the
+      backend for proxyless gRPC). The possible values are: - IPV4_ONLY: Only
+      send IPv4 traffic to the backends of the backend service (Instance
+      Group, Managed Instance Group, Network Endpoint Group), regardless of
+      traffic from the client to the proxy. Only IPv4 health checks are used
+      to check the health of the backends. This is the default setting. -
+      PREFER_IPV6: Prioritize the connection to the endpoint's IPv6 address
+      over its IPv4 address (provided there is a healthy IPv6 address). -
+      IPV6_ONLY: Only send IPv6 traffic to the backends of the backend service
+      (Instance Group, Managed Instance Group, Network Endpoint Group),
+      regardless of traffic from the client to the proxy. Only IPv6 health
+      checks are used to check the health of the backends. This field is
+      applicable to either: - Advanced Global External HTTPS Load Balancing
+      (load balancing scheme EXTERNAL_MANAGED), - Regional External HTTPS Load
+      Balancing, - Internal TCP Proxy (load balancing scheme
+      INTERNAL_MANAGED), - Regional Internal HTTPS Load Balancing (load
+      balancing scheme INTERNAL_MANAGED), - Traffic Director with Envoy
+      proxies and proxyless gRPC (load balancing scheme
       INTERNAL_SELF_MANAGED).
     LoadBalancingSchemeValueValuesEnum: Specifies the load balancer type. A
       backend service created for one type of load balancer cannot be used
@@ -4206,24 +4207,24 @@ class BackendService(_messages.Message):
       Balancing.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
-    ipAddressSelectionPolicy: Specifies preference of traffic to the backend
-      (from the proxy and from the client for proxyless gRPC). The possible
-      values are: - IPV4_ONLY: Only send IPv4 traffic to the backends of the
-      Backend Service (Instance Group, Managed Instance Group, Network
-      Endpoint Group) regardless of traffic from the client to the proxy. Only
-      IPv4 health-checks are used to check the health of the backends. This is
-      the default setting. - PREFER_IPV6: Prioritize the connection to the
-      endpoints IPv6 address over its IPv4 address (provided there is a
-      healthy IPv6 address). - IPV6_ONLY: Only send IPv6 traffic to the
-      backends of the Backend Service (Instance Group, Managed Instance Group,
-      Network Endpoint Group) regardless of traffic from the client to the
-      proxy. Only IPv6 health-checks are used to check the health of the
-      backends. This field is applicable to either: - Advanced Global External
-      HTTPS Load Balancing (load balancing scheme EXTERNAL_MANAGED), -
-      Regional External HTTPS Load Balancing, - Internal TCP Proxy (load
-      balancing scheme INTERNAL_MANAGED), - Regional Internal HTTPS Load
-      Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic Director
-      with Envoy proxies and proxyless gRPC (load balancing scheme
+    ipAddressSelectionPolicy: Specifies a preference for traffic sent from the
+      proxy to the backend (or from the client to the backend for proxyless
+      gRPC). The possible values are: - IPV4_ONLY: Only send IPv4 traffic to
+      the backends of the backend service (Instance Group, Managed Instance
+      Group, Network Endpoint Group), regardless of traffic from the client to
+      the proxy. Only IPv4 health checks are used to check the health of the
+      backends. This is the default setting. - PREFER_IPV6: Prioritize the
+      connection to the endpoint's IPv6 address over its IPv4 address
+      (provided there is a healthy IPv6 address). - IPV6_ONLY: Only send IPv6
+      traffic to the backends of the backend service (Instance Group, Managed
+      Instance Group, Network Endpoint Group), regardless of traffic from the
+      client to the proxy. Only IPv6 health checks are used to check the
+      health of the backends. This field is applicable to either: - Advanced
+      Global External HTTPS Load Balancing (load balancing scheme
+      EXTERNAL_MANAGED), - Regional External HTTPS Load Balancing, - Internal
+      TCP Proxy (load balancing scheme INTERNAL_MANAGED), - Regional Internal
+      HTTPS Load Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic
+      Director with Envoy proxies and proxyless gRPC (load balancing scheme
       INTERNAL_SELF_MANAGED).
     kind: [Output Only] Type of resource. Always compute#backendService for
       backend services.
@@ -4378,24 +4379,24 @@ class BackendService(_messages.Message):
     DISABLED = 1
 
   class IpAddressSelectionPolicyValueValuesEnum(_messages.Enum):
-    r"""Specifies preference of traffic to the backend (from the proxy and
-    from the client for proxyless gRPC). The possible values are: - IPV4_ONLY:
-    Only send IPv4 traffic to the backends of the Backend Service (Instance
-    Group, Managed Instance Group, Network Endpoint Group) regardless of
-    traffic from the client to the proxy. Only IPv4 health-checks are used to
-    check the health of the backends. This is the default setting. -
-    PREFER_IPV6: Prioritize the connection to the endpoints IPv6 address over
-    its IPv4 address (provided there is a healthy IPv6 address). - IPV6_ONLY:
-    Only send IPv6 traffic to the backends of the Backend Service (Instance
-    Group, Managed Instance Group, Network Endpoint Group) regardless of
-    traffic from the client to the proxy. Only IPv6 health-checks are used to
-    check the health of the backends. This field is applicable to either: -
-    Advanced Global External HTTPS Load Balancing (load balancing scheme
-    EXTERNAL_MANAGED), - Regional External HTTPS Load Balancing, - Internal
-    TCP Proxy (load balancing scheme INTERNAL_MANAGED), - Regional Internal
-    HTTPS Load Balancing (load balancing scheme INTERNAL_MANAGED), - Traffic
-    Director with Envoy proxies and proxyless gRPC (load balancing scheme
-    INTERNAL_SELF_MANAGED).
+    r"""Specifies a preference for traffic sent from the proxy to the backend
+    (or from the client to the backend for proxyless gRPC). The possible
+    values are: - IPV4_ONLY: Only send IPv4 traffic to the backends of the
+    backend service (Instance Group, Managed Instance Group, Network Endpoint
+    Group), regardless of traffic from the client to the proxy. Only IPv4
+    health checks are used to check the health of the backends. This is the
+    default setting. - PREFER_IPV6: Prioritize the connection to the
+    endpoint's IPv6 address over its IPv4 address (provided there is a healthy
+    IPv6 address). - IPV6_ONLY: Only send IPv6 traffic to the backends of the
+    backend service (Instance Group, Managed Instance Group, Network Endpoint
+    Group), regardless of traffic from the client to the proxy. Only IPv6
+    health checks are used to check the health of the backends. This field is
+    applicable to either: - Advanced Global External HTTPS Load Balancing
+    (load balancing scheme EXTERNAL_MANAGED), - Regional External HTTPS Load
+    Balancing, - Internal TCP Proxy (load balancing scheme INTERNAL_MANAGED),
+    - Regional Internal HTTPS Load Balancing (load balancing scheme
+    INTERNAL_MANAGED), - Traffic Director with Envoy proxies and proxyless
+    gRPC (load balancing scheme INTERNAL_SELF_MANAGED).
 
     Values:
       IPV4_ONLY: Only send IPv4 traffic to the backends of the Backend Service
@@ -20993,6 +20994,30 @@ class ComputeProjectsSetUsageExportBucketRequest(_messages.Message):
   usageExportLocation = _messages.MessageField('UsageExportLocation', 3)
 
 
+class ComputePublicAdvertisedPrefixesAnnounceRequest(_messages.Message):
+  r"""A ComputePublicAdvertisedPrefixesAnnounceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    publicAdvertisedPrefix: The name of the public advertised prefix. It
+      should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  publicAdvertisedPrefix = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
 class ComputePublicAdvertisedPrefixesDeleteRequest(_messages.Message):
   r"""A ComputePublicAdvertisedPrefixesDeleteRequest object.
 
@@ -21147,6 +21172,30 @@ class ComputePublicAdvertisedPrefixesPatchRequest(_messages.Message):
   requestId = _messages.StringField(4)
 
 
+class ComputePublicAdvertisedPrefixesWithdrawRequest(_messages.Message):
+  r"""A ComputePublicAdvertisedPrefixesWithdrawRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    publicAdvertisedPrefix: The name of the public advertised prefix. It
+      should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  publicAdvertisedPrefix = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+
+
 class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
   r"""A ComputePublicDelegatedPrefixesAggregatedListRequest object.
 
@@ -21221,6 +21270,33 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
   project = _messages.StringField(6, required=True)
   returnPartialSuccess = _messages.BooleanField(7)
   serviceProjectNumber = _messages.IntegerField(8)
+
+
+class ComputePublicDelegatedPrefixesAnnounceRequest(_messages.Message):
+  r"""A ComputePublicDelegatedPrefixesAnnounceRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    publicDelegatedPrefix: The name of the public delegated prefix. It should
+      comply with RFC1035.
+    region: The name of the region where the public delegated prefix is
+      located. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  publicDelegatedPrefix = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputePublicDelegatedPrefixesDeleteRequest(_messages.Message):
@@ -21385,6 +21461,33 @@ class ComputePublicDelegatedPrefixesPatchRequest(_messages.Message):
   publicDelegatedPrefixResource = _messages.MessageField('PublicDelegatedPrefix', 3)
   region = _messages.StringField(4, required=True)
   requestId = _messages.StringField(5)
+
+
+class ComputePublicDelegatedPrefixesWithdrawRequest(_messages.Message):
+  r"""A ComputePublicDelegatedPrefixesWithdrawRequest object.
+
+  Fields:
+    project: Project ID for this request.
+    publicDelegatedPrefix: The name of the public delegated prefix. It should
+      comply with RFC1035.
+    region: The name of the region where the public delegated prefix is
+      located. It should comply with RFC1035.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+  """
+
+  project = _messages.StringField(1, required=True)
+  publicDelegatedPrefix = _messages.StringField(2, required=True)
+  region = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
 
 
 class ComputeRegionAutoscalersDeleteRequest(_messages.Message):
@@ -33553,12 +33656,32 @@ class Condition(_messages.Message):
 class ConfidentialInstanceConfig(_messages.Message):
   r"""A set of Confidential Instance options.
 
+  Enums:
+    ConfidentialInstanceTypeValueValuesEnum: Defines the type of technology
+      used by the confidential instance.
+
   Fields:
+    confidentialInstanceType: Defines the type of technology used by the
+      confidential instance.
     enableConfidentialCompute: Defines whether the instance should have
       confidential compute enabled.
   """
 
-  enableConfidentialCompute = _messages.BooleanField(1)
+  class ConfidentialInstanceTypeValueValuesEnum(_messages.Enum):
+    r"""Defines the type of technology used by the confidential instance.
+
+    Values:
+      CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED: No type specified. Do not use
+        this value.
+      SEV: AMD Secure Encrypted Virtualization.
+      SEV_SNP: AMD Secure Encrypted Virtualization - Secure Nested Paging.
+    """
+    CONFIDENTIAL_INSTANCE_TYPE_UNSPECIFIED = 0
+    SEV = 1
+    SEV_SNP = 2
+
+  confidentialInstanceType = _messages.EnumField('ConfidentialInstanceTypeValueValuesEnum', 1)
+  enableConfidentialCompute = _messages.BooleanField(2)
 
 
 class ConnectionDraining(_messages.Message):
@@ -37325,14 +37448,19 @@ class ForwardingRule(_messages.Message):
       balancing products as described in [Load balancing
       features](https://cloud.google.com/load-balancing/docs/features#protocol
       s_from_the_load_balancer_to_the_backends).
-    allPorts: This field can only be used: - If IPProtocol is one of TCP, UDP,
-      or SCTP. - By internal TCP/UDP load balancers, backend service-based
-      network load balancers, and internal and external protocol forwarding.
-      Set this field to true to allow packets addressed to any port or packets
-      lacking destination port information (for example, UDP fragments after
-      the first fragment) to be forwarded to the backends configured with this
-      forwarding rule. The ports, port_range, and allPorts fields are mutually
-      exclusive.
+    allPorts: The ports, portRange, and allPorts fields are mutually
+      exclusive. Only packets addressed to ports in the specified range will
+      be forwarded to the backends configured with this forwarding rule. The
+      allPorts field has the following limitations: - It requires that the
+      forwarding rule IPProtocol be TCP, UDP, SCTP, or L3_DEFAULT. - It's
+      applicable only to the following products: internal passthrough Network
+      Load Balancers, backend service-based external passthrough Network Load
+      Balancers, and internal and external protocol forwarding. - Set this
+      field to true to allow packets addressed to any port or packets lacking
+      destination port information (for example, UDP fragments after the first
+      fragment) to be forwarded to the backends configured with this
+      forwarding rule. The L3_DEFAULT protocol requires allPorts be set to
+      true.
     allowGlobalAccess: This field is used along with the backend_service field
       for internal load balancing or with the target field for internal
       TargetInstance. If set to true, clients can access the Internal TCP/UDP
@@ -37436,33 +37564,36 @@ class ForwardingRule(_messages.Message):
       whether it should try to auto-generate a DNS zone or not. Non-PSC
       forwarding rules do not use this field. Once set, this field is not
       mutable.
-    portRange: This field can only be used: - If IPProtocol is one of TCP,
-      UDP, or SCTP. - By backend service-based network load balancers, target
-      pool-based network load balancers, internal proxy load balancers,
-      external proxy load balancers, Traffic Director, external protocol
-      forwarding, and Classic VPN. Some products have restrictions on what
-      ports can be used. See port specifications for details. Only packets
-      addressed to ports in the specified range will be forwarded to the
-      backends configured with this forwarding rule. The ports, port_range,
-      and allPorts fields are mutually exclusive. For external forwarding
+    portRange: The ports, portRange, and allPorts fields are mutually
+      exclusive. Only packets addressed to ports in the specified range will
+      be forwarded to the backends configured with this forwarding rule. The
+      portRange field has the following limitations: - It requires that the
+      forwarding rule IPProtocol be TCP, UDP, or SCTP, and - It's applicable
+      only to the following products: external passthrough Network Load
+      Balancers, internal and external proxy Network Load Balancers, internal
+      and external Application Load Balancers, external protocol forwarding,
+      and Classic VPN. - Some products have restrictions on what ports can be
+      used. See port specifications for details. For external forwarding
       rules, two or more forwarding rules cannot use the same [IPAddress,
       IPProtocol] pair, and cannot have overlapping portRanges. For internal
       forwarding rules within the same VPC network, two or more forwarding
       rules cannot use the same [IPAddress, IPProtocol] pair, and cannot have
       overlapping portRanges. @pattern: \\d+(?:-\\d+)?
-    ports: This field can only be used: - If IPProtocol is one of TCP, UDP, or
-      SCTP. - By internal TCP/UDP load balancers, backend service-based
-      network load balancers, and internal protocol forwarding. You can
-      specify a list of up to five ports by number, separated by commas. The
-      ports can be contiguous or discontiguous. Only packets addressed to
-      these ports will be forwarded to the backends configured with this
-      forwarding rule. For external forwarding rules, two or more forwarding
-      rules cannot use the same [IPAddress, IPProtocol] pair, and cannot share
-      any values defined in ports. For internal forwarding rules within the
-      same VPC network, two or more forwarding rules cannot use the same
-      [IPAddress, IPProtocol] pair, and cannot share any values defined in
-      ports. The ports, port_range, and allPorts fields are mutually
-      exclusive. @pattern: \\d+(?:-\\d+)?
+    ports: The ports, portRange, and allPorts fields are mutually exclusive.
+      Only packets addressed to ports in the specified range will be forwarded
+      to the backends configured with this forwarding rule. The ports field
+      has the following limitations: - It requires that the forwarding rule
+      IPProtocol be TCP, UDP, or SCTP, and - It's applicable only to the
+      following products: internal passthrough Network Load Balancers, backend
+      service-based external passthrough Network Load Balancers, and internal
+      protocol forwarding. - You can specify a list of up to five ports by
+      number, separated by commas. The ports can be contiguous or
+      discontiguous. For external forwarding rules, two or more forwarding
+      rules cannot use the same [IPAddress, IPProtocol] pair if they share at
+      least one port number. For internal forwarding rules within the same VPC
+      network, two or more forwarding rules cannot use the same [IPAddress,
+      IPProtocol] pair if they share at least one port number. @pattern:
+      \\d+(?:-\\d+)?
     pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
       Rule.
     pscConnectionStatus: A PscConnectionStatusValueValuesEnum attribute.
@@ -44144,6 +44275,11 @@ class InstanceGroupManagerResizeRequest(_messages.Message):
       compute#instanceGroupManagerResizeRequest for resize requests.
     name: The name of this resize request. The name must be 1-63 characters
       long, and comply with RFC1035.
+    requestedRunDuration: Requested run duration for instances that will be
+      created by this request. At the end of the run duration instance will be
+      deleted.
+    resizeBy: The number of instances to be created by this resize request.
+      The group's target size will be increased by this number.
     selfLink: [Output Only] The URL for this resize request. The server
       defines this URL.
     selfLinkWithId: [Output Only] Server-defined URL for this resource with
@@ -44181,11 +44317,13 @@ class InstanceGroupManagerResizeRequest(_messages.Message):
   id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
   kind = _messages.StringField(5, default='compute#instanceGroupManagerResizeRequest')
   name = _messages.StringField(6)
-  selfLink = _messages.StringField(7)
-  selfLinkWithId = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  status = _messages.MessageField('InstanceGroupManagerResizeRequestStatus', 10)
-  zone = _messages.StringField(11)
+  requestedRunDuration = _messages.MessageField('Duration', 7)
+  resizeBy = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  selfLink = _messages.StringField(9)
+  selfLinkWithId = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  status = _messages.MessageField('InstanceGroupManagerResizeRequestStatus', 12)
+  zone = _messages.StringField(13)
 
 
 class InstanceGroupManagerResizeRequestStatus(_messages.Message):
@@ -52614,6 +52752,8 @@ class ManagedInstance(_messages.Message):
       instance config for this instance.
     preservedStateFromPolicy: [Output Only] Preserved state generated based on
       stateful policy for this instance.
+    propertiesFromFlexibilityPolicy: [Output Only] Instance properties
+      selected for this instance resulting from InstanceFlexibilityPolicy.
     version: [Output Only] Intended version of this instance.
   """
 
@@ -52727,7 +52867,8 @@ class ManagedInstance(_messages.Message):
   name = _messages.StringField(9)
   preservedStateFromConfig = _messages.MessageField('PreservedState', 10)
   preservedStateFromPolicy = _messages.MessageField('PreservedState', 11)
-  version = _messages.MessageField('ManagedInstanceVersion', 12)
+  propertiesFromFlexibilityPolicy = _messages.MessageField('ManagedInstancePropertiesFromFlexibilityPolicy', 12)
+  version = _messages.MessageField('ManagedInstanceVersion', 13)
 
 
 class ManagedInstanceAllInstancesConfig(_messages.Message):
@@ -52857,6 +52998,16 @@ class ManagedInstanceLastAttempt(_messages.Message):
     errors = _messages.MessageField('ErrorsValueListEntry', 1, repeated=True)
 
   errors = _messages.MessageField('ErrorsValue', 1)
+
+
+class ManagedInstancePropertiesFromFlexibilityPolicy(_messages.Message):
+  r"""A ManagedInstancePropertiesFromFlexibilityPolicy object.
+
+  Fields:
+    machineType: The machine type to be used for this instance.
+  """
+
+  machineType = _messages.StringField(1)
 
 
 class ManagedInstanceVersion(_messages.Message):
@@ -60532,7 +60683,7 @@ class Project(_messages.Message):
       is PREMIUM.
     ManagedProtectionTierValueValuesEnum: [Output Only] The Cloud Armor
       Managed Protection (CAMP) tier for this project. It can be one of the
-      following values: CA_STANDARD, CAMP_PLUS_MONTHLY. If this field is not
+      following values: CA_STANDARD, CAMP_PLUS_PAYGO. If this field is not
       specified, it is assumed to be CA_STANDARD.
     VmDnsSettingValueValuesEnum: [Output Only] Default internal DNS setting
       used by VMs running in this project.
@@ -60561,7 +60712,7 @@ class Project(_messages.Message):
       projects.
     managedProtectionTier: [Output Only] The Cloud Armor Managed Protection
       (CAMP) tier for this project. It can be one of the following values:
-      CA_STANDARD, CAMP_PLUS_MONTHLY. If this field is not specified, it is
+      CA_STANDARD, CAMP_PLUS_PAYGO. If this field is not specified, it is
       assumed to be CA_STANDARD.
     name: The project ID. For example: my-example-project. Use the project ID
       to make requests to Compute Engine.
@@ -60598,16 +60749,16 @@ class Project(_messages.Message):
   class ManagedProtectionTierValueValuesEnum(_messages.Enum):
     r"""[Output Only] The Cloud Armor Managed Protection (CAMP) tier for this
     project. It can be one of the following values: CA_STANDARD,
-    CAMP_PLUS_MONTHLY. If this field is not specified, it is assumed to be
+    CAMP_PLUS_PAYGO. If this field is not specified, it is assumed to be
     CA_STANDARD.
 
     Values:
       CAMP_PLUS_ANNUAL: Plus tier protection annual.
-      CAMP_PLUS_MONTHLY: Plus tier protection monthly.
+      CAMP_PLUS_PAYGO: Plus tier protection monthly.
       CA_STANDARD: Standard protection.
     """
     CAMP_PLUS_ANNUAL = 0
-    CAMP_PLUS_MONTHLY = 1
+    CAMP_PLUS_PAYGO = 1
     CA_STANDARD = 2
 
   class VmDnsSettingValueValuesEnum(_messages.Enum):
@@ -60752,11 +60903,11 @@ class ProjectsSetManagedProtectionTierRequest(_messages.Message):
 
     Values:
       CAMP_PLUS_ANNUAL: Plus tier protection annual.
-      CAMP_PLUS_MONTHLY: Plus tier protection monthly.
+      CAMP_PLUS_PAYGO: Plus tier protection monthly.
       CA_STANDARD: Standard protection.
     """
     CAMP_PLUS_ANNUAL = 0
-    CAMP_PLUS_MONTHLY = 1
+    CAMP_PLUS_PAYGO = 1
     CA_STANDARD = 2
 
   managedProtectionTier = _messages.EnumField('ManagedProtectionTierValueValuesEnum', 1)
@@ -60768,6 +60919,14 @@ class PublicAdvertisedPrefix(_messages.Message):
   route advertisement and is announced globally to the internet.
 
   Enums:
+    ByoipApiVersionValueValuesEnum: [Output Only] The version of BYOIP API.
+    PdpScopeValueValuesEnum: Specifies how child public delegated prefix will
+      be scoped. It could be one of following values: - `REGIONAL`: The public
+      delegated prefix is regional only. The provisioning will take a few
+      minutes. - `GLOBAL`: The public delegated prefix is global only. The
+      provisioning will take ~4 weeks. - `GLOBAL_AND_REGIONAL` [output only]:
+      The public delegated prefixes is BYOIP V1 legacy prefix. This is output
+      only value and no longer supported in BYOIP V2.
     StatusValueValuesEnum: The status of the public advertised prefix.
       Possible values include: - `INITIAL`: RPKI validation is complete. -
       `PTR_CONFIGURED`: User has configured the PTR. - `VALIDATED`: Reverse
@@ -60777,6 +60936,7 @@ class PublicAdvertisedPrefix(_messages.Message):
       configured. - `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
 
   Fields:
+    byoipApiVersion: [Output Only] The version of BYOIP API.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -60802,6 +60962,13 @@ class PublicAdvertisedPrefix(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    pdpScope: Specifies how child public delegated prefix will be scoped. It
+      could be one of following values: - `REGIONAL`: The public delegated
+      prefix is regional only. The provisioning will take a few minutes. -
+      `GLOBAL`: The public delegated prefix is global only. The provisioning
+      will take ~4 weeks. - `GLOBAL_AND_REGIONAL` [output only]: The public
+      delegated prefixes is BYOIP V1 legacy prefix. This is output only value
+      and no longer supported in BYOIP V2.
     publicDelegatedPrefixs: [Output Only] The list of public delegated
       prefixes that exist for this public advertised prefix.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -60816,6 +60983,42 @@ class PublicAdvertisedPrefix(_messages.Message):
       `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
   """
 
+  class ByoipApiVersionValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The version of BYOIP API.
+
+    Values:
+      V1: This public advertised prefix can be used to create both regional
+        and global public delegated prefixes. It usually takes 4 weeks to
+        create or delete a public delegated prefix. The BGP status cannot be
+        changed.
+      V2: This public advertised prefix can only be used to create regional
+        public delegated prefixes. Public delegated prefix creation and
+        deletion takes minutes and the BGP status can be modified.
+    """
+    V1 = 0
+    V2 = 1
+
+  class PdpScopeValueValuesEnum(_messages.Enum):
+    r"""Specifies how child public delegated prefix will be scoped. It could
+    be one of following values: - `REGIONAL`: The public delegated prefix is
+    regional only. The provisioning will take a few minutes. - `GLOBAL`: The
+    public delegated prefix is global only. The provisioning will take ~4
+    weeks. - `GLOBAL_AND_REGIONAL` [output only]: The public delegated
+    prefixes is BYOIP V1 legacy prefix. This is output only value and no
+    longer supported in BYOIP V2.
+
+    Values:
+      GLOBAL: The public delegated prefix is global only. The provisioning
+        will take ~4 weeks.
+      GLOBAL_AND_REGIONAL: The public delegated prefixes is BYOIP V1 legacy
+        prefix. This is output only value and no longer supported in BYOIP V2.
+      REGIONAL: The public delegated prefix is regional only. The provisioning
+        will take a few minutes.
+    """
+    GLOBAL = 0
+    GLOBAL_AND_REGIONAL = 1
+    REGIONAL = 2
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of the public advertised prefix. Possible values include: -
     `INITIAL`: RPKI validation is complete. - `PTR_CONFIGURED`: User has
@@ -60826,34 +61029,41 @@ class PublicAdvertisedPrefix(_messages.Message):
     `PREFIX_REMOVAL_IN_PROGRESS`: The prefix is being removed.
 
     Values:
+      ANNOUNCED_TO_INTERNET: The prefix is announced to Internet.
       INITIAL: RPKI validation is complete.
       PREFIX_CONFIGURATION_COMPLETE: The prefix is fully configured.
       PREFIX_CONFIGURATION_IN_PROGRESS: The prefix is being configured.
       PREFIX_REMOVAL_IN_PROGRESS: The prefix is being removed.
       PTR_CONFIGURED: User has configured the PTR.
+      READY_TO_ANNOUNCE: The prefix is currently withdrawn but ready to be
+        announced.
       REVERSE_DNS_LOOKUP_FAILED: Reverse DNS lookup failed.
       VALIDATED: Reverse DNS lookup is successful.
     """
-    INITIAL = 0
-    PREFIX_CONFIGURATION_COMPLETE = 1
-    PREFIX_CONFIGURATION_IN_PROGRESS = 2
-    PREFIX_REMOVAL_IN_PROGRESS = 3
-    PTR_CONFIGURED = 4
-    REVERSE_DNS_LOOKUP_FAILED = 5
-    VALIDATED = 6
+    ANNOUNCED_TO_INTERNET = 0
+    INITIAL = 1
+    PREFIX_CONFIGURATION_COMPLETE = 2
+    PREFIX_CONFIGURATION_IN_PROGRESS = 3
+    PREFIX_REMOVAL_IN_PROGRESS = 4
+    PTR_CONFIGURED = 5
+    READY_TO_ANNOUNCE = 6
+    REVERSE_DNS_LOOKUP_FAILED = 7
+    VALIDATED = 8
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  dnsVerificationIp = _messages.StringField(3)
-  fingerprint = _messages.BytesField(4)
-  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(6)
-  kind = _messages.StringField(7, default='compute#publicAdvertisedPrefix')
-  name = _messages.StringField(8)
-  publicDelegatedPrefixs = _messages.MessageField('PublicAdvertisedPrefixPublicDelegatedPrefix', 9, repeated=True)
-  selfLink = _messages.StringField(10)
-  sharedSecret = _messages.StringField(11)
-  status = _messages.EnumField('StatusValueValuesEnum', 12)
+  byoipApiVersion = _messages.EnumField('ByoipApiVersionValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  dnsVerificationIp = _messages.StringField(4)
+  fingerprint = _messages.BytesField(5)
+  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(7)
+  kind = _messages.StringField(8, default='compute#publicAdvertisedPrefix')
+  name = _messages.StringField(9)
+  pdpScope = _messages.EnumField('PdpScopeValueValuesEnum', 10)
+  publicDelegatedPrefixs = _messages.MessageField('PublicAdvertisedPrefixPublicDelegatedPrefix', 11, repeated=True)
+  selfLink = _messages.StringField(12)
+  sharedSecret = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
 
 
 class PublicAdvertisedPrefixList(_messages.Message):
@@ -61049,6 +61259,7 @@ class PublicDelegatedPrefix(_messages.Message):
   IP blocks in the same scope as the parent block.
 
   Enums:
+    ByoipApiVersionValueValuesEnum: [Output Only] The version of BYOIP API.
     StatusValueValuesEnum: [Output Only] The status of the public delegated
       prefix, which can be one of following values: - `INITIALIZING` The
       public delegated prefix is being initialized and addresses cannot be
@@ -61058,6 +61269,7 @@ class PublicDelegatedPrefix(_messages.Message):
       deprovsioned.
 
   Fields:
+    byoipApiVersion: [Output Only] The version of BYOIP API.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
     description: An optional description of this resource. Provide this
@@ -61100,6 +61312,19 @@ class PublicDelegatedPrefix(_messages.Message):
       active. - `DELETING` The public delegated prefix is being deprovsioned.
   """
 
+  class ByoipApiVersionValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The version of BYOIP API.
+
+    Values:
+      V1: This public delegated prefix usually takes 4 weeks to delete, and
+        the BGP status cannot be changed. Announce and Withdraw APIs can not
+        be used on this prefix.
+      V2: This public delegated prefix takes minutes to delete. Announce and
+        Withdraw APIs can be used on this prefix to change the BGP status.
+    """
+    V1 = 0
+    V2 = 1
+
   class StatusValueValuesEnum(_messages.Enum):
     r"""[Output Only] The status of the public delegated prefix, which can be
     one of following values: - `INITIALIZING` The public delegated prefix is
@@ -61110,6 +61335,9 @@ class PublicDelegatedPrefix(_messages.Message):
 
     Values:
       ANNOUNCED: The public delegated prefix is active.
+      ANNOUNCED_TO_GOOGLE: The prefix is announced within Google network.
+      ANNOUNCED_TO_INTERNET: The prefix is announced to Internet and within
+        Google.
       DELETING: The public delegated prefix is being deprovsioned.
       INITIALIZING: The public delegated prefix is being initialized and
         addresses cannot be created yet.
@@ -61117,23 +61345,26 @@ class PublicDelegatedPrefix(_messages.Message):
         but ready to be announced.
     """
     ANNOUNCED = 0
-    DELETING = 1
-    INITIALIZING = 2
-    READY_TO_ANNOUNCE = 3
+    ANNOUNCED_TO_GOOGLE = 1
+    ANNOUNCED_TO_INTERNET = 2
+    DELETING = 3
+    INITIALIZING = 4
+    READY_TO_ANNOUNCE = 5
 
-  creationTimestamp = _messages.StringField(1)
-  description = _messages.StringField(2)
-  fingerprint = _messages.BytesField(3)
-  id = _messages.IntegerField(4, variant=_messages.Variant.UINT64)
-  ipCidrRange = _messages.StringField(5)
-  isLiveMigration = _messages.BooleanField(6)
-  kind = _messages.StringField(7, default='compute#publicDelegatedPrefix')
-  name = _messages.StringField(8)
-  parentPrefix = _messages.StringField(9)
-  publicDelegatedSubPrefixs = _messages.MessageField('PublicDelegatedPrefixPublicDelegatedSubPrefix', 10, repeated=True)
-  region = _messages.StringField(11)
-  selfLink = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
+  byoipApiVersion = _messages.EnumField('ByoipApiVersionValueValuesEnum', 1)
+  creationTimestamp = _messages.StringField(2)
+  description = _messages.StringField(3)
+  fingerprint = _messages.BytesField(4)
+  id = _messages.IntegerField(5, variant=_messages.Variant.UINT64)
+  ipCidrRange = _messages.StringField(6)
+  isLiveMigration = _messages.BooleanField(7)
+  kind = _messages.StringField(8, default='compute#publicDelegatedPrefix')
+  name = _messages.StringField(9)
+  parentPrefix = _messages.StringField(10)
+  publicDelegatedSubPrefixs = _messages.MessageField('PublicDelegatedPrefixPublicDelegatedSubPrefix', 11, repeated=True)
+  region = _messages.StringField(12)
+  selfLink = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
 
 
 class PublicDelegatedPrefixAggregatedList(_messages.Message):
@@ -65543,10 +65774,12 @@ class ResourceStatus(_messages.Message):
     physicalHost: [Output Only] An opaque ID of the host on which the VM is
       running.
     scheduling: A ResourceStatusScheduling attribute.
+    upcomingMaintenance: A UpcomingMaintenance attribute.
   """
 
   physicalHost = _messages.StringField(1)
   scheduling = _messages.MessageField('ResourceStatusScheduling', 2)
+  upcomingMaintenance = _messages.MessageField('UpcomingMaintenance', 3)
 
 
 class ResourceStatusScheduling(_messages.Message):
@@ -71038,6 +71271,8 @@ class Snapshot(_messages.Message):
     sourceDiskEncryptionKey: The customer-supplied encryption key of the
       source disk. Required if the source disk is protected by a customer-
       supplied encryption key.
+    sourceDiskForRecoveryCheckpoint: The source disk whose recovery checkpoint
+      will be used to create this snapshot.
     sourceDiskId: [Output Only] The ID value of the disk used to create this
       snapshot. This value may be used to determine whether the snapshot was
       taken from the current or a previous instance of a given disk name.
@@ -71181,17 +71416,18 @@ class Snapshot(_messages.Message):
   snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 23)
   sourceDisk = _messages.StringField(24)
   sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
-  sourceDiskId = _messages.StringField(26)
-  sourceInstantSnapshot = _messages.StringField(27)
-  sourceInstantSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
-  sourceInstantSnapshotId = _messages.StringField(29)
-  sourceSnapshotSchedulePolicy = _messages.StringField(30)
-  sourceSnapshotSchedulePolicyId = _messages.StringField(31)
-  status = _messages.EnumField('StatusValueValuesEnum', 32)
-  storageBytes = _messages.IntegerField(33)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 34)
-  storageLocations = _messages.StringField(35, repeated=True)
-  userLicenses = _messages.StringField(36, repeated=True)
+  sourceDiskForRecoveryCheckpoint = _messages.StringField(26)
+  sourceDiskId = _messages.StringField(27)
+  sourceInstantSnapshot = _messages.StringField(28)
+  sourceInstantSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
+  sourceInstantSnapshotId = _messages.StringField(30)
+  sourceSnapshotSchedulePolicy = _messages.StringField(31)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(32)
+  status = _messages.EnumField('StatusValueValuesEnum', 33)
+  storageBytes = _messages.IntegerField(34)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 35)
+  storageLocations = _messages.StringField(36, repeated=True)
+  userLicenses = _messages.StringField(37, repeated=True)
 
 
 class SnapshotList(_messages.Message):

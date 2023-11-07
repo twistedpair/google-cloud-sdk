@@ -740,14 +740,14 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
       compliant for this Assured Workload, but which are currently disallowed
       by the ResourceUsageRestriction org policy. Invoke
       RestrictAllowedResources endpoint to allow your project developers to
-      use these services in their environment."
+      use these services in their environment.
     createTime: Output only. Immutable. The Workload creation timestamp.
     displayName: Required. The user-assigned display name of the Workload.
       When present it must be between 4 to 30 characters. Allowed characters
       are: lowercase and uppercase letters, numbers, hyphen, and spaces.
       Example: My Workload
-    ekmProvisioningResponse: Optional. Represents the Ekm Provisioning State
-      of the given workload.
+    ekmProvisioningResponse: Output only. Represents the Ekm Provisioning
+      State of the given workload.
     enableSovereignControls: Optional. Indicates the sovereignty status of the
       given workload. Currently meant to be used by Europe/Canada customers.
     etag: Optional. ETag of the workload, it is calculated on the basis of the

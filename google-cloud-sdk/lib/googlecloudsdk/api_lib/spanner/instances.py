@@ -82,8 +82,8 @@ def Create(
   ):
     instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
         autoscalingLimits=msgs.AutoscalingLimits(
-            minNodes=autoscaling_min_nodes,
-            maxNodes=autoscaling_max_nodes,
+            minNodes=None,
+            maxNodes=None,
             minProcessingUnits=autoscaling_min_processing_units,
             maxProcessingUnits=autoscaling_max_processing_units,
         ),
@@ -92,6 +92,15 @@ def Create(
             storageUtilizationPercent=autoscaling_storage_target,
         ),
     )
+    if autoscaling_min_nodes:
+      instance_obj.autoscalingConfig.autoscalingLimits.minProcessingUnits = (
+          autoscaling_min_nodes * 1000
+      )
+    if autoscaling_max_nodes:
+      instance_obj.autoscalingConfig.autoscalingLimits.maxProcessingUnits = (
+          autoscaling_max_nodes * 1000
+      )
+
   if instance_type is not None:
     instance_obj.instanceType = instance_type
   if expire_behavior is not None:
@@ -204,13 +213,9 @@ def Patch(
   ) and (autoscaling_high_priority_cpu_target and autoscaling_storage_target):
     fields.append('autoscalingConfig')
   else:
-    if autoscaling_min_nodes:
-      fields.append('autoscalingConfig.autoscalingLimits.minNodes')
-    if autoscaling_max_nodes:
-      fields.append('autoscalingConfig.autoscalingLimits.maxNodes')
-    if autoscaling_min_processing_units:
+    if autoscaling_min_nodes or autoscaling_min_processing_units:
       fields.append('autoscalingConfig.autoscalingLimits.minProcessingUnits')
-    if autoscaling_max_processing_units:
+    if autoscaling_max_nodes or autoscaling_max_processing_units:
       fields.append('autoscalingConfig.autoscalingLimits.maxProcessingUnits')
     if autoscaling_high_priority_cpu_target:
       fields.append(
@@ -238,8 +243,6 @@ def Patch(
   ):
     instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
         autoscalingLimits=msgs.AutoscalingLimits(
-            minNodes=autoscaling_min_nodes,
-            maxNodes=autoscaling_max_nodes,
             minProcessingUnits=autoscaling_min_processing_units,
             maxProcessingUnits=autoscaling_max_processing_units,
         ),
@@ -248,6 +251,14 @@ def Patch(
             storageUtilizationPercent=autoscaling_storage_target,
         ),
     )
+    if autoscaling_min_nodes:
+      instance_obj.autoscalingConfig.autoscalingLimits.minProcessingUnits = (
+          autoscaling_min_nodes * 1000
+      )
+    if autoscaling_max_nodes:
+      instance_obj.autoscalingConfig.autoscalingLimits.maxProcessingUnits = (
+          autoscaling_max_nodes * 1000
+      )
 
   if instance_type is not None:
     fields.append('instanceType')

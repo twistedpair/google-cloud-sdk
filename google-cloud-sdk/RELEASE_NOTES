@@ -5,6 +5,131 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 454.0.0 (2023-11-07)
+
+### AI
+
+* Added `deployment-group`, `enable-access-logging`,`audiences`,`allowed-issuers` to `gcloud ai index-endpoints mutate-deployed-index`.
+
+### Anthos Multi-Cloud
+
+*   Updated `container attached clusters register` and
+    `container attached clusters import` to check for proper deployment of the
+    install agent before attempting to register/import.
+
+### Artifact Registry
+
+* Updated `gcloud artifacts sbom load` to have the newly created bucket have
+Uniform Bucket Level Access set to true.
+
+### Binauthz
+
+*  Fixed issue with `gcloud container binauthz attestations sign-and-create` where `--validate` is not supported with `--pae-encode-payload`.
+
+### Certificate Manager
+
+*   Added `--update-mask` flag to `gcloud certificate-manager trust-configs import`.
+
+### Cloud Bigtable
+
+* Rebuilt cbt cli with go version 1.21.3 which fixed CVE-2023-39323.
+
+### Cloud Bigtable Emulator
+
+* Rebuilding cbt emulator with go version 1.21.3 which fixed CVE-2023-39323.
+
+### Cloud Build
+
+* Added `--clear-subscription-filter` to `gcloud builds triggers update pubsub` command.
+
+### Cloud Dataproc
+
+* Added `--min-secondary-worker-fraction` flags to `gcloud dataproc clusters create` and `gcloud dataproc clusters update`.
+
+### Cloud Deploy
+
+* Added `gcloud deploy automations` and `gcloud deploy automation-runs` command groups.
+
+### Cloud IAM
+
+*   Added `--allowed-services` flag to
+    `gcloud iam workforce-pools providers create-oidc`, which allows the user to setup
+    domains that can be accessed by users in a workforce pool.
+*   Added `--disable-programmatic-signin` flag to
+    `gcloud iam workforce-pools providers create-oidc` and
+    `gcloud iam workforce-pools providers update-oidc`, which lets the
+    administrator disable programmatic sign-in for users in a workforce pool.
+
+### Cloud Run
+
+*   Added `--container`, `--remove-containers`, and `--depends-on` flags to `gcloud beta run deploy` and `gcloud beta run services update` to allow deploying and updating multi-container Services.
+
+### Cloud SQL
+
+* Added `--cascadable-replica`  flag to `gcloud sql instances create` to enable
+cascadable replica creation for SQL Server.
+* Added `gcloud sql instances switchover` in alpha and beta to enable switchover
+in Cloud SQL for SQL Server.
+* Added `--failover` flag to `gcloud sql instances promote-replica` to enable
+unmanaged failover in Cloud SQL for SQL Server.
+
+### Cloud Storage
+
+* Fixed "Completed" progress count incrementing for uploads with errors.
+* Fixed an issue where `--content-md5` flag was showing up for `gcloud storage objects update` command. MD5 Hash is a read only field so cannot be updated. Removed `--content-md5` flag from the `update` command and removed `--clear-content-md5` flag from `gcloud storage {cp|mv|rsync|objects update}` commands.
+*  Added `--autoclass-terminal-storage-class` flag to `gcloud storage buckets {create|update}` to set the terminal storage class for Autoclass buckets.
+* Updated gsutil component to 5.27.
+* Releases soft delete feature, including `restore` command and various flags across other commands.
+* Removes un-implemented `operations list` flags: `--uri` and `--page-size`. These flags didn't do anything and there are no operations public users could have been using them on yet.
+
+### Cloud TPU
+
+* Promote `--update-labels`, `--clear-labels`, and `--remove-labels` flags of
+  `gcloud compute tpus tpu-vm update` to GA.
+
+### Compute Engine
+
+* Promoted Standby Policy flags for `gcloud compute instance-groups managed create` in beta.
+* Promoted Standby Policy flags for `gcloud compute instance-groups managed update` in beta.
+* Promoted `gcloud compute snapshot-settings` to GA. Documentation of this feature is available at <https://cloud.google.com/compute/docs/disks/snapshot-settings>.
+* Updated enum name for `--managed-protection-tier` flag for `gcloud compute project-info update` from `CAMP_PLUS_MONTHLY` to `CAMP_PLUS_PAYGO`.
+* Added `--network-user-defined-fields`, `--network-src-ip-ranges`, `--network-dest-ip-ranges`, `--network-ip-protocols`, `--network-src-ports`, `--network-dest-ports`, `--network-src-region-codes`, and `--network-src-asns` to `gcloud compute security-policies rules create|update`.
+* Added `gcloud compute security-policies add-user-defined-fields` and `gcloud compute security-policies remove-user-defined-fields` commands.
+* Added `--region` to `gcloud compute backend-services update`.
+* Added `--security-policy` and `--security-policy-region` to `gcloud compute instances network-interfaces update`.
+* Added `gcloud compute target-pools update` and `gcloud compute target-instances update` commands.
+
+### Distributed Cloud Edge
+
+* Added `upgrade` command to `gcloud edge-cloud container clusters` to allow manually upgrading local control plane clusters.
+* Promoted `--router` to `gcloud edge-cloud container vpn-connections create` to allow users to define Cloud Router to use when creating the VPN connection.
+
+### GKE Hub
+
+* Promoted `gcloud container fleet policycontroller` group to GA.
+
+### Kubernetes Engine
+
+*  Fixed issue where `gcloud container clusters create-auto` would prefer `compute/zone` over `compute/region` if both configs were set.
+  Now prioritizes using `compute/region`.
+* Updated default kubectl from 1.27.5 to 1.27.7.
+* Additional kubectl versions:
+  * kubectl.1.24 (1.24.17)
+  * kubectl.1.25 (1.25.15)
+  * kubectl.1.26 (1.26.10)
+  * kubectl.1.27 (1.27.7)
+  * kubectl.1.28 (1.28.3)
+*  Added `--labels` flag to `gcloud container clusters create-auto` to enable applying labels on Autopilot clusters at creation time.
+
+### Looker
+
+*   Added `gcloud looker regions list` which displays all available
+    regions to deploy a Looker instance.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 453.0.0 (2023-10-31)
 
 ### Breaking Changes

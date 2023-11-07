@@ -431,8 +431,8 @@ class GoogleAppsScriptTypeLinkPreviewExtensionPoint(_messages.Message):
       separated by a hyphen `-`. For example, `en-US`. If a user's locale is
       present in the map's keys, the user sees the localized version of the
       `labelText`.
-    logoUrl: Optional. The icon that displays in the smart chip. If omitted,
-      the chip uses your add-on's toolbar icon,
+    logoUrl: Optional. The icon that displays in the smart chip and preview
+      card. If omitted, the add-on uses its toolbar icon,
       [`logoUrl`](https://developers.google.com/workspace/add-ons/reference/re
       st/v1/projects.deployments#CommonAddOnManifest.FIELDS.logoUrl).
     patterns: Required. An array of URL patterns that trigger the add-on to

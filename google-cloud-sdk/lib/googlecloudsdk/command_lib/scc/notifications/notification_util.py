@@ -15,12 +15,8 @@
 
 """Shared util methods common to Notification commands."""
 import re
-from googlecloudsdk.command_lib.scc.util import GetParentFromNamedArguments
-from googlecloudsdk.core import exceptions as core_exceptions
-
-
-class InvalidNotificationConfigError(core_exceptions.Error):
-  """Exception raised for errors in the input."""
+from googlecloudsdk.command_lib.scc import errors
+from googlecloudsdk.command_lib.scc import util
 
 
 def GetNotificationConfigName(args):
@@ -29,38 +25,50 @@ def GetNotificationConfigName(args):
       "(organizations|projects|folders)/.+/notificationConfigs/[a-zA-Z0-9-_]{1,128}$"
   )
   id_pattern = re.compile("[a-zA-Z0-9-_]{1,128}$")
-
+  notification_config_id = args.NOTIFICATIONCONFIGID
   if not resource_pattern.match(
-      args.NOTIFICATIONCONFIGID
-  ) and not id_pattern.match(args.NOTIFICATIONCONFIGID):
-    raise InvalidNotificationConfigError(
+      notification_config_id
+  ) and not id_pattern.match(notification_config_id):
+    raise errors.InvalidNotificationConfigError(
         "NotificationConfig must match either (organizations|projects|folders)/"
         ".+/notificationConfigs/[a-zA-Z0-9-_]{1,128})$ or "
         "[a-zA-Z0-9-_]{1,128}$."
     )
 
-  if resource_pattern.match(args.NOTIFICATIONCONFIGID):
+  if resource_pattern.match(notification_config_id):
     # Handle config id as full resource name
-    return args.NOTIFICATIONCONFIGID
+    return notification_config_id
 
   return (
-      GetParentFromNamedArguments(args)
+      util.GetParentFromNamedArguments(args)
       + "/notificationConfigs/"
-      + args.NOTIFICATIONCONFIGID
+      + notification_config_id
   )
+
+
+def GetParentFromResourceName(resource_name):
+  resource_pattern = re.compile("(organizations|projects|folders)/.*")
+  if not resource_pattern.match(resource_name):
+    raise errors.InvalidSCCInputError(
+        "When providing a full resource path, it must also include the pattern "
+        "the organization, project, or folder prefix."
+    )
+  list_organization_components = resource_name.split("/")
+  return list_organization_components[0] + "/" + list_organization_components[1]
 
 
 def ValidateMutexOnConfigIdAndParent(args, parent):
   """Validates that only a full resource name or split arguments are provided."""
-  if "/" in args.NOTIFICATIONCONFIGID:
+  notification_config_id = args.NOTIFICATIONCONFIGID
+  if "/" in notification_config_id:
     if parent is not None:
-      raise InvalidNotificationConfigError(
+      raise errors.InvalidNotificationConfigError(
           "Only provide a full resource name "
           "(organizations/123/notificationConfigs/test-config) "
           "or an --(organization|folder|project) flag, not both."
       )
   elif parent is None:
-    raise InvalidNotificationConfigError(
+    raise errors.InvalidNotificationConfigError(
         "A corresponding parent by a --(organization|folder|project) flag must "
         "be provided if it is not included in notification ID."
     )

@@ -353,8 +353,7 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Consumer(_messages.Message):
-  r"""Contains information of the customer's network configurations.Next
-  available ID: 5
+  r"""Contains information of the customer's network configurations.
 
   Fields:
     endpointLocation: Output only. The location of the endpoint URI. Format:
@@ -373,6 +372,19 @@ class Consumer(_messages.Message):
   endpointLocation = _messages.StringField(1)
   endpointUri = _messages.StringField(2)
   subnetwork = _messages.StringField(3)
+
+
+class DataCatalogConfig(_messages.Message):
+  r"""Specifies how metastore metadata should be integrated with the Data
+  Catalog service.
+
+  Fields:
+    enabled: Optional. Defines whether the metastore metadata should be synced
+      to Data Catalog. The default value is to disable syncing metastore
+      metadata to Data Catalog.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class DatabaseDump(_messages.Message):
@@ -1025,13 +1037,16 @@ class LocationMetadata(_messages.Message):
   r"""Metadata about the service in a location.
 
   Fields:
+    multiRegionMetadata: The multi-region metadata if the current region is a
+      multi-region.
     supportedHiveMetastoreVersions: The versions of Hive Metastore that can be
       used when creating a new metastore service in this location. The server
       guarantees that exactly one HiveMetastoreVersion in the list will set
       is_default.
   """
 
-  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 1, repeated=True)
+  multiRegionMetadata = _messages.MessageField('MultiRegionMetadata', 1)
+  supportedHiveMetastoreVersions = _messages.MessageField('HiveMetastoreVersion', 2, repeated=True)
 
 
 class MaintenanceWindow(_messages.Message):
@@ -1170,6 +1185,18 @@ class MetadataImport(_messages.Message):
   name = _messages.StringField(5)
   state = _messages.EnumField('StateValueValuesEnum', 6)
   updateTime = _messages.StringField(7)
+
+
+class MetadataIntegration(_messages.Message):
+  r"""Specifies how metastore metadata should be integrated with external
+  services.
+
+  Fields:
+    dataCatalogConfig: Optional. The integration config for the Data Catalog
+      service.
+  """
+
+  dataCatalogConfig = _messages.MessageField('DataCatalogConfig', 1)
 
 
 class MetadataManagementActivity(_messages.Message):
@@ -1968,9 +1995,20 @@ class MoveTableToDatabaseResponse(_messages.Message):
   r"""Response message for DataprocMetastore.MoveTableToDatabase."""
 
 
+class MultiRegionMetadata(_messages.Message):
+  r"""The metadata for the multi-region that includes the constituent regions.
+  The metadata is only populated if the region is multi-region. For single
+  region, it will be empty.
+
+  Fields:
+    constituentRegions: The regions constituting the multi-region.
+  """
+
+  constituentRegions = _messages.StringField(1, repeated=True)
+
+
 class NetworkConfig(_messages.Message):
-  r"""Network configuration for the Dataproc Metastore service.Next available
-  ID: 4
+  r"""Network configuration for the Dataproc Metastore service.
 
   Fields:
     consumers: Immutable. The consumer-side network configuration for the
@@ -2395,6 +2433,8 @@ class Service(_messages.Message):
       service. This specifies when the service can be restarted for
       maintenance purposes in UTC time. Maintenance window is not needed for
       services with the SPANNER database type.
+    metadataIntegration: Optional. The setting that defines how metastore
+      metadata should be integrated with external services and systems.
     metadataManagementActivity: Output only. The metadata management
       activities of the metastore service.
     name: Immutable. The relative resource name of the metastore service, in
@@ -2526,19 +2566,20 @@ class Service(_messages.Message):
   hiveMetastoreConfig = _messages.MessageField('HiveMetastoreConfig', 6)
   labels = _messages.MessageField('LabelsValue', 7)
   maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
-  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  networkConfig = _messages.MessageField('NetworkConfig', 12)
-  port = _messages.IntegerField(13, variant=_messages.Variant.INT32)
-  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 14)
-  scalingConfig = _messages.MessageField('ScalingConfig', 15)
-  state = _messages.EnumField('StateValueValuesEnum', 16)
-  stateMessage = _messages.StringField(17)
-  telemetryConfig = _messages.MessageField('TelemetryConfig', 18)
-  tier = _messages.EnumField('TierValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
+  metadataIntegration = _messages.MessageField('MetadataIntegration', 9)
+  metadataManagementActivity = _messages.MessageField('MetadataManagementActivity', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  networkConfig = _messages.MessageField('NetworkConfig', 13)
+  port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
+  releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 15)
+  scalingConfig = _messages.MessageField('ScalingConfig', 16)
+  state = _messages.EnumField('StateValueValuesEnum', 17)
+  stateMessage = _messages.StringField(18)
+  telemetryConfig = _messages.MessageField('TelemetryConfig', 19)
+  tier = _messages.EnumField('TierValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class SetIamPolicyRequest(_messages.Message):

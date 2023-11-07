@@ -26,6 +26,8 @@ from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
 
 
+PULL_RPC_DEADLINE_SECONDS = '20'
+SERVER_TIMEOUT_HEADER = 'X-Server-Timeout'
 DEFAULT_MESSAGE_RETENTION_VALUE = 'default'
 NEVER_EXPIRATION_PERIOD_VALUE = 'never'
 CLEAR_DEAD_LETTER_VALUE = 'clear'
@@ -289,7 +291,12 @@ class SubscriptionsClient(object):
         pullRequest=self.messages.PullRequest(
             maxMessages=max_messages, returnImmediately=return_immediately),
         subscription=subscription_ref.RelativeName())
-    return self._service.Pull(pull_req)
+    self.client.additional_http_headers[SERVER_TIMEOUT_HEADER] = (
+        PULL_RPC_DEADLINE_SECONDS
+    )
+    pull_resp = self._service.Pull(pull_req)
+    del self.client.additional_http_headers[SERVER_TIMEOUT_HEADER]
+    return pull_resp
 
   def Seek(self, subscription_ref, time=None, snapshot_ref=None):
     """Reset a Subscription's backlog to point to a given time or snapshot.

@@ -798,6 +798,23 @@ class AiplatformProjectsLocationsEndpointsRawPredictRequest(_messages.Message):
   googleCloudAiplatformV1RawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1RawPredictRequest', 2)
 
 
+class AiplatformProjectsLocationsEndpointsServerStreamingPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsServerStreamingPredictRequest
+  object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1StreamingPredictRequest: A
+      GoogleCloudAiplatformV1StreamingPredictRequest resource to be passed as
+      the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1StreamingPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1StreamingPredictRequest', 2)
+
+
 class AiplatformProjectsLocationsEndpointsUndeployModelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsUndeployModelRequest object.
 
@@ -3135,6 +3152,198 @@ class AiplatformProjectsLocationsNasJobsNasTrialDetailsListRequest(_messages.Mes
   parent = _messages.StringField(3, required=True)
 
 
+class AiplatformProjectsLocationsNotebookRuntimeTemplatesCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimeTemplatesCreateRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1NotebookRuntimeTemplate: A
+      GoogleCloudAiplatformV1NotebookRuntimeTemplate resource to be passed as
+      the request body.
+    notebookRuntimeTemplateId: Optional. User specified ID for the notebook
+      runtime template.
+    parent: Required. The resource name of the Location to create the
+      NotebookRuntimeTemplate. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1NotebookRuntimeTemplate = _messages.MessageField('GoogleCloudAiplatformV1NotebookRuntimeTemplate', 1)
+  notebookRuntimeTemplateId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimeTemplatesDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimeTemplatesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the NotebookRuntimeTemplate resource to be
+      deleted. Format: `projects/{project}/locations/{location}/notebookRuntim
+      eTemplates/{notebook_runtime_template}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimeTemplatesGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimeTemplatesGetRequest object.
+
+  Fields:
+    name: Required. The name of the NotebookRuntimeTemplate resource. Format:
+      `projects/{project}/locations/{location}/notebookRuntimeTemplates/{noteb
+      ook_runtime_template}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimeTemplatesListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimeTemplatesListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      For field names both snake_case and camelCase are supported. *
+      `notebookRuntimeTemplate` supports = and !=. `notebookRuntimeTemplate`
+      represents the NotebookRuntimeTemplate ID, i.e. the last segment of the
+      NotebookRuntimeTemplate's resource name. * `display_name` supports = and
+      != * `labels` supports general map functions that is: *
+      `labels.key=value` - key:value equality * `labels.key:* or labels:key -
+      key existence * A key including a space must be quoted. `labels."a
+      key"`. * `notebookRuntimeType` supports = and !=. notebookRuntimeType
+      enum: [USER_DEFINED, ONE_CLICK]. Some examples: *
+      `notebookRuntimeTemplate=notebookRuntimeTemplate123` *
+      `displayName="myDisplayName"` * `labels.myKey="myValue"` *
+      `notebookRuntimeType=USER_DEFINED`
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending. Supported
+      fields: * `display_name` * `create_time` * `update_time` Example:
+      `display_name, create_time desc`.
+    pageSize: Optional. The standard list page size.
+    pageToken: Optional. The standard list page token. Typically obtained via
+      ListNotebookRuntimeTemplatesResponse.next_page_token of the previous
+      NotebookService.ListNotebookRuntimeTemplates call.
+    parent: Required. The resource name of the Location from which to list the
+      NotebookRuntimeTemplates. Format:
+      `projects/{project}/locations/{location}`
+    readMask: Optional. Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
+
+
+class AiplatformProjectsLocationsNotebookRuntimesAssignRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimesAssignRequest object.
+
+  Fields:
+    googleCloudAiplatformV1AssignNotebookRuntimeRequest: A
+      GoogleCloudAiplatformV1AssignNotebookRuntimeRequest resource to be
+      passed as the request body.
+    parent: Required. The resource name of the Location to get the
+      NotebookRuntime assignment. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1AssignNotebookRuntimeRequest = _messages.MessageField('GoogleCloudAiplatformV1AssignNotebookRuntimeRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimesDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimesDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the NotebookRuntime resource to be deleted.
+      Instead of checking whether the name is in valid NotebookRuntime
+      resource name format, directly throw NotFound exception if there is no
+      such NotebookRuntime in spanner.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimesGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimesGetRequest object.
+
+  Fields:
+    name: Required. The name of the NotebookRuntime resource. Instead of
+      checking whether the name is in valid NotebookRuntime resource name
+      format, directly throw NotFound exception if there is no such
+      NotebookRuntime in spanner.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsNotebookRuntimesListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimesListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      For field names both snake_case and camelCase are supported. *
+      `notebookRuntime` supports = and !=. `notebookRuntime` represents the
+      NotebookRuntime ID, i.e. the last segment of the NotebookRuntime's
+      resource name. * `displayName` supports = and != and regex. *
+      `notebookRuntimeTemplate` supports = and !=. `notebookRuntimeTemplate`
+      represents the NotebookRuntimeTemplate ID, i.e. the last segment of the
+      NotebookRuntimeTemplate's resource name. * `healthState` supports = and
+      !=. healthState enum: [HEALTHY, UNHEALTHY, HEALTH_STATE_UNSPECIFIED]. *
+      `runtimeState` supports = and !=. runtimeState enum:
+      [RUNTIME_STATE_UNSPECIFIED, RUNNING, BEING_STARTED, BEING_STOPPED,
+      STOPPED, BEING_UPGRADED]. * `runtimeUser` supports = and !=. * API
+      version is UI only: `uiState` supports = and !=. uiState enum:
+      [UI_RESOURCE_STATE_UNSPECIFIED, UI_RESOURCE_STATE_BEING_CREATED,
+      UI_RESOURCE_STATE_ACTIVE, UI_RESOURCE_STATE_BEING_DELETED,
+      UI_RESOURCE_STATE_CREATION_FAILED]. * `notebookRuntimeType` supports =
+      and !=. notebookRuntimeType enum: [USER_DEFINED, ONE_CLICK]. Some
+      examples: * `notebookRuntime="notebookRuntime123"` *
+      `displayName="myDisplayName"` and `displayName=~"myDisplayNameRegex"` *
+      `notebookRuntimeTemplate="notebookRuntimeTemplate321"` *
+      `healthState=HEALTHY` * `runtimeState=RUNNING` *
+      `runtimeUser="test@google.com"` *
+      `uiState=UI_RESOURCE_STATE_BEING_DELETED` *
+      `notebookRuntimeType=USER_DEFINED`
+    orderBy: Optional. A comma-separated list of fields to order by, sorted in
+      ascending order. Use "desc" after a field name for descending. Supported
+      fields: * `display_name` * `create_time` * `update_time` Example:
+      `display_name, create_time desc`.
+    pageSize: Optional. The standard list page size.
+    pageToken: Optional. The standard list page token. Typically obtained via
+      ListNotebookRuntimesResponse.next_page_token of the previous
+      NotebookService.ListNotebookRuntimes call.
+    parent: Required. The resource name of the Location from which to list the
+      NotebookRuntimes. Format: `projects/{project}/locations/{location}`
+    readMask: Optional. Mask specifying which fields to read.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+  readMask = _messages.StringField(6)
+
+
+class AiplatformProjectsLocationsNotebookRuntimesStartRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsNotebookRuntimesStartRequest object.
+
+  Fields:
+    googleCloudAiplatformV1StartNotebookRuntimeRequest: A
+      GoogleCloudAiplatformV1StartNotebookRuntimeRequest resource to be passed
+      as the request body.
+    name: Required. The name of the NotebookRuntime resource to be started.
+      Instead of checking whether the name is in valid NotebookRuntime
+      resource name format, directly throw NotFound exception if there is no
+      such NotebookRuntime in spanner.
+  """
+
+  googleCloudAiplatformV1StartNotebookRuntimeRequest = _messages.MessageField('GoogleCloudAiplatformV1StartNotebookRuntimeRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsOperationsCancelRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsOperationsCancelRequest object.
 
@@ -3336,6 +3545,24 @@ class AiplatformProjectsLocationsPublishersModelsRawPredictRequest(_messages.Mes
 
   endpoint = _messages.StringField(1, required=True)
   googleCloudAiplatformV1RawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1RawPredictRequest', 2)
+
+
+class AiplatformProjectsLocationsPublishersModelsServerStreamingPredictRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsPublishersModelsServerStreamingPredictRequest
+  object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1StreamingPredictRequest: A
+      GoogleCloudAiplatformV1StreamingPredictRequest resource to be passed as
+      the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1StreamingPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1StreamingPredictRequest', 2)
 
 
 class AiplatformProjectsLocationsSchedulesCreateRequest(_messages.Message):
@@ -4797,6 +5024,36 @@ class GoogleCloudAiplatformV1Artifact(_messages.Message):
   uri = _messages.StringField(12)
 
 
+class GoogleCloudAiplatformV1AssignNotebookRuntimeOperationMetadata(_messages.Message):
+  r"""Metadata information for NotebookService.AssignNotebookRuntime.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    progressMessage: A human-readable message that shows the intermediate
+      progress details of NotebookRuntime.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+  progressMessage = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1AssignNotebookRuntimeRequest(_messages.Message):
+  r"""Request message for NotebookService.AssignNotebookRuntime.
+
+  Fields:
+    notebookRuntime: Required. Provide runtime specific information (e.g.
+      runtime owner, notebook id) used for NotebookRuntime assignment.
+    notebookRuntimeId: Optional. User specified ID for the notebook runtime.
+    notebookRuntimeTemplate: Required. The resource name of the
+      NotebookRuntimeTemplate based on which a NotebookRuntime will be
+      assigned (reuse or create a new one).
+  """
+
+  notebookRuntime = _messages.MessageField('GoogleCloudAiplatformV1NotebookRuntime', 1)
+  notebookRuntimeId = _messages.StringField(2)
+  notebookRuntimeTemplate = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1Attribution(_messages.Message):
   r"""Attribution that explains a particular prediction output.
 
@@ -6027,6 +6284,16 @@ class GoogleCloudAiplatformV1CreateMetadataStoreOperationMetadata(_messages.Mess
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1CreateNotebookRuntimeTemplateOperationMetadata(_messages.Message):
+  r"""Metadata information for NotebookService.CreateNotebookRuntimeTemplate.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1CreatePipelineJobRequest(_messages.Message):
   r"""Request message for PipelineService.CreatePipelineJob.
 
@@ -7100,16 +7367,16 @@ class GoogleCloudAiplatformV1DeployedIndex(_messages.Message):
     createTime: Output only. Timestamp when the DeployedIndex was created.
     dedicatedResources: Optional. A description of resources that are
       dedicated to the DeployedIndex, and that need a higher degree of manual
-      configuration. If min_replica_count is not set, the default value is 2
-      (we don't provide SLA when min_replica_count=1). If max_replica_count is
-      not set, the default value is min_replica_count. The max allowed replica
-      count is 1000. Available machine types for SMALL shard: e2-standard-2
-      and all machine types available for MEDIUM and LARGE shard. Available
-      machine types for MEDIUM shard: e2-standard-16 and all machine types
-      available for LARGE shard. Available machine types for LARGE shard:
-      e2-highmem-16, n2d-standard-32. n1-standard-16 and n1-standard-32 are
-      still available, but we recommend e2-standard-16 and e2-highmem-16 for
-      cost efficiency.
+      configuration. The field min_replica_count must be set to a value
+      strictly greater than 0, or else validation will fail. We don't provide
+      SLA when min_replica_count=1. If max_replica_count is not set, the
+      default value is min_replica_count. The max allowed replica count is
+      1000. Available machine types for SMALL shard: e2-standard-2 and all
+      machine types available for MEDIUM and LARGE shard. Available machine
+      types for MEDIUM shard: e2-standard-16 and all machine types available
+      for LARGE shard. Available machine types for LARGE shard: e2-highmem-16,
+      n2d-standard-32. n1-standard-16 and n1-standard-32 are still available,
+      but we recommend e2-standard-16 and e2-highmem-16 for cost efficiency.
     deployedIndexAuthConfig: Optional. If set, the authentication is enabled
       for the private endpoint.
     deploymentGroup: Optional. The deployment group can be no longer than 64
@@ -10843,6 +11110,33 @@ class GoogleCloudAiplatformV1ListNasTrialDetailsResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1ListNotebookRuntimeTemplatesResponse(_messages.Message):
+  r"""Response message for NotebookService.ListNotebookRuntimeTemplates.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass to
+      ListNotebookRuntimeTemplatesRequest.page_token to obtain that page.
+    notebookRuntimeTemplates: List of NotebookRuntimeTemplates in the
+      requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  notebookRuntimeTemplates = _messages.MessageField('GoogleCloudAiplatformV1NotebookRuntimeTemplate', 2, repeated=True)
+
+
+class GoogleCloudAiplatformV1ListNotebookRuntimesResponse(_messages.Message):
+  r"""Response message for NotebookService.ListNotebookRuntimes.
+
+  Fields:
+    nextPageToken: A token to retrieve next page of results. Pass to
+      ListNotebookRuntimesRequest.page_token to obtain that page.
+    notebookRuntimes: List of NotebookRuntimes in the requested page.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  notebookRuntimes = _messages.MessageField('GoogleCloudAiplatformV1NotebookRuntime', 2, repeated=True)
+
+
 class GoogleCloudAiplatformV1ListOptimalTrialsRequest(_messages.Message):
   r"""Request message for VizierService.ListOptimalTrials."""
 
@@ -13304,6 +13598,25 @@ class GoogleCloudAiplatformV1Neighbor(_messages.Message):
   neighborId = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1NetworkSpec(_messages.Message):
+  r"""Network spec.
+
+  Fields:
+    enableInternetAccess: Whether to enable public internet access. Default
+      false.
+    network: The full name of the Google Compute Engine
+      [network](https://cloud.google.com//compute/docs/networks-and-
+      firewalls#networks)
+    subnetwork: The name of the subnet that this instance is in. Format: `proj
+      ects/{project_id_or_number}/regions/{region}/subnetworks/{subnetwork_id}
+      `
+  """
+
+  enableInternetAccess = _messages.BooleanField(1)
+  network = _messages.StringField(2)
+  subnetwork = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1NfsMount(_messages.Message):
   r"""Represents a mount configuration for Network File System (NFS) to mount.
 
@@ -13321,12 +13634,362 @@ class GoogleCloudAiplatformV1NfsMount(_messages.Message):
   server = _messages.StringField(3)
 
 
+class GoogleCloudAiplatformV1NotebookEucConfig(_messages.Message):
+  r"""The euc configuration of NotebookRuntimeTemplate.
+
+  Fields:
+    bypassActasCheck: Output only. Whether ActAs check is bypassed for service
+      account attached to the VM. If false, we need ActAs check for the
+      default Compute Engine Service account. When a Runtime is created, a VM
+      is allocated using Default Compute Engine Service Account. Any user
+      requesting to use this Runtime requires Service Account User (ActAs)
+      permission over this SA. If true, Runtime owner is using EUC and does
+      not require the above permission as VM no longer use default Compute
+      Engine SA, but a P4SA.
+    eucDisabled: Input only. Whether EUC is disabled in this
+      NotebookRuntimeTemplate. In proto3, the default value of a boolean is
+      false. In this way, by default EUC will be enabled for
+      NotebookRuntimeTemplate.
+  """
+
+  bypassActasCheck = _messages.BooleanField(1)
+  eucDisabled = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1NotebookIdleShutdownConfig(_messages.Message):
+  r"""The idle shutdown configuration of NotebookRuntimeTemplate, which
+  contains the idle_timeout as required field.
+
+  Fields:
+    idleShutdownDisabled: Whether Idle Shutdown is disabled in this
+      NotebookRuntimeTemplate.
+    idleTimeout: Required. Duration is accurate to the second. In Notebook,
+      Idle Timeout is accurate to minute so the range of idle_timeout (second)
+      is: 10 * 60 ~ 1440 * 60.
+  """
+
+  idleShutdownDisabled = _messages.BooleanField(1)
+  idleTimeout = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1NotebookRuntime(_messages.Message):
+  r"""A runtime is a virtual machine allocated to a particular user for a
+  particular Notebook file on temporary basis with lifetime limited to 24
+  hours.
+
+  Enums:
+    HealthStateValueValuesEnum: Output only. The health state of the
+      NotebookRuntime.
+    NotebookRuntimeTypeValueValuesEnum: Output only. The type of the notebook
+      runtime.
+    RuntimeStateValueValuesEnum: Output only. The runtime (instance) state of
+      the NotebookRuntime.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize your
+      NotebookRuntime. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one
+      NotebookRuntime (System labels are excluded). See https://goo.gl/xmQnxf
+      for more information and examples of labels. System reserved label keys
+      are prefixed with "aiplatform.googleapis.com/" and are immutable.
+      Following system labels exist for NotebookRuntime: *
+      "aiplatform.googleapis.com/notebook_runtime_gce_instance_id": output
+      only, its value is the Compute Engine instance id. *
+      "aiplatform.googleapis.com/colab_enterprise_entry_service": its value is
+      either "bigquery" or "vertex"; if absent, it should be "vertex". This is
+      to describe the entry service, either BigQuery or Vertex.
+
+  Fields:
+    createTime: Output only. Timestamp when this NotebookRuntime was created.
+    description: The description of the NotebookRuntime.
+    displayName: Required. The display name of the NotebookRuntime. The name
+      can be up to 128 characters long and can consist of any UTF-8
+      characters.
+    expirationTime: Output only. Timestamp when this NotebookRuntime will be
+      expired: 1. System Predefined NotebookRuntime: 24 hours after creation.
+      After expiration, system predifined runtime will be deleted. 2. User
+      created NotebookRuntime: 6 months after last upgrade. After expiration,
+      user created runtime will be stopped and allowed for upgrade.
+    healthState: Output only. The health state of the NotebookRuntime.
+    labels: The labels with user-defined metadata to organize your
+      NotebookRuntime. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. No more than 64 user labels can be associated with one
+      NotebookRuntime (System labels are excluded). See https://goo.gl/xmQnxf
+      for more information and examples of labels. System reserved label keys
+      are prefixed with "aiplatform.googleapis.com/" and are immutable.
+      Following system labels exist for NotebookRuntime: *
+      "aiplatform.googleapis.com/notebook_runtime_gce_instance_id": output
+      only, its value is the Compute Engine instance id. *
+      "aiplatform.googleapis.com/colab_enterprise_entry_service": its value is
+      either "bigquery" or "vertex"; if absent, it should be "vertex". This is
+      to describe the entry service, either BigQuery or Vertex.
+    name: Output only. The resource name of the NotebookRuntime.
+    notebookRuntimeTemplateRef: Output only. The pointer to
+      NotebookRuntimeTemplate this NotebookRuntime is created from.
+    notebookRuntimeType: Output only. The type of the notebook runtime.
+    proxyUri: Output only. The proxy endpoint used to access the
+      NotebookRuntime.
+    runtimeState: Output only. The runtime (instance) state of the
+      NotebookRuntime.
+    runtimeUser: Required. The user email of the NotebookRuntime.
+    serviceAccount: Output only. The service account that the NotebookRuntime
+      workload runs as.
+    updateTime: Output only. Timestamp when this NotebookRuntime was most
+      recently updated.
+    version: Output only. The VM os image version of NotebookRuntime.
+  """
+
+  class HealthStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The health state of the NotebookRuntime.
+
+    Values:
+      HEALTH_STATE_UNSPECIFIED: Unspecified health state.
+      HEALTHY: NotebookRuntime is in healthy state. Applies to ACTIVE state.
+      UNHEALTHY: NotebookRuntime is in unhealthy state. Applies to ACTIVE
+        state.
+    """
+    HEALTH_STATE_UNSPECIFIED = 0
+    HEALTHY = 1
+    UNHEALTHY = 2
+
+  class NotebookRuntimeTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of the notebook runtime.
+
+    Values:
+      NOTEBOOK_RUNTIME_TYPE_UNSPECIFIED: Unspecified notebook runtime type,
+        NotebookRuntimeType will default to USER_DEFINED.
+      USER_DEFINED: runtime or template with coustomized configurations from
+        user.
+      ONE_CLICK: runtime or template with system defined configurations.
+    """
+    NOTEBOOK_RUNTIME_TYPE_UNSPECIFIED = 0
+    USER_DEFINED = 1
+    ONE_CLICK = 2
+
+  class RuntimeStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The runtime (instance) state of the NotebookRuntime.
+
+    Values:
+      RUNTIME_STATE_UNSPECIFIED: Unspecified runtime state.
+      RUNNING: NotebookRuntime is in running state.
+      BEING_STARTED: NotebookRuntime is in starting state.
+      BEING_STOPPED: NotebookRuntime is in stopping state.
+      STOPPED: NotebookRuntime is in stopped state.
+      BEING_UPGRADED: NotebookRuntime is in upgrading state. It is in the
+        middle of upgrading process.
+    """
+    RUNTIME_STATE_UNSPECIFIED = 0
+    RUNNING = 1
+    BEING_STARTED = 2
+    BEING_STOPPED = 3
+    STOPPED = 4
+    BEING_UPGRADED = 5
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize your
+    NotebookRuntime. Label keys and values can be no longer than 64 characters
+    (Unicode codepoints), can only contain lowercase letters, numeric
+    characters, underscores and dashes. International characters are allowed.
+    No more than 64 user labels can be associated with one NotebookRuntime
+    (System labels are excluded). See https://goo.gl/xmQnxf for more
+    information and examples of labels. System reserved label keys are
+    prefixed with "aiplatform.googleapis.com/" and are immutable. Following
+    system labels exist for NotebookRuntime: *
+    "aiplatform.googleapis.com/notebook_runtime_gce_instance_id": output only,
+    its value is the Compute Engine instance id. *
+    "aiplatform.googleapis.com/colab_enterprise_entry_service": its value is
+    either "bigquery" or "vertex"; if absent, it should be "vertex". This is
+    to describe the entry service, either BigQuery or Vertex.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  expirationTime = _messages.StringField(4)
+  healthState = _messages.EnumField('HealthStateValueValuesEnum', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  notebookRuntimeTemplateRef = _messages.MessageField('GoogleCloudAiplatformV1NotebookRuntimeTemplateRef', 8)
+  notebookRuntimeType = _messages.EnumField('NotebookRuntimeTypeValueValuesEnum', 9)
+  proxyUri = _messages.StringField(10)
+  runtimeState = _messages.EnumField('RuntimeStateValueValuesEnum', 11)
+  runtimeUser = _messages.StringField(12)
+  serviceAccount = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+  version = _messages.StringField(15)
+
+
+class GoogleCloudAiplatformV1NotebookRuntimeTemplate(_messages.Message):
+  r"""A template that specifies runtime configurations such as machine type,
+  runtime version, network configurations, etc. Multiple runtimes can be
+  created from a runtime template.
+
+  Enums:
+    NotebookRuntimeTypeValueValuesEnum: Optional. Immutable. The type of the
+      notebook runtime template.
+
+  Messages:
+    LabelsValue: The labels with user-defined metadata to organize the
+      NotebookRuntimeTemplates. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+
+  Fields:
+    createTime: Output only. Timestamp when this NotebookRuntimeTemplate was
+      created.
+    dataPersistentDiskSpec: Optional. The specification of persistent disk
+      attached to the runtime as data disk storage.
+    description: The description of the NotebookRuntimeTemplate.
+    displayName: Required. The display name of the NotebookRuntimeTemplate.
+      The name can be up to 128 characters long and can consist of any UTF-8
+      characters.
+    etag: Used to perform consistent read-modify-write updates. If not set, a
+      blind "overwrite" update happens.
+    eucConfig: EUC configuration of the NotebookRuntimeTemplate.
+    idleShutdownConfig: The idle shutdown configuration of
+      NotebookRuntimeTemplate. This config will only be set when idle shutdown
+      is enabled.
+    isDefault: Output only. The default template to use if not specified.
+    labels: The labels with user-defined metadata to organize the
+      NotebookRuntimeTemplates. Label keys and values can be no longer than 64
+      characters (Unicode codepoints), can only contain lowercase letters,
+      numeric characters, underscores and dashes. International characters are
+      allowed. See https://goo.gl/xmQnxf for more information and examples of
+      labels.
+    machineSpec: Optional. Immutable. The specification of a single machine
+      for the template.
+    name: Output only. The resource name of the NotebookRuntimeTemplate.
+    networkSpec: Optional. Network spec.
+    notebookRuntimeType: Optional. Immutable. The type of the notebook runtime
+      template.
+    serviceAccount: The service account that the runtime workload runs as. You
+      can use any service account within the same project, but you must have
+      the service account user permission to use the instance. If not
+      specified, the [Compute Engine default service
+      account](https://cloud.google.com/compute/docs/access/service-
+      accounts#default_service_account) is used.
+    updateTime: Output only. Timestamp when this NotebookRuntimeTemplate was
+      most recently updated.
+  """
+
+  class NotebookRuntimeTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Immutable. The type of the notebook runtime template.
+
+    Values:
+      NOTEBOOK_RUNTIME_TYPE_UNSPECIFIED: Unspecified notebook runtime type,
+        NotebookRuntimeType will default to USER_DEFINED.
+      USER_DEFINED: runtime or template with coustomized configurations from
+        user.
+      ONE_CLICK: runtime or template with system defined configurations.
+    """
+    NOTEBOOK_RUNTIME_TYPE_UNSPECIFIED = 0
+    USER_DEFINED = 1
+    ONE_CLICK = 2
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""The labels with user-defined metadata to organize the
+    NotebookRuntimeTemplates. Label keys and values can be no longer than 64
+    characters (Unicode codepoints), can only contain lowercase letters,
+    numeric characters, underscores and dashes. International characters are
+    allowed. See https://goo.gl/xmQnxf for more information and examples of
+    labels.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  dataPersistentDiskSpec = _messages.MessageField('GoogleCloudAiplatformV1PersistentDiskSpec', 2)
+  description = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  etag = _messages.StringField(5)
+  eucConfig = _messages.MessageField('GoogleCloudAiplatformV1NotebookEucConfig', 6)
+  idleShutdownConfig = _messages.MessageField('GoogleCloudAiplatformV1NotebookIdleShutdownConfig', 7)
+  isDefault = _messages.BooleanField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  machineSpec = _messages.MessageField('GoogleCloudAiplatformV1MachineSpec', 10)
+  name = _messages.StringField(11)
+  networkSpec = _messages.MessageField('GoogleCloudAiplatformV1NetworkSpec', 12)
+  notebookRuntimeType = _messages.EnumField('NotebookRuntimeTypeValueValuesEnum', 13)
+  serviceAccount = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+
+
+class GoogleCloudAiplatformV1NotebookRuntimeTemplateRef(_messages.Message):
+  r"""Points to a NotebookRuntimeTemplateRef.
+
+  Fields:
+    notebookRuntimeTemplate: Immutable. A resource name of the
+      NotebookRuntimeTemplate.
+  """
+
+  notebookRuntimeTemplate = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1PauseModelDeploymentMonitoringJobRequest(_messages.Message):
   r"""Request message for JobService.PauseModelDeploymentMonitoringJob."""
 
 
 class GoogleCloudAiplatformV1PauseScheduleRequest(_messages.Message):
   r"""Request message for ScheduleService.PauseSchedule."""
+
+
+class GoogleCloudAiplatformV1PersistentDiskSpec(_messages.Message):
+  r"""Represents the spec of persistent disk options.
+
+  Fields:
+    diskSizeGb: Size in GB of the disk (default is 100GB).
+    diskType: Type of the disk (default is "pd-standard"). Valid values: "pd-
+      ssd" (Persistent Disk Solid State Drive) "pd-standard" (Persistent Disk
+      Hard Disk Drive) "pd-balanced" (Balanced Persistent Disk) "pd-extreme"
+      (Extreme Persistent Disk)
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  diskType = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1PipelineJob(_messages.Message):
@@ -17833,6 +18496,23 @@ class GoogleCloudAiplatformV1SpecialistPool(_messages.Message):
   specialistWorkerEmails = _messages.StringField(6, repeated=True)
 
 
+class GoogleCloudAiplatformV1StartNotebookRuntimeOperationMetadata(_messages.Message):
+  r"""Metadata information for NotebookService.StartNotebookRuntime.
+
+  Fields:
+    genericMetadata: The operation generic information.
+    progressMessage: A human-readable message that shows the intermediate
+      progress details of NotebookRuntime.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+  progressMessage = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1StartNotebookRuntimeRequest(_messages.Message):
+  r"""Request message for NotebookService.StartNotebookRuntime."""
+
+
 class GoogleCloudAiplatformV1StopTrialRequest(_messages.Message):
   r"""Request message for VizierService.StopTrial."""
 
@@ -17869,6 +18549,32 @@ class GoogleCloudAiplatformV1StratifiedSplit(_messages.Message):
   validationFraction = _messages.FloatField(4)
 
 
+class GoogleCloudAiplatformV1StreamingPredictRequest(_messages.Message):
+  r"""Request message for PredictionService.StreamingPredict. The first
+  message must contain endpoint field and optionally input. The subsequent
+  messages must contain input.
+
+  Fields:
+    inputs: The prediction input.
+    parameters: The parameters that govern the prediction.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 1, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 2)
+
+
+class GoogleCloudAiplatformV1StreamingPredictResponse(_messages.Message):
+  r"""Response message for PredictionService.StreamingPredict.
+
+  Fields:
+    outputs: The prediction output.
+    parameters: The parameters that govern the prediction.
+  """
+
+  outputs = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 1, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 2)
+
+
 class GoogleCloudAiplatformV1StreamingReadFeatureValuesRequest(_messages.Message):
   r"""Request message for
   FeaturestoreOnlineServingService.StreamingFeatureValuesRead.
@@ -17896,7 +18602,7 @@ class GoogleCloudAiplatformV1StringArray(_messages.Message):
 
 
 class GoogleCloudAiplatformV1Study(_messages.Message):
-  r"""A message representing a Study.
+  r"""A message representing a Study. Next id: 12
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a Study.
@@ -18440,6 +19146,109 @@ class GoogleCloudAiplatformV1TFRecordDestination(_messages.Message):
   """
 
   gcsDestination = _messages.MessageField('GoogleCloudAiplatformV1GcsDestination', 1)
+
+
+class GoogleCloudAiplatformV1Tensor(_messages.Message):
+  r"""A tensor value type.
+
+  Enums:
+    DtypeValueValuesEnum: The data type of tensor.
+
+  Messages:
+    StructValValue: A map of string to tensor.
+
+  Fields:
+    boolVal: Type specific representations that make it easy to create tensor
+      protos in all languages. Only the representation corresponding to
+      "dtype" can be set. The values hold the flattened representation of the
+      tensor in row major order. BOOL
+    bytesVal: STRING
+    doubleVal: DOUBLE
+    dtype: The data type of tensor.
+    floatVal: FLOAT
+    int64Val: INT64
+    intVal: INT_8 INT_16 INT_32
+    listVal: A list of tensor values.
+    shape: Shape of the tensor.
+    stringVal: STRING
+    structVal: A map of string to tensor.
+    tensorVal: Serialized raw tensor content.
+    uint64Val: UINT64
+    uintVal: UINT8 UINT16 UINT32
+  """
+
+  class DtypeValueValuesEnum(_messages.Enum):
+    r"""The data type of tensor.
+
+    Values:
+      DATA_TYPE_UNSPECIFIED: Not a legal value for DataType. Used to indicate
+        a DataType field has not been set.
+      BOOL: Data types that all computation devices are expected to be capable
+        to support.
+      STRING: <no description>
+      FLOAT: <no description>
+      DOUBLE: <no description>
+      INT8: <no description>
+      INT16: <no description>
+      INT32: <no description>
+      INT64: <no description>
+      UINT8: <no description>
+      UINT16: <no description>
+      UINT32: <no description>
+      UINT64: <no description>
+    """
+    DATA_TYPE_UNSPECIFIED = 0
+    BOOL = 1
+    STRING = 2
+    FLOAT = 3
+    DOUBLE = 4
+    INT8 = 5
+    INT16 = 6
+    INT32 = 7
+    INT64 = 8
+    UINT8 = 9
+    UINT16 = 10
+    UINT32 = 11
+    UINT64 = 12
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StructValValue(_messages.Message):
+    r"""A map of string to tensor.
+
+    Messages:
+      AdditionalProperty: An additional property for a StructValValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type StructValValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StructValValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudAiplatformV1Tensor attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  boolVal = _messages.BooleanField(1, repeated=True)
+  bytesVal = _messages.BytesField(2, repeated=True)
+  doubleVal = _messages.FloatField(3, repeated=True)
+  dtype = _messages.EnumField('DtypeValueValuesEnum', 4)
+  floatVal = _messages.FloatField(5, repeated=True, variant=_messages.Variant.FLOAT)
+  int64Val = _messages.IntegerField(6, repeated=True)
+  intVal = _messages.IntegerField(7, repeated=True, variant=_messages.Variant.INT32)
+  listVal = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 8, repeated=True)
+  shape = _messages.IntegerField(9, repeated=True)
+  stringVal = _messages.StringField(10, repeated=True)
+  structVal = _messages.MessageField('StructValValue', 11)
+  tensorVal = _messages.BytesField(12)
+  uint64Val = _messages.IntegerField(13, repeated=True, variant=_messages.Variant.UINT64)
+  uintVal = _messages.IntegerField(14, repeated=True, variant=_messages.Variant.UINT32)
 
 
 class GoogleCloudAiplatformV1Tensorboard(_messages.Message):

@@ -714,10 +714,10 @@ class RecognitionConfig(_messages.Message):
     speechContexts: Array of SpeechContext. A means to provide context to
       assist the speech recognition. For more information, see [speech
       adaptation](https://cloud.google.com/speech-to-text/docs/adaptation).
-    transcriptNormalization: Use transcription normalization to automatically
-      replace parts of the transcript with phrases of your choosing. For
-      StreamingRecognize, this normalization only applies to stable partial
-      transcripts (stability > 0.8) and final transcripts.
+    transcriptNormalization: Optional. Use transcription normalization to
+      automatically replace parts of the transcript with phrases of your
+      choosing. For StreamingRecognize, this normalization only applies to
+      stable partial transcripts (stability > 0.8) and final transcripts.
     useEnhanced: Set to true to use an enhanced model for speech recognition.
       If `use_enhanced` is set to true and the `model` field is not set, then
       an appropriate enhanced model is chosen if an enhanced model exists for

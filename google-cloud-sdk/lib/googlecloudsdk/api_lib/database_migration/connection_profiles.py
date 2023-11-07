@@ -117,7 +117,8 @@ class ConnectionProfilesClient(object):
     if not pattern.match(args.host):
       raise calliope_exceptions.InvalidArgumentException(
           'host',
-          'Hostname and IP can only include letters, numbers, dots, hyphens and valid IP ranges.'
+          'Hostname and IP can only include letters, numbers, dots, hyphens and'
+          ' valid IP ranges.',
       )
 
   def _ValidateSslConfigArgs(self, args):
@@ -301,10 +302,27 @@ class ConnectionProfilesClient(object):
 
   def _GetActivationPolicy(self, cp_type, policy):
     if policy is None:
-      return cp_type.ActivationPolicyValueValuesEnum.SQL_ACTIVATION_POLICY_UNSPECIFIED
+      return (
+          cp_type.ActivationPolicyValueValuesEnum.SQL_ACTIVATION_POLICY_UNSPECIFIED
+      )
     return cp_type.ActivationPolicyValueValuesEnum.lookup_by_name(policy)
 
   def _GetDatabaseVersion(self, cp_type, version):
+    """Returns the database version.
+
+    Args:
+      cp_type: str, the connection profile type.
+      version: database version.
+
+    Raises:
+    BadArgumentException: database-version is MYSQL_8_0_35 or MYSQL_8_0_36
+    """
+    if version == 'MYSQL_8_0_35' or version == 'MYSQL_8_0_36':
+      raise calliope_exceptions.BadArgumentException(
+          'database-version',
+          'The requested connection profile contains unsupported database'
+          ' version.',
+      )
     return cp_type.DatabaseVersionValueValuesEnum.lookup_by_name(version)
 
   def _GetAuthorizedNetworks(self, networks):
@@ -491,8 +509,11 @@ class ConnectionProfilesClient(object):
 
     private_connectivity_ref = args.CONCEPTS.private_connection.Parse()
     if private_connectivity_ref:
-      connection_profile_obj.privateConnectivity = self.messages.PrivateConnectivity(
-          privateConnection=private_connectivity_ref.RelativeName())
+      connection_profile_obj.privateConnectivity = (
+          self.messages.PrivateConnectivity(
+              privateConnection=private_connectivity_ref.RelativeName()
+          )
+      )
     elif args.forward_ssh_hostname:
       connection_profile_obj.forwardSshConnectivity = (
           self._GetForwardSshTunnelConnectivity(args)
@@ -601,7 +622,9 @@ class ConnectionProfilesClient(object):
                                                     connection_profile_id)
 
     request_id = api_util.GenerateRequestId()
-    create_req_type = self.messages.DatamigrationProjectsLocationsConnectionProfilesCreateRequest
+    create_req_type = (
+        self.messages.DatamigrationProjectsLocationsConnectionProfilesCreateRequest
+    )
     create_req = create_req_type(
         connectionProfile=connection_profile,
         connectionProfileId=connection_profile_id,
@@ -630,7 +653,9 @@ class ConnectionProfilesClient(object):
         current_cp, args)
 
     request_id = api_util.GenerateRequestId()
-    update_req_type = self.messages.DatamigrationProjectsLocationsConnectionProfilesPatchRequest
+    update_req_type = (
+        self.messages.DatamigrationProjectsLocationsConnectionProfilesPatchRequest
+    )
     update_req = update_req_type(
         connectionProfile=updated_cp,
         name=updated_cp.name,
@@ -655,7 +680,9 @@ class ConnectionProfilesClient(object):
         projectsId=project_id,
         locationsId=args.region if args.IsKnownAndSpecified('region') else '-')
 
-    list_req_type = self.messages.DatamigrationProjectsLocationsConnectionProfilesListRequest
+    list_req_type = (
+        self.messages.DatamigrationProjectsLocationsConnectionProfilesListRequest
+    )
     list_req = list_req_type(
         parent=location_ref.RelativeName(),
         filter=args.filter,

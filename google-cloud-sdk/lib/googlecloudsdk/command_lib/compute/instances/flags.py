@@ -1345,6 +1345,18 @@ def _ValidateNetworkInterfaceStackType(stack_type_input):
         'Invalid value for stack-type [%s].' % stack_type)
 
 
+def _ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported(stack_type_input):
+  """Validates stack type field, throws exception if invalid."""
+  stack_type = stack_type_input.upper()
+  if (stack_type in constants.NETWORK_INTERFACE_STACK_TYPE_CHOICES and
+      stack_type != constants.NETWORK_INTERFACE_IPV6_ONLY_STACK_TYPE):
+    return stack_type
+  else:
+    raise exceptions.InvalidArgumentException(
+        '--network-interface',
+        'Invalid value for stack-type [%s].' % stack_type)
+
+
 def _ValidateNetworkTier(network_tier_input):
   """Validates network tier field, throws exception if invalid."""
   network_tier = network_tier_input.upper()
@@ -1384,7 +1396,8 @@ def AddAddressArgs(parser,
                    containers=False,
                    support_network_queue_count=False,
                    support_network_attachments=False,
-                   support_vlan_nic=False):
+                   support_vlan_nic=False,
+                   support_ipv6_only=False):
   """Adds address arguments for instances and instance-templates.
 
   Args:
@@ -1401,6 +1414,7 @@ def AddAddressArgs(parser,
     support_network_attachments: indicates whether network attachments are
       supported.
     support_vlan_nic: indicates whether VLAN network interfaces are supported.
+    support_ipv6_only: indicates whether IPV6_ONLY stack type is supported.
   """
   addresses = parser.add_mutually_exclusive_group()
   AddNoAddressArg(addresses)
@@ -1441,8 +1455,12 @@ def AddAddressArgs(parser,
   # IPv6 related fields are not supported in create-with-container commands yet.
   if not containers:
     multiple_network_interface_cards_spec['ipv6-public-ptr-domain'] = str
-    multiple_network_interface_cards_spec[
-        'stack-type'] = _ValidateNetworkInterfaceStackType
+    if support_ipv6_only:
+      multiple_network_interface_cards_spec[
+          'stack-type'] = _ValidateNetworkInterfaceStackType
+    else:
+      multiple_network_interface_cards_spec[
+          'stack-type'] = _ValidateNetworkInterfaceStackTypeIpv6OnlyNotSupported
     multiple_network_interface_cards_spec[
         'ipv6-network-tier'] = _ValidateNetworkInterfaceIpv6NetworkTier
     network_interface_help_texts.append("""\
@@ -1502,11 +1520,16 @@ def AddAddressArgs(parser,
       """)
 
   if not containers:
-    network_interface_help_texts.append("""
+    if support_ipv6_only:
+      stack_types = '`IPV4_ONLY`, `IPV4_IPV6`, `IPV6_ONLY`'
+    else:
+      stack_types = '`IPV4_ONLY`, `IPV4_IPV6`'
+    network_interface_help_texts.append(f"""
       *stack-type*::: Specifies whether IPv6 is enabled on the interface.
-      ``STACK_TYPE'' must be one of: `IPV4_ONLY`, `IPV4_IPV6`. The default value
-      is `IPV4_ONLY`.
-
+      ``STACK_TYPE'' must be one of: {stack_types}.
+      The default value is `IPV4_ONLY`.
+    """)
+    network_interface_help_texts.append("""
       *ipv6-network-tier*::: Specifies the IPv6 network tier that will be used
       to configure the instance network interface IPv6 access config.
       ``IPV6_NETWORK_TIER'' must be `PREMIUM` (currently only one value is
@@ -3483,19 +3506,27 @@ def AddVisibleCoreCountArgs(parser):
     """)
 
 
-def AddStackTypeArgs(parser):
+def AddStackTypeArgs(parser, support_ipv6_only=False):
   """Adds stack type arguments for instance."""
+  choices = {
+      'IPV4_ONLY': 'The network interface will be assigned IPv4 addresses',
+      'IPV4_IPV6': (
+          'The network interface can have both IPv4 and IPv6 addresses'
+      ),
+  }
+  if support_ipv6_only:
+    choices['IPV6_ONLY'] = (
+        'The network interface will be assigned IPv6 addresses'
+    )
   parser.add_argument(
       '--stack-type',
-      choices={
-          'IPV4_ONLY':
-              'The network interface will be assigned IPv4 addresses',
-          'IPV4_IPV6':
-              'The network interface can have both IPv4 and IPv6 addresses'
-      },
+      choices=choices,
       type=arg_utils.ChoiceToEnumName,
-      help=('Specifies whether IPv6 is enabled on the default network '
-            'interface. If not specified, IPV4_ONLY will be used.'))
+      help=(
+          'Specifies whether IPv6 is enabled on the default network '
+          'interface. If not specified, IPV4_ONLY will be used.'
+      ),
+  )
 
 
 def AddIpv6NetworkTierArgs(parser):
@@ -3661,4 +3692,20 @@ def AddMaintenanceIntervalArgs(parser):
       choices=choices_text,
       type=arg_utils.ChoiceToEnumName,
       help=help_text,
+  )
+
+
+def AddAvailabilityDomainAgrs(parser):
+  parser.add_argument(
+      '--availability-domain',
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=8),
+      help="""
+          Specifies the availability domain that this VM instance should be
+          scheduled on. The number of availability domains that a VM can be
+          scheduled on is specified when you create the spread placement
+          policy.
+
+          Specify a value from 1 to the number of domains that are available in
+          your placement policy.
+          """,
   )

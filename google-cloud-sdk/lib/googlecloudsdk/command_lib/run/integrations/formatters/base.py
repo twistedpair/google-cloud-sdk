@@ -57,8 +57,8 @@ class Record(object):
 
   def __init__(
       self,
-      name: str,
-      region: str,
+      name: Optional[str],
+      region: Optional[str],
       metadata: Optional[types_utils.TypeMetadata] = None,
       resource: Optional[runapps.Resource] = None,
       status: Optional[runapps.ResourceStatus] = None,
@@ -72,7 +72,7 @@ class Record(object):
     self.latest_deployment = latest_deployment
 
 
-class BaseFormatter:
+class BaseFormatter(abc.ABC):
   """Prints the run Integration in a custom human-readable format."""
 
   @abc.abstractmethod
@@ -83,7 +83,7 @@ class BaseFormatter:
   def TransformComponentStatus(self, record: Record) -> cp._Marker:
     """Override to describe the format of the components and status of the integration."""
 
-  def CallToAction(self, record: Record) -> cp._Marker:
+  def CallToAction(self, record: Record) -> Optional[str]:
     """Override to return call to action message.
 
     Args:

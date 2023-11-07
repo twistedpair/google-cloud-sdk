@@ -62,7 +62,6 @@ def AddKmsKeyFlag(parser, is_required):
       '--kms-key',
       type=str,
       required=is_required,
-      hidden=True,
       help="""\
           The KMS key used to encrypt sensitive data in the workflow template.
           """,

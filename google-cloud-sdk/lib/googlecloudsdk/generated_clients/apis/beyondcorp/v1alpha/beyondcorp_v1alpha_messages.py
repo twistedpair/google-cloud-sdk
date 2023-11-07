@@ -450,11 +450,34 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsListRequest(_messages.
   object.
 
   Fields:
+    filter: Optional. A filter specifying constraints of a list operation. All
+      fields in the PartnerTenant message are supported. For example, the
+      following query will return the PartnerTenants with displayName "test-
+      tenant" organizations/${ORG_ID}/locations/${LOCATION}/partnerTenants?fil
+      ter=displayName="test-tenant" Nested fields are also supported. The
+      follow query will return PartnerTenants with internal_tenant_id "1234" o
+      rganizations/${ORG_ID}/locations/${LOCATION}/partnerTenants?filter=partn
+      erMetadata.internalTenantId="1234" For more information, please refer to
+      https://google.aip.dev/160.
+    orderBy: Optional. Specifies the ordering of results. See [Sorting
+      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
+      r) for more information.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 50 will be used by the service. Regardless
+      of the page_size value, the response may include a partial list and a
+      caller should only rely on response's next_page_token to determine if
+      there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      ListPartnerTenantsResponse, if any.
     parent: Required. The parent organization to which the PartnerTenants
       belong. Format: `organizations/{organization_id}/locations/global`
   """
 
-  parent = _messages.StringField(1, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsPatchRequest(_messages.Message):
@@ -591,12 +614,36 @@ class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsListReques
   object.
 
   Fields:
+    filter: Optional. A filter specifying constraints of a list operation. All
+      fields in the ProxyConfig message are supported. For example, the
+      following query will return the ProxyConfigs with displayName "test-
+      config" organizations/${ORG_ID}/locations/global/partnerTenants/${PARTNE
+      R_TENANT_ID}/proxyConfigs?filter=displayName="test-config" Nested fields
+      are also supported. The follow query will return ProxyConfigs with
+      pacUri "example.com/pac.pac" organizations/${ORG_ID}/locations/global/pa
+      rtnerTenants/${PARTNER_TENANT_ID}/proxyConfigs?filter=routingInfo.pacUri
+      ="example.com/pac.pac" For more information, please refer to
+      https://google.aip.dev/160.
+    orderBy: Optional. Specifies the ordering of results. See [Sorting
+      order](https://cloud.google.com/apis/design/design_patterns#sorting_orde
+      r) for more information.
+    pageSize: Optional. The maximum number of items to return. If not
+      specified, a default value of 50 will be used by the service. Regardless
+      of the page_size value, the response may include a partial list and a
+      caller should only rely on response's next_page_token to determine if
+      there are more instances left to be queried.
+    pageToken: Optional. The next_page_token value returned from a previous
+      ListProxyConfigsRequest, if any.
     parent: Required. The parent organization to which the ProxyConfigs
       belong. Format: `organizations/{organization_id}/locations/global/partne
       rTenants/{partner_tenant_id}`
   """
 
-  parent = _messages.StringField(1, required=True)
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class BeyondcorpOrganizationsLocationsGlobalPartnerTenantsProxyConfigsPatchRequest(_messages.Message):
@@ -3815,20 +3862,26 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaListPartnerTenantsResponse(_mes
   r"""Message for response to listing PartnerTenants.
 
   Fields:
+    nextPageToken: A token to retrieve the next page of results, or empty if
+      there are no more results in the list.
     partnerTenants: The list of PartnerTenant objects.
   """
 
-  partnerTenants = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 1, repeated=True)
+  nextPageToken = _messages.StringField(1)
+  partnerTenants = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerTenant', 2, repeated=True)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaListProxyConfigsResponse(_messages.Message):
   r"""Message for response to listing ProxyConfigs.
 
   Fields:
+    nextPageToken: A token to retrieve the next page of results, or empty if
+      there are no more results in the list.
     proxyConfigs: The list of ProxyConfig objects.
   """
 
-  proxyConfigs = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 1, repeated=True)
+  nextPageToken = _messages.StringField(1)
+  proxyConfigs = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig', 2, repeated=True)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaPartnerMetadata(_messages.Message):
@@ -3906,7 +3959,6 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
       ProxyConfig. Cannot exceed 64 characters.
     encryptionInfo: Optional. Information to encrypt JWT for the proxy server.
     name: Output only. ProxyConfig resource name.
-    proxyProtocolConfig: Optional. Protocol config data for the Proxy.
     proxyUri: Required. The URI of the proxy server.
     routingInfo: Required. Routing info to direct traffic to the proxy server.
     transportInfo: Required. Transport layer information to verify for the
@@ -3918,52 +3970,10 @@ class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyConfig(_messages.Message):
   displayName = _messages.StringField(2)
   encryptionInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaEncryptionInfo', 3)
   name = _messages.StringField(4)
-  proxyProtocolConfig = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaProxyProtocolConfig', 5)
-  proxyUri = _messages.StringField(6)
-  routingInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo', 7)
-  transportInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo', 8)
-  updateTime = _messages.StringField(9)
-
-
-class GoogleCloudBeyondcorpPartnerservicesV1alphaProxyProtocolConfig(_messages.Message):
-  r"""The protocol data that specifies how to communicate with Partner's
-  Proxy.
-
-  Messages:
-    MetadataValue: Optional. Untyped property bag to be sent back to the proxy
-      using client specific mechanism.
-
-  Fields:
-    metadata: Optional. Untyped property bag to be sent back to the proxy
-      using client specific mechanism.
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class MetadataValue(_messages.Message):
-    r"""Optional. Untyped property bag to be sent back to the proxy using
-    client specific mechanism.
-
-    Messages:
-      AdditionalProperty: An additional property for a MetadataValue object.
-
-    Fields:
-      additionalProperties: Additional properties of type MetadataValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a MetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A string attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.StringField(2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  metadata = _messages.MessageField('MetadataValue', 1)
+  proxyUri = _messages.StringField(5)
+  routingInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo', 6)
+  transportInfo = _messages.MessageField('GoogleCloudBeyondcorpPartnerservicesV1alphaTransportInfo', 7)
+  updateTime = _messages.StringField(8)
 
 
 class GoogleCloudBeyondcorpPartnerservicesV1alphaRoutingInfo(_messages.Message):
@@ -4305,7 +4315,7 @@ class GoogleCloudBeyondcorpSaasplatformSubscriptionsV1alphaSubscription(_message
     endTime: Output only. End time of the subscription.
     name: Required. Unique resource name of the Subscription. The name is
       ignored when creating a subscription.
-    seatCount: Output only. Number of seats in the subscription.
+    seatCount: Optional. Number of seats in the subscription.
     sku: Required. SKU of subscription.
     startTime: Output only. Start time of the subscription.
     state: Output only. The current state of the subscription.

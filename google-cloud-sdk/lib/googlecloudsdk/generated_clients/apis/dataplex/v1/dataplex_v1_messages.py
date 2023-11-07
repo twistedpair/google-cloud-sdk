@@ -3667,7 +3667,9 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
   r"""The output of a DataQualityScan.
 
   Fields:
-    dimensions: A list of results at the dimension level.
+    dimensions: A list of results at the dimension level.A dimension will have
+      a corresponding DataQualityDimensionResult if and only if there is at
+      least one rule with the 'dimension' field set to it.
     passed: Overall data quality result -- true if all rules passed.
     postScanActionsResult: Output only. The result of post scan actions.
     rowCount: The count of rows processed.
@@ -5138,6 +5140,10 @@ class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):
       BIGQUERY_POLICY_TAG_SET_IAM_POLICY: BigQuery set iam policy for policy
         tag.
       ACCESS_POLICY_UPDATE: Access policy update event.
+      GOVERNANCE_RULE_MATCHED_RESOURCES: Number of resources matched with
+        particular Query.
+      GOVERNANCE_RULE_SEARCH_LIMIT_EXCEEDS: Rule processing exceeds the
+        allowed limit.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     RESOURCE_IAM_POLICY_UPDATE = 1
@@ -5152,6 +5158,8 @@ class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):
     BIGQUERY_POLICY_TAG_DELETE = 10
     BIGQUERY_POLICY_TAG_SET_IAM_POLICY = 11
     ACCESS_POLICY_UPDATE = 12
+    GOVERNANCE_RULE_MATCHED_RESOURCES = 13
+    GOVERNANCE_RULE_SEARCH_LIMIT_EXCEEDS = 14
 
   entity = _messages.MessageField('GoogleCloudDataplexV1GovernanceEventEntity', 1)
   eventType = _messages.EnumField('EventTypeValueValuesEnum', 2)

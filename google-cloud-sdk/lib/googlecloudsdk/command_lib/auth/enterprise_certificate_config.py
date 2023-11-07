@@ -25,6 +25,7 @@ import os
 from googlecloudsdk.core import config
 from googlecloudsdk.core import log
 from googlecloudsdk.core.util import files
+from googlecloudsdk.core.util import platforms
 
 RESOURCE_TYPE = 'enterprise-certificate-proxy configuration file'
 
@@ -49,6 +50,30 @@ def get_bin_folder():
     )
 
   return sdk_bin_path
+
+
+def get_config_path(output_file):
+  if output_file:
+    return output_file
+  return config.CertConfigDefaultFilePath()
+
+
+def platform_to_config(platform):
+  if not platform:
+    platform = platforms.Platform.Current()
+  if platform.operating_system == platforms.OperatingSystem.MACOSX:
+    return ConfigType.KEYCHAIN
+  elif platform.operating_system == platforms.OperatingSystem.LINUX:
+    return ConfigType.PKCS11
+  elif platform.operating_system == platforms.OperatingSystem.WINDOWS:
+    return ConfigType.MYSTORE
+  else:
+    raise ECPConfigError(
+        (
+            'Unsupported platform {}. Enterprise Certificate Proxy currently'
+            ' only supports OSX, Windows, and Linux.'
+        ).format(platform.operating_system)
+    )
 
 
 class ConfigType(enum.Enum):
@@ -130,29 +155,129 @@ class MyStoreConfig(object):
     self.provider = provider
 
 
-def create_ecp_config(args, config_type):
-  """Create an ECP config based on user arguments and the desired store type."""
+def create_linux_config(base_config, **kwargs):
+  """Creates a Linux ECP Config.
+
+  Args:
+    base_config: Optional parameter to use as a fallback for parameters that are
+      not set in kwargs.
+    **kwargs: Linux config parameters. See go/enterprise-cert-config for valid
+      variables.
+
+  Returns:
+    A dictionary object containing the ECP config.
+  """
+  if base_config:
+    base_linux_config = base_config.get('cert_configs', {}).get('pkcs11', {})
+    base_libs_config = base_config.get('libs', {})
+  else:
+    base_linux_config = {}
+    base_libs_config = {}
+
+  ecp_config = PKCS11Config(
+      kwargs.get('module', None) or base_linux_config.get('module', None),
+      kwargs.get('slot', None) or base_linux_config.get('slot', 0),
+      kwargs.get('label', None) or base_linux_config.get('label', None),
+      kwargs.get('user_pin', None) or base_linux_config.get('user_pin', None),
+  )
+  lib_config = LinuxPathConfig(
+      kwargs.get('ecp', None) or base_libs_config.get('ecp', None),
+      kwargs.get('ecp_client', None)
+      or base_libs_config.get('ecp_client', None),
+      kwargs.get('tls_offload', None)
+      or base_libs_config.get('tls_offload', None),
+  )
+  return {'pkcs11': vars(ecp_config)}, {'libs': vars(lib_config)}
+
+
+def create_macos_config(base_config, **kwargs):
+  """Creates a MacOS ECP Config.
+
+  Args:
+    base_config: Optional parameter to use as a fallback for parameters that are
+      not set in kwargs.
+    **kwargs: MacOS config parameters. See go/enterprise-cert-config for valid
+      variables.
+
+  Returns:
+    A dictionary object containing the ECP config.
+  """
+  if base_config:
+    base_macos_config = base_config['cert_configs']['macos_keychain']
+    base_libs_config = base_config['libs']
+  else:
+    base_macos_config = {}
+    base_libs_config = {}
+
+  ecp_config = KeyChainConfig(
+      kwargs.get('issuer', None) or base_macos_config.get('issuer', None)
+  )
+  lib_config = MacOSBinaryPathConfig(
+      kwargs.get('ecp', None) or base_libs_config.get('ecp', None),
+      kwargs.get('ecp_client', None)
+      or base_libs_config.get('ecp_client', None),
+      kwargs.get('tls_offload', None)
+      or base_libs_config.get('tls_offload', None),
+  )
+  return {'macos_keychain': vars(ecp_config)}, {'libs': vars(lib_config)}
+
+
+def create_windows_config(base_config, **kwargs):
+  """Creates a Windows ECP Config.
+
+  Args:
+    base_config: Optional parameter to use as a fallback for parameters that are
+      not set in kwargs.
+    **kwargs: Windows config parameters. See go/enterprise-cert-config for valid
+      variables.
+
+  Returns:
+    A dictionary object containing the ECP config.
+  """
+  if base_config:
+    base_windows_config = base_config['cert_configs']['windows_store']
+    base_libs_config = base_config['libs']
+  else:
+    base_windows_config = {}
+    base_libs_config = {}
+
+  ecp_config = MyStoreConfig(
+      kwargs.get('issuer', None) or base_windows_config.get('issuer', None),
+      kwargs.get('store', None) or base_windows_config.get('store', None),
+      kwargs.get('provider', None) or base_windows_config.get('provider', None),
+  )
+  lib_config = WindowsBinaryPathConfig(
+      kwargs.get('ecp', None) or base_libs_config.get('ecp', None),
+      kwargs.get('ecp_client', None)
+      or base_libs_config.get('ecp_client', None),
+      kwargs.get('tls_offload', None)
+      or base_libs_config.get('tls_offload', None),
+  )
+  return {'windows_store': vars(ecp_config)}, {'libs': vars(lib_config)}
+
+
+def create_ecp_config(config_type, base_config=None, **kwargs):
+  """Creates an ECP Config.
+
+  Args:
+    config_type: An ConfigType Enum that describes the type of ECP config.
+    base_config: Optional parameter to use as a fallback for parameters that are
+      not set in kwargs.
+    **kwargs: config parameters. See go/enterprise-cert-config for valid
+      variables.
+
+  Returns:
+    A dictionary object containing the ECP config.
+  Raises:
+    ECPConfigError: No valid config_type is specified.
+  """
 
   if config_type == ConfigType.PKCS11:
-    key, ecp_config = 'pkcs11', PKCS11Config(
-        args.module,
-        args.slot,
-        args.label,
-        args.user_pin,
-    )
-    lib_config = LinuxPathConfig(args.ecp, args.ecp_client, args.tls_offload)
+    ecp_config, libs_config = create_linux_config(base_config, **kwargs)
   elif config_type == ConfigType.KEYCHAIN:
-    key, ecp_config = 'macos_keychain', KeyChainConfig(args.issuer)
-    lib_config = MacOSBinaryPathConfig(
-        args.ecp, args.ecp_client, args.tls_offload
-    )
+    ecp_config, libs_config = create_macos_config(base_config, **kwargs)
   elif config_type == ConfigType.MYSTORE:
-    key, ecp_config = 'windows_store', MyStoreConfig(
-        args.issuer, args.store, args.provider
-    )
-    lib_config = WindowsBinaryPathConfig(
-        args.ecp, args.ecp_client, args.tls_offload
-    )
+    ecp_config, libs_config = create_windows_config(base_config, **kwargs)
   else:
     raise ECPConfigError(
         (
@@ -160,18 +285,33 @@ def create_ecp_config(args, config_type):
             ' configuration. Valid options are: [PKCS11, KEYCHAIN, MYSTORE]'
         ).format(config_type)
     )
-  return {'cert_configs': {key: vars(ecp_config)}, 'libs': vars(lib_config)}
+  return {'cert_configs': ecp_config, **libs_config}
 
 
-def create_config(args, config_type):
+def create_config(config_type, **kwargs):
   """Creates the ECP config based on the passed in CLI arguments."""
-  output = create_ecp_config(args, config_type)
+  output = create_ecp_config(config_type, None, **kwargs)
+  config_path = get_config_path(kwargs.get('output_file', None))
 
-  config_path = (
-      args.output_file
-      if args.output_file
-      else config.CertConfigDefaultFilePath()
-  )
+  files.WriteFileContents(config_path, json.dumps(output, indent=2))
+  log.CreatedResource(config_path, RESOURCE_TYPE)
+
+
+def update_config(config_type, **kwargs):
+  """Updates the ECP config based on the passed in CLI arguments.
+
+  Args:
+    config_type: An ConfigType Enum that describes the type of ECP config.
+    **kwargs: config parameters that will be updated. See
+      go/enterprise-cert-config for valid variables.
+
+  Only explicit args will overwrite existing values
+  """
+  config_path = get_config_path(kwargs.get('output_file', None))
+  data = files.ReadFileContents(config_path)
+
+  active_config = json.loads(data)
+  output = create_ecp_config(config_type, active_config, **kwargs)
 
   files.WriteFileContents(config_path, json.dumps(output, indent=2))
   log.CreatedResource(config_path, RESOURCE_TYPE)

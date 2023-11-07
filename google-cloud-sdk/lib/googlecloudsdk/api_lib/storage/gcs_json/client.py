@@ -888,38 +888,17 @@ class JsonClient(cloud_api.CloudApi):
     decryption_key = getattr(
         getattr(request_config, 'resource_args', None), 'decryption_key', None)
     with self._encryption_headers_context(decryption_key):
-      try:
-        object_metadata = self.client.objects.Get(
-            self.messages.StorageObjectsGetRequest(
-                bucket=bucket_name,
-                object=object_name,
-                generation=generation,
-                projection=projection,
-                # Avoid needlessly appending "&softDeleted=False" to URL.
-                softDeleted=True if soft_deleted else None,
-            ),
-            global_params=global_params,
-        )
-      except apitools_exceptions.HttpError as e:
-        translated_error = cloud_errors.translate_error(
-            e, error_util.ERROR_TRANSLATION
-        )
-        if (
-            translated_error.message
-            == 'HTTPError 400: You must specify a generation.'
-            and soft_deleted
-        ):
-          core_exceptions.reraise(
-              cloud_errors.translate_error(
-                  e,
-                  error_util.ERROR_TRANSLATION,
-                  format_str=(
-                      'HTTPError 400: You must specify a generation or'
-                      ' wildcard.'
-                  ),
-              )
-          )
-        core_exceptions.reraise(translated_error)
+      object_metadata = self.client.objects.Get(
+          self.messages.StorageObjectsGetRequest(
+              bucket=bucket_name,
+              object=object_name,
+              generation=generation,
+              projection=projection,
+              # Avoid needlessly appending "&softDeleted=False" to URL.
+              softDeleted=True if soft_deleted else None,
+          ),
+          global_params=global_params,
+      )
     return metadata_util.get_object_resource_from_metadata(object_metadata)
 
   def list_objects(

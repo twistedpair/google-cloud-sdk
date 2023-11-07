@@ -172,9 +172,11 @@ class Container(_messages.Message):
       images), but you can create your own [custom container
       images](https://cloud.google.com/workstations/docs/custom-container-
       images). If using a private image, the `host.gceInstance.serviceAccount`
-      field must be specified in the workstation configuration and must have
-      permission to pull the specified image. Otherwise, the image must be
-      publicly accessible.
+      field must be specified in the workstation configuration. If using a
+      custom container image, the service account must have [Artifact Registry
+      Reader](https://cloud.google.com/artifact-registry/docs/access-
+      control#roles) permission to pull the specified image. Otherwise, the
+      image must be publicly accessible.
     runAsUser: Optional. If set, overrides the USER specified in the image
       with the given uid.
     workingDir: Optional. If set, overrides the default DIR specified by the
@@ -371,10 +373,11 @@ class GceInstance(_messages.Message):
       Cloud Workstations VMs created with this configuration. When specified,
       be sure that the service account has `logginglogEntries.create`
       permission on the project so it can write logs out to Cloud Logging. If
-      using a custom container image, the service account must have
-      permissions to pull the specified image. If you as the administrator
-      want to be able to `ssh` into the underlying VM, you need to set this
-      value to a service account for which you have the
+      using a custom container image, the service account must have [Artifact
+      Registry Reader](https://cloud.google.com/artifact-registry/docs/access-
+      control#roles) permission to pull the specified image. If you as the
+      administrator want to be able to `ssh` into the underlying VM, you need
+      to set this value to a service account for which you have the
       `iam.serviceAccounts.actAs` permission. Conversely, if you don't want
       anyone to be able to `ssh` into the underlying VM, use a service account
       where no one has that permission. If not set, VMs run with a service

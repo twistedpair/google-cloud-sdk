@@ -214,6 +214,12 @@ def add_cp_mv_rsync_flags(parser):
   flags.add_object_metadata_flags(parser)
   flags.add_precondition_flags(parser)
   parser.add_argument(
+      '--content-md5',
+      metavar='MD5_DIGEST',
+      help=('Manually specified MD5 hash digest for the contents of an uploaded'
+            ' file. This flag cannot be used when uploading multiple files. The'
+            ' custom digest is used by the cloud provider for validation.'))
+  parser.add_argument(
       '-n',
       '--no-clobber',
       action='store_true',

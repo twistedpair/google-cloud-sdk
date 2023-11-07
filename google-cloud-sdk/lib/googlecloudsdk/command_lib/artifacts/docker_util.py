@@ -949,3 +949,15 @@ def DockerUrlToImage(url):
     return image, None
   docker_version = _ValidateAndGetDockerVersion(version_or_tag)
   return image, docker_version
+
+
+def IsARDockerImage(uri):
+  return re.match(DOCKER_REPO_REGEX, uri) is not None
+
+
+def IsGCRImage(uri):
+  return (
+      re.match(GCR_DOCKER_REPO_REGEX, uri) is not None
+      or re.match(GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX, uri)
+      is not None
+  )

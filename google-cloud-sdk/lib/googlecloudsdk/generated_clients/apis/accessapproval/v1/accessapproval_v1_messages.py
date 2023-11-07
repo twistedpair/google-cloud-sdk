@@ -565,9 +565,9 @@ class ApprovalRequest(_messages.Message):
     name: The resource name of the request. Format is "{projects|folders|organ
       izations}/{id}/approvalRequests/{approval_request}".
     requestTime: The time at which approval was requested.
-    requestedExpiration: The requested expiration for the approval. If the
-      request is approved, access will be granted from the time of approval
-      until the expiration time.
+    requestedDuration: The requested access duration.
+    requestedExpiration: The original requested expiration for the approval.
+      Calculated by adding the requested_duration to the request_time.
     requestedLocations: The locations for which approval is being requested.
     requestedReason: The justification for which approval is being requested.
     requestedResourceName: The resource for which approval is being requested.
@@ -585,11 +585,12 @@ class ApprovalRequest(_messages.Message):
   dismiss = _messages.MessageField('DismissDecision', 2)
   name = _messages.StringField(3)
   requestTime = _messages.StringField(4)
-  requestedExpiration = _messages.StringField(5)
-  requestedLocations = _messages.MessageField('AccessLocations', 6)
-  requestedReason = _messages.MessageField('AccessReason', 7)
-  requestedResourceName = _messages.StringField(8)
-  requestedResourceProperties = _messages.MessageField('ResourceProperties', 9)
+  requestedDuration = _messages.StringField(5)
+  requestedExpiration = _messages.StringField(6)
+  requestedLocations = _messages.MessageField('AccessLocations', 7)
+  requestedReason = _messages.MessageField('AccessReason', 8)
+  requestedResourceName = _messages.StringField(9)
+  requestedResourceProperties = _messages.MessageField('ResourceProperties', 10)
 
 
 class ApproveApprovalRequestMessage(_messages.Message):

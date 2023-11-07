@@ -1627,6 +1627,11 @@ class Node(_messages.Message):
     customCoreCount: Output only. Customized number of cores
     fqdn: Output only. Fully qualified domain name of the node.
     internalIp: Output only. Internal IP address of the node.
+    location: Output only. Resource name of a zone that belongs to the region
+      of the private cloud where node is located. For example:
+      `projects/{project}/locations/us-central1-a` where `{project}` can
+      either be a project number or a project ID based on what's the input
+      given during parent cluster creation
     name: Output only. The resource name of this node. Resource names are
       schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. For example:
@@ -1659,10 +1664,11 @@ class Node(_messages.Message):
   customCoreCount = _messages.IntegerField(1)
   fqdn = _messages.StringField(2)
   internalIp = _messages.StringField(3)
-  name = _messages.StringField(4)
-  nodeTypeId = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  version = _messages.StringField(7)
+  location = _messages.StringField(4)
+  name = _messages.StringField(5)
+  nodeTypeId = _messages.StringField(6)
+  state = _messages.EnumField('StateValueValuesEnum', 7)
+  version = _messages.StringField(8)
 
 
 class NodeType(_messages.Message):

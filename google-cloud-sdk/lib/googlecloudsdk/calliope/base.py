@@ -23,6 +23,7 @@ from __future__ import unicode_literals
 import abc
 import collections
 import contextlib
+import enum
 from functools import wraps  # pylint:disable=g-importing-member
 import itertools
 import re
@@ -34,7 +35,6 @@ from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.resource import resource_printer
-
 import six
 
 try:
@@ -95,7 +95,8 @@ class DeprecationException(exceptions.Error):
   """An exception for when a command or group has been deprecated."""
 
 
-class ReleaseTrack(object):
+@enum.unique
+class ReleaseTrack(enum.Enum):
   """An enum representing the release track of a command or command group.
 
   The release track controls where a command appears.  The default of GA means
@@ -104,38 +105,34 @@ class ReleaseTrack(object):
   as well.
   """
 
-  class _TRACK(object):
-    """An enum representing the release track of a command or command group."""
+  def __init__(self, prefix, help_tag, help_note):
+    self.prefix = prefix
+    self.help_tag = help_tag
+    self.help_note = help_note
 
-    # pylint: disable=redefined-builtin
-    def __init__(self, id, prefix, help_tag, help_note):
-      self.id = id
-      self.prefix = prefix
-      self.help_tag = help_tag
-      self.help_note = help_note
+  def __str__(self):
+    return self.name
 
-    def __str__(self):
-      return self.id
+  @property
+  def id(self):
+    return self.name
 
-    def __eq__(self, other):
-      return self.id == other.id
-
-    def __hash__(self):
-      return hash(self.id)
-
-  GA = _TRACK('GA', None, None, None)
-  BETA = _TRACK(
-      'BETA', 'beta',
+  GA = (None, None, None)
+  BETA = (
+      'beta',
       '{0}(BETA){0} '.format(MARKDOWN_BOLD),
-      'This command is currently in beta and might change without notice.')
-  ALPHA = _TRACK(
-      'ALPHA', 'alpha',
+      'This command is currently in beta and might change without notice.',
+  )
+  ALPHA = (
+      'alpha',
       '{0}(ALPHA){0} '.format(MARKDOWN_BOLD),
-      'This command is currently in alpha and might change without notice. If '
-      'this command fails with API permission errors despite specifying the '
-      'correct project, you might be trying to access an API with an '
-      'invitation-only early access allowlist.')
-  _ALL = [GA, BETA, ALPHA]
+      (
+          'This command is currently in alpha and might change without notice.'
+          ' If this command fails with API permission errors despite specifying'
+          ' the correct project, you might be trying to access an API with an'
+          ' invitation-only early access allowlist.'
+      ),
+  )
 
   @staticmethod
   def AllValues():
@@ -144,7 +141,7 @@ class ReleaseTrack(object):
     Returns:
       list, All the enum values.
     """
-    return list(ReleaseTrack._ALL)
+    return list(ReleaseTrack)
 
   @staticmethod
   def FromPrefix(prefix):
@@ -157,7 +154,7 @@ class ReleaseTrack(object):
       ReleaseTrack, The corresponding object or None if the prefix was not a
       valid release track.
     """
-    for track in ReleaseTrack._ALL:
+    for track in ReleaseTrack:
       if track.prefix == prefix:
         return track
     return None
@@ -175,10 +172,10 @@ class ReleaseTrack(object):
     Returns:
       ReleaseTrack, The corresponding object.
     """
-    for track in ReleaseTrack._ALL:
-      if track.id == id:
-        return track
-    raise ValueError('Unknown release track id [{}].'.format(id))
+    try:
+      return ReleaseTrack[id]
+    except KeyError:
+      raise ValueError('Unknown release track id [{}].'.format(id))
 
 
 class Action(six.with_metaclass(abc.ABCMeta, object)):
@@ -520,7 +517,7 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
   def GetTrackedAttribute(cls, obj, attribute):
     """Gets the attribute value from obj for tracks.
 
-    The values are checked in ReleaseTrack._ALL order.
+    The values are checked in ReleaseTrack order.
 
     Args:
       obj: The object to extract attribute from.
@@ -529,7 +526,7 @@ class _Common(six.with_metaclass(abc.ABCMeta, object)):
     Returns:
       The attribute value from obj for tracks.
     """
-    for track in ReleaseTrack._ALL:  # pylint: disable=protected-access
+    for track in ReleaseTrack:
       if track not in cls._valid_release_tracks:  # pylint: disable=unsupported-membership-test
         continue
       names = []

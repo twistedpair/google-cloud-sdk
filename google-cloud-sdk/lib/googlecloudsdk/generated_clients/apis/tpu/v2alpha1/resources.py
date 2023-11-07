@@ -84,6 +84,14 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_RESERVATIONS = (
+      'projects.locations.reservations',
+      'projects/{projectId}/locations/{locationId}/reservations/'
+      '{reservationId}',
+      {},
+      ['projectId', 'locationId', 'reservationId'],
+      True
+  )
   PROJECTS_LOCATIONS_RUNTIMEVERSIONS = (
       'projects.locations.runtimeVersions',
       '{+name}',

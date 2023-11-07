@@ -305,12 +305,15 @@ def AutoscalingStorageTarget(required=False):
   )
 
 
-def AddCapacityArgsForInstance(require_all_autoscaling_args, parser):
+def AddCapacityArgsForInstance(
+    require_all_autoscaling_args, hide_autoscaling_args, parser
+):
   """Parse the instance capacity arguments, including manual and autoscaling.
 
   Args:
     require_all_autoscaling_args: bool. If True, a complete autoscaling config
       is required.
+    hide_autoscaling_args: bool. If True, the autoscaling args will be hidden.
     parser: the argparse parser for the command.
   """
   capacity_parser = parser.add_argument_group(mutex=True, required=False)
@@ -321,7 +324,7 @@ def AddCapacityArgsForInstance(require_all_autoscaling_args, parser):
 
   # Autoscaling.
   autoscaling_config_group_parser = capacity_parser.add_argument_group(
-      help='Autoscaling'
+      help='Autoscaling (Preview)', hidden=hide_autoscaling_args
   )
   AutoscalingHighPriorityCpuTarget(
       required=require_all_autoscaling_args

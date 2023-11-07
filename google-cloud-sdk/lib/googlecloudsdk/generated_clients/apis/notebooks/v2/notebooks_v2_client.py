@@ -189,6 +189,33 @@ class NotebooksV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetConfig(self, request, global_params=None):
+      r"""Gets general backend configurations that might also affect the frontend. Location is required by CCFE. Although we could bypass it to send location- less request directly to the backend job, we would need CPE (go/cloud-cpe). Having the location might also be useful depending on the query.
+
+      Args:
+        request: (NotebooksProjectsLocationsInstancesGetConfigRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Config) The response message.
+      """
+      config = self.GetMethodConfig('GetConfig')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetConfig.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/instances:getConfig',
+        http_method='GET',
+        method_id='notebooks.projects.locations.instances.getConfig',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}/instances:getConfig',
+        request_field='',
+        request_type_name='NotebooksProjectsLocationsInstancesGetConfigRequest',
+        response_type_name='Config',
+        supports_download=False,
+    )
+
     def GetIamPolicy(self, request, global_params=None):
       r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
 

@@ -78,6 +78,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_DISCOVERYCONFIGS = (
+      'organizations.locations.discoveryConfigs',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'discoveryConfigs/{discoveryConfigsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_INSPECTTEMPLATES = (
       'organizations.locations.inspectTemplates',
       '{+name}',
@@ -198,6 +209,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/'
               'deidentifyTemplates/{deidentifyTemplatesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_DISCOVERYCONFIGS = (
+      'projects.locations.discoveryConfigs',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'discoveryConfigs/{discoveryConfigsId}',
       },
       ['name'],
       True

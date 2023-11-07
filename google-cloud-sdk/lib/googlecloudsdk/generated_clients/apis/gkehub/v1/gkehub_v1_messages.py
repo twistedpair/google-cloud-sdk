@@ -172,6 +172,37 @@ class AuthorizationLoggingOptions(_messages.Message):
   permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 1)
 
 
+class BinaryAuthorizationConfig(_messages.Message):
+  r"""BinaryAuthorizationConfig defines the fleet level configuration of
+  binary authorization feature.
+
+  Enums:
+    EvaluationModeValueValuesEnum: Optional. Mode of operation for binauthz
+      policy evaluation.
+
+  Fields:
+    evaluationMode: Optional. Mode of operation for binauthz policy
+      evaluation.
+    policyBindings: Optional. Binauthz policies that apply to this cluster.
+  """
+
+  class EvaluationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Mode of operation for binauthz policy evaluation.
+
+    Values:
+      EVALUATION_MODE_UNSPECIFIED: Default value
+      DISABLED: Disable BinaryAuthorization
+      POLICY_BINDINGS: Use Binary Authorization with the policies specified in
+        policy_bindings.
+    """
+    EVALUATION_MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    POLICY_BINDINGS = 2
+
+  evaluationMode = _messages.EnumField('EvaluationModeValueValuesEnum', 1)
+  policyBindings = _messages.MessageField('PolicyBinding', 2, repeated=True)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -308,12 +339,16 @@ class CommonFleetDefaultMemberConfigSpec(_messages.Message):
   Fields:
     configmanagement: Config Management-specific spec.
     helloworld: Hello World-specific spec.
+    identityservice: Identity Service-specific spec.
     mesh: Anthos Service Mesh-specific spec
+    policycontroller: Policy Controller spec.
   """
 
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
   helloworld = _messages.MessageField('HelloWorldMembershipSpec', 2)
-  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 3)
+  identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 3)
+  mesh = _messages.MessageField('ServiceMeshMembershipSpec', 4)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 5)
 
 
 class Condition(_messages.Message):
@@ -1299,6 +1334,21 @@ class DataAccessOptions(_messages.Message):
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
 
 
+class DefaultClusterConfig(_messages.Message):
+  r"""DefaultClusterConfig describes the default cluster configurations to be
+  applied to all clusters born-in-fleet.
+
+  Fields:
+    binaryAuthorizationConfig: Enable/Disable binary authorization features
+      for the cluster.
+    securityPostureConfig: Enable/Disable Security Posture features for the
+      cluster.
+  """
+
+  binaryAuthorizationConfig = _messages.MessageField('BinaryAuthorizationConfig', 1)
+  securityPostureConfig = _messages.MessageField('SecurityPostureConfig', 2)
+
+
 class DeleteReferenceRequest(_messages.Message):
   r"""The DeleteReferenceRequest request.
 
@@ -1723,6 +1773,8 @@ class Fleet(_messages.Message):
 
   Fields:
     createTime: Output only. When the Fleet was created.
+    defaultClusterConfig: The default cluster configurations to apply across
+      the fleet.
     deleteTime: Output only. When the Fleet was deleted.
     displayName: Optional. A user-assigned display name of the Fleet. When
       present, it must be between 4 to 30 characters. Allowed characters are:
@@ -1765,13 +1817,14 @@ class Fleet(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  deleteTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  state = _messages.MessageField('FleetLifecycleState', 6)
-  uid = _messages.StringField(7)
-  updateTime = _messages.StringField(8)
+  defaultClusterConfig = _messages.MessageField('DefaultClusterConfig', 2)
+  deleteTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  state = _messages.MessageField('FleetLifecycleState', 7)
+  uid = _messages.StringField(8)
+  updateTime = _messages.StringField(9)
 
 
 class FleetLifecycleState(_messages.Message):
@@ -2996,28 +3049,7 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
-class HelloWorldFeatureSpec(_messages.Message):
-  r"""**Hello World**: The Hub-wide input for the HelloWorld feature.
-
-  Fields:
-    customConfig: Custom config for the HelloWorld controller codelab. This
-      should be a textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
-      testing.
-  """
-
-  customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
-
-
-class HelloWorldFeatureState(_messages.Message):
-  r"""**Hello World**: An empty state left as an example Hub-wide Feature
-  state.
-  """
-
-
-
-class HelloWorldFeatureTest(_messages.Message):
+class HelloWorldFeatureSample(_messages.Message):
   r"""Represents message used in feature e2e create/mutate testing.
 
   Enums:
@@ -3111,6 +3143,27 @@ class HelloWorldFeatureTest(_messages.Message):
   third = _messages.EnumField('ThirdValueValuesEnum', 9)
 
 
+class HelloWorldFeatureSpec(_messages.Message):
+  r"""**Hello World**: The Hub-wide input for the HelloWorld feature.
+
+  Fields:
+    customConfig: Custom config for the HelloWorld controller codelab. This
+      should be a textpb string.
+    featureSample: Message to hold fields to use in feature e2e create/mutate
+      testing.
+  """
+
+  customConfig = _messages.StringField(1)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
+
+
+class HelloWorldFeatureState(_messages.Message):
+  r"""**Hello World**: An empty state left as an example Hub-wide Feature
+  state.
+  """
+
+
+
 class HelloWorldFooBar(_messages.Message):
   r"""Nested Message.
 
@@ -3129,12 +3182,12 @@ class HelloWorldMembershipSpec(_messages.Message):
   Fields:
     customConfig: Custom config for individual memberships. This should be a
       textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
+    featureSample: Message to hold fields to use in feature e2e create/mutate
       testing.
   """
 
   customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
 
 
 class HelloWorldMembershipState(_messages.Message):
@@ -3150,12 +3203,12 @@ class HelloWorldScopeSpec(_messages.Message):
   Fields:
     customConfig: Custom config for individual memberships. This should be a
       textpb string.
-    featureTest: Message to hold fields to use in feature e2e create/mutate
+    featureSample: Message to hold fields to use in feature e2e create/mutate
       testing.
   """
 
   customConfig = _messages.StringField(1)
-  featureTest = _messages.MessageField('HelloWorldFeatureTest', 2)
+  featureSample = _messages.MessageField('HelloWorldFeatureSample', 2)
 
 
 class HelloWorldScopeState(_messages.Message):
@@ -4026,9 +4079,6 @@ class MembershipEndpoint(_messages.Message):
   r"""MembershipEndpoint contains information needed to contact a Kubernetes
   API, endpoint and any additional Kubernetes metadata.
 
-  Enums:
-    ModeValueValuesEnum: Immutable. The management mode of this membership.
-
   Fields:
     applianceCluster: Optional. Specific information for a GDC Edge Appliance
       cluster.
@@ -4043,7 +4093,6 @@ class MembershipEndpoint(_messages.Message):
       registered to one and only one Hub Membership. * Propagate Workload Pool
       Information available in the Membership Authority field. * Ensure proper
       initial configuration of default Hub Features.
-    mode: Immutable. The management mode of this membership.
     multiCloudCluster: Optional. Specific information for a GKE Multi-Cloud
       cluster.
     onPremCluster: Optional. Specific information for a GKE On-Prem cluster.
@@ -4051,25 +4100,14 @@ class MembershipEndpoint(_messages.Message):
       this field, it should have a nil "type" instead.
   """
 
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Immutable. The management mode of this membership.
-
-    Values:
-      MODE_UNSPECIFIED: The mode is not set.
-      AUTOFLEET: Membership is being managed in autofleet mode.
-    """
-    MODE_UNSPECIFIED = 0
-    AUTOFLEET = 1
-
   applianceCluster = _messages.MessageField('ApplianceCluster', 1)
   edgeCluster = _messages.MessageField('EdgeCluster', 2)
   gkeCluster = _messages.MessageField('GkeCluster', 3)
   googleManaged = _messages.BooleanField(4)
   kubernetesMetadata = _messages.MessageField('KubernetesMetadata', 5)
   kubernetesResource = _messages.MessageField('KubernetesResource', 6)
-  mode = _messages.EnumField('ModeValueValuesEnum', 7)
-  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 8)
-  onPremCluster = _messages.MessageField('OnPremCluster', 9)
+  multiCloudCluster = _messages.MessageField('MultiCloudCluster', 7)
+  onPremCluster = _messages.MessageField('OnPremCluster', 8)
 
 
 class MembershipFeatureSpec(_messages.Message):
@@ -4086,6 +4124,7 @@ class MembershipFeatureSpec(_messages.Message):
       default. This field can be updated by users by either overriding a
       Membership config (updated to USER implicitly) or setting to FLEET
       explicitly.
+    policycontroller: Policy Controller spec.
   """
 
   configmanagement = _messages.MessageField('ConfigManagementMembershipSpec', 1)
@@ -4094,6 +4133,7 @@ class MembershipFeatureSpec(_messages.Message):
   identityservice = _messages.MessageField('IdentityServiceMembershipSpec', 4)
   mesh = _messages.MessageField('ServiceMeshMembershipSpec', 5)
   origin = _messages.MessageField('Origin', 6)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipSpec', 7)
 
 
 class MembershipFeatureState(_messages.Message):
@@ -4106,6 +4146,7 @@ class MembershipFeatureState(_messages.Message):
     fleetobservability: Fleet observability membership state.
     helloworld: Hello World-specific state.
     identityservice: Identity Service-specific state.
+    policycontroller: Policycontroller-specific state.
     servicemesh: Service Mesh-specific state.
     state: The high-level state of this Feature for a single membership.
   """
@@ -4115,8 +4156,9 @@ class MembershipFeatureState(_messages.Message):
   fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 3)
   helloworld = _messages.MessageField('HelloWorldMembershipState', 4)
   identityservice = _messages.MessageField('IdentityServiceMembershipState', 5)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 6)
-  state = _messages.MessageField('FeatureState', 7)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 6)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 7)
+  state = _messages.MessageField('FeatureState', 8)
 
 
 class MembershipState(_messages.Message):
@@ -4631,6 +4673,548 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
+class PolicyBinding(_messages.Message):
+  r"""Binauthz policy that applies to this cluster.
+
+  Fields:
+    name: The relative resource name of the binauthz platform policy to audit.
+      GKE platform policies have the following format:
+      `projects/{project_number}/platforms/gke/policies/{policy_id}`.
+  """
+
+  name = _messages.StringField(1)
+
+
+class PolicyControllerBundleInstallSpec(_messages.Message):
+  r"""BundleInstallSpec is the specification configuration for a single
+  managed bundle.
+
+  Fields:
+    exemptedNamespaces: The set of namespaces to be exempted from the bundle.
+  """
+
+  exemptedNamespaces = _messages.StringField(1, repeated=True)
+
+
+class PolicyControllerHubConfig(_messages.Message):
+  r"""Configuration for Policy Controller
+
+  Enums:
+    InstallSpecValueValuesEnum: The install_spec represents the intended state
+      specified by the latest request that mutated install_spec in the feature
+      spec, not the lifecycle state of the feature observed by the Hub feature
+      controller that is reported in the feature state.
+
+  Messages:
+    DeploymentConfigsValue: Map of deployment configs to deployments
+      ("admission", "audit", "mutation').
+
+  Fields:
+    auditIntervalSeconds: Sets the interval for Policy Controller Audit Scans
+      (in seconds). When set to 0, this disables audit functionality
+      altogether.
+    constraintViolationLimit: The maximum number of audit violations to be
+      stored in a constraint. If not set, the internal default (currently 20)
+      will be used.
+    deploymentConfigs: Map of deployment configs to deployments ("admission",
+      "audit", "mutation').
+    exemptableNamespaces: The set of namespaces that are excluded from Policy
+      Controller checks. Namespaces do not need to currently exist on the
+      cluster.
+    installSpec: The install_spec represents the intended state specified by
+      the latest request that mutated install_spec in the feature spec, not
+      the lifecycle state of the feature observed by the Hub feature
+      controller that is reported in the feature state.
+    logDeniesEnabled: Logs all denies and dry run failures.
+    monitoring: Monitoring specifies the configuration of monitoring.
+    mutationEnabled: Enables the ability to mutate resources using Policy
+      Controller.
+    policyContent: Specifies the desired policy content on the cluster
+    referentialRulesEnabled: Enables the ability to use Constraint Templates
+      that reference to objects other than the object currently being
+      evaluated.
+  """
+
+  class InstallSpecValueValuesEnum(_messages.Enum):
+    r"""The install_spec represents the intended state specified by the latest
+    request that mutated install_spec in the feature spec, not the lifecycle
+    state of the feature observed by the Hub feature controller that is
+    reported in the feature state.
+
+    Values:
+      INSTALL_SPEC_UNSPECIFIED: Spec is unknown.
+      INSTALL_SPEC_NOT_INSTALLED: Request to uninstall Policy Controller.
+      INSTALL_SPEC_ENABLED: Request to install and enable Policy Controller.
+      INSTALL_SPEC_SUSPENDED: Request to suspend Policy Controller i.e. its
+        webhooks. If Policy Controller is not installed, it will be installed
+        but suspended.
+      INSTALL_SPEC_DETACHED: Request to stop all reconciliation actions by
+        PoCo Hub controller. This is a breakglass mechanism to stop PoCo Hub
+        from affecting cluster resources.
+    """
+    INSTALL_SPEC_UNSPECIFIED = 0
+    INSTALL_SPEC_NOT_INSTALLED = 1
+    INSTALL_SPEC_ENABLED = 2
+    INSTALL_SPEC_SUSPENDED = 3
+    INSTALL_SPEC_DETACHED = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DeploymentConfigsValue(_messages.Message):
+    r"""Map of deployment configs to deployments ("admission", "audit",
+    "mutation').
+
+    Messages:
+      AdditionalProperty: An additional property for a DeploymentConfigsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        DeploymentConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DeploymentConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerPolicyControllerDeploymentConfig attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerPolicyControllerDeploymentConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  auditIntervalSeconds = _messages.IntegerField(1)
+  constraintViolationLimit = _messages.IntegerField(2)
+  deploymentConfigs = _messages.MessageField('DeploymentConfigsValue', 3)
+  exemptableNamespaces = _messages.StringField(4, repeated=True)
+  installSpec = _messages.EnumField('InstallSpecValueValuesEnum', 5)
+  logDeniesEnabled = _messages.BooleanField(6)
+  monitoring = _messages.MessageField('PolicyControllerMonitoringConfig', 7)
+  mutationEnabled = _messages.BooleanField(8)
+  policyContent = _messages.MessageField('PolicyControllerPolicyContentSpec', 9)
+  referentialRulesEnabled = _messages.BooleanField(10)
+
+
+class PolicyControllerMembershipSpec(_messages.Message):
+  r"""**Policy Controller**: Configuration for a single cluster. Intended to
+  parallel the PolicyController CR.
+
+  Fields:
+    policyControllerHubConfig: Policy Controller configuration for the
+      cluster.
+    version: Version of Policy Controller installed.
+  """
+
+  policyControllerHubConfig = _messages.MessageField('PolicyControllerHubConfig', 1)
+  version = _messages.StringField(2)
+
+
+class PolicyControllerMembershipState(_messages.Message):
+  r"""**Policy Controller**: State for a single cluster.
+
+  Enums:
+    StateValueValuesEnum: The overall Policy Controller lifecycle state
+      observed by the Hub Feature controller.
+
+  Messages:
+    ComponentStatesValue: Currently these include (also serving as map keys):
+      1. "admission" 2. "audit" 3. "mutation"
+
+  Fields:
+    componentStates: Currently these include (also serving as map keys): 1.
+      "admission" 2. "audit" 3. "mutation"
+    policyContentState: The overall content state observed by the Hub Feature
+      controller.
+    state: The overall Policy Controller lifecycle state observed by the Hub
+      Feature controller.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The overall Policy Controller lifecycle state observed by the Hub
+    Feature controller.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      NOT_INSTALLED: The PC does not exist on the given cluster, and no k8s
+        resources of any type that are associated with the PC should exist
+        there. The cluster does not possess a membership with the PCH.
+      INSTALLING: The PCH possesses a Membership, however the PC is not fully
+        installed on the cluster. In this state the hub can be expected to be
+        taking actions to install the PC on the cluster.
+      ACTIVE: The PC is fully installed on the cluster and in an operational
+        mode. In this state PCH will be reconciling state with the PC, and the
+        PC will be performing it's operational tasks per that software.
+        Entering a READY state requires that the hub has confirmed the PC is
+        installed and its pods are operational with the version of the PC the
+        PCH expects.
+      UPDATING: The PC is fully installed, but in the process of changing the
+        configuration (including changing the version of PC either up and
+        down, or modifying the manifests of PC) of the resources running on
+        the cluster. The PCH has a Membership, is aware of the version the
+        cluster should be running in, but has not confirmed for itself that
+        the PC is running with that version.
+      DECOMMISSIONING: The PC may have resources on the cluster, but the PCH
+        wishes to remove the Membership. The Membership still exists.
+      CLUSTER_ERROR: The PC is not operational, and the PCH is unable to act
+        to make it operational. Entering a CLUSTER_ERROR state happens
+        automatically when the PCH determines that a PC installed on the
+        cluster is non-operative or that the cluster does not meet
+        requirements set for the PCH to administer the cluster but has
+        nevertheless been given an instruction to do so (such as 'install').
+      HUB_ERROR: In this state, the PC may still be operational, and only the
+        PCH is unable to act. The hub should not issue instructions to change
+        the PC state, or otherwise interfere with the on-cluster resources.
+        Entering a HUB_ERROR state happens automatically when the PCH
+        determines the hub is in an unhealthy state and it wishes to 'take
+        hands off' to avoid corrupting the PC or other data.
+      SUSPENDED: Policy Controller (PC) is installed but suspended. This means
+        that the policies are not enforced, but violations are still recorded
+        (through audit).
+      DETACHED: PoCo Hub is not taking any action to reconcile cluster
+        objects. Changes to those objects will not be overwritten by PoCo Hub.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLING = 2
+    ACTIVE = 3
+    UPDATING = 4
+    DECOMMISSIONING = 5
+    CLUSTER_ERROR = 6
+    HUB_ERROR = 7
+    SUSPENDED = 8
+    DETACHED = 9
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ComponentStatesValue(_messages.Message):
+    r"""Currently these include (also serving as map keys): 1. "admission" 2.
+    "audit" 3. "mutation"
+
+    Messages:
+      AdditionalProperty: An additional property for a ComponentStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ComponentStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ComponentStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerOnClusterState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerOnClusterState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  componentStates = _messages.MessageField('ComponentStatesValue', 1)
+  policyContentState = _messages.MessageField('PolicyControllerPolicyContentState', 2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+
+
+class PolicyControllerMonitoringConfig(_messages.Message):
+  r"""MonitoringConfig specifies the backends Policy Controller should export
+  metrics to. For example, to specify metrics should be exported to Cloud
+  Monitoring and Prometheus, specify backends: ["cloudmonitoring",
+  "prometheus"]
+
+  Enums:
+    BackendsValueListEntryValuesEnum:
+
+  Fields:
+    backends: Specifies the list of backends Policy Controller will export to.
+      An empty list would effectively disable metrics export.
+  """
+
+  class BackendsValueListEntryValuesEnum(_messages.Enum):
+    r"""BackendsValueListEntryValuesEnum enum type.
+
+    Values:
+      MONITORING_BACKEND_UNSPECIFIED: Backend cannot be determined
+      PROMETHEUS: Prometheus backend for monitoring
+      CLOUD_MONITORING: Stackdriver/Cloud Monitoring backend for monitoring
+    """
+    MONITORING_BACKEND_UNSPECIFIED = 0
+    PROMETHEUS = 1
+    CLOUD_MONITORING = 2
+
+  backends = _messages.EnumField('BackendsValueListEntryValuesEnum', 1, repeated=True)
+
+
+class PolicyControllerOnClusterState(_messages.Message):
+  r"""OnClusterState represents the state of a sub-component of Policy
+  Controller.
+
+  Enums:
+    StateValueValuesEnum: The lifecycle state of this component.
+
+  Fields:
+    details: Surface potential errors or information logs.
+    state: The lifecycle state of this component.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The lifecycle state of this component.
+
+    Values:
+      LIFECYCLE_STATE_UNSPECIFIED: The lifecycle state is unspecified.
+      NOT_INSTALLED: The PC does not exist on the given cluster, and no k8s
+        resources of any type that are associated with the PC should exist
+        there. The cluster does not possess a membership with the PCH.
+      INSTALLING: The PCH possesses a Membership, however the PC is not fully
+        installed on the cluster. In this state the hub can be expected to be
+        taking actions to install the PC on the cluster.
+      ACTIVE: The PC is fully installed on the cluster and in an operational
+        mode. In this state PCH will be reconciling state with the PC, and the
+        PC will be performing it's operational tasks per that software.
+        Entering a READY state requires that the hub has confirmed the PC is
+        installed and its pods are operational with the version of the PC the
+        PCH expects.
+      UPDATING: The PC is fully installed, but in the process of changing the
+        configuration (including changing the version of PC either up and
+        down, or modifying the manifests of PC) of the resources running on
+        the cluster. The PCH has a Membership, is aware of the version the
+        cluster should be running in, but has not confirmed for itself that
+        the PC is running with that version.
+      DECOMMISSIONING: The PC may have resources on the cluster, but the PCH
+        wishes to remove the Membership. The Membership still exists.
+      CLUSTER_ERROR: The PC is not operational, and the PCH is unable to act
+        to make it operational. Entering a CLUSTER_ERROR state happens
+        automatically when the PCH determines that a PC installed on the
+        cluster is non-operative or that the cluster does not meet
+        requirements set for the PCH to administer the cluster but has
+        nevertheless been given an instruction to do so (such as 'install').
+      HUB_ERROR: In this state, the PC may still be operational, and only the
+        PCH is unable to act. The hub should not issue instructions to change
+        the PC state, or otherwise interfere with the on-cluster resources.
+        Entering a HUB_ERROR state happens automatically when the PCH
+        determines the hub is in an unhealthy state and it wishes to 'take
+        hands off' to avoid corrupting the PC or other data.
+      SUSPENDED: Policy Controller (PC) is installed but suspended. This means
+        that the policies are not enforced, but violations are still recorded
+        (through audit).
+      DETACHED: PoCo Hub is not taking any action to reconcile cluster
+        objects. Changes to those objects will not be overwritten by PoCo Hub.
+    """
+    LIFECYCLE_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLING = 2
+    ACTIVE = 3
+    UPDATING = 4
+    DECOMMISSIONING = 5
+    CLUSTER_ERROR = 6
+    HUB_ERROR = 7
+    SUSPENDED = 8
+    DETACHED = 9
+
+  details = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+
+
+class PolicyControllerPolicyContentSpec(_messages.Message):
+  r"""PolicyContentSpec defines the user's desired content configuration on
+  the cluster.
+
+  Messages:
+    BundlesValue: map of bundle name to BundleInstallSpec. The bundle name
+      maps to the `bundleName` key in the
+      `policycontroller.gke.io/constraintData` annotation on a constraint.
+
+  Fields:
+    bundles: map of bundle name to BundleInstallSpec. The bundle name maps to
+      the `bundleName` key in the `policycontroller.gke.io/constraintData`
+      annotation on a constraint.
+    templateLibrary: Configures the installation of the Template Library.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BundlesValue(_messages.Message):
+    r"""map of bundle name to BundleInstallSpec. The bundle name maps to the
+    `bundleName` key in the `policycontroller.gke.io/constraintData`
+    annotation on a constraint.
+
+    Messages:
+      AdditionalProperty: An additional property for a BundlesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type BundlesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BundlesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerBundleInstallSpec attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerBundleInstallSpec', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bundles = _messages.MessageField('BundlesValue', 1)
+  templateLibrary = _messages.MessageField('PolicyControllerTemplateLibraryConfig', 2)
+
+
+class PolicyControllerPolicyContentState(_messages.Message):
+  r"""The state of the policy controller policy content
+
+  Messages:
+    BundleStatesValue: The state of the any bundles included in the chosen
+      version of the manifest
+
+  Fields:
+    bundleStates: The state of the any bundles included in the chosen version
+      of the manifest
+    referentialSyncConfigState: The state of the referential data sync
+      configuration. This could represent the state of either the syncSet
+      object(s) or the config object, depending on the version of PoCo
+      configured by the user.
+    templateLibraryState: The state of the template library
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class BundleStatesValue(_messages.Message):
+    r"""The state of the any bundles included in the chosen version of the
+    manifest
+
+    Messages:
+      AdditionalProperty: An additional property for a BundleStatesValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type BundleStatesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a BundleStatesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A PolicyControllerOnClusterState attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('PolicyControllerOnClusterState', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  bundleStates = _messages.MessageField('BundleStatesValue', 1)
+  referentialSyncConfigState = _messages.MessageField('PolicyControllerOnClusterState', 2)
+  templateLibraryState = _messages.MessageField('PolicyControllerOnClusterState', 3)
+
+
+class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
+  r"""Deployment-specific configuration.
+
+  Enums:
+    PodAffinityValueValuesEnum: Pod affinity configuration.
+
+  Fields:
+    containerResources: Container resource requirements.
+    podAffinity: Pod affinity configuration.
+    podAntiAffinity: Pod anti-affinity enablement.
+    podTolerations: Pod tolerations of node taints.
+    replicaCount: Pod replica count.
+  """
+
+  class PodAffinityValueValuesEnum(_messages.Enum):
+    r"""Pod affinity configuration.
+
+    Values:
+      AFFINITY_UNSPECIFIED: No affinity configuration has been specified.
+      NO_AFFINITY: Affinity configurations will be removed from the
+        deployment.
+      ANTI_AFFINITY: Anti-affinity configuration will be applied to this
+        deployment. Default for admissions deployment.
+    """
+    AFFINITY_UNSPECIFIED = 0
+    NO_AFFINITY = 1
+    ANTI_AFFINITY = 2
+
+  containerResources = _messages.MessageField('PolicyControllerResourceRequirements', 1)
+  podAffinity = _messages.EnumField('PodAffinityValueValuesEnum', 2)
+  podAntiAffinity = _messages.BooleanField(3)
+  podTolerations = _messages.MessageField('PolicyControllerToleration', 4, repeated=True)
+  replicaCount = _messages.IntegerField(5)
+
+
+class PolicyControllerResourceList(_messages.Message):
+  r"""ResourceList contains container resource requirements.
+
+  Fields:
+    cpu: CPU requirement expressed in Kubernetes resource units.
+    memory: Memory requirement expressed in Kubernetes resource units.
+  """
+
+  cpu = _messages.StringField(1)
+  memory = _messages.StringField(2)
+
+
+class PolicyControllerResourceRequirements(_messages.Message):
+  r"""ResourceRequirements describes the compute resource requirements.
+
+  Fields:
+    limits: Limits describes the maximum amount of compute resources allowed
+      for use by the running container.
+    requests: Requests describes the amount of compute resources reserved for
+      the container by the kube-scheduler.
+  """
+
+  limits = _messages.MessageField('PolicyControllerResourceList', 1)
+  requests = _messages.MessageField('PolicyControllerResourceList', 2)
+
+
+class PolicyControllerTemplateLibraryConfig(_messages.Message):
+  r"""The config specifying which default library templates to install.
+
+  Enums:
+    InstallationValueValuesEnum: Configures the manner in which the template
+      library is installed on the cluster.
+
+  Fields:
+    installation: Configures the manner in which the template library is
+      installed on the cluster.
+  """
+
+  class InstallationValueValuesEnum(_messages.Enum):
+    r"""Configures the manner in which the template library is installed on
+    the cluster.
+
+    Values:
+      INSTALLATION_UNSPECIFIED: No installation strategy has been specified.
+      NOT_INSTALLED: Do not install the template library.
+      ALL: Install the entire template library.
+    """
+    INSTALLATION_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    ALL = 2
+
+  installation = _messages.EnumField('InstallationValueValuesEnum', 1)
+
+
+class PolicyControllerToleration(_messages.Message):
+  r"""Toleration of a node taint.
+
+  Fields:
+    effect: Matches a taint effect.
+    key: Matches a taint key (not necessarily unique).
+    operator: Matches a taint operator.
+    value: Matches a taint value.
+  """
+
+  effect = _messages.StringField(1)
+  key = _messages.StringField(2)
+  operator = _messages.StringField(3)
+  value = _messages.StringField(4)
+
+
 class RBACRoleBinding(_messages.Message):
   r"""RBACRoleBinding represents a rbacrolebinding across the Fleet
 
@@ -5050,6 +5634,55 @@ class ScopeLifecycleState(_messages.Message):
     UPDATING = 4
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
+
+
+class SecurityPostureConfig(_messages.Message):
+  r"""SecurityPostureConfig defines the flags needed to enable/disable
+  features for the Security Posture API.
+
+  Enums:
+    ModeValueValuesEnum: Sets which mode to use for Security Posture features.
+    VulnerabilityModeValueValuesEnum: Sets which mode to use for vulnerability
+      scanning.
+
+  Fields:
+    mode: Sets which mode to use for Security Posture features.
+    vulnerabilityMode: Sets which mode to use for vulnerability scanning.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for Security Posture features.
+
+    Values:
+      MODE_UNSPECIFIED: Default value not specified.
+      DISABLED: Disables Security Posture features on the cluster.
+      BASIC: Applies Security Posture features on the cluster.
+      ENTERPRISE: Applies the Security Posture off cluster Enterprise level
+        features.
+    """
+    MODE_UNSPECIFIED = 0
+    DISABLED = 1
+    BASIC = 2
+    ENTERPRISE = 3
+
+  class VulnerabilityModeValueValuesEnum(_messages.Enum):
+    r"""Sets which mode to use for vulnerability scanning.
+
+    Values:
+      VULNERABILITY_MODE_UNSPECIFIED: Default value not specified.
+      VULNERABILITY_DISABLED: Disables vulnerability scanning on the cluster.
+      VULNERABILITY_BASIC: Applies basic vulnerability scanning on the
+        cluster.
+      VULNERABILITY_ENTERPRISE: Applies the Security Posture's vulnerability
+        on cluster Enterprise level features.
+    """
+    VULNERABILITY_MODE_UNSPECIFIED = 0
+    VULNERABILITY_DISABLED = 1
+    VULNERABILITY_BASIC = 2
+    VULNERABILITY_ENTERPRISE = 3
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  vulnerabilityMode = _messages.EnumField('VulnerabilityModeValueValuesEnum', 2)
 
 
 class ServiceMeshControlPlaneManagement(_messages.Message):

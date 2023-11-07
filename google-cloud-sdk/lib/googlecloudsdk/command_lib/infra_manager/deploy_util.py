@@ -27,6 +27,7 @@ from apitools.base.py import exceptions as apitools_exceptions
 from apitools.base.py import extra_types
 from googlecloudsdk.api_lib.infra_manager import configmanager_util
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.calliope import exceptions as c_exceptions
 from googlecloudsdk.command_lib.infra_manager import deterministic_snapshot
 from googlecloudsdk.command_lib.infra_manager import errors
@@ -36,6 +37,7 @@ from googlecloudsdk.core import resources
 from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import times
 import six
+
 
 if sys.version_info >= (3, 6):
   # pylint: disable=g-import-not-at-top
@@ -388,6 +390,19 @@ def Apply(
 
   location = deployment_ref.Parent().Name()
 
+  # Check if a deployment with the given name already exists. If it does, we'll
+  # update that deployment. If not, we'll create it.
+  try:
+    existing_deployment = configmanager_util.GetDeployment(deployment_full_name)
+  except apitools_exceptions.HttpNotFoundError:
+    existing_deployment = None
+
+  if existing_deployment is not None:
+    # cleanup objects before uploading any new staging object
+    _CleanupGCSStagingObjectsNotInUse(
+        location, deployment_full_name, deployment_id
+    )
+
   tf_blueprint = _CreateTFBlueprint(
       messages,
       deployment_id,
@@ -413,13 +428,6 @@ def Apply(
 
   if artifacts_gcs_bucket is not None:
     deployment.artifactsGcsBucket = artifacts_gcs_bucket
-
-  # Check if a deployment with the given name already exists. If it does, we'll
-  # update that deployment. If not, we'll create it.
-  try:
-    existing_deployment = configmanager_util.GetDeployment(deployment_full_name)
-  except apitools_exceptions.HttpNotFoundError:
-    existing_deployment = None
 
   is_creating_deployment = existing_deployment is None
   op = None
@@ -741,3 +749,86 @@ def UnlockDeployment(
     raise errors.OperationFailedError('Unlock deployment operation failed.')
 
   return unlock_response
+
+
+def _CleanupGCSStagingObjectsNotInUse(
+    location, deployment_full_name, deployment_id
+):
+  """Deletes staging object for all revisions except for last successful revision.
+
+  Args:
+    location: The location of deployment.
+    deployment_full_name: string, the fully qualified name of the deployment,
+      e.g. "projects/p/locations/l/deployments/d".
+    deployment_id: the short name of the deployment.
+
+  Raises:
+    NotFoundError: If the bucket or folder does not exist.
+  """
+
+  gcs_client = storage_api.StorageClient()
+  gcs_staging_dir = staging_bucket_util.DefaultGCSStagingDir(
+      deployment_id, location
+  )
+  gcs_staging_dir_ref = resources.REGISTRY.Parse(
+      gcs_staging_dir, collection='storage.objects'
+  )
+  bucket_ref = storage_util.BucketReference(gcs_staging_dir_ref.bucket)
+
+  items = []
+  try:
+    items = gcs_client.ListBucket(bucket_ref, gcs_staging_dir_ref.object)
+  except storage_api.BucketNotFoundError:
+    # if staging bucket does not exist, do nothing
+    pass
+
+  staged_objects = set()
+  items_found = False
+  for item in items:
+    items_found = True
+    item_dir = '/'.join(item.name.split('/')[:4])
+    staged_objects.add(
+        'gs://{0}/{1}'.format(gcs_staging_dir_ref.bucket, item_dir)
+    )
+  if not items_found:
+    return
+  op = configmanager_util.ListRevisions(deployment_full_name)
+  revisions = sorted(
+      op.revisions, key=lambda x: GetRevisionNumber(x.name), reverse=True
+  )
+
+  # discard gcsSource in latest revision from being deleted
+  lastest_revision = revisions[0]
+  if lastest_revision.terraformBlueprint is not None:
+    staged_objects.discard(lastest_revision.terraformBlueprint.gcsSource)
+
+  # discard staged object for last successful revision from being deleted
+  for revision in revisions:
+    if str(revision.state) == 'APPLIED':
+      if revision.terraformBlueprint is not None:
+        staged_objects.discard(revision.terraformBlueprint.gcsSource)
+      break
+
+  for obj in staged_objects:
+    staging_bucket_util.DeleteStagingGCSFolder(gcs_client, obj)
+
+
+def GetRevisionNumber(revision_full_name):
+  """Returns the revision number from the revision name.
+
+     e.g. - returns 12 for
+     projects/p1/locations/l1/deployments/d1/revisions/r-12.
+
+  Args:
+    revision_full_name: string, the fully qualified name of the revision, e.g.
+      "projects/p/locations/l/deployments/d/revisions/r-12".
+
+  Returns:
+    a revision number.
+  """
+  revision_ref = resources.REGISTRY.Parse(
+      revision_full_name,
+      collection='config.projects.locations.deployments.revisions',
+  )
+  revision_short_name = revision_ref.Name()
+  return int(revision_short_name[2:])

@@ -6198,3 +6198,57 @@ def AddEnableBackupRestoreFlag(parser):
       help=help_text,
       hidden=False,
   )
+
+
+def AddConvertToAutopilotFlag(parser, hidden=True):
+  """Adds --convert-to-autopilot flag to parser."""
+
+  help_text = """\
+Convert the given standard cluster to Autopilot.
+"""
+
+  parser.add_argument(
+      '--convert-to-autopilot',
+      default=None,
+      help=help_text,
+      action='store_true',
+      hidden=hidden,
+  )
+
+
+def AddCompleteConvertToAutopilotFlag(parser, hidden=True):
+  """Adds --complete-convert-to-autopilot flag to parser."""
+
+  help_text = """\
+Commit the Autopilot conversion operation by deleting all Standard node pools
+and completing CA rotation. This action requires that a conversion has been
+started and that workload migration has completed, with no pods running on GKE
+Standard node pools.
+
+This action will be automatically performed 72 hours after conversion.
+"""
+
+  parser.add_argument(
+      '--complete-convert-to-autopilot',
+      default=None,
+      help=help_text,
+      action='store_true',
+      hidden=hidden,
+  )
+
+
+def AddConvertToStandardFlag(parser, hidden=True):
+  """Adds --convert-to-standard flag to parser."""
+
+  help_text = """\
+Convert the given Autopilot cluster to Standard. It can also be used to rollback
+the Autopilot conversion during or after workload migration.
+"""
+
+  parser.add_argument(
+      '--convert-to-standard',
+      default=None,
+      help=help_text,
+      action='store_true',
+      hidden=hidden,
+  )

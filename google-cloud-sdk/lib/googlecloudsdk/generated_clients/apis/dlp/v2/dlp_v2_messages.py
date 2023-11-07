@@ -115,17 +115,17 @@ class DlpOrganizationsDeidentifyTemplatesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc,update_time, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the template was created. -
       `update_time`: corresponds to the time the template was last updated. -
       `name`: corresponds to the template's name. - `display_name`:
       corresponds to the template's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListDeidentifyTemplates`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListDeidentifyTemplates`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -225,17 +225,17 @@ class DlpOrganizationsInspectTemplatesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc,update_time, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the template was created. -
       `update_time`: corresponds to the time the template was last updated. -
       `name`: corresponds to the template's name. - `display_name`:
       corresponds to the template's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListInspectTemplates`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListInspectTemplates`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -335,17 +335,17 @@ class DlpOrganizationsLocationsDeidentifyTemplatesListRequest(_messages.Message)
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc,update_time, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the template was created. -
       `update_time`: corresponds to the time the template was last updated. -
       `name`: corresponds to the template's name. - `display_name`:
       corresponds to the template's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListDeidentifyTemplates`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListDeidentifyTemplates`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -386,6 +386,89 @@ class DlpOrganizationsLocationsDeidentifyTemplatesPatchRequest(_messages.Message
   name = _messages.StringField(2, required=True)
 
 
+class DlpOrganizationsLocationsDiscoveryConfigsCreateRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsDiscoveryConfigsCreateRequest object.
+
+  Fields:
+    googlePrivacyDlpV2CreateDiscoveryConfigRequest: A
+      GooglePrivacyDlpV2CreateDiscoveryConfigRequest resource to be passed as
+      the request body.
+    parent: Required. Parent resource name. The format of this value is as
+      follows: `projects/`PROJECT_ID`/locations/`LOCATION_ID The following
+      example `parent` string specifies a parent project with the identifier
+      `example-project`, and specifies the `europe-west3` location for
+      processing data: parent=projects/example-project/locations/europe-west3
+  """
+
+  googlePrivacyDlpV2CreateDiscoveryConfigRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDiscoveryConfigRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DlpOrganizationsLocationsDiscoveryConfigsDeleteRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsDiscoveryConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the project and the config, for example
+      `projects/dlp-test-project/discoveryConfigs/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsDiscoveryConfigsGetRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsDiscoveryConfigsGetRequest object.
+
+  Fields:
+    name: Required. Resource name of the project and the configuration, for
+      example `projects/dlp-test-project/discoveryConfigs/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpOrganizationsLocationsDiscoveryConfigsListRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsDiscoveryConfigsListRequest object.
+
+  Fields:
+    orderBy: Comma separated list of config fields to order by, followed by
+      `asc` or `desc` postfix. This list is case insensitive. The default
+      sorting order is ascending. Redundant space characters are
+      insignificant. Example: `name asc,update_time, create_time desc`
+      Supported fields are: - `last_run_time`: corresponds to the last time
+      the DiscoveryConfig ran. - `name`: corresponds to the DiscoveryConfig's
+      name. - `status`: corresponds to DiscoveryConfig's status.
+    pageSize: Size of the page. This value can be limited by a server.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to ListDiscoveryConfigs. `order_by` field must not change for subsequent
+      calls.
+    parent: Required. Parent resource name. The format of this value is as
+      follows: `projects/`PROJECT_ID`/locations/`LOCATION_ID The following
+      example `parent` string specifies a parent project with the identifier
+      `example-project`, and specifies the `europe-west3` location for
+      processing data: parent=projects/example-project/locations/europe-west3
+  """
+
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DlpOrganizationsLocationsDiscoveryConfigsPatchRequest(_messages.Message):
+  r"""A DlpOrganizationsLocationsDiscoveryConfigsPatchRequest object.
+
+  Fields:
+    googlePrivacyDlpV2UpdateDiscoveryConfigRequest: A
+      GooglePrivacyDlpV2UpdateDiscoveryConfigRequest resource to be passed as
+      the request body.
+    name: Required. Resource name of the project and the configuration, for
+      example `projects/dlp-test-project/discoveryConfigs/53234423`.
+  """
+
+  googlePrivacyDlpV2UpdateDiscoveryConfigRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateDiscoveryConfigRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
   r"""A DlpOrganizationsLocationsDlpJobsListRequest object.
 
@@ -413,9 +496,9 @@ class DlpOrganizationsLocationsDlpJobsListRequest(_messages.Message):
       than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc, end_time asc, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc, end_time asc, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the job was created. -
       `end_time`: corresponds to the time the job ended. - `name`: corresponds
       to the job's name. - `state`: corresponds to `state`
@@ -514,17 +597,17 @@ class DlpOrganizationsLocationsInspectTemplatesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc,update_time, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the template was created. -
       `update_time`: corresponds to the time the template was last updated. -
       `name`: corresponds to the template's name. - `display_name`:
       corresponds to the template's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListInspectTemplates`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListInspectTemplates`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -635,8 +718,8 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
       this field should be no more than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of triggeredJob fields to order by, followed
-      by `asc` or `desc` postfix. This list is case-insensitive, default
-      sorting order is ascending, redundant space characters are
+      by `asc` or `desc` postfix. This list is case insensitive. The default
+      sorting order is ascending. Redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
       Supported fields are: - `create_time`: corresponds to the time the
       JobTrigger was created. - `update_time`: corresponds to the time the
@@ -644,9 +727,10 @@ class DlpOrganizationsLocationsJobTriggersListRequest(_messages.Message):
       time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
       - `display_name`: corresponds to the JobTrigger's display name. -
       `status`: corresponds to JobTrigger's status.
-    pageSize: Size of the page, can be limited by a server.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      ListJobTriggers. `order_by` field must not change for subsequent calls.
+    pageSize: Size of the page. This value can be limited by a server.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to ListJobTriggers. `order_by` field must not change for subsequent
+      calls.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
       location](https://cloud.google.com/dlp/docs/specifying-location): +
@@ -753,17 +837,17 @@ class DlpOrganizationsLocationsStoredInfoTypesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc, display_name, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc, display_name, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListStoredInfoTypes`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListStoredInfoTypes`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -857,17 +941,17 @@ class DlpOrganizationsStoredInfoTypesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc, display_name, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc, display_name, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListStoredInfoTypes`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListStoredInfoTypes`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -1032,17 +1116,17 @@ class DlpProjectsDeidentifyTemplatesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc,update_time, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the template was created. -
       `update_time`: corresponds to the time the template was last updated. -
       `name`: corresponds to the template's name. - `display_name`:
       corresponds to the template's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListDeidentifyTemplates`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListDeidentifyTemplates`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -1167,9 +1251,9 @@ class DlpProjectsDlpJobsListRequest(_messages.Message):
       than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc, end_time asc, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc, end_time asc, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the job was created. -
       `end_time`: corresponds to the time the job ended. - `name`: corresponds
       to the job's name. - `state`: corresponds to `state`
@@ -1291,17 +1375,17 @@ class DlpProjectsInspectTemplatesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc,update_time, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the template was created. -
       `update_time`: corresponds to the time the template was last updated. -
       `name`: corresponds to the template's name. - `display_name`:
       corresponds to the template's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListInspectTemplates`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListInspectTemplates`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -1427,8 +1511,8 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       this field should be no more than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of triggeredJob fields to order by, followed
-      by `asc` or `desc` postfix. This list is case-insensitive, default
-      sorting order is ascending, redundant space characters are
+      by `asc` or `desc` postfix. This list is case insensitive. The default
+      sorting order is ascending. Redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
       Supported fields are: - `create_time`: corresponds to the time the
       JobTrigger was created. - `update_time`: corresponds to the time the
@@ -1436,9 +1520,10 @@ class DlpProjectsJobTriggersListRequest(_messages.Message):
       time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
       - `display_name`: corresponds to the JobTrigger's display name. -
       `status`: corresponds to JobTrigger's status.
-    pageSize: Size of the page, can be limited by a server.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      ListJobTriggers. `order_by` field must not change for subsequent calls.
+    pageSize: Size of the page. This value can be limited by a server.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to ListJobTriggers. `order_by` field must not change for subsequent
+      calls.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
       location](https://cloud.google.com/dlp/docs/specifying-location): +
@@ -1616,17 +1701,17 @@ class DlpProjectsLocationsDeidentifyTemplatesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc,update_time, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the template was created. -
       `update_time`: corresponds to the time the template was last updated. -
       `name`: corresponds to the template's name. - `display_name`:
       corresponds to the template's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListDeidentifyTemplates`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListDeidentifyTemplates`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -1664,6 +1749,89 @@ class DlpProjectsLocationsDeidentifyTemplatesPatchRequest(_messages.Message):
   """
 
   googlePrivacyDlpV2UpdateDeidentifyTemplateRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class DlpProjectsLocationsDiscoveryConfigsCreateRequest(_messages.Message):
+  r"""A DlpProjectsLocationsDiscoveryConfigsCreateRequest object.
+
+  Fields:
+    googlePrivacyDlpV2CreateDiscoveryConfigRequest: A
+      GooglePrivacyDlpV2CreateDiscoveryConfigRequest resource to be passed as
+      the request body.
+    parent: Required. Parent resource name. The format of this value is as
+      follows: `projects/`PROJECT_ID`/locations/`LOCATION_ID The following
+      example `parent` string specifies a parent project with the identifier
+      `example-project`, and specifies the `europe-west3` location for
+      processing data: parent=projects/example-project/locations/europe-west3
+  """
+
+  googlePrivacyDlpV2CreateDiscoveryConfigRequest = _messages.MessageField('GooglePrivacyDlpV2CreateDiscoveryConfigRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class DlpProjectsLocationsDiscoveryConfigsDeleteRequest(_messages.Message):
+  r"""A DlpProjectsLocationsDiscoveryConfigsDeleteRequest object.
+
+  Fields:
+    name: Required. Resource name of the project and the config, for example
+      `projects/dlp-test-project/discoveryConfigs/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsDiscoveryConfigsGetRequest(_messages.Message):
+  r"""A DlpProjectsLocationsDiscoveryConfigsGetRequest object.
+
+  Fields:
+    name: Required. Resource name of the project and the configuration, for
+      example `projects/dlp-test-project/discoveryConfigs/53234423`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class DlpProjectsLocationsDiscoveryConfigsListRequest(_messages.Message):
+  r"""A DlpProjectsLocationsDiscoveryConfigsListRequest object.
+
+  Fields:
+    orderBy: Comma separated list of config fields to order by, followed by
+      `asc` or `desc` postfix. This list is case insensitive. The default
+      sorting order is ascending. Redundant space characters are
+      insignificant. Example: `name asc,update_time, create_time desc`
+      Supported fields are: - `last_run_time`: corresponds to the last time
+      the DiscoveryConfig ran. - `name`: corresponds to the DiscoveryConfig's
+      name. - `status`: corresponds to DiscoveryConfig's status.
+    pageSize: Size of the page. This value can be limited by a server.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to ListDiscoveryConfigs. `order_by` field must not change for subsequent
+      calls.
+    parent: Required. Parent resource name. The format of this value is as
+      follows: `projects/`PROJECT_ID`/locations/`LOCATION_ID The following
+      example `parent` string specifies a parent project with the identifier
+      `example-project`, and specifies the `europe-west3` location for
+      processing data: parent=projects/example-project/locations/europe-west3
+  """
+
+  orderBy = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class DlpProjectsLocationsDiscoveryConfigsPatchRequest(_messages.Message):
+  r"""A DlpProjectsLocationsDiscoveryConfigsPatchRequest object.
+
+  Fields:
+    googlePrivacyDlpV2UpdateDiscoveryConfigRequest: A
+      GooglePrivacyDlpV2UpdateDiscoveryConfigRequest resource to be passed as
+      the request body.
+    name: Required. Resource name of the project and the configuration, for
+      example `projects/dlp-test-project/discoveryConfigs/53234423`.
+  """
+
+  googlePrivacyDlpV2UpdateDiscoveryConfigRequest = _messages.MessageField('GooglePrivacyDlpV2UpdateDiscoveryConfigRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -1780,9 +1948,9 @@ class DlpProjectsLocationsDlpJobsListRequest(_messages.Message):
       than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc, end_time asc, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc, end_time asc, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the job was created. -
       `end_time`: corresponds to the time the job ended. - `name`: corresponds
       to the job's name. - `state`: corresponds to `state`
@@ -1904,17 +2072,17 @@ class DlpProjectsLocationsInspectTemplatesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc,update_time, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc,update_time, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the template was created. -
       `update_time`: corresponds to the time the template was last updated. -
       `name`: corresponds to the template's name. - `display_name`:
       corresponds to the template's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListInspectTemplates`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListInspectTemplates`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -2055,8 +2223,8 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       this field should be no more than 500 characters.
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of triggeredJob fields to order by, followed
-      by `asc` or `desc` postfix. This list is case-insensitive, default
-      sorting order is ascending, redundant space characters are
+      by `asc` or `desc` postfix. This list is case insensitive. The default
+      sorting order is ascending. Redundant space characters are
       insignificant. Example: `name asc,update_time, create_time desc`
       Supported fields are: - `create_time`: corresponds to the time the
       JobTrigger was created. - `update_time`: corresponds to the time the
@@ -2064,9 +2232,10 @@ class DlpProjectsLocationsJobTriggersListRequest(_messages.Message):
       time the JobTrigger ran. - `name`: corresponds to the JobTrigger's name.
       - `display_name`: corresponds to the JobTrigger's display name. -
       `status`: corresponds to JobTrigger's status.
-    pageSize: Size of the page, can be limited by a server.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      ListJobTriggers. `order_by` field must not change for subsequent calls.
+    pageSize: Size of the page. This value can be limited by a server.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to ListJobTriggers. `order_by` field must not change for subsequent
+      calls.
     parent: Required. Parent resource name. The format of this value varies
       depending on whether you have [specified a processing
       location](https://cloud.google.com/dlp/docs/specifying-location): +
@@ -2173,17 +2342,17 @@ class DlpProjectsLocationsStoredInfoTypesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc, display_name, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc, display_name, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListStoredInfoTypes`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListStoredInfoTypes`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -2277,17 +2446,17 @@ class DlpProjectsStoredInfoTypesListRequest(_messages.Message):
   Fields:
     locationId: Deprecated. This field has no effect.
     orderBy: Comma separated list of fields to order by, followed by `asc` or
-      `desc` postfix. This list is case-insensitive, default sorting order is
-      ascending, redundant space characters are insignificant. Example: `name
-      asc, display_name, create_time desc` Supported fields are: -
+      `desc` postfix. This list is case insensitive. The default sorting order
+      is ascending. Redundant space characters are insignificant. Example:
+      `name asc, display_name, create_time desc` Supported fields are: -
       `create_time`: corresponds to the time the most recent version of the
       resource was created. - `state`: corresponds to the state of the
       resource. - `name`: corresponds to resource name. - `display_name`:
       corresponds to info type's display name.
-    pageSize: Size of the page, can be limited by the server. If zero server
-      returns a page of max size 100.
-    pageToken: Page token to continue retrieval. Comes from previous call to
-      `ListStoredInfoTypes`.
+    pageSize: Size of the page. This value can be limited by the server. If
+      zero server returns a page of max size 100.
+    pageToken: Page token to continue retrieval. Comes from the previous call
+      to `ListStoredInfoTypes`.
     parent: Required. Parent resource name. The format of this value varies
       depending on the scope of the request (project or organization) and
       whether you have [specified a processing
@@ -2370,6 +2539,14 @@ class GooglePrivacyDlpV2AllInfoTypes(_messages.Message):
   r"""Apply transformation to all findings."""
 
 
+class GooglePrivacyDlpV2AllOtherBigQueryTables(_messages.Message):
+  r"""Catch-all for all other tables not specified by other filters. Should
+  always be last, except for single-table configurations, which will only have
+  a TableReference target.
+  """
+
+
+
 class GooglePrivacyDlpV2AllText(_messages.Message):
   r"""Apply to all text."""
 
@@ -2419,6 +2596,26 @@ class GooglePrivacyDlpV2AuxiliaryTable(_messages.Message):
   quasiIds = _messages.MessageField('GooglePrivacyDlpV2QuasiIdField', 1, repeated=True)
   relativeFrequency = _messages.MessageField('GooglePrivacyDlpV2FieldId', 2)
   table = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 3)
+
+
+class GooglePrivacyDlpV2BigQueryDiscoveryTarget(_messages.Message):
+  r"""Target used to match against for discovery with BigQuery tables
+
+  Fields:
+    cadence: How often and when to update profiles. New tables that match both
+      the filter and conditions are scanned as quickly as possible depending
+      on system capacity.
+    conditions: In addition to matching the filter, these conditions must be
+      true before a profile is generated.
+    disabled: Tables that match this filter will not have profiles created.
+    filter: Required. The tables the discovery cadence applies to. The first
+      target with a matching filter will be the one to apply to a table.
+  """
+
+  cadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryGenerationCadence', 1)
+  conditions = _messages.MessageField('GooglePrivacyDlpV2DiscoveryBigQueryConditions', 2)
+  disabled = _messages.MessageField('GooglePrivacyDlpV2Disabled', 3)
+  filter = _messages.MessageField('GooglePrivacyDlpV2DiscoveryBigQueryFilter', 4)
 
 
 class GooglePrivacyDlpV2BigQueryField(_messages.Message):
@@ -2506,6 +2703,37 @@ class GooglePrivacyDlpV2BigQueryOptions(_messages.Message):
   tableReference = _messages.MessageField('GooglePrivacyDlpV2BigQueryTable', 7)
 
 
+class GooglePrivacyDlpV2BigQueryRegex(_messages.Message):
+  r"""A pattern to match against one or more tables, datasets, or projects
+  that contain BigQuery tables. At least one pattern must be specified.
+  Regular expressions use RE2
+  [syntax](https://github.com/google/re2/wiki/Syntax); a guide can be found
+  under the google/re2 repository on GitHub.
+
+  Fields:
+    datasetIdRegex: If unset, this property matches all datasets.
+    projectIdRegex: For organizations, if unset, will match all projects. Has
+      no effect for data profile configurations created within a project.
+    tableIdRegex: If unset, this property matches all tables.
+  """
+
+  datasetIdRegex = _messages.StringField(1)
+  projectIdRegex = _messages.StringField(2)
+  tableIdRegex = _messages.StringField(3)
+
+
+class GooglePrivacyDlpV2BigQueryRegexes(_messages.Message):
+  r"""A collection of regular expressions to determine what tables to match
+  against.
+
+  Fields:
+    patterns: A single BigQuery regular expression pattern to match against
+      one or more tables, datasets, or projects that contain BigQuery tables.
+  """
+
+  patterns = _messages.MessageField('GooglePrivacyDlpV2BigQueryRegex', 1, repeated=True)
+
+
 class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
   r"""Message defining the location of a BigQuery table. A table is uniquely
   identified by its project_id, dataset_id, and table_name. Within a query a
@@ -2521,6 +2749,43 @@ class GooglePrivacyDlpV2BigQueryTable(_messages.Message):
   datasetId = _messages.StringField(1)
   projectId = _messages.StringField(2)
   tableId = _messages.StringField(3)
+
+
+class GooglePrivacyDlpV2BigQueryTableCollection(_messages.Message):
+  r"""Specifies a collection of BigQuery tables. Used for Discovery.
+
+  Fields:
+    includeRegexes: A collection of regular expressions to match a BigQuery
+      table against.
+  """
+
+  includeRegexes = _messages.MessageField('GooglePrivacyDlpV2BigQueryRegexes', 1)
+
+
+class GooglePrivacyDlpV2BigQueryTableTypes(_messages.Message):
+  r"""The types of BigQuery tables supported by Cloud DLP.
+
+  Enums:
+    TypesValueListEntryValuesEnum:
+
+  Fields:
+    types: A set of BigQuery table types.
+  """
+
+  class TypesValueListEntryValuesEnum(_messages.Enum):
+    r"""TypesValueListEntryValuesEnum enum type.
+
+    Values:
+      BIG_QUERY_TABLE_TYPE_UNSPECIFIED: Unused.
+      BIG_QUERY_TABLE_TYPE_TABLE: A normal BigQuery table.
+      BIG_QUERY_TABLE_TYPE_EXTERNAL_BIG_LAKE: A table that references data
+        stored in Cloud Storage.
+    """
+    BIG_QUERY_TABLE_TYPE_UNSPECIFIED = 0
+    BIG_QUERY_TABLE_TYPE_TABLE = 1
+    BIG_QUERY_TABLE_TYPE_EXTERNAL_BIG_LAKE = 2
+
+  types = _messages.EnumField('TypesValueListEntryValuesEnum', 1, repeated=True)
 
 
 class GooglePrivacyDlpV2BoundingBox(_messages.Message):
@@ -2976,8 +3241,8 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
       value close to 1 may indicate the column is likely to contain free-form
       or natural language text. Range in 0-1.
     name: The name of the profile.
-    otherMatches: Other types found within this column. List will be un-
-      ordered.
+    otherMatches: Other types found within this column. List will be
+      unordered.
     policyState: Indicates if a policy tag has been applied to the column.
     profileLastGenerated: The last time the profile was generated.
     profileStatus: Success or error status from the most recent profile
@@ -2985,7 +3250,7 @@ class GooglePrivacyDlpV2ColumnDataProfile(_messages.Message):
       generated.
     sensitivityScore: The sensitivity of this column.
     state: State of a profile.
-    tableDataProfile: The resource name to the table data profile.
+    tableDataProfile: The resource name of the table data profile.
     tableFullResource: The resource name of the table this column is within.
     tableId: The BigQuery table ID.
   """
@@ -3275,6 +3540,21 @@ class GooglePrivacyDlpV2CreateDeidentifyTemplateRequest(_messages.Message):
   templateId = _messages.StringField(3)
 
 
+class GooglePrivacyDlpV2CreateDiscoveryConfigRequest(_messages.Message):
+  r"""Request message for CreateDiscoveryConfig.
+
+  Fields:
+    configId: The config ID can contain uppercase and lowercase letters,
+      numbers, and hyphens; that is, it must match the regular expression:
+      `[a-zA-Z\d-_]+`. The maximum length is 100 characters. Can be empty to
+      allow the system to generate one.
+    discoveryConfig: Required. The DiscoveryConfig to create.
+  """
+
+  configId = _messages.StringField(1)
+  discoveryConfig = _messages.MessageField('GooglePrivacyDlpV2DiscoveryConfig', 2)
+
+
 class GooglePrivacyDlpV2CreateDlpJobRequest(_messages.Message):
   r"""Request message for CreateDlpJobRequest. Used to initiate long running
   jobs such as calculating risk metrics or inspecting Google Cloud Storage.
@@ -3550,7 +3830,7 @@ class GooglePrivacyDlpV2CustomInfoType(_messages.Message):
     regex: Regular expression based CustomInfoType.
     sensitivityScore: Sensitivity for this CustomInfoType. If this
       CustomInfoType extends an existing InfoType, the sensitivity here will
-      take precedent over that of the original InfoType. If unset for a
+      take precedence over that of the original InfoType. If unset for a
       CustomInfoType, it will default to HIGH. This only applies to data
       profiling.
     storedType: Load an existing `StoredInfoType` resource for use in
@@ -3617,7 +3897,7 @@ class GooglePrivacyDlpV2DataProfileAction(_messages.Message):
 
 
 class GooglePrivacyDlpV2DataProfileBigQueryRowSchema(_messages.Message):
-  r"""The schema of data to be saved to the BigQuery when the
+  r"""The schema of data to be saved to the BigQuery table when the
   `DataProfileAction` is enabled.
 
   Fields:
@@ -3662,7 +3942,7 @@ class GooglePrivacyDlpV2DataProfileJobConfig(_messages.Message):
       that region and used instead. If no global or region-specific template
       is provided for a region with data, that region's data will not be
       scanned. For more information, see
-      https://cloud.google.com/dlp/docs/data-profiles#data_residency.
+      https://cloud.google.com/dlp/docs/data-profiles#data-residency.
     location: The data to scan.
     projectId: The project that will run the scan. The DLP service account
       that exists within this project must have access to all resources that
@@ -4203,6 +4483,283 @@ class GooglePrivacyDlpV2Dictionary(_messages.Message):
 
   cloudStoragePath = _messages.MessageField('GooglePrivacyDlpV2CloudStoragePath', 1)
   wordList = _messages.MessageField('GooglePrivacyDlpV2WordList', 2)
+
+
+class GooglePrivacyDlpV2Disabled(_messages.Message):
+  r"""Do not profile the tables."""
+
+
+class GooglePrivacyDlpV2DiscoveryBigQueryConditions(_messages.Message):
+  r"""Requirements that must be true before a table is scanned in discovery
+  for the first time. There is an AND relationship between the top-level
+  attributes. Additionally, minimum conditions with an OR relationship that
+  must be met before Cloud DLP scans a table can be set (like a minimum row
+  count or a minimum table age).
+
+  Enums:
+    TypeCollectionValueValuesEnum: Restrict discovery to categories of table
+      types.
+
+  Fields:
+    createdAfter: BigQuery table must have been created after this date. Used
+      to avoid backfilling.
+    orConditions: At least one of the conditions must be true for a table to
+      be scanned.
+    typeCollection: Restrict discovery to categories of table types.
+    types: Restrict discovery to specific table types.
+  """
+
+  class TypeCollectionValueValuesEnum(_messages.Enum):
+    r"""Restrict discovery to categories of table types.
+
+    Values:
+      BIG_QUERY_COLLECTION_UNSPECIFIED: Unused.
+      BIG_QUERY_COLLECTION_ALL_TYPES: Automatically generate profiles for all
+        tables, even if the table type is not yet fully supported for
+        analysis. Profiles for unsupported tables will be generated with
+        errors to indicate their partial support. When full support is added,
+        the tables will automatically be profiled during the next scheduled
+        run.
+      BIG_QUERY_COLLECTION_ONLY_SUPPORTED_TYPES: Only those types fully
+        supported will be profiled. Will expand automatically as Cloud DLP
+        adds support for new table types. Unsupported table types will not
+        have partial profiles generated.
+    """
+    BIG_QUERY_COLLECTION_UNSPECIFIED = 0
+    BIG_QUERY_COLLECTION_ALL_TYPES = 1
+    BIG_QUERY_COLLECTION_ONLY_SUPPORTED_TYPES = 2
+
+  createdAfter = _messages.StringField(1)
+  orConditions = _messages.MessageField('GooglePrivacyDlpV2OrConditions', 2)
+  typeCollection = _messages.EnumField('TypeCollectionValueValuesEnum', 3)
+  types = _messages.MessageField('GooglePrivacyDlpV2BigQueryTableTypes', 4)
+
+
+class GooglePrivacyDlpV2DiscoveryBigQueryFilter(_messages.Message):
+  r"""Determines what tables will have profiles generated within an
+  organization or project. Includes the ability to filter by regular
+  expression patterns on project ID, dataset ID, and table ID.
+
+  Fields:
+    otherTables: Catch-all. This should always be the last filter in the list
+      because anything above it will apply first. Should only appear once in a
+      configuration. If none is specified, a default one will be added
+      automatically.
+    tables: A specific set of tables for this filter to apply to. A table
+      collection must be specified in only one filter per config. If a table
+      id or dataset is empty, Cloud DLP assumes all tables in that collection
+      must be profiled. Must specify a project ID.
+  """
+
+  otherTables = _messages.MessageField('GooglePrivacyDlpV2AllOtherBigQueryTables', 1)
+  tables = _messages.MessageField('GooglePrivacyDlpV2BigQueryTableCollection', 2)
+
+
+class GooglePrivacyDlpV2DiscoveryConfig(_messages.Message):
+  r"""Configuration for discovery to scan resources for profile generation.
+  Only one discovery configuration may exist per organization, folder, or
+  project. The generated data profiles are retained according to the [data
+  retention policy] (https://cloud.google.com/dlp/docs/data-
+  profiles#retention).
+
+  Enums:
+    StatusValueValuesEnum: Required. A status for this configuration.
+
+  Fields:
+    actions: Actions to execute at the completion of scanning.
+    createTime: Output only. The creation timestamp of a DiscoveryConfig.
+    displayName: Display name (max 100 chars)
+    errors: Output only. A stream of errors encountered when the config was
+      activated. Repeated errors may result in the config automatically being
+      paused. Output only field. Will return the last 100 errors. Whenever the
+      config is modified this list will be cleared.
+    inspectTemplates: Detection logic for profile generation. Not all template
+      features are used by Discovery. FindingLimits, include_quote and
+      exclude_info_types have no impact on Discovery. Multiple templates may
+      be provided if there is data in multiple regions. At most one template
+      must be specified per-region (including "global"). Each region is
+      scanned using the applicable template. If no region-specific template is
+      specified, but a "global" template is specified, it will be copied to
+      that region and used instead. If no global or region-specific template
+      is provided for a region with data, that region's data will not be
+      scanned. For more information, see
+      https://cloud.google.com/dlp/docs/data-profiles#data-residency.
+    lastRunTime: Output only. The timestamp of the last time this config was
+      executed.
+    name: Unique resource name for the DiscoveryConfig, assigned by the
+      service when the DiscoveryConfig is created, for example `projects/dlp-
+      test-project/locations/global/discoveryConfigs/53234423`.
+    orgConfig: Only set when the parent is an org.
+    status: Required. A status for this configuration.
+    targets: Target to match against for determining what to scan and how
+      frequently.
+    updateTime: Output only. The last update timestamp of a DiscoveryConfig.
+  """
+
+  class StatusValueValuesEnum(_messages.Enum):
+    r"""Required. A status for this configuration.
+
+    Values:
+      STATUS_UNSPECIFIED: Unused
+      RUNNING: The discovery config is currently active.
+      PAUSED: The discovery config is paused temporarily.
+    """
+    STATUS_UNSPECIFIED = 0
+    RUNNING = 1
+    PAUSED = 2
+
+  actions = _messages.MessageField('GooglePrivacyDlpV2DataProfileAction', 1, repeated=True)
+  createTime = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  errors = _messages.MessageField('GooglePrivacyDlpV2Error', 4, repeated=True)
+  inspectTemplates = _messages.StringField(5, repeated=True)
+  lastRunTime = _messages.StringField(6)
+  name = _messages.StringField(7)
+  orgConfig = _messages.MessageField('GooglePrivacyDlpV2OrgConfig', 8)
+  status = _messages.EnumField('StatusValueValuesEnum', 9)
+  targets = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTarget', 10, repeated=True)
+  updateTime = _messages.StringField(11)
+
+
+class GooglePrivacyDlpV2DiscoveryGenerationCadence(_messages.Message):
+  r"""What must take place for a profile to be updated and how frequently it
+  should occur. New tables are scanned as quickly as possible depending on
+  system capacity.
+
+  Fields:
+    schemaModifiedCadence: Governs when to update data profiles when a schema
+      is modified.
+    tableModifiedCadence: Governs when to update data profiles when a table is
+      modified.
+  """
+
+  schemaModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoverySchemaModifiedCadence', 1)
+  tableModifiedCadence = _messages.MessageField('GooglePrivacyDlpV2DiscoveryTableModifiedCadence', 2)
+
+
+class GooglePrivacyDlpV2DiscoverySchemaModifiedCadence(_messages.Message):
+  r"""The cadence at which to update data profiles when a schema is modified.
+
+  Enums:
+    FrequencyValueValuesEnum: How frequently profiles may be updated when
+      schemas are modified. Defaults to monthly.
+    TypesValueListEntryValuesEnum:
+
+  Fields:
+    frequency: How frequently profiles may be updated when schemas are
+      modified. Defaults to monthly.
+    types: The type of events to consider when deciding if the table's schema
+      has been modified and should have the profile updated. Defaults to
+      NEW_COLUMNS.
+  """
+
+  class FrequencyValueValuesEnum(_messages.Enum):
+    r"""How frequently profiles may be updated when schemas are modified.
+    Defaults to monthly.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
+  class TypesValueListEntryValuesEnum(_messages.Enum):
+    r"""TypesValueListEntryValuesEnum enum type.
+
+    Values:
+      SCHEMA_MODIFICATION_UNSPECIFIED: Unused
+      SCHEMA_NEW_COLUMNS: Profiles should be regenerated when new columns are
+        added to the table. Default.
+      SCHEMA_REMOVED_COLUMNS: Profiles should be regenerated when columns are
+        removed from the table.
+    """
+    SCHEMA_MODIFICATION_UNSPECIFIED = 0
+    SCHEMA_NEW_COLUMNS = 1
+    SCHEMA_REMOVED_COLUMNS = 2
+
+  frequency = _messages.EnumField('FrequencyValueValuesEnum', 1)
+  types = _messages.EnumField('TypesValueListEntryValuesEnum', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2DiscoveryStartingLocation(_messages.Message):
+  r"""The location to begin a discovery scan. Denotes an organization ID or
+  folder ID within an organization.
+
+  Fields:
+    folderId: The ID of the Folder within an organization to scan.
+    organizationId: The ID of an organization to scan.
+  """
+
+  folderId = _messages.IntegerField(1)
+  organizationId = _messages.IntegerField(2)
+
+
+class GooglePrivacyDlpV2DiscoveryTableModifiedCadence(_messages.Message):
+  r"""The cadence at which to update data profiles when a table is modified.
+
+  Enums:
+    FrequencyValueValuesEnum: How frequently data profiles can be updated when
+      tables are modified. Defaults to never.
+    TypesValueListEntryValuesEnum:
+
+  Fields:
+    frequency: How frequently data profiles can be updated when tables are
+      modified. Defaults to never.
+    types: The type of events to consider when deciding if the table has been
+      modified and should have the profile updated. Defaults to
+      MODIFIED_TIMESTAMP.
+  """
+
+  class FrequencyValueValuesEnum(_messages.Enum):
+    r"""How frequently data profiles can be updated when tables are modified.
+    Defaults to never.
+
+    Values:
+      UPDATE_FREQUENCY_UNSPECIFIED: Unspecified.
+      UPDATE_FREQUENCY_NEVER: After the data profile is created, it will never
+        be updated.
+      UPDATE_FREQUENCY_DAILY: The data profile can be updated up to once every
+        24 hours.
+      UPDATE_FREQUENCY_MONTHLY: The data profile can be updated up to once
+        every 30 days. Default.
+    """
+    UPDATE_FREQUENCY_UNSPECIFIED = 0
+    UPDATE_FREQUENCY_NEVER = 1
+    UPDATE_FREQUENCY_DAILY = 2
+    UPDATE_FREQUENCY_MONTHLY = 3
+
+  class TypesValueListEntryValuesEnum(_messages.Enum):
+    r"""TypesValueListEntryValuesEnum enum type.
+
+    Values:
+      TABLE_MODIFICATION_UNSPECIFIED: Unused.
+      TABLE_MODIFIED_TIMESTAMP: A table will be considered modified when the
+        last_modified_time from BigQuery has been updated.
+    """
+    TABLE_MODIFICATION_UNSPECIFIED = 0
+    TABLE_MODIFIED_TIMESTAMP = 1
+
+  frequency = _messages.EnumField('FrequencyValueValuesEnum', 1)
+  types = _messages.EnumField('TypesValueListEntryValuesEnum', 2, repeated=True)
+
+
+class GooglePrivacyDlpV2DiscoveryTarget(_messages.Message):
+  r"""Target used to match against for Discovery.
+
+  Fields:
+    bigQueryTarget: BigQuery target for Discovery. The first target to match a
+      table will be the one applied.
+  """
+
+  bigQueryTarget = _messages.MessageField('GooglePrivacyDlpV2BigQueryDiscoveryTarget', 1)
 
 
 class GooglePrivacyDlpV2DlpJob(_messages.Message):
@@ -5334,11 +5891,11 @@ class GooglePrivacyDlpV2InspectConfig(_messages.Message):
       correspond to InfoType values returned by ListInfoTypes or listed at
       https://cloud.google.com/dlp/docs/infotypes-reference. When no InfoTypes
       or CustomInfoTypes are specified in a request, the system may
-      automatically choose what detectors to run. By default this may be all
-      types, but may change over time as detectors are updated. If you need
-      precise control and predictability as to what detectors are run you
-      should specify specific InfoTypes listed in the reference, otherwise a
-      default list will be used, which may change over time.
+      automatically choose a default list of detectors to run, which may
+      change over time. If you need precise control and predictability as to
+      what detectors are run you should specify specific InfoTypes listed in
+      the reference, otherwise a default list will be used, which may change
+      over time.
     limits: Configuration to control the number of findings returned. This is
       not used for data profiling. When redacting sensitive data from images,
       finding limits don't apply. They can cause unexpected or inconsistent
@@ -5966,10 +6523,24 @@ class GooglePrivacyDlpV2ListDeidentifyTemplatesResponse(_messages.Message):
     deidentifyTemplates: List of deidentify templates, up to page_size in
       ListDeidentifyTemplatesRequest.
     nextPageToken: If the next page is available then the next page token to
-      be used in following ListDeidentifyTemplates request.
+      be used in the following ListDeidentifyTemplates request.
   """
 
   deidentifyTemplates = _messages.MessageField('GooglePrivacyDlpV2DeidentifyTemplate', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2ListDiscoveryConfigsResponse(_messages.Message):
+  r"""Response message for ListDiscoveryConfigs.
+
+  Fields:
+    discoveryConfigs: List of configs, up to page_size in
+      ListDiscoveryConfigsRequest.
+    nextPageToken: If the next page is available then this value is the next
+      page token to be used in the following ListDiscoveryConfigs request.
+  """
+
+  discoveryConfigs = _messages.MessageField('GooglePrivacyDlpV2DiscoveryConfig', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -6002,7 +6573,7 @@ class GooglePrivacyDlpV2ListInspectTemplatesResponse(_messages.Message):
     inspectTemplates: List of inspectTemplates, up to page_size in
       ListInspectTemplatesRequest.
     nextPageToken: If the next page is available then the next page token to
-      be used in following ListInspectTemplates request.
+      be used in the following ListInspectTemplates request.
   """
 
   inspectTemplates = _messages.MessageField('GooglePrivacyDlpV2InspectTemplate', 1, repeated=True)
@@ -6015,8 +6586,8 @@ class GooglePrivacyDlpV2ListJobTriggersResponse(_messages.Message):
   Fields:
     jobTriggers: List of triggeredJobs, up to page_size in
       ListJobTriggersRequest.
-    nextPageToken: If the next page is available then the next page token to
-      be used in following ListJobTriggers request.
+    nextPageToken: If the next page is available then this value is the next
+      page token to be used in the following ListJobTriggers request.
   """
 
   jobTriggers = _messages.MessageField('GooglePrivacyDlpV2JobTrigger', 1, repeated=True)
@@ -6028,7 +6599,7 @@ class GooglePrivacyDlpV2ListStoredInfoTypesResponse(_messages.Message):
 
   Fields:
     nextPageToken: If the next page is available then the next page token to
-      be used in following ListStoredInfoTypes request.
+      be used in the following ListStoredInfoTypes request.
     storedInfoTypes: List of storedInfoTypes, up to page_size in
       ListStoredInfoTypesRequest.
   """
@@ -6117,6 +6688,36 @@ class GooglePrivacyDlpV2NumericalStatsResult(_messages.Message):
   maxValue = _messages.MessageField('GooglePrivacyDlpV2Value', 1)
   minValue = _messages.MessageField('GooglePrivacyDlpV2Value', 2)
   quantileValues = _messages.MessageField('GooglePrivacyDlpV2Value', 3, repeated=True)
+
+
+class GooglePrivacyDlpV2OrConditions(_messages.Message):
+  r"""There is an OR relationship between these attributes. They are used to
+  determine if a table should be scanned or not in Discovery.
+
+  Fields:
+    minAge: Minimum age a table must have before Cloud DLP can profile it.
+      Value must be 1 hour or greater.
+    minRowCount: Minimum number of rows that should be present before Cloud
+      DLP profiles a table
+  """
+
+  minAge = _messages.StringField(1)
+  minRowCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
+class GooglePrivacyDlpV2OrgConfig(_messages.Message):
+  r"""Project and scan location information. Only set when the parent is an
+  org.
+
+  Fields:
+    location: The data to scan: folder, org, or project
+    projectId: The project that will run the scan. The DLP service account
+      that exists within this project must have access to all resources that
+      are profiled, and the Cloud DLP API must be enabled.
+  """
+
+  location = _messages.MessageField('GooglePrivacyDlpV2DiscoveryStartingLocation', 1)
+  projectId = _messages.StringField(2)
 
 
 class GooglePrivacyDlpV2OtherInfoTypeSummary(_messages.Message):
@@ -6816,7 +7417,7 @@ class GooglePrivacyDlpV2ReplaceWithInfoTypeConfig(_messages.Message):
 
 
 class GooglePrivacyDlpV2RequestedDeidentifyOptions(_messages.Message):
-  r"""De-id options.
+  r"""De-identification options.
 
   Fields:
     snapshotDeidentifyTemplate: Snapshot of the state of the
@@ -7818,6 +8419,18 @@ class GooglePrivacyDlpV2UpdateDeidentifyTemplateRequest(_messages.Message):
   """
 
   deidentifyTemplate = _messages.MessageField('GooglePrivacyDlpV2DeidentifyTemplate', 1)
+  updateMask = _messages.StringField(2)
+
+
+class GooglePrivacyDlpV2UpdateDiscoveryConfigRequest(_messages.Message):
+  r"""Request message for UpdateDiscoveryConfig.
+
+  Fields:
+    discoveryConfig: Required. New DiscoveryConfig value.
+    updateMask: Mask to control which fields get updated.
+  """
+
+  discoveryConfig = _messages.MessageField('GooglePrivacyDlpV2DiscoveryConfig', 1)
   updateMask = _messages.StringField(2)
 
 

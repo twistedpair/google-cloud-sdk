@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -192,6 +192,11 @@ class StorageTransport(abc.ABC):
             ),
             self.delete_object: gapic_v1.method.wrap_method(
                 self.delete_object,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.restore_object: gapic_v1.method.wrap_method(
+                self.restore_object,
                 default_timeout=None,
                 client_info=client_info,
             ),
@@ -418,6 +423,15 @@ class StorageTransport(abc.ABC):
             Union[
                 empty_pb2.Empty,
                 Awaitable[empty_pb2.Empty]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def restore_object(self) -> Callable[
+            [storage.RestoreObjectRequest],
+            Union[
+                storage.Object,
+                Awaitable[storage.Object]
             ]]:
         raise NotImplementedError()
 

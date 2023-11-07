@@ -459,6 +459,43 @@ class TaskGraphExecutor:
         task_wrapper.is_submitted = True
         self._executable_tasks.put(task_wrapper)
 
+  @contextlib.contextmanager
+  def _get_worker_process_spawner(self, shared_process_context):
+    """Creates a worker process spawner.
+
+    Must be used as a context manager since the worker process spawner must be
+    non-daemonic in order to start child processes, but non-daemonic child
+    processes block parent processes from exiting, so if there are any failures
+    after the worker process spawner is started, gcloud storage will fail to
+    exit, unless we put the shutdown logic in a `finally` block.
+
+    Args:
+      shared_process_context (SharedProcessContext): Holds values from global
+        state that need to be replicated in child processes.
+
+    Yields:
+      None, allows body of a `with` statement to execute.
+    """
+    worker_process_spawner = multiprocessing_context.Process(
+        target=_process_factory,
+        args=(
+            self._task_queue,
+            self._task_output_queue,
+            self._task_status_queue,
+            self._thread_count,
+            self._idle_thread_count,
+            self._signal_queue,
+            shared_process_context,
+        ),
+    )
+    try:
+      worker_process_spawner.start()
+      yield
+    finally:
+      # Shutdown all the workers.
+      self._signal_queue.put(_SHUTDOWN)
+      worker_process_spawner.join()
+
   def run(self):
     """Executes tasks from a task iterator in parallel.
 
@@ -467,53 +504,48 @@ class TaskGraphExecutor:
         raised.
     """
     shared_process_context = SharedProcessContext()
-    worker_process_spawner = multiprocessing_context.Process(
-        target=_process_factory,
-        args=(self._task_queue, self._task_output_queue,
-              self._task_status_queue, self._thread_count,
-              self._idle_thread_count, self._signal_queue,
-              shared_process_context))
-    worker_process_spawner.start()
+    with self._get_worker_process_spawner(shared_process_context):
+      # It is now safe to start the progress_manager thread, since new processes
+      # are started by a child process.
+      with task_status.progress_manager(
+          self._task_status_queue, self._progress_manager_args
+      ):
+        self._add_worker_process()
 
-    # It is now safe to start the progress_manager.
-    with task_status.progress_manager(self._task_status_queue,
-                                      self._progress_manager_args):
-      self._add_worker_process()
+        get_tasks_from_iterator_thread = threading.Thread(
+            target=self._get_tasks_from_iterator
+        )
+        add_executable_tasks_to_queue_thread = threading.Thread(
+            target=self._add_executable_tasks_to_queue
+        )
+        handle_task_output_thread = threading.Thread(
+            target=self._handle_task_output
+        )
 
-      get_tasks_from_iterator_thread = threading.Thread(
-          target=self._get_tasks_from_iterator)
-      add_executable_tasks_to_queue_thread = threading.Thread(
-          target=self._add_executable_tasks_to_queue)
-      handle_task_output_thread = threading.Thread(
-          target=self._handle_task_output)
+        get_tasks_from_iterator_thread.start()
+        add_executable_tasks_to_queue_thread.start()
+        handle_task_output_thread.start()
 
-      get_tasks_from_iterator_thread.start()
-      add_executable_tasks_to_queue_thread.start()
-      handle_task_output_thread.start()
+        get_tasks_from_iterator_thread.join()
+        try:
+          self._task_graph.is_empty.wait()
+        except console_io.OperationCancelledError:
+          # If user hits ctrl-c, there will be no thread to pop tasks from the
+          # graph. Python garbage collection will remove unstarted tasks in the
+          # graph if we skip this endless wait.
+          pass
 
-      get_tasks_from_iterator_thread.join()
-      try:
-        self._task_graph.is_empty.wait()
-      except console_io.OperationCancelledError:
-        # If user hits ctrl-c, there will be no thread to pop tasks from the
-        # graph. Python garbage collection will remove unstarted tasks in the
-        # graph if we skip this endless wait.
-        pass
+        self._executable_tasks.put(_SHUTDOWN)
+        self._task_output_queue.put(_SHUTDOWN)
 
-      self._executable_tasks.put(_SHUTDOWN)
-      self._task_output_queue.put(_SHUTDOWN)
+        handle_task_output_thread.join()
+        add_executable_tasks_to_queue_thread.join()
 
-      handle_task_output_thread.join()
-      add_executable_tasks_to_queue_thread.join()
+    # Queue close calls need to be outside the worker process spawner context
+    # manager since the task queue need to be open for the shutdown logic.
+    self._task_queue.close()
+    self._task_output_queue.close()
 
-      # Shutdown all the workers.
-      self._signal_queue.put(_SHUTDOWN)
-      worker_process_spawner.join()
-
-      self._task_queue.close()
-      self._task_output_queue.close()
-
-    # TODO(b/187408108) Update exit code for task failures.
     with self.thread_exception_lock:
       if self.thread_exception:
         raise self.thread_exception  # pylint: disable=raising-bad-type

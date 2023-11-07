@@ -207,6 +207,19 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class Capabilities(_messages.Message):
+  r"""Capabilities adds and removes POSIX capabilities from running
+  containers.
+
+  Fields:
+    add: Optional. Added capabilities +optional
+    drop: Optional. Removed capabilities +optional
+  """
+
+  add = _messages.StringField(1, repeated=True)
+  drop = _messages.StringField(2, repeated=True)
+
+
 class ChildStatusReference(_messages.Message):
   r"""ChildStatusReference is used to point to the statuses of individual
   TaskRuns and Runs within this PipelineRun.
@@ -1142,6 +1155,22 @@ class EventSource(_messages.Message):
   id = _messages.StringField(2)
   repository = _messages.StringField(3)
   subscription = _messages.StringField(4)
+
+
+class ExecAction(_messages.Message):
+  r"""ExecAction describes a "run in container" action.
+
+  Fields:
+    command: Optional. Command is the command line to execute inside the
+      container, the working directory for the command is root ('/') in the
+      container's filesystem. The command is simply exec'd, it is not run
+      inside a shell, so traditional shell instructions ('|', etc) won't work.
+      To use a shell, you need to explicitly call out to that shell. Exit
+      status of 0 is treated as live/healthy and non-zero is unhealthy.
+      +optional
+  """
+
+  command = _messages.StringField(1, repeated=True)
 
 
 class ExecutionEnvironment(_messages.Message):
@@ -2279,6 +2308,20 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
+class Probe(_messages.Message):
+  r"""Probe describes a health check to be performed against a container to
+  determine whether it is alive or ready to receive traffic.
+
+  Fields:
+    exec_: Optional. Exec specifies the action to take. +optional
+    periodSeconds: Optional. How often (in seconds) to perform the probe.
+      Default to 10 seconds. Minimum value is 1. +optional
+  """
+
+  exec_ = _messages.MessageField('ExecAction', 1)
+  periodSeconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class ProcessWorkflowTriggerWebhookRequest(_messages.Message):
   r"""Message for processing webhooks posted to WorkflowTrigger.
 
@@ -2638,10 +2681,42 @@ class SecurityContext(_messages.Message):
   r"""Security options the container should be run with.
 
   Fields:
+    allowPrivilegeEscalation: Optional. AllowPrivilegeEscalation controls
+      whether a process can gain more privileges than its parent process. This
+      bool directly controls if the no_new_privs flag will be set on the
+      container process. AllowPrivilegeEscalation is true always when the
+      container is: 1) run as Privileged 2) has CAP_SYS_ADMIN Note that this
+      field cannot be set when spec.os.name is windows. +optional
+    capabilities: Optional. Adds and removes POSIX capabilities from running
+      containers.
     privileged: Run container in privileged mode.
+    runAsGroup: Optional. The GID to run the entrypoint of the container
+      process. Uses runtime default if unset. May also be set in
+      PodSecurityContext. If set in both SecurityContext and
+      PodSecurityContext, the value specified in SecurityContext takes
+      precedence. Note that this field cannot be set when spec.os.name is
+      windows. +optional
+    runAsNonRoot: Optional. Indicates that the container must run as a non-
+      root user. If true, the Kubelet will validate the image at runtime to
+      ensure that it does not run as UID 0 (root) and fail to start the
+      container if it does. If unset or false, no such validation will be
+      performed. May also be set in PodSecurityContext. If set in both
+      SecurityContext and PodSecurityContext, the value specified in
+      SecurityContext takes precedence. +optional
+    runAsUser: Optional. The UID to run the entrypoint of the container
+      process. Defaults to user specified in image metadata if unspecified.
+      May also be set in PodSecurityContext. If set in both SecurityContext
+      and PodSecurityContext, the value specified in SecurityContext takes
+      precedence. Note that this field cannot be set when spec.os.name is
+      windows. +optional
   """
 
-  privileged = _messages.BooleanField(1)
+  allowPrivilegeEscalation = _messages.BooleanField(1)
+  capabilities = _messages.MessageField('Capabilities', 2)
+  privileged = _messages.BooleanField(3)
+  runAsGroup = _messages.IntegerField(4)
+  runAsNonRoot = _messages.BooleanField(5)
+  runAsUser = _messages.IntegerField(6)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2670,8 +2745,14 @@ class Sidecar(_messages.Message):
     env: List of environment variables to set in the container.
     image: Docker image name.
     name: Name of the Sidecar.
+    readinessProbe: Optional. Periodic probe of Sidecar service readiness.
+      Container will be removed from service endpoints if the probe fails.
+      Cannot be updated. More info:
+      https://kubernetes.io/docs/concepts/workloads/pods/pod-
+      lifecycle#container-probes +optional
     script: The contents of an executable file to execute.
-    securityContext: Security options the container should be run with.
+    securityContext: Optional. Security options the container should be run
+      with.
     volumeMounts: Pod volumes to mount into the container's filesystem.
     workingDir: Container's working directory.
   """
@@ -2681,10 +2762,11 @@ class Sidecar(_messages.Message):
   env = _messages.MessageField('EnvVar', 3, repeated=True)
   image = _messages.StringField(4)
   name = _messages.StringField(5)
-  script = _messages.StringField(6)
-  securityContext = _messages.MessageField('SecurityContext', 7)
-  volumeMounts = _messages.MessageField('VolumeMount', 8, repeated=True)
-  workingDir = _messages.StringField(9)
+  readinessProbe = _messages.MessageField('Probe', 6)
+  script = _messages.StringField(7)
+  securityContext = _messages.MessageField('SecurityContext', 8)
+  volumeMounts = _messages.MessageField('VolumeMount', 9, repeated=True)
+  workingDir = _messages.StringField(10)
 
 
 class SidecarState(_messages.Message):
@@ -2849,6 +2931,11 @@ class Step(_messages.Message):
     image: Docker image name.
     name: Name of the container specified as a DNS_LABEL.
     script: The contents of an executable file to execute.
+    securityContext: Optional. SecurityContext defines the security options
+      the Step should be run with. If set, the fields of SecurityContext
+      override the equivalent fields of PodSecurityContext. More info:
+      https://kubernetes.io/docs/tasks/configure-pod-container/security-
+      context/ +optional
     timeout: Time after which the Step times out. Defaults to never.
     volumeMounts: Pod volumes to mount into the container's filesystem.
     workingDir: Container's working directory.
@@ -2860,9 +2947,10 @@ class Step(_messages.Message):
   image = _messages.StringField(4)
   name = _messages.StringField(5)
   script = _messages.StringField(6)
-  timeout = _messages.StringField(7)
-  volumeMounts = _messages.MessageField('VolumeMount', 8, repeated=True)
-  workingDir = _messages.StringField(9)
+  securityContext = _messages.MessageField('SecurityContext', 7)
+  timeout = _messages.StringField(8)
+  volumeMounts = _messages.MessageField('VolumeMount', 9, repeated=True)
+  workingDir = _messages.StringField(10)
 
 
 class StepState(_messages.Message):
@@ -2881,6 +2969,18 @@ class StepState(_messages.Message):
   running = _messages.MessageField('ContainerStateRunning', 3)
   terminated = _messages.MessageField('ContainerStateTerminated', 4)
   waiting = _messages.MessageField('ContainerStateWaiting', 5)
+
+
+class StepTemplate(_messages.Message):
+  r"""StepTemplate can be used as the basis for all step containers within the
+  Task, so that the steps inherit settings on the base container.
+
+  Fields:
+    env: Optional. List of environment variables to set in the Step. Cannot be
+      updated.
+  """
+
+  env = _messages.MessageField('EnvVar', 1, repeated=True)
 
 
 class TaskRef(_messages.Message):
@@ -3134,6 +3234,9 @@ class TaskSpec(_messages.Message):
     params: List of parameters.
     results: Values that this Task can output.
     sidecars: Sidecars that run alongside the Task's step containers.
+    stepTemplate: Optional. StepTemplate can be used as the basis for all step
+      containers within the Task, so that the steps inherit settings on the
+      base container.
     steps: Steps of the task.
     volumes: A collection of volumes that are available to mount into steps.
     workspaces: The volumes that this Task requires.
@@ -3154,9 +3257,10 @@ class TaskSpec(_messages.Message):
   params = _messages.MessageField('ParamSpec', 3, repeated=True)
   results = _messages.MessageField('TaskResult', 4, repeated=True)
   sidecars = _messages.MessageField('Sidecar', 5, repeated=True)
-  steps = _messages.MessageField('Step', 6, repeated=True)
-  volumes = _messages.MessageField('VolumeSource', 7, repeated=True)
-  workspaces = _messages.MessageField('WorkspaceDeclaration', 8, repeated=True)
+  stepTemplate = _messages.MessageField('StepTemplate', 6, repeated=True)
+  steps = _messages.MessageField('Step', 7, repeated=True)
+  volumes = _messages.MessageField('VolumeSource', 8, repeated=True)
+  workspaces = _messages.MessageField('WorkspaceDeclaration', 9, repeated=True)
 
 
 class TestIamPermissionsRequest(_messages.Message):
@@ -3578,6 +3682,8 @@ class WorkspacePipelineTaskBinding(_messages.Message):
   workspace = _messages.StringField(2)
 
 
+encoding.AddCustomJsonFieldMapping(
+    Probe, 'exec_', 'exec')
 encoding.AddCustomJsonFieldMapping(
     TimeoutFields, 'finally_', 'finally')
 encoding.AddCustomJsonFieldMapping(

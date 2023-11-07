@@ -124,6 +124,10 @@ _INFO = {
         display_name='Workload Migration',
         cmd_group='workload-migration',
     ),
+    'namespaceactuation': Info(
+        display_name='Namespace Actuation',
+        cmd_group='namespaceactuation',
+    ),
 }
 
 

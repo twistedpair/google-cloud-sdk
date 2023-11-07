@@ -599,7 +599,7 @@ class EnvVar(_messages.Message):
   r"""EnvVar represents an environment variable present in a Container.
 
   Fields:
-    name: Required. Name of the environment variable. Must be a C_IDENTIFIER.
+    name: Required. Name of the environment variable.
     value: Value of the environment variable. Defaults to "". Variable
       references are not supported in Cloud Run.
     valueFrom: Source for the environment variable's value. Only supports
@@ -1383,15 +1383,16 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
-      `run.googleapis.com/disable-default-uri`: Service. *
+      `run.googleapis.com/disable-default-url`: Service. *
       `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-      stage`: Service, Job. * `run.googleapis.com/network-interfaces`:
-      Revision, Execution. * `run.googleapis.com/post-key-revocation-action-
-      type`: Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+      stage`: Service, Job. * `run.googleapis.com/minScale`: Service (ALPHA) *
+      `run.googleapis.com/network-interfaces`: Revision, Execution. *
+      `run.googleapis.com/post-key-revocation-action-type`: Revision. *
+      `run.googleapis.com/secrets`: Revision, Execution. *
       `run.googleapis.com/secure-session-agent`: Revision. *
       `run.googleapis.com/sessionAffinity`: Revision. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
@@ -1418,15 +1419,16 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
-      `run.googleapis.com/disable-default-uri`: Service. *
+      `run.googleapis.com/disable-default-url`: Service. *
       `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
       `run.googleapis.com/gc-traffic-tags`: Service. *
       `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-      stage`: Service, Job. * `run.googleapis.com/network-interfaces`:
-      Revision, Execution. * `run.googleapis.com/post-key-revocation-action-
-      type`: Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+      stage`: Service, Job. * `run.googleapis.com/minScale`: Service (ALPHA) *
+      `run.googleapis.com/network-interfaces`: Revision, Execution. *
+      `run.googleapis.com/post-key-revocation-action-type`: Revision. *
+      `run.googleapis.com/secrets`: Revision, Execution. *
       `run.googleapis.com/secure-session-agent`: Revision. *
       `run.googleapis.com/sessionAffinity`: Revision. *
       `run.googleapis.com/startup-cpu-boost`: Revision. *
@@ -1481,14 +1483,15 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
     `run.googleapis.com/description`: Service. * `run.googleapis.com/disable-
-    default-uri`: Service. * `run.googleapis.com/encryption-key-shutdown-
+    default-url`: Service. * `run.googleapis.com/encryption-key-shutdown-
     hours`: Revision * `run.googleapis.com/encryption-key`: Revision,
     Execution. * `run.googleapis.com/execution-environment`: Revision,
     Execution. * `run.googleapis.com/gc-traffic-tags`: Service. *
     `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
-    stage`: Service, Job. * `run.googleapis.com/network-interfaces`: Revision,
-    Execution. * `run.googleapis.com/post-key-revocation-action-type`:
-    Revision. * `run.googleapis.com/secrets`: Revision, Execution. *
+    stage`: Service, Job. * `run.googleapis.com/minScale`: Service (ALPHA) *
+    `run.googleapis.com/network-interfaces`: Revision, Execution. *
+    `run.googleapis.com/post-key-revocation-action-type`: Revision. *
+    `run.googleapis.com/secrets`: Revision, Execution. *
     `run.googleapis.com/secure-session-agent`: Revision. *
     `run.googleapis.com/sessionAffinity`: Revision. *
     `run.googleapis.com/startup-cpu-boost`: Revision. *
@@ -3507,7 +3510,7 @@ class Service(_messages.Message):
       authorization-breakglass` * `run.googleapis.com/binary-authorization` *
       `run.googleapis.com/client-name` * `run.googleapis.com/custom-audiences`
       * `run.googleapis.com/description` * `run.googleapis.com/disable-
-      default-uri` * `run.googleapis.com/gc-traffic-tags` *
+      default-url` * `run.googleapis.com/gc-traffic-tags` *
       `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets the
       ingress settings for the Service. See [the ingress settings
       documentation](/run/docs/securing/ingress) for details on configuring

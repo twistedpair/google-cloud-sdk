@@ -122,19 +122,3 @@ def ParseIso8601LifetimeFlag(value):
 
   return times.FormatDurationForJson(times.ParseDuration(value))
 
-
-def SetUpdateMask(unused_ref, args, request):
-  """Set request.updateMask so that every field is updated for patch requests.
-
-  Args:
-    unused_ref: unused.
-    args: The argparse namespace.
-    request: The request to modify.
-
-  Returns:
-    The updated request.
-  """
-  del args  # Not needed to modify update mask.
-  if hasattr(request, "updateMask"):
-    request.updateMask = "*"
-  return request

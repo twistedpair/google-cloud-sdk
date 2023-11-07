@@ -637,8 +637,6 @@ class DeviceSession(_messages.Message):
     activeStartTime: Output only. The timestamp that the session first became
       ACTIVE.
     androidDevice: Required. The requested device
-    androidDeviceList: Optional. The list of requested devices. At most two
-      devices may be simultaneously requested.
     createTime: Output only. The time that the Session was created.
     displayName: Output only. The title of the DeviceSession to be presented
       in the UI.
@@ -655,7 +653,7 @@ class DeviceSession(_messages.Message):
       session_state message including the current session state.
     ttl: Optional. The amount of time that a device will be initially
       allocated for. This can eventually be extended with the
-      ExtendDeviceSession RPC. Default: 30 minutes.
+      UpdateDeviceSession RPC. Default: 30 minutes.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -692,15 +690,14 @@ class DeviceSession(_messages.Message):
 
   activeStartTime = _messages.StringField(1)
   androidDevice = _messages.MessageField('AndroidDevice', 2)
-  androidDeviceList = _messages.MessageField('AndroidDeviceList', 3)
-  createTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  expireTime = _messages.StringField(6)
-  inactivityTimeout = _messages.StringField(7)
-  name = _messages.StringField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  stateHistories = _messages.MessageField('SessionStateEvent', 10, repeated=True)
-  ttl = _messages.StringField(11)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  expireTime = _messages.StringField(5)
+  inactivityTimeout = _messages.StringField(6)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  stateHistories = _messages.MessageField('SessionStateEvent', 9, repeated=True)
+  ttl = _messages.StringField(10)
 
 
 class DirectAccessVersionInfo(_messages.Message):
@@ -1134,7 +1131,7 @@ class ManualSharding(_messages.Message):
       least one shard if this field is present. When you select one or more
       physical devices, the number of repeated test_targets_for_shard must be
       <= 50. When you select one or more ARM virtual devices, it must be <=
-      100. When you select only x86 virtual devices, it must be <= 500.
+      200. When you select only x86 virtual devices, it must be <= 500.
   """
 
   testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
@@ -1563,7 +1560,7 @@ class SmartSharding(_messages.Message):
       This approach avoids cancelling the shard before all tests can finish.
       Note that there is a limit for maximum number of shards. When you select
       one or more physical devices, the number of shards must be <= 50. When
-      you select one or more ARM virtual devices, it must be <= 100. When you
+      you select one or more ARM virtual devices, it must be <= 200. When you
       select only x86 virtual devices, it must be <= 500. To guarantee at
       least one test case for per shard, the number of shards will not exceed
       the number of test cases. Each shard created counts toward daily test
@@ -2048,6 +2045,8 @@ class TestSetup(_messages.Message):
     environmentVariables: Environment variables to set for the test (only
       applicable for instrumentation tests).
     filesToPush: List of files to push to the device before starting the test.
+    initialSetupApks: Optional. Initial setup APKs to install before the app
+      under test is installed. Currently capped at 100.
     networkProfile: The network traffic profile used for running the test.
       Available network profiles can be queried by using the
       NETWORK_CONFIGURATION environment type when calling
@@ -2064,8 +2063,9 @@ class TestSetup(_messages.Message):
   dontAutograntPermissions = _messages.BooleanField(4)
   environmentVariables = _messages.MessageField('EnvironmentVariable', 5, repeated=True)
   filesToPush = _messages.MessageField('DeviceFile', 6, repeated=True)
-  networkProfile = _messages.StringField(7)
-  systrace = _messages.MessageField('SystraceSetup', 8)
+  initialSetupApks = _messages.MessageField('Apk', 7, repeated=True)
+  networkProfile = _messages.StringField(8)
+  systrace = _messages.MessageField('SystraceSetup', 9)
 
 
 class TestSpecification(_messages.Message):
@@ -2341,7 +2341,7 @@ class UniformSharding(_messages.Message):
       always be a positive number that is no greater than the total number of
       test cases. When you select one or more physical devices, the number of
       shards must be <= 50. When you select one or more ARM virtual devices,
-      it must be <= 100. When you select only x86 virtual devices, it must be
+      it must be <= 200. When you select only x86 virtual devices, it must be
       <= 500.
   """
 

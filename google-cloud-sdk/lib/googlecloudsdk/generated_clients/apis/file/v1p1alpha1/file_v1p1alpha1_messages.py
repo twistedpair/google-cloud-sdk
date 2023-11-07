@@ -71,6 +71,8 @@ class Backup(_messages.Message):
         needed for mission-critical workloads.
       ZONAL: ZONAL instances offer large/small capacities and performance
         scaling capabilities.
+      REGIONAL: REGIONAL instances offer the features and availability needed
+        for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -80,6 +82,7 @@ class Backup(_messages.Message):
     HIGH_SCALE_SSD = 5
     ENTERPRISE = 6
     ZONAL = 7
+    REGIONAL = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The backup state.
@@ -625,9 +628,10 @@ class FileShareConfig(_messages.Message):
       set to RFC1918 Internal IP ranges (10.0.0.0/8, 172.16.0.0/12,
       192.168.0.0/16) This field is deprecated, use nfs_export_options
       instead.
-    name: The name of the file share (must be 32 characters or less for the
-      Enterprise and High Scale SSD tiers, 16 characters or less for all other
-      tiers).
+    name: Required. The name of the file share. Must use 1-16 characters for
+      the basic service tier and 1-63 characters for all other service tiers.
+      Must use lowercase letters, numbers, or underscores [a-z0-9_]. Must
+      start with a letter. Immutable.
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
     sourceBackup: The resource name of the backup, in the format
@@ -1284,6 +1288,8 @@ class Instance(_messages.Message):
         needed for mission-critical workloads.
       ZONAL: ZONAL instances offer large/small capacities and performance
         scaling capabilities.
+      REGIONAL: REGIONAL instances offer the features and availability needed
+        for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -1293,6 +1299,7 @@ class Instance(_messages.Message):
     HIGH_SCALE_SSD = 5
     ENTERPRISE = 6
     ZONAL = 7
+    REGIONAL = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1976,6 +1983,8 @@ class Snapshot(_messages.Message):
         needed for mission-critical workloads.
       ZONAL: ZONAL instances offer large/small capacities and performance
         scaling capabilities.
+      REGIONAL: REGIONAL instances offer the features and availability needed
+        for mission-critical workloads.
     """
     TIER_UNSPECIFIED = 0
     STANDARD = 1
@@ -1985,6 +1994,7 @@ class Snapshot(_messages.Message):
     HIGH_SCALE_SSD = 5
     ENTERPRISE = 6
     ZONAL = 7
+    REGIONAL = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The snapshot state.

@@ -2637,9 +2637,13 @@ class StorageConfig(_messages.Message):
   Fields:
     bucket: Optional. The name of the Cloud Storage bucket used by the
       environment. No `gs://` prefix.
+    filestoreInstance: Optional. The Filestore instance uri used by the
+      environment.
+      projects/{project}/locations/{location}/instances/{instance}
   """
 
   bucket = _messages.StringField(1)
+  filestoreInstance = _messages.StringField(2)
 
 
 class Task(_messages.Message):

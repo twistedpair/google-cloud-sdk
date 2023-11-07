@@ -126,3 +126,13 @@ AZURE_SERVER_CONFIG_FORMAT = """\
       endOfLife.yesno(no=False)
     )"
   )"""
+
+ATTACHED_INSTALL_AGENT_NAMESPACE = 'gke-install'
+
+# ATTACHED_INSTALL_AGENT_VERIFY_RETRIES is the maximum number of times to retry
+# verifying the install agent's successful deployment to a cluster.
+ATTACHED_INSTALL_AGENT_VERIFY_RETRIES = 60
+
+# ATTACHED_INSTALL_AGENT_VERIFY_WAIT_MS is the amount of time to wait between
+# attempts to verify the install agent's successful deployment.
+ATTACHED_INSTALL_AGENT_VERIFY_WAIT_MS = 1000

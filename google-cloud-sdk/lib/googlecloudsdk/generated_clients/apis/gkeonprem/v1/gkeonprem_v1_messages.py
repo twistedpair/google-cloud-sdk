@@ -5964,6 +5964,9 @@ class VmwareAdminCluster(_messages.Message):
     onPremVersion: The Anthos clusters on the VMware version for the admin
       cluster.
     platformConfig: The VMware platform configuration.
+    preparedSecrets: Output only. The VMware admin cluster prepared secrets
+      configuration. It should always be enabled by the Central API, instead
+      of letting users set it.
     reconciling: Output only. If set, there are currently changes in flight to
       the VMware admin cluster.
     state: Output only. The current state of VMware admin cluster.
@@ -6049,12 +6052,13 @@ class VmwareAdminCluster(_messages.Message):
   networkConfig = _messages.MessageField('VmwareAdminNetworkConfig', 16)
   onPremVersion = _messages.StringField(17)
   platformConfig = _messages.MessageField('VmwarePlatformConfig', 18)
-  reconciling = _messages.BooleanField(19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  status = _messages.MessageField('ResourceStatus', 21)
-  uid = _messages.StringField(22)
-  updateTime = _messages.StringField(23)
-  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 24)
+  preparedSecrets = _messages.MessageField('VmwareAdminPreparedSecretsConfig', 19)
+  reconciling = _messages.BooleanField(20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  status = _messages.MessageField('ResourceStatus', 22)
+  uid = _messages.StringField(23)
+  updateTime = _messages.StringField(24)
+  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 25)
 
 
 class VmwareAdminControlPlaneNodeConfig(_messages.Message):
@@ -6180,6 +6184,17 @@ class VmwareAdminNetworkConfig(_messages.Message):
   serviceAddressCidrBlocks = _messages.StringField(5, repeated=True)
   staticIpConfig = _messages.MessageField('VmwareStaticIpConfig', 6)
   vcenterNetwork = _messages.StringField(7)
+
+
+class VmwareAdminPreparedSecretsConfig(_messages.Message):
+  r"""VmwareAdminPreparedSecretsConfig represents configuration for admin
+  cluster prepared secrets.
+
+  Fields:
+    enabled: Whether prepared secrets is enabled.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class VmwareAdminSeesawConfig(_messages.Message):
