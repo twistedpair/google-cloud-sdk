@@ -1118,34 +1118,104 @@ class ManagementSettings(_messages.Message):
   r"""Defines renewal, billing, and transfer settings for a `Registration`.
 
   Enums:
-    RenewalMethodValueValuesEnum: Output only. The renewal method for this
-      `Registration`.
+    PreferredRenewalMethodValueValuesEnum: Optional. The desired renewal
+      method for this `Registration`. The actual `renewal_method` is
+      automatically updated to reflect this choice. If unset or equal to
+      `RENEWAL_METHOD_UNSPECIFIED`, it will be treated as if it were set to
+      `AUTOMATIC_RENEWAL`. Can't be set to `RENEWAL_DISABLED` during resource
+      creation and can only be updated when the `Registration` resource has
+      state `ACTIVE` or `SUSPENDED`. When `preferred_renewal_method` is set to
+      `AUTOMATIC_RENEWAL` the actual `renewal_method` can be set to
+      `RENEWAL_DISABLED` in case of e.g. problems with the Billing Account or
+      reported domain abuse. In such cases check the `issues` field on the
+      `Registration`. After the problem is resolved the `renewal_method` will
+      be automatically updated to `preferred_renewal_method` in a few hours.
+    RenewalMethodValueValuesEnum: Output only. The actual renewal method for
+      this `Registration`. When `preferred_renewal_method` is set to
+      `AUTOMATIC_RENEWAL` the actual `renewal_method` can be equal to
+      `RENEWAL_DISABLED` in case of e.g. problems with the Billing Account or
+      reported domain abuse. In such cases check the `issues` field on the
+      `Registration`. After the problem is resolved the `renewal_method` will
+      be automatically updated to `preferred_renewal_method` in a few hours.
     TransferLockStateValueValuesEnum: Controls whether the domain can be
       transferred to another registrar.
 
   Fields:
-    renewalMethod: Output only. The renewal method for this `Registration`.
+    preferredRenewalMethod: Optional. The desired renewal method for this
+      `Registration`. The actual `renewal_method` is automatically updated to
+      reflect this choice. If unset or equal to `RENEWAL_METHOD_UNSPECIFIED`,
+      it will be treated as if it were set to `AUTOMATIC_RENEWAL`. Can't be
+      set to `RENEWAL_DISABLED` during resource creation and can only be
+      updated when the `Registration` resource has state `ACTIVE` or
+      `SUSPENDED`. When `preferred_renewal_method` is set to
+      `AUTOMATIC_RENEWAL` the actual `renewal_method` can be set to
+      `RENEWAL_DISABLED` in case of e.g. problems with the Billing Account or
+      reported domain abuse. In such cases check the `issues` field on the
+      `Registration`. After the problem is resolved the `renewal_method` will
+      be automatically updated to `preferred_renewal_method` in a few hours.
+    renewalMethod: Output only. The actual renewal method for this
+      `Registration`. When `preferred_renewal_method` is set to
+      `AUTOMATIC_RENEWAL` the actual `renewal_method` can be equal to
+      `RENEWAL_DISABLED` in case of e.g. problems with the Billing Account or
+      reported domain abuse. In such cases check the `issues` field on the
+      `Registration`. After the problem is resolved the `renewal_method` will
+      be automatically updated to `preferred_renewal_method` in a few hours.
     transferLockState: Controls whether the domain can be transferred to
       another registrar.
   """
 
-  class RenewalMethodValueValuesEnum(_messages.Enum):
-    r"""Output only. The renewal method for this `Registration`.
+  class PreferredRenewalMethodValueValuesEnum(_messages.Enum):
+    r"""Optional. The desired renewal method for this `Registration`. The
+    actual `renewal_method` is automatically updated to reflect this choice.
+    If unset or equal to `RENEWAL_METHOD_UNSPECIFIED`, it will be treated as
+    if it were set to `AUTOMATIC_RENEWAL`. Can't be set to `RENEWAL_DISABLED`
+    during resource creation and can only be updated when the `Registration`
+    resource has state `ACTIVE` or `SUSPENDED`. When
+    `preferred_renewal_method` is set to `AUTOMATIC_RENEWAL` the actual
+    `renewal_method` can be set to `RENEWAL_DISABLED` in case of e.g. problems
+    with the Billing Account or reported domain abuse. In such cases check the
+    `issues` field on the `Registration`. After the problem is resolved the
+    `renewal_method` will be automatically updated to
+    `preferred_renewal_method` in a few hours.
 
     Values:
       RENEWAL_METHOD_UNSPECIFIED: The renewal method is undefined.
-      AUTOMATIC_RENEWAL: The domain is automatically renewed each year . To
-        disable automatic renewals, delete the resource by calling
-        `DeleteRegistration` or export it by calling `ExportRegistration`.
-      MANUAL_RENEWAL: The domain must be explicitly renewed each year before
-        its `expire_time`. This option is only available when the
-        `Registration` is in state `EXPORTED`. To manage the domain's current
-        billing and renewal settings, go to [Google
-        Domains](https://domains.google/).
+      AUTOMATIC_RENEWAL: The domain is automatically renewed each year.
+      MANUAL_RENEWAL: Deprecated: For more information, see [Cloud Domains
+        feature deprecation](https://cloud.google.com/domains/docs/deprecation
+        s/feature-deprecations) This option was never used. Use
+        RENEWAL_DISABLED instead.
+      RENEWAL_DISABLED: The domain won't be renewed and will expire at its
+        expiration time.
     """
     RENEWAL_METHOD_UNSPECIFIED = 0
     AUTOMATIC_RENEWAL = 1
     MANUAL_RENEWAL = 2
+    RENEWAL_DISABLED = 3
+
+  class RenewalMethodValueValuesEnum(_messages.Enum):
+    r"""Output only. The actual renewal method for this `Registration`. When
+    `preferred_renewal_method` is set to `AUTOMATIC_RENEWAL` the actual
+    `renewal_method` can be equal to `RENEWAL_DISABLED` in case of e.g.
+    problems with the Billing Account or reported domain abuse. In such cases
+    check the `issues` field on the `Registration`. After the problem is
+    resolved the `renewal_method` will be automatically updated to
+    `preferred_renewal_method` in a few hours.
+
+    Values:
+      RENEWAL_METHOD_UNSPECIFIED: The renewal method is undefined.
+      AUTOMATIC_RENEWAL: The domain is automatically renewed each year.
+      MANUAL_RENEWAL: Deprecated: For more information, see [Cloud Domains
+        feature deprecation](https://cloud.google.com/domains/docs/deprecation
+        s/feature-deprecations) This option was never used. Use
+        RENEWAL_DISABLED instead.
+      RENEWAL_DISABLED: The domain won't be renewed and will expire at its
+        expiration time.
+    """
+    RENEWAL_METHOD_UNSPECIFIED = 0
+    AUTOMATIC_RENEWAL = 1
+    MANUAL_RENEWAL = 2
+    RENEWAL_DISABLED = 3
 
   class TransferLockStateValueValuesEnum(_messages.Enum):
     r"""Controls whether the domain can be transferred to another registrar.
@@ -1161,8 +1231,9 @@ class ManagementSettings(_messages.Message):
     UNLOCKED = 1
     LOCKED = 2
 
-  renewalMethod = _messages.EnumField('RenewalMethodValueValuesEnum', 1)
-  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 2)
+  preferredRenewalMethod = _messages.EnumField('PreferredRenewalMethodValueValuesEnum', 1)
+  renewalMethod = _messages.EnumField('RenewalMethodValueValuesEnum', 2)
+  transferLockState = _messages.EnumField('TransferLockStateValueValuesEnum', 3)
 
 
 class Money(_messages.Message):
@@ -1724,10 +1795,14 @@ class Registration(_messages.Message):
         verification within 15 days of registration, the domain is suspended.
         To resend the verification email, call ConfigureContactSettings and
         provide the current `registrant_contact.email`.
+      PROBLEM_WITH_BILLING: Billing account is not in good standing. The
+        domain will not automatically renew at its expiration time unless you
+        resolve problems with your billing account.
     """
     ISSUE_UNSPECIFIED = 0
     CONTACT_SUPPORT = 1
     UNVERIFIED_EMAIL = 2
+    PROBLEM_WITH_BILLING = 3
 
   class RegisterFailureReasonValueValuesEnum(_messages.Enum):
     r"""Output only. The reason the domain registration failed. Only set for
@@ -1761,7 +1836,8 @@ class Registration(_messages.Message):
       IMPORT_PENDING: The domain is being imported from Google Domains to
         Cloud Domains.
       ACTIVE: The domain is registered and operational. The domain renews
-        automatically as long as it remains in this state.
+        automatically as long as it remains in this state and the
+        RenewalMethod is set to AUTOMATIC_RENEWAL.
       SUSPENDED: The domain is suspended and inoperative. For more details,
         see the `issues` field.
       EXPORTED: The domain is no longer managed with Cloud Domains. It may

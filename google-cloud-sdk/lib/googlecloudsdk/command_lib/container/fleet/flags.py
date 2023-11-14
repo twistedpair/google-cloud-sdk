@@ -103,7 +103,6 @@ class FleetFlags:
 
   def AddDefaultClusterConfig(self):
     default_cluster_config_group = self.parser.add_group(
-        hidden=True,
         help='Default cluster configurations to apply across the fleet.',
     )
     self._AddSecurityPostureConfig(default_cluster_config_group)
@@ -113,7 +112,6 @@ class FleetFlags:
       self, default_cluster_config_group: parser_arguments.ArgumentInterceptor
   ):
     security_posture_config_group = default_cluster_config_group.add_group(
-        hidden=True,
         help='Security posture config.',
     )
     self._AddSecurityPostureMode(security_posture_config_group)
@@ -126,7 +124,6 @@ class FleetFlags:
         '--security-posture',
         choices=['disabled', 'standard'],
         default=None,
-        hidden=True,
         help=textwrap.dedent("""\
           To apply standard security posture to clusters in the fleet,
 
@@ -142,7 +139,6 @@ class FleetFlags:
         '--workload-vulnerability-scanning',
         choices=['disabled', 'standard', 'enterprise'],
         default=None,
-        hidden=True,
         help=textwrap.dedent("""\
             To apply standard vulnerability scanning to clusters in the fleet,
 

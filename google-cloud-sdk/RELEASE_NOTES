@@ -5,6 +5,143 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 455.0.0 (2023-11-14)
+
+### Breaking Changes
+
+*   **(Network Connectivity)** Removed `gcloud network-connectivity spokes accept` and
+    `gcloud network-connectivity spokes reject` commands. Use
+    `gcloud network-connectivity hubs accept-spoke` and
+    `gcloud network-connectivity hubs reject-spoke` commands instead.
+
+
+### Google Cloud CLI
+
+* Updated bundled python for the `gcloud` CLI to 3.11.6.
+* Updated `cryptography` package to version 41.0.5.
+* Updated `openssl` to version 3.1.4 for cryptography.
+
+### AI
+
+* Added more choice options to `--region` flag of `gcloud ai custom-jobs` and `gcloud ai hp-tuning-jobs`, including: asia-northeast2, australia-southeast2, europe-north1, europe-southwest1, europe-west8, and southamerica-west1.
+
+### App Engine
+
+* Updated the  Python App Engine devappserver to support new Memcache API
+ methods ('peek' and 'peek_multi') to retrieve timestamps of Memcache items.
+* Updated the Java SDK to version 2.0.22 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.22>.
+
+### Binauthz
+
+*  Updated `gcloud container binauthz attestations list` to make `--attestor`
+optional, allowing listing from any project.
+*  Modified `gcloud container binauthz attestations sign-and-create` to allow
+   `--validate` to work with `--pae-encode-payload`.
+
+### Cloud Bigtable
+
+* Fixed issue where `cbt createtable` would create column families with a MaxVersions(1) GC policy. As per our documentation (https://cloud.google.com/bigtable/docs/garbage-collection#everything-else), tables created by the cbt cli should retain an infinite number of versions by default.
+
+### Cloud Data Fusion
+
+*   Added `--patch_revision` optional argument to\
+    `gcloud beta data-fusion instances create` to create a Cloud Data Fusion \
+    instance with the provided patch revision version.
+*   Added `--patch_revision` optional argument to\
+    `gcloud beta data-fusion instances update` to perform patch revision \
+    update of the Cloud Data Fusion instance.
+
+### Cloud Filestore
+
+*   Added `--tier=REGIONAL` flag to `gcloud filestore instances create` to support a regional filestore instance creation.
+
+### Cloud Functions
+
+* Promoted `--concurrency` flag of `gcloud functions deploy` to GA.
+* Promoted `--cpu` flag of `gcloud functions deploy` to GA.
+
+### Cloud Run
+
+* Promoted `gcloud run jobs executions cancel` to GA. This command allows
+  cancelling a running Cloud Run job execution.
+
+### Cloud SQL
+
+*   Added `--show-sql-network-architecture` and
+    `--upgrade-sql-network-architecture` flags to `gcloud sql instances list`
+    and `gcloud sql instances patch` to support New Network Architecture self upgrade
+    for Cloud SQL.
+
+### Cloud Storage
+
+*   Released object lock feature and per-object retention settings.
+*   Added `storage/multipart_chunksize` and `storage/multipart_threshold` for
+    adjusting settings of Boto3 client uploads via S3 or the other XML APIs.
+
+### Cloud TPU
+
+* Promoted `--attach-disk` and `--detach-disk` flags of
+  `gcloud compute tpus tpu-vm update` to GA.
+
+### Dataproc Metastore
+
+* Promoted `--data-catalog-sync` flag of `gcloud metastore services create` and `gcloud metastore services update` to GA.
+
+### GKE Hub
+
+* Added `--security-posture` flag to `gcloud container fleet create`, `gcloud container fleet update` in alpha, beta and GA track.
+* Added `--security-posture` flag to `gcloud container hub create`, `gcloud container hub update` in alpha, beta and GA track.
+* Added `--workload-vulnerability-scanning` flag to `gcloud container fleet create`, `gcloud container fleet update` in alpha, beta and GA track.
+* Added `--workload-vulnerability-scanning` flag to `gcloud container hub create`, `gcloud container hub update` in alpha, beta and GA track.
+* Added support for `fleet-default-member-config` command to Service Mesh in alpha, beta and GA tracks.
+* Promoted `--fleet-default-member-config` flag of the following commands to GA:
+  * `gcloud container fleet identity-service enable`
+  * `gcloud container hub identity-service enable`
+  * `gcloud container fleet identity-service delete`
+  * `gcloud container hub identity-service delete`
+
+* Added `--fleet-default-member-config` flag to the following commands in alpha, beta, and GA tracks:
+  * `gcloud container fleet identity-service apply`
+  * `gcloud container hub identity-service apply`
+
+  to modify a fleet-level default membership configuration.
+
+* Added `--origin` flag to the following commands in alpha, beta, and GA tracks:
+  * `gcloud container fleet identity-service apply`
+  * `gcloud container hub identity-service apply`
+
+  to apply a fleet-level default membership configuration to a membership.
+* Added support for `fleet-default-member-config` command to Service Mesh in alpha, beta and GA tracks.
+
+### Kubernetes Engine
+
+*   Fixed a bug where if `--artifact-url`  was passed to
+  `gcloud container binauthz attestations list` only attestations over the full artifact url would be returned instead of attestations over the artifact digest.
+
+### Security Command Center
+
+* Promoted `gcloud scc custom-modules sha simulate` to GA.
+
+### Vmware Engine
+
+* Added commands for managing new types of resources:
+  * Added `gcloud vmware dns-bind-permission` which manages DNS bind permission resources.
+  * Added `gcloud vmware private-clouds dns-forwarding` which manages DNS forwarding resources.
+  * Added `gcloud vmware network-policies external-access-rules` which manages external access rule resources.
+  * Added `gcloud vmware private-clouds external-addresses` which manages external address resources.
+  * Added `gcloud vmware private-clouds logging-servers` which manages logging server resources.
+  * Added `gcloud vmware private-clouds management-dns-zone-bindings` which manages management DNS zone binding resources.
+  * Added `gcloud vmware network-peerings` which manages network peering resources.
+  * Added `gcloud vmware network-peering routes` which manages network peering route resources.
+  * Added `gcloud vmware private-clouds clusters nodes` which allows cluster node resources.
+* Added `--type`, `--preferred-zone`, and `--secondary-zone` to `gcloud vmware private-clouds create` command to support stretched private clouds creation.
+* Added `clusterCoreCount`, `clusterVirtualCpuCount`, `clusterStorageGb` and `clusterMemoryGb` fields in `gcloud vmware private-clouds clusters describe` command output.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 454.0.0 (2023-11-07)
 
 ### AI
@@ -185,10 +322,6 @@ project in a particular location.
 
 * Promoted `--default-action-on-vm-failure` flag of `gcloud compute instance-groups managed <create | update>` to beta.
 * Promoted `--source-disk-for-recovery-checkpoint` and `--source-disk-for-recovery-checkpoint-region` flags of `gcloud compute snapshots create` to GA.
-
-### Database Migration
-
-* Added MySQL minor versions options when creating Cloud SQL connection profile using `gcloud database-migration connection-profiles create cloudsql` command.
 
 ### GKE Hub
 

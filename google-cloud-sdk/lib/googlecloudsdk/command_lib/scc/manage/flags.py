@@ -89,3 +89,13 @@ def CreateModuleIdOrNameArg(
           'MODULE_TYPE', module_type
       ),
   )
+
+
+def CreateValidateOnlyFlag(required=False) -> base.Argument:
+  return base.Argument(
+      '--validate_only',
+      required=required,
+      default=None,
+      action='store_true',
+      help="""If present, the request is validated (including IAM checks) but no action is taken (the module will not be deleted).""",
+  )

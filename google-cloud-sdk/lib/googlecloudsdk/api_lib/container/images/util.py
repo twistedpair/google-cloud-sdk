@@ -71,10 +71,16 @@ def IsFullySpecified(image_name):
 
 def IsInvalidRegistry(registry):
   ar_pattern = '^([a-z0-9-]*)-docker.pkg.dev'
+  ar_rep_pattern = 'docker.([a-z0-9-]*).rep.pkg.dev'
   gcr_pattern = '^([a-z0-9-]*)[.]?gcr.io'
   ar_prog = re.compile(ar_pattern)
+  ar_rep_prog = re.compile(ar_rep_pattern)
   gcr_prog = re.compile(gcr_pattern)
-  return gcr_prog.match(registry) is None and ar_prog.match(registry) is None
+  return (
+      gcr_prog.match(registry) is None
+      and ar_prog.match(registry) is None
+      and ar_rep_prog.match(registry) is None
+  )
 
 
 def ValidateRepositoryPath(repository_path):

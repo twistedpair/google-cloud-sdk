@@ -646,6 +646,12 @@ def AddMaintenanceReleaseChannel(parser):
   base.ChoiceArgument(
       '--maintenance-release-channel',
       choices={
+          'week5': (
+              'week5 updates release after the production '
+              'updates. Use the week5 channel to receive a 5 week '
+              'advance notification about the upcoming maintenance, '
+              'so you can prepare your application for the release.'
+          ),
           'production': (
               'Production updates are stable and recommended '
               'for applications in production.'
@@ -1735,9 +1741,11 @@ def AddShowSqlNetworkArchitecture(parser):
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--show-sql-network-architecture',
-      hidden=True,
       required=False,
-      help="""Show the instance's current SqlNetworkArchitecture backend""",
+      help="""Show the instance's current SqlNetworkArchitecture backend in addition
+        to the default output list. An instance could use either the old or new
+        network architecture. The new network architecture offers better
+        isolation, reliability, and faster new feature adoption.""",
       **kwargs
   )
 
@@ -2025,11 +2033,11 @@ def AddUpgradeSqlNetworkArchitecture(parser):
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--upgrade-sql-network-architecture',
-      hidden=True,
       required=False,
       help=(
-          'Upgrade the specified CloudSQL instance from legacy network'
-          ' architecture to the GCP standard.'
+          """Upgrade from old network architecture to new network architecture. The
+       new network architecture offers better isolation, reliability, and faster
+       new feature adoption."""
       ),
       **kwargs
   )

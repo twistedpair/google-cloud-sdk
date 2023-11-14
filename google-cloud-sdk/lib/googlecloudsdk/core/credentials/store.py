@@ -173,7 +173,12 @@ class GceCredentialProvider(object):
 
   def GetCredentials(self, account, use_google_auth=True):
     if account in c_gce.Metadata().Accounts():
-      return AcquireFromGCE(account, use_google_auth)
+      # Here we just return the google-auth credential without refreshing it.
+      # In _Load method we will attach the token store to the cred object, then
+      # refresh. This way the refreshed token can be cached in the token store
+      # automatically.
+      refresh = not use_google_auth
+      return AcquireFromGCE(account, use_google_auth, refresh)
     return None
 
   def GetAccount(self):
@@ -734,15 +739,30 @@ def _Load(account,
       raise creds_exceptions.NoActiveAccountException(
           named_configs.ActiveConfig(False).file_path)
 
-    cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account, use_google_auth)
-    if cred is not None:
-      return cred
-
+    # First check if store has the credential
     store = c_creds.GetCredentialStore(
         with_access_token_cache=with_access_token_cache)
     cred = store.Load(account, use_google_auth)
+
     if not cred:
-      raise NoCredentialsForAccountException(account)
+      # Next check the static providers.
+      cred = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(
+          account, use_google_auth
+      )
+      if not cred:
+        raise NoCredentialsForAccountException(account)
+
+      if c_creds.IsGoogleAuthGceCredentials(cred):
+        # Save the GCE cred info into the cred store.
+        store.Store(account, cred)
+
+        # If we can use the token store, attach the token store to the cred, so
+        # the tokens can be written into the store automatically after refresh.
+        if with_access_token_cache:
+          cred = c_creds.MaybeAttachAccessTokenCacheStoreGoogleAuth(cred)
+      else:
+        # For cred from custom credential provider, return as is.
+        return cred
 
   if not prevent_refresh:
     RefreshIfAlmostExpire(cred)
@@ -1165,9 +1185,10 @@ def Store(credentials, account=None, scopes=None):
   """Store credentials according for an account address.
 
   gcloud only stores user account credentials, external account credentials,
-  external account authorized user credential, service account credentials and
-  p12 service account credentials. GCE, IAM impersonation, and Devshell
-  credentials are generated in runtime.
+  external account authorized user credential, service account credentials,
+  p12 service account credentials, and GCE google-auth credentials. GCE
+  oauth2client credentials, IAM impersonation, and Devshell credentials are
+  generated in runtime.
   External account credentials do not contain any sensitive credentials. They
   only provide hints on how to retrieve local external and exchange them for
   Google access tokens.
@@ -1176,9 +1197,9 @@ def Store(credentials, account=None, scopes=None):
     credentials: oauth2client.client.Credentials or
       google.auth.credentials.Credentials, The credentials to be stored.
     account: str, The account address of the account they're being stored for.
-        If None, the account stored in the core.account property is used.
-    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES
-        are requested.
+      If None, the account stored in the core.account property is used.
+    scopes: tuple, Custom auth scopes to request. By default CLOUDSDK_SCOPES are
+      requested.
 
   Raises:
     NoActiveAccountException: If account is not provided and there is no
@@ -1187,14 +1208,21 @@ def Store(credentials, account=None, scopes=None):
 
   if c_creds.IsOauth2ClientCredentials(credentials):
     cred_type = c_creds.CredentialType.FromCredentials(credentials)
+
+    # Don't save oauth2client GCE cred since oauth2client is deprecated.
+    if cred_type.key == c_creds.GCE_CREDS_NAME:
+      return
   else:
     cred_type = c_creds.CredentialTypeGoogleAuth.FromCredentials(credentials)
 
   if cred_type.key not in [
-      c_creds.USER_ACCOUNT_CREDS_NAME, c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
+      c_creds.USER_ACCOUNT_CREDS_NAME,
+      c_creds.EXTERNAL_ACCOUNT_CREDS_NAME,
       c_creds.EXTERNAL_ACCOUNT_USER_CREDS_NAME,
       c_creds.EXTERNAL_ACCOUNT_AUTHORIZED_USER_CREDS_NAME,
-      c_creds.SERVICE_ACCOUNT_CREDS_NAME, c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME
+      c_creds.SERVICE_ACCOUNT_CREDS_NAME,
+      c_creds.P12_SERVICE_ACCOUNT_CREDS_NAME,
+      c_creds.GCE_CREDS_NAME,
   ]:
     return
 
@@ -1206,7 +1234,10 @@ def Store(credentials, account=None, scopes=None):
   store = c_creds.GetCredentialStore()
   store.Store(account, credentials)
 
-  _LegacyGenerator(account, credentials, scopes).WriteTemplate()
+  if cred_type.key != c_creds.GCE_CREDS_NAME:
+    # Don't write GCE credentials into the legacy ADC file since GCE cred type
+    # is not supported by the legacy ADC file.
+    _LegacyGenerator(account, credentials, scopes).WriteTemplate()
 
 
 def ActivateCredentials(account, credentials):
@@ -1362,7 +1393,7 @@ def AcquireFromToken(refresh_token,
   return cred
 
 
-def AcquireFromGCE(account=None, use_google_auth=True):
+def AcquireFromGCE(account=None, use_google_auth=True, refresh=True):
   """Get credentials from a GCE metadata server.
 
   Args:
@@ -1370,6 +1401,8 @@ def AcquireFromGCE(account=None, use_google_auth=True):
     use_google_auth: bool, True to load credentials of google-auth if it is
       supported in the current authentication scenario. False to load
       credentials of oauth2client.
+    refresh: bool, Whether to refresh the credential or not. The default value
+      is True.
 
   Returns:
     oauth2client.client.Credentials or google.auth.credentials.Credentials based
@@ -1387,7 +1420,8 @@ def AcquireFromGCE(account=None, use_google_auth=True):
     credentials = google_auth_gce.Credentials(service_account_email=email)
   else:
     credentials = oauth2client_gce.AppAssertionCredentials(email=account)
-  Refresh(credentials)
+  if refresh:
+    Refresh(credentials)
   return credentials
 
 

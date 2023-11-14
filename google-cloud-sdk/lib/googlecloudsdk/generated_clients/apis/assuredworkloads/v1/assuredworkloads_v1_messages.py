@@ -251,7 +251,12 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest(_mess
 class GoogleCloudAssuredworkloadsV1AcknowledgeViolationRequest(_messages.Message):
   r"""Request for acknowledging the violation Next Id: 5
 
+  Enums:
+    AcknowledgeTypeValueValuesEnum: Optional. Acknowledge type of specified
+      violation.
+
   Fields:
+    acknowledgeType: Optional. Acknowledge type of specified violation.
     comment: Required. Business justification explaining the need for
       violation acknowledgement
     nonCompliantOrgPolicy: Optional. This field is deprecated and will be
@@ -262,8 +267,22 @@ class GoogleCloudAssuredworkloadsV1AcknowledgeViolationRequest(_messages.Message
       organizations/{organization_id}/policies/{constraint_name}
   """
 
-  comment = _messages.StringField(1)
-  nonCompliantOrgPolicy = _messages.StringField(2)
+  class AcknowledgeTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Acknowledge type of specified violation.
+
+    Values:
+      ACKNOWLEDGE_TYPE_UNSPECIFIED: Acknowledge type unspecified.
+      SINGLE_VIOLATION: Acknowledge only the specific violation.
+      EXISTING_CHILD_RESOURCE_VIOLATIONS: Acknowledge specified orgPolicy
+        violation and also associated resource violations.
+    """
+    ACKNOWLEDGE_TYPE_UNSPECIFIED = 0
+    SINGLE_VIOLATION = 1
+    EXISTING_CHILD_RESOURCE_VIOLATIONS = 2
+
+  acknowledgeType = _messages.EnumField('AcknowledgeTypeValueValuesEnum', 1)
+  comment = _messages.StringField(2)
+  nonCompliantOrgPolicy = _messages.StringField(3)
 
 
 class GoogleCloudAssuredworkloadsV1AcknowledgeViolationResponse(_messages.Message):
@@ -336,8 +355,7 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
         controls
       ITAR: International Traffic in Arms Regulations
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
-        Support controls Available for public preview consumption. Don't
-        create production workloads.
+        Support controls
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
       ISR_REGIONS: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
@@ -500,6 +518,7 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation
+    ViolationTypeValueValuesEnum: Output only. Type of the violation
 
   Fields:
     acknowledged: A boolean that indicates if the violation is acknowledged
@@ -507,6 +526,9 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
       acknowledged first. Check exception_contexts to find the last time the
       violation was acknowledged when there are more than one violations. This
       field will be absent when acknowledged field is marked as false.
+    associatedOrgPolicyViolationId: Optional. Output only. Violation Id of the
+      org-policy violation due to which the resource violation is caused.
+      Empty for org-policy violations.
     auditLogLink: Output only. Immutable. Audit Log Link for violated resource
       Format: https://console.cloud.google.com/logs/query;query={logName}{prot
       oPayload.resourceName}{timeRange}{folder}
@@ -531,12 +553,20 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
       organizations/{organization_id}/policies/{constraint_name}
     orgPolicyConstraint: Output only. Immutable. The org-policy-constraint
       that was incorrectly changed, which resulted in this violation.
+    parentProjectNumber: Optional. Output only. Parent project number where
+      resource is present. Empty for org-policy violations.
     remediation: Output only. Compliance violation remediation
     resolveTime: Output only. Time of the event which fixed the Violation. If
       the violation is ACTIVE this will be empty.
+    resourceName: Optional. Output only. Name of the resource like
+      //storage.googleapis.com/myprojectxyz-testbucket. Empty for org-policy
+      violations.
+    resourceType: Optional. Output only. Type of the resource like
+      compute.googleapis.com/Disk, etc. Empty for org-policy violations.
     state: Output only. State of the violation
     updateTime: Output only. The last time when the Violation record was
       updated.
+    violationType: Output only. Type of the violation
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -553,21 +583,38 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
     UNRESOLVED = 2
     EXCEPTION = 3
 
+  class ViolationTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. Type of the violation
+
+    Values:
+      VIOLATION_TYPE_UNSPECIFIED: Unspecified type.
+      ORG_POLICY: Org Policy Violation.
+      RESOURCE: Resource Violation.
+    """
+    VIOLATION_TYPE_UNSPECIFIED = 0
+    ORG_POLICY = 1
+    RESOURCE = 2
+
   acknowledged = _messages.BooleanField(1)
   acknowledgementTime = _messages.StringField(2)
-  auditLogLink = _messages.StringField(3)
-  beginTime = _messages.StringField(4)
-  category = _messages.StringField(5)
-  description = _messages.StringField(6)
-  exceptionAuditLogLink = _messages.StringField(7)
-  exceptionContexts = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationExceptionContext', 8, repeated=True)
-  name = _messages.StringField(9)
-  nonCompliantOrgPolicy = _messages.StringField(10)
-  orgPolicyConstraint = _messages.StringField(11)
-  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediation', 12)
-  resolveTime = _messages.StringField(13)
-  state = _messages.EnumField('StateValueValuesEnum', 14)
-  updateTime = _messages.StringField(15)
+  associatedOrgPolicyViolationId = _messages.StringField(3)
+  auditLogLink = _messages.StringField(4)
+  beginTime = _messages.StringField(5)
+  category = _messages.StringField(6)
+  description = _messages.StringField(7)
+  exceptionAuditLogLink = _messages.StringField(8)
+  exceptionContexts = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationExceptionContext', 9, repeated=True)
+  name = _messages.StringField(10)
+  nonCompliantOrgPolicy = _messages.StringField(11)
+  orgPolicyConstraint = _messages.StringField(12)
+  parentProjectNumber = _messages.StringField(13)
+  remediation = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediation', 14)
+  resolveTime = _messages.StringField(15)
+  resourceName = _messages.StringField(16)
+  resourceType = _messages.StringField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
+  violationType = _messages.EnumField('ViolationTypeValueValuesEnum', 20)
 
 
 class GoogleCloudAssuredworkloadsV1ViolationExceptionContext(_messages.Message):
@@ -617,12 +664,14 @@ class GoogleCloudAssuredworkloadsV1ViolationRemediation(_messages.Message):
         for list org policy which have denied values in the monitoring rule
       REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION:
         Remediation type for gcp.restrictCmekCryptoKeyProjects
+      REMEDIATION_RESOURCE_VIOLATION: Remediation type for resource violation.
     """
     REMEDIATION_TYPE_UNSPECIFIED = 0
     REMEDIATION_BOOLEAN_ORG_POLICY_VIOLATION = 1
     REMEDIATION_LIST_ALLOWED_VALUES_ORG_POLICY_VIOLATION = 2
     REMEDIATION_LIST_DENIED_VALUES_ORG_POLICY_VIOLATION = 3
     REMEDIATION_RESTRICT_CMEK_CRYPTO_KEY_PROJECTS_ORG_POLICY_VIOLATION = 4
+    REMEDIATION_RESOURCE_VIOLATION = 5
 
   compliantValues = _messages.StringField(1, repeated=True)
   instructions = _messages.MessageField('GoogleCloudAssuredworkloadsV1ViolationRemediationInstructions', 2)
@@ -775,8 +824,7 @@ class GoogleCloudAssuredworkloadsV1Workload(_messages.Message):
         controls
       ITAR: International Traffic in Arms Regulations
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
-        Support controls Available for public preview consumption. Don't
-        create production workloads.
+        Support controls
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
       ISR_REGIONS: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
@@ -887,14 +935,20 @@ class GoogleCloudAssuredworkloadsV1WorkloadComplianceStatus(_messages.Message):
   r"""Represents the Compliance Status of this workload
 
   Fields:
+    acknowledgedResourceViolationCount: Number of current resource violations
+      which are not acknowledged.
     acknowledgedViolationCount: Number of current orgPolicy violations which
+      are acknowledged.
+    activeResourceViolationCount: Number of current resource violations which
       are acknowledged.
     activeViolationCount: Number of current orgPolicy violations which are not
       acknowledged.
   """
 
-  acknowledgedViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  activeViolationCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  acknowledgedResourceViolationCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  acknowledgedViolationCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  activeResourceViolationCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  activeViolationCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAssuredworkloadsV1WorkloadEkmProvisioningResponse(_messages.Message):

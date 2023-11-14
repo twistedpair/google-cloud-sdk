@@ -190,7 +190,7 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
     subnetwork: The name of the subnetwork from which the IP address will be
       allocated. Format:
       `projects/{project}/regions/{region}/subnetworks/{subnetwork}`
-    targetEndpoint: Required. The service endpoint this private regional
+    targetGoogleApi: Required. The service endpoint this private regional
       endpoint connects to. Format: `{apiname}.{region}.p.rep.googleapis.com`
       Example: "cloudkms.us-central1.p.rep.googleapis.com".
     updateTime: Output only. Time when the RegionalEndpoint was updated.
@@ -244,7 +244,7 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
   network = _messages.StringField(7)
   pscForwardingRule = _messages.StringField(8)
   subnetwork = _messages.StringField(9)
-  targetEndpoint = _messages.StringField(10)
+  targetGoogleApi = _messages.StringField(10)
   updateTime = _messages.StringField(11)
 
 

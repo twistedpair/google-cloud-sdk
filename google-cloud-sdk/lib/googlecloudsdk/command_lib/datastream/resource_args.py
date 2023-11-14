@@ -328,8 +328,8 @@ def AddConnectionProfileResourceArg(parser,
       required=required)
   forward_ssh_parser.add_argument(
       '--forward-ssh-port',
-      help="""Port for the SSH tunnel, default value is 22.\
-      """,
+      help="""Port for the SSH tunnel, default value is 22.""",
+      type=int,
       default=22)
   password_group = forward_ssh_parser.add_group(required=required, mutex=True)
   password_group.add_argument(

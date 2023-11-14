@@ -597,8 +597,6 @@ def PrepareNodeForSSH(
       not supported.
     InvalidArgumentException: If there is no command specified, but multiple
       workers are targeted.
-    TPUInMaintenanceEvent: If the specified TPU is in maintenance, the node
-      cannot be SSHed into.
     IapTunnelingUnavailable: If IAP Tunneling is not available, the node cannot
       be SSHed into.
   """
@@ -633,7 +631,10 @@ def PrepareNodeForSSH(
       node.health
       == tpu.messages.Node.HealthValueValuesEnum.UNHEALTHY_MAINTENANCE
   ):
-    raise tpu_exceptions.TPUInMaintenanceEvent()
+    log.warning(
+        '!!! This TPU is going through a maintenance event, and might be'
+        ' unavailable !!!'
+    )
 
   # Retrieve GuestAttributes.
   single_pod_worker = (
@@ -916,8 +917,6 @@ def PrepareNodeForSCP(
     BadArgumentException: If the node retrieved is not a TPU VM. Non TPU VMs are
       not supported.
     InvalidArgumentException: If there are multiple workers targeted.
-    TPUInMaintenanceEvent: If the specified TPU is in maintenance, the node
-      cannot be SCPed into.
     IapTunnelingUnavailable: If IAP Tunneling is not available, the node cannot
       be SCPed into.
   """
@@ -951,7 +950,10 @@ def PrepareNodeForSCP(
       node.health
       == tpu.messages.Node.HealthValueValuesEnum.UNHEALTHY_MAINTENANCE
   ):
-    raise tpu_exceptions.TPUInMaintenanceEvent()
+    log.warning(
+        '!!! This TPU is going through a maintenance event, and might be'
+        ' unavailable !!!'
+    )
 
   # Retrieve GuestAttributes.
   single_pod_worker = (

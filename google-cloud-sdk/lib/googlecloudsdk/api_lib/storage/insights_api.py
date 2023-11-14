@@ -85,7 +85,6 @@ class InsightsApi:
       include_source_locations=None,
       exclude_source_locations=None,
       auto_add_new_buckets=False,
-      skip_verification=False,
       identity_type=None,
       description=None,
   ):
@@ -125,8 +124,6 @@ class InsightsApi:
         either use included or excluded location parameters.
       auto_add_new_buckets (bool): If True, auto includes any new buckets added
         to source projects that satisfy the include/exclude criterias.
-      skip_verification (bool): If True, skips verification of dataset config
-        during creation.
       identity_type (str): Option for how permissions need to be setup for a
         given dataset config. Default option is IDENTITY_TYPE_PER_CONFIG.
       description (str): Human readable description text for the given dataset
@@ -156,7 +153,6 @@ class InsightsApi:
         name=dataset_config_name,
         organizationNumber=organization_number,
         retentionPeriodDays=retention_period,
-        skipVerificationAndIngest=skip_verification,
         sourceProjects=source_projects,
     )
 
@@ -271,15 +267,12 @@ class InsightsApi:
     )
 
   def _get_dataset_config_update_mask(
-      self, retention_period=None, skip_verification=None, description=None
+      self, retention_period=None, description=None
   ):
     """Returns the update_mask list."""
     update_mask = []
     if retention_period is not None:
       update_mask.append('retentionPeriodDays')
-    # skip_verification=False can't lead to metadata changes!
-    if skip_verification:
-      update_mask.append('skipVerificationAndIngest')
     if description is not None:
       update_mask.append('description')
     return update_mask
@@ -288,7 +281,6 @@ class InsightsApi:
       self,
       dataset_config_relative_name,
       retention_period=None,
-      skip_verification=None,
       description=None,
   ):
     """Updates the dataset config.
@@ -298,8 +290,6 @@ class InsightsApi:
         config to be modified.
       retention_period (int): No of days for which insights data is to be
         retained in BigQuery instance.
-      skip_verification (bool): If True, skips verification of dataset config
-        during creation.
       description (str): Human readable description text for the given dataset
         config.
 
@@ -309,7 +299,7 @@ class InsightsApi:
 
     # Only the fields present in the mask will be updated.
     update_mask = self._get_dataset_config_update_mask(
-        retention_period, skip_verification, description
+        retention_period, description
     )
 
     if not update_mask:
@@ -321,7 +311,6 @@ class InsightsApi:
 
     dataset_config = self.messages.DatasetConfig(
         retentionPeriodDays=retention_period,
-        skipVerificationAndIngest=skip_verification,
         description=description,
     )
     request = self.messages.StorageinsightsProjectsLocationsDatasetConfigsPatchRequest(

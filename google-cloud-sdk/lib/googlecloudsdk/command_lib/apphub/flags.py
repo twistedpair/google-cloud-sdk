@@ -26,60 +26,6 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
-def AddTopologyUpdateFlags(parser):
-  """Adds flags to topology update command.
-
-  Flags include:
-    --enable
-    --disable
-
-  Args:
-    parser: The argparser.
-  """
-
-  state_group = parser.add_group(mutex=True, help='Manage topology state.')
-  state_group.add_argument(
-      '--enable',
-      action='store_const',
-      const=True,
-      help='Enable topology.',
-  )
-  state_group.add_argument(
-      '--disable',
-      action='store_const',
-      const=True,
-      help='Disable topology.',
-  )
-
-
-def AddTelemetryUpdateFlags(parser):
-  """Adds flags to telemetry update command.
-
-  Flags include:
-    --enable-monitoring
-    --disable-monitoring
-
-  Args:
-    parser: The argparser.
-  """
-
-  state_group = parser.add_group(
-      mutex=True, help='Manage telemetry monitoring state.'
-  )
-  state_group.add_argument(
-      '--enable-monitoring',
-      action='store_const',
-      const=True,
-      help='Enable telemetry monitoring.',
-  )
-  state_group.add_argument(
-      '--disable-monitoring',
-      action='store_const',
-      const=True,
-      help='Disable telemetry monitoring.',
-  )
-
-
 def GetGlobalLocationResourceSpec():
   return concepts.ResourceSpec(
       'apphub.projects.locations',
@@ -828,3 +774,18 @@ def AddUpdateApplicationServiceFlags(parser):
       help='async operation.',
   )
 
+
+def AddGetIamPolicyFlags(parser):
+  GetApplicationResourceArg().AddToParser(parser)
+
+
+def AddAddIamPolicyBindingFlags(parser):
+  GetApplicationResourceArg().AddToParser(parser)
+
+
+def AddRemoveIamPolicyBindingFlags(parser):
+  GetApplicationResourceArg().AddToParser(parser)
+
+
+def AddSetIamPolicyFlags(parser):
+  GetApplicationResourceArg().AddToParser(parser)

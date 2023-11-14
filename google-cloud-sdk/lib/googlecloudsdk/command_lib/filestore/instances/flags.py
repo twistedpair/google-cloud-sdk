@@ -74,6 +74,7 @@ FILE_TIER_TO_TYPE = {
     'ENTERPRISE': 'ENTERPRISE',
     'HIGH_SCALE_SSD': 'HIGH SCALE',
     'ZONAL': 'ZONAL',
+    'REGIONAL': 'REGIONAL',
 }
 
 
@@ -179,7 +180,7 @@ def GetTierArg(messages):
       'BASIC_SSD': ('basic-ssd', 'Performant NFS storage system using SSD.'),
       'ENTERPRISE': (
           'enterprise',
-          """ENTERPRISE instances offer the features\
+          """Enterprise instances offer the features\
           and availability needed for mission-critical workloads.""",
       ),
       'HIGH_SCALE_SSD': (
@@ -194,6 +195,11 @@ def GetTierArg(messages):
             requirements. It offers fast performance that scales\
             with capacity and allows you to grow and shrink\
             capacity.""",
+      ),
+      'REGIONAL': (
+          'regional',
+          """Regional instances offer the features\
+          and availability needed for mission-critical workloads.""",
       ),
   }
   tier_arg = arg_utils.ChoiceEnumMapper(
@@ -293,7 +299,7 @@ def AddNetworkArg(parser):
         allocated IP address range is specified, it must be one of the ranges
         associated with the private service access connection. When specified as
         a direct CIDR value, it must be a /29 CIDR block for Basic tier or a /24
-        CIDR block for High Scale, Zonal or Enterprise tier in one of the internal IP
+        CIDR block for High Scale, Zonal, Enterprise or Regional tier in one of the internal IP
         address ranges (https://www.arin.net/knowledge/address_filters.html)
         that identifies the range of IP addresses reserved for this instance.
         For example, 10.0.0.0/29 or 192.168.0.0/24. The range you specify can't
@@ -340,6 +346,7 @@ unit is specified, GB is assumed. Acceptable instance capacities for each tier a
   - 1TB-9.75TB in 256GB increments or its multiples.
   - 10TB-100TB in 2.5TB increments or its multiples.
 * ENTERPRISE: 1TB-10TB in 256GB increments or its multiples.
+* REGIONAL: 1TB-9.75TB in 256GB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
 
@@ -401,6 +408,7 @@ unit is specified, GB is assumed. Acceptable instance capacities for each tier a
   - 1TB-9.75TB in 256GB increments or its multiples.
   - 10TB-100TB in 2.5TB increments or its multiples.
 * ENTERPRISE: 1TB-10TB in 256GB increments or its multiples.
+* REGIONAL: 1TB-9.75TB in 256GB increments or its multiples.
 
 *name*::: The desired logical name of the volume.
 

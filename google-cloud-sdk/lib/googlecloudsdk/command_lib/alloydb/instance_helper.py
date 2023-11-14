@@ -308,8 +308,6 @@ def _ClientConnectionConfig(
     alloydb_messages.ClientConnectionConfig
   """
 
-  # TODO(b/270442834): Always pass the SSL config even if it's empty once we
-  # unhide the flag
   should_generate_config = any([
       ssl_mode is not None,
       require_connectors is not None,

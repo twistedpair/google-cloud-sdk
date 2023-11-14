@@ -3237,6 +3237,8 @@ class _SectionStorage(_Section):
   DEFAULT_COPY_CHUNK_SIZE = '100Mi'
   DEFAULT_DOWNLOAD_CHUNK_SIZE = '256Ki'
   DEFAULT_UPLOAD_CHUNK_SIZE = '100Mi'
+  DEFAULT_MULTIPART_THRESHOLD = '8Mi'
+  DEFAULT_MULTIPART_CHUNKSIZE = '8Mi'
   DEFAULT_RESUMABLE_THRESHOLD = '8Mi'
   DEFAULT_RSYNC_LIST_CHUNK_SIZE = 32000
 
@@ -3367,6 +3369,26 @@ class _SectionStorage(_Section):
         'max_retry_delay',
         default=32,
         help_text='Max second delay between retriable operations.')
+
+    self.multipart_chunksize = self._Add(
+        'multipart_chunksize',
+        default=self.DEFAULT_MULTIPART_CHUNKSIZE,
+        validator=_HumanReadableByteAmountValidator,
+        help_text='Specifies partition size in bytes of each part of a '
+        'multipart upload made by the Boto3 client. To calculate the maximum '
+        'size of a Boto3 client multipart upload, multiply the multipart_chunk '
+        'value by the maximum number of parts the API allows. For AWS S3 this '
+        'limit is 10000. Values can be provided either in bytes or as '
+        'human-readable values (e.g., "150M" to represent 150 mebibytes).')
+
+    self.multipart_threshold = self._Add(
+        'multipart_threshold',
+        default=self.DEFAULT_MULTIPART_THRESHOLD,
+        validator=_HumanReadableByteAmountValidator,
+        help_text='Files larger than this threshold will be partitioned into '
+        'parts, uploaded separately by the Boto3 client, and then combined '
+        'into a single object. Otherwise, files smaller than this threshold '
+        'will be uploaded by the Boto3 client in a single stream.')
 
     self.process_count = self._Add(
         'process_count',

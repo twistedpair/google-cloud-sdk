@@ -14,6 +14,35 @@ from apitools.base.py import extra_types
 package = 'composer'
 
 
+class AirflowMetadataRetentionPolicy(_messages.Message):
+  r"""The policy for airflow metadata database retention.
+
+  Enums:
+    EnableRetentionValueValuesEnum: Optional. Retention can be either enabled
+      or disabled.
+
+  Fields:
+    enableRetention: Optional. Retention can be either enabled or disabled.
+    retentionDays: Optional. How many days data should be retained for.
+  """
+
+  class EnableRetentionValueValuesEnum(_messages.Enum):
+    r"""Optional. Retention can be either enabled or disabled.
+
+    Values:
+      RETENTION_MODE_UNSPECIFIED: Default mode doesn't change environment
+        parameters.
+      RETENTION_MODE_ENABLED: Retention policy is enabled.
+      RETENTION_MODE_DISABLED: Retention policy is disabled.
+    """
+    RETENTION_MODE_UNSPECIFIED = 0
+    RETENTION_MODE_ENABLED = 1
+    RETENTION_MODE_DISABLED = 2
+
+  enableRetention = _messages.EnumField('EnableRetentionValueValuesEnum', 1)
+  retentionDays = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class AllowedIpRange(_messages.Message):
   r"""Allowed IP range with user-provided description.
 
@@ -658,6 +687,8 @@ class DataRetentionConfig(_messages.Message):
       how long to store event-based records in airflow database. If the
       retention mechanism is enabled this value must be a positive integer
       otherwise, value should be set to 0.
+    airflowMetadataRetentionConfig: Optional. The retention policy for airflow
+      metadata database. Details: go/composer-database-retention-2
     taskLogsRetentionConfig: Optional. The configuration settings for task
       logs retention
     taskLogsRetentionDays: Optional. The number of days to retain task logs in
@@ -683,9 +714,10 @@ class DataRetentionConfig(_messages.Message):
     CLOUD_LOGGING_ONLY = 2
 
   airflowDatabaseRetentionDays = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  taskLogsRetentionConfig = _messages.MessageField('TaskLogsRetentionConfig', 2)
-  taskLogsRetentionDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  taskLogsStorageMode = _messages.EnumField('TaskLogsStorageModeValueValuesEnum', 4)
+  airflowMetadataRetentionConfig = _messages.MessageField('AirflowMetadataRetentionPolicy', 2)
+  taskLogsRetentionConfig = _messages.MessageField('TaskLogsRetentionConfig', 3)
+  taskLogsRetentionDays = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  taskLogsStorageMode = _messages.EnumField('TaskLogsStorageModeValueValuesEnum', 5)
 
 
 class DatabaseConfig(_messages.Message):

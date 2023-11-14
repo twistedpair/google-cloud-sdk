@@ -15,6 +15,8 @@
 """Useful commands for interacting with the Cloud SCC API."""
 
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.generated_clients.apis.securitycentermanagement.v1 import securitycentermanagement_v1_messages as messages
 
 
@@ -35,6 +37,26 @@ class ETDCustomModuleClient(object):
         name=name
     )
     return self._client.Get(req)
+
+  def Delete(self, name: str, validate_only: bool):
+    """Delete a ETD custom module."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesDeleteRequest(
+        name=name, validateOnly=validate_only
+    )
+    if validate_only:
+      log.status.Print('Request is valid.')
+      return
+    console_io.PromptContinue(
+        message=(
+            'Are you sure you want to delete the Event Threat Detection custom'
+            ' module {}?\n'.format(name)
+        ),
+        cancel_on_no=True,
+    )
+    response = self._client.Delete(req)
+    log.DeletedResource(name)
+    return response
 
 
 class EffectiveETDCustomModuleClient(object):

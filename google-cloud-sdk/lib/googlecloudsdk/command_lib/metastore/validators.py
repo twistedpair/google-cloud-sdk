@@ -160,6 +160,16 @@ def ValidateServiceMutexConfigForV1(unused_ref, unused_args, req):
         'Kerberos configuration cannot be used in conjunction with'
         ' --network-config-from-file or --consumer-subnetworks.',
     )
+  if (
+      req.service.encryptionConfig
+      and req.service.encryptionConfig.kmsKey
+      and req.service.metadataIntegration.dataCatalogConfig.enabled
+  ):
+    raise exceptions.BadArgumentException(
+        '--data-catalog-sync',
+        'Data Catalog synchronization cannot be used in conjunction with'
+        ' customer-managed encryption keys.',
+    )
   return req
 
 

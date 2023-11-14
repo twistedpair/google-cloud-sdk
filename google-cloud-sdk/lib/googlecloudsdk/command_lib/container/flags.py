@@ -6252,3 +6252,23 @@ the Autopilot conversion during or after workload migration.
       action='store_true',
       hidden=hidden,
   )
+
+
+def AddSecretManagerEnableFlag(parser, hidden=True):
+  """Adds --enable-secret-manager flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    hidden: hidden status
+  """
+  help_text = """\
+    Enable the Secret Manager provider integration. This is disabled by default. To
+    learn more, see the Secret Manager overview: https://cloud.google.com/secret-manager/.
+    """
+  parser.add_argument(
+      '--enable-secret-manager',
+      action='store_true',
+      default=None,
+      help=help_text,
+      hidden=hidden,
+  )

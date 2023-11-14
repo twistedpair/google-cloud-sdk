@@ -2524,8 +2524,8 @@ class Fleet(_messages.Message):
 
   Fields:
     createTime: Output only. When the Fleet was created.
-    defaultClusterConfig: The default cluster configurations to apply across
-      the fleet.
+    defaultClusterConfig: Optional. The default cluster configurations to
+      apply across the fleet.
     deleteTime: Output only. When the Fleet was deleted.
     displayName: Optional. A user-assigned display name of the Fleet. When
       present, it must be between 4 to 30 characters. Allowed characters are:
@@ -3508,9 +3508,9 @@ class GkehubProjectsLocationsMembershipsRbacrolebindingsPatchRequest(_messages.M
 
   Fields:
     name: The resource name for the rbacrolebinding `projects/{project}/locati
-      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
-      bacrolebindings/{rbacrolebinding}`
+      ons/{location}/scopes/{scope}/rbacrolebindings/{rbacrolebinding}` or `pr
+      ojects/{project}/locations/{location}/memberships/{membership}/rbacroleb
+      indings/{rbacrolebinding}`
     rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
       body.
     updateMask: Required. The fields to be updated.
@@ -3712,9 +3712,9 @@ class GkehubProjectsLocationsNamespacesRbacrolebindingsPatchRequest(_messages.Me
 
   Fields:
     name: The resource name for the rbacrolebinding `projects/{project}/locati
-      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
-      bacrolebindings/{rbacrolebinding}`
+      ons/{location}/scopes/{scope}/rbacrolebindings/{rbacrolebinding}` or `pr
+      ojects/{project}/locations/{location}/memberships/{membership}/rbacroleb
+      indings/{rbacrolebinding}`
     rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
       body.
     updateMask: Required. The fields to be updated.
@@ -4183,9 +4183,9 @@ class GkehubProjectsLocationsScopesRbacrolebindingsPatchRequest(_messages.Messag
 
   Fields:
     name: The resource name for the rbacrolebinding `projects/{project}/locati
-      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
-      bacrolebindings/{rbacrolebinding}`
+      ons/{location}/scopes/{scope}/rbacrolebindings/{rbacrolebinding}` or `pr
+      ojects/{project}/locations/{location}/memberships/{membership}/rbacroleb
+      indings/{rbacrolebinding}`
     rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
       body.
     updateMask: Required. The fields to be updated.
@@ -6698,9 +6698,9 @@ class RBACRoleBinding(_messages.Message):
     group: group is the group, as seen by the kubernetes cluster.
     labels: Optional. Labels for this RBACRolebinding.
     name: The resource name for the rbacrolebinding `projects/{project}/locati
-      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
-      bacrolebindings/{rbacrolebinding}`
+      ons/{location}/scopes/{scope}/rbacrolebindings/{rbacrolebinding}` or `pr
+      ojects/{project}/locations/{location}/memberships/{membership}/rbacroleb
+      indings/{rbacrolebinding}`
     role: Required. Role to bind to the principal
     state: Output only. State of the rbacrolebinding resource.
     uid: Output only. Google-generated UUID for this resource. This is unique

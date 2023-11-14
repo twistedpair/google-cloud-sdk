@@ -41,6 +41,10 @@ class InvalidTestDataFileError(core_exceptions.Error):
   """Error if a test data file is improperly formatted."""
 
 
+class InvalidResourceFileError(core_exceptions.Error):
+  """Error if a resource file is improperly formatted."""
+
+
 def AppendOrgArg():
   """Add Organization as a positional resource."""
   org_spec_data = yaml_data.ResourceYAMLData.FromPath("scc.organization")
@@ -211,3 +215,16 @@ def ProcessTestResourceDataFile(file_contents):
   except yaml.YAMLParseError as ype:
     raise InvalidTestDataFileError(
         "Error parsing test data file [{}]".format(ype))
+
+
+def ProcessSimulatedResourceFile(file_contents):
+  """Process the simulate resource data file for the custom module to validate against."""
+  messages = sc_client.GetMessages()
+  try:
+    resource_dict = yaml.load(file_contents)
+
+    return encoding.DictToMessage(resource_dict, messages.SimulatedResource)
+  except yaml.YAMLParseError as ype:
+    raise InvalidResourceFileError(
+        "Error parsing resource file [{}]".format(ype)
+    )

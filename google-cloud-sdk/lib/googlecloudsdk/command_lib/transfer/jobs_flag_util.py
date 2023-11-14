@@ -126,7 +126,7 @@ def add_source_creds_flag(parser):
       'S3: https://cloud.google.com/storage-transfer/docs/reference/'
       'rest/v1/TransferSpec#AwsAccessKey\n'
       'Note: Be sure to put quotations around the JSON value strings.\n\n'
-      'Azure: http://cloud/storage-transfer/docs/reference/rest/'
+      'Azure: https://cloud.google.com/storage-transfer/docs/reference/rest/'
       'v1/TransferSpec#AzureCredentials\n\n')
 
 

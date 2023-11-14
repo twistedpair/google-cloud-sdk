@@ -269,6 +269,11 @@ class CopyTaskIterator:
     self._raw_destination = _get_raw_destination(destination_string)
     if self._multiple_sources:
       self._raise_if_destination_is_file_url_and_not_a_directory_or_pipe()
+    else:
+      # For multiple sources,
+      # _raise_if_destination_is_file_url_and_not_a_directory_or_pipe already
+      # checks for directory's existence.
+      self._raise_if_download_destination_ends_with_delimiter_and_does_not_exist()
 
     if self._multiple_sources and self._custom_md5_digest:
       raise errors.Error(
@@ -294,6 +299,20 @@ class CopyTaskIterator:
           'Destination URL must name an existing directory.'
           ' Provided: {}.'.format(
               self._raw_destination.storage_url.object_name))
+
+  def _raise_if_download_destination_ends_with_delimiter_and_does_not_exist(
+      self,
+  ):
+    if isinstance(self._raw_destination.storage_url, storage_url.FileUrl):
+      # Download operation.
+      destination_path = self._raw_destination.storage_url.object_name
+      if destination_path.endswith(
+          self._raw_destination.storage_url.delimiter
+      ) and not self._raw_destination.storage_url.isdir():
+        raise errors.InvalidUrlError(
+            'Destination URL must name an existing directory if it ends with a'
+            ' delimiter. Provided: {}.'.format(destination_path)
+        )
 
   def _update_workload_estimation(self, resource):
     """Updates total_file_count and total_size.
@@ -427,7 +446,8 @@ class CopyTaskIterator:
         self._total_size > _ONE_TB_IN_BYTES
         and self._has_cloud_source
         and not self._has_local_source
-        and destination_url.scheme is storage_url.ProviderPrefix.GCS
+        and self._raw_destination.storage_url.scheme
+        is storage_url.ProviderPrefix.GCS
         and properties.VALUES.storage.suggest_transfer.GetBool()
     ):
       log.status.Print(

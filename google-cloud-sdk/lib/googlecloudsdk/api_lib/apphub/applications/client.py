@@ -22,6 +22,7 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.apphub import consts as api_lib_consts
 from googlecloudsdk.api_lib.apphub import utils as api_lib_utils
 from googlecloudsdk.api_lib.util import waiter
+from googlecloudsdk.command_lib.iam import iam_util
 
 
 class ApplicationsClient(object):
@@ -155,7 +156,7 @@ class ApplicationsClient(object):
     attributes = api_lib_utils.GetMessagesModule().Attributes()
     application = self.messages.Application(attributes=attributes)
 
-    if args.environment:
+    if args.environment is not None:
       attributes.environment = api_lib_utils.GetMessagesModule().Environment(
           environment=args.environment
       )
@@ -219,14 +220,14 @@ class ApplicationsClient(object):
           api_lib_consts.UpdateApplication.UPDATE_MASK_OPERATOR_OWNERS_FIELD_NAME,
       )
 
-    if args.display_name:
+    if args.display_name is not None:
       application.displayName = args.display_name
       update_mask = api_lib_utils.AddToUpdateMask(
           update_mask,
           api_lib_consts.UpdateApplication.UPDATE_MASK_DISPLAY_NAME_FIELD_NAME,
       )
 
-    if args.description:
+    if args.description is not None:
       application.description = args.description
       update_mask = api_lib_utils.AddToUpdateMask(
           update_mask,
@@ -280,3 +281,77 @@ class ApplicationsClient(object):
     )
 
     return delete_response
+
+  def GetIamPolicy(self, app_id):
+    """Fetch the IAM Policy attached to the sepcified application.
+
+    Args:
+      app_id: str, the application id.
+
+    Returns:
+      The application's IAM Policy.
+    """
+    # version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
+    get_req = (
+        self.messages.ApphubProjectsLocationsApplicationsGetIamPolicyRequest(
+            resource=app_id,
+        )
+    )
+    return self._app_client.GetIamPolicy(get_req)
+
+  def SetIamPolicy(self, app_id, policy_file):
+    """Sets an application's IamPolicy to the one provided.
+
+    If 'policy_file' has no etag specified, this will BLINDLY OVERWRITE the IAM
+    policy!
+
+    Args:
+        app_id: str, the application id..
+        policy_file: a policy file.
+
+    Returns:
+        The IAM Policy.
+    """
+    policy = iam_util.ParsePolicyFile(policy_file, self.messages.Policy)
+    return self._SetIamPolicyHelper(app_id, policy)
+
+  def _SetIamPolicyHelper(self, app_id, policy):
+    set_req = (
+        self.messages.ApphubProjectsLocationsApplicationsSetIamPolicyRequest(
+            resource=app_id,
+            setIamPolicyRequest=self.messages.SetIamPolicyRequest(
+                policy=policy,),
+        ))
+    return self._app_client.SetIamPolicy(set_req)
+
+  def AddIamPolicyBinding(self, app_id, member, role):
+    """Does an atomic Read-Modify-Write, adding the member to the role.
+
+    Args:
+        app_id: str, the application id.
+        member: str, the principal to add the binding for.
+        role: predefined role, the role name to assign to the principal.
+
+    Returns:
+        The IAM Policy.
+
+    """
+    policy = self.GetIamPolicy(app_id)
+    iam_util.AddBindingToIamPolicy(self.messages.Binding, policy, member, role)
+    return self._SetIamPolicyHelper(app_id, policy)
+
+  def RemoveIamPolicyBinding(self, app_id, member, role):
+    """Does an atomic Read-Modify-Write, removing the member to the role.
+
+    Args:
+        app_id: str, the application id.
+        member: str, the principal to add the binding for.
+        role: predefined role, the role name to assign to the principal.
+
+    Returns:
+        The IAM Policy.
+
+    """
+    policy = self.GetIamPolicy(app_id)
+    iam_util.RemoveBindingFromIamPolicy(policy, member, role)
+    return self._SetIamPolicyHelper(app_id, policy)

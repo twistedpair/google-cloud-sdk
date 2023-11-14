@@ -23,6 +23,7 @@ import itertools
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.recommender import base
 from googlecloudsdk.api_lib.recommender import flag_utils
+from googlecloudsdk.command_lib.projects import util
 
 
 def CreateClient(release_track):
@@ -63,7 +64,7 @@ class Location(base.ClientBase):
     if folder:
       self._service = self._client.folders_locations
       request = self._messages.RecommenderFoldersLocationsListRequest(
-          name=folder
+          name='folders/' + folder
       )
       folder_locations = list_pager.YieldFromList(
           self._service,
@@ -76,7 +77,7 @@ class Location(base.ClientBase):
     if organization:
       self._service = self._client.organizations_locations
       request = self._messages.RecommenderOrganizationsLocationsListRequest(
-          name=organization
+          name='organizations/' + organization
       )
       organization_locations = list_pager.YieldFromList(
           self._service,
@@ -89,7 +90,7 @@ class Location(base.ClientBase):
     if project:
       self._service = self._client.projects_locations
       request = self._messages.RecommenderProjectsLocationsListRequest(
-          name=project
+          name='projects/' + str(util.GetProjectNumber(project))
       )
       project_locations = list_pager.YieldFromList(
           self._service,
@@ -102,7 +103,7 @@ class Location(base.ClientBase):
     if billing_account:
       self._service = self._client.billingAccounts_locations
       request = self._messages.RecommenderBillingAccountsLocationsListRequest(
-          name=project
+          name='billing-accounts/' + billing_account
       )
       billing_account_locations = list_pager.YieldFromList(
           self._service,
@@ -113,5 +114,9 @@ class Location(base.ClientBase):
           field='locations',
       )
 
-    return itertools.chain(folder_locations, organization_locations,
-                           project_locations, billing_account_locations)
+    return itertools.chain(
+        folder_locations,
+        organization_locations,
+        project_locations,
+        billing_account_locations,
+    )

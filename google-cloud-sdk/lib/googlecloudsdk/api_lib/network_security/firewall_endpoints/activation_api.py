@@ -78,11 +78,46 @@ class Client:
         'networksecurity', _API_VERSION_FOR_TRACK.get(release_track)
     )
 
-  def CreateEndpoint(self, name, parent, description, labels=None):
-    """Calls the CreateEndpoint API."""
-    endpoint = self.messages.FirewallEndpoint(
-        labels=labels, description=description
+  def _ParseEndpointType(self, endpoint_type):
+    if endpoint_type is None:
+      return None
+    return self.messages.FirewallEndpoint.TypeValueValuesEnum.lookup_by_name(
+        endpoint_type
     )
+
+  def _ParseThirdPartyEndpointSettings(self, target_firewall_attachment):
+    if target_firewall_attachment is None:
+      return None
+    return self.messages.ThirdPartyEndpointSettings(
+        targetFirewallAttachment=target_firewall_attachment,
+    )
+
+  def CreateEndpoint(
+      self,
+      name,
+      parent,
+      description,
+      endpoint_type=None,
+      target_firewall_attachment=None,
+      labels=None,
+  ):
+    """Calls the CreateEndpoint API."""
+
+    third_party_endpoint_settings = self._ParseThirdPartyEndpointSettings(
+        target_firewall_attachment
+    )
+    if endpoint_type is not None:
+      endpoint = self.messages.FirewallEndpoint(
+          labels=labels,
+          type=self._ParseEndpointType(endpoint_type),
+          thirdPartyEndpointSettings=third_party_endpoint_settings,
+          description=description,
+      )
+    else:
+      endpoint = self.messages.FirewallEndpoint(
+          labels=labels,
+          description=description,
+      )
     create_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsCreateRequest(
         firewallEndpoint=endpoint, firewallEndpointId=name, parent=parent
     )

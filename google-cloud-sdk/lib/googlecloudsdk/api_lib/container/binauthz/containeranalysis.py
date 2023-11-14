@@ -44,35 +44,53 @@ class Client(object):
     self.messages = apis.GetMessagesModule(API_NAME, self.api_version)
 
   def YieldAttestations(
-      self, note_ref, artifact_url=None, page_size=None, limit=None
+      self,
+      note_ref=None,
+      project_ref=None,
+      artifact_digest=None,
+      page_size=None,
+      limit=None,
   ):
-    """Yields occurrences associated with given AA Note.
+    """Yields occurrences associated with a given attestor Note or Project.
 
     Args:
       note_ref: The Note reference that will be queried for attached
-        occurrences. (containeranalysis.projects.notes Resource)
-      artifact_url: URL of the artifact for which to fetch occurrences. If None,
-        then all occurrences attached to the AA Note are returned.
+        occurrences. If None, then all occurrences from the given project will
+        be listed. (containeranalysis.projects.notes Resource)
+      project_ref: The Project referenece that will be queried for occurrences
+        if note_ref is None.
+      artifact_digest: Digest of the artifact for which to fetch occurrences. If
+        None, then all occurrences attached to the AA Note are returned.
       page_size: The number of attestations to retrieve per request. (If None,
         use the default page size.)
       limit: The maxium number of attestations to retrieve. (If None,
         unlimited.)
 
     Yields:
-      Occurrences bound to `note_ref` with matching `artifact_url` (if passed).
+      Occurrences bound to `note_ref` with matching `artifact_digest` (if
+      passed).
     """
+    artifact_filter = (
+        'has_suffix(resourceUrl, "{}")'.format(artifact_digest)
+        if artifact_digest is not None
+        else ''
+    )
+    if note_ref is None:
+      service = self.client.projects_occurrences
+      request = self.messages.ContaineranalysisProjectsOccurrencesListRequest(
+          parent=project_ref.RelativeName(), filter=artifact_filter
+      )
+    else:
+      service = self.client.projects_notes_occurrences
+      request = (
+          self.messages.ContaineranalysisProjectsNotesOccurrencesListRequest(
+              name=note_ref.RelativeName(), filter=artifact_filter
+          )
+      )
+
     occurrence_iter = list_pager.YieldFromList(
-        self.client.projects_notes_occurrences,
-        request=(
-            self.messages.ContaineranalysisProjectsNotesOccurrencesListRequest(
-                name=note_ref.RelativeName(),
-                filter=(
-                    'has_suffix(resourceUrl, "{}")'.format(artifact_url)
-                    if artifact_url is not None
-                    else ''
-                ),
-            )
-        ),
+        service=service,
+        request=request,
         field='occurrences',
         batch_size=page_size or 100,  # Default batch_size.
         batch_size_attribute='pageSize',

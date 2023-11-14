@@ -20,7 +20,6 @@ from __future__ import print_function
 from __future__ import unicode_literals
 
 import os
-import platform
 
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
@@ -33,10 +32,7 @@ MODULES = [
     'pyopenssl==23.2.0',
     'google_crc32c',
     'certifi',
-    (
-        'https://github.com/googleapis/enterprise-certificate-proxy/releases/download/v0.2.3/'
-        'cryptography-41.0.4-cp37-abi3-macosx_10_12_{}.whl'
-    ).format('universal2' if platform.processor() == 'arm' else 'x86_64'),
+    'cryptography',
 ]
 
 # Enable file name.

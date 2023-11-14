@@ -284,11 +284,13 @@ class BinauthzState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   version = _messages.MessageField('BinauthzVersion', 1)
   webhook = _messages.EnumField('WebhookValueValuesEnum', 2)
@@ -703,11 +705,13 @@ class ConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GitSyncValueValuesEnum(_messages.Enum):
     r"""Deployment state of the git-sync pod
@@ -717,11 +721,13 @@ class ConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class ImporterValueValuesEnum(_messages.Enum):
     r"""Deployment state of the importer pod
@@ -731,11 +737,13 @@ class ConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class MonitorValueValuesEnum(_messages.Enum):
     r"""Deployment state of the monitor pod
@@ -745,11 +753,13 @@ class ConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class ReconcilerManagerValueValuesEnum(_messages.Enum):
     r"""Deployment state of reconciler-manager pod
@@ -759,11 +769,13 @@ class ConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class RootReconcilerValueValuesEnum(_messages.Enum):
     r"""Deployment state of root-reconciler
@@ -773,11 +785,13 @@ class ConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class SyncerValueValuesEnum(_messages.Enum):
     r"""Deployment state of the syncer pod
@@ -787,11 +801,13 @@ class ConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   admissionWebhook = _messages.EnumField('AdmissionWebhookValueValuesEnum', 1)
   gitSync = _messages.EnumField('GitSyncValueValuesEnum', 2)
@@ -1742,11 +1758,13 @@ class GatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GatekeeperControllerManagerStateValueValuesEnum(_messages.Enum):
     r"""Status of gatekeeper-controller-manager pod.
@@ -1756,11 +1774,13 @@ class GatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GatekeeperMutationValueValuesEnum(_messages.Enum):
     r"""Status of the pod serving the mutation webhook.
@@ -1770,11 +1790,13 @@ class GatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   gatekeeperAudit = _messages.EnumField('GatekeeperAuditValueValuesEnum', 1)
   gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
@@ -2328,11 +2350,13 @@ class HierarchyControllerDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class HncValueValuesEnum(_messages.Enum):
     r"""The deployment state for open source HNC (e.g. v0.7.0-hc.0)
@@ -2342,11 +2366,13 @@ class HierarchyControllerDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   extension = _messages.EnumField('ExtensionValueValuesEnum', 1)
   hnc = _messages.EnumField('HncValueValuesEnum', 2)
@@ -3208,11 +3234,13 @@ class OperatorState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   deploymentState = _messages.EnumField('DeploymentStateValueValuesEnum', 1)
   errors = _messages.MessageField('InstallError', 2, repeated=True)

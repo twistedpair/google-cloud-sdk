@@ -90,5 +90,14 @@ def AddDescriptionArg(parser, help_text="Description of the endpoint"):
   parser.add_argument("--description", required=False, help=help_text)
 
 
+def AddTargetFirewallAttachmentArg(
+    parser,
+    help_text="Target firewall attachment where third party endpoint forwards traffic."
+):
+  parser.add_argument(
+      "--target-firewall-attachment", required=False, help=help_text
+  )
+
+
 def AddZoneArg(parser, required=True, help_text="Zone of the endpoint"):
   parser.add_argument("--zone", required=required, help=help_text)

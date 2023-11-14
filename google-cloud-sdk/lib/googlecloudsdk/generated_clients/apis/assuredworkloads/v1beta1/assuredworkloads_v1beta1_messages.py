@@ -353,8 +353,7 @@ class GoogleCloudAssuredworkloadsV1beta1CreateWorkloadOperationMetadata(_message
         controls
       ITAR: International Traffic in Arms Regulations
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
-        Support controls Available for public preview consumption. Don't
-        create production workloads.
+        Support controls
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
       ISR_REGIONS: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions
@@ -820,8 +819,7 @@ class GoogleCloudAssuredworkloadsV1beta1Workload(_messages.Message):
         controls
       ITAR: International Traffic in Arms Regulations
       AU_REGIONS_AND_US_SUPPORT: Assured Workloads for Australia Regions and
-        Support controls Available for public preview consumption. Don't
-        create production workloads.
+        Support controls
       ASSURED_WORKLOADS_FOR_PARTNERS: Assured Workloads for Partners;
       ISR_REGIONS: Assured Workloads for Israel
       ISR_REGIONS_AND_SUPPORT: Assured Workloads for Israel Regions

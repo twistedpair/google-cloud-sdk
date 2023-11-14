@@ -19,6 +19,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import enum
+
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.transfer.appliances import regions
@@ -30,6 +32,13 @@ from googlecloudsdk.core import resources
 
 APPLIANCES_COLLECTION = 'transferappliance.projects.locations.appliances'
 ORDERS_COLLECTION = 'transferappliance.projects.locations.orders'
+
+
+class ResourceVerb(enum.Enum):
+  DELETE = 'delete'
+  DESCRIBE = 'describe'
+  LIST = 'list'
+  UPDATE = 'update'
 
 
 def appliance_attribute_config(name='appliance'):
@@ -83,15 +92,14 @@ def _add_region_flag(parser, verb):
 
   Args:
     parser (arg_parse.Parser): The parser for the command.
-    verb (str): The verb to describe the resource, such as 'to update'.
+    verb (ResourceVerb): The action taken on the resource, such as 'update'.
   """
-  # TODO(b/296116715) Use an enum for the verb.
   parser.add_argument(
       '--region',
       choices=regions.CLOUD_REGIONS,
       type=str.lower,
       help='The location affiliated with the appliance order to {}.'.format(
-          verb))
+          verb.value))
 
 
 def add_appliance_resource_arg(parser, verb):
@@ -101,12 +109,12 @@ def add_appliance_resource_arg(parser, verb):
 
   Args:
     parser (arg_parse.Parser): The parser for the command.
-    verb (str): The verb to describe the resource, such as 'to update'.
+    verb (ResourceVerb): The action taken on the resource, such as 'update'.
   """
   concept_parsers.ConceptParser.ForResource(
       'appliance',
       get_appliance_resource_spec(),
-      'The appliance to {}.'.format(verb),
+      'The appliance to {}.'.format(verb.value),
       flag_name_overrides={'region': ''},
       prefixes=True,
       required=True).AddToParser(parser)
@@ -120,13 +128,12 @@ def add_order_resource_arg(parser, verb):
 
   Args:
     parser (arg_parse.Parser): The parser for the command.
-    verb (str): The verb to describe the resource, such as 'update'.
+    verb (ResourceVerb): The action taken on the resource, such as 'update'.
   """
-  # TODO(b/296116715) Use an enum for the verb.
   concept_parsers.ConceptParser.ForResource(
       'order',
       get_order_resource_spec(),
-      'The order to {}.'.format(verb),
+      'The order to {}.'.format(verb.value),
       flag_name_overrides={'region': ''},
       prefixes=True,
       required=True).AddToParser(parser)
@@ -171,16 +178,16 @@ def add_list_resource_args(parser, listing_orders=True):
     listing_orders (bool): Toggles the help text phrasing to match either orders
       or appliances being the resource being listed.
   """
-  verb = 'list'
+  verb = ResourceVerb.LIST
   primary_help = 'The {} to {}.'
   secondary_help = 'The {} associated with the {} to {}.'
   if listing_orders:
-    orders_help = primary_help.format('orders', verb)
-    appliances_help = secondary_help.format('appliances', 'orders', verb)
+    orders_help = primary_help.format('orders', verb.value)
+    appliances_help = secondary_help.format('appliances', 'orders', verb.value)
     parser.display_info.AddUriFunc(_get_order_uri)
   else:
-    appliances_help = primary_help.format('appliances', verb)
-    orders_help = secondary_help.format('orders', 'appliances', verb)
+    appliances_help = primary_help.format('appliances', verb.value)
+    orders_help = secondary_help.format('orders', 'appliances', verb.value)
     parser.display_info.AddUriFunc(_get_appliance_uri)
 
   arg_specs = [

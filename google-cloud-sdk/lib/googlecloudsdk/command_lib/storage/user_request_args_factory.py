@@ -283,6 +283,7 @@ class _UserRequestArgs:
       gzip_settings=None,
       manifest_path=None,
       no_clobber=None,
+      override_unlocked_retention=None,
       precondition_generation_match=None,
       precondition_metageneration_match=None,
       predefined_acl_string=None,
@@ -296,6 +297,7 @@ class _UserRequestArgs:
     self.manifest_path = (
         os.path.expanduser(manifest_path) if manifest_path else None)
     self.no_clobber = no_clobber
+    self.override_unlocked_retention = override_unlocked_retention
     self.precondition_generation_match = precondition_generation_match
     self.precondition_metageneration_match = precondition_metageneration_match
     self.predefined_acl_string = predefined_acl_string
@@ -313,6 +315,8 @@ class _UserRequestArgs:
         self.gzip_settings == other.gzip_settings
         and self.manifest_path == other.manifest_path
         and self.no_clobber == other.no_clobber
+        and self.override_unlocked_retention
+        == other.override_unlocked_retention
         and self.precondition_generation_match
         == other.precondition_generation_match
         and self.precondition_metageneration_match
@@ -482,6 +486,10 @@ def get_user_request_args_from_command_args(args, metadata_type=None):
       gzip_settings=gzip_settings,
       manifest_path=getattr(args, 'manifest_path', None),
       no_clobber=getattr(args, 'no_clobber', None),
+      override_unlocked_retention=getattr(
+          args, 'override_unlocked_retention', None
+      )
+      or None,
       precondition_generation_match=getattr(args, 'if_generation_match', None),
       precondition_metageneration_match=getattr(
           args, 'if_metageneration_match', None

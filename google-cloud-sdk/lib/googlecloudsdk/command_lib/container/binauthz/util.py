@@ -143,6 +143,25 @@ def RemoveArtifactUrlScheme(artifact_url):
   return url_without_scheme
 
 
+def GetImageDigest(artifact_url):
+  """Returns the digest of an image given its url.
+
+  Args:
+    artifact_url: An image url. e.g. "https://gcr.io/foo/bar@sha256:123"
+
+  Returns:
+    The image digest. e.g. "sha256:123"
+  """
+  url_without_scheme = _ReplaceImageUrlScheme(artifact_url, scheme='')
+  try:
+    # The validation logic in `docker_name` silently produces incorrect results
+    # if the passed URL has a scheme.
+    digest = docker_name.Digest(url_without_scheme)
+  except docker_name.BadNameException as e:
+    raise BadImageUrlError(e)
+  return digest.digest
+
+
 def PaeEncode(dsse_type, body):
   """Pae encode input using the specified dsse type.
 

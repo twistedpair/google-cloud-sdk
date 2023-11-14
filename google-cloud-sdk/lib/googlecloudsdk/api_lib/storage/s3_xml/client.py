@@ -720,11 +720,18 @@ class S3XmlClient(cloud_api.CloudApi):
     """
     bucket_name = destination_resource.storage_url.bucket_name
     object_name = destination_resource.storage_url.object_name
+    multipart_chunksize = scaled_integer.ParseInteger(
+        properties.VALUES.storage.multipart_chunksize.Get())
+    multipart_threshold = scaled_integer.ParseInteger(
+        properties.VALUES.storage.multipart_threshold.Get())
     self.client.upload_fileobj(
         Fileobj=source_stream,
         # TODO(b/276920544): Consider re-enabling parallelism pending resolution
         # from boto3 maintainers.
-        Config=boto3.s3.transfer.TransferConfig(use_threads=False),
+        Config=boto3.s3.transfer.TransferConfig(
+            use_threads=False,
+            multipart_chunksize=multipart_chunksize,
+            multipart_threshold=multipart_threshold),
         Bucket=bucket_name,
         Key=object_name,
         ExtraArgs=extra_args)

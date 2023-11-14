@@ -243,7 +243,7 @@ TPU_SERVING_MODE_ERROR = """\
 Cannot specify --tpu-ipv4-cidr with --enable-tpu-service-networking."""
 
 GPU_SHARING_STRATEGY_ERROR_MSG = """\
-Invalid gpu sharing strategy [{gpu-sharing-strategy}] for argument --accelerator. Valid value is time-sharing'
+Invalid gpu sharing strategy [{gpu-sharing-strategy}] for argument --accelerator. Valid values are time-sharing, mps'
 """
 
 GPU_DRIVER_VERSION_ERROR_MSG = """\
@@ -342,6 +342,8 @@ POD = 'POD'
 DAEMONSET = 'DAEMONSET'
 DEPLOYMENT = 'DEPLOYMENT'
 STATEFULSET = 'STATEFULSET'
+CADVISOR = 'CADVISOR'
+KUBELET = 'KUBELET'
 LOGGING_OPTIONS = [
     NONE,
     SYSTEM,
@@ -364,6 +366,8 @@ MONITORING_OPTIONS = [
     DAEMONSET,
     DEPLOYMENT,
     STATEFULSET,
+    CADVISOR,
+    KUBELET,
 ]
 PRIMARY_LOGS_OPTIONS = [
     APISERVER,
@@ -704,6 +708,7 @@ class CreateClusterOptions(object):
       containerd_config_from_file=None,
       resource_manager_tags=None,
       autoprovisioning_resource_manager_tags=None,
+      enable_secret_manager=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -914,6 +919,7 @@ class CreateClusterOptions(object):
     self.autoprovisioning_resource_manager_tags = (
         autoprovisioning_resource_manager_tags
     )
+    self.enable_secret_manager = enable_secret_manager
 
 
 class UpdateClusterOptions(object):
@@ -1056,6 +1062,7 @@ class UpdateClusterOptions(object):
       autoprovisioning_resource_manager_tags=None,
       convert_to_autopilot=None,
       convert_to_standard=None,
+      enable_secret_manager=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1197,6 +1204,7 @@ class UpdateClusterOptions(object):
     )
     self.convert_to_autopilot = convert_to_autopilot
     self.convert_to_standard = convert_to_standard
+    self.enable_secret_manager = enable_secret_manager
 
 
 class SetMasterAuthOptions(object):
@@ -2304,6 +2312,11 @@ class APIAdapter(object):
               self.messages
           ).GetEnumForChoice(options.in_transit_encryption)
       )
+
+    if options.enable_secret_manager is not None:
+      if cluster.secretManagerConfig is None:
+        cluster.secretManagerConfig = self.messages.SecretManagerConfig()
+      cluster.secretManagerConfig.enabled = options.enable_secret_manager
 
     return cluster
 
@@ -3712,6 +3725,13 @@ class APIAdapter(object):
           update.desiredContainerdConfig,
           options.containerd_config_from_file,
           self.messages,
+      )
+
+    if options.enable_secret_manager is not None:
+      update = self.messages.ClusterUpdate(
+          desiredSecretManagerConfig=self.messages.SecretManagerConfig(
+              enabled=options.enable_secret_manager
+          )
       )
 
     return update
@@ -6867,6 +6887,14 @@ def _GetMonitoringConfig(options, messages):
       comp.enableComponents.append(
           messages.MonitoringComponentConfig
           .EnableComponentsValueListEntryValuesEnum.STATEFULSET)
+    if CADVISOR in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.CADVISOR)
+    if KUBELET in options.monitoring:
+      comp.enableComponents.append(
+          messages.MonitoringComponentConfig
+          .EnableComponentsValueListEntryValuesEnum.KUBELET)
 
     config.componentConfig = comp
 

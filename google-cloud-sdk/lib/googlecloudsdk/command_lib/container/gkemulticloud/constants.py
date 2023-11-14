@@ -59,6 +59,14 @@ ATTACHED_CLUSTERS_FORMAT = """\
     kubernetesVersion:label=KUBERNETES_VERSION,
     state)"""
 
+# TODO(b/282958703): Update table format to include version info simiar to AWS.
+ATTACHED_SERVER_CONFIG_FORMAT = """\
+  multi(
+    validVersions:format="table(
+      version
+    )"
+  )"""
+
 AWS_CLUSTERS_FORMAT = """\
   table(
     name.basename(),

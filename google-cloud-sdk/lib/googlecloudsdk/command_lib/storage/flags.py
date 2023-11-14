@@ -502,17 +502,9 @@ def add_dataset_config_create_update_flags(parser, is_update=False):
       help='Provide retention period for the config.',
   )
   parser.add_argument(
-      '--skip-verification',
-      action='store_true',
-      help=(
-          'Skips failures from the verification phase before data is ingested, '
-          'this flag can only move from unset to set.'
-      ),
-  )
-  parser.add_argument(
       '--description',
       type=str,
-      help='Optional user description for dataset config.',
+      help='Description for dataset config.',
   )
 
 
@@ -531,7 +523,6 @@ def add_admission_policy_flag(parser):
   parser.add_argument(
       '--admission-policy',
       choices=['ADMIT_ON_FIRST_MISS', 'ADMIT_ON_SECOND_MISS'],
-      default='ADMIT_ON_FIRST_MISS',
       help=(
           'The cache admission policy decides for each cache miss, whether to'
           ' insert the missed block or not.'
@@ -547,52 +538,62 @@ def add_read_paths_from_stdin_flag(
   )
 
 
-def add_retention_flags(parser, is_update=False, hidden=True):
+def add_per_object_retention_flags(parser, is_update=False):
   """Adds the flags for object retention lock.
 
   Args:
     parser (parser_arguments.ArgumentInterceptor): Parser passed to surface.
     is_update (bool): True if flags are for the objects update command.
-    hidden (bool): True if flags should be hidden.
   """
-  group_help = 'Flags for setting object retention.'
+  retention_group = parser.add_group(
+      category='RETENTION',
+  )
   if is_update:
     subject = 'object'
-    retention_group = parser.add_group(
-        category='RETENTION',
-        mutex=True,
-        hidden=hidden
-    )
     retention_group.add_argument(
         '--clear-retention',
         action='store_true',
-        help='Clears object retention settings and unlocks the policy.',
-        hidden=hidden
+        help=(
+            'Clears object retention settings and unlocks the configuration.'
+            ' Requires --override-unlocked-retention flag as confirmation.'
+        ),
     )
-    retention_set_group = retention_group.add_group(help=group_help)
+    retention_group.add_argument(
+        '--override-unlocked-retention',
+        action='store_true',
+        help=(
+            'Needed for certain retention configuration modifications, such as'
+            ' clearing retention settings and reducing retention time.'
+            ' Note that locked configurations cannot be edited even'
+            ' with this flag.'
+        ),
+    )
+    override_note = (
+        ' Requires --override-unlocked-retention flag to shorten'
+        ' the retain-until time in unlocked configurations.'
+    )
   else:
     subject = 'destination object'
-    retention_set_group = parser.add_group(
-        category='RETENTION',
-        hidden=hidden,
-        help=group_help
-    )
+    override_note = ''
 
-  retention_set_group.add_argument(
+  retention_group.add_argument(
       '--retention-mode',
       choices=sorted([option.value for option in RetentionMode]),
-      help=('Sets the {} retention mode to either LOCKED or UNLOCKED. When'
-            ' retention mode is LOCKED, the retain until time can only be'
-            ' increased.'.format(subject)),
-      hidden=hidden,
+      help=(
+          'Sets the {} retention mode to either "Locked" or "Unlocked". When'
+          ' retention mode is "Locked", the retain until time can only be'
+          ' increased.'.format(subject)
+      ),
   )
-  retention_set_group.add_argument(
+  retention_group.add_argument(
       '--retain-until',
       type=arg_parsers.Datetime.Parse,
-      help=('Ensures the {} is retained until the specified time in RFC 3339'
-            ' format.'.format(subject)),
+      help=(
+          'Ensures the {} is retained until the specified time in RFC 3339'
+          ' format.'.format(subject)
+          + override_note
+      ),
       metavar='DATETIME',
-      hidden=hidden,
   )
 
 
@@ -631,10 +632,10 @@ def add_enable_per_object_retention_flag(parser):
   parser.add_argument(
       '--enable-per-object-retention',
       action='store_true',
-      hidden=True,
       help=(
-          'Enables each object in the bucket to have its own retention policy,'
-          ' which prevents deletion until stored for a specific length of time.'
+          'Enables each object in the bucket to have its own retention'
+          ' settings, which prevents deletion until stored for a specific'
+          ' length of time.'
       ),
   )
 

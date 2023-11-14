@@ -161,7 +161,7 @@ def GetLocationsUri(resource):
   return ref.SelfLink()
 
 
-def AddFunctionMemoryAndCpuFlags(parser, track):
+def AddFunctionMemoryAndCpuFlags(parser):
   """Add flags for specifying function memory and cpu to the parser."""
 
   memory_help_text = """\
@@ -178,28 +178,25 @@ def AddFunctionMemoryAndCpuFlags(parser, track):
   By default, a new function is limited to 256MB of memory. When
   deploying an update to an existing function, the function keeps its old
   memory limit unless you specify this flag."""
-  if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    group = parser.add_group(required=False)
-    cpu_help_text = """\
-      The number of available CPUs to set. Only valid when `--gen2`
-      and `--memory=MEMORY` are specified.
+  group = parser.add_group(required=False)
+  cpu_help_text = """\
+    The number of available CPUs to set. Only valid when `--gen2`
+    and `--memory=MEMORY` are specified.
 
-      Examples: .5, 2, 2.0, 2000m.
+    Examples: .5, 2, 2.0, 2000m.
 
-      By default, a new function's available CPUs is determined based on its memory value.
+    By default, a new function's available CPUs is determined based on its memory value.
 
-      When deploying an update that includes memory changes to an existing function,
-      the function's available CPUs will be recalculated based on the new memory unless this flag
-      is specified. When deploying an update that does not include memory changes to an existing function,
-      the function's "available CPUs" setting will keep its old value unless you use this flag
-      to change the setting.
-      """
-    group.add_argument(
-        '--memory', type=str, help=memory_help_text, required=True
-    )
-    group.add_argument('--cpu', help=cpu_help_text)
-  else:
-    parser.add_argument('--memory', type=str, help=memory_help_text)
+    When deploying an update that includes memory changes to an existing function,
+    the function's available CPUs will be recalculated based on the new memory unless this flag
+    is specified. When deploying an update that does not include memory changes to an existing function,
+    the function's "available CPUs" setting will keep its old value unless you use this flag
+    to change the setting.
+    """
+  group.add_argument(
+      '--memory', type=str, help=memory_help_text, required=True
+  )
+  group.add_argument('--cpu', help=cpu_help_text)
 
 
 def ParseMemoryStrToNumBytes(binary_size):
@@ -1002,18 +999,17 @@ def AddDockerRepositoryFlags(parser):
   )
 
 
-def AddConcurrencyFlag(parser, track):
-  if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    parser.add_argument(
-        '--concurrency',
-        type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=1000),
-        help=(
-            'Set the maximum number of concurrent requests allowed per'
-            ' container instance. Leave concurrency unspecified to receive the'
-            ' server default value. Only applicable when the `--gen2` flag is'
-            ' provided.'
-        ),
-    )
+def AddConcurrencyFlag(parser):
+  parser.add_argument(
+      '--concurrency',
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=1000),
+      help=(
+          'Set the maximum number of concurrent requests allowed per'
+          ' container instance. Leave concurrency unspecified to receive the'
+          ' server default value. Only applicable when the `--gen2` flag is'
+          ' provided.'
+      ),
+  )
 
 
 def AddUpgradeFlags(parser):

@@ -198,6 +198,7 @@ class _ResourceParser(object):
       InvalidResourceException: if relative name doesn't match collection
           template.
     """
+    base_url = apis_internal._UniversifyAddress(base_url)  # pylint:disable=protected-access
     path_template = self.collection_info.GetPathRegEx(subcollection)
     match = re.match(path_template, relative_name)
     if not match:
@@ -209,7 +210,6 @@ class _ResourceParser(object):
     fields = match.groups()
     if url_unescape:
       fields = map(urllib.parse.unquote, fields)
-
     return Resource(self.registry, self.collection_info, subcollection,
                     param_values=dict(zip(params, fields)),
                     endpoint_url=base_url)
@@ -258,6 +258,7 @@ class _ResourceParser(object):
       ValueError: if parameter set in kwargs is not subset of the resource
           parameters.
     """
+    base_url = apis_internal._UniversifyAddress(base_url)  # pylint:disable=protected-access
     if resource_id is not None:
       try:
         return self.ParseRelativeName(
@@ -365,7 +366,13 @@ class Resource(object):
     """
     self._registry = registry
     self._collection_info = collection_info
-    self._endpoint_url = endpoint_url or collection_info.base_url
+
+    if endpoint_url:
+      self._endpoint_url = endpoint_url
+    else:
+      self._endpoint_url = apis_internal._UniversifyAddress(
+          collection_info.base_url
+      )
     self._subcollection = subcollection
     self._path = collection_info.GetPath(subcollection)
     self._params = collection_info.GetParams(subcollection)
@@ -1144,25 +1151,29 @@ class Registry(object):
           ref = self.ParseURL(line)
         except InvalidResourceException as e:
           bucket = None
-          if line.startswith(_GCS_URL):
+          # assume the universe_domain is set before running gcloud command
+          gcs_url = apis_internal._UniversifyAddress(_GCS_URL)  # pylint:disable=protected-access
+          gcs_alt_url = apis_internal._UniversifyAddress(_GCS_ALT_URL)  # pylint:disable=protected-access
+          gcs_alt_url_short = apis_internal._UniversifyAddress(_GCS_ALT_URL_SHORT)  # pylint:disable=protected-access, line-too-long
+          if line.startswith(gcs_url):
             try:
               bucket_prefix, bucket, object_prefix, objectpath = (
-                  line[len(_GCS_URL):].split('/', 3))
+                  line[len(gcs_url):].split('/', 3))
             except ValueError:
               raise e
             if (bucket_prefix, object_prefix) != ('b', 'o'):
               raise
-          elif line.startswith(_GCS_ALT_URL_SHORT):
+          elif line.startswith(gcs_alt_url_short):
             try:
               try:
                 bucket_prefix, bucket, object_prefix, objectpath = (
-                    line[len(_GCS_ALT_URL):].split('/', 3))
+                    line[len(gcs_alt_url):].split('/', 3))
               except ValueError:
                 raise e
               if (bucket_prefix, object_prefix) != ('b', 'o'):
                 raise
             except InvalidResourceException as e:
-              line = line[len(_GCS_ALT_URL_SHORT):]
+              line = line[len(gcs_alt_url_short):]
               if '/' in line:
                 bucket, objectpath = line.split('/', 1)
               else:
@@ -1229,6 +1240,8 @@ def GetApiBaseUrl(api_name, api_version):
       _, url_version, _ = resource_util.SplitEndpointUrl(client_base_url)
       if url_version is None:
         base_url += api_version + '/'
+  if base_url is not None:
+    base_url = apis_internal._UniversifyAddress(base_url)  # pylint:disable=protected-access
   return base_url
 
 

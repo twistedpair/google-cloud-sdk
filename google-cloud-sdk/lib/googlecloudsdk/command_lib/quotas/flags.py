@@ -19,35 +19,32 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.resource_manager import completers
 
 
-def AddConsumerFlags(parser):
+def AddConsumerFlags(parser, help_string):
   """Parse consumer flag in the command.
 
   Args:
     parser: An argparse parser that you can use to add arguments that go on the
       command line after this command. Positional arguments are allowed.
+    help_string: text that is prepended to help for each argument.
   """
   group = parser.add_mutually_exclusive_group(required=True)
   group.add_argument(
       '--project',
-      help=(
-          'Project number/ID. Only one of --project, --folder, or'
-          ' --organization can be provided.'
-      ),
+      metavar='PROJECT_ID_OR_NUMBER',
+      help='Project of the {0}.'.format(help_string),
   )
+
   group.add_argument(
       '--folder',
-      help=(
-          'Folder ID. Only one of --project, --folder, or --organization can be'
-          ' provided.'
-      ),
+      metavar='FOLDER_ID',
+      help='Folder of the {0}.'.format(help_string),
   )
+
   group.add_argument(
       '--organization',
       completer=completers.OrganizationCompleter,
-      help=(
-          'Organization ID. Only one of --project, --folder, or --organization'
-          ' can be provided.'
-      ),
+      metavar='ORGANIZATION_ID',
+      help='Organization of the {0}.'.format(help_string),
   )
 
 
@@ -106,7 +103,7 @@ def AllowsQuotaDecreaseBelowUsage():
       action='store_true',
       help=(
           'If specified, allows consumers to reduce their effective limit below'
-          ' their quota usage.'
+          ' their quota usage. Default is false.'
       ),
   )
 
@@ -117,7 +114,7 @@ def AllowHighPercentageQuotaDecrease():
       action='store_true',
       help=(
           'If specified, allows consumers to reduce their effective limit by'
-          ' more than 10 percent.'
+          ' more than 10 percent. Default is false.'
       ),
   )
 
@@ -153,7 +150,7 @@ def AllowMissing():
       action='store_true',
       help=(
           'If specified and the quota preference is not found, a new one will'
-          ' be created.'
+          ' be created. Default is false.'
       ),
   )
 
@@ -165,6 +162,28 @@ def ValidateOnly():
       help=(
           'If specified, only validates the request, but does not actually'
           ' update. Note that a request being valid does not mean that the'
-          ' request is guaranteed to be fulfilled.'
+          ' request is guaranteed to be fulfilled. Default is false.'
+      ),
+  )
+
+
+def PageToken():
+  return base.Argument(
+      '--page-token',
+      default=None,
+      help=(
+          'A token identifying a page of results the server should return.'
+          ' Default is none.'
+      ),
+  )
+
+
+def ReconcilingOnly():
+  return base.Argument(
+      '--reconciling-only',
+      action='store_true',
+      help=(
+          'If specified, only displays quota preferences in unresolved states.'
+          ' Default is false.'
       ),
   )

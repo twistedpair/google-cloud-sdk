@@ -119,7 +119,7 @@ class BmsClient(object):
         field='instances')
 
   def UpdateInstance(self, instance_resource, labels, os_image,
-                     enable_hyperthreading, ssh_keys, kms_crypto_key_version):
+                     enable_hyperthreading, ssh_keys, kms_key_version):
     """Update an existing instance resource."""
     updated_fields = []
     if labels is not None:
@@ -130,15 +130,15 @@ class BmsClient(object):
       updated_fields.append('hyperthreading_enabled')
     if ssh_keys:
       updated_fields.append('ssh_keys')
-    if kms_crypto_key_version is not None:
-      updated_fields.append('kms_crypto_key_version')
+    if kms_key_version is not None:
+      updated_fields.append('kms_key_version')
 
     ssh_keys_relative = [ssh_key.RelativeName() for ssh_key in ssh_keys]
 
     instance_msg = self.messages.Instance(
         name=instance_resource.RelativeName(), labels=labels, osImage=os_image,
         hyperthreadingEnabled=enable_hyperthreading, sshKeys=ssh_keys_relative,
-        kmsKeyVersion=kms_crypto_key_version)
+        kmsKeyVersion=kms_key_version)
 
     request = self.messages.BaremetalsolutionProjectsLocationsInstancesPatchRequest(
         name=instance_resource.RelativeName(),

@@ -113,11 +113,15 @@ class V2ExclusiveStoreAction(argparse._StoreAction):  # pylint: disable=protecte
   """StoreActionClass first validating if option is Composer >=2 exclusive."""
 
 
+# TODO(b/309750417): Update help text
 _AIRFLOW_VERSION_TYPE = arg_parsers.RegexpValidator(
-    r'^(\d+(?:\.\d+(?:\.\d+)?)?)', 'must be in the form X[.Y[.Z]].')
+    r'^(\d+(?:\.\d+(?:\.\d+(?:-build\.\d+)?)?)?)',
+    'must be in the form X[.Y[.Z]].',
+)
 
+# TODO(b/309750417): Update help text
 _IMAGE_VERSION_TYPE = arg_parsers.RegexpValidator(
-    r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+(?:\.\d+(?:\.\d+)?)?)',
+    r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+(?:\.\d+(?:\.\d+(?:-build\.\d+)?)?)?)',
     'must be in the form \'composer-A[.B.C[-D.E]]-airflow-X[.Y[.Z]]\' or '
     '\'latest\' can be provided in place of the Cloud Composer version '
     'string. For example: \'composer-latest-airflow-1.10.0\'.')

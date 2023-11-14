@@ -14,11 +14,14 @@
 # limitations under the License.
 """Utilities for Cloud Quotas API QuotaPreference."""
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.quotas import message_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import common_args
 
-
+PAGE_SIZE = 100
 _CONSUMER_LOCATION_RESOURCE = '%s/locations/global'
+_RECONCILING_ONLY_FILTER = 'reconciling:true'
 
 
 def _GetClientInstance(no_http=False):
@@ -69,6 +72,80 @@ def _GetIgnoreSafetyChecks(args, request):
   return ignore_safety_checks
 
 
+def _GetFilter(custom_filter, reconciling_only):
+  if custom_filter is not None and reconciling_only:
+    return custom_filter + ' AND ' + _RECONCILING_ONLY_FILTER
+  if reconciling_only:
+    return _RECONCILING_ONLY_FILTER
+  if custom_filter is not None:
+    return custom_filter
+  return None
+
+
+def CreateQuotaPreference(args):
+  """Creates a new QuotaPreference that declares the desired value for a quota.
+
+  Args:
+    args: argparse.Namespace, The arguments that this command was invoked with.
+
+  Returns:
+    The created QuotaPreference
+  """
+  consumer = message_util.CreateConsumer(
+      args.project, args.folder, args.organization
+  )
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  parent = _CONSUMER_LOCATION_RESOURCE % (consumer)
+
+  quota_preference = messages.QuotaPreference(
+      name=_GetPreferenceName(parent, args.preference_id),
+      dimensions=_GetDimensions(messages, args.dimensions),
+      quotaConfig=messages.QuotaConfig(
+          preferredValue=int(args.preferred_value)
+      ),
+      service=args.service,
+      quotaId=args.quota_id,
+      justification=_GetJustification(args.email, args.justification),
+  )
+
+  if args.project:
+    request = messages.CloudquotasProjectsLocationsQuotaPreferencesCreateRequest(
+        parent=parent,
+        quotaPreferenceId=args.preference_id,
+        quotaPreference=quota_preference,
+        ignoreSafetyChecks=_GetIgnoreSafetyChecks(
+            args,
+            messages.CloudquotasProjectsLocationsQuotaPreferencesCreateRequest,
+        ),
+    )
+    return client.projects_locations_quotaPreferences.Create(request)
+
+  if args.folder:
+    request = messages.CloudquotasFoldersLocationsQuotaPreferencesCreateRequest(
+        parent=parent,
+        quotaPreferenceId=args.preference_id,
+        quotaPreference=quota_preference,
+        ignoreSafetyChecks=_GetIgnoreSafetyChecks(
+            args,
+            messages.CloudquotasFoldersLocationsQuotaPreferencesCreateRequest,
+        ),
+    )
+    return client.folders_locations_quotaPreferences.Create(request)
+
+  if args.organization:
+    request = messages.CloudquotasOrganizationsLocationsQuotaPreferencesCreateRequest(
+        parent=parent,
+        quotaPreferenceId=args.preference_id,
+        quotaPreference=quota_preference,
+        ignoreSafetyChecks=_GetIgnoreSafetyChecks(
+            args,
+            messages.CloudquotasOrganizationsLocationsQuotaPreferencesCreateRequest,
+        ),
+    )
+    return client.organizations_locations_quotaPreferences.Create(request)
+
+
 def UpdateQuotaPreference(args):
   """Updates the parameters of a single QuotaPreference.
 
@@ -117,19 +194,23 @@ def UpdateQuotaPreference(args):
         quotaPreference=quota_preference,
         allowMissing=args.allow_missing,
         validateOnly=args.validate_only,
-        ignoreSafetyChecks=_GetIgnoreSafetyChecks(args, messages),
+        ignoreSafetyChecks=_GetIgnoreSafetyChecks(
+            args,
+            messages.CloudquotasFoldersLocationsQuotaPreferencesPatchRequest,
+        ),
     )
     return client.folders_locations_quotaPreferences.Patch(request)
 
   if args.organization:
-    request = (
-        messages.CloudquotasOrganizationsLocationsQuotaPreferencesPatchRequest(
-            name=preference_name,
-            quotaPreference=quota_preference,
-            allowMissing=args.allow_missing,
-            validateOnly=args.validate_only,
-            ignoreSafetyChecks=_GetIgnoreSafetyChecks(args, messages),
-        )
+    request = messages.CloudquotasOrganizationsLocationsQuotaPreferencesPatchRequest(
+        name=preference_name,
+        quotaPreference=quota_preference,
+        allowMissing=args.allow_missing,
+        validateOnly=args.validate_only,
+        ignoreSafetyChecks=_GetIgnoreSafetyChecks(
+            args,
+            messages.CloudquotasOrganizationsLocationsQuotaPreferencesPatchRequest,
+        ),
     )
     return client.organizations_locations_quotaPreferences.Patch(request)
 
@@ -141,7 +222,7 @@ def GetQuotaPreference(args):
     args: argparse.Namespace, The arguments that this command was invoked with.
 
   Returns:
-    The request QuotaPreference
+    The request QuotaPreference.
   """
   consumer = message_util.CreateConsumer(
       args.project, args.folder, args.organization
@@ -172,3 +253,71 @@ def GetQuotaPreference(args):
         )
     )
     return client.organizations_locations_quotaPreferences.Get(request)
+
+
+def ListQuotaPreferences(args):
+  """Lists QuotaPreferences in a given project, folder or organization.
+
+  Args:
+    args: argparse.Namespace, The arguments that this command was invoked with.
+
+  Returns:
+    List of QuotaPreferences.
+  """
+  consumer = message_util.CreateConsumer(
+      args.project, args.folder, args.organization
+  )
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  parent = _CONSUMER_LOCATION_RESOURCE % consumer
+  print(args.page_size)
+
+  if args.project:
+    request = messages.CloudquotasProjectsLocationsQuotaPreferencesListRequest(
+        parent=parent,
+        pageSize=args.page_size,
+        pageToken=args.page_token,
+        filter=_GetFilter(args.filter, args.reconciling_only),
+        orderBy=common_args.ParseSortByArg(args.sort_by),
+    )
+    return list_pager.YieldFromList(
+        client.projects_locations_quotaPreferences,
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
+        field='quotaPreferences',
+    )
+
+  if args.folder:
+    request = messages.CloudquotasFoldersLocationsQuotaPreferencesListRequest(
+        parent=parent,
+        pageSize=args.page_size,
+        pageToken=args.page_token,
+        filter=_GetFilter(args.filter, args.reconciling_only),
+        orderBy=common_args.ParseSortByArg(args.sort_by),
+    )
+    return list_pager.YieldFromList(
+        client.folders_locations_quotaPreferences,
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
+        field='quotaPreferences',
+    )
+
+  if args.organization:
+    request = (
+        messages.CloudquotasOrganizationsLocationsQuotaPreferencesListRequest(
+            parent=parent,
+            pageSize=args.page_size,
+            pageToken=args.page_token,
+            filter=_GetFilter(args.filter, args.reconciling_only),
+            orderBy=common_args.ParseSortByArg(args.sort_by),
+        )
+    )
+    return list_pager.YieldFromList(
+        client.organizations_locations_quotaPreferences,
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
+        field='quotaPreferences',
+    )

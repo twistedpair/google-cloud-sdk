@@ -350,6 +350,7 @@ def AddCommonBulkInsertArgs(
     support_custom_hostnames=False,
     support_storage_pool=False,
     support_specific_then_x_affinity=False,
+    support_ipv6_only=False,
 ):
   """Register parser args common to all tracks."""
   metadata_utils.AddMetadataArgs(parser)
@@ -448,7 +449,7 @@ def AddCommonBulkInsertArgs(
   if support_enable_target_shape:
     AddDistributionTargetShapeArgs(parser)
 
-  instances_flags.AddStackTypeArgs(parser)
+  instances_flags.AddStackTypeArgs(parser, support_ipv6_only)
   instances_flags.AddMinCpuPlatformArgs(parser, release_track)
   instances_flags.AddPublicDnsArgs(parser, instance=True)
   instances_flags.AddConfidentialComputeArgs(

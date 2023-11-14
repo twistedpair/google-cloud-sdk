@@ -263,7 +263,7 @@ def _GetGapicClientInstance(api_name,
 def _UniversifyAddress(address):
   """Take universe into account."""
   universe_domain_property = properties.VALUES.core.universe_domain
-  if universe_domain_property.IsExplicitlySet():
+  if address is not None and universe_domain_property.IsExplicitlySet():
     address = address.replace(universe_domain_property.default,
                               universe_domain_property.Get())
   return address
@@ -335,7 +335,7 @@ def _GetBaseUrlFromApi(api_name, api_version):
       client_base_url = 'https://{}.googleapis.com/{}'.format(
           api_name, api_version
       )
-  return client_base_url
+  return _UniversifyAddress(client_base_url)
 
 
 def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
@@ -355,14 +355,13 @@ def _GetEffectiveApiEndpoint(api_name, api_version, client_class=None):
   if endpoint_override:
     address = _BuildEndpointOverride(endpoint_override, client_base_url)
   elif _MtlsEnabled(api_name, api_version):
-    address = _GetMtlsEndpoint(api_name, api_version, client_class)
+    address = _UniversifyAddress(
+        _GetMtlsEndpoint(api_name, api_version, client_class)
+    )
   else:
     address = client_base_url
 
-  if endpoint_override is not None:
-    return address
-
-  return _UniversifyAddress(address)
+  return address
 
 
 def _GetMessagesModule(api_name, api_version):

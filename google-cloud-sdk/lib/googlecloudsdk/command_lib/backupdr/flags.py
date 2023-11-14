@@ -62,6 +62,13 @@ def AddNetwork(parser, required=True):
       type=str,
       help=(
           'Name of an existing VPC network with private service access'
-          ' configured'
+          ' configured in the format -'
+          ' projects/<project>/global/networks/<network>. This VPC network'
+          ' allows the management console to communicate with all'
+          ' backup/recovery appliances and requires a minimum IP range of /23.'
+          ' This value cannot be changed after you deploy the management'
+          ' server. If you don\'t have private service access, configure one.'
+          ' [Learn more]'
+          ' (https://cloud.google.com/vpc/docs/configure-private-services-access)'
       ),
   )

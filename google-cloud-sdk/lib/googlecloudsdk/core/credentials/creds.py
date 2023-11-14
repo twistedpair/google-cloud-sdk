@@ -93,6 +93,10 @@ def IsGoogleAuthCredentials(creds):
   return isinstance(creds, google_auth_creds.Credentials)
 
 
+def IsGoogleAuthGceCredentials(creds):
+  return isinstance(creds, google_auth_compute_engine.Credentials)
+
+
 def _IsUserAccountCredentialsOauth2client(creds):
   if CredentialType.FromCredentials(creds).is_user:
     return True
@@ -956,6 +960,11 @@ def ToJsonGoogleAuth(credentials):
             (base64.b64encode(credentials.private_key_pkcs12).decode('ascii')),
         'password': credentials.private_key_password
     }
+  elif creds_type == CredentialTypeGoogleAuth.GCE:
+    creds_dict = {
+        'type': creds_type.key,
+        'service_account_email': credentials.service_account_email,
+    }
   else:
     raise UnknownCredentialsType(
         'Google auth does not support serialization of {} credentials.'.format(
@@ -1084,7 +1093,7 @@ def FromJsonGoogleAuth(json_value):
 
   The type of the credentials could be service account, external account
   (workload identity pool or workforce pool), external account authorized user
-  (workforce), user account, or p12 service account.
+  (workforce), user account, p12 service account, or compute engine.
 
   Args:
     json_value: string, A string of the JSON representation of the credentials.
@@ -1209,6 +1218,13 @@ def FromJsonGoogleAuth(json_value):
     # token_uri is hard-coded in google-auth library, replace it.
     cred._token_uri = json_key['token_uri']  # pylint: disable=protected-access
     return cred
+
+  if cred_type == CredentialTypeGoogleAuth.GCE:
+    cred = google_auth_compute_engine.Credentials(
+        service_account_email=json_key['service_account_email']
+    )
+    return cred
+
   raise UnknownCredentialsType(
       'Google auth does not support deserialization of {} credentials.'.format(
           json_key['type']))

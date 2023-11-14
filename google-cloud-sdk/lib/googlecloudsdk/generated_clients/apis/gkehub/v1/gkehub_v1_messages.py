@@ -298,11 +298,288 @@ class CloudAuditOptions(_messages.Message):
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
 
 
+class ClusterUpgradeFleetSpec(_messages.Message):
+  r"""**ClusterUpgrade**: The configuration for the fleet-level ClusterUpgrade
+  feature.
+
+  Fields:
+    gkeUpgradeOverrides: Allow users to override some properties of each GKE
+      upgrade.
+    postConditions: Required. Post conditions to evaluate to mark an upgrade
+      COMPLETE. Required.
+    upstreamFleets: This fleet consumes upgrades that have COMPLETE status
+      code in the upstream fleets. See UpgradeStatus.Code for code
+      definitions. The fleet name should be either fleet project number or id.
+      This is defined as repeated for future proof reasons. Initial
+      implementation will enforce at most one upstream fleet.
+  """
+
+  gkeUpgradeOverrides = _messages.MessageField('ClusterUpgradeGKEUpgradeOverride', 1, repeated=True)
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 2)
+  upstreamFleets = _messages.StringField(3, repeated=True)
+
+
+class ClusterUpgradeFleetState(_messages.Message):
+  r"""**ClusterUpgrade**: The state for the fleet-level ClusterUpgrade
+  feature.
+
+  Messages:
+    IgnoredValue: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+
+  Fields:
+    downstreamFleets: This fleets whose upstream_fleets contain the current
+      fleet. The fleet name should be either fleet project number or id.
+    gkeState: Feature state for GKE clusters.
+    ignored: A list of memberships ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel. The membership resource is in
+      the format: `projects/{p}/locations/{l}/membership/{m}`.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class IgnoredValue(_messages.Message):
+    r"""A list of memberships ignored by the feature. For example, manually
+    upgraded clusters can be ignored if they are newer than the default
+    versions of its release channel. The membership resource is in the format:
+    `projects/{p}/locations/{l}/membership/{m}`.
+
+    Messages:
+      AdditionalProperty: An additional property for a IgnoredValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type IgnoredValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a IgnoredValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A ClusterUpgradeIgnoredMembership attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  downstreamFleets = _messages.StringField(1, repeated=True)
+  gkeState = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureState', 2)
+  ignored = _messages.MessageField('IgnoredValue', 3)
+
+
+class ClusterUpgradeGKEUpgrade(_messages.Message):
+  r"""GKEUpgrade represents a GKE provided upgrade, e.g., control plane
+  upgrade.
+
+  Fields:
+    name: Name of the upgrade, e.g., "k8s_control_plane". It should be a valid
+      upgrade name. It must not exceet 99 characters.
+    version: Version of the upgrade, e.g., "1.22.1-gke.100". It should be a
+      valid version. It must not exceet 99 characters.
+  """
+
+  name = _messages.StringField(1)
+  version = _messages.StringField(2)
+
+
+class ClusterUpgradeGKEUpgradeFeatureCondition(_messages.Message):
+  r"""GKEUpgradeFeatureCondition describes the condition of the feature for
+  GKE clusters at a certain point of time.
+
+  Fields:
+    reason: Reason why the feature is in this status.
+    status: Status of the condition, one of True, False, Unknown.
+    type: Type of the condition, for example, "ready".
+    updateTime: Last timestamp the condition was updated.
+  """
+
+  reason = _messages.StringField(1)
+  status = _messages.StringField(2)
+  type = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
+class ClusterUpgradeGKEUpgradeFeatureState(_messages.Message):
+  r"""GKEUpgradeFeatureState contains feature states for GKE clusters in the
+  scope.
+
+  Fields:
+    conditions: Current conditions of the feature.
+    upgradeState: Upgrade state. It will eventually replace `state`.
+  """
+
+  conditions = _messages.MessageField('ClusterUpgradeGKEUpgradeFeatureCondition', 1, repeated=True)
+  upgradeState = _messages.MessageField('ClusterUpgradeGKEUpgradeState', 2, repeated=True)
+
+
+class ClusterUpgradeGKEUpgradeOverride(_messages.Message):
+  r"""Properties of a GKE upgrade that can be overridden by the user. For
+  example, a user can skip soaking by overriding the soaking to 0.
+
+  Fields:
+    postConditions: Required. Post conditions to override for the specified
+      upgrade (name + version). Required.
+    upgrade: Required. Which upgrade to override. Required.
+  """
+
+  postConditions = _messages.MessageField('ClusterUpgradePostConditions', 1)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
+
+
+class ClusterUpgradeGKEUpgradeState(_messages.Message):
+  r"""GKEUpgradeState is a GKEUpgrade and its state at the scope and fleet
+  level.
+
+  Messages:
+    StatsValue: Number of GKE clusters in each status code.
+
+  Fields:
+    stats: Number of GKE clusters in each status code.
+    status: Status of the upgrade.
+    upgrade: Which upgrade to track the state.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class StatsValue(_messages.Message):
+    r"""Number of GKE clusters in each status code.
+
+    Messages:
+      AdditionalProperty: An additional property for a StatsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type StatsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a StatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  stats = _messages.MessageField('StatsValue', 1)
+  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 2)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 3)
+
+
+class ClusterUpgradeIgnoredMembership(_messages.Message):
+  r"""IgnoredMembership represents a membership ignored by the feature. A
+  membership can be ignored because it was manually upgraded to a newer
+  version than RC default.
+
+  Fields:
+    ignoredTime: Time when the membership was first set to ignored.
+    reason: Reason why the membership is ignored.
+  """
+
+  ignoredTime = _messages.StringField(1)
+  reason = _messages.StringField(2)
+
+
+class ClusterUpgradeMembershipGKEUpgradeState(_messages.Message):
+  r"""ScopeGKEUpgradeState is a GKEUpgrade and its state per-membership.
+
+  Fields:
+    status: Status of the upgrade.
+    upgrade: Which upgrade to track the state.
+  """
+
+  status = _messages.MessageField('ClusterUpgradeUpgradeStatus', 1)
+  upgrade = _messages.MessageField('ClusterUpgradeGKEUpgrade', 2)
+
+
+class ClusterUpgradeMembershipState(_messages.Message):
+  r"""Per-membership state for this feature.
+
+  Fields:
+    fleet: Project number or id of the fleet. It is set only for Memberships
+      that are part of fleet-based Rollout Sequencing.
+    ignored: Whether this membership is ignored by the feature. For example,
+      manually upgraded clusters can be ignored if they are newer than the
+      default versions of its release channel.
+    scopes: Fully qualified scope names that this clusters is bound to which
+      also have rollout sequencing enabled.
+    upgrades: Actual upgrade state against desired.
+  """
+
+  fleet = _messages.StringField(1)
+  ignored = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
+  scopes = _messages.StringField(3, repeated=True)
+  upgrades = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 4, repeated=True)
+
+
+class ClusterUpgradePostConditions(_messages.Message):
+  r"""Post conditional checks after an upgrade has been applied on all
+  eligible clusters.
+
+  Fields:
+    soaking: Required. Amount of time to "soak" after a rollout has been
+      finished before marking it COMPLETE. Cannot exceed 30 days. Required.
+  """
+
+  soaking = _messages.StringField(1)
+
+
+class ClusterUpgradeUpgradeStatus(_messages.Message):
+  r"""UpgradeStatus provides status information for each upgrade.
+
+  Enums:
+    CodeValueValuesEnum: Status code of the upgrade.
+
+  Fields:
+    code: Status code of the upgrade.
+    reason: Reason for this status.
+    updateTime: Last timestamp the status was updated.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""Status code of the upgrade.
+
+    Values:
+      CODE_UNSPECIFIED: Required by https://linter.aip.dev/126/unspecified.
+      INELIGIBLE: The upgrade is ineligible. At the scope level, this means
+        the upgrade is ineligible for all the clusters in the scope.
+      PENDING: The upgrade is pending. At the scope level, this means the
+        upgrade is pending for all the clusters in the scope.
+      IN_PROGRESS: The upgrade is in progress. At the scope level, this means
+        the upgrade is in progress for at least one cluster in the scope.
+      SOAKING: The upgrade has finished and is soaking until the soaking time
+        is up. At the scope level, this means at least one cluster is in
+        soaking while the rest are either soaking or complete.
+      FORCED_SOAKING: A cluster will be forced to enter soaking if an upgrade
+        doesn't finish within a certain limit, despite it's actual status.
+      COMPLETE: The upgrade has passed all post conditions (soaking). At the
+        scope level, this means all eligible clusters are in COMPLETE status.
+    """
+    CODE_UNSPECIFIED = 0
+    INELIGIBLE = 1
+    PENDING = 2
+    IN_PROGRESS = 3
+    SOAKING = 4
+    FORCED_SOAKING = 5
+    COMPLETE = 6
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  reason = _messages.StringField(2)
+  updateTime = _messages.StringField(3)
+
+
 class CommonFeatureSpec(_messages.Message):
   r"""CommonFeatureSpec contains Hub-wide configuration information
 
   Fields:
     appdevexperience: Appdevexperience specific spec.
+    clusterupgrade: ClusterUpgrade (fleet-based) feature spec.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
@@ -310,10 +587,11 @@ class CommonFeatureSpec(_messages.Message):
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 2)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 3)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 4)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 5)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetSpec', 2)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 4)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 5)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 6)
 
 
 class CommonFeatureState(_messages.Message):
@@ -321,15 +599,17 @@ class CommonFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
+    clusterupgrade: ClusterUpgrade fleet-level state.
     fleetobservability: FleetObservability feature state.
     helloworld: Hello World-specific state.
     state: Output only. The "running state" of the Feature in this Hub.
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 2)
-  helloworld = _messages.MessageField('HelloWorldFeatureState', 3)
-  state = _messages.MessageField('FeatureState', 4)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeFleetState', 2)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureState', 3)
+  helloworld = _messages.MessageField('HelloWorldFeatureState', 4)
+  state = _messages.MessageField('FeatureState', 5)
 
 
 class CommonFleetDefaultMemberConfigSpec(_messages.Message):
@@ -544,11 +824,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GitSyncValueValuesEnum(_messages.Enum):
     r"""Deployment state of the git-sync pod
@@ -558,11 +840,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class ImporterValueValuesEnum(_messages.Enum):
     r"""Deployment state of the importer pod
@@ -572,11 +856,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class MonitorValueValuesEnum(_messages.Enum):
     r"""Deployment state of the monitor pod
@@ -586,11 +872,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class ReconcilerManagerValueValuesEnum(_messages.Enum):
     r"""Deployment state of reconciler-manager pod
@@ -600,11 +888,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class RootReconcilerValueValuesEnum(_messages.Enum):
     r"""Deployment state of root-reconciler
@@ -614,11 +904,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class SyncerValueValuesEnum(_messages.Enum):
     r"""Deployment state of the syncer pod
@@ -628,11 +920,13 @@ class ConfigManagementConfigSyncDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   admissionWebhook = _messages.EnumField('AdmissionWebhookValueValuesEnum', 1)
   gitSync = _messages.EnumField('GitSyncValueValuesEnum', 2)
@@ -734,11 +1028,13 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GatekeeperControllerManagerStateValueValuesEnum(_messages.Enum):
     r"""Status of gatekeeper-controller-manager pod.
@@ -748,11 +1044,13 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class GatekeeperMutationValueValuesEnum(_messages.Enum):
     r"""Status of the pod serving the mutation webhook.
@@ -762,11 +1060,13 @@ class ConfigManagementGatekeeperDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   gatekeeperAudit = _messages.EnumField('GatekeeperAuditValueValuesEnum', 1)
   gatekeeperControllerManagerState = _messages.EnumField('GatekeeperControllerManagerStateValueValuesEnum', 2)
@@ -856,11 +1156,13 @@ class ConfigManagementHierarchyControllerDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   class HncValueValuesEnum(_messages.Enum):
     r"""The deployment state for open source HNC (e.g. v0.7.0-hc.0)
@@ -870,11 +1172,13 @@ class ConfigManagementHierarchyControllerDeploymentState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   extension = _messages.EnumField('ExtensionValueValuesEnum', 1)
   hnc = _messages.EnumField('HncValueValuesEnum', 2)
@@ -1022,11 +1326,13 @@ class ConfigManagementOperatorState(_messages.Message):
       NOT_INSTALLED: Deployment is not installed
       INSTALLED: Deployment is installed
       ERROR: Deployment was attempted to be installed, but has errors
+      PENDING: Deployment is installing or terminating
     """
     DEPLOYMENT_STATE_UNSPECIFIED = 0
     NOT_INSTALLED = 1
     INSTALLED = 2
     ERROR = 3
+    PENDING = 4
 
   deploymentState = _messages.EnumField('DeploymentStateValueValuesEnum', 1)
   errors = _messages.MessageField('ConfigManagementInstallError', 2, repeated=True)
@@ -1773,8 +2079,8 @@ class Fleet(_messages.Message):
 
   Fields:
     createTime: Output only. When the Fleet was created.
-    defaultClusterConfig: The default cluster configurations to apply across
-      the fleet.
+    defaultClusterConfig: Optional. The default cluster configurations to
+      apply across the fleet.
     deleteTime: Output only. When the Fleet was deleted.
     displayName: Optional. A user-assigned display name of the Fleet. When
       present, it must be between 4 to 30 characters. Allowed characters are:
@@ -2953,9 +3259,9 @@ class GkehubProjectsLocationsScopesRbacrolebindingsPatchRequest(_messages.Messag
 
   Fields:
     name: The resource name for the rbacrolebinding `projects/{project}/locati
-      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
-      bacrolebindings/{rbacrolebinding}`
+      ons/{location}/scopes/{scope}/rbacrolebindings/{rbacrolebinding}` or `pr
+      ojects/{project}/locations/{location}/memberships/{membership}/rbacroleb
+      indings/{rbacrolebinding}`
     rBACRoleBinding: A RBACRoleBinding resource to be passed as the request
       body.
     updateMask: Required. The fields to be updated.
@@ -4142,6 +4448,7 @@ class MembershipFeatureState(_messages.Message):
 
   Fields:
     appdevexperience: Appdevexperience specific state.
+    clusterupgrade: ClusterUpgrade state.
     configmanagement: Config Management-specific state.
     fleetobservability: Fleet observability membership state.
     helloworld: Hello World-specific state.
@@ -4152,13 +4459,14 @@ class MembershipFeatureState(_messages.Message):
   """
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureState', 1)
-  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 2)
-  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 3)
-  helloworld = _messages.MessageField('HelloWorldMembershipState', 4)
-  identityservice = _messages.MessageField('IdentityServiceMembershipState', 5)
-  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 6)
-  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 7)
-  state = _messages.MessageField('FeatureState', 8)
+  clusterupgrade = _messages.MessageField('ClusterUpgradeMembershipState', 2)
+  configmanagement = _messages.MessageField('ConfigManagementMembershipState', 3)
+  fleetobservability = _messages.MessageField('FleetObservabilityMembershipState', 4)
+  helloworld = _messages.MessageField('HelloWorldMembershipState', 5)
+  identityservice = _messages.MessageField('IdentityServiceMembershipState', 6)
+  policycontroller = _messages.MessageField('PolicyControllerMembershipState', 7)
+  servicemesh = _messages.MessageField('ServiceMeshMembershipState', 8)
+  state = _messages.MessageField('FeatureState', 9)
 
 
 class MembershipState(_messages.Message):
@@ -5227,9 +5535,9 @@ class RBACRoleBinding(_messages.Message):
     group: group is the group, as seen by the kubernetes cluster.
     labels: Optional. Labels for this RBACRolebinding.
     name: The resource name for the rbacrolebinding `projects/{project}/locati
-      ons/{location}/namespaces/{namespace}/rbacrolebindings/{rbacrolebinding}
-      ` or `projects/{project}/locations/{location}/memberships/{membership}/r
-      bacrolebindings/{rbacrolebinding}`
+      ons/{location}/scopes/{scope}/rbacrolebindings/{rbacrolebinding}` or `pr
+      ojects/{project}/locations/{location}/memberships/{membership}/rbacroleb
+      indings/{rbacrolebinding}`
     role: Required. Role to bind to the principal
     state: Output only. State of the rbacrolebinding resource.
     uid: Output only. Google-generated UUID for this resource. This is unique

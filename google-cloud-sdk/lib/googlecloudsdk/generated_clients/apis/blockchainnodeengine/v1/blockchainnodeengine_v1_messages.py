@@ -414,11 +414,14 @@ class EthereumDetails(_messages.Message):
       TESTNET_GOERLI_PRATER: The Ethereum Testnet based on Goerli protocol.
       TESTNET_SEPOLIA: The Ethereum Testnet based on Sepolia/Bepolia protocol.
         See https://github.com/eth-clients/sepolia.
+      TESTNET_HOLESKY: The Ethereum Testnet based on Holesky specification.
+        See https://github.com/eth-clients/holesky.
     """
     NETWORK_UNSPECIFIED = 0
     MAINNET = 1
     TESTNET_GOERLI_PRATER = 2
     TESTNET_SEPOLIA = 3
+    TESTNET_HOLESKY = 4
 
   class NodeTypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The type of Ethereum node.

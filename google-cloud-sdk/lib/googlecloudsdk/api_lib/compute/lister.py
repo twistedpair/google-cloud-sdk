@@ -393,28 +393,17 @@ def AddBaseListerArgs(parser, hidden=False):
         """)
 
 
-def AddZoneArg(parser, hidden=False, required=False):
-  """Add the zone argument defined by base_classes.ZonalLister."""
-  help_message = (
-      'Only resources from the given zones are queried.'
-      if required
-      else 'If provided, only resources from the given zones are queried.'
-  )
-  parser.add_argument(
-      '--zones',
-      metavar='ZONE',
-      help=help_message,
-      hidden=hidden,
-      required=required,
-      type=arg_parsers.ArgList(min_length=1),
-      completer=compute_completers.ZonesCompleter,
-      default=[])
-
-
 def AddZonalListerArgs(parser, hidden=False):
   """Add arguments defined by base_classes.ZonalLister."""
   AddBaseListerArgs(parser, hidden)
-  AddZoneArg(parser, hidden, required=False)
+  parser.add_argument(
+      '--zones',
+      metavar='ZONE',
+      help='If provided, only resources from the given zones are queried.',
+      hidden=hidden,
+      type=arg_parsers.ArgList(min_length=1),
+      completer=compute_completers.ZonesCompleter,
+      default=[])
 
 
 def AddRegionsArg(parser, hidden=False):

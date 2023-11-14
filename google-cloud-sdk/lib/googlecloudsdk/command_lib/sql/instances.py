@@ -866,11 +866,10 @@ class _BaseInstances(object):
         sql_messages, args, original, release_track
     )
 
-    if IsBetaOrNewer(release_track):
-      if args.upgrade_sql_network_architecture:
-        instance_resource.sqlNetworkArchitecture = (
-            sql_messages.DatabaseInstance.SqlNetworkArchitectureValueValuesEnum.NEW_NETWORK_ARCHITECTURE
-        )
+    if args.upgrade_sql_network_architecture:
+      instance_resource.sqlNetworkArchitecture = (
+          sql_messages.DatabaseInstance.SqlNetworkArchitectureValueValuesEnum.NEW_NETWORK_ARCHITECTURE
+      )
 
     return instance_resource
 

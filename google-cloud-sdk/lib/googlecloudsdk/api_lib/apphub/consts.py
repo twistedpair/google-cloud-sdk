@@ -20,37 +20,8 @@ from __future__ import unicode_literals
 
 
 class Resource:
-  TOPOLOGY = 'topology'
-  TELEMETRY = 'telemetry'
   WORKLOAD = 'workload'
-
   SERVICE = 'service'
-
-
-class UpdateTopology:
-
-  EMPTY_UPDATE_HELP_TEXT = 'Please specify fields to update.'
-
-  STATE_ENABLED = 'enabled'
-  STATE_DISABLED = 'disabled'
-
-  UPDATE_MASK_ENABLED_FIELD_NAME = 'enabled'
-
-  WAIT_FOR_UPDATE_MESSAGE = 'Updating topology'
-  UPDATE_TIMELIMIT_SEC = 60
-
-
-class UpdateTelemetry:
-
-  EMPTY_UPDATE_HELP_TEXT = 'Please specify fields to update.'
-
-  MONITORING_STATE_ENABLED = 'enabled'
-  MONITORING_STATE_DISABLED = 'disabled'
-
-  UPDATE_MASK_MONITORING_ENABLED_FIELD_NAME = 'monitoringEnabled'
-
-  WAIT_FOR_UPDATE_MESSAGE = 'Updating telemetry'
-  UPDATE_TIMELIMIT_SEC = 60
 
 
 class AddServiceProject:

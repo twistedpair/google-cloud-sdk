@@ -1231,6 +1231,18 @@ class FleetClient(object):
         batch_size_attribute='pageSize',
     )
 
+  def PauseRollout(
+      self, req: messages.GkehubProjectsLocationsRolloutsPauseRequest
+  ) -> messages.Operation:
+    """Pause a fleet rollout."""
+    return self.client.projects_locations_rollouts.Pause(req)
+
+  def ResumeRollout(
+      self, req: messages.GkehubProjectsLocationsRolloutsResumeRequest
+  ) -> messages.Operation:
+    """Resume a fleet rollout."""
+    return self.client.projects_locations_rollouts.Resume(req)
+
 
 class OperationClient:
   """Client for the GKE Hub API long-running operations."""

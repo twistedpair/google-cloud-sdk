@@ -57,7 +57,7 @@ def AddListWorkloadsFlags(parser):
           'The location of the Assured Workloads environments. For a '
           'current list of supported LOCATION values, see '
           '[Assured Workloads locations]'
-          '(http://cloud/assured-workloads/docs/locations).'
+          '(https://cloud.google.com/assured-workloads/docs/locations).'
       ),
   )
   parser.add_argument(
@@ -78,7 +78,7 @@ def AddListOperationsFlags(parser):
           'The location of the Assured Workloads operations. For a '
           'current list of supported LOCATION values, see '
           '[Assured Workloads locations]'
-          '(http://cloud/assured-workloads/docs/locations).'
+          '(https://cloud.google.com/assured-workloads/docs/locations).'
       ),
   )
   parser.add_argument(
@@ -108,7 +108,7 @@ def AddCreateWorkloadFlags(parser, release_track):
           'The location of the new Assured Workloads environment. For a '
           'current list of supported LOCATION values, see '
           '[Assured Workloads locations]'
-          '(http://cloud/assured-workloads/docs/locations).'
+          '(https://cloud.google.com/assured-workloads/docs/locations).'
       ),
   )
   parser.add_argument(

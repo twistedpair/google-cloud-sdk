@@ -20,6 +20,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import base64
+import binascii
 import copy
 import io
 import json
@@ -66,13 +67,13 @@ UPDATE_HELP = textwrap.dedent("""\
     {
       "subsetView":
       {
-        "rowPrefixes": ["cm93MQ=="],
+        "rowPrefixes": ["store1#"],
         "familySubsets":
         {
           "column_family_name":
           {
-            "qualifiers":["Y29sdW1uX2E="],
-            "qualifierPrefixes":["Y29sdW1uX3ByZWZpeDE="]
+            "qualifiers":["address"],
+            "qualifierPrefixes":["tel"]
           }
         }
       },
@@ -92,7 +93,7 @@ def ModifyCreateViewRequest(unused_ref, args, req):
     req: the real request to be sent to backend service.
 
   Returns:
-    req: the real request to be sent to backend service.
+    The real request to be sent to backend service.
   """
   if args.definition_file:
     req.view = ParseViewFromYamlOrJsonDefinitionFile(
@@ -141,7 +142,7 @@ def PromptForViewDefinition(is_create, pre_encoded, current_view=None):
   if is_create:
     help_text = BuildCreateViewFileContents()
   else:
-    help_text = BuildUpdateViewFileContents(current_view)
+    help_text = BuildUpdateViewFileContents(current_view, pre_encoded)
   try:
     content = edit.OnlineEdit(help_text)
   except edit.NoSaveException:
@@ -201,7 +202,7 @@ def ParseViewFromYamlOrJsonDefinitionFile(file_path, pre_encoded):
 
 
 def Base64EncodingYamlViewDefinition(yaml_view):
-  """Apply base64 encoding to all binary fields in the view defnition in YAML format."""
+  """Apply base64 encoding to all binary fields in the view definition in YAML format."""
   if not yaml_view or "subsetView" not in yaml_view:
     return yaml_view
   yaml_subset_view = yaml_view["subsetView"]
@@ -225,9 +226,75 @@ def Base64EncodingYamlViewDefinition(yaml_view):
   return yaml_view
 
 
+def Base64DecodingYamlViewDefinition(yaml_view):
+  """Apply base64 decoding to all binary fields in the view definition in YAML format."""
+  if not yaml_view or "subsetView" not in yaml_view:
+    return yaml_view
+  yaml_subset_view = yaml_view["subsetView"]
+
+  if "rowPrefixes" in yaml_subset_view:
+    for i in range(len(yaml_subset_view["rowPrefixes"])):
+      yaml_subset_view["rowPrefixes"][i] = Base64ToUtf8(
+          yaml_subset_view["rowPrefixes"][i]
+      )
+  if "familySubsets" in yaml_subset_view:
+    for family_name, family_subset in yaml_subset_view["familySubsets"].items():
+      for i in range(len(family_subset["qualifiers"])):
+        family_subset["qualifiers"][i] = Base64ToUtf8(
+            family_subset["qualifiers"][i]
+        )
+      for i in range(len(family_subset["qualifierPrefixes"])):
+        family_subset["qualifierPrefixes"][i] = Base64ToUtf8(
+            family_subset["qualifierPrefixes"][i]
+        )
+      yaml_subset_view["familySubsets"][family_name] = family_subset
+  return yaml_view
+
+
 def Utf8ToBase64(s):
   """Encode a utf-8 string as a base64 string."""
   return six.ensure_text(base64.b64encode(six.ensure_binary(s)))
+
+
+def Base64ToUtf8(s):
+  """Decode a base64 string as a utf-8 string."""
+  try:
+    return six.ensure_text(base64.b64decode(s))
+  except (TypeError, binascii.Error) as error:
+    raise ValueError(
+        "Error decoding base64 string [{0}] in the current view definition into"
+        " utf-8. [{1}].".format(s, error)
+    )
+
+
+def CheckOnlyAsciiCharactersInView(view):
+  """Raises a ValueError if the view contains non-ascii characters."""
+  if view is None or view.subsetView is None:
+    return
+  subset_view = view.subsetView
+
+  if subset_view.rowPrefixes is not None:
+    for row_prefix in subset_view.rowPrefixes:
+      CheckAscii(row_prefix)
+
+  if subset_view.familySubsets is not None:
+    for additional_property in subset_view.familySubsets.additionalProperties:
+      family_subset = additional_property.value
+      for qualifier in family_subset.qualifiers:
+        CheckAscii(qualifier)
+      for qualifier_prefix in family_subset.qualifierPrefixes:
+        CheckAscii(qualifier_prefix)
+
+
+def CheckAscii(s):
+  """Check if a string is ascii."""
+  try:
+    s.decode("ascii")
+  except UnicodeError as error:
+    raise ValueError(
+        "Non-ascii characters [{0}] found in the current view definition,"
+        " please use --pre-encoded instead. [{1}].".format(s, error)
+    )
 
 
 def BuildCreateViewFileContents():
@@ -252,18 +319,21 @@ def ModifyUpdateViewRequest(original_ref, args, req):
     req: the real request to be sent to backend service.
 
   Returns:
-    req: the real request to be sent to backend service.
+    The real request to be sent to backend service.
   """
   current_view = None
-  # If args.definition_file is provided, the content in the file will be
-  # automatically parsed as req.view.
-  if not args.definition_file:
+  if args.definition_file:
+    req.view = ParseViewFromYamlOrJsonDefinitionFile(
+        args.definition_file, args.pre_encoded
+    )
+  else:
     # If no definition_file is provided, EDITOR will be executed with a
     # commented prompt for the user to fill out the view definition.
-    current_view = GetCurrentView(original_ref.RelativeName())
-    # TODO(b/277572435): Add pre_encoded argument for UpdateView.
+    current_view = GetCurrentView(
+        original_ref.RelativeName(), not args.pre_encoded
+    )
     req.view = PromptForViewDefinition(
-        is_create=False, pre_encoded=True, current_view=current_view
+        is_create=False, pre_encoded=args.pre_encoded, current_view=current_view
     )
 
   if req.view.subsetView is not None:
@@ -273,7 +343,9 @@ def ModifyUpdateViewRequest(original_ref, args, req):
 
   if args.interactive:
     if current_view is None:
-      current_view = GetCurrentView(original_ref.RelativeName())
+      current_view = GetCurrentView(
+          original_ref.RelativeName(), check_ascii=False
+      )
 
     # This essentially merges the requested view to the original view
     # based on the update mask.
@@ -306,29 +378,58 @@ def ModifyUpdateViewRequest(original_ref, args, req):
   return req
 
 
-def GetCurrentView(view_name):
-  """Get the current view resource object given the view name."""
+def GetCurrentView(view_name, check_ascii):
+  """Get the current view resource object given the view name.
+
+  Args:
+    view_name: The name of the view.
+    check_ascii: True if we should check to make sure that the returned view
+      contains only ascii characters.
+
+  Returns:
+    The view resource object.
+
+  Raises:
+    ValueError if check_ascii is true and the current view definition contains
+    invalid non-ascii characters.
+  """
   client = util.GetAdminClient()
   request = util.GetAdminMessages().BigtableadminProjectsInstancesTablesViewsGetRequest(
       name=view_name
   )
   try:
-    return client.projects_instances_tables_views.Get(request)
+    view = client.projects_instances_tables_views.Get(request)
+    if check_ascii:
+      CheckOnlyAsciiCharactersInView(view)
+    return view
   except api_exceptions.HttpError as error:
     raise exceptions.HttpException(error)
 
 
-def SerializeToJsonOrYaml(view, serialized_format="json"):
+def SerializeToJsonOrYaml(view, pre_encoded, serialized_format="json"):
   """Serializes a view protobuf to either JSON or YAML."""
   view_dict = encoding.MessageToDict(view)
+  if not pre_encoded:
+    view_dict = Base64DecodingYamlViewDefinition(view_dict)
   if serialized_format == "json":
     return six.text_type(json.dumps(view_dict, indent=2))
   if serialized_format == "yaml":
     return six.text_type(yaml.dump(view_dict))
 
 
-def BuildUpdateViewFileContents(current_view):
-  """Builds the help text for updating an existing View."""
+def BuildUpdateViewFileContents(current_view, pre_encoded):
+  """Builds the help text for updating an existing View.
+
+  Args:
+    current_view: The current view resource object.
+    pre_encoded: When pre_encoded is False, user is passing utf-8 values for
+      binary fields in the view definition and expecting us to apply base64
+      encoding. Thus, we should also display utf-8 values in the help text,
+      which requires base64 decoding the binary fields in the `current_view`.
+
+  Returns:
+    A string containing the help text for update view.
+  """
   buf = io.StringIO()
   for line in UPDATE_HELP.splitlines():
     buf.write("#")
@@ -337,7 +438,7 @@ def BuildUpdateViewFileContents(current_view):
     buf.write(line)
     buf.write("\n")
 
-  serialized_original_view = SerializeToJsonOrYaml(current_view)
+  serialized_original_view = SerializeToJsonOrYaml(current_view, pre_encoded)
   for line in serialized_original_view.splitlines():
     buf.write("#")
     if line:

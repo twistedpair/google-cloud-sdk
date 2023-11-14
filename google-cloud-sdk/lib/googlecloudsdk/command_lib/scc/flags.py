@@ -44,6 +44,24 @@ READ_TIME_FLAG = base.Argument(
       for information on supported time formats.""",
 )
 
+API_VERSION_FLAG = base.ChoiceArgument(
+    "--api-version",
+    choices=["v1", "v2enabled"],
+    help_str="""
+      This is a temporary flag to be used for testing the Security Command
+      Center v2 api before its launch.""",
+    default="v1",
+    hidden=True,
+)
+
+LOCATION_FLAG = base.Argument(
+    "--location",
+    help="""
+      Location corresponding to the specified resource.""",
+    hidden=True,
+    default="global",
+)
+
 
 def AppendParentArg():
   """Add Parent as a positional resource."""

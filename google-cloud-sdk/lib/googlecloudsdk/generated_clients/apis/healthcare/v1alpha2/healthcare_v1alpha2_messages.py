@@ -745,6 +745,9 @@ class Dataset(_messages.Message):
   records or medical imaging data.
 
   Fields:
+    encryptionSpec: Customer-managed encryption key spec for a Dataset. If
+      set, this Dataset and all of its sub-resources will be secured by this
+      key.
     name: Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
     timeZone: The default timezone used by this dataset. Must be a either a
@@ -753,8 +756,9 @@ class Dataset(_messages.Message):
       HL7v2 messages, where no explicit timezone is specified.
   """
 
-  name = _messages.StringField(1)
-  timeZone = _messages.StringField(2)
+  encryptionSpec = _messages.MessageField('EncryptionSpec', 1)
+  name = _messages.StringField(2)
+  timeZone = _messages.StringField(3)
 
 
 class DateShiftConfig(_messages.Message):
@@ -1042,6 +1046,22 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EncryptionSpec(_messages.Message):
+  r"""Represents a customer-managed encryption key spec that can be applied to
+  a resource.
+
+  Fields:
+    kmsKeyName: Required. The resource name of customer-managed encryption key
+      that is used to secure a resource and its sub-resources. If empty, the
+      resource is secured by the default Google encryption key. Only the key
+      in the same location as this Dataset is allowed to be used for
+      encryption. Format is: `projects/{project}/locations/{location}/keyRings
+      /{keyRing}/cryptoKeys/{key}`
+  """
+
+  kmsKeyName = _messages.StringField(1)
 
 
 class Entity(_messages.Message):

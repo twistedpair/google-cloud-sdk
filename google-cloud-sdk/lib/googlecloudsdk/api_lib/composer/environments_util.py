@@ -480,8 +480,19 @@ def _CreateConfig(messages, flags, is_composer_v1):
         endTime=flags.maintenance_window_end.isoformat(),
         recurrence=flags.maintenance_window_recurrence)
   if flags.airflow_database_retention_days:
+    enable_retention = (
+        messages.AirflowMetadataRetentionPolicy.EnableRetentionValueValuesEnum.RETENTION_MODE_ENABLED
+    )
+    if flags.airflow_database_retention_days == 0:
+      enable_retention = (
+          messages.AirflowMetadataRetentionPolicy.EnableRetentionValueValuesEnum.RETENTION_MODE_DISABLED
+      )
     config.dataRetentionConfig = messages.DataRetentionConfig(
-        airflowDatabaseRetentionDays=flags.airflow_database_retention_days)
+        airflowMetadataRetentionConfig=messages.AirflowMetadataRetentionPolicy(
+            retentionDays=flags.airflow_database_retention_days,
+            enableRetention=enable_retention,
+        )
+    )
 
   if flags.enable_scheduled_snapshot_creation:
     config.recoveryConfig = messages.RecoveryConfig(

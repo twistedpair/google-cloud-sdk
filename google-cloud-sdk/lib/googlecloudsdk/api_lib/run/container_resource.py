@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import collections
-import functools
 import json
 from typing import Mapping, Sequence
 
@@ -426,8 +425,6 @@ class VolumeMountsAsDictionaryWrapper(
   def __init__(self, volumes, mounts_to_wrap, mount_class):
     """Wraps a list of volume mounts in a mutable dict-like object.
 
-    Forces readOnly=True on creation of new volume mounts.
-
     Args:
       volumes: associated VolumesAsDictionaryWrapper obj
       mounts_to_wrap: list[VolumeMount], list of mounts to treat as a dict.
@@ -435,7 +432,7 @@ class VolumeMountsAsDictionaryWrapper(
     """
     super(VolumeMountsAsDictionaryWrapper, self).__init__(
         mounts_to_wrap,
-        functools.partial(mount_class, readOnly=True),
+        mount_class,
         key_field='mountPath',
         value_field='name',
     )

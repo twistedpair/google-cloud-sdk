@@ -193,14 +193,7 @@ def ArgsForClusterRef(
       ),
       type=float,
   )
-  parser.add_argument(
-      '--kms-key',
-      type=str,
-      hidden=True,
-      help="""\
-          The KMS key to use for PD disk encryption for all instances in the cluster and encrypt sensitive data in the jobs that run on the cluster.
-          """,
-  )
+  kms_resource_args.AddKmsKeyResourceArg(parser, 'cluster', name='--kms-key')
 
   if alpha:
     parser.add_argument(
@@ -1315,11 +1308,11 @@ def GetClusterConfig(
     if changed_config:
       cluster_config.lifecycleConfig = lifecycle_config
 
-  if hasattr(args.CONCEPTS, 'kms_key'):
-    kms_ref = args.CONCEPTS.kms_key.Parse()
-    encryption_config = dataproc.messages.EncryptionConfig()
-    if kms_ref:
-      encryption_config.gcePdKmsKeyName = kms_ref.RelativeName()
+  encryption_config = dataproc.messages.EncryptionConfig()
+  if hasattr(args.CONCEPTS, 'gce_pd_kms_key'):
+    gce_pd_kms_ref = args.CONCEPTS.gce_pd_kms_key.Parse()
+    if gce_pd_kms_ref:
+      encryption_config.gcePdKmsKeyName = gce_pd_kms_ref.RelativeName()
     else:
       # Did user use any gce-pd-kms-key flags?
       for keyword in [
@@ -1332,10 +1325,23 @@ def GetClusterConfig(
           raise exceptions.ArgumentError(
               '--gce-pd-kms-key was not fully specified.'
           )
-    if args.kms_key:
-      encryption_config.kmsKey = args.kms_key
-    if encryption_config.gcePdKmsKeyName or encryption_config.kmsKey:
-      cluster_config.encryptionConfig = encryption_config
+  if hasattr(args.CONCEPTS, 'kms_key'):
+    kms_ref = args.CONCEPTS.kms_key.Parse()
+    if kms_ref:
+      encryption_config.kmsKey = kms_ref.RelativeName()
+    else:
+      for keyword in [
+          'kms-key',
+          'kms-project',
+          'kms-location',
+          'kms-keyring',
+      ]:
+        if getattr(args, keyword.replace('-', '_'), None):
+          raise exceptions.ArgumentError(
+              '--kms-key was not fully specified.'
+          )
+  if encryption_config.gcePdKmsKeyName or encryption_config.kmsKey:
+    cluster_config.encryptionConfig = encryption_config
 
   # Secondary worker group is optional. However, users may specify
   # future pVMs configuration at creation time.

@@ -2835,16 +2835,6 @@ def AddConfidentialComputeArgs(
     support_confidential_compute_type=False,
     support_confidential_compute_type_tdx=False) -> None:
   """Adds flags for confidential compute for instance."""
-  parser.add_argument(
-      '--confidential-compute',
-      dest='confidential_compute',
-      action='store_true',
-      default=None,
-      help="""\
-      The instance boots with Confidential Computing enabled. Confidential
-      Computing is based on Secure Encrypted Virtualization (SEV), an AMD
-      virtualization feature for running confidential instances.
-      """)
   if support_confidential_compute_type:
     choices = {
         'SEV': 'Secure Encrypted Virtualization',
@@ -2870,11 +2860,34 @@ def AddConfidentialComputeArgs(
         running confidential instances is also supported.
         """)))
 
+    parser = parser.add_mutually_exclusive_group()
     parser.add_argument(
         '--confidential-compute-type',
         dest='confidential_compute_type',
         choices=choices,
         help=help_text)
+
+    bool_flag_action = actions.DeprecationAction(
+        '--confidential-compute',
+        warn=(
+            'The --confidential-compute flag will soon be deprecated. Please'
+            ' use `--confidential-compute-type=SEV` instead'
+        ),
+        action='store_true',
+    )
+  else:
+    bool_flag_action = 'store_true'
+
+  parser.add_argument(
+      '--confidential-compute',
+      dest='confidential_compute',
+      action=bool_flag_action,
+      default=None,
+      help="""\
+      The instance boots with Confidential Computing enabled. Confidential
+      Computing is based on Secure Encrypted Virtualization (SEV), an AMD
+      virtualization feature for running confidential instances.
+      """)
 
 
 def AddHostnameArg(parser):

@@ -173,6 +173,8 @@ type:
     enum_value: V4
   - arg_value: v5litepod
     enum_value: V5LITE_POD
+  - arg_value: v5p
+    enum_value: V5P
 
 ga-type:
   arg_name: type

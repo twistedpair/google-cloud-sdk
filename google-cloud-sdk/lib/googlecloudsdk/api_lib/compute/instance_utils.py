@@ -379,14 +379,13 @@ def CreateConfidentialInstanceMessage(messages, args,
       enable_confidential_compute = None
       confidential_instance_type = None
 
-  if confidential_instance_type is None:
-    if enable_confidential_compute is not None:
-      confidential_instance_config_msg = messages.ConfidentialInstanceConfig(
-          enableConfidentialCompute=enable_confidential_compute)
-  else:
+  if confidential_instance_type is not None:
     confidential_instance_config_msg = messages.ConfidentialInstanceConfig(
-        enableConfidentialCompute=enable_confidential_compute,
         confidentialInstanceType=confidential_instance_type)
+  elif enable_confidential_compute is not None:
+    confidential_instance_config_msg = messages.ConfidentialInstanceConfig(
+        enableConfidentialCompute=enable_confidential_compute
+    )
 
   return confidential_instance_config_msg
 

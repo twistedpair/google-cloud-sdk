@@ -117,6 +117,13 @@ def TestSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
   return req
 
 
+def SimulateSecurityHealthAnalyticsCustomModulesReqHook(ref, args, req):
+  """Simulates a Security Health Analytics custom module."""
+  del ref
+  req.parent = _ValidateAndGetParent(args)
+  return req
+
+
 def UpdateSecurityHealthAnalyticsCustomModuleReqHook(ref, args, req):
   """Updates a Security Health Analytics custom module."""
   del ref

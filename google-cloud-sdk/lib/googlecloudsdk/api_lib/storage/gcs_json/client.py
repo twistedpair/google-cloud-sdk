@@ -351,6 +351,18 @@ class JsonClient(cloud_api.CloudApi):
     return None
 
   @error_util.catch_http_error_raise_gcs_api_error()
+  def create_anywhere_cache(self, bucket_name, zone, admission_policy, ttl):
+    """See super class."""
+    request = self.messages.AnywhereCache(
+        bucket=bucket_name,
+        anywhereCacheId=zone,
+        admissionPolicy=admission_policy,
+        ttl=ttl
+    )
+    operation = self.client.anywhereCache.Insert(request)
+    return operation
+
+  @error_util.catch_http_error_raise_gcs_api_error()
   def create_bucket(self,
                     bucket_resource,
                     request_config,
@@ -1039,17 +1051,6 @@ class JsonClient(cloud_api.CloudApi):
     metadata_util.update_object_metadata_from_request_config(
         object_metadata, request_config, posix_to_set=posix_to_set
     )
-
-    override_unlocked_retention = (
-        bool(
-            request_config.resource_args
-            and (
-                request_config.resource_args.retain_until
-                or request_config.resource_args.retention_mode
-            )
-        )
-        or None
-    )
     request = self.messages.StorageObjectsPatchRequest(
         bucket=bucket_name,
         object=object_name,
@@ -1057,7 +1058,7 @@ class JsonClient(cloud_api.CloudApi):
         generation=generation,
         ifGenerationMatch=request_config.precondition_generation_match,
         ifMetagenerationMatch=request_config.precondition_metageneration_match,
-        overrideUnlockedRetention=override_unlocked_retention,
+        overrideUnlockedRetention=request_config.override_unlocked_retention,
         predefinedAcl=predefined_acl,
         projection=projection,
     )

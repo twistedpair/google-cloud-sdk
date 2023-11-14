@@ -127,6 +127,30 @@ class CloudApi(object):
   # GCS: https://cloud.google.com/storage/docs/objects#naming
   MAX_OBJECT_NAME_LENGTH = 1024
 
+  def create_anywhere_cache(
+      self, bucket_name, zone, admission_policy=None, ttl=None
+  ):
+    """Creates Anywhere Cache for given bucket.
+
+    Args:
+      bucket_name (str): The name of the bucket where the Anywhere Cache should
+        be created.
+      zone (str): Name of the zonal locations where the Anywhere Cache should be
+        created.
+      admission_policy (str|None): The cache admission policy decides for each
+        cache miss, that is whether to insert the missed block or not.
+      ttl (str|None): Cache entry time-to-live in seconds
+
+    Returns:
+      GoogleLongrunningOperation Apitools object for creating caches.
+
+    Raises:
+      CloudApiError: API returned an error.
+      NotImplementedError: This function was not implemented by a class using
+        this interface.
+    """
+    raise NotImplementedError('create_anywhere_cache must be overridden.')
+
   def create_bucket(self, bucket_resource, request_config, fields_scope=None):
     """Creates a new bucket with the specified metadata.
 

@@ -987,12 +987,18 @@ def CreateNetworkInterfaceMessage(resources,
             messages, True, alias_ip_ranges_string))
 
   if stack_type is not None:
-    network_interface.stackType = messages.NetworkInterface.StackTypeValueValuesEnum(
-        stack_type)
+    network_interface.stackType = (
+        messages.NetworkInterface.StackTypeValueValuesEnum(stack_type)
+    )
 
-  # Again, for a network interface targeting a network attachment, access
-  # config is not needed/wanted.
-  if not no_address and network_attachment is None:
+  # Can't use StackTypeValueValuesEnum to compare because in some api versions
+  # IPv6 Only instances may not be supported yet and StackTypeValueValuesEnum
+  # may not contain IPV6_ONLY at all
+  no_access_config = stack_type == 'IPV6_ONLY'
+
+  # For a ipv6-only network interface or a network interface targeting a
+  # network attachment, access config is not needed/wanted.
+  if not no_access_config and not no_address and network_attachment is None:
     access_config = messages.AccessConfig(
         name=constants.DEFAULT_ACCESS_CONFIG_NAME,
         type=messages.AccessConfig.TypeValueValuesEnum.ONE_TO_ONE_NAT)
