@@ -55,6 +55,7 @@ def Create(
     instance_type=None,
     expire_behavior=None,
     default_storage_type=None,
+    ssd_cache=None,
 ):
   """Create a new instance."""
   client = apis.GetClientInstance('spanner', 'v1')
@@ -82,8 +83,8 @@ def Create(
   ):
     instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
         autoscalingLimits=msgs.AutoscalingLimits(
-            minNodes=None,
-            maxNodes=None,
+            minNodes=autoscaling_min_nodes,
+            maxNodes=autoscaling_max_nodes,
             minProcessingUnits=autoscaling_min_processing_units,
             maxProcessingUnits=autoscaling_max_processing_units,
         ),
@@ -92,15 +93,6 @@ def Create(
             storageUtilizationPercent=autoscaling_storage_target,
         ),
     )
-    if autoscaling_min_nodes:
-      instance_obj.autoscalingConfig.autoscalingLimits.minProcessingUnits = (
-          autoscaling_min_nodes * 1000
-      )
-    if autoscaling_max_nodes:
-      instance_obj.autoscalingConfig.autoscalingLimits.maxProcessingUnits = (
-          autoscaling_max_nodes * 1000
-      )
-
   if instance_type is not None:
     instance_obj.instanceType = instance_type
   if expire_behavior is not None:
@@ -108,6 +100,10 @@ def Create(
         expireBehavior=expire_behavior)
   if default_storage_type is not None:
     instance_obj.defaultStorageType = default_storage_type
+  if ssd_cache and ssd_cache.strip():
+    instance_obj.ssdCache = (
+        config_ref.RelativeName() + '/ssdCaches/' + ssd_cache.strip()
+    )
   req = msgs.SpannerProjectsInstancesCreateRequest(
       parent=project_ref.RelativeName(),
       createInstanceRequest=msgs.CreateInstanceRequest(
@@ -213,9 +209,13 @@ def Patch(
   ) and (autoscaling_high_priority_cpu_target and autoscaling_storage_target):
     fields.append('autoscalingConfig')
   else:
-    if autoscaling_min_nodes or autoscaling_min_processing_units:
+    if autoscaling_min_nodes:
+      fields.append('autoscalingConfig.autoscalingLimits.minNodes')
+    if autoscaling_max_nodes:
+      fields.append('autoscalingConfig.autoscalingLimits.maxNodes')
+    if autoscaling_min_processing_units:
       fields.append('autoscalingConfig.autoscalingLimits.minProcessingUnits')
-    if autoscaling_max_nodes or autoscaling_max_processing_units:
+    if autoscaling_max_processing_units:
       fields.append('autoscalingConfig.autoscalingLimits.maxProcessingUnits')
     if autoscaling_high_priority_cpu_target:
       fields.append(
@@ -243,6 +243,8 @@ def Patch(
   ):
     instance_obj.autoscalingConfig = msgs.AutoscalingConfig(
         autoscalingLimits=msgs.AutoscalingLimits(
+            minNodes=autoscaling_min_nodes,
+            maxNodes=autoscaling_max_nodes,
             minProcessingUnits=autoscaling_min_processing_units,
             maxProcessingUnits=autoscaling_max_processing_units,
         ),
@@ -251,14 +253,6 @@ def Patch(
             storageUtilizationPercent=autoscaling_storage_target,
         ),
     )
-    if autoscaling_min_nodes:
-      instance_obj.autoscalingConfig.autoscalingLimits.minProcessingUnits = (
-          autoscaling_min_nodes * 1000
-      )
-    if autoscaling_max_nodes:
-      instance_obj.autoscalingConfig.autoscalingLimits.maxProcessingUnits = (
-          autoscaling_max_nodes * 1000
-      )
 
   if instance_type is not None:
     fields.append('instanceType')

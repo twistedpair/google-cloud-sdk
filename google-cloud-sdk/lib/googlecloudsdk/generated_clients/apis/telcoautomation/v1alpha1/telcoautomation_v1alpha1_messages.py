@@ -1861,7 +1861,7 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsComputeDep
   eDeploymentStatusRequest object.
 
   Fields:
-    name: Required. The name of the deployment.
+    name: Required. The name of the deployment without revisionID.
   """
 
   name = _messages.StringField(1, required=True)

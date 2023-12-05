@@ -2496,6 +2496,8 @@ class Restore(_messages.Message):
     backup: Output only. The relative resource name of the metastore service
       backup to restore from, in the following form:projects/{project_id}/loca
       tions/{location_id}/services/{service_id}/backups/{backup_id}.
+    backupLocation: Optional. A Cloud Storage URI specifying where the backup
+      artifacts are stored, in the format gs:///.
     details: Output only. The restore details containing the revision of the
       service to be restored to, in format of JSON.
     endTime: Output only. The time when the restore ended.
@@ -2533,11 +2535,12 @@ class Restore(_messages.Message):
     METADATA_ONLY = 2
 
   backup = _messages.StringField(1)
-  details = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  startTime = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  backupLocation = _messages.StringField(2)
+  details = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class RestoreServiceRequest(_messages.Message):

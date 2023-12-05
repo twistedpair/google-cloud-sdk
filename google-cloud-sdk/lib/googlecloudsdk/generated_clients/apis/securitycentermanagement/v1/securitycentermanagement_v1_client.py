@@ -358,6 +358,33 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Validate(self, request, global_params=None):
+      r"""Validates the given Event Threat Detection custom module.
+
+      Args:
+        request: (SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesValidateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateEventThreatDetectionCustomModuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('Validate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Validate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/folders/{foldersId}/locations/{locationsId}/eventThreatDetectionCustomModules:validate',
+        http_method='POST',
+        method_id='securitycentermanagement.folders.locations.eventThreatDetectionCustomModules.validate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/eventThreatDetectionCustomModules:validate',
+        request_field='validateEventThreatDetectionCustomModuleRequest',
+        request_type_name='SecuritycentermanagementFoldersLocationsEventThreatDetectionCustomModulesValidateRequest',
+        response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
+        supports_download=False,
+    )
+
   class FoldersLocationsSecurityHealthAnalyticsCustomModulesService(base_api.BaseApiService):
     """Service class for the folders_locations_securityHealthAnalyticsCustomModules resource."""
 
@@ -897,7 +924,7 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         ordered_params=['parent'],
         path_params=['parent'],
         query_params=[],
-        relative_path='v1/{+parent}:validate',
+        relative_path='v1/{+parent}/eventThreatDetectionCustomModules:validate',
         request_field='validateEventThreatDetectionCustomModuleRequest',
         request_type_name='SecuritycentermanagementOrganizationsLocationsEventThreatDetectionCustomModulesValidateRequest',
         response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
@@ -1420,6 +1447,33 @@ class SecuritycentermanagementV1(base_api.BaseApiClient):
         request_field='eventThreatDetectionCustomModule',
         request_type_name='SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesPatchRequest',
         response_type_name='EventThreatDetectionCustomModule',
+        supports_download=False,
+    )
+
+    def Validate(self, request, global_params=None):
+      r"""Validates the given Event Threat Detection custom module.
+
+      Args:
+        request: (SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesValidateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateEventThreatDetectionCustomModuleResponse) The response message.
+      """
+      config = self.GetMethodConfig('Validate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Validate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/eventThreatDetectionCustomModules:validate',
+        http_method='POST',
+        method_id='securitycentermanagement.projects.locations.eventThreatDetectionCustomModules.validate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/eventThreatDetectionCustomModules:validate',
+        request_field='validateEventThreatDetectionCustomModuleRequest',
+        request_type_name='SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesValidateRequest',
+        response_type_name='ValidateEventThreatDetectionCustomModuleResponse',
         supports_download=False,
     )
 

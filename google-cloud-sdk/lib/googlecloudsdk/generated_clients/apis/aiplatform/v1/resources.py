@@ -104,6 +104,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_DEPLOYMENTRESOURCEPOOLS = (
+      'projects.locations.deploymentResourcePools',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'deploymentResourcePools/{deploymentResourcePoolsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_ENDPOINTS = (
       'projects.locations.endpoints',
       '{+name}',

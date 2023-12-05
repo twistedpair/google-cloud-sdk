@@ -4950,6 +4950,14 @@ class RemoteModelInfo(_messages.Message):
       dynamically.
     remoteModelVersion: Output only. The model version for LLM.
     remoteServiceType: Output only. The remote service type for remote model.
+    speechRecognizer: Output only. The name of the speech recognizer to use
+      for speech recognition. The expected format is
+      `projects/{project}/locations/{location}/recognizers/{recognizer}`.
+      Customers can specify this field at model creation. If not specified, a
+      default recognizer `projects/{model
+      project}/locations/global/recognizers/_` will be used. See more details
+      at [recognizers](https://cloud.google.com/speech-to-
+      text/v2/docs/reference/rest/v2/projects.locations.recognizers)
   """
 
   class RemoteServiceTypeValueValuesEnum(_messages.Enum):
@@ -4966,17 +4974,22 @@ class RemoteModelInfo(_messages.Message):
         details at [REST Resource:
         documents](https://cloud.google.com/natural-
         language/docs/reference/rest/v1/documents).
+      CLOUD_AI_SPEECH_TO_TEXT_V2: V2 Speech-to-Text API. See more details at
+        [Google Cloud Speech-to-Text V2 API](https://cloud.google.com/speech-
+        to-text/v2/docs)
     """
     REMOTE_SERVICE_TYPE_UNSPECIFIED = 0
     CLOUD_AI_TRANSLATE_V3 = 1
     CLOUD_AI_VISION_V1 = 2
     CLOUD_AI_NATURAL_LANGUAGE_V1 = 3
+    CLOUD_AI_SPEECH_TO_TEXT_V2 = 4
 
   connection = _messages.StringField(1)
   endpoint = _messages.StringField(2)
   maxBatchingRows = _messages.IntegerField(3)
   remoteModelVersion = _messages.StringField(4)
   remoteServiceType = _messages.EnumField('RemoteServiceTypeValueValuesEnum', 5)
+  speechRecognizer = _messages.StringField(6)
 
 
 class Routine(_messages.Message):
@@ -7356,6 +7369,46 @@ class UserDefinedFunctionResource(_messages.Message):
 
   inlineCode = _messages.StringField(1)
   resourceUri = _messages.StringField(2)
+
+
+class VectorSearchStatistics(_messages.Message):
+  r"""Statistics for a vector search query. Populated as part of
+  JobStatistics2.
+
+  Enums:
+    IndexUsageModeValueValuesEnum: Specifies the index usage mode for the
+      query.
+
+  Fields:
+    indexUnusedReasons: When `indexUsageMode` is `UNUSED` or `PARTIALLY_USED`,
+      this field explains why indexes were not used in all or part of the
+      vector search query. If `indexUsageMode` is `FULLY_USED`, this field is
+      not populated.
+    indexUsageMode: Specifies the index usage mode for the query.
+  """
+
+  class IndexUsageModeValueValuesEnum(_messages.Enum):
+    r"""Specifies the index usage mode for the query.
+
+    Values:
+      INDEX_USAGE_MODE_UNSPECIFIED: Index usage mode not specified.
+      UNUSED: No vector indexes were used in the vector search query. See
+        [`indexUnusedReasons`]
+        (/bigquery/docs/reference/rest/v2/Job#IndexUnusedReason) for detailed
+        reasons.
+      PARTIALLY_USED: Part of the vector search query used vector indexes. See
+        [`indexUnusedReasons`]
+        (/bigquery/docs/reference/rest/v2/Job#IndexUnusedReason) for why other
+        parts of the query did not use vector indexes.
+      FULLY_USED: The entire vector search query used vector indexes.
+    """
+    INDEX_USAGE_MODE_UNSPECIFIED = 0
+    UNUSED = 1
+    PARTIALLY_USED = 2
+    FULLY_USED = 3
+
+  indexUnusedReasons = _messages.MessageField('IndexUnusedReason', 1, repeated=True)
+  indexUsageMode = _messages.EnumField('IndexUsageModeValueValuesEnum', 2)
 
 
 class ViewDefinition(_messages.Message):

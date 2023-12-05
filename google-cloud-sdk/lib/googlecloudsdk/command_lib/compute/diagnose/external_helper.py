@@ -23,7 +23,6 @@ from googlecloudsdk.command_lib.compute import ssh_utils
 from googlecloudsdk.command_lib.util.ssh import containers
 from googlecloudsdk.command_lib.util.ssh import ssh
 from googlecloudsdk.core import log
-from googlecloudsdk.core import properties
 import six
 
 
@@ -83,7 +82,7 @@ def RunSSHCommandToInstance(command_list,
     ssh.CommandError: there was an error running a SSH command
   """
   external_address = ssh_utils.GetExternalIPAddress(instance)
-  internal_address = ssh_utils.GetInternalIpAddress(instance)
+  internal_address = ssh_utils.GetInternalIPAddress(instance)
   remote = ssh.Remote(external_address, user)
 
   identity_file = None
@@ -111,7 +110,6 @@ def RunSSHCommandToInstance(command_list,
 
   return_code = cmd.Run(
       ssh_helper.env,
-      putty_force_connect=properties.VALUES.ssh.putty_force_connect.GetBool(),
       explicit_output_file=explicit_output_file,
       explicit_error_file=explicit_error_file)
   log.out.flush()

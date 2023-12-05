@@ -176,7 +176,7 @@ class ArtifactregistryProjectsLocationsRepositoriesCreateRequest(_messages.Messa
     parent: Required. The name of the parent resource where the repository
       will be created.
     repository: A Repository resource to be passed as the request body.
-    repositoryId: The repository id to use for this repository.
+    repositoryId: Required. The repository id to use for this repository.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -677,8 +677,8 @@ class ArtifactregistryProjectsLocationsRepositoriesPatchRequest(_messages.Messag
   r"""A ArtifactregistryProjectsLocationsRepositoriesPatchRequest object.
 
   Fields:
-    name: The name of the repository, for example: "projects/p1/locations/us-
-      central1/repositories/repo1".
+    name: The name of the repository, for example: `projects/p1/locations/us-
+      central1/repositories/repo1`.
     repository: A Repository resource to be passed as the request body.
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -1226,7 +1226,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryArtifac
 
   Fields:
     repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repositories/repo1".
+      `projects/p1/locations/us-central1/repositories/repo1`.
   """
 
   repository = _messages.StringField(1)
@@ -1263,10 +1263,12 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigAptRepositoryPublicR
       REPOSITORY_BASE_UNSPECIFIED: Unspecified repository base.
       DEBIAN: Debian.
       UBUNTU: Ubuntu LTS/Pro.
+      DEBIAN_SNAPSHOT: Archived Debian.
     """
     REPOSITORY_BASE_UNSPECIFIED = 0
     DEBIAN = 1
     UBUNTU = 2
+    DEBIAN_SNAPSHOT = 3
 
   repositoryBase = _messages.EnumField('RepositoryBaseValueValuesEnum', 1)
   repositoryPath = _messages.StringField(2)
@@ -1277,7 +1279,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigDockerRepositoryArti
 
   Fields:
     repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repositories/repo1".
+      `projects/p1/locations/us-central1/repositories/repo1`.
   """
 
   repository = _messages.StringField(1)
@@ -1299,7 +1301,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigMavenRepositoryArtif
 
   Fields:
     repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repositories/repo1".
+      `projects/p1/locations/us-central1/repositories/repo1`.
   """
 
   repository = _messages.StringField(1)
@@ -1321,7 +1323,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigNpmRepositoryArtifac
 
   Fields:
     repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repositories/repo1".
+      `projects/p1/locations/us-central1/repositories/repo1`.
   """
 
   repository = _messages.StringField(1)
@@ -1343,7 +1345,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigPythonRepositoryArti
 
   Fields:
     repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repositories/repo1".
+      `projects/p1/locations/us-central1/repositories/repo1`.
   """
 
   repository = _messages.StringField(1)
@@ -1365,7 +1367,7 @@ class GoogleDevtoolsArtifactregistryV1RemoteRepositoryConfigYumRepositoryArtifac
 
   Fields:
     repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repositories/repo1".
+      `projects/p1/locations/us-central1/repositories/repo1`.
   """
 
   repository = _messages.StringField(1)
@@ -2276,6 +2278,9 @@ class PythonRepository(_messages.Message):
 class RemoteRepositoryConfig(_messages.Message):
   r"""Remote repository configuration.
 
+  Enums:
+    RemoteTypeValueValuesEnum:
+
   Fields:
     aptRepository: Specific settings for an Apt remote repository.
     deleteNotFoundCacheFiles: Optional. If files are removed from the remote
@@ -2287,10 +2292,23 @@ class RemoteRepositoryConfig(_messages.Message):
     mavenRepository: Specific settings for a Maven remote repository.
     npmRepository: Specific settings for an Npm remote repository.
     pythonRepository: Specific settings for a Python remote repository.
+    remoteType: A RemoteTypeValueValuesEnum attribute.
     upstreamCredentials: Optional. The credentials used to access the remote
       repository.
     yumRepository: Specific settings for a Yum remote repository.
   """
+
+  class RemoteTypeValueValuesEnum(_messages.Enum):
+    r"""RemoteTypeValueValuesEnum enum type.
+
+    Values:
+      REMOTE_TYPE_UNSPECIFIED: <no description>
+      MIRROR: <no description>
+      CACHE_LAYER: <no description>
+    """
+    REMOTE_TYPE_UNSPECIFIED = 0
+    MIRROR = 1
+    CACHE_LAYER = 2
 
   aptRepository = _messages.MessageField('AptRepository', 1)
   deleteNotFoundCacheFiles = _messages.BooleanField(2)
@@ -2300,17 +2318,18 @@ class RemoteRepositoryConfig(_messages.Message):
   mavenRepository = _messages.MessageField('MavenRepository', 6)
   npmRepository = _messages.MessageField('NpmRepository', 7)
   pythonRepository = _messages.MessageField('PythonRepository', 8)
-  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 9)
-  yumRepository = _messages.MessageField('YumRepository', 10)
+  remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 9)
+  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 10)
+  yumRepository = _messages.MessageField('YumRepository', 11)
 
 
 class Repository(_messages.Message):
   r"""A Repository for storing artifacts with a specific format.
 
   Enums:
-    FormatValueValuesEnum: The format of packages that are stored in the
-      repository.
-    ModeValueValuesEnum: The mode of the repository.
+    FormatValueValuesEnum: Optional. The format of packages that are stored in
+      the repository.
+    ModeValueValuesEnum: Optional. The mode of the repository.
 
   Messages:
     CleanupPoliciesValue: Optional. Cleanup policies for this repository.
@@ -2335,7 +2354,8 @@ class Repository(_messages.Message):
     description: The user-provided description of the repository.
     dockerConfig: Docker repository config contains repository level
       configuration for the repositories of docker type.
-    format: The format of packages that are stored in the repository.
+    format: Optional. The format of packages that are stored in the
+      repository.
     kmsKeyName: The Cloud KMS resource name of the customer managed encryption
       key that's used to encrypt the contents of the Repository. Has the form:
       `projects/my-project/locations/my-region/keyRings/my-kr/cryptoKeys/my-
@@ -2347,9 +2367,9 @@ class Repository(_messages.Message):
       lowercase letters, numeric characters, underscores, and dashes.
     mavenConfig: Maven repository config contains repository level
       configuration for the repositories of maven type.
-    mode: The mode of the repository.
-    name: The name of the repository, for example: "projects/p1/locations/us-
-      central1/repositories/repo1".
+    mode: Optional. The mode of the repository.
+    name: The name of the repository, for example: `projects/p1/locations/us-
+      central1/repositories/repo1`.
     remoteRepositoryConfig: Configuration specific for a Remote Repository.
     satisfiesPzs: Output only. If set, the repository satisfies physical zone
       separation.
@@ -2365,7 +2385,7 @@ class Repository(_messages.Message):
   """
 
   class FormatValueValuesEnum(_messages.Enum):
-    r"""The format of packages that are stored in the repository.
+    r"""Optional. The format of packages that are stored in the repository.
 
     Values:
       FORMAT_UNSPECIFIED: Unspecified package format.
@@ -2393,7 +2413,7 @@ class Repository(_messages.Message):
     GENERIC = 10
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""The mode of the repository.
+    r"""Optional. The mode of the repository.
 
     Values:
       MODE_UNSPECIFIED: Unspecified mode.
@@ -2503,6 +2523,7 @@ class SbomConfig(_messages.Message):
       repository enablement config and API enablement state.
     enablementStateReason: Output only. Reason for the repository state and
       potential actions to activate it.
+    gcsBucket: Optional. The GCS bucket to put the generated SBOMs into.
     lastEnableTime: Output only. The last time this repository config was set
       to INHERITED.
   """
@@ -2541,7 +2562,8 @@ class SbomConfig(_messages.Message):
   enablementConfig = _messages.EnumField('EnablementConfigValueValuesEnum', 1)
   enablementState = _messages.EnumField('EnablementStateValueValuesEnum', 2)
   enablementStateReason = _messages.StringField(3)
-  lastEnableTime = _messages.StringField(4)
+  gcsBucket = _messages.StringField(4)
+  lastEnableTime = _messages.StringField(5)
 
 
 class SetIamPolicyRequest(_messages.Message):
@@ -2915,7 +2937,7 @@ class UpstreamPolicy(_messages.Message):
     priority: Entries with a greater priority value take precedence in the
       pull order.
     repository: A reference to the repository resource, for example:
-      "projects/p1/locations/us-central1/repositories/repo1".
+      `projects/p1/locations/us-central1/repositories/repo1`.
   """
 
   id = _messages.StringField(1)

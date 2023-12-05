@@ -51,7 +51,10 @@ def AddRegionConfigArg(name, parser, repeatable=True, required=True):
       type=arg_parsers.ArgDict(
           spec={
               'region': RegionValidator,
-              'capacity': capacity_validator
+              'capacity': capacity_validator,
+              'enable_autoscaling': arg_parsers.ArgBoolean(),
+              'autoscaling_buffer': arg_parsers.BoundedInt(lower_bound=1),
+              'autoscaling_min_capacity': arg_parsers.BoundedInt(lower_bound=1),
           },
           required_keys=['region', 'capacity']),
       required=required,
@@ -93,3 +96,29 @@ def ValidateMode(mode):
   if mode == '3d' or mode == 'ar':
     return True
   raise exceptions.InvalidArgumentException('--mode', 'mode must be 3d or ar')
+
+
+def ValidateGpuClass(gpu_class, mode):
+  """Validates the gpu_class input.
+
+  Args:
+    gpu_class: String indicating the GPU class of the instance. Allowed values
+      are l4 and t4.
+    mode: String indicating the rendering mode of the instance.
+
+  Returns:
+    True if the GPU class and mode combination is supported by ISXR, False
+    otherwise.
+  """
+  gpu_class = gpu_class.lower()
+  if gpu_class == 't4':
+    return True
+  if gpu_class == 'l4':
+    if not mode or mode.lower() != '3d':
+      raise exceptions.InvalidArgumentException(
+          '--gpu-class', 'l4 gpu-class must have --mode=3d'
+      )
+    return True
+  raise exceptions.InvalidArgumentException(
+      '--gpu-class', 'gpu-class must be l4 or t4'
+  )

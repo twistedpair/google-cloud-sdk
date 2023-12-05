@@ -34,6 +34,10 @@ class BlockchainNode(_messages.Message):
     labels: User-provided key-value pairs.
     name: Output only. The fully qualified name of the blockchain node. e.g.
       `projects/my-project/locations/us-central1/blockchainNodes/my-node`.
+    privateServiceConnectEnabled: Optional. When true, the node is only
+      accessible via Private Service Connect; no public endpoints are exposed.
+      Otherwise, the node is only accessible via public endpoints. See
+      https://cloud.google.com/vpc/docs/private-service-connect.
     state: Output only. A status representing the state of the node.
     updateTime: Output only. The timestamp at which the blockchain node was
       last updated.
@@ -104,8 +108,9 @@ class BlockchainNode(_messages.Message):
   ethereumDetails = _messages.MessageField('EthereumDetails', 4)
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  privateServiceConnectEnabled = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  updateTime = _messages.StringField(9)
 
 
 class BlockchainnodeengineProjectsLocationsBlockchainNodesCreateRequest(_messages.Message):

@@ -67,11 +67,14 @@ class ApiWarning(_messages.Message):
       COMPROMISED_CREDENTIALS: Warning when user tries to create/update a user
         with credentials that have previously been compromised by a public
         data breach.
+      INTERNAL_STATE_FAILURE: Warning when the operation succeeds but some
+        non-critical workflow state failed.
     """
     SQL_API_WARNING_CODE_UNSPECIFIED = 0
     REGION_UNREACHABLE = 1
     MAX_RESULTS_EXCEEDS_LIMIT = 2
     COMPROMISED_CREDENTIALS = 3
+    INTERNAL_STATE_FAILURE = 4
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -623,7 +626,8 @@ class DatabaseInstance(_messages.Message):
     InstalledVersionValueValuesEnum: Stores the current database version
       including minor version such as `MYSQL_8_0_18`.
     InstanceTypeValueValuesEnum: The instance type.
-    SqlNetworkArchitectureValueValuesEnum:
+    SqlNetworkArchitectureValueValuesEnum: The SQL network architecture for
+      the instance.
     StateValueValuesEnum: The current serving state of the Cloud SQL instance.
     SuspensionReasonValueListEntryValuesEnum:
 
@@ -710,7 +714,7 @@ class DatabaseInstance(_messages.Message):
     serviceAccountEmailAddress: The service account email address assigned to
       the instance. \This property is read-only.
     settings: The user settings.
-    sqlNetworkArchitecture: A SqlNetworkArchitectureValueValuesEnum attribute.
+    sqlNetworkArchitecture: The SQL network architecture for the instance.
     state: The current serving state of the Cloud SQL instance.
     suspensionReason: If the instance state is SUSPENDED, the reason for the
       suspension.
@@ -956,7 +960,7 @@ class DatabaseInstance(_messages.Message):
     READ_REPLICA_INSTANCE = 3
 
   class SqlNetworkArchitectureValueValuesEnum(_messages.Enum):
-    r"""SqlNetworkArchitectureValueValuesEnum enum type.
+    r"""The SQL network architecture for the instance.
 
     Values:
       SQL_NETWORK_ARCHITECTURE_UNSPECIFIED: <no description>
@@ -1962,22 +1966,8 @@ class IpConfiguration(_messages.Message):
   r"""IP Management configuration.
 
   Enums:
-    SslModeValueValuesEnum: Specify how SSL/TLS is enforced in database
-      connections. This flag is supported only for PostgreSQL. Use the legacy
-      `require_ssl` flag for enforcing SSL/TLS in MySQL and SQL Server. But,
-      for PostgreSQL, use the `ssl_mode` flag instead of the legacy
-      `require_ssl` flag. To avoid the conflict between those flags in
-      PostgreSQL, only the following value pairs are valid: *
-      `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false` *
-      `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
-      `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
-      Note that the value of `ssl_mode` gets priority over the value of the
-      legacy `require_ssl`. For example, for the pair
-      `ssl_mode=ENCRYPTED_ONLY, require_ssl=false`, the
-      `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL connection", while the
-      `require_ssl=false` means "both non-SSL and SSL connections are
-      allowed". The database respects `ssl_mode` in this case and only accepts
-      SSL connections.
+    SslModeValueValuesEnum: SQL Server uses the `require_ssl` flag. You can
+      set the value for this flag to 'true' or 'false'.
 
   Fields:
     allocatedIpRange: The name of the allocated ip range for the private ip
@@ -1997,8 +1987,9 @@ class IpConfiguration(_messages.Message):
       `/projects/myProject/global/networks/default`. This setting can be
       updated, but it cannot be removed after it is set.
     pscConfig: PSC settings for this instance.
-    requireSsl: Whether SSL/TLS connections over IP are enforced. If set to
-      false, then allow both non-SSL/non-TLS and SSL/TLS connections. For
+    requireSsl: Use `ssl_mode` instead for MySQL and PostgreSQL. SQL Server
+      uses this flag. Whether SSL/TLS connections over IP are enforced. If set
+      to false, then allow both non-SSL/non-TLS and SSL/TLS connections. For
       SSL/TLS connections, the client certificate won't be verified. If set to
       true, then only allow connections encrypted with SSL/TLS and with valid
       client certificates. If you want to enforce SSL/TLS without enforcing
@@ -2006,38 +1997,13 @@ class IpConfiguration(_messages.Message):
       flag instead of the legacy `require_ssl` flag.
     reservedIpRange: This field is deprecated and will be removed from a
       future version of the API.
-    sslMode: Specify how SSL/TLS is enforced in database connections. This
-      flag is supported only for PostgreSQL. Use the legacy `require_ssl` flag
-      for enforcing SSL/TLS in MySQL and SQL Server. But, for PostgreSQL, use
-      the `ssl_mode` flag instead of the legacy `require_ssl` flag. To avoid
-      the conflict between those flags in PostgreSQL, only the following value
-      pairs are valid: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
-      `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
-      * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
-      Note that the value of `ssl_mode` gets priority over the value of the
-      legacy `require_ssl`. For example, for the pair
-      `ssl_mode=ENCRYPTED_ONLY, require_ssl=false`, the
-      `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL connection", while the
-      `require_ssl=false` means "both non-SSL and SSL connections are
-      allowed". The database respects `ssl_mode` in this case and only accepts
-      SSL connections.
+    sslMode: SQL Server uses the `require_ssl` flag. You can set the value for
+      this flag to 'true' or 'false'.
   """
 
   class SslModeValueValuesEnum(_messages.Enum):
-    r"""Specify how SSL/TLS is enforced in database connections. This flag is
-    supported only for PostgreSQL. Use the legacy `require_ssl` flag for
-    enforcing SSL/TLS in MySQL and SQL Server. But, for PostgreSQL, use the
-    `ssl_mode` flag instead of the legacy `require_ssl` flag. To avoid the
-    conflict between those flags in PostgreSQL, only the following value pairs
-    are valid: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
-    `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
-    `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true` Note
-    that the value of `ssl_mode` gets priority over the value of the legacy
-    `require_ssl`. For example, for the pair `ssl_mode=ENCRYPTED_ONLY,
-    require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means "only accepts SSL
-    connection", while the `require_ssl=false` means "both non-SSL and SSL
-    connections are allowed". The database respects `ssl_mode` in this case
-    and only accepts SSL connections.
+    r"""SQL Server uses the `require_ssl` flag. You can set the value for this
+    flag to 'true' or 'false'.
 
     Values:
       SSL_MODE_UNSPECIFIED: The SSL mode is unknown.
@@ -2509,11 +2475,13 @@ class OperationsListResponse(_messages.Message):
     nextPageToken: The continuation token, used to page through large result
       sets. Provide this value in a subsequent request to return the next page
       of results.
+    warnings: List of warnings that occurred while handling the request.
   """
 
   items = _messages.MessageField('Operation', 1, repeated=True)
   kind = _messages.StringField(2)
   nextPageToken = _messages.StringField(3)
+  warnings = _messages.MessageField('ApiWarning', 4, repeated=True)
 
 
 class PasswordStatus(_messages.Message):
@@ -2536,8 +2504,8 @@ class PasswordValidationPolicy(_messages.Message):
 
   Fields:
     complexity: The complexity of the password.
-    disallowCompromisedCredentials: Optional. Disallow credentials that have
-      been previously compromised by a public data breach.
+    disallowCompromisedCredentials: Disallow credentials that have been
+      previously compromised by a public data breach.
     disallowUsernameSubstring: Disallow username as a part of the password.
     enablePasswordPolicy: Whether the password policy is enabled or not.
     minLength: Minimum number of characters allowed.
@@ -3257,6 +3225,11 @@ class SqlExternalSyncSettingError(_messages.Message):
       TURN_ON_PITR_AFTER_PROMOTE: This code instructs customers to turn on
         point-in-time recovery manually for the instance after promoting the
         Cloud SQL for PostgreSQL instance.
+      INCOMPATIBLE_DATABASE_MINOR_VERSION: The minor version of replica
+        database is incompatible with the source.
+      SOURCE_MAX_SUBSCRIPTIONS: This warning message indicates that Cloud SQL
+        uses the maximum number of subscriptions to migrate data from the
+        source to the destination.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3295,6 +3268,8 @@ class SqlExternalSyncSettingError(_messages.Message):
     MYSQL_PARALLEL_IMPORT_INSUFFICIENT_PRIVILEGE = 34
     LOCAL_INFILE_OFF = 35
     TURN_ON_PITR_AFTER_PROMOTE = 36
+    INCOMPATIBLE_DATABASE_MINOR_VERSION = 37
+    SOURCE_MAX_SUBSCRIPTIONS = 38
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -3850,6 +3825,9 @@ class SqlOperationsListRequest(_messages.Message):
   r"""A SqlOperationsListRequest object.
 
   Fields:
+    filter: Optional. A filter string that follows the rules of EBNF grammar
+      (https://google.aip.dev/assets/misc/ebnf-filtering.txt). Cloud SQL
+      provides filters for status, operationType, and startTime.
     instance: Cloud SQL instance ID. This does not include the project ID.
     maxResults: Maximum number of operations per response.
     pageToken: A previously-returned page token representing part of the
@@ -3857,10 +3835,11 @@ class SqlOperationsListRequest(_messages.Message):
     project: Project ID of the project that contains the instance.
   """
 
-  instance = _messages.StringField(1)
-  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
-  pageToken = _messages.StringField(3)
-  project = _messages.StringField(4, required=True)
+  filter = _messages.StringField(1)
+  instance = _messages.StringField(2)
+  maxResults = _messages.IntegerField(3, variant=_messages.Variant.UINT32)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
 
 
 class SqlOutOfDiskReport(_messages.Message):

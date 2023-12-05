@@ -350,7 +350,8 @@ def GetArgDetails(arg, depth=0):
         required=arg.is_required,
         flag_name=arg_name)
     if type_help_text:
-      deduped_help_text = re.sub(rf'^{help_text}', '', type_help_text)
+      deduped_help_text = re.sub(
+          f'^{re.escape(help_text)}', '', type_help_text)
       extra_help.append(
           arg_parsers_usage_text.IndentAsciiDoc(
               deduped_help_text, depth + _ARG_DETAILS_OFFSET)

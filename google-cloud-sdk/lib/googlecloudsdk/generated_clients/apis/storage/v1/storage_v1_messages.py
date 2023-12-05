@@ -513,9 +513,9 @@ class Bucket(_messages.Message):
       effectiveTime: Server-determined value that indicates the time from
         which the policy, or one with a greater retention, was effective. This
         value is in RFC 3339 format.
-      retentionDurationSeconds: The period of time in seconds, that soft-
-        deleted objects in the bucket will be retained and cannot be
-        permanently deleted.
+      retentionDurationSeconds: The duration in seconds that soft-deleted
+        objects in the bucket will be retained and cannot be permanently
+        deleted.
     """
 
     effectiveTime = _message_types.DateTimeField(1)

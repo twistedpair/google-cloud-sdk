@@ -51,7 +51,7 @@ def ListOperations(project, database, limit=None, operation_filter=None):
           name='projects/{0}/databases/{1}'.format(project, database),
       )
   )
-  batch_size = min(limit, DEFAULT_PAGE_SIZE) if limit else DEFAULT_PAGE_SIZE
+  batch_size = limit if limit else DEFAULT_PAGE_SIZE
   return list_pager.YieldFromList(
       _GetOperationService(),
       list_request,

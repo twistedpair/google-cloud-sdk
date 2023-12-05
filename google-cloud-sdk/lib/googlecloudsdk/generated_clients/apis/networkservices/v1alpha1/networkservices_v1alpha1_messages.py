@@ -3674,8 +3674,12 @@ class MulticastGroupDefinition(_messages.Message):
 
   Fields:
     createTime: Output only. [Output only] Create time stamp
+    ipCidrRange: Output only. [Output only] MulticastGroup IP range.
     labels: Labels as key value pairs
+    multicastDomain: Required. Reference to the MulticastDomain.
     name: name of resource
+    reservedInternalRange: Required. Reference to the InternalRange reserved
+      for this MulticastGroupDefinition.
     updateTime: Output only. [Output only] Update time stamp
   """
 
@@ -3704,9 +3708,12 @@ class MulticastGroupDefinition(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  ipCidrRange = _messages.StringField(2)
+  labels = _messages.MessageField('LabelsValue', 3)
+  multicastDomain = _messages.StringField(4)
+  name = _messages.StringField(5)
+  reservedInternalRange = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class NetworkservicesProjectsLocationsEdgeCacheKeysetsCreateRequest(_messages.Message):

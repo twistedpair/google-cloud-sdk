@@ -1477,6 +1477,13 @@ class _SectionArtifacts(_Section):
         help_text='Default prefix to use while interacting with Artifact '
         'Registry resources.')
 
+    self.domain = self._Add(
+        'domain',
+        default='pkg.dev',
+        hidden=True,
+        help_text='Default domain endpoint to use while interacting with '
+        'Artifact Registry Docker resources.')
+
 
 class _SectionAuth(_Section):
   """Contains the properties for the 'auth' section."""
@@ -2937,12 +2944,6 @@ class _SectionNetapp(_Section):
         help_text='Default location to use when working with Cloud NetApp Files'
                   ' resources. When a `location` value is required but not '
                   'provided, the command will fall back to this value, if set.')
-
-    self.region = self._Add(
-        'region',
-        help_text='Default region to use when working with Cloud NetApp Files '
-        'regions. When a `--region` flag is required but not '
-        'provided, the command will fall back to this value, if set.')
 
 
 class _SectionNotebooks(_Section):

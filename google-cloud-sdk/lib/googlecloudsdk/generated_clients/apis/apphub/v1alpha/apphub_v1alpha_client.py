@@ -1047,60 +1047,6 @@ class ApphubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def GetTelemetry(self, request, global_params=None):
-      r"""GetTelemetry gets current Telemetry configuration.
-
-      Args:
-        request: (ApphubProjectsLocationsGetTelemetryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Telemetry) The response message.
-      """
-      config = self.GetMethodConfig('GetTelemetry')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetTelemetry.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/telemetry',
-        http_method='GET',
-        method_id='apphub.projects.locations.getTelemetry',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsGetTelemetryRequest',
-        response_type_name='Telemetry',
-        supports_download=False,
-    )
-
-    def GetTopology(self, request, global_params=None):
-      r"""GetTopology gets current Topology configuration.
-
-      Args:
-        request: (ApphubProjectsLocationsGetTopologyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Topology) The response message.
-      """
-      config = self.GetMethodConfig('GetTopology')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetTopology.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/topology',
-        http_method='GET',
-        method_id='apphub.projects.locations.getTopology',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha/{+name}',
-        request_field='',
-        request_type_name='ApphubProjectsLocationsGetTopologyRequest',
-        response_type_name='Topology',
-        supports_download=False,
-    )
-
     def List(self, request, global_params=None):
       r"""Lists information about the supported locations for this service.
 
@@ -1152,60 +1098,6 @@ class ApphubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApphubProjectsLocationsLookupServiceProjectAttachmentRequest',
         response_type_name='LookupServiceProjectAttachmentResponse',
-        supports_download=False,
-    )
-
-    def UpdateTelemetry(self, request, global_params=None):
-      r"""UpdateTelemetry updates telemetry configuration.
-
-      Args:
-        request: (ApphubProjectsLocationsUpdateTelemetryRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('UpdateTelemetry')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateTelemetry.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/telemetry',
-        http_method='PATCH',
-        method_id='apphub.projects.locations.updateTelemetry',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='telemetry',
-        request_type_name='ApphubProjectsLocationsUpdateTelemetryRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def UpdateTopology(self, request, global_params=None):
-      r"""UpdateTopology updates topology configuration.
-
-      Args:
-        request: (ApphubProjectsLocationsUpdateTopologyRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('UpdateTopology')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateTopology.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/topology',
-        http_method='PATCH',
-        method_id='apphub.projects.locations.updateTopology',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['updateMask'],
-        relative_path='v1alpha/{+name}',
-        request_field='topology',
-        request_type_name='ApphubProjectsLocationsUpdateTopologyRequest',
-        response_type_name='Operation',
         supports_download=False,
     )
 

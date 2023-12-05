@@ -290,6 +290,38 @@ class _GCEMetadata(object):
             audience=audience, format=token_format, licenses=include_license),
         http_errors_to_ignore=(404,))
 
+  @_HandleMissingMetadataServer()
+  def UniverseDomain(self):
+    """Get the universe domain of the current GCE instance.
+
+    If the GCE metadata server universe domain endpoint is not found, or the
+    endpoint returns an empty string, return the default universe domain
+    (googleapis.com); otherwise return the fetched universe domain value, or
+    raise an exception if the request fails.
+
+    Raises:
+      CannotConnectToMetadataServerException: If the metadata server
+          cannot be reached.
+      MetadataServerException: If there is a problem communicating with the
+          metadata server.
+
+    Returns:
+      str, The short name (e.g., us-central1-f) of the zone containing the
+          current instance.
+      None if not on a GCE VM.
+    """
+
+    if not self.connected:
+      return None
+
+    universe_domain = _ReadNoProxyWithCleanFailures(
+        gce_read.GOOGLE_GCE_METADATA_UNIVERSE_DOMAIN_URI,
+        http_errors_to_ignore=(404,),
+    )
+    if not universe_domain:
+      return properties.VALUES.core.universe_domain.default
+    return universe_domain
+
 
 _metadata = None
 _metadata_lock = threading.Lock()

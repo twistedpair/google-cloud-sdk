@@ -1446,11 +1446,24 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
     iap_tunnel_args: iap_tunnel.SshTunnelArgs or None, options about IAP Tunnel.
     env: Environment, data about the ssh client.
 
+  Raises:
+    BadCharacterError: If instance arg contains any invalid characters.
+
   Returns:
     [str], the additional arguments for OpenSSH or Putty.
   """
   if not iap_tunnel_args:
     return []
+
+  # A relaxed validation of the passed in instance name / IP / hostname.
+  # Mostly so potentially malicious names don't get passed in the resulting
+  # generated command.
+  allowed_non_alnum_chars = {'-', '_', '.'}
+  for char in iap_tunnel_args.instance:
+    if not char.isalnum() and char not in allowed_non_alnum_chars:
+      raise BadCharacterError(
+          'Instance name/IP/hostname contains illegal characters.'
+      )
 
   gcloud_command = execution_utils.ArgsForGcloud()
   # Applying _EscapeProxyCommandArg to the first item (the python executable
@@ -1463,12 +1476,15 @@ def _BuildIapTunnelProxyCommandArgs(iap_tunnel_args, env):
   # characters that don't need escaping, so don't bother escaping them.
   if iap_tunnel_args.track:
     gcloud_command.append(iap_tunnel_args.track)
-  port_token = '%port' if env.suite is Suite.PUTTY else '%p'
+  # Windows CMD only accepts double quotes.
+  port_token, quotation = (
+      ('%port', '\"') if env.suite is Suite.PUTTY else ('%p', '\'')
+  )
   gcloud_command.extend([
       'compute',
       'start-iap-tunnel',
-      iap_tunnel_args.instance,
-      port_token,
+      quotation + iap_tunnel_args.instance + quotation,
+      quotation + port_token + quotation,
       '--listen-on-stdin',
       '--project=' + iap_tunnel_args.project,
   ])
@@ -1756,7 +1772,10 @@ class SSHCommand(object):
     args = self.Build(env)
     log.debug('Running command [{}].'.format(' '.join(args)))
     # PuTTY and friends always ask on fingerprint mismatch
-    in_str = 'y\n' if env.suite is Suite.PUTTY and putty_force_connect else None
+    if env.suite is Suite.PUTTY and putty_force_connect:
+      in_str = 'y\n'
+    else:
+      in_str = None
 
     # We pipe stdout to a specific file
     extra_popen_kwargs = {}
@@ -1989,7 +2008,10 @@ class SCPCommand(object):
     # pscp asks on (1) first connection and (2) fingerprint mismatch.
     # This ensures pscp will always allow the connection.
     # TODO(b/35355795): Work out a better solution for PuTTY.
-    in_str = 'y\n' if env.suite is Suite.PUTTY and putty_force_connect else None
+    if env.suite is Suite.PUTTY and putty_force_connect:
+      in_str = 'y\n'
+    else:
+      in_str = None
     status = execution_utils.Exec(args, no_exit=True, in_str=in_str)
     if status:
       raise CommandError(args[0], return_code=status)

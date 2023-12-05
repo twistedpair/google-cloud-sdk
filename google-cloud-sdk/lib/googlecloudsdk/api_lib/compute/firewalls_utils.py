@@ -43,6 +43,7 @@ EFFECTIVE_FIREWALL_LIST_FORMAT = """\
     priority,
     action,
     direction,
+    disabled,
     ip_ranges.list():label=IP_RANGES
   )"""
 
@@ -512,7 +513,7 @@ def ConvertFirewallPolicyRulesToEffectiveFwRules(
     item.update({'priority': rule.priority})
     item.update({'direction': rule.direction})
     item.update({'action': rule.action.upper()})
-    item.update({'disabled': rule.disabled})
+    item.update({'disabled': bool(rule.disabled)})
     if rule.match.srcIpRanges:
       item.update({'ip_ranges': rule.match.srcIpRanges})
     if rule.match.destIpRanges:

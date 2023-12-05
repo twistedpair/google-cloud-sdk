@@ -266,6 +266,11 @@ def WarnIfDiskSizeIsTooSmall(size_gb, disk_type):
                     constants.DISK_TYPE_PD_SSD in disk_type or
                     constants.DISK_TYPE_PD_EXTREME in disk_type):
     warning_threshold_gb = constants.SSD_DISK_PERFORMANCE_WARNING_GB
+  elif disk_type and (constants.DISK_TYPE_HD_EXTREME in disk_type or
+                      constants.DISK_TYPE_HD_BALANCED in disk_type or
+                      constants.DISK_TYPE_HD_THROUGHPUT in disk_type):
+    # When disk type is hyperdisk, we don't show the warning.
+    warning_threshold_gb = 0
   else:
     warning_threshold_gb = constants.STANDARD_DISK_PERFORMANCE_WARNING_GB
 

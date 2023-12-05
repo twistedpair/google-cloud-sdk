@@ -617,6 +617,8 @@ class CreateClusterOptions(object):
       dataplane_v2=None,
       enable_dataplane_v2_metrics=None,
       disable_dataplane_v2_metrics=None,
+      enable_dataplane_v2_flow_observability=None,
+      disable_dataplane_v2_flow_observability=None,
       dataplane_v2_observability_mode=None,
       shielded_secure_boot=None,
       shielded_integrity_monitoring=None,
@@ -822,6 +824,12 @@ class CreateClusterOptions(object):
     self.dataplane_v2 = dataplane_v2
     self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
     self.disable_dataplane_v2_metrics = disable_dataplane_v2_metrics
+    self.enable_dataplane_v2_flow_observability = (
+        enable_dataplane_v2_flow_observability
+    )
+    self.disable_dataplane_v2_flow_observability = (
+        disable_dataplane_v2_flow_observability
+    )
     self.dataplane_v2_observability_mode = dataplane_v2_observability_mode
     self.shielded_secure_boot = shielded_secure_boot
     self.shielded_integrity_monitoring = shielded_integrity_monitoring
@@ -1028,6 +1036,8 @@ class UpdateClusterOptions(object):
       dataplane_v2=None,
       enable_dataplane_v2_metrics=None,
       disable_dataplane_v2_metrics=None,
+      enable_dataplane_v2_flow_observability=None,
+      disable_dataplane_v2_flow_observability=None,
       dataplane_v2_observability_mode=None,
       enable_workload_config_audit=None,
       pod_autoscaling_direct_metrics_opt_in=None,
@@ -1166,6 +1176,12 @@ class UpdateClusterOptions(object):
     self.dataplane_v2 = dataplane_v2
     self.enable_dataplane_v2_metrics = enable_dataplane_v2_metrics
     self.disable_dataplane_v2_metrics = disable_dataplane_v2_metrics
+    self.enable_dataplane_v2_flow_observability = (
+        enable_dataplane_v2_flow_observability
+    )
+    self.disable_dataplane_v2_flow_observability = (
+        disable_dataplane_v2_flow_observability
+    )
     self.dataplane_v2_observability_mode = dataplane_v2_observability_mode
     self.enable_workload_config_audit = enable_workload_config_audit
     self.pod_autoscaling_direct_metrics_opt_in = pod_autoscaling_direct_metrics_opt_in
@@ -1896,9 +1912,9 @@ class APIAdapter(object):
               'Flag --binauthz-policy-bindings can only be specified once.'
           )
         cluster.binaryAuthorization = self.messages.BinaryAuthorization(
-            evaluationMode=self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-                options.binauthz_evaluation_mode
-            ),
+            evaluationMode=util.GetBinauthzEvaluationModeMapper(
+                self.messages, hidden=False
+            ).GetEnumForChoice(options.binauthz_evaluation_mode),
             policyBindings=[
                 self.messages.PolicyBinding(
                     name=options.binauthz_policy_bindings[0]['name']
@@ -1907,8 +1923,10 @@ class APIAdapter(object):
         )
       else:
         cluster.binaryAuthorization = self.messages.BinaryAuthorization(
-            evaluationMode=self.messages.BinaryAuthorization
-            .EvaluationModeValueValuesEnum(options.binauthz_evaluation_mode))
+            evaluationMode=util.GetBinauthzEvaluationModeMapper(
+                self.messages, hidden=False
+            ).GetEnumForChoice(options.binauthz_evaluation_mode),
+        )
 
     # Policy bindings only makes sense in the context of an evaluation mode.
     if (
@@ -3271,10 +3289,14 @@ class APIAdapter(object):
           options.disable_managed_prometheus or
           options.enable_dataplane_v2_metrics or
           options.disable_dataplane_v2_metrics or
+          options.enable_dataplane_v2_flow_observability or
+          options.disable_dataplane_v2_flow_observability or
           options.dataplane_v2_observability_mode):
       logging = _GetLoggingConfig(options, self.messages)
       # Fix incorrectly omitting required field.
-      if (options.dataplane_v2_observability_mode and
+      if ((options.dataplane_v2_observability_mode or
+           options.enable_dataplane_v2_flow_observability or
+           options.disable_dataplane_v2_flow_observability) and
           options.enable_dataplane_v2_metrics is None and
           options.disable_dataplane_v2_metrics is None):
         cluster = self.GetCluster(cluster_ref)
@@ -5243,10 +5265,11 @@ class APIAdapter(object):
     else:
       if binauthz_evaluation_mode is not None:
         binary_authorization.evaluationMode = (
-            self.messages.BinaryAuthorization.EvaluationModeValueValuesEnum(
-                binauthz_evaluation_mode
-            )
+            util.GetBinauthzEvaluationModeMapper(
+                self.messages, hidden=False
+            ).GetEnumForChoice(binauthz_evaluation_mode)
         )
+
         # Clear the policy and policyBindings field if the updated evaluation
         # mode does not require a policy.
         if not BinauthzEvaluationModeRequiresPolicy(
@@ -6931,6 +6954,31 @@ def _GetMonitoringConfig(options, messages):
       adv_obs = messages.AdvancedDatapathObservabilityConfig(
           relayMode=relay_mode)
 
+  if options.enable_dataplane_v2_flow_observability:
+    # relayMode value does not need to be explicitly set here since it's
+    # ignored in GKE public API code when enableRelay is true
+    if adv_obs:
+      adv_obs = messages.AdvancedDatapathObservabilityConfig(
+          enableMetrics=adv_obs.enableMetrics, enableRelay=True,
+          relayMode=adv_obs.relayMode)
+    else:
+      adv_obs = messages.AdvancedDatapathObservabilityConfig(enableRelay=True)
+
+  if options.disable_dataplane_v2_flow_observability:
+    # relayMode value needs to be explicitly set to DISABLED since
+    # GKE public API code cannot differentiate on update between
+    # "enableRelay is not set" and "enableRelay is false"
+    if adv_obs:
+      adv_obs = messages.AdvancedDatapathObservabilityConfig(
+          enableMetrics=adv_obs.enableMetrics, enableRelay=False,
+          relayMode=(messages.AdvancedDatapathObservabilityConfig
+                     .RelayModeValueValuesEnum.DISABLED))
+    else:
+      adv_obs = messages.AdvancedDatapathObservabilityConfig(
+          enableRelay=False,
+          relayMode=(messages.AdvancedDatapathObservabilityConfig
+                     .RelayModeValueValuesEnum.DISABLED))
+
   if comp is None and prom is None and adv_obs is None:
     return None
 
@@ -7006,6 +7054,21 @@ def ProjectLocationOperation(project, location, operation):
   return ProjectLocation(project, location) + '/operations/' + operation
 
 
+def NormalizeBinauthzEvaluationMode(evaluation_mode):
+  """Converts an evaluation mode to lowercase format.
+
+  e.g. Converts 'PROJECT_SINGLETON_POLICY_ENFORCE' to
+  'project-singleton-policy-enforce'
+
+  Args:
+    evaluation_mode: An evaluation mode.
+
+  Returns:
+    The evaluation mode in lowercase form.
+  """
+  return evaluation_mode.replace('_', '-').lower()
+
+
 def GetBinauthzEvaluationModeOptions(messages, release_track):
   """Returns all valid options for --binauthz-evaluation-mode."""
   # Only expose DISABLED AND PROJECT_SINGLETON_POLICY_ENFORCE evaluation modes
@@ -7013,16 +7076,21 @@ def GetBinauthzEvaluationModeOptions(messages, release_track):
   if release_track == base.ReleaseTrack.GA:
     return ['DISABLED', 'PROJECT_SINGLETON_POLICY_ENFORCE']
   options = list(
-      messages.BinaryAuthorization.EvaluationModeValueValuesEnum.to_dict())
+      messages.BinaryAuthorization.EvaluationModeValueValuesEnum.to_dict()
+  )
   options.remove('EVALUATION_MODE_UNSPECIFIED')
   return sorted(options)
 
 
 def BinauthzEvaluationModeRequiresPolicy(messages, evaluation_mode):
-  evaluation_mode_enum = messages.BinaryAuthorization.EvaluationModeValueValuesEnum
-  if evaluation_mode in (evaluation_mode_enum.EVALUATION_MODE_UNSPECIFIED,
-                         evaluation_mode_enum.DISABLED,
-                         evaluation_mode_enum.PROJECT_SINGLETON_POLICY_ENFORCE):
+  evaluation_mode_enum = (
+      messages.BinaryAuthorization.EvaluationModeValueValuesEnum
+  )
+  if evaluation_mode in (
+      evaluation_mode_enum.EVALUATION_MODE_UNSPECIFIED,
+      evaluation_mode_enum.DISABLED,
+      evaluation_mode_enum.PROJECT_SINGLETON_POLICY_ENFORCE,
+  ):
     return False
   return True
 

@@ -305,6 +305,20 @@ def AutoscalingStorageTarget(required=False):
   )
 
 
+def SsdCache(
+    positional=False,
+    required=False,
+    hidden=True,
+    text='Cloud Spanner SSD Cache ID.',
+):
+  if positional:
+    return base.Argument('cache_id', hidden=hidden, help=text)
+  else:
+    return base.Argument(
+        '--ssd-cache', required=required, hidden=hidden, help=text
+    )
+
+
 def AddCapacityArgsForInstance(
     require_all_autoscaling_args, hide_autoscaling_args, parser
 ):

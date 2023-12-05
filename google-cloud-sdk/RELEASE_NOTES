@@ -5,6 +5,177 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 456.0.0 (2023-12-05)
+
+### Breaking Changes
+
+*   **(AlloyDB)** Modified `gcloud alloydb instances update` to be asynchronous by default. Use
+*   **(AlloyDB)** `--no-async` flag to get the old behavior.
+
+
+### Google Cloud CLI
+
+* Updated `gcloud` CLI to support Python v3.11 and v3.12.
+
+### AlloyDB
+
+* Added support for specifying `--database-version` in `clusters create` command in GA track.
+
+### Anthos
+
+* Support new flag `server` for `gcloud anthos auth login` command.
+* 'server' flag obviates the need to download login-config file.
+
+### Anthos Multi-Cloud
+
+*   Added `--proxy-secret-name` and `--proxy-secret-namespace` flags to
+    `gcloud container attached clusters import` to configure an HTTP/HTTPS
+    proxy for outbound traffic.
+*   Promoted `--max-surge-update` and `--max-unavailable-update` flags to GA
+    (General Availability) for `gcloud container aws node-pools create` and
+    `gcloud container aws node-pools update` commands. These flags let you
+    specify or modify surge update parameters during node pool creation and
+    updating.
+
+### App Engine
+
+* Added `gcloud beta app runtimes list --environment=standard` which displays the supported runtimes for App Engine Standard.
+
+### Artifact Registry
+
+* Added `domain` as a config option to use a different domain endpoint for `artifacts docker`.
+
+### BigQuery
+
+* Added python 3.12 support.
+* Added support for `kms_key_name` to connections.
+* Added concurrent requests when looking up IAM information.
+* Added support to show replica table information.
+* Updated quotes library used.
+* Fixed bug in `cp` to ensure all regions are being checked.
+* Ensured `bq ls -p` only displays the first page of results by default to
+ align with other list methods.
+* Added messaging for DDL statements modifying vector indexes.
+* Improved error messaging for tag updates.
+* Added improved error messaging when project lookups are aborted.
+
+### Certificate Manager
+
+* Added command `certificate-manager trust-configs create`.
+
+### Cloud Backup DR
+
+* Promoted `gcloud backup-dr` command group which includes `gcloud backup-dr management-servers`, `gcloud backup-dr locations` and `gcloud backup-dr operations` to GA.
+
+### Cloud Datastore
+
+* Updated `gcloud datastore operations list` to respect a `--limit` set to >100.
+
+### Cloud Domains
+
+* Added support for disabling and enabling automatic renewal of domains using the Cloud Domains `gcloud domains registrations configure management` method (with the `preferred-renewal-method` flag or in the interactive flow).
+
+### Cloud Firestore
+
+* Updated `gcloud firestore operations list` to respect a `--limit` set to >100.
+
+### Cloud Healthcare
+
+* Added `gcloud healthcare hl7v2-stores metrics` which allows users to retrieve
+  metrics associated with a HL7v2 store.
+
+### Cloud NetApp
+
+* Removed netapp/region as a property since netapp/location can be either region or zone depending on SO or PO.
+
+### Cloud Pub/Sub
+
+*   Fix missing error message for commands under `gcloud pubsub`.
+
+### Cloud Run
+
+* Added the information of whether the job to be deleted has running executions
+  to the confirm message of `gcloud run jobs delete`.
+* Regionalize builds for Cloud Run source deploys.
+
+### Cloud Services
+
+*  Promoted `gcloud services api-keys create` to GA.
+*  Promoted `gcloud services api-keys delete` to GA.
+*  Promoted `gcloud services api-keys get-key-string` to GA.
+*  Promoted `gcloud services api-keys update` to GA.
+
+### Cloud TPU
+
+* Promoted `--update-metadata`, `--clear-metadata`, `--remove-metadata` and
+  `--metadata-from-file` flags of `gcloud compute tpus tpu-vm update` to GA.
+
+### Cloud Workstations
+
+*   Added `--enable-audit-agent` flag to `workstations configs create` and `workstations configs update`.
+
+### Compute Engine
+
+* Promoted `--confidential-compute-type` flag of `gcloud compute instance create` to beta.
+* Promoted flag `--user-ip-request-headers` of `gcloud compute security-policies update` to GA.
+* Fixed issue where `gcloud compute ssh` and `gcloud compute scp` commands would
+  fail on Windows when PuTTY prompted in certain situations, such as when using
+  `--plain` or when connecting to an instance with OS Login 2FA enabled.
+* Fixed crash in `gcloud compute diagnose routes` when specifying
+  `--reverse-traceroute`.
+* Promoted `location` flag for `gcloud compute connect-to-serial-port` to beta.
+* Promoted `--type` flag of `gcloud compute routers nats create` to GA.
+* Promoted `--source-nat-active-ranges`, `--source-nat-active-ranges-region`, `--source-nat-drain-ranges`, `--clear-source-nat-drain-ranges` and `--source-nat-drain-ranges-region` flags of `gcloud compute routers nats rule update` to GA.
+* Promoted `--source-nat-active-ranges` and `--source-nat-active-ranges-region` flags of `gcloud compute routers nats rule create` to GA.
+* Promoted new allowed value: `PRIVATE_NAT` for `--purpose` flag of `gcloud compute networks subnets create` to GA.
+* Promoted new `:ALL` range option for subnets passed to `--nat-custom-subnet-ip-ranges` flag of `gcloud compute routers nats (create|update)` to GA.
+
+### Compute Firewall Rules
+
+* Added `--export-terraform-script` flag to
+  `gcloud compute firewall-rules migrate` to prepare a terraform script for migrated Network Firewall Policy.
+* Added `disabled` column to default view of `gcloud compute networks get-effective-firewalls` and `gcloud compute network-firewall-policies get-effective-firewalls`.
+
+### Database Migration
+
+* Updated `gcloud database-migration` to show error details on command failure when used with `--no-async` flag.
+* Adding support for choosing Alloy DB database version using `--database-version` flag in `gcloud database-migration connection-profiles create alloydb`.
+
+### GKE Hub
+
+* Promoted `gcloud container fleet dataplane-v2-encryption {describe, disable, enable}` to GA.
+* Added property `pod-affinity` to `gcloud container fleet policycontroller deployment set` and `gcloud container fleet policycontroller deployment remove` so that users can configure high availability on Policy Controller deployments.
+* Added `--binauthz-evaluation-mode` flag to `gcloud container fleet create`, `gcloud container fleet update` in alpha, beta and GA track.
+* Added `--binauthz-evaluation-mode` flag to `gcloud container hub create`, `gcloud container hub update` in alpha, beta and GA track.
+* Added `--binauthz-policy-bindings` flag to `gcloud container fleet create`, `gcloud container fleet update` in alpha, beta and GA track.
+* Added `--binauthz-policy-bindings` flag to `gcloud container hub create`, `gcloud container hub update` in alpha, beta and GA track.
+
+### Kpt
+
+* Updated kpt from v1.0.0-beta.47 to v1.0.0-beta.48. See <https://github.com/kptdev/kpt/releases/tag/v1.0.0-beta.48> for more details.
+
+### Kubernetes Engine
+
+* Added `--enable-dataplane-v2-flow-observability` and `--disable-dataplane-v2-flow-observability`
+  flags for toggling DPv2 Flow Observability feature.
+
+### Network Security
+
+* Add `--billing-project` required flag to `gcloud network-security firewall-endpoints create` command to provide Google Cloud project ID for API enablement check, quota, and endpoint uptime billing.
+* Add `--update-billing-project` flag to `gcloud network-security firewall-endpoints update` command to update the Google Cloud project used for API enablement check, quota, and endpoint uptime billing.
+
+### Recaptcha
+
+* Support creating Fastly enabled site keys using `recaptcha keys create --waf-service=cloudfare`.
+
+### Regional Endpoints
+
+* Unhid `regional-endpoints` as a subgroup of `gcloud beta networkconnectivity`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 455.0.0 (2023-11-14)
 
 ### Breaking Changes

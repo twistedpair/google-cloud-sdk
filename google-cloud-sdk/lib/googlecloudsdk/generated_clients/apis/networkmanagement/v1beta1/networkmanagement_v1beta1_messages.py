@@ -467,6 +467,7 @@ class DeliverInfo(_messages.Message):
         Connect](https://cloud.google.com/vpc/docs/configure-private-service-
         connect-apis).
       SERVERLESS_NEG: Target is a serverless network endpoint group.
+      STORAGE_BUCKET: Target is a Cloud Storage bucket.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -478,6 +479,7 @@ class DeliverInfo(_messages.Message):
     PSC_GOOGLE_API = 7
     PSC_VPC_SC = 8
     SERVERLESS_NEG = 9
+    STORAGE_BUCKET = 10
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -512,7 +514,7 @@ class DropInfo(_messages.Message):
       ROUTE_WRONG_NETWORK: Packet is sent to a wrong (unintended) network.
         Example: you trace a packet from VM1:Network1 to VM2:Network2,
         however, the route configured in Network1 sends the packet destined
-        for VM2's IP addresss to Network3.
+        for VM2's IP address to Network3.
       PRIVATE_TRAFFIC_TO_INTERNET: Packet with internal destination address
         sent to the internet gateway.
       PRIVATE_GOOGLE_ACCESS_DISALLOWED: Instance with only an internal IP
@@ -924,6 +926,12 @@ class FirewallInfo(_messages.Message):
         rule. For details, see [Regional network firewall
         policies](https://cloud.google.com/firewall/docs/regional-firewall-
         policies).
+      UNSUPPORTED_FIREWALL_POLICY_RULE: Firewall policy rule containing
+        attributes not yet supported in Connectivity tests. Firewall analysis
+        is skipped if such a rule can potentially be matched. Please see the
+        [list of unsupported configurations](https://cloud.google.com/network-
+        intelligence-center/docs/connectivity-
+        tests/concepts/overview#unsupported-configs).
     """
     FIREWALL_RULE_TYPE_UNSPECIFIED = 0
     HIERARCHICAL_FIREWALL_POLICY_RULE = 1
@@ -932,6 +940,7 @@ class FirewallInfo(_messages.Message):
     SERVERLESS_VPC_ACCESS_MANAGED_FIREWALL_RULE = 4
     NETWORK_FIREWALL_POLICY_RULE = 5
     NETWORK_REGIONAL_FIREWALL_POLICY_RULE = 6
+    UNSUPPORTED_FIREWALL_POLICY_RULE = 7
 
   action = _messages.StringField(1)
   direction = _messages.StringField(2)
@@ -1212,7 +1221,9 @@ class LoadBalancerInfo(_messages.Message):
     backendType: Type of load balancer's backend configuration.
     backendUri: Backend configuration URI.
     backends: Information for the loadbalancer backends.
-    healthCheckUri: URI of the health check for the load balancer.
+    healthCheckUri: URI of the health check for the load balancer. Deprecated
+      and no longer populated as different load balancer backends might have
+      different health checks.
     loadBalancerType: Type of the load balancer.
   """
 

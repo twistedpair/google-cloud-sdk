@@ -97,6 +97,7 @@ class Client:
       name,
       parent,
       description,
+      billing_project_id,
       endpoint_type=None,
       target_firewall_attachment=None,
       labels=None,
@@ -112,26 +113,42 @@ class Client:
           type=self._ParseEndpointType(endpoint_type),
           thirdPartyEndpointSettings=third_party_endpoint_settings,
           description=description,
+          billingProjectId=billing_project_id,
       )
     else:
       endpoint = self.messages.FirewallEndpoint(
           labels=labels,
           description=description,
+          billingProjectId=billing_project_id,
       )
     create_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsCreateRequest(
         firewallEndpoint=endpoint, firewallEndpointId=name, parent=parent
     )
     return self._endpoint_client.Create(create_request)
 
-  def UpdateEndpointLabels(self, name, description, labels):
-    """Calls the UpdateEndpoint API with 'labels' as the only mask."""
+  def UpdateEndpoint(
+      self, name, description, update_mask, labels=None, billing_project_id=None
+  ):
+    """Calls the UpdateEndpoint API.
+
+    Args:
+      name: str, full name of the firewall endpoint.
+      description: str, description of the firewall endpoint.
+      update_mask: str, comma separated list of fields to update.
+      labels: LabelsValue, labels for the firewall endpoint.
+      billing_project_id: str, billing project ID.
+    Returns:
+      Operation ref to track the long-running process.
+    """
     endpoint = self.messages.FirewallEndpoint(
-        labels=labels, description=description
+        labels=labels,
+        description=description,
+        billingProjectId=billing_project_id,
     )
     update_request = self.messages.NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(
         name=name,
         firewallEndpoint=endpoint,
-        updateMask='labels',
+        updateMask=update_mask,
     )
     return self._endpoint_client.Patch(update_request)
 

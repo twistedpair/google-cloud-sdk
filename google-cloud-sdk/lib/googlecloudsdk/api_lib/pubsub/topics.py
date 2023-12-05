@@ -118,6 +118,7 @@ class TopicsClient(object):
       kms_key=None,
       message_retention_duration=None,
       message_storage_policy_allowed_regions=None,
+      message_storage_policy_enforce_in_transit=False,
       schema=None,
       message_encoding=None,
       first_revision_id=None,
@@ -137,6 +138,8 @@ class TopicsClient(object):
         the Topic.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
         in which messages are allowed to be stored at rest.
+      message_storage_policy_enforce_in_transit (bool): Whether or not to
+        enforce in-transit guarantees for this topic using the allowed regions.
       schema (Resource): Full resource name of schema used to validate messages
         published on Topic.
       message_encoding (str): If a schema is set, the message encoding of
@@ -170,8 +173,14 @@ class TopicsClient(object):
     if kms_key:
       topic.kmsKeyName = kms_key
     if message_storage_policy_allowed_regions:
-      topic.messageStoragePolicy = self.messages.MessageStoragePolicy(
-          allowedPersistenceRegions=message_storage_policy_allowed_regions)
+      message_storage_policy = self.messages.MessageStoragePolicy(
+          allowedPersistenceRegions=message_storage_policy_allowed_regions
+      )
+      if message_storage_policy_enforce_in_transit:
+        message_storage_policy.enforceInTransit = (
+            message_storage_policy_enforce_in_transit
+        )
+      topic.messageStoragePolicy = message_storage_policy
     if schema and message_encoding:
       encoding_enum = ParseMessageEncoding(self.messages, message_encoding)
       topic.schemaSettings = self.messages.SchemaSettings(
@@ -406,6 +415,7 @@ class TopicsClient(object):
       clear_message_retention_duration=False,
       recompute_message_storage_policy=False,
       message_storage_policy_allowed_regions=None,
+      message_storage_policy_enforce_in_transit=False,
       schema=None,
       message_encoding=None,
       first_revision_id=None,
@@ -431,6 +441,8 @@ class TopicsClient(object):
         the message storage policy.
       message_storage_policy_allowed_regions (list[str]): List of Cloud regions
         in which messages are allowed to be stored at rest.
+      message_storage_policy_enforce_in_transit (bool): Whether or not to
+        enforce in-transit guarantees for this topic using the allowed regions.
       schema (Resource): Full resource name of schema used to validate messages
         published on Topic.
       message_encoding (str): If a schema is set, the message encoding of
@@ -480,12 +492,16 @@ class TopicsClient(object):
     if recompute_message_storage_policy:
       update_settings.append(_TopicUpdateSetting('messageStoragePolicy', None))
     elif message_storage_policy_allowed_regions:
+      message_storage_policy = self.messages.MessageStoragePolicy(
+          allowedPersistenceRegions=message_storage_policy_allowed_regions
+      )
+      if message_storage_policy_enforce_in_transit:
+        message_storage_policy.enforceInTransit = (
+            message_storage_policy_enforce_in_transit
+        )
       update_settings.append(
-          _TopicUpdateSetting(
-              'messageStoragePolicy',
-              self.messages.MessageStoragePolicy(
-                  allowedPersistenceRegions=message_storage_policy_allowed_regions
-              )))
+          _TopicUpdateSetting('messageStoragePolicy', message_storage_policy)
+      )
 
     if clear_schema_settings:
       update_settings.append(_TopicUpdateSetting('schemaSettings', None))

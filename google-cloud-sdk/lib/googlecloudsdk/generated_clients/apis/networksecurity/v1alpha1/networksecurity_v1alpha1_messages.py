@@ -2751,7 +2751,7 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsCreateRequest(
   Fields:
     firewallEndpointAssociation: A FirewallEndpointAssociation resource to be
       passed as the request body.
-    firewallEndpointAssociationId: Required. Id of the requesting object. If
+    firewallEndpointAssociationId: Optional. Id of the requesting object. If
       auto-generating Id server-side, remove this field and
       firewall_endpoint_association_id from the method_signature of Create
       RPC.

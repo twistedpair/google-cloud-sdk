@@ -37,6 +37,7 @@ class Backup(_messages.Message):
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup, in the format
       `projects/{project_id}/locations/{location_id}/backups/{backup_id}`.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     sourceFileShare: Name of the file share in the source Filestore instance
       that the backup is created from.
@@ -137,12 +138,13 @@ class Backup(_messages.Message):
   kmsKeyName = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  sourceFileShare = _messages.StringField(9)
-  sourceInstance = _messages.StringField(10)
-  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  storageBytes = _messages.IntegerField(13)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  sourceFileShare = _messages.StringField(10)
+  sourceInstance = _messages.StringField(11)
+  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  storageBytes = _messages.IntegerField(14)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1302,6 +1304,7 @@ class Instance(_messages.Message):
     protocol: Immutable. The protocol indicates the access protocol for all
       shares in the instance. This field is immutable and it cannot be changed
       after the instance has been created. Default value: `NFS_V3`.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The instance state.
     statusMessage: Output only. Additional information about the instance
@@ -1441,11 +1444,12 @@ class Instance(_messages.Message):
   name = _messages.StringField(13)
   networks = _messages.MessageField('NetworkConfig', 14, repeated=True)
   protocol = _messages.EnumField('ProtocolValueValuesEnum', 15)
-  satisfiesPzs = _messages.BooleanField(16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  statusMessage = _messages.StringField(18)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 19, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 20)
+  satisfiesPzi = _messages.BooleanField(16)
+  satisfiesPzs = _messages.BooleanField(17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  statusMessage = _messages.StringField(19)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 20, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 21)
 
 
 class ListBackupsResponse(_messages.Message):

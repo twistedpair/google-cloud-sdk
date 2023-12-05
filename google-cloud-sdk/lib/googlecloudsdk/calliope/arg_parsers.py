@@ -1102,6 +1102,10 @@ class ArgList(usage_text.ArgTypeUsage, ArgType):
 
   _MAX_METAVAR_LENGTH = 30  # arbitrary, but this is pretty long
 
+  @property
+  def hidden(self):
+    return False
+
   def GetUsageMetavar(self, is_custom_metavar, metavar):
     """Get a specially-formatted metavar for the ArgList to use in help.
 
@@ -1306,6 +1310,10 @@ class ArgDict(ArgList):
 
     return arg_dict
 
+  @property
+  def hidden(self):
+    return False
+
   def GetUsageMetavar(self, is_custom_metavar, metavar):
     # If we're not using a spec to limit the key values or if metavar
     # has been overridden, then use the normal ArgList formatting
@@ -1326,7 +1334,7 @@ class ArgDict(ArgList):
         msg_list.append(spec_key)
 
     for spec_key, spec_function in spec_list:
-      if spec_function is not None:
+      if spec_function and not usage_text.IsHidden(spec_function):
         msg_list.append('{0}={1}'.format(spec_key, spec_key.upper()))
 
     msg = '[' + '],['.join(msg_list) + ']'
@@ -1456,7 +1464,7 @@ class ArgObject(ArgDict):
 
   def __init__(self, key_type=None, value_type=None, spec=None,
                required_keys=None, help_text=None, repeated=False,
-               enable_shorthand=True):
+               hidden=None, enable_shorthand=True):
     # Disable arg_dict syntax for nested values
     if value_type:
       self._DisableShorthand(value_type)
@@ -1470,6 +1478,7 @@ class ArgObject(ArgDict):
     self.help_text = help_text
     self.repeated = repeated
     self._keyed_values = key_type is not None or spec is not None
+    self._hidden = hidden
     self.enable_shorthand = enable_shorthand
 
     if self.required_keys and not self._keyed_values:
@@ -1595,10 +1604,21 @@ class ArgObject(ArgDict):
 
     return value
 
+  @property
+  def hidden(self):
+    if self._hidden is not None:
+      return self._hidden
+    elif self.spec:
+      return all(usage_text.IsHidden(value) for value in self.spec.values())
+    else:
+      return (usage_text.IsHidden(self.key_type) or
+              usage_text.IsHidden(self.value_type))
+
   def GetUsageMetavar(self, is_custom_metavar, metavar):
     if self._keyed_values:
       return super(ArgObject, self).GetUsageMetavar(is_custom_metavar, metavar)
-    return metavar
+    else:
+      return metavar
 
   def GetUsageExample(self, shorthand):
     """Returns a string of usage examples.
@@ -1622,8 +1642,11 @@ class ArgObject(ArgDict):
       shorthand: bool, whether to display in shorthand
 
     Returns:
-      str, example text of usage
+      str | None, example text of usage. None if hidden.
     """
+    if self.hidden:
+      return None
+
     shorthand_enabled = shorthand and self.enable_shorthand
     is_json_obj = not shorthand_enabled and self._keyed_values
     is_array = not shorthand_enabled and self.repeated
@@ -1634,9 +1657,10 @@ class ArgObject(ArgDict):
 
     if self.spec:
       comma = ',' if format_as_shorthand else ', '
-      usage = comma.join(
+      example = (
           usage_text.GetNestedKeyValueExample(key, value, format_as_shorthand)
           for key, value in sorted(self.spec.items()))
+      usage = comma.join(line for line in example if line is not None)
     else:
       # Keys can be None but values are parsed as string
       # by default in ArgObject
@@ -1704,8 +1728,11 @@ class ArgObject(ArgDict):
         code examples.
 
     Returns:
-      str, help text with schema and examples
+      str | None, help text with schema and examples. None if hidden.
     """
+    if self.hidden:
+      return None
+
     result = []
     result.append(usage_text.FormatHelpText(
         field_name, required, help_text=self.help_text))
@@ -1728,7 +1755,7 @@ class ArgObject(ArgDict):
       # Reset indentation back to root level
       result.append(usage_text.ASCII_INDENT + self._GetCodeExamples(flag_name))
 
-    return '\n\n'.join(result)
+    return '\n\n'.join(line for line in result if line is not None)
 
 
 class UpdateAction(argparse.Action):

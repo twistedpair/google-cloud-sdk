@@ -193,7 +193,8 @@ def UseSelfSignedJwt(creds):
 
   if cred_type != CredentialTypeGoogleAuth.SERVICE_ACCOUNT:
     return False
-
+  if creds.universe_domain != properties.VALUES.core.universe_domain.default:
+    return True
   if properties.VALUES.auth.service_account_use_self_signed_jwt.GetBool():
     return True
   if not properties.IsDefaultUniverse():
@@ -969,6 +970,10 @@ def ToJsonGoogleAuth(credentials):
     raise UnknownCredentialsType(
         'Google auth does not support serialization of {} credentials.'.format(
             creds_type.key))
+
+  # Save universe_domain.
+  creds_dict['universe_domain'] = credentials.universe_domain
+
   return json.dumps(
       creds_dict, sort_keys=True, indent=2, separators=(',', ': '))
 
@@ -1221,7 +1226,10 @@ def FromJsonGoogleAuth(json_value):
 
   if cred_type == CredentialTypeGoogleAuth.GCE:
     cred = google_auth_compute_engine.Credentials(
-        service_account_email=json_key['service_account_email']
+        service_account_email=json_key['service_account_email'],
+    )
+    cred._universe_domain = json_key.get(  # pylint: disable=protected-access
+        'universe_domain', properties.VALUES.core.universe_domain.default
     )
     return cred
 

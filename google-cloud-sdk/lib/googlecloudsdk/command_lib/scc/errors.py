@@ -28,3 +28,7 @@ class InvalidSCCInputError(core_exceptions.Error):
 
 class InvalidNotificationConfigError(core_exceptions.Error):
   """Exception raised for errors in the input of a NotificationConfig."""
+
+
+class InvalidAPIVersion(core_exceptions.Error):
+  """Exception raised for invalid API version."""

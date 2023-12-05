@@ -115,6 +115,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateAttachedClusterAgentToken(self, request, global_params=None):
+      r"""GenerateAttachedClusterAgentToken method for the projects_locations_attachedClusters service.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsAttachedClustersGenerateAttachedClusterAgentTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAttachedClusterAgentToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAttachedClusterAgentToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/attachedClusters/{attachedClustersId}:generateAttachedClusterAgentToken',
+        http_method='POST',
+        method_id='gkemulticloud.projects.locations.attachedClusters.generateAttachedClusterAgentToken',
+        ordered_params=['attachedCluster'],
+        path_params=['attachedCluster'],
+        query_params=[],
+        relative_path='v1/{+attachedCluster}:generateAttachedClusterAgentToken',
+        request_field='googleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenRequest',
+        request_type_name='GkemulticloudProjectsLocationsAttachedClustersGenerateAttachedClusterAgentTokenRequest',
+        response_type_name='GoogleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Describes a specific AttachedCluster resource.
 
@@ -368,6 +395,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Rollback(self, request, global_params=None):
+      r"""Rolls back a previously aborted or failed AwsNodePool update request. Makes no changes if the last update request successfully finished. If an update request is in progress, you cannot rollback the update. You must first cancel or let it finish unsuccessfully before you can rollback.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsRollbackRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Rollback')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Rollback.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/awsClusters/{awsClustersId}/awsNodePools/{awsNodePoolsId}:rollback',
+        http_method='POST',
+        method_id='gkemulticloud.projects.locations.awsClusters.awsNodePools.rollback',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:rollback',
+        request_field='googleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest',
+        request_type_name='GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsRollbackRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsAwsClustersWellKnownService(base_api.BaseApiService):
     """Service class for the projects_locations_awsClusters_well_known resource."""
 
@@ -493,6 +547,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest',
         response_type_name='GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse',
+        supports_download=False,
+    )
+
+    def GenerateAwsClusterAgentToken(self, request, global_params=None):
+      r"""GenerateAwsClusterAgentToken method for the projects_locations_awsClusters service.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsAwsClustersGenerateAwsClusterAgentTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudGkemulticloudV1GenerateAwsClusterAgentTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAwsClusterAgentToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAwsClusterAgentToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/awsClusters/{awsClustersId}:generateAwsClusterAgentToken',
+        http_method='POST',
+        method_id='gkemulticloud.projects.locations.awsClusters.generateAwsClusterAgentToken',
+        ordered_params=['awsCluster'],
+        path_params=['awsCluster'],
+        query_params=[],
+        relative_path='v1/{+awsCluster}:generateAwsClusterAgentToken',
+        request_field='googleCloudGkemulticloudV1GenerateAwsClusterAgentTokenRequest',
+        request_type_name='GkemulticloudProjectsLocationsAwsClustersGenerateAwsClusterAgentTokenRequest',
+        response_type_name='GoogleCloudGkemulticloudV1GenerateAwsClusterAgentTokenResponse',
         supports_download=False,
     )
 
@@ -992,6 +1073,33 @@ class GkemulticloudV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest',
         response_type_name='GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse',
+        supports_download=False,
+    )
+
+    def GenerateAzureClusterAgentToken(self, request, global_params=None):
+      r"""GenerateAzureClusterAgentToken method for the projects_locations_azureClusters service.
+
+      Args:
+        request: (GkemulticloudProjectsLocationsAzureClustersGenerateAzureClusterAgentTokenRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudGkemulticloudV1GenerateAzureClusterAgentTokenResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateAzureClusterAgentToken')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateAzureClusterAgentToken.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/azureClusters/{azureClustersId}:generateAzureClusterAgentToken',
+        http_method='POST',
+        method_id='gkemulticloud.projects.locations.azureClusters.generateAzureClusterAgentToken',
+        ordered_params=['azureCluster'],
+        path_params=['azureCluster'],
+        query_params=[],
+        relative_path='v1/{+azureCluster}:generateAzureClusterAgentToken',
+        request_field='googleCloudGkemulticloudV1GenerateAzureClusterAgentTokenRequest',
+        request_type_name='GkemulticloudProjectsLocationsAzureClustersGenerateAzureClusterAgentTokenRequest',
+        response_type_name='GoogleCloudGkemulticloudV1GenerateAzureClusterAgentTokenResponse',
         supports_download=False,
     )
 

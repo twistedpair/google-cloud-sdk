@@ -32,11 +32,20 @@ class AlloyDbConnectionProfile(_messages.Message):
 class AlloyDbSettings(_messages.Message):
   r"""Settings for creating an AlloyDB cluster.
 
+  Enums:
+    DatabaseVersionValueValuesEnum: Optional. The database engine major
+      version. This is an optional field. If a database version is not
+      supplied at cluster creation time, then a default database version will
+      be used.
+
   Messages:
     LabelsValue: Labels for the AlloyDB cluster created by DMS. An object
       containing a list of 'key', 'value' pairs.
 
   Fields:
+    databaseVersion: Optional. The database engine major version. This is an
+      optional field. If a database version is not supplied at cluster
+      creation time, then a default database version will be used.
     encryptionConfig: Optional. The encryption config can be specified to
       encrypt the data disks and other persistent data resources of a cluster
       with a customer-managed encryption key (CMEK). When this field is not
@@ -54,6 +63,20 @@ class AlloyDbSettings(_messages.Message):
       "projects/{project_number}/global/networks/{network_id}". This is
       required to create a cluster.
   """
+
+  class DatabaseVersionValueValuesEnum(_messages.Enum):
+    r"""Optional. The database engine major version. This is an optional
+    field. If a database version is not supplied at cluster creation time,
+    then a default database version will be used.
+
+    Values:
+      DATABASE_VERSION_UNSPECIFIED: This is an unknown database version.
+      POSTGRES_14: The database version is Postgres 14.
+      POSTGRES_15: The database version is Postgres 15.
+    """
+    DATABASE_VERSION_UNSPECIFIED = 0
+    POSTGRES_14 = 1
+    POSTGRES_15 = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -80,11 +103,12 @@ class AlloyDbSettings(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 1)
-  initialUser = _messages.MessageField('UserPassword', 2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  primaryInstanceSettings = _messages.MessageField('PrimaryInstanceSettings', 4)
-  vpcNetwork = _messages.StringField(5)
+  databaseVersion = _messages.EnumField('DatabaseVersionValueValuesEnum', 1)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
+  initialUser = _messages.MessageField('UserPassword', 3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  primaryInstanceSettings = _messages.MessageField('PrimaryInstanceSettings', 5)
+  vpcNetwork = _messages.StringField(6)
 
 
 class ApplyConversionWorkspaceRequest(_messages.Message):

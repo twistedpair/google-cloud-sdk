@@ -62,24 +62,33 @@ class NetworkEndpointGroupsClient(object):
       serverless_deployment_version=None,
       serverless_deployment_url_mask=None,
       psc_target_service=None,
+      client_port_mapping_mode=None,
   ):
     """Creates a network endpoint group."""
     is_zonal = hasattr(neg_ref, 'zone')
     is_regional = hasattr(neg_ref, 'region')
 
     network_uri = None
-    # Zonal, PSC NEG and regional Internet NEGs will pass the network
-    # parameter to Arcus
-    is_regional_internet_neg = is_regional and self._IsInternetNeg(
+    # Zonal, PSC NEG, Port Mapping NEG and Internet NEGs will pass
+    # the network parameter to Arcus
+    is_internet_neg = self._IsInternetNeg(
         network_endpoint_type
     )
-    if network and (is_zonal or psc_target_service or is_regional_internet_neg):
+    is_port_mapping_neg = is_regional and self._IsPortMappingNeg(
+        network_endpoint_type, client_port_mapping_mode
+    )
+    if network and (
+        is_zonal
+        or psc_target_service
+        or is_internet_neg
+        or is_port_mapping_neg
+    ):
       network_ref = self.resources.Parse(
           network, {'project': neg_ref.project}, collection='compute.networks'
       )
       network_uri = network_ref.SelfLink()
     subnet_uri = None
-    if subnet and (is_zonal or psc_target_service):
+    if subnet and (is_zonal or psc_target_service or is_port_mapping_neg):
       if is_regional:
         region = neg_ref.region
       else:
@@ -167,6 +176,25 @@ class NetworkEndpointGroupsClient(object):
             network=network_uri,
             subnetwork=subnet_uri,
             pscTargetService=psc_target_service,
+        )
+      elif client_port_mapping_mode:
+        client_port_mapping_mode_enum = (
+            self.messages.NetworkEndpointGroup.ClientPortMappingModeValueValuesEnum
+        )
+        network_endpoint_group = self.messages.NetworkEndpointGroup(
+            name=neg_ref.Name(),
+            networkEndpointType=arg_utils.ChoiceToEnum(
+                network_endpoint_type, endpoint_type_enum
+            ),
+            defaultPort=default_port,
+            network=network_uri,
+            subnetwork=subnet_uri,
+            cloudRun=cloud_run,
+            appEngine=app_engine,
+            cloudFunction=cloud_function,
+            clientPortMappingMode=arg_utils.ChoiceToEnum(
+                client_port_mapping_mode, client_port_mapping_mode_enum
+            ),
         )
       else:
         network_endpoint_group = self.messages.NetworkEndpointGroup(
@@ -430,3 +458,26 @@ class NetworkEndpointGroupsClient(object):
         endpoint_type_enum.INTERNET_FQDN_PORT,
         endpoint_type_enum.INTERNET_IP_PORT,
     }
+
+  def _IsPortMappingNeg(self, network_endpoint_type, client_port_mapping_mode):
+    """Checks if the NEG in the request is a Port Mapping NEG."""
+    if not client_port_mapping_mode:
+      return False
+
+    endpoint_type_enum = (
+        self.messages.NetworkEndpointGroup.NetworkEndpointTypeValueValuesEnum
+    )
+    endpoint_type_enum_value = arg_utils.ChoiceToEnum(
+        network_endpoint_type, endpoint_type_enum
+    )
+    client_port_mapping_mode_enum = (
+        self.messages.NetworkEndpointGroup.ClientPortMappingModeValueValuesEnum
+    )
+    client_port_mapping_mode_enum_value = arg_utils.ChoiceToEnum(
+        client_port_mapping_mode, client_port_mapping_mode_enum
+    )
+    return (
+        endpoint_type_enum_value == endpoint_type_enum.GCE_VM_IP_PORT
+        and client_port_mapping_mode_enum_value
+        == client_port_mapping_mode_enum.CLIENT_PORT_PER_ENDPOINT
+    )

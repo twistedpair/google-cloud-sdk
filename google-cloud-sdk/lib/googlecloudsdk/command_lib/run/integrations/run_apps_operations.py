@@ -137,21 +137,35 @@ class RunAppsOperations(object):
       yaml_content: content of the yaml file.
     """
     app_dict = dict(yaml_content)
-    name = app_dict.pop('name')
+    name = _DEFAULT_APP_NAME
+    if 'name' in app_dict:
+      name = app_dict.pop('name')
     appconfig = runapps_v1alpha1_messages.Config(
         config=yaml.dump(yaml_content).encode('utf-8')
     )
     match_type_names = []
     vpc = False
 
-    for res_type, res_configs in app_dict.items():
-      if res_type == 'name':
+    # try the canonical manifest
+    for r in app_dict.get('resources', {}):
+      res_id = r.get('id', '')
+      parts = res_id.split('/')
+      if len(parts) != 2:
         continue
-      for config in res_configs:
-        res_name = config['name']
-        match_type_names.append({'type': res_type, 'name': res_name})
-        if res_type == 'redis':
-          vpc = True
+      match_type_names.append({'type': parts[0], 'name': parts[1]})
+      if parts[0] == 'redis':
+        vpc = True
+
+    # try the POC manifest
+    if not match_type_names:
+      for res_type, res_configs in app_dict.items():
+        if res_type == 'name':
+          continue
+        for config in res_configs:
+          res_name = config['name']
+          match_type_names.append({'type': res_type, 'name': res_name})
+          if res_type == 'redis':
+            vpc = True
 
     if vpc:
       match_type_names.append({'type': 'vpc', 'name': '*'})

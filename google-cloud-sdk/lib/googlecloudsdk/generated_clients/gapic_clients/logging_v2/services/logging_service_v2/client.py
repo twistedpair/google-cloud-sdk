@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -978,6 +978,7 @@ class LoggingServiceV2Client(metaclass=LoggingServiceV2ClientMeta):
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.logging_service_v2.pagers.ListLogsPager:
                 Result returned from ListLogs.
+
                 Iterating over this object will yield
                 results and resolve additional pages
                 automatically.

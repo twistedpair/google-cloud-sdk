@@ -20,9 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage.resources import resource_reference
-from googlecloudsdk.command_lib.storage.tasks.buckets import delete_bucket_task
-from googlecloudsdk.command_lib.storage.tasks.cp import delete_managed_folder_task
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_task
 from six.moves import queue
 
 
@@ -67,15 +65,15 @@ class DeleteTaskIteratorFactory:
       # check for buckets.
       if resource_url.is_bucket():
         self._bucket_delete_tasks.put(
-            delete_bucket_task.DeleteBucketTask(resource_url)
+            delete_task.DeleteBucketTask(resource_url)
         )
       elif isinstance(resource, resource_reference.ManagedFolderResource):
         self._managed_folder_delete_tasks.put(
-            delete_managed_folder_task.DeleteManagedFolderTask(resource)
+            delete_task.DeleteManagedFolderTask(resource_url)
         )
       else:
         self._object_delete_tasks.put(
-            delete_object_task.DeleteObjectTask(
+            delete_task.DeleteObjectTask(
                 resource_url, user_request_args=self._user_request_args
             )
         )

@@ -3198,6 +3198,16 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
+        'v2':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.securitycenter.v2',
+                    client_classpath='securitycenter_v2_client.SecuritycenterV2',
+                    base_url='https://securitycenter.googleapis.com/',
+                    messages_modulepath='securitycenter_v2_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
     },
     'securitycentermanagement': {
         'v1':
@@ -3329,6 +3339,16 @@ MAP = {
                     client_classpath='serviceusage_v2_client.ServiceusageV2',
                     base_url='https://serviceusage.googleapis.com/',
                     messages_modulepath='serviceusage_v2_messages'),
+                default_version=False,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v2alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.serviceusage.v2alpha',
+                    client_classpath='serviceusage_v2alpha_client.ServiceusageV2alpha',
+                    base_url='https://serviceusage.googleapis.com/',
+                    messages_modulepath='serviceusage_v2alpha_messages'),
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

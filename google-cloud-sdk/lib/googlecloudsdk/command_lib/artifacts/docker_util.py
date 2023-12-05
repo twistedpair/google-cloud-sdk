@@ -37,10 +37,10 @@ ARTIFACTREGISTRY_API_NAME = "artifactregistry"
 _INVALID_IMAGE_PATH_ERROR = """Invalid Docker string.
 
 A valid Docker repository has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID
 
 A valid image has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE
 """
 
 _INVALID_DEFAULT_DOCKER_STRING_ERROR = (
@@ -48,40 +48,40 @@ _INVALID_DEFAULT_DOCKER_STRING_ERROR = (
 core/project: {project}, artifacts/location: {location}, artifacts/repository: {repo}
 
 A valid Docker repository has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID
 
 A valid image has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE
 """)
 
 _INVALID_IMAGE_ERROR = """Invalid Docker image.
 
 A valid container image has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE
 
 A valid container image that can be referenced by tag or digest, has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
 """
 
 _INVALID_DOCKER_IMAGE_ERROR = """Invalid Docker image.
 
 A valid container image can be referenced by tag or digest, has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
 """
 
 _INVALID_DOCKER_TAG_ERROR = """Invalid Docker tag.
 
 A valid Docker tag has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
 """
 
 _DOCKER_IMAGE_NOT_FOUND = """Image not found.
 
 A valid container image can be referenced by tag or digest, has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
 """
 
 
@@ -90,19 +90,24 @@ GCR_DOCKER_REPO_REGEX = r"^(?P<repo>(us\.|eu\.|asia\.)?gcr.io)\/(?P<project>[^\/
 # For domain scoped repos, the project is two segments long instead of one
 GCR_DOCKER_DOMAIN_SCOPED_REPO_REGEX = r"^(?P<repo>(us\.|eu\.|asia\.)?gcr.io)\/(?P<project>[^\/]+\.[^\/]+\/[^\/]+)\/(?P<image>.*)"
 
-DOCKER_REPO_REGEX = (
-    r"^(?P<location>.*)-docker.pkg.dev\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)"
+DOCKER_REPO_REGEX = r"^(?P<location>.*)[.-]docker.(?P<domain>{})\/(?P<project>[^\/]+)\/(?P<repo>[^\/]+)".format(
+    properties.VALUES.artifacts.domain.Get()
 )
 
 DOCKER_IMG_BY_TAG_REGEX = (
-    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*):(?P<tag>.*)"
+    r"^.*[.-]docker.(?P<domain>{})\/[^\/]+\/[^\/]+\/(?P<img>.*):(?P<tag>.*)"
+    .format(properties.VALUES.artifacts.domain.Get())
 )
 
-DOCKER_IMG_BY_DIGEST_REGEX = (
-    r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)@(?P<digest>sha256:.*)"
+DOCKER_IMG_BY_DIGEST_REGEX = r"^.*[.-]docker.(?P<domain>{})\/[^\/]+\/[^\/]+\/(?P<img>.*)@(?P<digest>sha256:.*)".format(
+    properties.VALUES.artifacts.domain.Get()
 )
 
-DOCKER_IMG_REGEX = r"^.*-docker.pkg.dev\/[^\/]+\/[^\/]+\/(?P<img>.*)"
+DOCKER_IMG_REGEX = (
+    r"^.*[.-]docker.(?P<domain>{})\/[^\/]+\/[^\/]+\/(?P<img>.*)".format(
+        properties.VALUES.artifacts.domain.Get()
+    )
+)
 
 _VERSION_COLLECTION_NAME = (
     "artifactregistry.projects.locations.repositories.packages.versions"
@@ -381,7 +386,7 @@ class DockerRepo(object):
   """Holder for a Docker repository.
 
   A valid Docker repository has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID
 
   Properties:
     project: str, The name of cloud project.
@@ -408,14 +413,20 @@ class DockerRepo(object):
 
   def __eq__(self, other):
     if isinstance(other, DockerRepo):
-      return self._project == other._project \
-        and self._location == other._location \
-        and self._repo == other._repo
+      return (
+          self._project == other._project
+          and self._location == other._location
+          and self._repo == other._repo
+      )
     return NotImplemented
 
   def GetDockerString(self):
-    return "{}-docker.pkg.dev/{}/{}".format(self.location, self.project,
-                                            self.repo)
+    return "{}-docker.{}/{}/{}".format(
+        self.location,
+        properties.VALUES.artifacts.domain.Get(),
+        self.project,
+        self.repo,
+    )
 
   def GetRepositoryName(self):
     return "projects/{}/locations/{}/repositories/{}".format(
@@ -426,7 +437,7 @@ class DockerImage(object):
   """Holder for a Docker image resource.
 
   A valid image has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE_PATH
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE_PATH
 
   Properties:
     project: str, The name of cloud project.
@@ -460,19 +471,21 @@ class DockerImage(object):
                                    self.pkg.replace("/", "%2F"))
 
   def GetDockerString(self):
-    return "{}{}-docker.pkg.dev/{}/{}/{}".format(
+    return "{}{}-docker.{}/{}/{}/{}".format(
         properties.VALUES.artifacts.registry_endpoint_prefix.Get(),
         self.docker_repo.location,
+        properties.VALUES.artifacts.domain.Get(),
         self.docker_repo.project,
         self.docker_repo.repo,
-        self.pkg.replace("%2F", "/"))
+        self.pkg.replace("%2F", "/"),
+    )
 
 
 class DockerTag(object):
   """Holder for a Docker tag.
 
   A valid Docker tag has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE:tag
 
   Properties:
     image: DockerImage, The DockerImage containing the tag.
@@ -510,7 +523,7 @@ class DockerVersion(object):
   """Holder for a Docker version.
 
   A valid Docker version has the format of
-  LOCATION-docker.pkg.dev/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
+  LOCATION-docker.DOMAIN/PROJECT-ID/REPOSITORY-ID/IMAGE@sha256:digest
 
   Properties:
     image: DockerImage, The DockerImage containing the tag.
@@ -722,8 +735,9 @@ def DescribeDockerImage(args):
   result["image_summary"] = {
       "digest": docker_version.digest,
       "fully_qualified_digest": docker_version.GetDockerString(),
-      "registry": "{}-docker.pkg.dev".format(
-          docker_version.image.docker_repo.location
+      "registry": "{}-docker.{}".format(
+          docker_version.image.docker_repo.location,
+          properties.VALUES.artifacts.domain.Get(),
       ),
       "repository": docker_version.image.docker_repo.repo,
   }

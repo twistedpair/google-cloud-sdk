@@ -502,20 +502,14 @@ class ClusterUpgradeMembershipState(_messages.Message):
   r"""Per-membership state for this feature.
 
   Fields:
-    fleet: Project number or id of the fleet. It is set only for Memberships
-      that are part of fleet-based Rollout Sequencing.
     ignored: Whether this membership is ignored by the feature. For example,
       manually upgraded clusters can be ignored if they are newer than the
       default versions of its release channel.
-    scopes: Fully qualified scope names that this clusters is bound to which
-      also have rollout sequencing enabled.
     upgrades: Actual upgrade state against desired.
   """
 
-  fleet = _messages.StringField(1)
-  ignored = _messages.MessageField('ClusterUpgradeIgnoredMembership', 2)
-  scopes = _messages.StringField(3, repeated=True)
-  upgrades = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 4, repeated=True)
+  ignored = _messages.MessageField('ClusterUpgradeIgnoredMembership', 1)
+  upgrades = _messages.MessageField('ClusterUpgradeMembershipGKEUpgradeState', 2, repeated=True)
 
 
 class ClusterUpgradePostConditions(_messages.Message):

@@ -119,6 +119,28 @@ class Workstations:
 
   def StartTcpTunnel(self, args, threaded=False):
     """Start a TCP tunnel to a workstation."""
+    config_name = args.CONCEPTS.workstation.Parse().Parent().RelativeName()
+    try:
+      config = self.client.projects_locations_workstationClusters_workstationConfigs.Get(
+          self.messages.WorkstationsProjectsLocationsWorkstationClustersWorkstationConfigsGetRequest(
+              name=config_name
+          )
+      )
+      if (
+          hasattr(config, 'disableTcpConnections')
+          and config.disableTcpConnections
+      ):
+        log.error(
+            'TCP tunneling is disabled for workstations under this'
+            ' configuration.'
+        )
+        sys.exit(1)
+    except HttpError:
+      # The user may not have permission to get the config. In that
+      # case just proceed, and if tcp tunneling is disabled the error
+      # message just won't be as nice.
+      pass
+
     workstation_name = args.CONCEPTS.workstation.Parse().RelativeName()
 
     # Look up the workstation host and determine port

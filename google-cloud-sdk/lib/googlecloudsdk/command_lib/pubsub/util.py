@@ -84,6 +84,12 @@ class RequestsFailedError(exceptions.Error):
             action=action, requests=','.join(requests)))
 
 
+def CreateFailureErrorMessage(
+    original_message, default_message='Internal Error'
+):
+  return original_message if original_message else default_message
+
+
 def ParseSnapshot(snapshot_name, project_id=''):
   project_id = _GetProject(project_id)
   return resources.REGISTRY.Parse(snapshot_name,

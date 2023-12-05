@@ -14,10 +14,11 @@
 # limitations under the License.
 """Utilities for Cloud Quotas API QuotaInfo."""
 
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.quotas import message_util
 from googlecloudsdk.api_lib.util import apis
 
-
+PAGE_SIZE = 10
 _CONSUMER_LOCATION_SERVICE_RESOURCE = '%s/locations/global/services/%s'
 
 
@@ -89,7 +90,13 @@ def ListQuotaInfo(args):
             pageToken=args.page_token,
         )
     )
-    return client.projects_locations_services_quotaInfos.List(request)
+    return list_pager.YieldFromList(
+        client.projects_locations_services_quotaInfos,
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
+        field='quotaInfos',
+    )
 
   if args.folder:
     request = messages.CloudquotasFoldersLocationsServicesQuotaInfosListRequest(
@@ -97,7 +104,13 @@ def ListQuotaInfo(args):
         pageSize=args.page_size,
         pageToken=args.page_token,
     )
-    return client.folders_locations_services_quotaInfos.List(request)
+    return list_pager.YieldFromList(
+        client.folders_locations_services_quotaInfos,
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
+        field='quotaInfos',
+    )
 
   if args.organization:
     request = (
@@ -107,4 +120,10 @@ def ListQuotaInfo(args):
             pageToken=args.page_token,
         )
     )
-    return client.organizations_locations_services_quotaInfos.List(request)
+    return list_pager.YieldFromList(
+        client.organizations_locations_services_quotaInfos,
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=args.page_size if args.page_size is not None else PAGE_SIZE,
+        field='quotaInfos',
+    )

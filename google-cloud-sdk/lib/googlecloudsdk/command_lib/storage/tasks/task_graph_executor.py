@@ -37,6 +37,7 @@ from googlecloudsdk.command_lib.storage.tasks import task_graph as task_graph_mo
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import creds_context_managers
 from googlecloudsdk.core.util import platforms
@@ -59,7 +60,12 @@ else:
       # On MacOS, fork is unsafe: https://bugs.python.org/issue33725. The
       # default start method is spawn on versions >= 3.8, but we need to set it
       # explicitly for older versions.
-      platforms.OperatingSystem.Current() is platforms.OperatingSystem.MACOSX
+      platforms.OperatingSystem.Current() is platforms.OperatingSystem.MACOSX or
+      # On Linux, fork causes issues when mTLS is enabled: go/ecp-gcloud-storage
+      # The default start method on Linux is fork, hence we will set it to spawn
+      # when client certificate authentication (mTLS) is enabled.
+      (properties.VALUES.context_aware.use_client_certificate.GetBool() and
+       platforms.OperatingSystem.Current() is platforms.OperatingSystem.LINUX)
   )
 
   if _should_force_spawn:

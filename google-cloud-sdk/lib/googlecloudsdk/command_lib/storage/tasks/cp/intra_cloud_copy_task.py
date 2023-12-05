@@ -35,7 +35,7 @@ from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_task
 from googlecloudsdk.core import log
 
 
@@ -155,11 +155,11 @@ class IntraCloudCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
           md5_hash=result_resource.md5_hash)
     if self._delete_source:
       return task.Output(
-          additional_task_iterators=[[
-              delete_object_task.DeleteObjectTask(
-                  self._source_resource.storage_url)
-          ]],
-          messages=None)
+          additional_task_iterators=[
+              [delete_task.DeleteObjectTask(self._source_resource.storage_url)]
+          ],
+          messages=None,
+      )
 
   def __eq__(self, other):
     if not isinstance(other, IntraCloudCopyTask):

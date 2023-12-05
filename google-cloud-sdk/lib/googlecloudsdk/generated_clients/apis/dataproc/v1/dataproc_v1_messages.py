@@ -3051,7 +3051,8 @@ class EncryptionConfig(_messages.Message):
     gcePdKmsKeyName: Optional. The Cloud KMS key name to use for PD disk
       encryption for all instances in the cluster.
     kmsKey: Optional. The Cloud KMS key name to use for encrypting customer
-      core content and cluster PD disk for all instances in the cluster.
+      core content in spanner and cluster PD disk for all instances in the
+      cluster.
   """
 
   gcePdKmsKeyName = _messages.StringField(1)
@@ -3734,7 +3735,6 @@ class GdceClusterConfig(_messages.Message):
   r"""The target GDCE cluster config.
 
   Fields:
-    defaultServiceAccount: Optional. The default service account.
     gdcEdgeIdentityProvider: Optional. The name of the identity provider
       associated with the GDCE cluster.
     gdcEdgeMembershipTarget: Optional. A target GDCE cluster to deploy to. It
@@ -3744,10 +3744,9 @@ class GdceClusterConfig(_messages.Message):
       associated with the fleet.
   """
 
-  defaultServiceAccount = _messages.StringField(1)
-  gdcEdgeIdentityProvider = _messages.StringField(2)
-  gdcEdgeMembershipTarget = _messages.StringField(3)
-  gdcEdgeWorkloadIdentityPool = _messages.StringField(4)
+  gdcEdgeIdentityProvider = _messages.StringField(1)
+  gdcEdgeMembershipTarget = _messages.StringField(2)
+  gdcEdgeWorkloadIdentityPool = _messages.StringField(3)
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -3978,11 +3977,35 @@ class GkeNodePoolTarget(_messages.Message):
 
 
 class GoogleCloudDataprocV1WorkflowTemplateEncryptionConfig(_messages.Message):
-  r"""Encryption settings for the encrypting customer core content. NEXT ID: 2
+  r"""Encryption settings for encrypting workflow template job arguments.
 
   Fields:
-    kmsKey: Optional. The Cloud KMS key name to use for encrypting customer
-      core content.
+    kmsKey: Optional. The Cloud KMS key name to use for encrypting workflow
+      template job arguments.When this this key is provided, the following
+      workflow template job arguments
+      (https://cloud.google.com/dataproc/docs/concepts/workflows/use-
+      workflows#adding_jobs_to_a_template), if present, are CMEK encrypted
+      (https://cloud.google.com/dataproc/docs/concepts/configuring-
+      clusters/customer-managed-
+      encryption#use_cmek_with_workflow_template_data): FlinkJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/FlinkJob)
+      HadoopJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/HadoopJob)
+      SparkJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/SparkJob)
+      SparkRJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/SparkRJob)
+      PySparkJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/PySparkJob)
+      SparkSqlJob
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/SparkSqlJob)
+      scriptVariables and queryList.queries HiveJob
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/HiveJob)
+      scriptVariables and queryList.queries PigJob
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/PigJob)
+      scriptVariables and queryList.queries PrestoJob
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/PrestoJob)
+      scriptVariables and queryList.queries
   """
 
   kmsKey = _messages.StringField(1)
@@ -9920,8 +9943,8 @@ class WorkflowTemplate(_messages.Message):
       workflow is running at the end of the timeout period, any remaining jobs
       are cancelled, the workflow is ended, and if the workflow was running on
       a managed cluster, the cluster is deleted.
-    encryptionConfig: Optional. Encryption settings for the encrypting
-      customer core content.
+    encryptionConfig: Optional. Encryption settings for encrypting workflow
+      template job arguments.
     id: A string attribute.
     jobs: Required. The Directed Acyclic Graph of Jobs to submit.
     labels: Optional. The labels to associate with this template. These labels

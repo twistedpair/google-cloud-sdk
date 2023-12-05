@@ -1670,10 +1670,13 @@ class GoogleCloudMlV1NasSpecMultiTrialAlgorithmSpec(_messages.Message):
         trial Neural Architecture Search (NAS).
       GRID_SEARCH: The Grid Search Algorithm for Multi-trial Neural
         Architecture Search (NAS).
+      REGULARIZED_EVOLUTION: The Regularized evolution Algorithm for Multi-
+        trial Neural Architecture Search (NAS).
     """
     MULTI_TRIAL_ALGORITHM_UNSPECIFIED = 0
     REINFORCEMENT_LEARNING = 1
     GRID_SEARCH = 2
+    REGULARIZED_EVOLUTION = 3
 
   initialIgnoredModelCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   maxFailedNasTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)

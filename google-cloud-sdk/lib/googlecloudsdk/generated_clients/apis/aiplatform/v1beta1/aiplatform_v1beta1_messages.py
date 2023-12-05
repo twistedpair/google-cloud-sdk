@@ -1381,6 +1381,38 @@ class AiplatformProjectsLocationsEndpointsDeployModelRequest(_messages.Message):
   googleCloudAiplatformV1beta1DeployModelRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1DeployModelRequest', 2)
 
 
+class AiplatformProjectsLocationsEndpointsDirectPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsDirectPredictRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1beta1DirectPredictRequest: A
+      GoogleCloudAiplatformV1beta1DirectPredictRequest resource to be passed
+      as the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1DirectPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1DirectPredictRequest', 2)
+
+
+class AiplatformProjectsLocationsEndpointsDirectRawPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsDirectRawPredictRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1beta1DirectRawPredictRequest: A
+      GoogleCloudAiplatformV1beta1DirectRawPredictRequest resource to be
+      passed as the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1beta1DirectRawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1beta1DirectRawPredictRequest', 2)
+
+
 class AiplatformProjectsLocationsEndpointsExplainRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsExplainRequest object.
 
@@ -1969,9 +2001,8 @@ class AiplatformProjectsLocationsFeatureGroupsFeaturesListRequest(_messages.Mess
       FeaturestoreService.ListFeatures call or
       FeatureRegistryService.ListFeatures call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
-      FeaturestoreService.ListFeatures or or
-      FeatureRegistryService.ListFeatures must match the call that provided
-      the page token.
+      FeaturestoreService.ListFeatures or FeatureRegistryService.ListFeatures
+      must match the call that provided the page token.
     parent: Required. The resource name of the Location to list Features.
       Format for entity_type as parent: `projects/{project}/locations/{locatio
       n}/featurestores/{featurestore}/entityTypes/{entity_type}` Format for
@@ -2179,7 +2210,7 @@ class AiplatformProjectsLocationsFeatureGroupsPatchRequest(_messages.Message):
     googleCloudAiplatformV1beta1FeatureGroup: A
       GoogleCloudAiplatformV1beta1FeatureGroup resource to be passed as the
       request body.
-    name: Output only. Name of the FeatureGroup. Format:
+    name: Identifier. Name of the FeatureGroup. Format:
       `projects/{project}/locations/{location}/featureGroups/{featureGroup}`
     updateMask: Field mask is used to specify the fields to be overwritten in
       the FeatureGroup resource by the update. The fields specified in the
@@ -2455,9 +2486,9 @@ class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsPatchRequest(_me
     googleCloudAiplatformV1beta1FeatureView: A
       GoogleCloudAiplatformV1beta1FeatureView resource to be passed as the
       request body.
-    name: Output only. Name of the FeatureView. Format: `projects/{project}/lo
-      cations/{location}/featureOnlineStores/{feature_online_store}/featureVie
-      ws/{feature_view}`
+    name: Identifier. Name of the FeatureView. Format: `projects/{project}/loc
+      ations/{location}/featureOnlineStores/{feature_online_store}/featureView
+      s/{feature_view}`
     updateMask: Field mask is used to specify the fields to be overwritten in
       the FeatureView resource by the update. The fields specified in the
       update_mask are relative to the resource, not the full request. A field
@@ -2614,8 +2645,8 @@ class AiplatformProjectsLocationsFeatureOnlineStoresPatchRequest(_messages.Messa
     googleCloudAiplatformV1beta1FeatureOnlineStore: A
       GoogleCloudAiplatformV1beta1FeatureOnlineStore resource to be passed as
       the request body.
-    name: Output only. Name of the FeatureOnlineStore. Format: `projects/{proj
-      ect}/locations/{location}/featureOnlineStores/{featureOnlineStore}`
+    name: Identifier. Name of the FeatureOnlineStore. Format: `projects/{proje
+      ct}/locations/{location}/featureOnlineStores/{featureOnlineStore}`
     updateMask: Field mask is used to specify the fields to be overwritten in
       the FeatureOnlineStore resource by the update. The fields specified in
       the update_mask are relative to the resource, not the full request. A
@@ -2863,9 +2894,8 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesListRequest(_me
       FeaturestoreService.ListFeatures call or
       FeatureRegistryService.ListFeatures call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
-      FeaturestoreService.ListFeatures or or
-      FeatureRegistryService.ListFeatures must match the call that provided
-      the page token.
+      FeaturestoreService.ListFeatures or FeatureRegistryService.ListFeatures
+      must match the call that provided the page token.
     parent: Required. The resource name of the Location to list Features.
       Format for entity_type as parent: `projects/{project}/locations/{locatio
       n}/featurestores/{featurestore}/entityTypes/{entity_type}` Format for
@@ -11563,6 +11593,54 @@ class GoogleCloudAiplatformV1beta1DestinationFeatureSetting(_messages.Message):
   featureId = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1DirectPredictRequest(_messages.Message):
+  r"""Request message for PredictionService.DirectPredict.
+
+  Fields:
+    inputs: The prediction input.
+    parameters: The parameters that govern the prediction.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensor', 1, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensor', 2)
+
+
+class GoogleCloudAiplatformV1beta1DirectPredictResponse(_messages.Message):
+  r"""Response message for PredictionService.DirectPredict.
+
+  Fields:
+    outputs: The prediction output.
+    parameters: The parameters that govern the prediction.
+  """
+
+  outputs = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensor', 1, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1beta1Tensor', 2)
+
+
+class GoogleCloudAiplatformV1beta1DirectRawPredictRequest(_messages.Message):
+  r"""Request message for PredictionService.DirectRawPredict.
+
+  Fields:
+    input: The prediction input.
+    methodName: Fully qualified name of the API method being invoked to
+      perform predictions. Format: `/namespace.Service/Method/` Example:
+      `/tensorflow.serving.PredictionService/Predict`
+  """
+
+  input = _messages.BytesField(1)
+  methodName = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1beta1DirectRawPredictResponse(_messages.Message):
+  r"""Response message for PredictionService.DirectRawPredict.
+
+  Fields:
+    output: The prediction output.
+  """
+
+  output = _messages.BytesField(1)
+
+
 class GoogleCloudAiplatformV1beta1DiskSpec(_messages.Message):
   r"""Represents the spec of disk options.
 
@@ -13049,7 +13127,7 @@ class GoogleCloudAiplatformV1beta1ExplanationSpecOverride(_messages.Message):
 
 class GoogleCloudAiplatformV1beta1ExportDataConfig(_messages.Message):
   r"""Describes what part of the Dataset is to be exported, the destination of
-  the export and how to export.
+  the export and how to export. Next ID: 13
 
   Fields:
     annotationsFilter: An expression for filtering what part of the Dataset is
@@ -13510,7 +13588,7 @@ class GoogleCloudAiplatformV1beta1FeatureGroup(_messages.Message):
       of labels. No more than 64 user labels can be associated with one
       FeatureGroup(System labels are excluded)." System reserved label keys
       are prefixed with "aiplatform.googleapis.com/" and are immutable.
-    name: Output only. Name of the FeatureGroup. Format:
+    name: Identifier. Name of the FeatureGroup. Format:
       `projects/{project}/locations/{location}/featureGroups/{featureGroup}`
     updateTime: Output only. Timestamp when this FeatureGroup was last
       updated.
@@ -13669,8 +13747,8 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStore(_messages.Message):
       of labels. No more than 64 user labels can be associated with one
       FeatureOnlineStore(System labels are excluded)." System reserved label
       keys are prefixed with "aiplatform.googleapis.com/" and are immutable.
-    name: Output only. Name of the FeatureOnlineStore. Format: `projects/{proj
-      ect}/locations/{location}/featureOnlineStores/{featureOnlineStore}`
+    name: Identifier. Name of the FeatureOnlineStore. Format: `projects/{proje
+      ct}/locations/{location}/featureOnlineStores/{featureOnlineStore}`
     optimized: Contains settings for the Optimized store that will be created
       to serve featureValues for all FeatureViews under this
       FeatureOnlineStore. When choose Optimized storage type, need to set
@@ -13809,7 +13887,7 @@ class GoogleCloudAiplatformV1beta1FeatureOnlineStoreEmbeddingManagement(_message
 
 
 class GoogleCloudAiplatformV1beta1FeatureOnlineStoreOptimized(_messages.Message):
-  r"""Optimized storage type to replace lightning"""
+  r"""Optimized storage type"""
 
 
 class GoogleCloudAiplatformV1beta1FeatureSelector(_messages.Message):
@@ -13984,9 +14062,9 @@ class GoogleCloudAiplatformV1beta1FeatureView(_messages.Message):
       of labels. No more than 64 user labels can be associated with one
       FeatureOnlineStore(System labels are excluded)." System reserved label
       keys are prefixed with "aiplatform.googleapis.com/" and are immutable.
-    name: Output only. Name of the FeatureView. Format: `projects/{project}/lo
-      cations/{location}/featureOnlineStores/{feature_online_store}/featureVie
-      ws/{feature_view}`
+    name: Identifier. Name of the FeatureView. Format: `projects/{project}/loc
+      ations/{location}/featureOnlineStores/{feature_online_store}/featureView
+      s/{feature_view}`
     syncConfig: Configures when data is to be synced/updated for this
       FeatureView. At the end of the sync the latest featureValues for each
       entityId of this FeatureView are made ready for online serving.
@@ -14053,6 +14131,16 @@ class GoogleCloudAiplatformV1beta1FeatureViewBigQuerySource(_messages.Message):
   uri = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1beta1FeatureViewDataKey(_messages.Message):
+  r"""Lookup key for a feature view.
+
+  Fields:
+    key: String key to use for lookup.
+  """
+
+  key = _messages.StringField(1)
+
+
 class GoogleCloudAiplatformV1beta1FeatureViewFeatureRegistrySource(_messages.Message):
   r"""A Feature Registry source for features that need to be synced to Online
   Store.
@@ -14088,9 +14176,9 @@ class GoogleCloudAiplatformV1beta1FeatureViewSync(_messages.Message):
       for sufficient resources but may not have started the actual data
       transfer yet.
     finalStatus: Output only. Final status of the FeatureViewSync.
-    name: Output only. Name of the FeatureViewSync. Format: `projects/{project
-      }/locations/{location}/featureOnlineStores/{feature_online_store}/featur
-      eViews/{feature_view}/featureViewSyncs/{feature_view_sync}`
+    name: Identifier. Name of the FeatureViewSync. Format: `projects/{project}
+      /locations/{location}/featureOnlineStores/{feature_online_store}/feature
+      Views/{feature_view}/featureViewSyncs/{feature_view_sync}`
     runTime: Output only. Time when this FeatureViewSync is finished.
   """
 
@@ -14497,19 +14585,39 @@ class GoogleCloudAiplatformV1beta1FetchFeatureValuesRequest(_messages.Message):
   the features under the requested feature view will be returned.
 
   Enums:
+    DataFormatValueValuesEnum: Optional. Response data format. If not set,
+      FeatureViewDataFormat.KEY_VALUE will be used.
     FormatValueValuesEnum: Specify response data format. If not set, KeyValue
-      format will be used.
+      format will be used. Deprecated. Use
+      FetchFeatureValuesRequest.data_format.
 
   Fields:
+    dataFormat: Optional. Response data format. If not set,
+      FeatureViewDataFormat.KEY_VALUE will be used.
+    dataKey: Optional. The request key to fetch feature values for.
     format: Specify response data format. If not set, KeyValue format will be
-      used.
+      used. Deprecated. Use FetchFeatureValuesRequest.data_format.
     id: Simple ID. The whole string will be used as is to identify Entity to
       fetch feature values for.
   """
 
+  class DataFormatValueValuesEnum(_messages.Enum):
+    r"""Optional. Response data format. If not set,
+    FeatureViewDataFormat.KEY_VALUE will be used.
+
+    Values:
+      FEATURE_VIEW_DATA_FORMAT_UNSPECIFIED: Not set. Will be treated as the
+        KeyValue format.
+      KEY_VALUE: Return response data in key-value format.
+      PROTO_STRUCT: Return response data in proto Struct format.
+    """
+    FEATURE_VIEW_DATA_FORMAT_UNSPECIFIED = 0
+    KEY_VALUE = 1
+    PROTO_STRUCT = 2
+
   class FormatValueValuesEnum(_messages.Enum):
     r"""Specify response data format. If not set, KeyValue format will be
-    used.
+    used. Deprecated. Use FetchFeatureValuesRequest.data_format.
 
     Values:
       FORMAT_UNSPECIFIED: Not set. Will be treated as the KeyValue format.
@@ -14520,8 +14628,10 @@ class GoogleCloudAiplatformV1beta1FetchFeatureValuesRequest(_messages.Message):
     KEY_VALUE = 1
     PROTO_STRUCT = 2
 
-  format = _messages.EnumField('FormatValueValuesEnum', 1)
-  id = _messages.StringField(2)
+  dataFormat = _messages.EnumField('DataFormatValueValuesEnum', 1)
+  dataKey = _messages.MessageField('GoogleCloudAiplatformV1beta1FeatureViewDataKey', 2)
+  format = _messages.EnumField('FormatValueValuesEnum', 3)
+  id = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1beta1FetchFeatureValuesResponse(_messages.Message):
@@ -17117,6 +17227,8 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       corresponds to the `command` field of the Kubernetes Containers [v1 core
       API](https://kubernetes.io/docs/reference/generated/kubernetes-
       api/v1.23/#container-v1-core).
+    deploymentTimeout: Immutable. Deployment timeout. Limit for deployment
+      timeout is 2 hours.
     env: Immutable. List of environment variables to set in the container.
       After the container starts running, code running in the container can
       read these environment variables. Additionally, the command and args
@@ -17129,6 +17241,14 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       the Kubernetes Containers [v1 core
       API](https://kubernetes.io/docs/reference/generated/kubernetes-
       api/v1.23/#container-v1-core).
+    grpcPorts: Immutable. List of ports to expose from the container. Vertex
+      AI sends gRPC prediction requests that it receives to the first port on
+      this list. Vertex AI also sends liveness and health checks to this port.
+      If you do not specify this field, gRPC requests to the container will be
+      disabled. Vertex AI does not use ports other than the first one listed.
+      This field corresponds to the `ports` field of the Kubernetes Containers
+      v1 core API.
+    healthProbe: Immutable. Specification for Kubernetes readiness probe.
     healthRoute: Immutable. HTTP path on the container to send health checks
       to. Vertex AI intermittently sends GET requests to this path on the
       container's IP address and port to check that the container is healthy.
@@ -17196,15 +17316,23 @@ class GoogleCloudAiplatformV1beta1ModelContainerSpec(_messages.Message):
       available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
       environment variable](https://cloud.google.com/vertex-
       ai/docs/predictions/custom-container-requirements#aip-variables).)
+    sharedMemorySizeMb: Immutable. The amount of the VM memory to reserve as
+      the shared memory for the model in megabytes.
+    startupProbe: Immutable. Specification for Kubernetes startup probe.
   """
 
   args = _messages.StringField(1, repeated=True)
   command = _messages.StringField(2, repeated=True)
-  env = _messages.MessageField('GoogleCloudAiplatformV1beta1EnvVar', 3, repeated=True)
-  healthRoute = _messages.StringField(4)
-  imageUri = _messages.StringField(5)
-  ports = _messages.MessageField('GoogleCloudAiplatformV1beta1Port', 6, repeated=True)
-  predictRoute = _messages.StringField(7)
+  deploymentTimeout = _messages.StringField(3)
+  env = _messages.MessageField('GoogleCloudAiplatformV1beta1EnvVar', 4, repeated=True)
+  grpcPorts = _messages.MessageField('GoogleCloudAiplatformV1beta1Port', 5, repeated=True)
+  healthProbe = _messages.MessageField('GoogleCloudAiplatformV1beta1Probe', 6)
+  healthRoute = _messages.StringField(7)
+  imageUri = _messages.StringField(8)
+  ports = _messages.MessageField('GoogleCloudAiplatformV1beta1Port', 9, repeated=True)
+  predictRoute = _messages.StringField(10)
+  sharedMemorySizeMb = _messages.IntegerField(11)
+  startupProbe = _messages.MessageField('GoogleCloudAiplatformV1beta1Probe', 12)
 
 
 class GoogleCloudAiplatformV1beta1ModelDeploymentMonitoringBigQueryTable(_messages.Message):
@@ -20202,6 +20330,40 @@ class GoogleCloudAiplatformV1beta1PrivateServiceConnectConfig(_messages.Message)
   projectAllowlist = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudAiplatformV1beta1Probe(_messages.Message):
+  r"""Probe describes a health check to be performed against a container to
+  determine whether it is alive or ready to receive traffic.
+
+  Fields:
+    exec_: Exec specifies the action to take.
+    periodSeconds: How often (in seconds) to perform the probe. Default to 10
+      seconds. Minimum value is 1. Must be less than timeout_seconds. Maps to
+      Kubernetes probe argument 'periodSeconds'.
+    timeoutSeconds: Number of seconds after which the probe times out.
+      Defaults to 1 second. Minimum value is 1. Must be greater or equal to
+      period_seconds. Maps to Kubernetes probe argument 'timeoutSeconds'.
+  """
+
+  exec_ = _messages.MessageField('GoogleCloudAiplatformV1beta1ProbeExecAction', 1)
+  periodSeconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  timeoutSeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1beta1ProbeExecAction(_messages.Message):
+  r"""ExecAction specifies a command to execute.
+
+  Fields:
+    command: Command is the command line to execute inside the container, the
+      working directory for the command is root ('/') in the container's
+      filesystem. The command is simply exec'd, it is not run inside a shell,
+      so traditional shell instructions ('|', etc) won't work. To use a shell,
+      you need to explicitly call out to that shell. Exit status of 0 is
+      treated as live/healthy and non-zero is unhealthy.
+  """
+
+  command = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudAiplatformV1beta1PublisherModel(_messages.Message):
   r"""A Model Garden Publisher Model.
 
@@ -20902,6 +21064,16 @@ class GoogleCloudAiplatformV1beta1ReadTensorboardUsageResponsePerUserUsageData(_
   viewCount = _messages.IntegerField(2)
 
 
+class GoogleCloudAiplatformV1beta1RebootPersistentResourceOperationMetadata(_messages.Message):
+  r"""Details of operations that perform reboot PersistentResource.
+
+  Fields:
+    genericMetadata: Operation metadata for PersistentResource.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1beta1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1beta1RemoveContextChildrenRequest(_messages.Message):
   r"""Request message for MetadataService.DeleteContextChildrenRequest.
 
@@ -20938,6 +21110,7 @@ class GoogleCloudAiplatformV1beta1ReportExecutionEventRequest(_messages.Message)
 
   Fields:
     eventType: Required. The type of the event.
+    status: Optional. The error details of the event.
     vmToken: Required. The VM identity token (a JWT) for authenticating the
       VM. https://cloud.google.com/compute/docs/instances/verifying-instance-
       identity
@@ -20961,7 +21134,8 @@ class GoogleCloudAiplatformV1beta1ReportExecutionEventRequest(_messages.Message)
     FAILED = 3
 
   eventType = _messages.EnumField('EventTypeValueValuesEnum', 1)
-  vmToken = _messages.StringField(2)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
+  vmToken = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1beta1ReportExecutionEventResponse(_messages.Message):
@@ -25533,7 +25707,7 @@ class GoogleCloudAiplatformV1beta1StringArray(_messages.Message):
 
 
 class GoogleCloudAiplatformV1beta1Study(_messages.Message):
-  r"""A message representing a Study. Next id: 12
+  r"""A message representing a Study.
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a Study.
@@ -27452,10 +27626,11 @@ class GoogleCloudAiplatformV1beta1UploadModelRequest(_messages.Message):
     serviceAccount: Optional. The user-provided custom service account to use
       to do the model upload. If empty, [Vertex AI Service
       Agent](https://cloud.google.com/vertex-ai/docs/general/access-
-      control#service-agents) will be used. Users uploading the Model must
-      have the `iam.serviceAccounts.actAs` permission on this service account.
-      Also, this account must belong to the project specified in the `parent`
-      field and have all necessary read permissions.
+      control#service-agents) will be used to access resources needed to
+      upload the model. This account must belong to the target project where
+      the model is uploaded to, i.e., the project specified in the `parent`
+      field of this request and have necessary read permissions (to Google
+      Cloud Storage, Artifact Registry, etc.).
   """
 
   model = _messages.MessageField('GoogleCloudAiplatformV1beta1Model', 1)
@@ -28369,6 +28544,8 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+encoding.AddCustomJsonFieldMapping(
+    GoogleCloudAiplatformV1beta1Probe, 'exec_', 'exec')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

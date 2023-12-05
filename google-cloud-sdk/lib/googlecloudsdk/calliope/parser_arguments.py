@@ -510,7 +510,7 @@ class ArgumentInterceptor(Argument):
     # go/gcloud-project-flag-overwritable
     # Do not add global --project if command already has --project
     # argument in parser
-    for flag in ['--project', '--format']:
+    for flag in ['--project', '--billing-project', '--format']:
       if self._FlagArgExists(flag) and flag in action.option_strings:
         return
     # pylint:disable=protected-access, simply no other way to do this.

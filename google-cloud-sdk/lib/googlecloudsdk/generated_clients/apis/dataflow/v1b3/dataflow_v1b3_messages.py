@@ -3528,12 +3528,14 @@ class Job(_messages.Message):
       state. After a job has reached a terminal state, no further state
       updates may be made. This field may be mutated by the Cloud Dataflow
       service; callers cannot mutate it.
-    RequestedStateValueValuesEnum: The job's requested state. `UpdateJob` may
-      be used to switch between the `JOB_STATE_STOPPED` and
-      `JOB_STATE_RUNNING` states, by setting requested_state. `UpdateJob` may
-      also be used to directly set a job's requested state to
-      `JOB_STATE_CANCELLED` or `JOB_STATE_DONE`, irrevocably terminating the
-      job if it has not already reached a terminal state.
+    RequestedStateValueValuesEnum: The job's requested state. Applies to
+      `UpdateJob` requests. Set `requested_state` with `UpdateJob` requests to
+      switch between the states `JOB_STATE_STOPPED` and `JOB_STATE_RUNNING`.
+      You can also use `UpdateJob` requests to change a job's state from
+      `JOB_STATE_RUNNING` to `JOB_STATE_CANCELLED`, `JOB_STATE_DONE`, or
+      `JOB_STATE_DRAINED`. These states irrevocably terminate the job if it
+      hasn't already reached a terminal state. This field has no effect on
+      `CreateJob` requests.
     TypeValueValuesEnum: The type of Cloud Dataflow job.
 
   Messages:
@@ -3599,12 +3601,14 @@ class Job(_messages.Message):
       stopped, and its intermediate state is transferred to this job.
     replacedByJobId: If another job is an update of this job (and thus, this
       job is in `JOB_STATE_UPDATED`), this field contains the ID of that job.
-    requestedState: The job's requested state. `UpdateJob` may be used to
-      switch between the `JOB_STATE_STOPPED` and `JOB_STATE_RUNNING` states,
-      by setting requested_state. `UpdateJob` may also be used to directly set
-      a job's requested state to `JOB_STATE_CANCELLED` or `JOB_STATE_DONE`,
-      irrevocably terminating the job if it has not already reached a terminal
-      state.
+    requestedState: The job's requested state. Applies to `UpdateJob`
+      requests. Set `requested_state` with `UpdateJob` requests to switch
+      between the states `JOB_STATE_STOPPED` and `JOB_STATE_RUNNING`. You can
+      also use `UpdateJob` requests to change a job's state from
+      `JOB_STATE_RUNNING` to `JOB_STATE_CANCELLED`, `JOB_STATE_DONE`, or
+      `JOB_STATE_DRAINED`. These states irrevocably terminate the job if it
+      hasn't already reached a terminal state. This field has no effect on
+      `CreateJob` requests.
     runtimeUpdatableParams: This field may ONLY be modified at runtime using
       the projects.jobs.update method to adjust job behavior. This field has
       no effect when specified at job creation.
@@ -3710,11 +3714,13 @@ class Job(_messages.Message):
     JOB_STATE_RESOURCE_CLEANING_UP = 12
 
   class RequestedStateValueValuesEnum(_messages.Enum):
-    r"""The job's requested state. `UpdateJob` may be used to switch between
-    the `JOB_STATE_STOPPED` and `JOB_STATE_RUNNING` states, by setting
-    requested_state. `UpdateJob` may also be used to directly set a job's
-    requested state to `JOB_STATE_CANCELLED` or `JOB_STATE_DONE`, irrevocably
-    terminating the job if it has not already reached a terminal state.
+    r"""The job's requested state. Applies to `UpdateJob` requests. Set
+    `requested_state` with `UpdateJob` requests to switch between the states
+    `JOB_STATE_STOPPED` and `JOB_STATE_RUNNING`. You can also use `UpdateJob`
+    requests to change a job's state from `JOB_STATE_RUNNING` to
+    `JOB_STATE_CANCELLED`, `JOB_STATE_DONE`, or `JOB_STATE_DRAINED`. These
+    states irrevocably terminate the job if it hasn't already reached a
+    terminal state. This field has no effect on `CreateJob` requests.
 
     Values:
       JOB_STATE_UNKNOWN: The job's run state isn't specified.

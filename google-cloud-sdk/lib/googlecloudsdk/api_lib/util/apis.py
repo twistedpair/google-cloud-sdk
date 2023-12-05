@@ -20,7 +20,8 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import exceptions as apitools_exceptions
-from apitools.base.py import http_wrapper
+
+from google.api_core import exceptions as api_core_exceptions
 
 from googlecloudsdk.api_lib.util import api_enablement
 from googlecloudsdk.api_lib.util import apis_internal
@@ -141,6 +142,7 @@ def ResolveVersion(api_name, api_version=None):
 
 
 API_ENABLEMENT_ERROR_EXPECTED_STATUS_CODE = 403  # retry status code
+RESOURCE_EXHAUSTED_STATUS_CODE = api_core_exceptions.ResourceExhausted.code
 
 
 def GetApiEnablementInfo(exception):
@@ -193,12 +195,27 @@ def PromptToEnableApi(project, service_token, exception,
     raise exception
 
 
-def CheckResponseForApiEnablement(skip_activation_prompt=False):
+def CheckResponse(skip_activation_prompt=False):
   """Returns a callback for checking API errors."""
   state = {'already_prompted_to_enable': False}
 
-  def _CheckResponseForApiEnablement(response):
-    """Checks API error and if it's an enablement error, prompt to enable & retry.
+  def _CheckForApiEnablementError(response_as_error):
+    # If it was an API enablement error,
+    # prompt the user to enable the API. If yes, we make that call and then
+    # raise a RequestError, which will prompt the caller to retry. If not, we
+    # raise the actual HTTP error.
+    enablement_info = GetApiEnablementInfo(response_as_error)
+    if enablement_info:
+      if state['already_prompted_to_enable'] or skip_activation_prompt:
+        raise apitools_exceptions.RequestError('Retry')
+      state['already_prompted_to_enable'] = True
+      PromptToEnableApi(*enablement_info)
+
+  def _CheckResponse(response):
+    """Checks API error.
+
+    If it's an enablement error, prompt to enable & retry.
+    If it's a resource exhausted error, no retry & return.
 
     Args:
       response: response that had an error.
@@ -210,22 +227,25 @@ def CheckResponseForApiEnablement(skip_activation_prompt=False):
     """
     # This will throw if there was a specific type of error. If not, then we can
     # parse and deal with our own class of errors.
-    http_wrapper.CheckResponse(response)
-    if not properties.VALUES.core.should_prompt_to_enable_api.GetBool():
+    if response is None:
+      # Caller shouldn't call us if the response is None, but handle anyway.
+      raise apitools_exceptions.RequestError(
+          'Request to url %s did not return a response.' %
+          response.request_url)
+    # If it was a resource exhausted error, return
+    elif response.status_code == RESOURCE_EXHAUSTED_STATUS_CODE:
       return
-    # Once we get here, we check if it was an API enablement error and if so,
-    # prompt the user to enable the API. If yes, we make that call and then
-    # raise a RequestError, which will prompt the caller to retry. If not, we
-    # raise the actual HTTP error.
-    response_as_error = apitools_exceptions.HttpError.FromResponse(response)
-    enablement_info = GetApiEnablementInfo(response_as_error)
-    if enablement_info:
-      if state['already_prompted_to_enable'] or skip_activation_prompt:
-        raise apitools_exceptions.RequestError('Retry')
-      state['already_prompted_to_enable'] = True
-      PromptToEnableApi(*enablement_info)
+    elif response.status_code >= 500:
+      raise apitools_exceptions.BadStatusCodeError.FromResponse(response)
+    elif response.retry_after:
+      raise apitools_exceptions.RetryAfterError.FromResponse(response)
 
-  return _CheckResponseForApiEnablement
+    response_as_error = apitools_exceptions.HttpError.FromResponse(response)
+
+    if properties.VALUES.core.should_prompt_to_enable_api.GetBool():
+      _CheckForApiEnablementError(response_as_error)
+
+  return _CheckResponse
 
 
 def GetClientClass(api_name, api_version):
@@ -267,7 +287,7 @@ def GetClientInstance(
       api_version,
       no_http,
       None,
-      CheckResponseForApiEnablement(skip_activation_prompt),
+      CheckResponse(skip_activation_prompt),
       http_timeout_sec=http_timeout_sec,
   )
 

@@ -421,19 +421,6 @@ Location policy specifies the algorithm used when scaling-up the node pool.
   return group
 
 
-def WarnForLocationPolicyDefault(args):
-  if not hasattr(args, 'location_policy'):
-    return
-  if not args.IsSpecified('location_policy'):
-    log.status.Print(
-        'Default change: During creation of nodepools or autoscaling'
-        ' configuration changes for cluster versions greater than'
-        ' 1.24.1-gke.800 a default location policy is applied. For Spot and PVM'
-        ' it defaults to ANY, and for all other VM kinds a BALANCED policy is'
-        ' used. To change the default values use the `--location-policy` flag.'
-    )
-
-
 def AddNodePoolAutoprovisioningFlag(parser, hidden=True):
   """Adds --enable-autoprovisioning flag for node pool to parser.
 
@@ -948,9 +935,15 @@ def AddBinauthzFlags(
   messages = apis.GetMessagesModule(
       'container', api_adapter.APIVersionFromReleaseTrack(release_track)
   )
-  options = api_adapter.GetBinauthzEvaluationModeOptions(
-      messages, release_track
-  )
+
+  # Retrieve valid Binauthz evaluation mode options and convert to lowercase
+  # to display in the help text per gcloud conventions.
+  options = [
+      api_adapter.NormalizeBinauthzEvaluationMode(option)
+      for option in api_adapter.GetBinauthzEvaluationModeOptions(
+          messages, release_track
+      )
+  ]
 
   binauthz_group = parser.add_group(
       mutex=False, help='Flags for Binary Authorization:'
@@ -959,6 +952,9 @@ def AddBinauthzFlags(
     binauthz_group.add_argument(
         '--binauthz-evaluation-mode',
         choices=options,
+        # Convert values to lower case before checking against the list of
+        # options. This allows users to pass evaluation mode in enum form.
+        type=api_adapter.NormalizeBinauthzEvaluationMode,
         default=None,
         help='Enable Binary Authorization for this cluster.',
         hidden=hidden,
@@ -983,6 +979,9 @@ def AddBinauthzFlags(
     binauthz_enablement_group.add_argument(
         '--binauthz-evaluation-mode',
         choices=options,
+        # Convert values to lower case before checking against the list of
+        # options. This allows users to pass evaluation mode in enum form.
+        type=api_adapter.NormalizeBinauthzEvaluationMode,
         default=None,
         help='Enable Binary Authorization for this cluster.',
         hidden=hidden,
@@ -1000,6 +999,7 @@ def AddBinauthzFlags(
                 'name': platform_policy_type,
             },
             required_keys=['name'],
+            max_length=1,
         ),
         metavar='name=BINAUTHZ_POLICY',
         action='append',
@@ -5129,8 +5129,23 @@ def AddDataplaneV2MetricsFlag(parser):
   )
 
 
-def AddDataplaneV2ObservabilityModeFlag(parser):
-  """Adds --dataplane-v2-observability-mode enum flag."""
+def AddDataplaneV2ObservabilityFlags(parser):
+  """Adds --dataplane-v2-observability-mode enum flag and --enable-dataplane-v2-flow-observability, --disable-dataplane-v2-flow-observability boolean flags to parser."""
+
+  group = parser.add_group(mutex=True)
+  group.add_argument(
+      '--enable-dataplane-v2-flow-observability',
+      action='store_const',
+      const=True,
+      help="""Enables Advanced Datapath Observability which allows for a real-time view into pod-to-pod traffic within your cluster.""",
+  )
+  group.add_argument(
+      '--disable-dataplane-v2-flow-observability',
+      action='store_const',
+      const=True,
+      help="""Disables Advanced Datapath Observability.""",
+  )
+
   help_text = """
 Select Advanced Datapath Observability mode for the cluster. Defaults to `DISABLED`.
 
@@ -5144,7 +5159,7 @@ Examples:
 
   $ {command} --dataplane-v2-observability-mode=EXTERNAL_LB
 """
-  parser.add_argument(
+  group.add_argument(
       '--dataplane-v2-observability-mode',
       choices=_DPV2_OBS_MODE,
       help=help_text,

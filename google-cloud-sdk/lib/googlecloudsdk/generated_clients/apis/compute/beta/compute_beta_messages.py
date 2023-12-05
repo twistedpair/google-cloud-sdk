@@ -38351,13 +38351,14 @@ class FutureReservation(_messages.Message):
 
   Fields:
     autoCreatedReservationsDeleteTime: Future timestamp when the FR auto-
-      created reservations will be deleted by GCE. Format of this field must
-      be a valid href="https://www.ietf.org/rfc/rfc3339.txt">RFC3339 value.
+      created reservations will be deleted by Compute Engine. Format of this
+      field must be a valid
+      href="https://www.ietf.org/rfc/rfc3339.txt">RFC3339 value.
     autoCreatedReservationsDuration: Specifies the duration of auto-created
       reservations. It represents relative time to future reservation
       start_time when auto-created reservations will be automatically deleted
-      by GCE. Duration time unit is represented as a count of seconds and
-      fractions of seconds at nanosecond resolution.
+      by Compute Engine. Duration time unit is represented as a count of
+      seconds and fractions of seconds at nanosecond resolution.
     autoDeleteAutoCreatedReservations: Setting for enabling or disabling
       automatic deletion for auto-created reservation. If set to true, auto-
       created reservations will be deleted at Future Reservation's end time
@@ -43966,10 +43967,14 @@ class InstanceGroupManagerInstanceFlexibilityPolicy(_messages.Message):
   Messages:
     InstanceSelectionListsValue: Named instance selections configuring
       properties that the group will use when creating new VMs.
+    InstanceSelectionsValue: Named instance selections configuring properties
+      that the group will use when creating new VMs.
 
   Fields:
     instanceSelectionLists: Named instance selections configuring properties
       that the group will use when creating new VMs.
+    instanceSelections: Named instance selections configuring properties that
+      the group will use when creating new VMs.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -44001,7 +44006,37 @@ class InstanceGroupManagerInstanceFlexibilityPolicy(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class InstanceSelectionsValue(_messages.Message):
+    r"""Named instance selections configuring properties that the group will
+    use when creating new VMs.
+
+    Messages:
+      AdditionalProperty: An additional property for a InstanceSelectionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        InstanceSelectionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a InstanceSelectionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   instanceSelectionLists = _messages.MessageField('InstanceSelectionListsValue', 1)
+  instanceSelections = _messages.MessageField('InstanceSelectionsValue', 2)
 
 
 class InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(_messages.Message):
@@ -44561,22 +44596,25 @@ class InstanceGroupManagerStandbyPolicy(_messages.Message):
   r"""A InstanceGroupManagerStandbyPolicy object.
 
   Enums:
-    ModeValueValuesEnum: Defines behaviour of using instances from standby
-      pool to resize MIG.
+    ModeValueValuesEnum: Defines how a MIG resumes or starts VMs from a
+      standby pool when the group scales out. The default mode is `MANUAL`.
 
   Fields:
     initialDelaySec: A integer attribute.
-    mode: Defines behaviour of using instances from standby pool to resize
-      MIG.
+    mode: Defines how a MIG resumes or starts VMs from a standby pool when the
+      group scales out. The default mode is `MANUAL`.
   """
 
   class ModeValueValuesEnum(_messages.Enum):
-    r"""Defines behaviour of using instances from standby pool to resize MIG.
+    r"""Defines how a MIG resumes or starts VMs from a standby pool when the
+    group scales out. The default mode is `MANUAL`.
 
     Values:
-      MANUAL: MIG does not automatically stop/start or suspend/resume VMs.
-      SCALE_OUT_POOL: MIG automatically resumes and starts VMs when it scales
-        out, and replenishes the standby pool afterwards.
+      MANUAL: MIG does not automatically resume or start VMs in the standby
+        pool when the group scales out.
+      SCALE_OUT_POOL: MIG automatically resumes or starts VMs in the standby
+        pool when the group scales out, and replenishes the standby pool
+        afterwards.
     """
     MANUAL = 0
     SCALE_OUT_POOL = 1
@@ -62042,6 +62080,9 @@ class Quota(_messages.Message):
       PREEMPTIBLE_NVIDIA_T4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_T4_VWS_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_V100_GPUS: <no description>
+      PREEMPTIBLE_TPU_LITE_DEVICE_V5: <no description>
+      PREEMPTIBLE_TPU_LITE_PODSLICE_V5: <no description>
+      PREEMPTIBLE_TPU_PODSLICE_V4: <no description>
       PRIVATE_V6_ACCESS_SUBNETWORKS: <no description>
       PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK: <no description>
       PSC_INTERNAL_LB_FORWARDING_RULES: <no description>
@@ -62080,6 +62121,9 @@ class Quota(_messages.Message):
       TARGET_SSL_PROXIES: <no description>
       TARGET_TCP_PROXIES: <no description>
       TARGET_VPN_GATEWAYS: <no description>
+      TPU_LITE_DEVICE_V5: <no description>
+      TPU_LITE_PODSLICE_V5: <no description>
+      TPU_PODSLICE_V4: <no description>
       URL_MAPS: <no description>
       VPN_GATEWAYS: <no description>
       VPN_TUNNELS: <no description>
@@ -62193,48 +62237,54 @@ class Quota(_messages.Message):
     PREEMPTIBLE_NVIDIA_T4_GPUS = 105
     PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 106
     PREEMPTIBLE_NVIDIA_V100_GPUS = 107
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 108
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 109
-    PSC_INTERNAL_LB_FORWARDING_RULES = 110
-    PUBLIC_ADVERTISED_PREFIXES = 111
-    PUBLIC_DELEGATED_PREFIXES = 112
-    REGIONAL_AUTOSCALERS = 113
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 114
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 115
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 116
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 117
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 118
-    RESERVATIONS = 119
-    RESOURCE_POLICIES = 120
-    ROUTERS = 121
-    ROUTES = 122
-    SECURITY_POLICIES = 123
-    SECURITY_POLICIES_PER_REGION = 124
-    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 125
-    SECURITY_POLICY_CEVAL_RULES = 126
-    SECURITY_POLICY_RULES = 127
-    SECURITY_POLICY_RULES_PER_REGION = 128
-    SERVICE_ATTACHMENTS = 129
-    SNAPSHOTS = 130
-    SSD_TOTAL_GB = 131
-    SSL_CERTIFICATES = 132
-    STATIC_ADDRESSES = 133
-    STATIC_BYOIP_ADDRESSES = 134
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 135
-    SUBNETWORKS = 136
-    T2A_CPUS = 137
-    T2D_CPUS = 138
-    TARGET_HTTPS_PROXIES = 139
-    TARGET_HTTP_PROXIES = 140
-    TARGET_INSTANCES = 141
-    TARGET_POOLS = 142
-    TARGET_SSL_PROXIES = 143
-    TARGET_TCP_PROXIES = 144
-    TARGET_VPN_GATEWAYS = 145
-    URL_MAPS = 146
-    VPN_GATEWAYS = 147
-    VPN_TUNNELS = 148
-    XPN_SERVICE_PROJECTS = 149
+    PREEMPTIBLE_TPU_LITE_DEVICE_V5 = 108
+    PREEMPTIBLE_TPU_LITE_PODSLICE_V5 = 109
+    PREEMPTIBLE_TPU_PODSLICE_V4 = 110
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 111
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 112
+    PSC_INTERNAL_LB_FORWARDING_RULES = 113
+    PUBLIC_ADVERTISED_PREFIXES = 114
+    PUBLIC_DELEGATED_PREFIXES = 115
+    REGIONAL_AUTOSCALERS = 116
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 117
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 118
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 119
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 120
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 121
+    RESERVATIONS = 122
+    RESOURCE_POLICIES = 123
+    ROUTERS = 124
+    ROUTES = 125
+    SECURITY_POLICIES = 126
+    SECURITY_POLICIES_PER_REGION = 127
+    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 128
+    SECURITY_POLICY_CEVAL_RULES = 129
+    SECURITY_POLICY_RULES = 130
+    SECURITY_POLICY_RULES_PER_REGION = 131
+    SERVICE_ATTACHMENTS = 132
+    SNAPSHOTS = 133
+    SSD_TOTAL_GB = 134
+    SSL_CERTIFICATES = 135
+    STATIC_ADDRESSES = 136
+    STATIC_BYOIP_ADDRESSES = 137
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 138
+    SUBNETWORKS = 139
+    T2A_CPUS = 140
+    T2D_CPUS = 141
+    TARGET_HTTPS_PROXIES = 142
+    TARGET_HTTP_PROXIES = 143
+    TARGET_INSTANCES = 144
+    TARGET_POOLS = 145
+    TARGET_SSL_PROXIES = 146
+    TARGET_TCP_PROXIES = 147
+    TARGET_VPN_GATEWAYS = 148
+    TPU_LITE_DEVICE_V5 = 149
+    TPU_LITE_PODSLICE_V5 = 150
+    TPU_PODSLICE_V4 = 151
+    URL_MAPS = 152
+    VPN_GATEWAYS = 153
+    VPN_TUNNELS = 154
+    XPN_SERVICE_PROJECTS = 155
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)
@@ -66628,6 +66678,11 @@ class RouterBgp(_messages.Message):
       ASN, either 16-bit or 32-bit. The value will be fixed for this router
       resource. All VPN tunnels that link to this router will have the same
       local ASN.
+    identifierRange: Explicitly specifies a range of valid BGP Identifiers for
+      this Router. It is provided as a link-local IPv4 range (from
+      169.254.0.0/16), of size at least /30, even if the BGP sessions are over
+      IPv6. It must not overlap with any IPv4 BGP session ranges. Other
+      vendors commonly call this "router ID".
     keepaliveInterval: The interval in seconds between BGP keepalive messages
       that are sent to the peer. Hold time is three times the interval at
       which keepalive messages are sent, and the hold time is the maximum
@@ -66662,7 +66717,8 @@ class RouterBgp(_messages.Message):
   advertisedGroups = _messages.EnumField('AdvertisedGroupsValueListEntryValuesEnum', 2, repeated=True)
   advertisedIpRanges = _messages.MessageField('RouterAdvertisedIpRange', 3, repeated=True)
   asn = _messages.IntegerField(4, variant=_messages.Variant.UINT32)
-  keepaliveInterval = _messages.IntegerField(5, variant=_messages.Variant.UINT32)
+  identifierRange = _messages.StringField(5)
+  keepaliveInterval = _messages.IntegerField(6, variant=_messages.Variant.UINT32)
 
 
 class RouterBgpPeer(_messages.Message):
@@ -66716,11 +66772,15 @@ class RouterBgpPeer(_messages.Message):
       session with the peer is terminated and all associated routing
       information is removed. If set to TRUE, the peer connection can be
       established with routing information. The default is TRUE.
+    enableIpv4: Enable IPv4 traffic over BGP Peer. It is enabled by default if
+      the peerIpAddress is version 4.
     enableIpv6: Enable IPv6 traffic over BGP Peer. If not specified, it is
       disabled by default.
     interfaceName: Name of the interface the BGP peer is associated with.
     ipAddress: IP address of the interface inside Google Cloud Platform. Only
       IPv4 is supported.
+    ipv4NexthopAddress: IPv4 address of the interface inside Google Cloud
+      Platform.
     ipv6NexthopAddress: IPv6 address of the interface inside Google Cloud
       Platform.
     managementType: [Output Only] The resource that configures and manages
@@ -66743,6 +66803,8 @@ class RouterBgpPeer(_messages.Message):
       use a different value.
     peerIpAddress: IP address of the BGP interface outside Google Cloud
       Platform. Only IPv4 is supported.
+    peerIpv4NexthopAddress: IPv4 address of the BGP interface outside Google
+      Cloud Platform.
     peerIpv6NexthopAddress: IPv6 address of the BGP interface outside Google
       Cloud Platform.
     routerApplianceInstance: URI of the VM instance that is used as third-
@@ -66815,17 +66877,20 @@ class RouterBgpPeer(_messages.Message):
   customLearnedIpRanges = _messages.MessageField('RouterBgpPeerCustomLearnedIpRange', 6, repeated=True)
   customLearnedRoutePriority = _messages.IntegerField(7, variant=_messages.Variant.INT32)
   enable = _messages.EnumField('EnableValueValuesEnum', 8)
-  enableIpv6 = _messages.BooleanField(9)
-  interfaceName = _messages.StringField(10)
-  ipAddress = _messages.StringField(11)
-  ipv6NexthopAddress = _messages.StringField(12)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 13)
-  md5AuthenticationKeyName = _messages.StringField(14)
-  name = _messages.StringField(15)
-  peerAsn = _messages.IntegerField(16, variant=_messages.Variant.UINT32)
-  peerIpAddress = _messages.StringField(17)
-  peerIpv6NexthopAddress = _messages.StringField(18)
-  routerApplianceInstance = _messages.StringField(19)
+  enableIpv4 = _messages.BooleanField(9)
+  enableIpv6 = _messages.BooleanField(10)
+  interfaceName = _messages.StringField(11)
+  ipAddress = _messages.StringField(12)
+  ipv4NexthopAddress = _messages.StringField(13)
+  ipv6NexthopAddress = _messages.StringField(14)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 15)
+  md5AuthenticationKeyName = _messages.StringField(16)
+  name = _messages.StringField(17)
+  peerAsn = _messages.IntegerField(18, variant=_messages.Variant.UINT32)
+  peerIpAddress = _messages.StringField(19)
+  peerIpv4NexthopAddress = _messages.StringField(20)
+  peerIpv6NexthopAddress = _messages.StringField(21)
+  routerApplianceInstance = _messages.StringField(22)
 
 
 class RouterBgpPeerBfd(_messages.Message):
@@ -66900,6 +66965,7 @@ class RouterInterface(_messages.Message):
   r"""A RouterInterface object.
 
   Enums:
+    IpVersionValueValuesEnum: IP version of this interface.
     ManagementTypeValueValuesEnum: [Output Only] The resource that configures
       and manages this interface. - MANAGED_BY_USER is the default value and
       can be managed directly by users. - MANAGED_BY_ATTACHMENT is an
@@ -66913,6 +66979,7 @@ class RouterInterface(_messages.Message):
       the RFC3927 link-local IP address space. The value must be a CIDR-
       formatted string, for example: 169.254.0.1/30. NOTE: Do not truncate the
       address as it represents the IP address of the interface.
+    ipVersion: IP version of this interface.
     linkedInterconnectAttachment: URI of the linked Interconnect attachment.
       It must be in the same region as the router. Each interface can have one
       linked resource, which can be a VPN tunnel, an Interconnect attachment,
@@ -66955,6 +67022,16 @@ class RouterInterface(_messages.Message):
       here.
   """
 
+  class IpVersionValueValuesEnum(_messages.Enum):
+    r"""IP version of this interface.
+
+    Values:
+      IPV4: <no description>
+      IPV6: <no description>
+    """
+    IPV4 = 0
+    IPV6 = 1
+
   class ManagementTypeValueValuesEnum(_messages.Enum):
     r"""[Output Only] The resource that configures and manages this interface.
     - MANAGED_BY_USER is the default value and can be managed directly by
@@ -66977,13 +67054,14 @@ class RouterInterface(_messages.Message):
     MANAGED_BY_USER = 1
 
   ipRange = _messages.StringField(1)
-  linkedInterconnectAttachment = _messages.StringField(2)
-  linkedVpnTunnel = _messages.StringField(3)
-  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 4)
-  name = _messages.StringField(5)
-  privateIpAddress = _messages.StringField(6)
-  redundantInterface = _messages.StringField(7)
-  subnetwork = _messages.StringField(8)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 2)
+  linkedInterconnectAttachment = _messages.StringField(3)
+  linkedVpnTunnel = _messages.StringField(4)
+  managementType = _messages.EnumField('ManagementTypeValueValuesEnum', 5)
+  name = _messages.StringField(6)
+  privateIpAddress = _messages.StringField(7)
+  redundantInterface = _messages.StringField(8)
+  subnetwork = _messages.StringField(9)
 
 
 class RouterList(_messages.Message):
@@ -69746,7 +69824,13 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       to the first 128 bytes. - SNI: Server name indication in the TLS session
       of the HTTPS request. The key value is truncated to the first 128 bytes.
       The key type defaults to ALL on a HTTP session. - REGION_CODE: The
-      country/region from which the request originates.
+      country/region from which the request originates. - TLS_JA3_FINGERPRINT:
+      JA3 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+      HTTP/3. If not available, the key type defaults to ALL. - USER_IP: The
+      IP address of the originating client, which is resolved based on
+      "userIpRequestHeaders" configured with the security policy. If there is
+      no "userIpRequestHeaders" configuration or an IP address cannot be
+      resolved from it, the key type defaults to IP.
 
   Fields:
     banDurationSec: Can only be specified if the action for the rule is
@@ -69779,7 +69863,13 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       first 128 bytes. - SNI: Server name indication in the TLS session of the
       HTTPS request. The key value is truncated to the first 128 bytes. The
       key type defaults to ALL on a HTTP session. - REGION_CODE: The
-      country/region from which the request originates.
+      country/region from which the request originates. - TLS_JA3_FINGERPRINT:
+      JA3 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+      HTTP/3. If not available, the key type defaults to ALL. - USER_IP: The
+      IP address of the originating client, which is resolved based on
+      "userIpRequestHeaders" configured with the security policy. If there is
+      no "userIpRequestHeaders" configuration or an IP address cannot be
+      resolved from it, the key type defaults to IP.
     enforceOnKeyConfigs: If specified, any combination of values of
       enforce_on_key_type/enforce_on_key_name is treated as the key on which
       ratelimit threshold/action is enforced. You can specify up to 3
@@ -69823,7 +69913,13 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     the first 128 bytes. - SNI: Server name indication in the TLS session of
     the HTTPS request. The key value is truncated to the first 128 bytes. The
     key type defaults to ALL on a HTTP session. - REGION_CODE: The
-    country/region from which the request originates.
+    country/region from which the request originates. - TLS_JA3_FINGERPRINT:
+    JA3 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+    HTTP/3. If not available, the key type defaults to ALL. - USER_IP: The IP
+    address of the originating client, which is resolved based on
+    "userIpRequestHeaders" configured with the security policy. If there is no
+    "userIpRequestHeaders" configuration or an IP address cannot be resolved
+    from it, the key type defaults to IP.
 
     Values:
       ALL: <no description>
@@ -69834,6 +69930,8 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
       IP: <no description>
       REGION_CODE: <no description>
       SNI: <no description>
+      TLS_JA3_FINGERPRINT: <no description>
+      USER_IP: <no description>
       XFF_IP: <no description>
     """
     ALL = 0
@@ -69844,7 +69942,9 @@ class SecurityPolicyRuleRateLimitOptions(_messages.Message):
     IP = 5
     REGION_CODE = 6
     SNI = 7
-    XFF_IP = 8
+    TLS_JA3_FINGERPRINT = 8
+    USER_IP = 9
+    XFF_IP = 10
 
   banDurationSec = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   banThreshold = _messages.MessageField('SecurityPolicyRuleRateLimitOptionsThreshold', 2)
@@ -69881,7 +69981,13 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
       to the first 128 bytes. - SNI: Server name indication in the TLS session
       of the HTTPS request. The key value is truncated to the first 128 bytes.
       The key type defaults to ALL on a HTTP session. - REGION_CODE: The
-      country/region from which the request originates.
+      country/region from which the request originates. - TLS_JA3_FINGERPRINT:
+      JA3 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+      HTTP/3. If not available, the key type defaults to ALL. - USER_IP: The
+      IP address of the originating client, which is resolved based on
+      "userIpRequestHeaders" configured with the security policy. If there is
+      no "userIpRequestHeaders" configuration or an IP address cannot be
+      resolved from it, the key type defaults to IP.
 
   Fields:
     enforceOnKeyName: Rate limit key name applicable only for the following
@@ -69908,7 +70014,13 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
       first 128 bytes. - SNI: Server name indication in the TLS session of the
       HTTPS request. The key value is truncated to the first 128 bytes. The
       key type defaults to ALL on a HTTP session. - REGION_CODE: The
-      country/region from which the request originates.
+      country/region from which the request originates. - TLS_JA3_FINGERPRINT:
+      JA3 TLS/SSL fingerprint if the client connects using HTTPS, HTTP/2 or
+      HTTP/3. If not available, the key type defaults to ALL. - USER_IP: The
+      IP address of the originating client, which is resolved based on
+      "userIpRequestHeaders" configured with the security policy. If there is
+      no "userIpRequestHeaders" configuration or an IP address cannot be
+      resolved from it, the key type defaults to IP.
   """
 
   class EnforceOnKeyTypeValueValuesEnum(_messages.Enum):
@@ -69932,7 +70044,12 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
     indication in the TLS session of the HTTPS request. The key value is
     truncated to the first 128 bytes. The key type defaults to ALL on a HTTP
     session. - REGION_CODE: The country/region from which the request
-    originates.
+    originates. - TLS_JA3_FINGERPRINT: JA3 TLS/SSL fingerprint if the client
+    connects using HTTPS, HTTP/2 or HTTP/3. If not available, the key type
+    defaults to ALL. - USER_IP: The IP address of the originating client,
+    which is resolved based on "userIpRequestHeaders" configured with the
+    security policy. If there is no "userIpRequestHeaders" configuration or an
+    IP address cannot be resolved from it, the key type defaults to IP.
 
     Values:
       ALL: <no description>
@@ -69943,6 +70060,8 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
       IP: <no description>
       REGION_CODE: <no description>
       SNI: <no description>
+      TLS_JA3_FINGERPRINT: <no description>
+      USER_IP: <no description>
       XFF_IP: <no description>
     """
     ALL = 0
@@ -69953,7 +70072,9 @@ class SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig(_messages.Message):
     IP = 5
     REGION_CODE = 6
     SNI = 7
-    XFF_IP = 8
+    TLS_JA3_FINGERPRINT = 8
+    USER_IP = 9
+    XFF_IP = 10
 
   enforceOnKeyName = _messages.StringField(1)
   enforceOnKeyType = _messages.EnumField('EnforceOnKeyTypeValueValuesEnum', 2)
@@ -73080,9 +73201,10 @@ class SslPoliciesScopedList(_messages.Message):
 
 
 class SslPolicy(_messages.Message):
-  r"""Represents an SSL Policy resource. Use SSL policies to control the SSL
-  features, such as versions and cipher suites, offered by an HTTPS or SSL
-  Proxy load balancer. For more information, read SSL Policy Concepts.
+  r"""Represents an SSL Policy resource. Use SSL policies to control SSL
+  features, such as versions and cipher suites, that are offered by
+  Application Load Balancers and proxy Network Load Balancers. For more
+  information, read SSL policies overview.
 
   Enums:
     MinTlsVersionValueValuesEnum: The minimum version of SSL protocol that can
@@ -77654,9 +77776,9 @@ class TargetSslProxiesSetSslCertificatesRequest(_messages.Message):
 
 class TargetSslProxy(_messages.Message):
   r"""Represents a Target SSL Proxy resource. A target SSL proxy is a
-  component of a SSL Proxy load balancer. Global forwarding rules reference a
-  target SSL proxy, and the target proxy then references an external backend
-  service. For more information, read Using Target Proxies.
+  component of a Proxy Network Load Balancer. The forwarding rule references
+  the target SSL proxy, and the target proxy then references a backend
+  service. For more information, read Proxy Network Load Balancer overview.
 
   Enums:
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
@@ -78075,9 +78197,9 @@ class TargetTcpProxiesSetProxyHeaderRequest(_messages.Message):
 
 class TargetTcpProxy(_messages.Message):
   r"""Represents a Target TCP Proxy resource. A target TCP proxy is a
-  component of a TCP Proxy load balancer. Global forwarding rules reference
-  target TCP proxy, and the target proxy then references an external backend
-  service. For more information, read TCP Proxy Load Balancing overview.
+  component of a Proxy Network Load Balancer. The forwarding rule references
+  the target TCP proxy, and the target proxy then references a backend
+  service. For more information, read Proxy Network Load Balancer overview.
 
   Enums:
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append

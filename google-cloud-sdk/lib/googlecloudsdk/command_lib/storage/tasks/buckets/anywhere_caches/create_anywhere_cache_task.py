@@ -12,7 +12,7 @@
 # WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
 # See the License for the specific language governing permissions and
 # limitations under the License.
-"""Task for creating an Anywhere Cache Instance."""
+"""Task for creating an Anywhere Cache instance."""
 
 from __future__ import absolute_import
 from __future__ import division
@@ -25,7 +25,7 @@ from googlecloudsdk.core import log
 
 
 class CreateAnywhereCacheTask(task.Task):
-  """Creates an Anywhere Cache Instance in particular zone of a bucket."""
+  """Creates an Anywhere Cache instance in particular zone of a bucket."""
 
   def __init__(self, bucket_url, zone, admission_policy=None, ttl=None):
     """Initializes task.

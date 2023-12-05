@@ -103,3 +103,14 @@ def AddPrimaryLabelsFlag(parser):
       metavar='KEY=VALUE',
       type=arg_parsers.ArgDict(),
       help=help_text)
+
+
+def AddDatabaseVersionFlag(parser):
+  """Adds a --database-version flag to the given parser."""
+  help_text = 'Database engine major version.'
+  choices = [
+      'POSTGRES_14',
+      'POSTGRES_15',
+  ]
+
+  parser.add_argument('--database-version', help=help_text, choices=choices)

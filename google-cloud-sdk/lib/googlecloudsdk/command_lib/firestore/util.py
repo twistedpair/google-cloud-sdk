@@ -86,7 +86,10 @@ def ValidateFieldConfig(unused_ref, args, request):
   Raises:
     InvalidArgumentException: If the field configuration is invalid.
   """
-  if len(args.field_config) < 2:
+  if len(args.field_config) == 1 and args.field_config[0].vectorConfig:
+    # Allow single vector config in composite indexes surface.
+    pass
+  elif len(args.field_config) < 2:
     raise exceptions.InvalidArgumentException(
         '--field-config',
         'Composite indexes must be configured with at least 2 fields. For '
@@ -100,6 +103,10 @@ def ValidateFieldConfig(unused_ref, args, request):
     # ArgDict.
     order = field_config.order
     array_config = field_config.arrayConfig
+    if field_config.vectorConfig:
+      # TODO(b/302742966): enhance validation and error message once the vector
+      # config is in preview.
+      continue
     if (order and array_config) or (not order and not array_config):
       invalid_field_configs.append(field_config)
 

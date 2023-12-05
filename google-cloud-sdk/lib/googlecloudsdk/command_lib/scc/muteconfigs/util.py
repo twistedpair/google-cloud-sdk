@@ -85,18 +85,43 @@ def ValidateAndGetMuteConfigId(args):
     return mute_config_id
 
 
-def ValidateAndGetMuteConfigFullResourceName(args):
+def ValidateAndGetMuteConfigFullResourceName(args, version="v1"):
   """Validates muteConfig full resource name."""
   mute_config = args.mute_config
   resource_pattern = re.compile(
       "(organizations|projects|folders)/.*/muteConfigs/[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
   )
-  if not resource_pattern.match(mute_config):
-    raise errors.InvalidSCCInputError(
-        "Mute config must match the full resource name, or `--organization=`,"
-        " `--folder=` or `--project=` must be provided."
-    )
-  return mute_config
+  regionalized_resource_pattern = re.compile(
+      "(organizations|projects|folders)/.*/locations/.*/muteConfigs/[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
+  )
+
+  if regionalized_resource_pattern.match(mute_config):
+    return mute_config
+
+  # Add location to parent if user didn't specify location in the mute_config
+  # but wants to use v2.
+  if resource_pattern.match(mute_config):
+    if version == "v2":
+      mute_config_components = mute_config.split("/")
+      return (
+          mute_config_components[0]
+          + "/"
+          + mute_config_components[1]
+          + "/locations/"
+          + args.location
+          + "/"
+          + mute_config_components[2]
+          + "/"
+          + mute_config_components[3]
+      )
+    else:
+      return mute_config
+
+  # TODO: b/282774006 - Update message to include information about location.
+  raise errors.InvalidSCCInputError(
+      "Mute config must match the full resource name, or `--organization=`,"
+      " `--folder=` or `--project=` must be provided."
+  )
 
 
 def GetMuteConfigIdFromFullResourceName(mute_config):
@@ -105,10 +130,27 @@ def GetMuteConfigIdFromFullResourceName(mute_config):
   return mute_config_components[len(mute_config_components) - 1]
 
 
-def GetParentFromFullResourceName(mute_config):
+def GetParentFromFullResourceName(mute_config, version="v1"):
   """Gets parent from the full resource name."""
   mute_config_components = mute_config.split("/")
-  return mute_config_components[0] + "/" + mute_config_components[1]
+  if version == "v1":
+    # Return parent as "organizations/{organizationsID}"
+    # or "folders/{foldersID}"
+    # or "projects/{projectsID}"
+    return mute_config_components[0] + "/" + mute_config_components[1]
+  if version == "v2":
+    # Return parent as "organizations/{organizationsID}/locations/{locationsID}"
+    # or "folders/{foldersID}/locations/{locationsID}"
+    # or "projects/{projectsID}/locations/{locationsID}"
+    return (
+        mute_config_components[0]
+        + "/"
+        + mute_config_components[1]
+        + "/"
+        + mute_config_components[2]
+        + "/"
+        + mute_config_components[3]
+    )
 
 
 def GenerateMuteConfigName(args, req):
@@ -121,3 +163,19 @@ def GenerateMuteConfigName(args, req):
     mute_config = ValidateAndGetMuteConfigFullResourceName(args)
     req.name = mute_config
   return req
+
+
+def ValidateAndGetRegionalizedParent(args, parent):
+  """Appends location to parent."""
+  if args.location is not None:
+    if "/" in args.location:
+      pattern = re.compile("^locations/.*$")
+      if not pattern.match(args.location):
+        raise errors.InvalidSCCInputError(
+            "When providing a full resource path, it must include the pattern "
+            "'^locations/.*$'."
+        )
+      else:
+        return parent + "/" + args.location
+    else:
+      return parent + "/locations/" + args.location

@@ -596,7 +596,7 @@ def SetAutomationRules(messages, automation, automation_ref, rules):
       advance_rollout = messages.AdvanceRolloutRule(
           id=message.get(NAME_FIELD),
           wait=_WaitMinToSec(message.get(WAIT_FIELD)),
-          sourcePhases=message.get(SOURCE_PHASES_FIELD),
+          sourcePhases=message.get(SOURCE_PHASES_FIELD) or [],
       )
       automation_rule.advanceRolloutRule = advance_rollout
     automation.rules.append(automation_rule)

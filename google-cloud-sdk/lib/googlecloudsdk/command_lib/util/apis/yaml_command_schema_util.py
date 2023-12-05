@@ -325,7 +325,9 @@ class _FieldSpec:
   """Holds information about a field and type that is generated from it."""
 
   @classmethod
-  def FromUserData(cls, field, api_field=None, arg_name=None, required=None):
+  def FromUserData(
+      cls, field, api_field=None, arg_name=None, required=None, hidden=False
+  ):
     """Creates a _FieldSpec from user input.
 
     If value is not provided in yaml schema by user, the value is defaulted
@@ -337,6 +339,7 @@ class _FieldSpec:
         should be put.
       arg_name: The name of the key in the dict.
       required: True if the key is required.
+      hidden: True if the help text should be hidden.
 
     Returns:
       _FieldSpec instance
@@ -358,6 +361,7 @@ class _FieldSpec:
         arg_name=arg_name or child_field_name,
         repeated=field.repeated,
         required=required if required is not None else field.required,
+        hidden=hidden
     )
 
   field: apitools_messages.Field
@@ -365,6 +369,7 @@ class _FieldSpec:
   arg_name: str
   repeated: bool
   required: bool
+  hidden: bool | None
 
 
 class _FieldSpecType(usage_text.DefaultArgTypeWrapper, metaclass=abc.ABCMeta):
@@ -527,14 +532,17 @@ class ArgObject(arg_utils.ArgObjectType):
         api_field=data['api_field'],
         arg_name=data.get('arg_name'),
         help_text=data.get('help_text'),
+        hidden=data.get('hidden'),
         spec=[ArgObject.FromData(f) for f in spec] if spec is not None else None
     )
 
-  def __init__(self, api_field=None, arg_name=None, help_text=None, spec=None):
+  def __init__(self, api_field=None, arg_name=None, help_text=None,
+               hidden=None, spec=None):
     # Represents user specified yaml data
     self.api_field = api_field
     self.arg_name = arg_name
     self.help_text = help_text
+    self.hidden = hidden
     self.spec = spec
 
   def Action(self, field):
@@ -606,10 +614,12 @@ class ArgObject(arg_utils.ArgObjectType):
     value_type = self._GenerateSubFieldType(
         additional_props_field.type, VALUE, is_label_field=is_label_field)
 
+    # Repeated not included since map fields can never be repeated
     arg_obj = arg_parsers.ArgObject(
         key_type=key_type,
         value_type=value_type,
         help_text=self.help_text,
+        hidden=field_spec.hidden,
         enable_shorthand=is_root)
 
     additional_prop_spec_type = _AdditionalPropsType(
@@ -655,6 +665,7 @@ class ArgObject(arg_utils.ArgObjectType):
         help_text=self.help_text,
         required_keys=required,
         repeated=field_spec.repeated,
+        hidden=field_spec.hidden,
         enable_shorthand=is_root)
 
     return _MessageFieldType(
@@ -688,6 +699,7 @@ class ArgObject(arg_utils.ArgObjectType):
         value_type=value_type,
         help_text=self.help_text or default_help_text,
         repeated=field_spec.repeated,
+        hidden=field_spec.hidden,
         enable_shorthand=False
     )
     return _FieldType(
@@ -709,7 +721,8 @@ class ArgObject(arg_utils.ArgObjectType):
       instance or list of instances from string value.
     """
     field_spec = _FieldSpec.FromUserData(
-        field, arg_name=self.arg_name, api_field=self.api_field)
+        field, arg_name=self.arg_name, api_field=self.api_field,
+        hidden=self.hidden)
     field_type = arg_utils.GetFieldType(field)
     if field_type == arg_utils.FieldType.MAP:
       return self._GenerateMapType(field_spec, is_root)

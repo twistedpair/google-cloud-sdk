@@ -357,13 +357,25 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
     annotations: Optional. User defined annotations. See
       https://google.aip.dev/128#annotations for more details such as format
       and size limitations
-    condition: Optional. A condition that selects which sub-type targets are
-      impacted by this binding. When set, the `expression` field in the `Expr`
-      must include from 1 to 10 subexpressions, joined by the "||" or "&&"
-      operators. + When the bound policy is a Principal Access Boundary
-      policy, each subexpression must be of the form `principal.type == ` or
-      `principal.subject == ''`. An example expression is: "principal.type ==
-      ServiceAccount" or "principal.subject == 'bob@acme.com'".
+    condition: Optional. Condition can either be a principal condition or a
+      resource condition. It depends on the type of target, the policy it is
+      attached to, and/or the expression itself. When set, the `expression`
+      field in the `Expr` must include from 1 to 10 subexpressions, joined by
+      the "||"(Logical OR), "&&"(Logical AND) or "!"(Logical NOT) operators.
+      Allowed operations for principal.type: - `principal.type == ` -
+      `principal.type != ` - `principal.type in []` Allowed operations for
+      principal.subject: - `principal.subject == ` - `principal.subject != ` -
+      `principal.subject in []` - `principal.subject.startsWith()` -
+      `principal.subject.endsWith()` Supported principal types are Workspace,
+      Workforce Pool, Workload Pool and Service Account. Allowed string must
+      be one of: - iam.googleapis.com/WorkspaceIdentity -
+      iam.googleapis.com/WorkforcePoolIdentity -
+      iam.googleapis.com/WorkloadPoolIdentity -
+      iam.googleapis.com/ServiceAccount When the bound policy is a Principal
+      Access Boundary policy, each subexpression must be of the form
+      `principal.type == ` or `principal.subject == ''`. An example expression
+      is: "principal.type == 'iam.googleapis.com/ServiceAccount'" or
+      "principal.subject == 'bob@acme.com'".
     createTime: Output only. The time when the policy binding was created.
     displayName: Optional. The description of the policy binding. Must be less
       than or equal to 63 characters.
@@ -377,16 +389,21 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
       s/{folder_id}/locations/{location}/policyBindings/{policy_binding_id}` `
       organizations/{organization_id}/locations/{location}/policyBindings/{pol
       icy_binding_id}`
-    policy: Optional. The resource name of the policy to be bound.
+    policy: Immutable. The resource name of the policy to be bound.
     policyKind: Immutable. The kind of the policy to attach in this binding: +
       When the policy is empty, this field must be set. + When the policy is
       set, this field + can be left empty and will be set to the policy kind,
       or + must set to the input policy kind
     policyUid: Output only. The globally unique ID of the policy to be bound.
-    target: Immutable. The full resource name of the resource to which the
-      policy will be bound. Immutable once set.
-    uid: Output only. Immutable. The globally unique ID of the policy binding.
-      Assigned when the policy binding is created.
+    target: Immutable. Target is the full resource name of the resource to
+      which the policy will be bound. Immutable once set. Exampples: Workforce
+      Identity: 'principalSet://iam.googleapis.com/locations/global/workforceP
+      ools/POOL_ID/*' Workload Identity Pool: 'principalSet://iam.googleapis.c
+      om/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_I
+      D/*' Workspace Identity: 'principalSet://iam.googleapis.com/locations/gl
+      obal/workspace/WORKSPACE_ID/*'
+    uid: Output only. The globally unique ID of the policy binding. Assigned
+      when the policy binding is created.
     updateTime: Output only. The time when the policy binding was most
       recently updated.
   """
@@ -464,9 +481,9 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
       policy. Must be less than or equal to 63 characters.
     etag: Optional. The etag for the principal access boundary. If this is
       provided on update, it must match the server's etag.
-    name: Required. The resource name of the principal access boundary policy.
-      The following format is supported: `organizations/{organization_id}/loca
-      tions/{location}/principalAccessBoundaryPolicies/{policy_id}`
+    name: Identifier. The resource name of the principal access boundary
+      policy. The following format is supported: `organizations/{organization_
+      id}/locations/{location}/principalAccessBoundaryPolicies/{policy_id}`
     uid: Output only. The globally unique ID of the principal access boundary
       policy.
     updateTime: Output only. The time when the principal access boundary
@@ -1401,9 +1418,9 @@ class IamOrganizationsLocationsPrincipalAccessBoundaryPoliciesPatchRequest(_mess
     googleIamV3betaPrincipalAccessBoundaryPolicy: A
       GoogleIamV3betaPrincipalAccessBoundaryPolicy resource to be passed as
       the request body.
-    name: Required. The resource name of the principal access boundary policy.
-      The following format is supported: `organizations/{organization_id}/loca
-      tions/{location}/principalAccessBoundaryPolicies/{policy_id}`
+    name: Identifier. The resource name of the principal access boundary
+      policy. The following format is supported: `organizations/{organization_
+      id}/locations/{location}/principalAccessBoundaryPolicies/{policy_id}`
     updateMask: Optional. The list of fields to update
     validateOnly: Optional. If set, validate the request and preview the
       update, but do not actually post it.

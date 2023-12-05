@@ -398,19 +398,19 @@ class CustomClass(_messages.Message):
     StateValueValuesEnum: Output only. The CustomClass lifecycle state.
 
   Messages:
-    AnnotationsValue: Allows users to store small amounts of arbitrary data.
-      Both the key and the value must be 63 characters or less each. At most
-      100 annotations.
+    AnnotationsValue: Optional. Allows users to store small amounts of
+      arbitrary data. Both the key and the value must be 63 characters or less
+      each. At most 100 annotations.
 
   Fields:
-    annotations: Allows users to store small amounts of arbitrary data. Both
-      the key and the value must be 63 characters or less each. At most 100
-      annotations.
+    annotations: Optional. Allows users to store small amounts of arbitrary
+      data. Both the key and the value must be 63 characters or less each. At
+      most 100 annotations.
     createTime: Output only. Creation time.
     deleteTime: Output only. The time at which this resource was requested for
       deletion.
-    displayName: User-settable, human-readable name for the CustomClass. Must
-      be 63 characters or less.
+    displayName: Optional. User-settable, human-readable name for the
+      CustomClass. Must be 63 characters or less.
     etag: Output only. This checksum is computed by the server based on the
       value of other fields. This may be sent on update, undelete, and delete
       requests to ensure the client has an up-to-date value before proceeding.
@@ -450,8 +450,9 @@ class CustomClass(_messages.Message):
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
-    r"""Allows users to store small amounts of arbitrary data. Both the key
-    and the value must be 63 characters or less each. At most 100 annotations.
+    r"""Optional. Allows users to store small amounts of arbitrary data. Both
+    the key and the value must be 63 characters or less each. At most 100
+    annotations.
 
     Messages:
       AdditionalProperty: An additional property for a AnnotationsValue
@@ -552,6 +553,20 @@ class DeleteRecognizerRequest(_messages.Message):
   etag = _messages.StringField(2)
   name = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
+
+
+class Entry(_messages.Message):
+  r"""A single replacement configuration.
+
+  Fields:
+    caseSensitive: Whether the search is case sensitive.
+    replace: What to replace with. Max length is 100 characters.
+    search: What to replace. Max length is 100 characters.
+  """
+
+  caseSensitive = _messages.BooleanField(1)
+  replace = _messages.StringField(2)
+  search = _messages.StringField(3)
 
 
 class ExplicitDecodingConfig(_messages.Message):
@@ -1232,6 +1247,10 @@ class RecognitionConfig(_messages.Message):
       region can be found in the [Table Of Supported
       Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
       supported-languages).
+    transcriptNormalization: Optional. Use transcription normalization to
+      automatically replace parts of the transcript with phrases of your
+      choosing. For StreamingRecognize, this normalization only applies to
+      stable partial transcripts (stability > 0.8) and final transcripts.
   """
 
   adaptation = _messages.MessageField('SpeechAdaptation', 1)
@@ -1240,6 +1259,7 @@ class RecognitionConfig(_messages.Message):
   features = _messages.MessageField('RecognitionFeatures', 4)
   languageCodes = _messages.StringField(5, repeated=True)
   model = _messages.StringField(6)
+  transcriptNormalization = _messages.MessageField('TranscriptNormalization', 7)
 
 
 class RecognitionFeatures(_messages.Message):
@@ -2136,6 +2156,22 @@ class StreamingRecognitionResult(_messages.Message):
   languageCode = _messages.StringField(4)
   resultEndOffset = _messages.StringField(5)
   stability = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
+
+
+class TranscriptNormalization(_messages.Message):
+  r"""Transcription normalization configuration. Use transcription
+  normalization to automatically replace parts of the transcript with phrases
+  of your choosing. For StreamingRecognize, this normalization only applies to
+  stable partial transcripts (stability > 0.8) and final transcripts.
+
+  Fields:
+    entries: A list of replacement entries. We will perform replacement with
+      one entry at a time. For example, the second entry in ["cat" => "dog",
+      "mountain cat" => "mountain dog"] will never be applied because we will
+      always process the first entry before it. At most 100 entries.
+  """
+
+  entries = _messages.MessageField('Entry', 1, repeated=True)
 
 
 class UndeleteCustomClassRequest(_messages.Message):

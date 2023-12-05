@@ -471,6 +471,7 @@ def AddManagementSettingsFlagsToParser(parser):
 
   messages = apis.GetMessagesModule('domains', API_VERSION_FOR_FLAGS)
   TransferLockEnumMapper(messages).choice_arg.AddToParser(parser)
+  RenewalMethodEnumMapper(messages).choice_arg.AddToParser(parser)
 
 
 def _GetContactPrivacyEnum(domains_messages):
@@ -568,3 +569,37 @@ def TransferLockEnumMapper(domains_messages):
       required=False,
       help_str=('Transfer Lock of a registration. It needs to be unlocked '
                 'in order to transfer the domain to another registrar.'))
+
+
+def _GetRenewalMethodEnum(domains_messages):
+  """Get PreferredRenewalMethodValueValuesEnum from api messages."""
+  return (
+      domains_messages.ManagementSettings.PreferredRenewalMethodValueValuesEnum
+  )
+
+
+def RenewalMethodEnumMapper(domains_messages):
+  return arg_utils.ChoiceEnumMapper(
+      '--preferred-renewal-method',
+      _GetRenewalMethodEnum(domains_messages),
+      custom_mappings={
+          'AUTOMATIC_RENEWAL': (
+              'automatic-renewal',
+              'The domain is automatically renewed each year.',
+          ),
+          'RENEWAL_DISABLED': (
+              'renewal-disabled',
+              (
+                  "The domain won't be renewed and will expire at its "
+                  'expiration time.'
+              ),
+          ),
+      },
+      required=False,
+      help_str=(
+          'Preferred Renewal Method of a registration. '
+          'It defines how the registration should be renewed. '
+          'The actual Renewal Method can be set to renewal-disabled in case of '
+          'e.g. problems with the Billing Account or reporeted domain abuse.'
+      ),
+  )

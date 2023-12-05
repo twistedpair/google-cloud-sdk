@@ -26,14 +26,14 @@ from googlecloudsdk.command_lib.storage import errors as command_errors
 from googlecloudsdk.command_lib.storage import tracker_file_util
 from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_component_util
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_task
 from googlecloudsdk.core import log
 
 
 def _try_delete_and_return_permissions_error(component_url):
   """Attempts deleting component and returns any permissions errors."""
   try:
-    delete_object_task.DeleteObjectTask(component_url, verbose=False).execute()
+    delete_task.DeleteObjectTask(component_url, verbose=False).execute()
   except api_errors.CloudApiError as e:
     status = getattr(e, 'status_code', None)
     if status == 403:
@@ -121,10 +121,12 @@ class DeleteTemporaryComponentsTask(task.Task):
       raise command_errors.FatalError(permissions_error)
 
     if component_urls:
-      additional_task_iterators = [[
-          delete_object_task.DeleteObjectTask(url, verbose=False)
-          for url in component_urls
-      ]]
+      additional_task_iterators = [
+          [
+              delete_task.DeleteObjectTask(url, verbose=False)
+              for url in component_urls
+          ]
+      ]
       return task.Output(
           additional_task_iterators=additional_task_iterators, messages=None)
 

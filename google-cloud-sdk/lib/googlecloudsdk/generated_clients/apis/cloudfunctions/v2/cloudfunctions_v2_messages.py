@@ -657,6 +657,11 @@ class EventTrigger(_messages.Message):
       here will not be deleted at function deletion.
     retryPolicy: Optional. If unset, then defaults to ignoring failures (i.e.
       not retrying them).
+    service: Optional. The hostname of the service that 1st Gen function
+      should be observed. If no string is provided, the default service
+      implementing the API will be used. For example, `storage.googleapis.com`
+      is the default for all event types in the `google.storage` namespace.
+      The field is only applicable to 1st Gen functions.
     serviceAccountEmail: Optional. The email of the trigger's service account.
       The service account must have permission to invoke Cloud Run services,
       the permission is `run.routes.invoke`. If empty, defaults to the Compute
@@ -691,9 +696,10 @@ class EventTrigger(_messages.Message):
   eventType = _messages.StringField(3)
   pubsubTopic = _messages.StringField(4)
   retryPolicy = _messages.EnumField('RetryPolicyValueValuesEnum', 5)
-  serviceAccountEmail = _messages.StringField(6)
-  trigger = _messages.StringField(7)
-  triggerRegion = _messages.StringField(8)
+  service = _messages.StringField(6)
+  serviceAccountEmail = _messages.StringField(7)
+  trigger = _messages.StringField(8)
+  triggerRegion = _messages.StringField(9)
 
 
 class Expr(_messages.Message):
@@ -2009,11 +2015,10 @@ class ServiceConfig(_messages.Message):
       the revision being deployed will serve 100% of traffic, ignoring any
       traffic split settings, if any. On GetFunction, true will be returned if
       the latest revision is serving 100% of traffic.
-    availableCpu: [Preview] The number of CPUs used in a single container
-      instance. Default value is calculated from available memory. Supports
-      the same values as Cloud Run, see https://cloud.google.com/run/docs/refe
-      rence/rest/v1/Container#resourcerequirements Example: "1" indicates 1
-      vCPU
+    availableCpu: The number of CPUs used in a single container instance.
+      Default value is calculated from available memory. Supports the same
+      values as Cloud Run, see https://cloud.google.com/run/docs/reference/res
+      t/v1/Container#resourcerequirements Example: "1" indicates 1 vCPU
     availableMemory: The amount of memory available for a function. Defaults
       to 256M. Supported units are k, M, G, Mi, Gi. If no unit is supplied the
       value is interpreted as bytes. See https://github.com/kubernetes/kuberne
@@ -2032,8 +2037,8 @@ class ServiceConfig(_messages.Message):
       tolerate. See the [Max
       Instances](https://cloud.google.com/functions/docs/max-instances) Guide
       for more details.
-    maxInstanceRequestConcurrency: [Preview] Sets the maximum number of
-      concurrent requests that each instance can receive. Defaults to 1.
+    maxInstanceRequestConcurrency: Sets the maximum number of concurrent
+      requests that each instance can receive. Defaults to 1.
     minInstanceCount: The limit on the minimum number of function instances
       that may coexist at a given time. Function instances are kept in idle
       state for a short period after they finished executing the request to

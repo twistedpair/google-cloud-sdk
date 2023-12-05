@@ -115,6 +115,8 @@ SUBCOMMAND_ALLOWLIST = {
         SupportedAirflowVersion(from_version='1.10.2', to_version='2.0.0'),
     'list_dags':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
+    'list-import-errors':
+        SupportedAirflowVersion(from_version=None, to_version='3.0.0'),
     'list_tasks':
         SupportedAirflowVersion(from_version=None, to_version='2.0.0'),
     'next_execution':

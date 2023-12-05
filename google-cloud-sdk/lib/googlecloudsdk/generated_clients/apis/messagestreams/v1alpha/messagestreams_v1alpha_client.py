@@ -363,7 +363,7 @@ class MessagestreamsV1alpha(base_api.BaseApiClient):
         method_id='messagestreams.projects.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
         relative_path='v1alpha/{+name}/locations',
         request_field='',
         request_type_name='MessagestreamsProjectsLocationsListRequest',

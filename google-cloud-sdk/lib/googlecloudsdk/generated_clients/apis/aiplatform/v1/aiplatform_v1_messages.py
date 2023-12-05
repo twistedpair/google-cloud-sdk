@@ -621,6 +621,91 @@ class AiplatformProjectsLocationsDatasetsSearchDataItemsRequest(_messages.Messag
   savedQuery = _messages.StringField(14)
 
 
+class AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1CreateDeploymentResourcePoolRequest: A
+      GoogleCloudAiplatformV1CreateDeploymentResourcePoolRequest resource to
+      be passed as the request body.
+    parent: Required. The parent location resource where this
+      DeploymentResourcePool will be created. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  googleCloudAiplatformV1CreateDeploymentResourcePoolRequest = _messages.MessageField('GoogleCloudAiplatformV1CreateDeploymentResourcePoolRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the DeploymentResourcePool to delete. Format:
+      `projects/{project}/locations/{location}/deploymentResourcePools/{deploy
+      ment_resource_pool}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest object.
+
+  Fields:
+    name: Required. The name of the DeploymentResourcePool to retrieve.
+      Format: `projects/{project}/locations/{location}/deploymentResourcePools
+      /{deployment_resource_pool}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsListRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsDeploymentResourcePoolsListRequest object.
+
+  Fields:
+    pageSize: The maximum number of DeploymentResourcePools to return. The
+      service may return fewer than this value.
+    pageToken: A page token, received from a previous
+      `ListDeploymentResourcePools` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListDeploymentResourcePools` must match the call that provided the page
+      token.
+    parent: Required. The parent Location which owns this collection of
+      DeploymentResourcePools. Format:
+      `projects/{project}/locations/{location}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest(_messages.Message):
+  r"""A
+  AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest
+  object.
+
+  Fields:
+    deploymentResourcePool: Required. The name of the target
+      DeploymentResourcePool to query. Format: `projects/{project}/locations/{
+      location}/deploymentResourcePools/{deployment_resource_pool}`
+    pageSize: The maximum number of DeployedModels to return. The service may
+      return fewer than this value.
+    pageToken: A page token, received from a previous `QueryDeployedModels`
+      call. Provide this to retrieve the subsequent page. When paginating, all
+      other parameters provided to `QueryDeployedModels` must match the call
+      that provided the page token.
+  """
+
+  deploymentResourcePool = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+
+
 class AiplatformProjectsLocationsEndpointsCreateRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsCreateRequest object.
 
@@ -671,6 +756,38 @@ class AiplatformProjectsLocationsEndpointsDeployModelRequest(_messages.Message):
 
   endpoint = _messages.StringField(1, required=True)
   googleCloudAiplatformV1DeployModelRequest = _messages.MessageField('GoogleCloudAiplatformV1DeployModelRequest', 2)
+
+
+class AiplatformProjectsLocationsEndpointsDirectPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsDirectPredictRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1DirectPredictRequest: A
+      GoogleCloudAiplatformV1DirectPredictRequest resource to be passed as the
+      request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1DirectPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1DirectPredictRequest', 2)
+
+
+class AiplatformProjectsLocationsEndpointsDirectRawPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsDirectRawPredictRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1DirectRawPredictRequest: A
+      GoogleCloudAiplatformV1DirectRawPredictRequest resource to be passed as
+      the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1DirectRawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1DirectRawPredictRequest', 2)
 
 
 class AiplatformProjectsLocationsEndpointsExplainRequest(_messages.Message):
@@ -1062,9 +1179,8 @@ class AiplatformProjectsLocationsFeaturestoresEntityTypesFeaturesListRequest(_me
       FeaturestoreService.ListFeatures call or
       FeatureRegistryService.ListFeatures call. Provide this to retrieve the
       subsequent page. When paginating, all other parameters provided to
-      FeaturestoreService.ListFeatures or or
-      FeatureRegistryService.ListFeatures must match the call that provided
-      the page token.
+      FeaturestoreService.ListFeatures or FeatureRegistryService.ListFeatures
+      must match the call that provided the page token.
     parent: Required. The resource name of the Location to list Features.
       Format for entity_type as parent: `projects/{project}/locations/{locatio
       n}/featurestores/{featurestore}/entityTypes/{entity_type}` Format for
@@ -6187,6 +6303,32 @@ class GoogleCloudAiplatformV1CreateDatasetVersionOperationMetadata(_messages.Mes
   genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
 
 
+class GoogleCloudAiplatformV1CreateDeploymentResourcePoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for CreateDeploymentResourcePool method.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
+class GoogleCloudAiplatformV1CreateDeploymentResourcePoolRequest(_messages.Message):
+  r"""Request message for CreateDeploymentResourcePool method.
+
+  Fields:
+    deploymentResourcePool: Required. The DeploymentResourcePool to create.
+    deploymentResourcePoolId: Required. The ID to use for the
+      DeploymentResourcePool, which will become the final component of the
+      DeploymentResourcePool's resource name. The maximum length is 63
+      characters, and valid characters are
+      `/^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$/`.
+  """
+
+  deploymentResourcePool = _messages.MessageField('GoogleCloudAiplatformV1DeploymentResourcePool', 1)
+  deploymentResourcePoolId = _messages.StringField(2)
+
+
 class GoogleCloudAiplatformV1CreateEndpointOperationMetadata(_messages.Message):
   r"""Runtime operation information for EndpointService.CreateEndpoint.
 
@@ -6601,6 +6743,10 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
       Peering for Vertex AI](https://cloud.google.com/vertex-
       ai/docs/general/vpc-peering). If this field is left unspecified, the job
       is not peered with any network.
+    protectedArtifactLocationId: The ID of the location to store protected
+      artifacts. e.g. us-central1. Populate only when the location is
+      different than CustomJob location. List of supported locations:
+      https://cloud.google.com/vertex-ai/docs/general/locations
     reservedIpRanges: Optional. A list of names for the reserved ip ranges
       under the VPC network that can be used for this job. If set, we will
       deploy the job within the provided ip ranges. Otherwise, the job will be
@@ -6626,11 +6772,12 @@ class GoogleCloudAiplatformV1CustomJobSpec(_messages.Message):
   experiment = _messages.StringField(4)
   experimentRun = _messages.StringField(5)
   network = _messages.StringField(6)
-  reservedIpRanges = _messages.StringField(7, repeated=True)
-  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 8)
-  serviceAccount = _messages.StringField(9)
-  tensorboard = _messages.StringField(10)
-  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 11, repeated=True)
+  protectedArtifactLocationId = _messages.StringField(7)
+  reservedIpRanges = _messages.StringField(8, repeated=True)
+  scheduling = _messages.MessageField('GoogleCloudAiplatformV1Scheduling', 9)
+  serviceAccount = _messages.StringField(10)
+  tensorboard = _messages.StringField(11)
+  workerPoolSpecs = _messages.MessageField('GoogleCloudAiplatformV1WorkerPoolSpec', 12, repeated=True)
 
 
 class GoogleCloudAiplatformV1DataItem(_messages.Message):
@@ -7538,6 +7685,9 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
       account that doesn't have access to the resource project. Users
       deploying the Model must have the `iam.serviceAccounts.actAs` permission
       on this service account.
+    sharedResources: The resource name of the shared DeploymentResourcePool to
+      deploy on. Format: `projects/{project}/locations/{location}/deploymentRe
+      sourcePools/{deployment_resource_pool}`
   """
 
   automaticResources = _messages.MessageField('GoogleCloudAiplatformV1AutomaticResources', 1)
@@ -7552,6 +7702,7 @@ class GoogleCloudAiplatformV1DeployedModel(_messages.Message):
   modelVersionId = _messages.StringField(10)
   privateEndpoints = _messages.MessageField('GoogleCloudAiplatformV1PrivateEndpoints', 11)
   serviceAccount = _messages.StringField(12)
+  sharedResources = _messages.StringField(13)
 
 
 class GoogleCloudAiplatformV1DeployedModelRef(_messages.Message):
@@ -7567,6 +7718,26 @@ class GoogleCloudAiplatformV1DeployedModelRef(_messages.Message):
   endpoint = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1DeploymentResourcePool(_messages.Message):
+  r"""A description of resources that can be shared by multiple
+  DeployedModels, whose underlying specification consists of a
+  DedicatedResources.
+
+  Fields:
+    createTime: Output only. Timestamp when this DeploymentResourcePool was
+      created.
+    dedicatedResources: Required. The underlying DedicatedResources that the
+      DeploymentResourcePool uses.
+    name: Immutable. The resource name of the DeploymentResourcePool. Format:
+      `projects/{project}/locations/{location}/deploymentResourcePools/{deploy
+      ment_resource_pool}`
+  """
+
+  createTime = _messages.StringField(1)
+  dedicatedResources = _messages.MessageField('GoogleCloudAiplatformV1DedicatedResources', 2)
+  name = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1DestinationFeatureSetting(_messages.Message):
   r"""A GoogleCloudAiplatformV1DestinationFeatureSetting object.
 
@@ -7578,6 +7749,54 @@ class GoogleCloudAiplatformV1DestinationFeatureSetting(_messages.Message):
 
   destinationField = _messages.StringField(1)
   featureId = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1DirectPredictRequest(_messages.Message):
+  r"""Request message for PredictionService.DirectPredict.
+
+  Fields:
+    inputs: The prediction input.
+    parameters: The parameters that govern the prediction.
+  """
+
+  inputs = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 1, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 2)
+
+
+class GoogleCloudAiplatformV1DirectPredictResponse(_messages.Message):
+  r"""Response message for PredictionService.DirectPredict.
+
+  Fields:
+    outputs: The prediction output.
+    parameters: The parameters that govern the prediction.
+  """
+
+  outputs = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 1, repeated=True)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1Tensor', 2)
+
+
+class GoogleCloudAiplatformV1DirectRawPredictRequest(_messages.Message):
+  r"""Request message for PredictionService.DirectRawPredict.
+
+  Fields:
+    input: The prediction input.
+    methodName: Fully qualified name of the API method being invoked to
+      perform predictions. Format: `/namespace.Service/Method/` Example:
+      `/tensorflow.serving.PredictionService/Predict`
+  """
+
+  input = _messages.BytesField(1)
+  methodName = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1DirectRawPredictResponse(_messages.Message):
+  r"""Response message for PredictionService.DirectRawPredict.
+
+  Fields:
+    output: The prediction output.
+  """
+
+  output = _messages.BytesField(1)
 
 
 class GoogleCloudAiplatformV1DiskSpec(_messages.Message):
@@ -8962,7 +9181,7 @@ class GoogleCloudAiplatformV1ExplanationSpecOverride(_messages.Message):
 
 class GoogleCloudAiplatformV1ExportDataConfig(_messages.Message):
   r"""Describes what part of the Dataset is to be exported, the destination of
-  the export and how to export.
+  the export and how to export. Next ID: 13
 
   Fields:
     annotationsFilter: An expression for filtering what part of the Dataset is
@@ -10443,6 +10662,10 @@ class GoogleCloudAiplatformV1IndexDatapoint(_messages.Message):
     datapointId: Required. Unique identifier of the datapoint.
     featureVector: Required. Feature embedding vector. An array of numbers
       with the length of [NearestNeighborSearchConfig.dimensions].
+    numericRestricts: Optional. List of Restrict of the datapoint, used to
+      perform "restricted searches" where boolean rule are used to filter the
+      subset of the database eligible for matching. This uses numeric
+      comparisons.
     restricts: Optional. List of Restrict of the datapoint, used to perform
       "restricted searches" where boolean rule are used to filter the subset
       of the database eligible for matching. This uses categorical tokens.
@@ -10452,7 +10675,8 @@ class GoogleCloudAiplatformV1IndexDatapoint(_messages.Message):
   crowdingTag = _messages.MessageField('GoogleCloudAiplatformV1IndexDatapointCrowdingTag', 1)
   datapointId = _messages.StringField(2)
   featureVector = _messages.FloatField(3, repeated=True, variant=_messages.Variant.FLOAT)
-  restricts = _messages.MessageField('GoogleCloudAiplatformV1IndexDatapointRestriction', 4, repeated=True)
+  numericRestricts = _messages.MessageField('GoogleCloudAiplatformV1IndexDatapointNumericRestriction', 4, repeated=True)
+  restricts = _messages.MessageField('GoogleCloudAiplatformV1IndexDatapointRestriction', 5, repeated=True)
 
 
 class GoogleCloudAiplatformV1IndexDatapointCrowdingTag(_messages.Message):
@@ -10469,6 +10693,50 @@ class GoogleCloudAiplatformV1IndexDatapointCrowdingTag(_messages.Message):
   """
 
   crowdingAttribute = _messages.StringField(1)
+
+
+class GoogleCloudAiplatformV1IndexDatapointNumericRestriction(_messages.Message):
+  r"""This field allows restricts to be based on numeric comparisons rather
+  than categorical tokens.
+
+  Enums:
+    OpValueValuesEnum: This MUST be specified for queries and must NOT be
+      specified for datapoints.
+
+  Fields:
+    namespace: The namespace of this restriction. e.g.: cost.
+    op: This MUST be specified for queries and must NOT be specified for
+      datapoints.
+    valueDouble: Represents 64 bit float.
+    valueFloat: Represents 32 bit float.
+    valueInt: Represents 64 bit integer.
+  """
+
+  class OpValueValuesEnum(_messages.Enum):
+    r"""This MUST be specified for queries and must NOT be specified for
+    datapoints.
+
+    Values:
+      OPERATOR_UNSPECIFIED: Default value of the enum.
+      LESS: Datapoints are eligible iff their value is < the query's.
+      LESS_EQUAL: Datapoints are eligible iff their value is <= the query's.
+      EQUAL: Datapoints are eligible iff their value is == the query's.
+      GREATER_EQUAL: Datapoints are eligible iff their value is >= the
+        query's.
+      GREATER: Datapoints are eligible iff their value is > the query's.
+    """
+    OPERATOR_UNSPECIFIED = 0
+    LESS = 1
+    LESS_EQUAL = 2
+    EQUAL = 3
+    GREATER_EQUAL = 4
+    GREATER = 5
+
+  namespace = _messages.StringField(1)
+  op = _messages.EnumField('OpValueValuesEnum', 2)
+  valueDouble = _messages.FloatField(3)
+  valueFloat = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
+  valueInt = _messages.IntegerField(5)
 
 
 class GoogleCloudAiplatformV1IndexDatapointRestriction(_messages.Message):
@@ -10875,6 +11143,20 @@ class GoogleCloudAiplatformV1ListDatasetsResponse(_messages.Message):
   """
 
   datasets = _messages.MessageField('GoogleCloudAiplatformV1Dataset', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1ListDeploymentResourcePoolsResponse(_messages.Message):
+  r"""Response message for ListDeploymentResourcePools method.
+
+  Fields:
+    deploymentResourcePools: The DeploymentResourcePools from the specified
+      location.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+  """
+
+  deploymentResourcePools = _messages.MessageField('GoogleCloudAiplatformV1DeploymentResourcePool', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
 
 
@@ -11332,6 +11614,8 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
       compute#machine-types). For DeployedModel this field is optional, and
       the default value is `n1-standard-2`. For BatchPredictionJob or as part
       of WorkerPoolSpec this field is required.
+    tpuTopology: Immutable. The topology of the TPUs. Corresponds to the TPU
+      topologies available from GKE. (Example: tpu_topology: "2x2x1").
   """
 
   class AcceleratorTypeValueValuesEnum(_messages.Enum):
@@ -11369,6 +11653,7 @@ class GoogleCloudAiplatformV1MachineSpec(_messages.Message):
   acceleratorCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   acceleratorType = _messages.EnumField('AcceleratorTypeValueValuesEnum', 2)
   machineType = _messages.StringField(3)
+  tpuTopology = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1ManualBatchTuningParameters(_messages.Message):
@@ -12033,6 +12318,8 @@ class GoogleCloudAiplatformV1ModelContainerSpec(_messages.Message):
       corresponds to the `command` field of the Kubernetes Containers [v1 core
       API](https://kubernetes.io/docs/reference/generated/kubernetes-
       api/v1.23/#container-v1-core).
+    deploymentTimeout: Immutable. Deployment timeout. Limit for deployment
+      timeout is 2 hours.
     env: Immutable. List of environment variables to set in the container.
       After the container starts running, code running in the container can
       read these environment variables. Additionally, the command and args
@@ -12045,6 +12332,14 @@ class GoogleCloudAiplatformV1ModelContainerSpec(_messages.Message):
       the Kubernetes Containers [v1 core
       API](https://kubernetes.io/docs/reference/generated/kubernetes-
       api/v1.23/#container-v1-core).
+    grpcPorts: Immutable. List of ports to expose from the container. Vertex
+      AI sends gRPC prediction requests that it receives to the first port on
+      this list. Vertex AI also sends liveness and health checks to this port.
+      If you do not specify this field, gRPC requests to the container will be
+      disabled. Vertex AI does not use ports other than the first one listed.
+      This field corresponds to the `ports` field of the Kubernetes Containers
+      v1 core API.
+    healthProbe: Immutable. Specification for Kubernetes readiness probe.
     healthRoute: Immutable. HTTP path on the container to send health checks
       to. Vertex AI intermittently sends GET requests to this path on the
       container's IP address and port to check that the container is healthy.
@@ -12112,15 +12407,23 @@ class GoogleCloudAiplatformV1ModelContainerSpec(_messages.Message):
       available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
       environment variable](https://cloud.google.com/vertex-
       ai/docs/predictions/custom-container-requirements#aip-variables).)
+    sharedMemorySizeMb: Immutable. The amount of the VM memory to reserve as
+      the shared memory for the model in megabytes.
+    startupProbe: Immutable. Specification for Kubernetes startup probe.
   """
 
   args = _messages.StringField(1, repeated=True)
   command = _messages.StringField(2, repeated=True)
-  env = _messages.MessageField('GoogleCloudAiplatformV1EnvVar', 3, repeated=True)
-  healthRoute = _messages.StringField(4)
-  imageUri = _messages.StringField(5)
-  ports = _messages.MessageField('GoogleCloudAiplatformV1Port', 6, repeated=True)
-  predictRoute = _messages.StringField(7)
+  deploymentTimeout = _messages.StringField(3)
+  env = _messages.MessageField('GoogleCloudAiplatformV1EnvVar', 4, repeated=True)
+  grpcPorts = _messages.MessageField('GoogleCloudAiplatformV1Port', 5, repeated=True)
+  healthProbe = _messages.MessageField('GoogleCloudAiplatformV1Probe', 6)
+  healthRoute = _messages.StringField(7)
+  imageUri = _messages.StringField(8)
+  ports = _messages.MessageField('GoogleCloudAiplatformV1Port', 9, repeated=True)
+  predictRoute = _messages.StringField(10)
+  sharedMemorySizeMb = _messages.IntegerField(11)
+  startupProbe = _messages.MessageField('GoogleCloudAiplatformV1Probe', 12)
 
 
 class GoogleCloudAiplatformV1ModelDeploymentMonitoringBigQueryTable(_messages.Message):
@@ -14833,6 +15136,40 @@ class GoogleCloudAiplatformV1PrivateServiceConnectConfig(_messages.Message):
   projectAllowlist = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudAiplatformV1Probe(_messages.Message):
+  r"""Probe describes a health check to be performed against a container to
+  determine whether it is alive or ready to receive traffic.
+
+  Fields:
+    exec_: Exec specifies the action to take.
+    periodSeconds: How often (in seconds) to perform the probe. Default to 10
+      seconds. Minimum value is 1. Must be less than timeout_seconds. Maps to
+      Kubernetes probe argument 'periodSeconds'.
+    timeoutSeconds: Number of seconds after which the probe times out.
+      Defaults to 1 second. Minimum value is 1. Must be greater or equal to
+      period_seconds. Maps to Kubernetes probe argument 'timeoutSeconds'.
+  """
+
+  exec_ = _messages.MessageField('GoogleCloudAiplatformV1ProbeExecAction', 1)
+  periodSeconds = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  timeoutSeconds = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
+class GoogleCloudAiplatformV1ProbeExecAction(_messages.Message):
+  r"""ExecAction specifies a command to execute.
+
+  Fields:
+    command: Command is the command line to execute inside the container, the
+      working directory for the command is root ('/') in the container's
+      filesystem. The command is simply exec'd, it is not run inside a shell,
+      so traditional shell instructions ('|', etc) won't work. To use a shell,
+      you need to explicitly call out to that shell. Exit status of 0 is
+      treated as live/healthy and non-zero is unhealthy.
+  """
+
+  command = _messages.StringField(1, repeated=True)
+
+
 class GoogleCloudAiplatformV1PurgeArtifactsMetadata(_messages.Message):
   r"""Details of operations that perform MetadataService.PurgeArtifacts.
 
@@ -14981,6 +15318,28 @@ class GoogleCloudAiplatformV1PythonPackageSpec(_messages.Message):
   executorImageUri = _messages.StringField(3)
   packageUris = _messages.StringField(4, repeated=True)
   pythonModule = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1QueryDeployedModelsResponse(_messages.Message):
+  r"""Response message for QueryDeployedModels method.
+
+  Fields:
+    deployedModelRefs: References to the DeployedModels that share the
+      specified deploymentResourcePool.
+    deployedModels: DEPRECATED Use deployed_model_refs instead.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    totalDeployedModelCount: The total number of DeployedModels on this
+      DeploymentResourcePool.
+    totalEndpointCount: The total number of Endpoints that have DeployedModels
+      on this DeploymentResourcePool.
+  """
+
+  deployedModelRefs = _messages.MessageField('GoogleCloudAiplatformV1DeployedModelRef', 1, repeated=True)
+  deployedModels = _messages.MessageField('GoogleCloudAiplatformV1DeployedModel', 2, repeated=True)
+  nextPageToken = _messages.StringField(3)
+  totalDeployedModelCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  totalEndpointCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
 
 
 class GoogleCloudAiplatformV1RawPredictRequest(_messages.Message):
@@ -18602,7 +18961,7 @@ class GoogleCloudAiplatformV1StringArray(_messages.Message):
 
 
 class GoogleCloudAiplatformV1Study(_messages.Message):
-  r"""A message representing a Study. Next id: 12
+  r"""A message representing a Study.
 
   Enums:
     StateValueValuesEnum: Output only. The detailed state of a Study.
@@ -18668,6 +19027,8 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
       supported by the Vertex AI Vizier service. Not supported by
       HyperparameterTuningJob or TrainingPipeline.
     parameters: Required. The set of parameters to tune.
+    studyStoppingConfig: Conditions for automated stopping of a Study. Enable
+      automated stopping by configuring at least one condition.
   """
 
   class AlgorithmValueValuesEnum(_messages.Enum):
@@ -18725,6 +19086,7 @@ class GoogleCloudAiplatformV1StudySpec(_messages.Message):
   metrics = _messages.MessageField('GoogleCloudAiplatformV1StudySpecMetricSpec', 6, repeated=True)
   observationNoise = _messages.EnumField('ObservationNoiseValueValuesEnum', 7)
   parameters = _messages.MessageField('GoogleCloudAiplatformV1StudySpecParameterSpec', 8, repeated=True)
+  studyStoppingConfig = _messages.MessageField('GoogleCloudAiplatformV1StudySpecStudyStoppingConfig', 9)
 
 
 class GoogleCloudAiplatformV1StudySpecConvexAutomatedStoppingSpec(_messages.Message):
@@ -19041,6 +19403,71 @@ class GoogleCloudAiplatformV1StudySpecParameterSpecIntegerValueSpec(_messages.Me
   defaultValue = _messages.IntegerField(1)
   maxValue = _messages.IntegerField(2)
   minValue = _messages.IntegerField(3)
+
+
+class GoogleCloudAiplatformV1StudySpecStudyStoppingConfig(_messages.Message):
+  r"""The configuration (stopping conditions) for automated stopping of a
+  Study. Conditions include trial budgets, time budgets, and convergence
+  detection.
+
+  Fields:
+    maxDurationNoProgress: If the objective value has not improved for this
+      much time, stop the study. WARNING: Effective only for single-objective
+      studies.
+    maxNumTrials: If there are more than this many trials, stop the study.
+    maxNumTrialsNoProgress: If the objective value has not improved for this
+      many consecutive trials, stop the study. WARNING: Effective only for
+      single-objective studies.
+    maximumRuntimeConstraint: If the specified time or duration has passed,
+      stop the study.
+    minNumTrials: If there are fewer than this many COMPLETED trials, do not
+      stop the study.
+    minimumRuntimeConstraint: Each "stopping rule" in this proto specifies an
+      "if" condition. Before Vizier would generate a new suggestion, it first
+      checks each specified stopping rule, from top to bottom in this list.
+      Note that the first few rules (e.g. minimum_runtime_constraint,
+      min_num_trials) will prevent other stopping rules from being evaluated
+      until they are met. For example, setting `min_num_trials=5` and
+      `always_stop_after= 1 hour` means that the Study will ONLY stop after it
+      has 5 COMPLETED trials, even if more than an hour has passed since its
+      creation. It follows the first applicable rule (whose "if" condition is
+      satisfied) to make a stopping decision. If none of the specified rules
+      are applicable, then Vizier decides that the study should not stop. If
+      Vizier decides that the study should stop, the study enters STOPPING
+      state (or STOPPING_ASAP if should_stop_asap = true). IMPORTANT: The
+      automatic study state transition happens precisely as described above;
+      that is, deleting trials or updating StudyConfig NEVER automatically
+      moves the study state back to ACTIVE. If you want to _resume_ a Study
+      that was stopped, 1) change the stopping conditions if necessary, 2)
+      activate the study, and then 3) ask for suggestions. If the specified
+      time or duration has not passed, do not stop the study.
+    shouldStopAsap: If true, a Study enters STOPPING_ASAP whenever it would
+      normally enters STOPPING state. The bottom line is: set to true if you
+      want to interrupt on-going evaluations of Trials as soon as the study
+      stopping condition is met. (Please see Study.State documentation for the
+      source of truth).
+  """
+
+  maxDurationNoProgress = _messages.StringField(1)
+  maxNumTrials = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maxNumTrialsNoProgress = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maximumRuntimeConstraint = _messages.MessageField('GoogleCloudAiplatformV1StudyTimeConstraint', 4)
+  minNumTrials = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  minimumRuntimeConstraint = _messages.MessageField('GoogleCloudAiplatformV1StudyTimeConstraint', 6)
+  shouldStopAsap = _messages.BooleanField(7)
+
+
+class GoogleCloudAiplatformV1StudyTimeConstraint(_messages.Message):
+  r"""Time-based Constraint for Study
+
+  Fields:
+    endTime: Compares the wallclock time to this time. Must use UTC timezone.
+    maxDuration: Counts the wallclock time passed since the creation of this
+      Study.
+  """
+
+  endTime = _messages.StringField(1)
+  maxDuration = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1SuggestTrialsMetadata(_messages.Message):
@@ -20187,6 +20614,16 @@ class GoogleCloudAiplatformV1UnmanagedContainerModel(_messages.Message):
   predictSchemata = _messages.MessageField('GoogleCloudAiplatformV1PredictSchemata', 3)
 
 
+class GoogleCloudAiplatformV1UpdateDeploymentResourcePoolOperationMetadata(_messages.Message):
+  r"""Runtime operation information for UpdateDeploymentResourcePool method.
+
+  Fields:
+    genericMetadata: The operation generic information.
+  """
+
+  genericMetadata = _messages.MessageField('GoogleCloudAiplatformV1GenericOperationMetadata', 1)
+
+
 class GoogleCloudAiplatformV1UpdateExplanationDatasetOperationMetadata(_messages.Message):
   r"""Runtime operation information for ModelService.UpdateExplanationDataset.
 
@@ -20294,10 +20731,11 @@ class GoogleCloudAiplatformV1UploadModelRequest(_messages.Message):
     serviceAccount: Optional. The user-provided custom service account to use
       to do the model upload. If empty, [Vertex AI Service
       Agent](https://cloud.google.com/vertex-ai/docs/general/access-
-      control#service-agents) will be used. Users uploading the Model must
-      have the `iam.serviceAccounts.actAs` permission on this service account.
-      Also, this account must belong to the project specified in the `parent`
-      field and have all necessary read permissions.
+      control#service-agents) will be used to access resources needed to
+      upload the model. This account must belong to the target project where
+      the model is uploaded to, i.e., the project specified in the `parent`
+      field of this request and have necessary read permissions (to Google
+      Cloud Storage, Artifact Registry, etc.).
   """
 
   model = _messages.MessageField('GoogleCloudAiplatformV1Model', 1)
@@ -21073,6 +21511,8 @@ class StandardQueryParameters(_messages.Message):
   upload_protocol = _messages.StringField(12)
 
 
+encoding.AddCustomJsonFieldMapping(
+    GoogleCloudAiplatformV1Probe, 'exec_', 'exec')
 encoding.AddCustomJsonFieldMapping(
     StandardQueryParameters, 'f__xgafv', '$.xgafv')
 encoding.AddCustomJsonEnumMapping(

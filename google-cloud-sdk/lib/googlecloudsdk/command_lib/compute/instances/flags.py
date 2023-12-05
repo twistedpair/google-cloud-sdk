@@ -1882,6 +1882,26 @@ def AddHostErrorTimeoutSecondsArgs(parser):
     """)
 
 
+def AddGracefulShutdownArgs(parser):
+  parser.add_argument(
+      '--graceful-shutdown',
+      action=arg_parsers.StoreTrueFalseAction,
+      help="""\
+      If set to true, enables graceful shutdown for the instance.
+      """,
+  )
+  parser.add_argument(
+      '--graceful-shutdown-max-duration',
+      type=arg_parsers.Duration(lower_bound='1s', upper_bound='3600s'),
+      help="""
+      Specifies time needed to gracefully
+      shutdown the instance. After that time, the instance goes to STOPPING even
+      if graceful shutdown is not completed.e.g. `300s`, `1h`. See $ gcloud
+      topic datetimes for information on duration formats.
+      """,
+  )
+
+
 def AddLocalSsdRecoveryTimeoutArgs(parser):
   parser.add_argument(
       '--local-ssd-recovery-timeout',

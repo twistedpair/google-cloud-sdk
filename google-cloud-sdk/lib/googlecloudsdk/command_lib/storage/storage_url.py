@@ -309,6 +309,8 @@ class CloudUrl(StorageUrl):
     super(CloudUrl, self).__init__()
     self.scheme = scheme if scheme else None
     self.bucket_name = bucket_name if bucket_name else None
+    # TODO(b/309803217) Refactor it to have resource_name instead of
+    # object_name.
     self.object_name = object_name if object_name else None
     self.generation = str(generation) if generation else None
     self._validate_scheme()

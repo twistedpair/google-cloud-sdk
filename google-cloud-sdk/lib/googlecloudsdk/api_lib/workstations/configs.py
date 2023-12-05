@@ -175,6 +175,8 @@ class Configs:
       encryption_key.kmsKeyServiceAccount = args.kms_key_service_account
     config.encryptionKey = encryption_key
 
+    config.enableAuditAgent = args.enable_audit_agent
+
     if args.replica_zones:
       config.replicaZones = args.replica_zones
 
@@ -285,6 +287,10 @@ class Configs:
       update_mask.append(
           'host.gce_instance.confidential_instance_config.enable_confidential_compute'
       )
+
+    if args.IsSpecified('enable_audit_agent'):
+      config.enableAuditAgent = args.enable_audit_agent
+      update_mask.append('enable_audit_agent')
 
     if args.IsSpecified('enable_nested_virtualization'):
       config.host.gceInstance.enableNestedVirtualization = (

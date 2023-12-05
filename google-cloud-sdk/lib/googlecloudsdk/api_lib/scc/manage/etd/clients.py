@@ -14,7 +14,10 @@
 # limitations under the License.
 """Useful commands for interacting with the Cloud SCC API."""
 
+from typing import Generator
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.scc import util as scc_util
 from googlecloudsdk.core import log
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.generated_clients.apis.securitycentermanagement.v1 import securitycentermanagement_v1_messages as messages
@@ -57,6 +60,65 @@ class ETDCustomModuleClient(object):
     response = self._client.Delete(req)
     log.DeletedResource(name)
     return response
+
+  def Update(
+      self,
+      name: str,
+      validate_only: bool,
+      custom_config,
+      enablement_state,
+      update_mask: str,
+  ) -> messages.EventThreatDetectionCustomModule:
+    """Update an ETD custom module."""
+
+    event_threat_detection_custom_module = (
+        messages.EventThreatDetectionCustomModule(
+            config=custom_config,
+            enablementState=enablement_state,
+            name=name,
+        )
+    )
+
+    req = messages.SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesPatchRequest(
+        eventThreatDetectionCustomModule=event_threat_detection_custom_module,
+        name=name,
+        updateMask=scc_util.CleanUpUserMaskInput(update_mask),
+        validateOnly=validate_only,
+    )
+    if validate_only:
+      log.status.Print('Request is valid.')
+      return
+    console_io.PromptContinue(
+        message=(
+            'Are you sure you want to update the Event Threat Detection custom'
+            ' module {}?\n'.format(name)
+        ),
+        cancel_on_no=True,
+    )
+    response = self._client.Patch(req)
+    log.UpdatedResource(name)
+    return response
+
+  def List(
+      self, page_size: int, parent: str, limit: int
+  ) -> Generator[
+      messages.EventThreatDetectionCustomModule,
+      None,
+      messages.ListEventThreatDetectionCustomModulesResponse,
+  ]:
+    """List details of resident and inherited Event Threat Detection Custom Modules."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesListRequest(
+        pageSize=page_size, parent=parent
+    )
+    return list_pager.YieldFromList(
+        self._client,
+        request=req,
+        limit=limit,
+        field='eventThreatDetectionCustomModules',
+        batch_size=page_size,
+        batch_size_attribute='pageSize',
+    )
 
 
 class EffectiveETDCustomModuleClient(object):

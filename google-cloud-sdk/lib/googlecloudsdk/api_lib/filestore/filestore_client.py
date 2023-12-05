@@ -319,6 +319,8 @@ class FilestoreClient(object):
                                  description=None,
                                  labels=None,
                                  file_share=None,
+                                 managed_ad=None,
+                                 disconnect_managed_ad=None,
                                  clear_nfs_export_options=False):
     """Parses updates into an instance config.
 
@@ -327,6 +329,8 @@ class FilestoreClient(object):
       description: str, a new description, if any.
       labels: LabelsValue message, the new labels value, if any.
       file_share: dict representing a new file share config, if any.
+      managed_ad: The Managed Active Directory settings of the instance.
+      disconnect_managed_ad: Disconnect from Managed Active Directory.
       clear_nfs_export_options: bool, whether to clear the NFS export options.
 
     Raises:
@@ -341,6 +345,8 @@ class FilestoreClient(object):
         description=description,
         labels=labels,
         file_share=file_share,
+        managed_ad=managed_ad,
+        disconnect_managed_ad=disconnect_managed_ad,
         clear_nfs_export_options=clear_nfs_export_options)
     return instance
 
@@ -456,10 +462,10 @@ class FilestoreClient(object):
         anon_gid = None
         anon_uid = None
 
-      securityFlavorsList = []
+      security_flavors_list = []
       flavors = nfs_export_option.get('security-flavors', [])
       for flavor in flavors:
-        securityFlavorsList.append(
+        security_flavors_list.append(
             messages.NfsExportOptions.SecurityFlavorsValueListEntryValuesEnum.lookup_by_name(
                 flavor))
       nfs_export_config = messages.NfsExportOptions(
@@ -468,7 +474,7 @@ class FilestoreClient(object):
           anonGid=anon_gid,
           accessMode=access_mode,
           squashMode=squash_mode,
-          securityFlavors=securityFlavorsList)
+          securityFlavors=security_flavors_list)
       nfs_export_configs.append(nfs_export_config)
     return nfs_export_configs
 
@@ -552,6 +558,8 @@ class AlphaFilestoreAdapter(object):
       description=None,
       labels=None,
       file_share=None,
+      managed_ad=None,
+      disconnect_managed_ad=None,
       clear_nfs_export_options=False,
   ):
     """Parse update information into an updated Instance message."""
@@ -583,6 +591,10 @@ class AlphaFilestoreAdapter(object):
       # NfSExportOptions to their defaults.
       if clear_nfs_export_options:
         instance_config.fileShares[0].nfsExportOptions = []
+    if managed_ad:
+      self.ParseManagedADIntoInstance(instance_config, managed_ad)
+    if disconnect_managed_ad:
+      instance_config.directoryServices = None
     return instance_config
 
   def ValidateFileShareForUpdate(self, instance_config, file_share):
@@ -684,8 +696,9 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
 
     instance.directoryServices = self.messages.DirectoryServicesConfig(
         managedActiveDirectory=self.messages.ManagedActiveDirectoryConfig(
-            domain=domain,
-            computer=computer))
+            domain=domain, computer=computer
+        )
+    )
 
   def ParseFileShareIntoInstance(
       self, instance, file_share, instance_zone=None
@@ -703,7 +716,7 @@ class BetaFilestoreAdapter(AlphaFilestoreAdapter):
           fs for fs in instance.fileShares if fs.name != file_share.get('name')
       ]
       if 'source-backup' in file_share:
-        project = properties.VALUES.core.project.Get(required=True)
+        _ = properties.VALUES.core.project.Get(required=True)
         location = file_share.get('source-backup-region')
         if location is None:
           raise InvalidArgumentError(

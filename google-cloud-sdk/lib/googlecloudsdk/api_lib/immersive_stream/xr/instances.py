@@ -28,15 +28,21 @@ def ProjectLocation(project, location):
   return 'projects/{}/locations/{}'.format(project, location)
 
 
-def GenerateTargetLocationConfigs(release_track, add_region_configs,
-                                  update_region_configs, remove_regions,
-                                  current_instance):
+def GenerateTargetLocationConfigs(
+    release_track,
+    add_region_configs,
+    update_region_configs,
+    remove_regions,
+    current_instance,
+):
   """Generates the target location configs.
 
   Args:
     release_track: ALPHA or GA release track
     add_region_configs: List of region config dicts of the form: [{'region':
-      region1, 'capacity': capacity1}] that specifies the regions to add to the
+      region1, 'capacity': capacity1, 'enable_autoscaling': enable_autoscaling1,
+      'autoscaling_buffer': autoscaling_buffer1, 'autoscaling_min_capacity':
+      autoscaling_min_capacity1}] that specifies the regions to add to the
       service instance
     update_region_configs: List of region config dicts of the form: [{'region':
       region1, 'capacity': capacity1}] that specifies the regions to update to
@@ -59,8 +65,10 @@ def GenerateTargetLocationConfigs(release_track, add_region_configs,
     location_configs = {}
 
   if add_region_configs:
-    if any(region_config['region'] in location_configs
-           for region_config in add_region_configs):
+    if any(
+        region_config['region'] in location_configs
+        for region_config in add_region_configs
+    ):
       log.status.Print('Only new regions can be added.')
       return
     region_configs_diff = add_region_configs
@@ -71,12 +79,16 @@ def GenerateTargetLocationConfigs(release_track, add_region_configs,
       return None
     # Convert the list of regions to remove to a list of region configs with
     # 0 capacities.
-    region_configs_diff = ({'region': region, 'capacity': 0}
-                           for region in remove_regions)
+    region_configs_diff = (
+        {'region': region, 'capacity': 0, 'enable_autoscaling': False}
+        for region in remove_regions
+    )
 
   elif update_region_configs:
-    if any(region_config['region'] not in location_configs
-           for region_config in update_region_configs):
+    if any(
+        region_config['region'] not in location_configs
+        for region_config in update_region_configs
+    ):
       log.status.Print('Only existing regions can be updated.')
       return None
     # Update API is idempotent so we do not need to check if the capacity is
@@ -88,11 +100,25 @@ def GenerateTargetLocationConfigs(release_track, add_region_configs,
   for region_config in region_configs_diff:
     region = region_config['region']
     capacity = int(region_config['capacity'])
+    enable_autoscaling = region_config.get('enable_autoscaling', False)
     location_config = messages.LocationConfig(
-        location=region, capacity=capacity)
+        location=region,
+        capacity=capacity,
+        enableAutoscaling=enable_autoscaling,
+    )
+    if enable_autoscaling:
+      location_config.autoscalingBuffer = int(
+          region_config['autoscaling_buffer']
+      )
+      location_config.autoscalingMinCapacity = int(
+          region_config['autoscaling_min_capacity']
+      )
+
     location_configs_diff.additionalProperties.append(
         messages.StreamInstance.LocationConfigsValue.AdditionalProperty(
-            key=region, value=location_config))
+            key=region, value=location_config
+        )
+    )
 
   # Merge current location configs with the diff.
   for location_config in location_configs_diff.additionalProperties:
@@ -110,7 +136,9 @@ def GenerateTargetLocationConfigs(release_track, add_region_configs,
   for key, location_config in sorted(location_configs.items()):
     target_location_configs.additionalProperties.append(
         messages.StreamInstance.LocationConfigsValue.AdditionalProperty(
-            key=key, value=location_config))
+            key=key, value=location_config
+        )
+    )
 
   return target_location_configs
 
@@ -131,7 +159,9 @@ def Get(release_track, instance_relative_name):
 
   return service.Get(
       messages.StreamProjectsLocationsStreamInstancesGetRequest(
-          name=instance_relative_name))
+          name=instance_relative_name
+      )
+  )
 
 
 def Create(
@@ -143,6 +173,7 @@ def Create(
     target_location_configs,
     fallback_url=None,
     mode=None,
+    gpu_class=None,
 ):
   """Create a new Immersive Stream for XR service instance.
 
@@ -158,6 +189,7 @@ def Create(
     fallback_url: string - A url to redirect users to when the instance is
       unable to provide the streaming experience
     mode: string - The rendering mode supported by the service instance
+    gpu_class: string - The class of GPU used by this instance
 
   Returns:
     An Operation object which can be used to check on the progress of the
@@ -173,6 +205,7 @@ def Create(
       name=instance_name,
       locationConfigs=target_location_configs,
       mode=mode,
+      gpuClass=gpu_class,
   )
   if fallback_url:
     stream_config = messages.StreamConfig(fallbackUri=fallback_url)
@@ -181,10 +214,13 @@ def Create(
 
   return service.Create(
       messages.StreamProjectsLocationsStreamInstancesCreateRequest(
-          parent=ProjectLocation(properties.VALUES.core.project.Get(),
-                                 location),
+          parent=ProjectLocation(
+              properties.VALUES.core.project.Get(), location
+          ),
           streamInstance=instance,
-          streamInstanceId=instance_name))
+          streamInstanceId=instance_name,
+      )
+  )
 
 
 def UpdateLocationConfigs(release_track, instance_ref, target_location_configs):
@@ -200,8 +236,10 @@ def UpdateLocationConfigs(release_track, instance_ref, target_location_configs):
     An Operation object which can be used to check on the progress of the
     service instance update.
   """
-  if (not target_location_configs or
-      not target_location_configs.additionalProperties):
+  if (
+      not target_location_configs
+      or not target_location_configs.additionalProperties
+  ):
     raise exceptions.Error('Target location configs must be provided')
 
   client = api_util.GetClient(release_track)
@@ -214,7 +252,9 @@ def UpdateLocationConfigs(release_track, instance_ref, target_location_configs):
       messages.StreamProjectsLocationsStreamInstancesPatchRequest(
           name=instance_ref.RelativeName(),
           streamInstance=instance,
-          updateMask='location_configs'))
+          updateMask='location_configs',
+      )
+  )
 
 
 def UpdateContentBuildVersion(release_track, instance_ref, version):
@@ -239,7 +279,9 @@ def UpdateContentBuildVersion(release_track, instance_ref, version):
       messages.StreamProjectsLocationsStreamInstancesPatchRequest(
           name=instance_ref.RelativeName(),
           streamInstance=instance,
-          updateMask='content_build_version'))
+          updateMask='content_build_version',
+      )
+  )
 
 
 def UpdateFallbackUrl(release_track, instance_ref, fallback_url):
@@ -266,4 +308,6 @@ def UpdateFallbackUrl(release_track, instance_ref, fallback_url):
       messages.StreamProjectsLocationsStreamInstancesPatchRequest(
           name=instance_ref.RelativeName(),
           streamInstance=instance,
-          updateMask='stream_config'))
+          updateMask='stream_config',
+      )
+  )

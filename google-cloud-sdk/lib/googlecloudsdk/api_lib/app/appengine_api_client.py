@@ -71,9 +71,26 @@ class AppengineApiClient(appengine_api_client_base.AppengineApiClientBase):
     Raises:
       apitools_exceptions.HttpNotFoundError if app doesn't exist
     """
-    request = self.messages.AppengineAppsGetRequest(
-        name=self._FormatApp())
+    request = self.messages.AppengineAppsGetRequest(name=self._FormatApp())
     return self.client.apps.Get(request)
+
+  def ListRuntimes(self, environment):
+    """Lists the available runtimes for the given App Engine environment.
+
+    Args:
+      environment: The environment for the application, either Standard or
+        Flexible.
+
+    Returns:
+      v1beta|v1.ListRuntimesResponse, the list of Runtimes.
+
+    Raises:
+      apitools_exceptions.HttpNotFoundError if app doesn't exist
+    """
+    request = self.messages.AppengineAppsListRuntimesRequest(
+        parent=self._FormatApp(), environment=environment
+    )
+    return self.client.apps.ListRuntimes(request)
 
   def IsStopped(self, app):
     """Checks application resource to get serving status.

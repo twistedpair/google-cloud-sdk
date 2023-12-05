@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -31,6 +31,7 @@ __protobuf__ = proto.module(
     package='google.logging.v2',
     manifest={
         'LogEntry',
+        'LogErrorGroup',
         'LogEntryOperation',
         'LogEntrySourceLocation',
         'LogSplit',
@@ -92,6 +93,7 @@ class LogEntry(proto.Message):
             protocol buffer. Some Google Cloud Platform
             services use this field for their log entry
             payloads.
+
             The following protocol buffer types are
             supported; user-defined types are not supported:
 
@@ -235,6 +237,17 @@ class LogEntry(proto.Message):
             Optional. Information indicating this
             LogEntry is part of a sequence of multiple log
             entries split from a single LogEntry.
+        error_groups (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogErrorGroup]):
+            Output only. The `Error
+            Reporting <https://cloud.google.com/error-reporting>`__
+            error groups associated with this LogEntry. Error Reporting
+            sets the values for this field during error group creation.
+
+            For more information, see `View error
+            details <https://cloud.google.com/error-reporting/docs/viewing-errors#view_error_details>`__
+
+            This field isn't available during `log
+            routing <https://cloud.google.com/logging/docs/routing/overview>`__
     """
 
     log_name: str = proto.Field(
@@ -323,6 +336,32 @@ class LogEntry(proto.Message):
         proto.MESSAGE,
         number=35,
         message='LogSplit',
+    )
+    error_groups: MutableSequence['LogErrorGroup'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=36,
+        message='LogErrorGroup',
+    )
+
+
+class LogErrorGroup(proto.Message):
+    r"""Contains metadata that associates the LogEntry to Error
+    Reporting error groups.
+
+    Attributes:
+        id (str):
+            The id is a unique identifier for a particular error group;
+            it is the last part of the error group resource name:
+            /projects//errors/. Example: COShysOX0r_51QE The id is
+            derived from key parts of the error-log content and is
+            treated as Service Data. For information about how Service
+            Data is handled, see `Google Cloud Privacy
+            Notice <https://cloud.google.com/terms/cloud-privacy-notice>`__.
+    """
+
+    id: str = proto.Field(
+        proto.STRING,
+        number=1,
     )
 
 

@@ -348,6 +348,20 @@ def AddSerialConsoleSshKeyArgToParser(parser, positional=False, name=None):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddProvisioningSshKeyArgToParser(
+    parser, positional=False, name=None, required=True, plural=False
+):
+  group_parser = parser.add_mutually_exclusive_group(required=required)
+  AddSshKeyArgToParser(
+      group_parser,
+      positional=positional,
+      name=name,
+      plural=plural,
+      required=required,
+  )
+  AddClearSshKeyToParser(group_parser)
+
+
 def AddSshKeyArgToParser(
     parser, positional=False, name=None, required=True, plural=False
 ):
@@ -364,6 +378,15 @@ def AddSshKeyArgToParser(
       plural=plural,
       )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddClearSshKeyToParser(parser):
+  parser.add_argument(
+      '--clear-ssh-keys',
+      action='store_true',
+      help="""Provisions the instance without any SSH keys.""",
+      required=False,
+  )
 
 
 def AddNewNameArgToParser(parser, obj_name):

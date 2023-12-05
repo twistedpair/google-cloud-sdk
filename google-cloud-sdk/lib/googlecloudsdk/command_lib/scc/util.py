@@ -21,7 +21,7 @@ from __future__ import unicode_literals
 
 import re
 
-from googlecloudsdk.command_lib.scc.errors import InvalidSCCInputError
+from googlecloudsdk.command_lib.scc import errors
 from googlecloudsdk.core import properties
 
 
@@ -43,20 +43,26 @@ def GetParentFromPositionalArguments(args):
     parent = args.organization
 
   if parent is None:
-    raise InvalidSCCInputError("Could not find Parent argument. Please "
-                               "provide the parent argument.")
+    raise errors.InvalidSCCInputError(
+        "Could not find Parent argument. Please provide the parent argument."
+    )
 
   if id_pattern.match(parent):
     # Prepend organizations/ if only number value is provided.
     parent = "organizations/" + parent
 
-  if not (parent.startswith("organizations/") or
-          parent.startswith("projects/") or parent.startswith("folders/")):
-    error_message = ("Parent must match either [0-9]+, organizations/[0-9]+, "
-                     "projects/.* "
-                     "or folders/.*."
-                     "")
-    raise InvalidSCCInputError(error_message)
+  if not (
+      parent.startswith("organizations/")
+      or parent.startswith("projects/")
+      or parent.startswith("folders/")
+  ):
+    error_message = (
+        "Parent must match either [0-9]+, organizations/[0-9]+, "
+        "projects/.* "
+        "or folders/.*."
+        ""
+    )
+    raise errors.InvalidSCCInputError(error_message)
 
   return parent
 
@@ -67,16 +73,18 @@ def GetParentFromNamedArguments(args):
     if "/" in args.organization:
       pattern = re.compile("^organizations/[0-9]{1,19}$")
       if not pattern.match(args.organization):
-        raise InvalidSCCInputError(
+        raise errors.InvalidSCCInputError(
             "When providing a full resource path, it must include the pattern "
-            "'^organizations/[0-9]{1,19}$'.")
+            "'^organizations/[0-9]{1,19}$'."
+        )
       else:
         return args.organization
     else:
       pattern = re.compile("^[0-9]{1,19}$")
       if not pattern.match(args.organization):
-        raise InvalidSCCInputError(
-            "Organization does not match the pattern '^[0-9]{1,19}$'.")
+        raise errors.InvalidSCCInputError(
+            "Organization does not match the pattern '^[0-9]{1,19}$'."
+        )
       else:
         return "organizations/" + args.organization
 
@@ -84,9 +92,10 @@ def GetParentFromNamedArguments(args):
     if "/" in args.folder:
       pattern = re.compile("^folders/.*$")
       if not pattern.match(args.folder):
-        raise InvalidSCCInputError(
+        raise errors.InvalidSCCInputError(
             "When providing a full resource path, it must include the pattern "
-            "'^folders/.*$'.")
+            "'^folders/.*$'."
+        )
       else:
         return args.folder
     else:
@@ -96,9 +105,10 @@ def GetParentFromNamedArguments(args):
     if "/" in args.project:
       pattern = re.compile("^projects/.*$")
       if not pattern.match(args.project):
-        raise InvalidSCCInputError(
+        raise errors.InvalidSCCInputError(
             "When providing a full resource path, it must include the pattern "
-            "'^projects/.*$'.")
+            "'^projects/.*$'."
+        )
       else:
         return args.project
     else:
@@ -108,3 +118,69 @@ def GetParentFromNamedArguments(args):
 def CleanUpUserMaskInput(mask):
   """Removes spaces from a field mask provided by user."""
   return mask.replace(" ", "")
+
+
+def IsLocationSpecified(args, resource_name):
+  """Returns true if location is specified."""
+  location_in_resource_name = "/locations/" in resource_name
+  # Validate mutex on location.
+  if args.IsKnownAndSpecified("location") and location_in_resource_name:
+    raise errors.InvalidSCCInputError(
+        "Only provide location in a full resource name "
+        "or in a --location flag, not both."
+    )
+
+  return args.IsKnownAndSpecified("location") or location_in_resource_name
+
+
+def GetVersionFromArguments(
+    args, resource_name="", deprecated_args: list[str] = None
+):
+  """Returns the correct version to call based on the user supplied arguments.
+
+  Args:
+    args: arguments
+    resource_name: (optional) resource name e.g. finding, mute_config
+    deprecated_args: (optional) list of deprecated arguments for a command
+
+  Returns:
+    Version of securitycenter api to handle command, either "v1" or "v2"
+  """
+  location_specified = IsLocationSpecified(args, resource_name)
+  if deprecated_args:
+    for argument in deprecated_args:
+      if args.IsKnownAndSpecified(argument) and location_specified:
+        raise errors.InvalidSCCInputError(
+            "Location is not available when deprecated arguments are used"
+        )
+      if args.IsKnownAndSpecified(argument) and not location_specified:
+        return "v1"
+
+  if args.api_version == "v2enabled":
+    return "v2"
+
+  if args.api_version == "v1":
+    if location_specified:
+      # TODO: b/282774006 - Update error message to include details about
+      # location support.
+      raise errors.InvalidAPIVersion("Location is not supported by v1.")
+    return args.api_version
+
+
+def ValidateAndGetLocation(args, version):
+  """Validates --location flag input and returns location."""
+  if version == "v2":
+    if args.location is not None:
+      # Validate location if a user wants to use v2 and specifes a location.
+      name_pattern = re.compile("^locations/[A-Za-z0-9-]{0,61}$")
+      id_pattern = re.compile("^[A-Za-z0-9-]{0,61}$")
+      if name_pattern.match(args.location):
+        return args.location.split("/")[1]
+      if id_pattern.match(args.location):
+        return args.location
+      raise errors.InvalidSCCInputError(
+          "location does not match the pattern"
+          " '^locations/[A-Za-z0-9-]{0,61}$'. or [A-Za-z0-9-]{0,61}"
+      )
+  # Return the default location (global) if version is equal to v1.
+  return args.location

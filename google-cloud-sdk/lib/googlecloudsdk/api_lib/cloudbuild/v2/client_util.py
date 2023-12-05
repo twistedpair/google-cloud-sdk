@@ -121,3 +121,22 @@ def ClusterShortName(resource_name):
     return match.group(1)
   raise ValueError('The cluster membership resource name must match "%s"' %
                    (CLUSTER_NAME_SELECTOR,))
+
+
+def ListLocations(project):
+  """Get the list of supported Cloud Build locations.
+
+  Args:
+    project: The project to search.
+
+  Returns:
+    A CloudbuildProjectsLocationsListRequest object.
+  """
+  client = GetClientInstance()
+  messages = GetMessagesModule()
+
+  return client.projects_locations.List(
+      messages.CloudbuildProjectsLocationsListRequest(
+          name='projects/{}'.format(project)
+      )
+  )

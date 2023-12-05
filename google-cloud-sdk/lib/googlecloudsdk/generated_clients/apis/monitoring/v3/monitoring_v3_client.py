@@ -1118,7 +1118,7 @@ class MonitoringV3(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""Creates or adds data to one or more time series. The response is empty if all time series in the request were written. If any time series could not be written, a corresponding failure message is included in the error response.
+      r"""Creates or adds data to one or more time series. The response is empty if all time series in the request were written. If any time series could not be written, a corresponding failure message is included in the error response. This method does not support resource locations constraint of an organization policy (https://cloud.google.com/resource-manager/docs/organization-policy/defining-locations#setting_the_organization_policy).
 
       Args:
         request: (MonitoringProjectsTimeSeriesCreateRequest) input message

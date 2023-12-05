@@ -217,17 +217,20 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
     return files.ExpandHomeAndVars(
         DEFAULT_LOGIN_CONFIG_PATH[platforms.OperatingSystem.Current().id])
 
-  def _ParseLoginArgs(self,
-                      cluster,
-                      kube_config=None,
-                      login_config=None,
-                      login_config_cert=None,
-                      user=None,
-                      ldap_user=None,
-                      ldap_pass=None,
-                      dry_run=None,
-                      preferred_auth=None,
-                      **kwargs):
+  def _ParseLoginArgs(
+      self,
+      cluster,
+      kube_config=None,
+      login_config=None,
+      login_config_cert=None,
+      user=None,
+      ldap_user=None,
+      ldap_pass=None,
+      dry_run=None,
+      preferred_auth=None,
+      server_url=None,
+      **kwargs
+  ):
     del kwargs  # Not Used Here
     exec_args = ['login']
     if cluster:
@@ -247,6 +250,8 @@ class AnthosAuthWrapper(binary_operations.StreamingBinaryBackedOperation):
           ['--ldap-username', ldap_user, '--ldap-password', ldap_pass])
     if preferred_auth:
       exec_args.extend(['--preferred-auth', preferred_auth])
+    if server_url:
+      exec_args.extend(['--server', server_url])
 
     return exec_args
 

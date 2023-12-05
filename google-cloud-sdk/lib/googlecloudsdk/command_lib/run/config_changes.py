@@ -1461,7 +1461,7 @@ class StartupCpuBoostChange(TemplateConfigChanger):
 
 @dataclasses.dataclass(frozen=True)
 class DefaultUrlChange(TemplateConfigChanger):
-  """Sets the disable-default-url annotation on the service template.
+  """Sets the default-url-disabled annotation on the service template.
 
   Attributes:
     default_url: Boolean indicating whether the default URL should be enabled.
@@ -1470,7 +1470,7 @@ class DefaultUrlChange(TemplateConfigChanger):
   default_url: bool
 
   def Adjust(self, resource):
-    resource.template.annotations[container_resource.DISABLE_URL_ANNOTATION] = (
+    resource.annotations[container_resource.DISABLE_URL_ANNOTATION] = (
         str(not self.default_url)
     )
     return resource

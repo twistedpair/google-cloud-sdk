@@ -32,24 +32,28 @@ def _ServerTlsPolicyAttributeConfig():
   )
 
 
-def _LocationAttributeConfig():
+def _LocationAttributeConfig(region_fallthrough):
+  fallthroughs = []
+  if region_fallthrough:
+    fallthroughs.append(deps.ArgFallthrough('--region'))
+  fallthroughs.append(
+      deps.Fallthrough(
+          lambda: 'global', 'default value of location is [global]'
+      )
+  )
   return concepts.ResourceParameterAttributeConfig(
       name='location',
       help_text='The Cloud location for the {resource}.',
-      fallthroughs=[
-          deps.Fallthrough(
-              lambda: 'global', 'default value of location is [global]'
-          )
-      ],
+      fallthroughs=fallthroughs,
   )
 
 
-def _GetServerTlsPolicyResourceSpec():
+def _GetServerTlsPolicyResourceSpec(region_fallthrough):
   return concepts.ResourceSpec(
       'networksecurity.projects.locations.serverTlsPolicies',
       resource_name='server_tls_policy',
       serverTlsPoliciesId=_ServerTlsPolicyAttributeConfig(),
-      locationsId=_LocationAttributeConfig(),
+      locationsId=_LocationAttributeConfig(region_fallthrough),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False,
   )
@@ -62,6 +66,7 @@ def _GetServerTlsPolicyResourcePresentationSpec(
     required=False,
     plural=False,
     group=None,
+    region_fallthrough=False,
 ):
   """Returns ResourcePresentationSpec for server TLS policy resource.
 
@@ -72,18 +77,17 @@ def _GetServerTlsPolicyResourcePresentationSpec(
     required: bool, if False, means that map ID is optional.
     plural: bool.
     group: args group.
+    region_fallthrough: bool, True if the command has a region flag that should
+      be used as a fallthrough for the server TLS policy location.
 
   Returns:
     presentation_specs.ResourcePresentationSpec.
   """
   # 'location' flag is overridden to make it invisible in the documentation.
-  # Currently, only global server TLS policies are allowed and global is
-  # the default location, see LocationAttributeConfig, fallthroughs named param
-  # for detail.
   flag_overrides = {'location': ''}
   return presentation_specs.ResourcePresentationSpec(
       flag,
-      _GetServerTlsPolicyResourceSpec(),
+      _GetServerTlsPolicyResourceSpec(region_fallthrough),
       '{} {}.'.format(noun, verb),
       required=required,
       plural=plural,
@@ -99,6 +103,7 @@ def GetServerTlsPolicyResourceArg(
     required=False,
     plural=False,
     group=None,
+    region_fallthrough=False,
 ):
   """Creates a resource argument for a Server TLS policy.
 
@@ -109,6 +114,8 @@ def GetServerTlsPolicyResourceArg(
     required: bool, if True the flag is required.
     plural: bool, if True the flag is a list.
     group: args group.
+    region_fallthrough: bool, True if the command has a region flag that should
+      be used as a fallthrough for the server TLS policy location.
 
   Returns:
     ServerTlsPolicyResourceArg: ConceptParser, holder for Server TLS policy
@@ -116,7 +123,7 @@ def GetServerTlsPolicyResourceArg(
   """
   return concept_parsers.ConceptParser([
       _GetServerTlsPolicyResourcePresentationSpec(
-          '--' + name, noun, verb, required, plural, group
+          '--' + name, noun, verb, required, plural, group, region_fallthrough
       ),
   ])
 

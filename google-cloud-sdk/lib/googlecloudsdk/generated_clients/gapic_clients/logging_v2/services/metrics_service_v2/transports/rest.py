@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -315,6 +315,7 @@ class MetricsServiceV2RestTransport(MetricsServiceV2Transport):
                 value of the metric is the number of log
                 entries that match a logs filter in a
                 given time interval.
+
                 Logs-based metrics can also be used to
                 extract values from logs and create a
                 distribution of the values. The
@@ -475,6 +476,7 @@ class MetricsServiceV2RestTransport(MetricsServiceV2Transport):
                 value of the metric is the number of log
                 entries that match a logs filter in a
                 given time interval.
+
                 Logs-based metrics can also be used to
                 extract values from logs and create a
                 distribution of the values. The
@@ -638,6 +640,7 @@ class MetricsServiceV2RestTransport(MetricsServiceV2Transport):
                 value of the metric is the number of log
                 entries that match a logs filter in a
                 given time interval.
+
                 Logs-based metrics can also be used to
                 extract values from logs and create a
                 distribution of the values. The

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -25,7 +25,7 @@ from google.auth.transport.grpc import SslCredentials  # type: ignore
 
 import grpc  # type: ignore
 
-from google.longrunning import operations_pb2  # type: ignore
+from google.longrunning import operations_pb2 # type: ignore
 from cloudsdk.google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.types import logging_config
 from .base import ConfigServiceV2Transport, DEFAULT_CLIENT_INFO
@@ -1150,6 +1150,114 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
                 response_deserializer=logging_config.Settings.deserialize,
             )
         return self._stubs['update_settings']
+
+    @property
+    def list_saved_queries(self) -> Callable[
+            [logging_config.ListSavedQueriesRequest],
+            logging_config.ListSavedQueriesResponse]:
+        r"""Return a callable for the list saved queries method over gRPC.
+
+        Lists the SavedQueries that were created by the user
+        making the request.
+
+        Returns:
+            Callable[[~.ListSavedQueriesRequest],
+                    ~.ListSavedQueriesResponse]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'list_saved_queries' not in self._stubs:
+            self._stubs['list_saved_queries'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/ListSavedQueries',
+                request_serializer=logging_config.ListSavedQueriesRequest.serialize,
+                response_deserializer=logging_config.ListSavedQueriesResponse.deserialize,
+            )
+        return self._stubs['list_saved_queries']
+
+    @property
+    def create_saved_query(self) -> Callable[
+            [logging_config.CreateSavedQueryRequest],
+            logging_config.SavedQuery]:
+        r"""Return a callable for the create saved query method over gRPC.
+
+        Creates a new SavedQuery for the user making the
+        request.
+
+        Returns:
+            Callable[[~.CreateSavedQueryRequest],
+                    ~.SavedQuery]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'create_saved_query' not in self._stubs:
+            self._stubs['create_saved_query'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/CreateSavedQuery',
+                request_serializer=logging_config.CreateSavedQueryRequest.serialize,
+                response_deserializer=logging_config.SavedQuery.deserialize,
+            )
+        return self._stubs['create_saved_query']
+
+    @property
+    def delete_saved_query(self) -> Callable[
+            [logging_config.DeleteSavedQueryRequest],
+            empty_pb2.Empty]:
+        r"""Return a callable for the delete saved query method over gRPC.
+
+        Deletes an existing SavedQuery that was created by
+        the user making the request.
+
+        Returns:
+            Callable[[~.DeleteSavedQueryRequest],
+                    ~.Empty]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'delete_saved_query' not in self._stubs:
+            self._stubs['delete_saved_query'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/DeleteSavedQuery',
+                request_serializer=logging_config.DeleteSavedQueryRequest.serialize,
+                response_deserializer=empty_pb2.Empty.FromString,
+            )
+        return self._stubs['delete_saved_query']
+
+    @property
+    def list_recent_queries(self) -> Callable[
+            [logging_config.ListRecentQueriesRequest],
+            logging_config.ListRecentQueriesResponse]:
+        r"""Return a callable for the list recent queries method over gRPC.
+
+        Lists the RecentQueries that were created by the user
+        making the request.
+
+        Returns:
+            Callable[[~.ListRecentQueriesRequest],
+                    ~.ListRecentQueriesResponse]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'list_recent_queries' not in self._stubs:
+            self._stubs['list_recent_queries'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/ListRecentQueries',
+                request_serializer=logging_config.ListRecentQueriesRequest.serialize,
+                response_deserializer=logging_config.ListRecentQueriesResponse.deserialize,
+            )
+        return self._stubs['list_recent_queries']
 
     @property
     def copy_log_entries(self) -> Callable[

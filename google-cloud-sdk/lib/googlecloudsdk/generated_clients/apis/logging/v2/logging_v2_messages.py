@@ -28,6 +28,23 @@ class AggregateValueThreshold(_messages.Message):
   aggregation = _messages.MessageField('QueryStepAggregation', 2)
 
 
+class AlertingBooleanTest(_messages.Message):
+  r"""A test that reads a boolean column as the result.
+
+  Fields:
+    booleanColumn: Required. The column that contains a boolean that we want
+      to use as our result.
+    trigger: Optional. The number/percent of rows that must match in order for
+      the result set (partition set) to be considered in violation. If
+      unspecified, then the result set (partition set) will be in violation if
+      a single row matches.NOTE: Triggers are not yet supported for
+      BooleanTest.
+  """
+
+  booleanColumn = _messages.StringField(1)
+  trigger = _messages.MessageField('AlertingTrigger', 2)
+
+
 class AlertingQueryStep(_messages.Message):
   r"""A query step defined as a set of alerting configuration options. This
   may not be used as the first step in a query.
@@ -40,10 +57,140 @@ class AlertingQueryStep(_messages.Message):
     thresholdCondition: A test representing a comparison against a threshold.
   """
 
-  booleanCondition = _messages.MessageField('BooleanTest', 1)
+  booleanCondition = _messages.MessageField('AlertingBooleanTest', 1)
   partitionColumns = _messages.StringField(2, repeated=True)
-  stringCondition = _messages.MessageField('StringTest', 3)
-  thresholdCondition = _messages.MessageField('ThresholdTest', 4)
+  stringCondition = _messages.MessageField('AlertingStringTest', 3)
+  thresholdCondition = _messages.MessageField('AlertingThresholdTest', 4)
+
+
+class AlertingStringTest(_messages.Message):
+  r"""A test that compares a string column against a string to match. NOTE:
+  StringTest is not yet supported.
+
+  Enums:
+    ComparisonValueValuesEnum: Required. The comparison operator to use.
+
+  Fields:
+    column: Required. The column that contains the strings we want to search
+      on.
+    comparison: Required. The comparison operator to use.
+    pattern: Required. The string or regular expression which is compared to
+      the value in the column.
+    trigger: Optional. The number/percent of rows that must match in order for
+      the result set (partition set) to be considered in violation. If
+      unspecified, then the result set (partition set) will be in violation if
+      a single row matches.
+  """
+
+  class ComparisonValueValuesEnum(_messages.Enum):
+    r"""Required. The comparison operator to use.
+
+    Values:
+      STRING_COMPARISON_TYPE_UNSPECIFIED: No string comparison specified,
+        should never happen.
+      STRING_COMPARISON_MATCH: String column must equal the pattern.
+      STRING_COMPARISON_NOT_MATCH: String column must not equal the pattern.
+      STRING_COMPARISON_CONTAINS: String contains contains the pattern as a
+        substring.
+      STRING_COMPARISON_NOT_CONTAINS: String column does not contain the
+        pattern as a substring.
+      STRING_COMPARISON_REGEX_MATCH: Regular expression pattern found in
+        string column.
+      STRING_COMPARISON_REGEX_NOT_MATCH: Regular expression pattern not found
+        in string column.
+    """
+    STRING_COMPARISON_TYPE_UNSPECIFIED = 0
+    STRING_COMPARISON_MATCH = 1
+    STRING_COMPARISON_NOT_MATCH = 2
+    STRING_COMPARISON_CONTAINS = 3
+    STRING_COMPARISON_NOT_CONTAINS = 4
+    STRING_COMPARISON_REGEX_MATCH = 5
+    STRING_COMPARISON_REGEX_NOT_MATCH = 6
+
+  column = _messages.StringField(1)
+  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
+  pattern = _messages.StringField(3)
+  trigger = _messages.MessageField('AlertingTrigger', 4)
+
+
+class AlertingThresholdTest(_messages.Message):
+  r"""A test that compares some LHS against a threshold. NOTE: Only
+  RowCountThreshold is currently supported.
+
+  Enums:
+    ComparisonValueValuesEnum: Required. The comparison to be applied in the
+      __alert_result condition.
+
+  Fields:
+    aggregateValueThreshold: A value threshold comparison that includes an
+      aggregation of the value column.
+    comparison: Required. The comparison to be applied in the __alert_result
+      condition.
+    rowCountThreshold: A threshold based on the number of rows present.
+    threshold: Required. The threshold that will be used as the RHS of a
+      comparison.
+    valueThreshold: A value threshold comparison.
+  """
+
+  class ComparisonValueValuesEnum(_messages.Enum):
+    r"""Required. The comparison to be applied in the __alert_result
+    condition.
+
+    Values:
+      COMPARISON_TYPE_UNSPECIFIED: No comparison relationship is specified.
+      COMPARISON_GT: True if the aggregate / value_column is greater than the
+        threshold.
+      COMPARISON_GE: True if the aggregate / value_column is greater than or
+        equal to the threshold.
+      COMPARISON_LT: True if the aggregate / value_column is less than the
+        threshold.
+      COMPARISON_LE: True if the aggregate / value_column is less than or
+        equal to the threshold.
+      COMPARISON_EQ: True if the aggregate / value_column is equal to the
+        threshold.
+      COMPARISON_NE: True if the aggregate / value_column is not equal to the
+        threshold.
+    """
+    COMPARISON_TYPE_UNSPECIFIED = 0
+    COMPARISON_GT = 1
+    COMPARISON_GE = 2
+    COMPARISON_LT = 3
+    COMPARISON_LE = 4
+    COMPARISON_EQ = 5
+    COMPARISON_NE = 6
+
+  aggregateValueThreshold = _messages.MessageField('AggregateValueThreshold', 1)
+  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
+  rowCountThreshold = _messages.MessageField('RowCountThreshold', 3)
+  threshold = _messages.FloatField(4)
+  valueThreshold = _messages.MessageField('ValueThreshold', 5)
+
+
+class AlertingTrigger(_messages.Message):
+  r"""A restriction on the alert test to require a certain count or percent of
+  rows to be present.
+
+  Fields:
+    count: Optional. The absolute number of time series that must fail the
+      predicate for the test to be triggered.
+    percent: Optional. The percentage of time series that must fail the
+      predicate for the test to be triggered.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percent = _messages.FloatField(2)
+
+
+class AnalyticsQuery(_messages.Message):
+  r"""The configuration of a query to be run by QueryData or QueryDataLocal,
+  or validated by ValidateQuery or ValidateQueryLocal.
+
+  Fields:
+    querySteps: Required. The query steps to execute. Each query step will
+      correspond to a handle in the result proto.
+  """
+
+  querySteps = _messages.MessageField('QueryStep', 1, repeated=True)
 
 
 class ApproveRedactionOperationResponse(_messages.Message):
@@ -86,82 +233,6 @@ class BigQueryOptions(_messages.Message):
 
   usePartitionedTables = _messages.BooleanField(1)
   usesTimestampColumnPartitioning = _messages.BooleanField(2)
-
-
-class BooleanTest(_messages.Message):
-  r"""A test that reads a boolean column as the result.
-
-  Fields:
-    booleanColumn: Required. The column that contains a boolean that we want
-      to use as our result.
-    trigger: Optional. The number/percent of rows that must match in order for
-      the result set (partition set) to be considered in violation. If
-      unspecified, then the result set (partition set) will be in violation if
-      a single row matches.NOTE: Triggers are not yet supported for
-      BooleanTest.
-  """
-
-  booleanColumn = _messages.StringField(1)
-  trigger = _messages.MessageField('Trigger', 2)
-
-
-class Breakdown(_messages.Message):
-  r"""Columns within the output of the previous step to use to break down the
-  measures. We will generate one output measure for each value in the cross
-  product of measure_columns plus the top limit values in each of the
-  breakdown columns.In other words, if there is one measure column "foo" and
-  two breakdown columns "bar" with values ("bar1","bar2") and "baz" with
-  values ("baz1", "baz2"), we will end up with four output measures with
-  names: foo_bar1_baz1, foo_bar1_baz2, foo_bar2_baz1, foo_bar2_baz2 Each of
-  these measures will contain a subset of the values in "foo".
-
-  Enums:
-    SortOrderValueValuesEnum: Optional. The ordering that defines the behavior
-      of limit. If limit is not zero, this may not be set to
-      SORT_ORDER_NONE.Note that this will not control the ordering of the rows
-      in the result table in any useful way. Use the top-level sort ordering
-      for that purpose.
-
-  Fields:
-    column: Required. The name of the column containing the breakdown values.
-    limit: Optional. Values to choose how many breakdowns to create for each
-      measure. If limit is zero, all possible breakdowns will be generated. If
-      not, limit determines how many breakdowns, and sort_aggregation
-      determines the function we will use to sort the breakdowns.For example,
-      if limit is 3, we will generate at most three breakdowns per measure. If
-      sort_aggregation is "average" and sort_order is DESCENDING, those three
-      will be chosen as the ones where the average of all the points in the
-      breakdown set is the greatest.
-    sortAggregation: Optional. The aggregation to apply to the measure values
-      when choosing which breakdowns to generate. If sort_order is
-      SORT_ORDER_NONE, this is not used.
-    sortOrder: Optional. The ordering that defines the behavior of limit. If
-      limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
-      will not control the ordering of the rows in the result table in any
-      useful way. Use the top-level sort ordering for that purpose.
-  """
-
-  class SortOrderValueValuesEnum(_messages.Enum):
-    r"""Optional. The ordering that defines the behavior of limit. If limit is
-    not zero, this may not be set to SORT_ORDER_NONE.Note that this will not
-    control the ordering of the rows in the result table in any useful way.
-    Use the top-level sort ordering for that purpose.
-
-    Values:
-      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
-      SORT_ORDER_NONE: No sorting will be applied.
-      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
-      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
-    """
-    SORT_ORDER_UNSPECIFIED = 0
-    SORT_ORDER_NONE = 1
-    SORT_ORDER_ASCENDING = 2
-    SORT_ORDER_DESCENDING = 3
-
-  column = _messages.StringField(1)
-  limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  sortAggregation = _messages.MessageField('QueryStepAggregation', 3)
-  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 4)
 
 
 class BucketMetadata(_messages.Message):
@@ -237,37 +308,47 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
-class ChartingQueryStep(_messages.Message):
-  r"""A query step defined as a set of charting configuration options. This
-  may not be used as the first step in a query.
+class ChartingBreakdown(_messages.Message):
+  r"""Columns within the output of the previous step to use to break down the
+  measures. We will generate one output measure for each value in the cross
+  product of measure_columns plus the top limit values in each of the
+  breakdown columns.In other words, if there is one measure column "foo" and
+  two breakdown columns "bar" with values ("bar1","bar2") and "baz" with
+  values ("baz1", "baz2"), we will end up with four output measures with
+  names: foo_bar1_baz1, foo_bar1_baz2, foo_bar2_baz1, foo_bar2_baz2 Each of
+  these measures will contain a subset of the values in "foo".
 
   Enums:
-    SortOrderValueValuesEnum: Optional. The sort order that controls the final
-      results.
+    SortOrderValueValuesEnum: Optional. The ordering that defines the behavior
+      of limit. If limit is not zero, this may not be set to
+      SORT_ORDER_NONE.Note that this will not control the ordering of the rows
+      in the result table in any useful way. Use the top-level sort ordering
+      for that purpose.
 
   Fields:
-    breakdowns: Optional. The breakdowns for the measures of the chart. A
-      breakdown turns a single measure into multiple effective measures, each
-      one associated with a single value from the breakdown column.
-    dimensions: Required. The dimension columns. How many dimensions to choose
-      and how they're configured will depend on the chart type. A dimension is
-      the labels for the data; e.g., the X axis for a line graph or the
-      segment labels for a pie chart.
-    measures: Required. The measures to be displayed within the chart. A
-      measure is a data set to be displayed; e.g., a line on a line graph, a
-      set of bars on a bar graph, or the segment widths on a pie chart.
-    sortColumn: Optional. The column name to sort the results on. This may be
-      set to one of the dimension columns or left empty, which is equivalent.
-      If no breakdowns are requested, it may be set to any measure column; if
-      breakdowns are requested, sorting by measures is not supported. If
-      sort_order is SORT_ORDER_NONE, this value is not used. If there is an
-      anonymous measure using aggregation "count", use the string "*" to name
-      it here.
-    sortOrder: Optional. The sort order that controls the final results.
+    column: Required. The name of the column containing the breakdown values.
+    limit: Optional. Values to choose how many breakdowns to create for each
+      measure. If limit is zero, all possible breakdowns will be generated. If
+      not, limit determines how many breakdowns, and sort_aggregation
+      determines the function we will use to sort the breakdowns.For example,
+      if limit is 3, we will generate at most three breakdowns per measure. If
+      sort_aggregation is "average" and sort_order is DESCENDING, those three
+      will be chosen as the ones where the average of all the points in the
+      breakdown set is the greatest.
+    sortAggregation: Optional. The aggregation to apply to the measure values
+      when choosing which breakdowns to generate. If sort_order is
+      SORT_ORDER_NONE, this is not used.
+    sortOrder: Optional. The ordering that defines the behavior of limit. If
+      limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
+      will not control the ordering of the rows in the result table in any
+      useful way. Use the top-level sort ordering for that purpose.
   """
 
   class SortOrderValueValuesEnum(_messages.Enum):
-    r"""Optional. The sort order that controls the final results.
+    r"""Optional. The ordering that defines the behavior of limit. If limit is
+    not zero, this may not be set to SORT_ORDER_NONE.Note that this will not
+    control the ordering of the rows in the result table in any useful way.
+    Use the top-level sort ordering for that purpose.
 
     Values:
       SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
@@ -280,11 +361,107 @@ class ChartingQueryStep(_messages.Message):
     SORT_ORDER_ASCENDING = 2
     SORT_ORDER_DESCENDING = 3
 
-  breakdowns = _messages.MessageField('Breakdown', 1, repeated=True)
-  dimensions = _messages.MessageField('Dimension', 2, repeated=True)
-  measures = _messages.MessageField('Measure', 3, repeated=True)
-  sortColumn = _messages.StringField(4)
-  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 5)
+  column = _messages.StringField(1)
+  limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sortAggregation = _messages.MessageField('QueryStepAggregation', 3)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 4)
+
+
+class ChartingDimension(_messages.Message):
+  r"""A definition for the (one) dimension column in the output. Multiple
+  dimensions can be defined, but only a single column will be generated,
+  containing the cross-product of the defined dimensions.
+
+  Fields:
+    column: Required. The column name within the output of the previous step
+      to use.
+    columnType: Optional. The type of the dimension column. This is relevant
+      only if one of the bin_size fields is set. If it is empty, the type
+      TIMESTAMP or INT64 will be assumed based on which bin_size field is set.
+      If populated, this should be set to one of the following types: DATE,
+      TIME, DATETIME, TIMESTAMP, BIGNUMERIC, INT64, NUMERIC, FLOAT64. We also
+      accept all the documented aliases from
+      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
+      types#numeric_types as well as FLOAT (as an alias for FLOAT64).
+    floatBinSize: Optional. Used for a floating-point column: FLOAT64.
+    integerBinSize: Optional. Used for an integer column: INT64, NUMERIC, or
+      BIGNUMERIC.
+    limit: Optional. If set, any bins beyond this number will be dropped.
+    limitPlusOther: Optional. If set, up to this many bins will be generated
+      plus one optional additional bin. The extra bin will be named "Other"
+      and will contain the sum of the (aggregated) measure points from all
+      remaining bins. Setting this field will cause the dimension column type
+      to be coerced to STRING if it is not already that type.
+    sorting: Optional. The sorting for the dimension that defines the behavior
+      of limit. If limit is not zero, this may not be set to
+      SORT_ORDER_NONE.The column may be set to this dimension column or any
+      measure column. If the field is empty, it will sort on the dimension
+      column. If there is an anonymous measure using aggregation "count", use
+      the string "*" to name it here.Note that this will not control the
+      ordering of the rows in the result table in any useful way. Use the top-
+      level sort ordering for that purpose.
+    timeBinSize: Optional. Used for a time or date column: DATE, TIME,
+      DATETIME, or TIMESTAMP. If column_type is DATE, this must be a multiple
+      of 1 day. If column_type is TIME, this must be less than or equal to 24
+      hours.
+  """
+
+  column = _messages.StringField(1)
+  columnType = _messages.StringField(2)
+  floatBinSize = _messages.FloatField(3)
+  integerBinSize = _messages.IntegerField(4)
+  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  limitPlusOther = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  sorting = _messages.MessageField('Sorting', 7)
+  timeBinSize = _messages.StringField(8)
+
+
+class ChartingMeasure(_messages.Message):
+  r"""A definition for a single measure column in the output table. Multiple
+  measure columns will produce multiple curves, stacked bars, etc. depending
+  on chart type.
+
+  Fields:
+    aggregation: Optional. The aggregation to apply to the input column.
+      Required if binning is enabled on the dimension.
+    column: Required. The column name within the output of the previous step
+      to use. May be the same column as the dimension. May be left empty if
+      the aggregation is set to "count" (but not "count-distinct" or "count-
+      distinct-approx").
+  """
+
+  aggregation = _messages.MessageField('QueryStepAggregation', 1)
+  column = _messages.StringField(2)
+
+
+class ChartingQueryStep(_messages.Message):
+  r"""A query step defined as a set of charting configuration options. This
+  may not be used as the first step in a query.
+
+  Fields:
+    breakdowns: Optional. The breakdowns for the measures of the chart. A
+      breakdown turns a single measure into multiple effective measures, each
+      one associated with a single value from the breakdown column.
+    dimensions: Required. The dimension columns. How many dimensions to choose
+      and how they're configured will depend on the chart type. A dimension is
+      the labels for the data; e.g., the X axis for a line graph or the
+      segment labels for a pie chart.
+    measures: Required. The measures to be displayed within the chart. A
+      measure is a data set to be displayed; e.g., a line on a line graph, a
+      set of bars on a bar graph, or the segment widths on a pie chart.
+    sorting: Optional. The top-level sorting that determines the order in
+      which the results are returned.The column may be set to one of the
+      dimension columns or left empty, which is equivalent. If no breakdowns
+      are requested, it may be set to any measure column; if breakdowns are
+      requested, sorting by measures is not supported. If there is an
+      anonymous measure using aggregation "count", use the string "*" to name
+      it here.
+  """
+
+  breakdowns = _messages.MessageField('ChartingBreakdown', 1, repeated=True)
+  dimensions = _messages.MessageField('ChartingDimension', 2, repeated=True)
+  measures = _messages.MessageField('ChartingMeasure', 3, repeated=True)
+  sorting = _messages.MessageField('Sorting', 4)
 
 
 class CmekSettings(_messages.Message):
@@ -457,6 +634,55 @@ class CreateLinkRequest(_messages.Message):
   parent = _messages.StringField(3)
 
 
+class DefaultSinkConfig(_messages.Message):
+  r"""Describes the custom _Default sink configuration that is used to
+  override the built-in _Default sink configuration in newly created resource
+  containers, such as projects or folders.
+
+  Enums:
+    ModeValueValuesEnum: Required. Determines the behavior to apply to the
+      built-in _Default sink inclusion filter.Exclusions are always appended,
+      as built-in _Default sinks have no exclusions.
+
+  Fields:
+    exclusions: Optional. Specifies the set of exclusions to be added to the
+      _Default sink in newly created resource containers.
+    filter: Optional. An advanced logs filter
+      (https://cloud.google.com/logging/docs/view/advanced-queries). The only
+      exported log entries are those that are in the resource owning the sink
+      and that match the filter.For
+      example:logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND
+      severity>=ERRORCannot be empty or unset if mode == OVERWRITE. In order
+      to match all logs, use the following line as the value of filter and do
+      not use exclusions:logName:*
+    mode: Required. Determines the behavior to apply to the built-in _Default
+      sink inclusion filter.Exclusions are always appended, as built-in
+      _Default sinks have no exclusions.
+  """
+
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Required. Determines the behavior to apply to the built-in _Default
+    sink inclusion filter.Exclusions are always appended, as built-in _Default
+    sinks have no exclusions.
+
+    Values:
+      FILTER_WRITE_MODE_UNSPECIFIED: The filter's write mode is unspecified.
+        This mode must not be used.
+      APPEND: The contents of filter will be appended to the built-in _Default
+        sink filter. Using the append mode with an empty filter will keep the
+        sink inclusion filter unchanged.
+      OVERWRITE: The contents of filter will overwrite the built-in _Default
+        sink filter.
+    """
+    FILTER_WRITE_MODE_UNSPECIFIED = 0
+    APPEND = 1
+    OVERWRITE = 2
+
+  exclusions = _messages.MessageField('LogExclusion', 1, repeated=True)
+  filter = _messages.StringField(2)
+  mode = _messages.EnumField('ModeValueValuesEnum', 3)
+
+
 class DeleteLinkRequest(_messages.Message):
   r"""The parameters to DeleteLink.
 
@@ -472,7 +698,382 @@ class DeleteLinkRequest(_messages.Message):
   name = _messages.StringField(1)
 
 
-class Dimension(_messages.Message):
+class Empty(_messages.Message):
+  r"""A generic empty message that you can re-use to avoid defining duplicated
+  empty messages in your APIs. A typical example is to use it as the request
+  or the response type of an API method. For instance: service Foo { rpc
+  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
+class Explicit(_messages.Message):
+  r"""Specifies a set of buckets with arbitrary widths.There are size(bounds)
+  + 1 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i
+  < N-1): boundsi Lower bound (1 <= i < N); boundsi - 1The bounds field must
+  contain at least one element. If bounds has only one element, then there are
+  no finite buckets, and that single element is the common boundary of the
+  overflow and underflow buckets.
+
+  Fields:
+    bounds: The values must be monotonically increasing.
+  """
+
+  bounds = _messages.FloatField(1, repeated=True)
+
+
+class Exponential(_messages.Message):
+  r"""Specifies an exponential sequence of buckets that have a width that is
+  proportional to the value of the lower bound. Each bucket represents a
+  constant relative uncertainty on a specific value in the bucket.There are
+  num_finite_buckets + 2 (= N) buckets. Bucket i has the following
+  boundaries:Upper bound (0 <= i < N-1): scale * (growth_factor ^ i).Lower
+  bound (1 <= i < N): scale * (growth_factor ^ (i - 1)).
+
+  Fields:
+    growthFactor: Must be greater than 1.
+    numFiniteBuckets: Must be greater than 0.
+    scale: Must be greater than 0.
+  """
+
+  growthFactor = _messages.FloatField(1)
+  numFiniteBuckets = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  scale = _messages.FloatField(3)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStep(_messages.Message):
+  r"""One step of the query. Each query step other than the first implicitly
+  takes the output of the previous step as its input. Steps will be executed
+  in sequence and will return their results independently (in other words,
+  each step will finish at a different time and potentially return a different
+  schema).
+
+  Fields:
+    alertingQueryStep: A query step that builds an alerting query from
+      configuration data.
+    chartingQueryStep: A query step that builds a charting query from
+      configuration data.
+    handleQueryStep: A query step that refers to a step within a previously-
+      executed query.
+    outputNotRequired: Optional. Set this flag to indicate that you don't
+      intend to retrieve the results for this query step. No handle will be
+      generated for the step in the QueryDataResponse message.
+    sqlQueryStep: A query step containing a SQL query.
+  """
+
+  alertingQueryStep = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStep', 1)
+  chartingQueryStep = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStep', 2)
+  handleQueryStep = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepHandleQueryStep', 3)
+  outputNotRequired = _messages.BooleanField(4)
+  sqlQueryStep = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStep', 5)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStep(_messages.Message):
+  r"""A query step defined as a set of alerting configuration options. This
+  may not be used as the first step in a query.
+
+  Fields:
+    booleanCondition: A test representing the boolean value of a column.
+    partitionColumns: Optional. The list of columns to GROUP BY in the
+      generated SQL. NOTE: partition columns are not yet supported.
+    stringCondition: A test representing a comparison against a string.
+    thresholdCondition: A test representing a comparison against a threshold.
+  """
+
+  booleanCondition = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepBooleanTest', 1)
+  partitionColumns = _messages.StringField(2, repeated=True)
+  stringCondition = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepStringTest', 3)
+  thresholdCondition = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTest', 4)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepBooleanTest(_messages.Message):
+  r"""A test that reads a boolean column as the result.
+
+  Fields:
+    booleanColumn: Required. The column that contains a boolean that we want
+      to use as our result.
+    trigger: Optional. The number/percent of rows that must match in order for
+      the result set (partition set) to be considered in violation. If
+      unspecified, then the result set (partition set) will be in violation if
+      a single row matches.NOTE: Triggers are not yet supported for
+      BooleanTest.
+  """
+
+  booleanColumn = _messages.StringField(1)
+  trigger = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger', 2)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepStringTest(_messages.Message):
+  r"""A test that compares a string column against a string to match. NOTE:
+  StringTest is not yet supported.
+
+  Enums:
+    ComparisonValueValuesEnum: Required. The comparison operator to use.
+
+  Fields:
+    column: Required. The column that contains the strings we want to search
+      on.
+    comparison: Required. The comparison operator to use.
+    pattern: Required. The string or regular expression which is compared to
+      the value in the column.
+    trigger: Optional. The number/percent of rows that must match in order for
+      the result set (partition set) to be considered in violation. If
+      unspecified, then the result set (partition set) will be in violation if
+      a single row matches.
+  """
+
+  class ComparisonValueValuesEnum(_messages.Enum):
+    r"""Required. The comparison operator to use.
+
+    Values:
+      STRING_COMPARISON_TYPE_UNSPECIFIED: No string comparison specified,
+        should never happen.
+      STRING_COMPARISON_MATCH: String column must equal the pattern.
+      STRING_COMPARISON_NOT_MATCH: String column must not equal the pattern.
+      STRING_COMPARISON_CONTAINS: String contains contains the pattern as a
+        substring.
+      STRING_COMPARISON_NOT_CONTAINS: String column does not contain the
+        pattern as a substring.
+      STRING_COMPARISON_REGEX_MATCH: Regular expression pattern found in
+        string column.
+      STRING_COMPARISON_REGEX_NOT_MATCH: Regular expression pattern not found
+        in string column.
+    """
+    STRING_COMPARISON_TYPE_UNSPECIFIED = 0
+    STRING_COMPARISON_MATCH = 1
+    STRING_COMPARISON_NOT_MATCH = 2
+    STRING_COMPARISON_CONTAINS = 3
+    STRING_COMPARISON_NOT_CONTAINS = 4
+    STRING_COMPARISON_REGEX_MATCH = 5
+    STRING_COMPARISON_REGEX_NOT_MATCH = 6
+
+  column = _messages.StringField(1)
+  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
+  pattern = _messages.StringField(3)
+  trigger = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger', 4)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTest(_messages.Message):
+  r"""A test that compares some LHS against a threshold. NOTE: Only
+  RowCountThreshold is currently supported.
+
+  Enums:
+    ComparisonValueValuesEnum: Required. The comparison to be applied in the
+      __alert_result condition.
+
+  Fields:
+    aggregateValueThreshold: A value threshold comparison that includes an
+      aggregation of the value column.
+    comparison: Required. The comparison to be applied in the __alert_result
+      condition.
+    rowCountThreshold: A threshold based on the number of rows present.
+    threshold: Required. The threshold that will be used as the RHS of a
+      comparison.
+    valueThreshold: A value threshold comparison.
+  """
+
+  class ComparisonValueValuesEnum(_messages.Enum):
+    r"""Required. The comparison to be applied in the __alert_result
+    condition.
+
+    Values:
+      COMPARISON_TYPE_UNSPECIFIED: No comparison relationship is specified.
+      COMPARISON_GT: True if the aggregate / value_column is greater than the
+        threshold.
+      COMPARISON_GE: True if the aggregate / value_column is greater than or
+        equal to the threshold.
+      COMPARISON_LT: True if the aggregate / value_column is less than the
+        threshold.
+      COMPARISON_LE: True if the aggregate / value_column is less than or
+        equal to the threshold.
+      COMPARISON_EQ: True if the aggregate / value_column is equal to the
+        threshold.
+      COMPARISON_NE: True if the aggregate / value_column is not equal to the
+        threshold.
+    """
+    COMPARISON_TYPE_UNSPECIFIED = 0
+    COMPARISON_GT = 1
+    COMPARISON_GE = 2
+    COMPARISON_LT = 3
+    COMPARISON_LE = 4
+    COMPARISON_EQ = 5
+    COMPARISON_NE = 6
+
+  aggregateValueThreshold = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestAggregateValueThreshold', 1)
+  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
+  rowCountThreshold = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestRowCountThreshold', 3)
+  threshold = _messages.FloatField(4)
+  valueThreshold = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestValueThreshold', 5)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestAggregateValueThreshold(_messages.Message):
+  r"""A threshold condition that compares an aggregation to a threshold.
+
+  Fields:
+    aggregateColumn: Required. The column to provide aggregation on for
+      comparison.
+    aggregation: Required. The aggregation config that will be applied to the
+      provided column.
+  """
+
+  aggregateColumn = _messages.StringField(1)
+  aggregation = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregation', 2)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestRowCountThreshold(_messages.Message):
+  r"""A threshold condition that compares the row count to a threshold. Ex.
+  COUNT(*) > 10
+
+  Fields:
+    trigger: Optional. The number/percent of rows that must exceed the
+      threshold in order for this result set (partition set) to be considered
+      in violation. If unspecified, then the result set (partition set) will
+      be in violation when a single row violates the threshold.
+  """
+
+  trigger = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger', 1)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestValueThreshold(_messages.Message):
+  r"""A threshold condition that compares a value to a threshold.
+
+  Fields:
+    trigger: Optional. The number/percent of rows that must exceed the
+      threshold in order for this result set (partition set) to be considered
+      in violation. If unspecified, then the result set (partition set) will
+      be in violation when a single row violates the threshold.
+    valueColumn: Required. The column to compare the threshold against.
+  """
+
+  trigger = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger', 1)
+  valueColumn = _messages.StringField(2)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger(_messages.Message):
+  r"""A restriction on the alert test to require a certain count or percent of
+  rows to be present.
+
+  Fields:
+    count: Optional. The absolute number of time series that must fail the
+      predicate for the test to be triggered.
+    percent: Optional. The percentage of time series that must fail the
+      predicate for the test to be triggered.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  percent = _messages.FloatField(2)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStep(_messages.Message):
+  r"""A query step defined as a set of charting configuration options. This
+  may not be used as the first step in a query.
+
+  Enums:
+    SortOrderValueValuesEnum: Optional. The sort order that controls the final
+      results.
+
+  Fields:
+    breakdowns: Optional. The breakdowns for the measures of the chart. A
+      breakdown turns a single measure into multiple effective measures, each
+      one associated with a single value from the breakdown column.
+    dimensions: Required. The dimension columns. How many dimensions to choose
+      and how they're configured will depend on the chart type. A dimension is
+      the labels for the data; e.g., the X axis for a line graph or the
+      segment labels for a pie chart.
+    measures: Required. The measures to be displayed within the chart. A
+      measure is a data set to be displayed; e.g., a line on a line graph, a
+      set of bars on a bar graph, or the segment widths on a pie chart.
+    sortColumn: Optional. The column name to sort the results on. This may be
+      set to one of the dimension columns or left empty, which is equivalent.
+      If no breakdowns are requested, it may be set to any measure column; if
+      breakdowns are requested, sorting by measures is not supported. If
+      sort_order is SORT_ORDER_NONE, this value is not used. If there is an
+      anonymous measure using aggregation "count", use the string "*" to name
+      it here.
+    sortOrder: Optional. The sort order that controls the final results.
+  """
+
+  class SortOrderValueValuesEnum(_messages.Enum):
+    r"""Optional. The sort order that controls the final results.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
+      SORT_ORDER_NONE: No sorting will be applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
+      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
+
+  breakdowns = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepBreakdown', 1, repeated=True)
+  dimensions = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepDimension', 2, repeated=True)
+  measures = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepMeasure', 3, repeated=True)
+  sortColumn = _messages.StringField(4)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 5)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepBreakdown(_messages.Message):
+  r"""Columns within the output of the previous step to use to break down the
+  measures. We will generate one output measure for each value in the cross
+  product of measure_columns plus the top limit values in each of the
+  breakdown columns.In other words, if there is one measure column "foo" and
+  two breakdown columns "bar" with values ("bar1","bar2") and "baz" with
+  values ("baz1", "baz2"), we will end up with four output measures with
+  names: foo_bar1_baz1, foo_bar1_baz2, foo_bar2_baz1, foo_bar2_baz2 Each of
+  these measures will contain a subset of the values in "foo".
+
+  Enums:
+    SortOrderValueValuesEnum: Optional. The ordering that defines the behavior
+      of limit. If limit is not zero, this may not be set to
+      SORT_ORDER_NONE.Note that this will not control the ordering of the rows
+      in the result table in any useful way. Use the top-level sort ordering
+      for that purpose.
+
+  Fields:
+    column: Required. The name of the column containing the breakdown values.
+    limit: Optional. Values to choose how many breakdowns to create for each
+      measure. If limit is zero, all possible breakdowns will be generated. If
+      not, limit determines how many breakdowns, and sort_aggregation
+      determines the function we will use to sort the breakdowns.For example,
+      if limit is 3, we will generate at most three breakdowns per measure. If
+      sort_aggregation is "average" and sort_order is DESCENDING, those three
+      will be chosen as the ones where the average of all the points in the
+      breakdown set is the greatest.
+    sortAggregation: Optional. The aggregation to apply to the measure values
+      when choosing which breakdowns to generate. If sort_order is
+      SORT_ORDER_NONE, this is not used.
+    sortOrder: Optional. The ordering that defines the behavior of limit. If
+      limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
+      will not control the ordering of the rows in the result table in any
+      useful way. Use the top-level sort ordering for that purpose.
+  """
+
+  class SortOrderValueValuesEnum(_messages.Enum):
+    r"""Optional. The ordering that defines the behavior of limit. If limit is
+    not zero, this may not be set to SORT_ORDER_NONE.Note that this will not
+    control the ordering of the rows in the result table in any useful way.
+    Use the top-level sort ordering for that purpose.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
+      SORT_ORDER_NONE: No sorting will be applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
+      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
+
+  column = _messages.StringField(1)
+  limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  sortAggregation = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregation', 3)
+  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 4)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepDimension(_messages.Message):
   r"""A definition for the (one) dimension column in the output. Multiple
   dimensions can be defined, but only a single column will be generated,
   containing the cross-product of the defined dimensions.
@@ -547,47 +1148,138 @@ class Dimension(_messages.Message):
   timeBinSize = _messages.StringField(9)
 
 
-class Empty(_messages.Message):
-  r"""A generic empty message that you can re-use to avoid defining duplicated
-  empty messages in your APIs. A typical example is to use it as the request
-  or the response type of an API method. For instance: service Foo { rpc
-  Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
-  """
-
-
-
-class Explicit(_messages.Message):
-  r"""Specifies a set of buckets with arbitrary widths.There are size(bounds)
-  + 1 (= N) buckets. Bucket i has the following boundaries:Upper bound (0 <= i
-  < N-1): boundsi Lower bound (1 <= i < N); boundsi - 1The bounds field must
-  contain at least one element. If bounds has only one element, then there are
-  no finite buckets, and that single element is the common boundary of the
-  overflow and underflow buckets.
+class GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepMeasure(_messages.Message):
+  r"""A definition for a single measure column in the output table. Multiple
+  measure columns will produce multiple curves, stacked bars, etc. depending
+  on chart type.
 
   Fields:
-    bounds: The values must be monotonically increasing.
+    aggregation: The aggregation to apply to the input column. Required if
+      binning is enabled on the dimension.
+    column: Required. The column name within the output of the previous step
+      to use. May be the same column as the dimension. May be left empty if
+      the aggregation is set to "count" (but not "count-distinct" or "count-
+      distinct-approx").
   """
 
-  bounds = _messages.FloatField(1, repeated=True)
+  aggregation = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregation', 1)
+  column = _messages.StringField(2)
 
 
-class Exponential(_messages.Message):
-  r"""Specifies an exponential sequence of buckets that have a width that is
-  proportional to the value of the lower bound. Each bucket represents a
-  constant relative uncertainty on a specific value in the bucket.There are
-  num_finite_buckets + 2 (= N) buckets. Bucket i has the following
-  boundaries:Upper bound (0 <= i < N-1): scale * (growth_factor ^ i).Lower
-  bound (1 <= i < N): scale * (growth_factor ^ (i - 1)).
+class GoogleLoggingV2QueryDataRequestQueryStepHandleQueryStep(_messages.Message):
+  r"""A query step that reads the results of a step in a previous query
+  operation as its input.
 
   Fields:
-    growthFactor: Must be greater than 1.
-    numFiniteBuckets: Must be greater than 0.
-    scale: Must be greater than 0.
+    queryStepHandle: Required. A handle to a query step from a previous call
+      to QueryData.
   """
 
-  growthFactor = _messages.FloatField(1)
-  numFiniteBuckets = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  scale = _messages.FloatField(3)
+  queryStepHandle = _messages.StringField(1)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregation(_messages.Message):
+  r"""An identifier for an aggregation. Aggregations are used for cases where
+  we need to collapse a set of values into a single value, such as multiple
+  points in a measure into a single bin.
+
+  Fields:
+    parameters: Parameters to be applied to the aggregation. Aggregations that
+      support or require parameters are listed above.
+    type: Required. The type of aggregation to apply. Legal values for this
+      string are: "percentile" - Generates an APPROX_QUANTILES. Requires one
+      integer or double parameter. Applies only to numeric values. Supports
+      precision of up to 3 decimal places. "average" - Generates AVG().
+      Applies only to numeric values. "count" - Generates COUNT(). "count-
+      distinct" - Generates COUNT(DISTINCT). "count-distinct-approx" -
+      Generates APPROX_COUNT_DISTINCT(). "max" - Generates MAX(). Applies only
+      to numeric values. "min" - Generates MIN(). Applies only to numeric
+      values. "sum" - Generates SUM(). Applies only to numeric values. "or" -
+      Generates LOGICAL_OR(). Applies only to boolean values. "and" -
+      Generates LOGICAL_AND(). Applies only to boolean values. "none", "" -
+      Equivalent to no aggregation.
+  """
+
+  parameters = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregationParameter', 1, repeated=True)
+  type = _messages.StringField(2)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregationParameter(_messages.Message):
+  r"""A parameter value to be applied to an aggregation.
+
+  Fields:
+    doubleValue: Optional. A floating-point parameter value.
+    intValue: Optional. An integer parameter value.
+  """
+
+  doubleValue = _messages.FloatField(1)
+  intValue = _messages.IntegerField(2)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStep(_messages.Message):
+  r"""A query step defined in raw SQL.
+
+  Fields:
+    parameters: Optional. Parameters to be injected into the query at
+      execution time.
+    queryRestriction: Optional. Restrictions being requested, e.g. timerange
+      restrictions.
+    sqlQuery: Required. A query string, following the BigQuery SQL query
+      syntax. The FROM clause should specify a fully qualified log view
+      corresponding to the log view in the resource_names in dot separated
+      format like PROJECT_ID.LOCATION_ID.BUCKET_ID.VIEW_ID.For example: SELECT
+      count(*) FROM my_project.us.my_bucket._AllLogs;If any of the dot
+      separated components have special characters, that component needs to be
+      escaped separately like the following example:SELECT count(*) FROM
+      company.com:abc.us.my-bucket._AllLogs;
+  """
+
+  parameters = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameter', 1, repeated=True)
+  queryRestriction = _messages.MessageField('QueryRestriction', 2)
+  sqlQuery = _messages.StringField(3)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameter(_messages.Message):
+  r"""A parameter given to a query.
+
+  Fields:
+    description: Optional. Human-oriented description of the field.
+    intArray: Optional. The value of a parameter containing an array of
+      integers.
+    intValue: Optional. The value of an integer parameter.
+    name: Optional. If unset, this is a positional parameter. Otherwise,
+      should be unique within a query.
+    stringArray: Optional. The value of a parameter containing an array of
+      strings.
+    stringValue: Optional. The value of a string parameter.
+  """
+
+  description = _messages.StringField(1)
+  intArray = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameterIntegerArrayValue', 2)
+  intValue = _messages.IntegerField(3)
+  name = _messages.StringField(4)
+  stringArray = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameterStringArrayValue', 5)
+  stringValue = _messages.StringField(6)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameterIntegerArrayValue(_messages.Message):
+  r"""An array of integers within a parameter.
+
+  Fields:
+    values: Required. The values of the array.
+  """
+
+  values = _messages.IntegerField(1, repeated=True)
+
+
+class GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameterStringArrayValue(_messages.Message):
+  r"""An array of strings within a parameter.
+
+  Fields:
+    values: Required. The values of the array.
+  """
+
+  values = _messages.StringField(1, repeated=True)
 
 
 class HandleQueryStep(_messages.Message):
@@ -699,7 +1391,7 @@ class IntegerArrayValue(_messages.Message):
   r"""An array of integers within a parameter.
 
   Fields:
-    values: The values of the array.
+    values: Required. The values of the array.
   """
 
   values = _messages.IntegerField(1, repeated=True)
@@ -1066,6 +1758,56 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListRecentQueriesResponse(_messages.Message):
+  r"""The response from ListRecentQueries.
+
+  Fields:
+    nextPageToken: If there might be more results than appear in this
+      response, then nextPageToken is included. To get the next set of
+      results, call the same method again using the value of nextPageToken as
+      pageToken.
+    recentQueries: A list of recent queries.
+    unreachable: The unreachable resources. Each resource can be either 1) a
+      saved query if a specific query is unreachable or 2) a location if a
+      specific location is unreachable.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/recentQueries/[QUERY_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For
+      example:"projects/my-project/locations/global/recentQueries/12345678"
+      "projects/my-project/locations/global"If there are unreachable
+      resources, the response will first return pages that contain recent
+      queries, and then return pages that contain the unreachable resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  recentQueries = _messages.MessageField('RecentQuery', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListSavedQueriesResponse(_messages.Message):
+  r"""The response from ListSavedQueries.
+
+  Fields:
+    nextPageToken: If there might be more results than appear in this
+      response, then nextPageToken is included. To get the next set of
+      results, call the same method again using the value of nextPageToken as
+      pageToken.
+    savedQueries: A list of saved queries.
+    unreachable: The unreachable resources. It can be either 1) a saved query
+      if a specific query is unreachable or 2) a location if a specific
+      location is unreachabe.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]" For example:
+      "projects/my-project/locations/global/savedQueries/12345678"
+      "projects/my-project/locations/global" If there are unreachable
+      resources, the response will first return pages that contain saved
+      queries, and then return pages that contain the unreachable resources.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  savedQueries = _messages.MessageField('SavedQuery', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
 class ListSinksResponse(_messages.Message):
   r"""Result returned from ListSinks.
 
@@ -1361,6 +2103,13 @@ class LogEntry(_messages.Message):
       "type.googleapis.com/google.appengine.logging.v1.RequestLog"
 
   Fields:
+    errorGroups: Output only. The Error Reporting
+      (https://cloud.google.com/error-reporting) error groups associated with
+      this LogEntry. Error Reporting sets the values for this field during
+      error group creation.For more information, see View error details(
+      https://cloud.google.com/error-reporting/docs/viewing-
+      errors#view_error_details)This field isn't available during log routing
+      (https://cloud.google.com/logging/docs/routing/overview)
     httpRequest: Optional. Information about the HTTP request associated with
       this log entry, if applicable.
     insertId: Optional. A unique identifier for the log entry. If you provide
@@ -1585,24 +2334,25 @@ class LogEntry(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  httpRequest = _messages.MessageField('HttpRequest', 1)
-  insertId = _messages.StringField(2)
-  jsonPayload = _messages.MessageField('JsonPayloadValue', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  logName = _messages.StringField(5)
-  metadata = _messages.MessageField('MonitoredResourceMetadata', 6)
-  operation = _messages.MessageField('LogEntryOperation', 7)
-  protoPayload = _messages.MessageField('ProtoPayloadValue', 8)
-  receiveTimestamp = _messages.StringField(9)
-  resource = _messages.MessageField('MonitoredResource', 10)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 11)
-  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 12)
-  spanId = _messages.StringField(13)
-  split = _messages.MessageField('LogSplit', 14)
-  textPayload = _messages.StringField(15)
-  timestamp = _messages.StringField(16)
-  trace = _messages.StringField(17)
-  traceSampled = _messages.BooleanField(18)
+  errorGroups = _messages.MessageField('LogErrorGroup', 1, repeated=True)
+  httpRequest = _messages.MessageField('HttpRequest', 2)
+  insertId = _messages.StringField(3)
+  jsonPayload = _messages.MessageField('JsonPayloadValue', 4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  logName = _messages.StringField(6)
+  metadata = _messages.MessageField('MonitoredResourceMetadata', 7)
+  operation = _messages.MessageField('LogEntryOperation', 8)
+  protoPayload = _messages.MessageField('ProtoPayloadValue', 9)
+  receiveTimestamp = _messages.StringField(10)
+  resource = _messages.MessageField('MonitoredResource', 11)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 12)
+  sourceLocation = _messages.MessageField('LogEntrySourceLocation', 13)
+  spanId = _messages.StringField(14)
+  split = _messages.MessageField('LogSplit', 15)
+  textPayload = _messages.StringField(16)
+  timestamp = _messages.StringField(17)
+  trace = _messages.StringField(18)
+  traceSampled = _messages.BooleanField(19)
 
 
 class LogEntryOperation(_messages.Message):
@@ -1647,6 +2397,22 @@ class LogEntrySourceLocation(_messages.Message):
   file = _messages.StringField(1)
   function = _messages.StringField(2)
   line = _messages.IntegerField(3)
+
+
+class LogErrorGroup(_messages.Message):
+  r"""Contains metadata that associates the LogEntry to Error Reporting error
+  groups.
+
+  Fields:
+    id: The id is a unique identifier for a particular error group; it is the
+      last part of the error group resource name: /projects//errors/. Example:
+      COShysOX0r_51QE The id is derived from key parts of the error-log
+      content and is treated as Service Data. For information about how
+      Service Data is handled, see Google Cloud Privacy Notice
+      (https://cloud.google.com/terms/cloud-privacy-notice).
+  """
+
+  id = _messages.StringField(1)
 
 
 class LogExclusion(_messages.Message):
@@ -2625,6 +3391,102 @@ class LoggingBillingAccountsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingBillingAccountsLocationsRecentQueriesListRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsRecentQueriesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource to which the listed queries belong.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:projects/my-
+      project/locations/us-central1Note: The location portion of the resource
+      must be specified, but supplying the character - in place of LOCATION_ID
+      will return all recent queries.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingBillingAccountsLocationsSavedQueriesCreateRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsSavedQueriesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource in which to create the saved query:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example: "projects/my-
+      project/locations/global" "organizations/123456789/locations/us-
+      central1"
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    savedQueryId: Optional. The ID to use for the saved query, which will
+      become the final component of the saved query's resource name.If the
+      saved_query_id is not provided, the system will generate an alphanumeric
+      ID.The saved_query_id is limited to 100 characters and can include only
+      the following characters: upper and lower-case alphanumeric characters,
+      underscores, hyphens, and periods. First character has to be
+      alphanumeric.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  savedQueryId = _messages.StringField(3)
+
+
+class LoggingBillingAccountsLocationsSavedQueriesDeleteRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsSavedQueriesDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the saved query to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[Q
+      UERY_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/
+      savedQueries/[QUERY_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For example: "projects/my-project/locations/global/savedQueries/my-
+      saved-query"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingBillingAccountsLocationsSavedQueriesListRequest(_messages.Message):
+  r"""A LoggingBillingAccountsLocationsSavedQueriesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource to which the listed queries belong.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example: "projects/my-
+      project/locations/us-central1" Note: The locations portion of the
+      resource must be specified. To get a list of all saved queries, a
+      wildcard character - can be used for LOCATION_ID, for example:
+      "projects/my-project/locations/-"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingBillingAccountsLogsDeleteRequest(_messages.Message):
   r"""A LoggingBillingAccountsLogsDeleteRequest object.
 
@@ -2764,10 +3626,10 @@ class LoggingBillingAccountsSinksPatchRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -2810,10 +3672,10 @@ class LoggingBillingAccountsSinksUpdateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -3504,6 +4366,102 @@ class LoggingFoldersLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingFoldersLocationsRecentQueriesListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsRecentQueriesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource to which the listed queries belong.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:projects/my-
+      project/locations/us-central1Note: The location portion of the resource
+      must be specified, but supplying the character - in place of LOCATION_ID
+      will return all recent queries.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingFoldersLocationsSavedQueriesCreateRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsSavedQueriesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource in which to create the saved query:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example: "projects/my-
+      project/locations/global" "organizations/123456789/locations/us-
+      central1"
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    savedQueryId: Optional. The ID to use for the saved query, which will
+      become the final component of the saved query's resource name.If the
+      saved_query_id is not provided, the system will generate an alphanumeric
+      ID.The saved_query_id is limited to 100 characters and can include only
+      the following characters: upper and lower-case alphanumeric characters,
+      underscores, hyphens, and periods. First character has to be
+      alphanumeric.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  savedQueryId = _messages.StringField(3)
+
+
+class LoggingFoldersLocationsSavedQueriesDeleteRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsSavedQueriesDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the saved query to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[Q
+      UERY_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/
+      savedQueries/[QUERY_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For example: "projects/my-project/locations/global/savedQueries/my-
+      saved-query"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingFoldersLocationsSavedQueriesListRequest(_messages.Message):
+  r"""A LoggingFoldersLocationsSavedQueriesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource to which the listed queries belong.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example: "projects/my-
+      project/locations/us-central1" Note: The locations portion of the
+      resource must be specified. To get a list of all saved queries, a
+      wildcard character - can be used for LOCATION_ID, for example:
+      "projects/my-project/locations/-"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingFoldersLogsDeleteRequest(_messages.Message):
   r"""A LoggingFoldersLogsDeleteRequest object.
 
@@ -3643,10 +4601,10 @@ class LoggingFoldersSinksPatchRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -3689,10 +4647,10 @@ class LoggingFoldersSinksUpdateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -4822,6 +5780,102 @@ class LoggingOrganizationsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingOrganizationsLocationsRecentQueriesListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsRecentQueriesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource to which the listed queries belong.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:projects/my-
+      project/locations/us-central1Note: The location portion of the resource
+      must be specified, but supplying the character - in place of LOCATION_ID
+      will return all recent queries.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingOrganizationsLocationsSavedQueriesCreateRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsSavedQueriesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource in which to create the saved query:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example: "projects/my-
+      project/locations/global" "organizations/123456789/locations/us-
+      central1"
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    savedQueryId: Optional. The ID to use for the saved query, which will
+      become the final component of the saved query's resource name.If the
+      saved_query_id is not provided, the system will generate an alphanumeric
+      ID.The saved_query_id is limited to 100 characters and can include only
+      the following characters: upper and lower-case alphanumeric characters,
+      underscores, hyphens, and periods. First character has to be
+      alphanumeric.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  savedQueryId = _messages.StringField(3)
+
+
+class LoggingOrganizationsLocationsSavedQueriesDeleteRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsSavedQueriesDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the saved query to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[Q
+      UERY_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/
+      savedQueries/[QUERY_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For example: "projects/my-project/locations/global/savedQueries/my-
+      saved-query"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingOrganizationsLocationsSavedQueriesListRequest(_messages.Message):
+  r"""A LoggingOrganizationsLocationsSavedQueriesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource to which the listed queries belong.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example: "projects/my-
+      project/locations/us-central1" Note: The locations portion of the
+      resource must be specified. To get a list of all saved queries, a
+      wildcard character - can be used for LOCATION_ID, for example:
+      "projects/my-project/locations/-"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingOrganizationsLogsDeleteRequest(_messages.Message):
   r"""A LoggingOrganizationsLogsDeleteRequest object.
 
@@ -4961,10 +6015,10 @@ class LoggingOrganizationsSinksPatchRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5007,10 +6061,10 @@ class LoggingOrganizationsSinksUpdateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5658,6 +6712,102 @@ class LoggingProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class LoggingProjectsLocationsRecentQueriesListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsRecentQueriesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request. Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource to which the listed queries belong.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example:projects/my-
+      project/locations/us-central1Note: The location portion of the resource
+      must be specified, but supplying the character - in place of LOCATION_ID
+      will return all recent queries.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class LoggingProjectsLocationsSavedQueriesCreateRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsSavedQueriesCreateRequest object.
+
+  Fields:
+    parent: Required. The parent resource in which to create the saved query:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example: "projects/my-
+      project/locations/global" "organizations/123456789/locations/us-
+      central1"
+    savedQuery: A SavedQuery resource to be passed as the request body.
+    savedQueryId: Optional. The ID to use for the saved query, which will
+      become the final component of the saved query's resource name.If the
+      saved_query_id is not provided, the system will generate an alphanumeric
+      ID.The saved_query_id is limited to 100 characters and can include only
+      the following characters: upper and lower-case alphanumeric characters,
+      underscores, hyphens, and periods. First character has to be
+      alphanumeric.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  savedQuery = _messages.MessageField('SavedQuery', 2)
+  savedQueryId = _messages.StringField(3)
+
+
+class LoggingProjectsLocationsSavedQueriesDeleteRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsSavedQueriesDeleteRequest object.
+
+  Fields:
+    name: Required. The full resource name of the saved query to delete.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[Q
+      UERY_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/
+      savedQueries/[QUERY_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For example: "projects/my-project/locations/global/savedQueries/my-
+      saved-query"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class LoggingProjectsLocationsSavedQueriesListRequest(_messages.Message):
+  r"""A LoggingProjectsLocationsSavedQueriesListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of results to return from this
+      request.Non-positive values are ignored. The presence of nextPageToken
+      in the response indicates that more results might be available.
+    pageToken: Optional. If present, then retrieve the next batch of results
+      from the preceding call to this method. pageToken must be the value of
+      nextPageToken from the previous response. The values of other method
+      parameters should be identical to those in the previous call.
+    parent: Required. The resource to which the listed queries belong.
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+      "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+      "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+      "folders/[FOLDER_ID]/locations/[LOCATION_ID]" For example: "projects/my-
+      project/locations/us-central1" Note: The locations portion of the
+      resource must be specified. To get a list of all saved queries, a
+      wildcard character - can be used for LOCATION_ID, for example:
+      "projects/my-project/locations/-"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class LoggingProjectsLogsDeleteRequest(_messages.Message):
   r"""A LoggingProjectsLogsDeleteRequest object.
 
@@ -5869,10 +7019,10 @@ class LoggingProjectsSinksPatchRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5915,10 +7065,10 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -5954,6 +7104,28 @@ class LoggingProjectsSinksUpdateRequest(_messages.Message):
   sinkName = _messages.StringField(3, required=True)
   uniqueWriterIdentity = _messages.BooleanField(4)
   updateMask = _messages.StringField(5)
+
+
+class LoggingQuery(_messages.Message):
+  r"""Describes a Cloud Logging query that can be run in Logs Explorer UI or
+  via the logging API.In addition to the query itself, additional information
+  may be stored to capture the display configuration and other UI state used
+  in association with analysis of query results.
+
+  Fields:
+    filter: An advanced query using the Logging Query Language
+      (https://cloud.google.com/logging/docs/view/logging-query-language). The
+      maximum length of the filter is 20000 characters.
+    summaryFieldEnd: Characters will be counted from the end of the string.
+    summaryFieldStart: Characters will be counted from the start of the
+      string.
+    summaryFields: The set of summary fields to display for this saved query.
+  """
+
+  filter = _messages.StringField(1)
+  summaryFieldEnd = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  summaryFieldStart = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  summaryFields = _messages.MessageField('SummaryField', 4, repeated=True)
 
 
 class LoggingSinksCreateRequest(_messages.Message):
@@ -6046,10 +7218,10 @@ class LoggingSinksUpdateRequest(_messages.Message):
 
   Fields:
     customWriterIdentity: Optional. A service account provided by the caller
-      that will be used to write the log entries. Must be of format
-      serviceAccount:some@email. This can only be specified if writing to a
-      destination outside the sink's project. If not specified, a p4 service
-      account will automatically be generated.
+      that will be used to write the log entries. The format must be
+      serviceAccount:some@email. This field can only be specified if you are
+      routing logs to a destination outside this sink's project. If not
+      specified, a Logging service account will automatically be generated.
     logSink: A LogSink resource to be passed as the request body.
     sinkName: Required. The full resource name of the sink to update,
       including the parent resource and the sink identifier:
@@ -6132,24 +7304,6 @@ class LoggingUpdateSettingsRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
   settings = _messages.MessageField('Settings', 2)
   updateMask = _messages.StringField(3)
-
-
-class Measure(_messages.Message):
-  r"""A definition for a single measure column in the output table. Multiple
-  measure columns will produce multiple curves, stacked bars, etc. depending
-  on chart type.
-
-  Fields:
-    aggregation: The aggregation to apply to the input column. Required if
-      binning is enabled on the dimension.
-    column: Required. The column name within the output of the previous step
-      to use. May be the same column as the dimension. May be left empty if
-      the aggregation is set to "count" (but not "count-distinct" or "count-
-      distinct-approx").
-  """
-
-  aggregation = _messages.MessageField('QueryStepAggregation', 1)
-  column = _messages.StringField(2)
 
 
 class MetricDescriptor(_messages.Message):
@@ -6826,16 +7980,51 @@ class Operation(_messages.Message):
   response = _messages.MessageField('ResponseValue', 5)
 
 
+class OpsAnalyticsQuery(_messages.Message):
+  r"""Describes an analytics query that can be run in the Log Analytics page
+  of Google Cloud console.Preview: This is a preview feature and may be
+  subject to change before final release.
+
+  Fields:
+    sqlQueryText: Required. A logs analytics SQL query, which generally
+      follows BigQuery format.This is the SQL query that appears in the Log
+      Analytics UI's query editor.
+  """
+
+  sqlQueryText = _messages.StringField(1)
+
+
 class Parameter(_messages.Message):
   r"""A parameter value to be applied to an aggregation.
 
   Fields:
-    doubleValue: Optional. A floating-point parameter value.
-    intValue: Optional. An integer parameter value.
+    doubleValue: A floating-point parameter value.
+    intValue: An integer parameter value.
   """
 
   doubleValue = _messages.FloatField(1)
   intValue = _messages.IntegerField(2)
+
+
+class QueryDataLocalRequest(_messages.Message):
+  r"""The request message for QueryDataLocal. This is identical to
+  QueryDataRequest except for the associated resources.
+
+  Fields:
+    disableQueryCaching: Optional. If set to true, turns off all query caching
+      on both the Log Analytics and BigQuery sides.
+    parent: Required. The project in which the query will be run. The calling
+      user must have the bigquery.jobs.create and bigquery.jobs.get
+      permissions in this project.For example: "projects/PROJECT_ID"
+    query: Required. The contents of the query.
+    timeout: Optional. The timeout for the query. BigQuery will terminate the
+      job if this duration is exceeded. If not set, the default is 5 minutes.
+  """
+
+  disableQueryCaching = _messages.BooleanField(1)
+  parent = _messages.StringField(2)
+  query = _messages.MessageField('AnalyticsQuery', 3)
+  timeout = _messages.StringField(4)
 
 
 class QueryDataRequest(_messages.Message):
@@ -6844,8 +8033,10 @@ class QueryDataRequest(_messages.Message):
   Fields:
     disableQueryCaching: Optional. If set to true, turns off all query caching
       on both the Log Analytics and BigQuery sides.
+    query: Optional. The contents of the query. If this field is populated,
+      query_steps will be ignored.
     querySteps: The query steps to execute. Each query step will correspond to
-      a handle in the result proto.
+      a handle in the result proto. Deprecated in favor of query, above.
     resourceNames: Required. Names of one or more log views to run a SQL
       query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
       CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
@@ -6855,9 +8046,10 @@ class QueryDataRequest(_messages.Message):
   """
 
   disableQueryCaching = _messages.BooleanField(1)
-  querySteps = _messages.MessageField('QueryStep', 2, repeated=True)
-  resourceNames = _messages.StringField(3, repeated=True)
-  timeout = _messages.StringField(4)
+  query = _messages.MessageField('AnalyticsQuery', 2)
+  querySteps = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStep', 3, repeated=True)
+  resourceNames = _messages.StringField(4, repeated=True)
+  timeout = _messages.StringField(5)
 
 
 class QueryDataResponse(_messages.Message):
@@ -6865,8 +8057,9 @@ class QueryDataResponse(_messages.Message):
 
   Fields:
     queryStepHandles: Handles to each of the query steps described in the
-      request. These may be passed to ReadQueryResults or used in a
-      HandleQueryStep in a subsequent call to QueryData.
+      request, excluding those for which the output_not_required flag was set.
+      These may be passed to ReadQueryResults or used in a HandleQueryStep in
+      a subsequent call to QueryData.
     restrictionConflicts: Conflicts between the query and the restrictions
       that were requested. Any restrictions present here were ignored when
       executing the query.
@@ -6925,13 +8118,11 @@ class QueryParameter(_messages.Message):
 
   Fields:
     description: Optional. Human-oriented description of the field.
-    intArray: Optional. The value of a parameter containing an array of
-      integers.
+    intArray: The value of a parameter containing an array of integers.
     intValue: Optional. The value of an integer parameter.
     name: Optional. If unset, this is a positional parameter. Otherwise,
       should be unique within a query.
-    stringArray: Optional. The value of a parameter containing an array of
-      strings.
+    stringArray: The value of a parameter containing an array of strings.
     stringValue: Optional. The value of a string parameter.
   """
 
@@ -7086,11 +8277,11 @@ class QueryResults(_messages.Message):
 
 
 class QueryStep(_messages.Message):
-  r"""One step of the query. Each query step other than the first implicitly
-  takes the output of the previous step as its input. Steps will be executed
-  in sequence and will return their results independently (in other words,
-  each step will finish at a different time and potentially return a different
-  schema).
+  r"""One step of an analytics query. Each query step other than the first
+  implicitly takes the output of the previous step as its input. Steps will be
+  executed in sequence and will return their results independently (in other
+  words, each step will finish at a different time and potentially return a
+  different schema).
 
   Fields:
     alertingQueryStep: A query step that builds an alerting query from
@@ -7099,13 +8290,17 @@ class QueryStep(_messages.Message):
       configuration data.
     handleQueryStep: A query step that refers to a step within a previously-
       executed query.
+    outputNotRequired: Optional. Set this flag to indicate that you don't
+      intend to retrieve the results for this query step. No handle will be
+      generated for the step in the QueryDataResponse message.
     sqlQueryStep: A query step containing a SQL query.
   """
 
   alertingQueryStep = _messages.MessageField('AlertingQueryStep', 1)
   chartingQueryStep = _messages.MessageField('ChartingQueryStep', 2)
   handleQueryStep = _messages.MessageField('HandleQueryStep', 3)
-  sqlQueryStep = _messages.MessageField('SqlQueryStep', 4)
+  outputNotRequired = _messages.BooleanField(4)
+  sqlQueryStep = _messages.MessageField('SqlQueryStep', 5)
 
 
 class QueryStepAggregation(_messages.Message):
@@ -7114,8 +8309,8 @@ class QueryStepAggregation(_messages.Message):
   points in a measure into a single bin.
 
   Fields:
-    parameters: Parameters to be applied to the aggregation. Aggregations that
-      support or require parameters are listed above.
+    parameters: Optional. Parameters to be applied to the aggregation.
+      Aggregations that support or require parameters are listed above.
     type: Required. The type of aggregation to apply. Legal values for this
       string are: "percentile" - Generates an APPROX_QUANTILES. Requires one
       integer or double parameter. Applies only to numeric values. Supports
@@ -7124,8 +8319,10 @@ class QueryStepAggregation(_messages.Message):
       distinct" - Generates COUNT(DISTINCT). "count-distinct-approx" -
       Generates APPROX_COUNT_DISTINCT(). "max" - Generates MAX(). Applies only
       to numeric values. "min" - Generates MIN(). Applies only to numeric
-      values. "sum" - Generates SUM(). Applies only to numeric values. "none",
-      "" - Equivalent to no aggregation.
+      values. "sum" - Generates SUM(). Applies only to numeric values. "or" -
+      Generates LOGICAL_OR(). Applies only to boolean values. "and" -
+      Generates LOGICAL_AND(). Applies only to boolean values. "none", "" -
+      Equivalent to no aggregation.
   """
 
   parameters = _messages.MessageField('Parameter', 1, repeated=True)
@@ -7157,6 +8354,28 @@ class ReadQueryResultsRequest(_messages.Message):
   queryStepHandle = _messages.StringField(3)
   readMetadataOnly = _messages.BooleanField(4)
   resourceNames = _messages.StringField(5, repeated=True)
+
+
+class RecentQuery(_messages.Message):
+  r"""Describes a recent query executed on the Logs Explorer or Log Analytics
+  page within the last ~ 30 days.
+
+  Fields:
+    lastRunTime: The timestamp when this query was last run.
+    loggingQuery: Logging query that can be executed in Logs Explorer or via
+      Logging API.
+    name: Output only. Resource name of the recent query.In the format:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/recentQueries/[QUERY_ID]"
+      For a list of supported locations, see Supported Regions
+      (https://cloud.google.com/logging/docs/region-support)The QUERY_ID is a
+      system generated alphanumeric ID.
+    opsAnalyticsQuery: Analytics query that can be executed in Log Analytics.
+  """
+
+  lastRunTime = _messages.StringField(1)
+  loggingQuery = _messages.MessageField('LoggingQuery', 2)
+  name = _messages.StringField(3)
+  opsAnalyticsQuery = _messages.MessageField('OpsAnalyticsQuery', 4)
 
 
 class RedactLogEntriesImpact(_messages.Message):
@@ -7357,7 +8576,37 @@ class RowCountThreshold(_messages.Message):
       be in violation when a single row violates the threshold.
   """
 
-  trigger = _messages.MessageField('Trigger', 1)
+  trigger = _messages.MessageField('AlertingTrigger', 1)
+
+
+class SavedQuery(_messages.Message):
+  r"""Describes a query that has been saved by a user.
+
+  Fields:
+    createTime: Output only. The timestamp when the saved query was created.
+    description: A human readable description of the saved query.
+    displayName: The user specified title for the SavedQuery.
+    loggingQuery: Logging query that can be executed in Logs Explorer or via
+      Logging API.
+    name: Output only. Resource name of the saved query.In the format:
+      "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+      For a list of supported locations, see Supported Regions
+      (https://cloud.google.com/logging/docs/region-support#bucket-
+      regions)After the saved query is created, the location cannot be
+      changed.If the user doesn't provide a QUERY_ID, the system will generate
+      an alphanumeric ID.
+    opsAnalyticsQuery: Analytics query that can be executed in Log Analytics.
+    updateTime: Output only. The timestamp when the saved query was last
+      updated.
+  """
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  loggingQuery = _messages.MessageField('LoggingQuery', 4)
+  name = _messages.StringField(5)
+  opsAnalyticsQuery = _messages.MessageField('OpsAnalyticsQuery', 6)
+  updateTime = _messages.StringField(7)
 
 
 class Settings(_messages.Message):
@@ -7365,6 +8614,8 @@ class Settings(_messages.Message):
   billing account, or flexible resource.
 
   Fields:
+    defaultSinkConfig: Optional. Overrides the built-in configuration for
+      _Default sink.
     disableDefaultSink: Optional. If set to true, the _Default sink in newly
       created projects and folders will created in a disabled state. This can
       be used to automatically disable log storage if there is already an
@@ -7395,8 +8646,9 @@ class Settings(_messages.Message):
       (https://cloud.google.com/logging/docs/routing/managed-encryption) for
       more information.
     loggingServiceAccountId: Output only. The service account for the given
-      container. Sinks use this service account as their writer_identity if no
-      custom service account is provided.
+      resource container, such as project or folder. Log sinks use this
+      service account as their writer_identity if no custom service account is
+      provided in the request when calling the create sink method.
     name: Output only. The resource name of the settings.
     storageLocation: Optional. The storage location that Cloud Logging will
       use to create new resources when a location is needed but not explicitly
@@ -7407,12 +8659,44 @@ class Settings(_messages.Message):
       buckets.
   """
 
-  disableDefaultSink = _messages.BooleanField(1)
-  kmsKeyName = _messages.StringField(2)
-  kmsServiceAccountId = _messages.StringField(3)
-  loggingServiceAccountId = _messages.StringField(4)
-  name = _messages.StringField(5)
-  storageLocation = _messages.StringField(6)
+  defaultSinkConfig = _messages.MessageField('DefaultSinkConfig', 1)
+  disableDefaultSink = _messages.BooleanField(2)
+  kmsKeyName = _messages.StringField(3)
+  kmsServiceAccountId = _messages.StringField(4)
+  loggingServiceAccountId = _messages.StringField(5)
+  name = _messages.StringField(6)
+  storageLocation = _messages.StringField(7)
+
+
+class Sorting(_messages.Message):
+  r"""Defines a sort order based on a column. There are different requirements
+  for this message depending on its context; see the containing message for
+  details.
+
+  Enums:
+    OrderValueValuesEnum: Optional. The order in which to sort.
+
+  Fields:
+    column: Optional. The column name on which to sort.
+    order: Optional. The order in which to sort.
+  """
+
+  class OrderValueValuesEnum(_messages.Enum):
+    r"""Optional. The order in which to sort.
+
+    Values:
+      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
+      SORT_ORDER_NONE: No sorting will be applied.
+      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
+      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
+    """
+    SORT_ORDER_UNSPECIFIED = 0
+    SORT_ORDER_NONE = 1
+    SORT_ORDER_ASCENDING = 2
+    SORT_ORDER_DESCENDING = 3
+
+  column = _messages.StringField(1)
+  order = _messages.EnumField('OrderValueValuesEnum', 2)
 
 
 class SourceLocation(_messages.Message):
@@ -7591,60 +8875,23 @@ class StringArrayValue(_messages.Message):
   r"""An array of strings within a parameter.
 
   Fields:
-    values: The values of the array.
+    values: Required. The values of the array.
   """
 
   values = _messages.StringField(1, repeated=True)
 
 
-class StringTest(_messages.Message):
-  r"""A test that compares a string column against a string to match. NOTE:
-  StringTest is not yet supported.
-
-  Enums:
-    ComparisonValueValuesEnum: Required. The comparison operator to use.
+class SummaryField(_messages.Message):
+  r"""A field from the LogEntry that is added to the summary line
+  (https://cloud.google.com/logging/docs/view/logs-explorer-interface#add-
+  summary-fields) for a query in the Logs Explorer.
 
   Fields:
-    column: Required. The column that contains the strings we want to search
-      on.
-    comparison: Required. The comparison operator to use.
-    pattern: Required. The string or regular expression which is compared to
-      the value in the column.
-    trigger: Optional. The number/percent of rows that must match in order for
-      the result set (partition set) to be considered in violation. If
-      unspecified, then the result set (partition set) will be in violation if
-      a single row matches.
+    field: The field from the LogEntry to include in the summary line, for
+      example resource.type or jsonPayload.name.
   """
 
-  class ComparisonValueValuesEnum(_messages.Enum):
-    r"""Required. The comparison operator to use.
-
-    Values:
-      STRING_COMPARISON_TYPE_UNSPECIFIED: No string comparison specified,
-        should never happen.
-      STRING_COMPARISON_MATCH: String column must equal the pattern.
-      STRING_COMPARISON_NOT_MATCH: String column must not equal the pattern.
-      STRING_COMPARISON_CONTAINS: String contains contains the pattern as a
-        substring.
-      STRING_COMPARISON_NOT_CONTAINS: String column does not contain the
-        pattern as a substring.
-      STRING_COMPARISON_REGEX_MATCH: Regular expression pattern found in
-        string column.
-      STRING_COMPARISON_REGEX_NOT_MATCH: Regular expression pattern not found
-        in string column.
-    """
-    STRING_COMPARISON_TYPE_UNSPECIFIED = 0
-    STRING_COMPARISON_MATCH = 1
-    STRING_COMPARISON_NOT_MATCH = 2
-    STRING_COMPARISON_CONTAINS = 3
-    STRING_COMPARISON_NOT_CONTAINS = 4
-    STRING_COMPARISON_REGEX_MATCH = 5
-    STRING_COMPARISON_REGEX_NOT_MATCH = 6
-
-  column = _messages.StringField(1)
-  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
-  pattern = _messages.StringField(3)
-  trigger = _messages.MessageField('Trigger', 4)
+  field = _messages.StringField(1)
 
 
 class SuppressionInfo(_messages.Message):
@@ -7764,74 +9011,6 @@ class TailLogEntriesResponse(_messages.Message):
   suppressionInfo = _messages.MessageField('SuppressionInfo', 2, repeated=True)
 
 
-class ThresholdTest(_messages.Message):
-  r"""A test that compares some LHS against a threshold. NOTE: Only
-  RowCountThreshold is currently supported.
-
-  Enums:
-    ComparisonValueValuesEnum: Required. The comparison to be applied in the
-      __alert_result condition.
-
-  Fields:
-    aggregateValueThreshold: A value threshold comparison that includes an
-      aggregation of the value column.
-    comparison: Required. The comparison to be applied in the __alert_result
-      condition.
-    rowCountThreshold: A threshold based on the number of rows present.
-    threshold: Required. The threshold that will be used as the RHS of a
-      comparison.
-    valueThreshold: A value threshold comparison.
-  """
-
-  class ComparisonValueValuesEnum(_messages.Enum):
-    r"""Required. The comparison to be applied in the __alert_result
-    condition.
-
-    Values:
-      COMPARISON_TYPE_UNSPECIFIED: No comparison relationship is specified.
-      COMPARISON_GT: True if the aggregate / value_column is greater than the
-        threshold.
-      COMPARISON_GE: True if the aggregate / value_column is greater than or
-        equal to the threshold.
-      COMPARISON_LT: True if the aggregate / value_column is less than the
-        threshold.
-      COMPARISON_LE: True if the aggregate / value_column is less than or
-        equal to the threshold.
-      COMPARISON_EQ: True if the aggregate / value_column is equal to the
-        threshold.
-      COMPARISON_NE: True if the aggregate / value_column is not equal to the
-        threshold.
-    """
-    COMPARISON_TYPE_UNSPECIFIED = 0
-    COMPARISON_GT = 1
-    COMPARISON_GE = 2
-    COMPARISON_LT = 3
-    COMPARISON_LE = 4
-    COMPARISON_EQ = 5
-    COMPARISON_NE = 6
-
-  aggregateValueThreshold = _messages.MessageField('AggregateValueThreshold', 1)
-  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
-  rowCountThreshold = _messages.MessageField('RowCountThreshold', 3)
-  threshold = _messages.FloatField(4)
-  valueThreshold = _messages.MessageField('ValueThreshold', 5)
-
-
-class Trigger(_messages.Message):
-  r"""A restriction on the alert test to require a certain count or percent of
-  rows to be present.
-
-  Fields:
-    count: Optional. The absolute number of time series that must fail the
-      predicate for the test to be triggered.
-    percent: Optional. The percentage of time series that must fail the
-      predicate for the test to be triggered.
-  """
-
-  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  percent = _messages.FloatField(2)
-
-
 class UndeleteBucketRequest(_messages.Message):
   r"""The parameters to UndeleteBucket."""
 
@@ -7886,7 +9065,7 @@ class ValueThreshold(_messages.Message):
     valueColumn: Required. The column to compare the threshold against.
   """
 
-  trigger = _messages.MessageField('Trigger', 1)
+  trigger = _messages.MessageField('AlertingTrigger', 1)
   valueColumn = _messages.StringField(2)
 
 

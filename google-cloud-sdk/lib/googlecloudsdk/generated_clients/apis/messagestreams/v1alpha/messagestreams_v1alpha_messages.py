@@ -71,9 +71,11 @@ class GoogleOidc(_messages.Message):
     audience: Optional. Audience to be used to generate the OIDC Token. The
       audience claim identifies the recipient that the JWT is intended for. If
       unspecified, the destination URI will be used.
+    serviceAccount: Optional.
   """
 
   audience = _messages.StringField(1)
+  serviceAccount = _messages.StringField(2)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -214,6 +216,8 @@ class MessagestreamsProjectsLocationsListRequest(_messages.Message):
     filter: A filter to narrow down results to a preferred subset. The
       filtering language accepts strings like `"displayName=tokyo"`, and is
       documented in more detail in [AIP-160](https://google.aip.dev/160).
+    includeUnrevealedLocations: If true, the returned list will include
+      locations which are not yet revealed.
     name: The resource that owns the locations collection, if applicable.
     pageSize: The maximum number of results to return. If not set, the service
       selects a default.
@@ -222,9 +226,10 @@ class MessagestreamsProjectsLocationsListRequest(_messages.Message):
   """
 
   filter = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(4)
+  includeUnrevealedLocations = _messages.BooleanField(2)
+  name = _messages.StringField(3, required=True)
+  pageSize = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(5)
 
 
 class MessagestreamsProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -539,6 +544,16 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
+class Source(_messages.Message):
+  r"""Represents the source where we stream data from.
+
+  Fields:
+    pubsubSubscription: A string attribute.
+  """
+
+  pubsubSubscription = _messages.StringField(1)
+
+
 class StandardQueryParameters(_messages.Message):
   r"""Query parameters accepted by all methods.
 
@@ -656,6 +671,9 @@ class Status(_messages.Message):
 class Stream(_messages.Message):
   r"""The representation of the stream resource.
 
+  Enums:
+    EventarcTransformationTypeValueValuesEnum: Optional.
+
   Messages:
     AnnotationsValue: Optional. User-defined annotations. See
       https://google.aip.dev/128#annotations
@@ -669,6 +687,7 @@ class Stream(_messages.Message):
     etag: Output only. This checksum is computed by the server based on the
       value of other fields, and might be sent only on create requests to
       ensure that the client has an up-to-date value before proceeding.
+    eventarcTransformationType: Optional.
     labels: Optional. Labels as key value pairs
     name: The resource name of the stream. Must be unique within the location
       of the project and must be in
@@ -679,6 +698,7 @@ class Stream(_messages.Message):
       permission in the service account. See
       https://cloud.google.com/iam/docs/understanding-service-
       accounts?hl=en#sa_common for more information.
+    source: Optional. Source specifies where the stream reads data from.
     streamAction: Required. The specifications for routing messaging traffic
       and applying associated policies.
     uid: Output only. Server-assigned unique identifier for the stream. The
@@ -686,6 +706,38 @@ class Stream(_messages.Message):
       resource is deleted.
     updateTime: Output only. [Output only] Update time stamp
   """
+
+  class EventarcTransformationTypeValueValuesEnum(_messages.Enum):
+    r"""Optional.
+
+    Values:
+      EVENTARC_TRANSFORMATION_CONFIG_UNSPECIFIED: The transformation type is
+        unknown (e.g. the query parameter value is invalid). This type is only
+        relevant for data plane metrics and should not be used by the CLH.
+      EVENTARC_NOT_AN_EVENT: The request does not correspond to an event, so
+        it should not be transformed. This type is only relevant for data
+        plane metrics and should not be used by the CLH.
+      EVENTARC_CE_PUBSUB_BINDING: The transformation in which a CloudEvent is
+        extracted from the Pub/Sub message (i.e. the Pub/Sub Protocol Binding,
+        see https://github.com/google/knative-gcp/blob/main/docs/spec/pubsub-
+        protocol-binding.md). This transformation is very generic and should
+        be used for any trigger where EventFlow creates the Pub/Sub messages.
+        In practice, this means Audit Log events and events from Ingress
+        Platform.
+      EVENTARC_CUSTOM_PUBSUB: The transformation in which an arbitrary Pub/Sub
+        message is converted into a Pub/Sub event, as specified in go/cloud-
+        events-on-google-devx-design.
+      EVENTARC_GCS_NOTIFICATION: The transformation in which a Cloud Storage
+        Pub/Sub Notification (http://cloud/storage/docs/pubsub-notifications)
+        is converted into a CloudEvent, as specified in go/gcs-event-
+        conversion. This transformation is specific to the Cloud Storage stop-
+        gap integration (go/eventarc-gcs-stopgap-detailed-design).
+    """
+    EVENTARC_TRANSFORMATION_CONFIG_UNSPECIFIED = 0
+    EVENTARC_NOT_AN_EVENT = 1
+    EVENTARC_CE_PUBSUB_BINDING = 2
+    EVENTARC_CUSTOM_PUBSUB = 3
+    EVENTARC_GCS_NOTIFICATION = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AnnotationsValue(_messages.Message):
@@ -741,12 +793,14 @@ class Stream(_messages.Message):
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   etag = _messages.StringField(4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  streamAction = _messages.MessageField('StreamAction', 8)
-  uid = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  serviceAccount = _messages.StringField(8)
+  source = _messages.MessageField('Source', 9)
+  streamAction = _messages.MessageField('StreamAction', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class StreamAction(_messages.Message):

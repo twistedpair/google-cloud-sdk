@@ -1762,6 +1762,21 @@ class GoogleFirestoreAdminV1Database(_messages.Message):
   versionRetentionPeriod = _messages.StringField(14)
 
 
+class GoogleFirestoreAdminV1DatabaseSnapshot(_messages.Message):
+  r"""A consistent snapshot of a database at a specific point in time.
+
+  Fields:
+    database: Required. A name of the form
+      `projects/{project_id}/databases/{database_id}`
+    snapshotTime: Required. The timestamp at which the database snapshot is
+      taken. The requested timestamp must be a whole minute within the PITR
+      window.
+  """
+
+  database = _messages.StringField(1)
+  snapshotTime = _messages.StringField(2)
+
+
 class GoogleFirestoreAdminV1DeleteDatabaseMetadata(_messages.Message):
   r"""Metadata related to the delete database operation."""
 
@@ -1843,10 +1858,8 @@ class GoogleFirestoreAdminV1ExportDocumentsRequest(_messages.Message):
       a bucket (without a namespace path), a prefix will be generated based on
       the start time.
     snapshotTime: The timestamp that corresponds to the version of the
-      database to be exported. The timestamp must be rounded to the minute, in
-      the past, and not older than 5 days. Please choose a reasonable
-      timestamp based on prior knowledge on how long exports take as data at
-      provided snapshot timestamp can expire during export. If specified, then
+      database to be exported. The timestamp must be in the past, rounded to
+      the minute and not older than earliestVersionTime. If specified, then
       the exported documents will represent a consistent view of the database
       at the provided time. Otherwise, there are no guarantees about the
       consistency of the exported documents.
@@ -2459,10 +2472,14 @@ class GoogleFirestoreAdminV1RestoreDatabaseRequest(_messages.Message):
       letter and the last a letter or a number. Must not be UUID-like
       /[0-9a-f]{8}(-[0-9a-f]{4}){3}-[0-9a-f]{12}/. "(default)" database id is
       also valid.
+    databaseSnapshot: Database snapshot to restore from. The source database
+      must exist and have enabled PITR. The restored database will be created
+      in the same location as the source database.
   """
 
   backup = _messages.StringField(1)
   databaseId = _messages.StringField(2)
+  databaseSnapshot = _messages.MessageField('GoogleFirestoreAdminV1DatabaseSnapshot', 3)
 
 
 class GoogleFirestoreAdminV1Stats(_messages.Message):

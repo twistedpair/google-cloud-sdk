@@ -1051,6 +1051,33 @@ IPV6_ACCESS_TYPE must be one of:
       help_str=help_text)
 
 
+def _GetBinauthzEvaluationModeCustomMappings():
+  return {
+      'DISABLED': 'disabled',
+      'PROJECT_SINGLETON_POLICY_ENFORCE': 'project-singleton-policy-enforce',
+      'POLICY_BINDINGS': 'policy-bindings',
+      'POLICY_BINDINGS_AND_PROJECT_SINGLETON_POLICY_ENFORCE': (
+          'policy-bindings-and-project-singleton-policy-enforce'
+      ),
+  }
+
+
+def GetBinauthzEvaluationModeMapper(messages, hidden=False):
+  """Returns a mapper from text options to the evaluation mode enum.
+
+  Args:
+    messages: The message module.
+    hidden: Whether the flag should be hidden in the choice_arg
+  """
+  return arg_utils.ChoiceEnumMapper(
+      '--binauthz-evaluation-mode',
+      messages.BinaryAuthorization.EvaluationModeValueValuesEnum,
+      _GetBinauthzEvaluationModeCustomMappings(),
+      hidden=hidden,
+      help_str='',
+  )
+
+
 def HasUnknownKeys(actual, known):
   if not actual:
     return

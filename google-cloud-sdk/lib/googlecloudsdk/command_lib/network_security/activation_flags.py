@@ -19,13 +19,19 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.network_security.firewall_endpoints import activation_api
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
+from googlecloudsdk.core import properties
 
 
 ENDPOINT_RESOURCE_NAME = "FIREWALL_ENDPOINT"
+BILLING_HELP_TEST = (
+    "The Google Cloud project ID to use for API enablement check, quota, and"
+    " endpoint uptime billing."
+)
 
 
 def AddEndpointResource(release_track, parser):
@@ -101,3 +107,54 @@ def AddTargetFirewallAttachmentArg(
 
 def AddZoneArg(parser, required=True, help_text="Zone of the endpoint"):
   parser.add_argument("--zone", required=required, help=help_text)
+
+
+def AddBillingProjectArg(
+    parser,
+    required=True,
+    help_text=BILLING_HELP_TEST,
+):
+  """Add billing project argument to parser.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+    required: bool, whether to make this argument required.
+    help_text: str, help text to overwrite the generic --billing-project help
+      text.
+  """
+  parser.add_argument(
+      "--billing-project",
+      required=required,
+      help=help_text,
+      action=actions.StoreProperty(properties.VALUES.billing.quota_project),
+  )
+
+
+# We use the explicit --update-billing-project flag as opposed to the existent
+# --billing-project flag because otherwise there will be an ambiguity when a
+# user wants to update other things, but not the billing project.
+# For example, to update the labels, a billing project is still needed for API
+# quota, making the ambiguous call:
+# gcloud network-security firewall-endpoints update \
+#     --billing-project=proj --update-labels=k1=v1
+# This is a common use for other gcloud update flags as well.
+def AddUpdateBillingProjectArg(
+    parser,
+    required=False,
+    help_text=BILLING_HELP_TEST,
+):
+  """Add update billing project argument to parser.
+
+  Args:
+    parser: ArgumentInterceptor, An argparse parser.
+    required: bool, whether to make this argument required.
+    help_text: str, help text to display on the --update-billing-project help
+      text.
+  """
+  parser.add_argument(
+      "--update-billing-project",
+      required=required,
+      help=help_text,
+      metavar="BILLING_PROJECT",
+      action=actions.StoreProperty(properties.VALUES.billing.quota_project),
+  )

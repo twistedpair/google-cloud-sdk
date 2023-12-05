@@ -707,10 +707,8 @@ class StorageAsyncClient:
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> policy_pb2.Policy:
-        r"""Gets the IAM policy for a specified bucket or object. The
-        ``resource`` field in the request should be
-        ``projects/_/buckets/{bucket}`` for a bucket or
-        ``projects/_/buckets/{bucket}/objects/{object}`` for an object.
+        r"""Gets the IAM policy for a specified bucket. The ``resource``
+        field in the request should be ``projects/_/buckets/{bucket}``.
 
         .. code-block:: python
 
@@ -858,10 +856,8 @@ class StorageAsyncClient:
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> policy_pb2.Policy:
-        r"""Updates an IAM policy for the specified bucket or object. The
-        ``resource`` field in the request should be
-        ``projects/_/buckets/{bucket}`` for a bucket or
-        ``projects/_/buckets/{bucket}/objects/{object}`` for an object.
+        r"""Updates an IAM policy for the specified bucket. The ``resource``
+        field in the request should be ``projects/_/buckets/{bucket}``.
 
         .. code-block:: python
 

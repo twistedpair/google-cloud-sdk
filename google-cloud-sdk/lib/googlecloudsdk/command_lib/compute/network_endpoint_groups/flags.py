@@ -23,14 +23,12 @@ from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.compute import flags as compute_flags
 
 
-def MakeNetworkEndpointGroupsArg(support_regional_scope=False):
+def MakeNetworkEndpointGroupsArg():
   return compute_flags.ResourceArgument(
       resource_name='network endpoint group',
       zonal_collection='compute.networkEndpointGroups',
       global_collection='compute.globalNetworkEndpointGroups',
-      regional_collection='compute.regionNetworkEndpointGroups'
-      if support_regional_scope
-      else None,
+      regional_collection='compute.regionNetworkEndpointGroups',
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION,
       region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
   )
@@ -60,28 +58,17 @@ def _AddNetworkEndpointGroupType(parser, support_neg_type):
     ).AddToParser(parser)
 
 
-def _AddNetworkEndpointType(
-    parser,
-    support_hybrid_neg,
-    support_l4ilb_neg,
-    support_regional_scope,
-    support_l7psc_neg,
-):
+def _AddNetworkEndpointType(parser):
   """Adds endpoint type argument for creating network endpoint groups."""
   endpoint_type_choices = [
       'gce-vm-ip-port',
       'internet-ip-port',
       'internet-fqdn-port',
+      'non-gcp-private-ip-port',
+      'serverless',
+      'gce-vm-ip',
+      'private-service-connect',
   ]
-  if support_hybrid_neg:
-    endpoint_type_choices.append('non-gcp-private-ip-port')
-  if support_l4ilb_neg:
-    endpoint_type_choices.append('gce-vm-primary-ip')
-  if support_regional_scope:
-    endpoint_type_choices.append('serverless')
-  endpoint_type_choices.append('gce-vm-ip')
-  if support_l7psc_neg:
-    endpoint_type_choices.append('private-service-connect')
 
   help_text = """\
       Determines the spec of endpoints attached to this group.
@@ -108,9 +95,6 @@ def _AddNetworkEndpointType(
       network-endpoint-groups update` command with
       the `--add-endpoint` flag. Example:
       `--add-endpoint="fqdn=backend.example.com,port=443"`
-  """
-  if support_hybrid_neg:
-    help_text += """\
 
       *non-gcp-private-ip-port*:::
       Endpoint IP address must belong to a VM not in Compute
@@ -118,24 +102,16 @@ def _AddNetworkEndpointType(
       Interconnect connection. In this case, the NEG must be zonal. The
       `--default-port` must be specified or every network endpoint in
       the network endpoint group must have a port specified.
-    """
-  if support_l4ilb_neg:
-    help_text += """\
-
-      *gce-vm-primary-ip*:::
-      Endpoint IP address must be the primary IP of a VM's primary
-      network interface in Compute Engine.
-    """
-  if support_regional_scope:
-    help_text += """\
 
       *serverless*:::
       The network endpoint is handled by specified serverless
       infrastructure, such as Cloud Run, App Engine, or Cloud Function.
       Default port, network, and subnet are not effective for serverless
       endpoints.
-    """
-  help_text += """\
+
+      *private-service-connect*:::
+      The network endpoint corresponds to a service outside the VPC, accessed
+      via Private Service Connect.
 
       *gce-vm-ip*:::
       Endpoint must be the IP address of a VM's network interface in
@@ -143,13 +119,6 @@ def _AddNetworkEndpointType(
       optional. If unspecified, the primary NIC address is used.
       A port must not be specified.
   """
-  if support_l7psc_neg:
-    help_text += """\
-
-      *private-service-connect*:::
-      The network endpoint corresponds to a service outside the VPC, accessed
-      via Private Service Connect.
-    """
 
   base.ChoiceArgument(
       '--network-endpoint-type',
@@ -160,29 +129,20 @@ def _AddNetworkEndpointType(
   ).AddToParser(parser)
 
 
-def _AddNetwork(
-    parser,
-    support_hybrid_neg,
-    support_l4ilb_neg,
-    support_l7psc_neg,
-    support_regional_internet_neg,
-):
+def _AddNetwork(parser):
   """Adds network argument for creating network endpoint groups."""
   help_text = """\
       Name of the network in which the NEG is created. `default` project
       network is used if unspecified.
   """
-  network_applicable_ne_types = ['`gce-vm-ip-port`']
-  if support_hybrid_neg:
-    network_applicable_ne_types.append('`non-gcp-private-ip-port`')
-  if support_l4ilb_neg:
-    network_applicable_ne_types.append('`gce-vm-primary-ip`')
-  network_applicable_ne_types.append('`gce-vm-ip`')
-  if support_l7psc_neg:
-    network_applicable_ne_types.append('`private-service-connect`')
-  if support_regional_internet_neg:
-    network_applicable_ne_types.append('`internet-ip-port`')
-    network_applicable_ne_types.append('`internet-fqdn-port`')
+  network_applicable_ne_types = [
+      '`gce-vm-ip-port`',
+      '`non-gcp-private-ip-port`',
+      '`gce-vm-ip`',
+      '`private-service-connect`',
+      '`internet-ip-port`',
+      '`internet-fqdn-port`',
+  ]
 
   help_text += """\
 
@@ -196,7 +156,7 @@ def _AddNetwork(
   parser.add_argument('--network', help=help_text)
 
 
-def _AddSubnet(parser, support_l4ilb_neg, support_l7psc_neg):
+def _AddSubnet(parser):
   """Adds subnet argument for creating network endpoint groups."""
   help_text = """\
       Name of the subnet to which all network endpoints belong.
@@ -205,11 +165,8 @@ def _AddSubnet(parser, support_l4ilb_neg, support_l7psc_neg):
       region where the network endpoint group is created.
   """
   subnet_applicable_types = ['`gce-vm-ip-port`']
-  if support_l4ilb_neg:
-    subnet_applicable_types.append('`gce-vm-primary-ip`')
   subnet_applicable_types.append('`gce-vm-ip`')
-  if support_l7psc_neg:
-    subnet_applicable_types.append('`private-service-connect`')
+  subnet_applicable_types.append('`private-service-connect`')
   help_text += """\
 
       This is only supported for NEGs with endpoint type {0}.
@@ -221,38 +178,25 @@ def _AddSubnet(parser, support_l4ilb_neg, support_l7psc_neg):
   parser.add_argument('--subnet', help=help_text)
 
 
-def _AddDefaultPort(
-    parser, support_hybrid_neg, support_regional_scope, support_l7psc_neg
-):
+def _AddDefaultPort(parser):
   """Adds default port argument for creating network endpoint groups."""
   help_text = """\
     The default port to use if the port number is not specified in the network
     endpoint.
 
-    If this flag isn't specified for a NEG with endpoint type {0},
-    then every network endpoint in the network endpoint group must have a port
-    specified. For a global NEG with endpoint type `internet-ip-port`
-    and `internet-fqdn-port` if the default port is not specified,
-    the well-known port for your backend protocol is used (80 for HTTP,
-    443 for HTTPS).
-  """.format(
-      '`gce-vm-ip-port` or `non-gcp-private-ip-port`'
-      if support_hybrid_neg
-      else '`gce-vm-ip-port`'
-  )
-
-  if support_regional_scope:
-    help_text += """\
+    If this flag isn't specified for a NEG with endpoint type `gce-vm-ip-port`
+    or `non-gcp-private-ip-port`, then every network endpoint in the network
+    endpoint group must have a port specified. For a global NEG with endpoint
+    type `internet-ip-port` and `internet-fqdn-port` if the default port is not
+    specified, the well-known port for your backend protocol is used (80 for
+    HTTP, 443 for HTTPS).
 
     This flag is not supported for NEGs with endpoint type `serverless`.
-    """
-
-  if support_l7psc_neg:
-    help_text += """\
 
     This flag is not supported for NEGs with endpoint type
     `private-service-connect`.
-    """
+  """
+
   parser.add_argument('--default-port', type=int, help=help_text)
 
 
@@ -431,48 +375,48 @@ def _AddL7pscRoutingInfo(parser):
   parser.add_argument('--psc-target-service', help=psc_target_service_help)
 
 
+def _AddPortMappingInfo(parser):
+  """Adds port mapping info arguments for network endpoint groups."""
+
+  help_text = """
+  Determines the spec of client port maping mode of this group.
+  Port Mapping is a use case in which NEG specifies routing by mapping client ports to destinations (e.g. ip and port).
+
+  *port-mapping-disabled*:::
+  Group should not be used for mapping client port to destination.
+
+  *client-port-per-endpoint*:::
+  For each endpoint there is exactly one client port.
+  """
+
+  parser.add_argument(
+      '--client-port-mapping-mode',
+      help=help_text,
+  )
+
+
 def AddCreateNegArgsToParser(
     parser,
     support_neg_type=False,
-    support_hybrid_neg=False,
-    support_l4ilb_neg=False,
-    support_regional_scope=False,
     support_serverless_deployment=False,
-    support_l7psc_neg=False,
-    support_regional_internet_neg=False,
+    support_port_mapping_neg=False,
 ):
   """Adds flags for creating a network endpoint group to the parser."""
 
   _AddNetworkEndpointGroupType(parser, support_neg_type)
-  _AddNetworkEndpointType(
-      parser,
-      support_hybrid_neg,
-      support_l4ilb_neg,
-      support_regional_scope,
-      support_l7psc_neg,
-  )
-  _AddNetwork(
-      parser,
-      support_hybrid_neg,
-      support_l4ilb_neg,
-      support_l7psc_neg,
-      support_regional_internet_neg,
-  )
-  _AddSubnet(parser, support_l4ilb_neg, support_l7psc_neg)
-  _AddDefaultPort(
-      parser, support_hybrid_neg, support_regional_scope, support_l7psc_neg
-  )
-  if support_regional_scope:
-    _AddServerlessRoutingInfo(parser, support_serverless_deployment)
-  if support_regional_scope and support_l7psc_neg:
-    _AddL7pscRoutingInfo(parser)
+  _AddNetworkEndpointType(parser)
+  _AddNetwork(parser)
+  _AddSubnet(parser)
+  _AddDefaultPort(parser)
+  _AddServerlessRoutingInfo(parser, support_serverless_deployment)
+  _AddL7pscRoutingInfo(parser)
+  if support_port_mapping_neg:
+    _AddPortMappingInfo(parser)
 
 
 def _AddAddEndpoint(
     endpoint_group,
     endpoint_spec,
-    support_hybrid_neg,
-    support_l4ilb_neg,
     support_ipv6,
 ):
   """Adds add endpoint argument for updating network endpoint groups."""
@@ -551,14 +495,12 @@ def _AddAddEndpoint(
               (80 for HTTP, 443 for HTTPS or HTTP2).
 
               Example: `--add-endpoint="fqdn=backend.example.com,port=443"`
-    """
-  if support_hybrid_neg:
-    help_text += """\
 
           `non-gcp-private-ip-port`
-      """
-    if support_ipv6:
-      help_text += """\
+
+    """
+  if support_ipv6:
+    help_text += """\
 
               *ip* - Optional IPv4 address of the network endpoint to attach.
               The IP address must belong to a VM not in Compute Engine and must
@@ -572,8 +514,8 @@ def _AddAddEndpoint(
 
               At least one of the ip and ipv6 must be specified.
       """
-    else:
-      help_text += """\
+  else:
+    help_text += """\
 
               *ip* - Required IPv4 address of the network endpoint to attach.
               The IP address must belong to a VM not in Compute Engine and must
@@ -581,29 +523,10 @@ def _AddAddEndpoint(
               connection.
       """
 
-    help_text += """\
+  help_text += """\
 
               *port* - Required port of the network endpoint to attach unless
               the NEG default port is set.
-    """
-
-  if support_l4ilb_neg:
-    help_text += """\
-
-          `gce-vm-primary-ip`
-
-              *instance* - Required instance name in same zone as the network
-              endpoint group.
-
-              The VM instance must belong to the network / subnetwork
-              associated with the network endpoint group. If the VM instance
-              is deleted, then any network endpoint group that has a reference
-              to it is updated.
-
-              *ip* - Required IP address of the network endpoint to attach. The
-              IP address must be the primary IP of a VM's network interface.
-      """
-  help_text += """\
 
           `gce-vm-ip`
 
@@ -631,8 +554,6 @@ def _AddAddEndpoint(
 def _AddRemoveEndpoint(
     endpoint_group,
     endpoint_spec,
-    support_hybrid_neg,
-    support_l4ilb_neg,
     support_ipv6,
 ):
   """Adds remove endpoint argument for updating network endpoint groups."""
@@ -652,8 +573,8 @@ def _AddRemoveEndpoint(
   if support_ipv6:
     help_text += """\
 
-            *ipv6* - Optional IPv6 address of the network endpoint to detach.
-            If specified port must be provided as well.
+              *ipv6* - Optional IPv6 address of the network endpoint to detach.
+              If specified port must be provided as well.
     """
   help_text += """\
 
@@ -684,40 +605,24 @@ def _AddRemoveEndpoint(
 
               *port* - Optional port of the network endpoint to detach if the
               endpoint has a port specified.
-  """
-  if support_hybrid_neg:
-    help_text += """\
 
           `non-gcp-private-ip-port`
 
               *ip* - Required IPv4 address of the network endpoint to detach.
     """
 
-    if support_ipv6:
-      help_text += """\
+  if support_ipv6:
+    help_text += """\
 
               *ipv6* - Required IPv6 address of the network endpoint to detach.
 
               At least one of the ip and ipv6 must be specified.
       """
-    help_text += """\
+
+  help_text += """\
 
               *port* - Required port of the network endpoint to detach unless
               NEG default port is set.
-    """
-  if support_l4ilb_neg:
-    help_text += """\
-
-          `gce-vm-primary-ip`
-
-              *instance* - Required name of the instance with endpoints to
-              detach. If the IP address is unset, all endpoints for the
-              instance in the NEG are detached.
-
-              *ip* - Required IP address of the network endpoint to attach. The
-              IP address must be the VM network interface's primary IP address.
-    """
-  help_text += """\
 
           `gce-vm-ip`
 
@@ -738,12 +643,7 @@ def _AddRemoveEndpoint(
   )
 
 
-def AddUpdateNegArgsToParser(
-    parser,
-    support_hybrid_neg=False,
-    support_l4ilb_neg=False,
-    support_ipv6=False,
-):
+def AddUpdateNegArgsToParser(parser, support_ipv6=False):
   """Adds flags for updating a network endpoint group to the parser."""
   endpoint_group = parser.add_group(
       mutex=True,
@@ -761,14 +661,10 @@ def AddUpdateNegArgsToParser(
   _AddAddEndpoint(
       endpoint_group,
       endpoint_spec,
-      support_hybrid_neg,
-      support_l4ilb_neg,
       support_ipv6,
   )
   _AddRemoveEndpoint(
       endpoint_group,
       endpoint_spec,
-      support_hybrid_neg,
-      support_l4ilb_neg,
       support_ipv6,
   )

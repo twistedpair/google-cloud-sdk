@@ -48,6 +48,7 @@ class AiplatformV1(base_api.BaseApiClient):
     self.projects_locations_datasets_datasetVersions = self.ProjectsLocationsDatasetsDatasetVersionsService(self)
     self.projects_locations_datasets_savedQueries = self.ProjectsLocationsDatasetsSavedQueriesService(self)
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
+    self.projects_locations_deploymentResourcePools = self.ProjectsLocationsDeploymentResourcePoolsService(self)
     self.projects_locations_endpoints = self.ProjectsLocationsEndpointsService(self)
     self.projects_locations_featurestores_entityTypes_features = self.ProjectsLocationsFeaturestoresEntityTypesFeaturesService(self)
     self.projects_locations_featurestores_entityTypes = self.ProjectsLocationsFeaturestoresEntityTypesService(self)
@@ -1066,6 +1067,151 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsDeploymentResourcePoolsService(base_api.BaseApiService):
+    """Service class for the projects_locations_deploymentResourcePools resource."""
+
+    _NAME = 'projects_locations_deploymentResourcePools'
+
+    def __init__(self, client):
+      super(AiplatformV1.ProjectsLocationsDeploymentResourcePoolsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/deploymentResourcePools',
+        request_field='googleCloudAiplatformV1CreateDeploymentResourcePoolRequest',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsCreateRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Delete a DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsDeleteRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1DeploymentResourcePool) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsGetRequest',
+        response_type_name='GoogleCloudAiplatformV1DeploymentResourcePool',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List DeploymentResourcePools in a location.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1ListDeploymentResourcePoolsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/deploymentResourcePools',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsListRequest',
+        response_type_name='GoogleCloudAiplatformV1ListDeploymentResourcePoolsResponse',
+        supports_download=False,
+    )
+
+    def QueryDeployedModels(self, request, global_params=None):
+      r"""List DeployedModels that have been deployed on this DeploymentResourcePool.
+
+      Args:
+        request: (AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1QueryDeployedModelsResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryDeployedModels')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryDeployedModels.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/deploymentResourcePools/{deploymentResourcePoolsId}:queryDeployedModels',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.deploymentResourcePools.queryDeployedModels',
+        ordered_params=['deploymentResourcePool'],
+        path_params=['deploymentResourcePool'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+deploymentResourcePool}:queryDeployedModels',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsDeploymentResourcePoolsQueryDeployedModelsRequest',
+        response_type_name='GoogleCloudAiplatformV1QueryDeployedModelsResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsEndpointsService(base_api.BaseApiService):
     """Service class for the projects_locations_endpoints resource."""
 
@@ -1154,6 +1300,60 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1DeployModelRequest',
         request_type_name='AiplatformProjectsLocationsEndpointsDeployModelRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def DirectPredict(self, request, global_params=None):
+      r"""Perform an unary online prediction request for Vertex first-party products and frameworks.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsDirectPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1DirectPredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('DirectPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DirectPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:directPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.directPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:directPredict',
+        request_field='googleCloudAiplatformV1DirectPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsDirectPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1DirectPredictResponse',
+        supports_download=False,
+    )
+
+    def DirectRawPredict(self, request, global_params=None):
+      r"""Perform an online prediction request through gRPC.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsDirectRawPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1DirectRawPredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('DirectRawPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DirectRawPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:directRawPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.directRawPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:directRawPredict',
+        request_field='googleCloudAiplatformV1DirectRawPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsDirectRawPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1DirectRawPredictResponse',
         supports_download=False,
     )
 

@@ -1916,9 +1916,9 @@ class RevisionStatus(_messages.Message):
       provisioned. * `ContainerHealthy`: `True` when the Revision readiness
       check completes. * `Active`: `True` when the Revision may receive
       traffic.
-    desiredReplicas: Output only. The desired number of instances running this
-      revision. For Cloud Run, this only includes instances provisioned using
-      the minScale annotation. It does not include instances created by
+    desiredReplicas: Output only. The configured number of instances running
+      this revision. For Cloud Run, this only includes instances provisioned
+      using the minScale annotation. It does not include instances created by
       autoscaling.
     imageDigest: ImageDigest holds the resolved digest for the image specified
       within .Spec.Container.Image. The digest is resolved during the creation
@@ -3962,8 +3962,8 @@ class VolumeMount(_messages.Message):
       be mounted. Must not contain ':'.
     name: Required. The name of the volume. There must be a corresponding
       Volume with the same name.
-    readOnly: Only true is accepted for Secret Volumes. Defaults to true for
-      Secrets Volumes.
+    readOnly: Sets the mount to be read-only or read-write. Not used by Cloud
+      Run.
     subPath: Path within the volume from which the container's volume should
       be mounted. Defaults to "" (volume's root).
   """

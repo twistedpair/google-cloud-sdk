@@ -18,8 +18,8 @@ class Authorization(_messages.Message):
   bootstrap onto the admin cluster.
 
   Fields:
-    adminUsers: Required. For VMware and bare metal user clusters, users will
-      be granted the cluster-admin role on the cluster, which provides full
+    adminUsers: For VMware and bare metal user clusters, users will be granted
+      the cluster-admin role on the cluster, which provides full
       administrative access to the cluster. For bare metal admin clusters,
       users will be granted the cluster-view role, which limits users to read-
       only access.
@@ -5906,6 +5906,18 @@ class VmwareAdminAddonNodeConfig(_messages.Message):
   autoResizeConfig = _messages.MessageField('VmwareAutoResizeConfig', 1)
 
 
+class VmwareAdminAuthorizationConfig(_messages.Message):
+  r"""VmwareAdminAuthorizationConfig represents configuration for admin
+  cluster authorization.
+
+  Fields:
+    viewerUsers: For VMware admin clusters, users will be granted the cluster-
+      viewer role on the cluster.
+  """
+
+  viewerUsers = _messages.MessageField('ClusterUser', 1, repeated=True)
+
+
 class VmwareAdminCluster(_messages.Message):
   r"""Resource that represents a VMware admin cluster.
 
@@ -5933,6 +5945,7 @@ class VmwareAdminCluster(_messages.Message):
       alphanumerics between.
     antiAffinityGroups: The VMware admin cluster anti affinity group
       configuration.
+    authorization: The VMware admin cluster authorization configuration.
     autoRepairConfig: The VMware admin cluster auto repair configuration.
     bootstrapClusterMembership: The bootstrap cluster this VMware admin
       cluster belongs to.
@@ -6037,28 +6050,29 @@ class VmwareAdminCluster(_messages.Message):
   addonNode = _messages.MessageField('VmwareAdminAddonNodeConfig', 1)
   annotations = _messages.MessageField('AnnotationsValue', 2)
   antiAffinityGroups = _messages.MessageField('VmwareAAGConfig', 3)
-  autoRepairConfig = _messages.MessageField('VmwareAutoRepairConfig', 4)
-  bootstrapClusterMembership = _messages.StringField(5)
-  controlPlaneNode = _messages.MessageField('VmwareAdminControlPlaneNodeConfig', 6)
-  createTime = _messages.StringField(7)
-  description = _messages.StringField(8)
-  endpoint = _messages.StringField(9)
-  etag = _messages.StringField(10)
-  fleet = _messages.MessageField('Fleet', 11)
-  imageType = _messages.StringField(12)
-  loadBalancer = _messages.MessageField('VmwareAdminLoadBalancerConfig', 13)
-  localName = _messages.StringField(14)
-  name = _messages.StringField(15)
-  networkConfig = _messages.MessageField('VmwareAdminNetworkConfig', 16)
-  onPremVersion = _messages.StringField(17)
-  platformConfig = _messages.MessageField('VmwarePlatformConfig', 18)
-  preparedSecrets = _messages.MessageField('VmwareAdminPreparedSecretsConfig', 19)
-  reconciling = _messages.BooleanField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  status = _messages.MessageField('ResourceStatus', 22)
-  uid = _messages.StringField(23)
-  updateTime = _messages.StringField(24)
-  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 25)
+  authorization = _messages.MessageField('VmwareAdminAuthorizationConfig', 4)
+  autoRepairConfig = _messages.MessageField('VmwareAutoRepairConfig', 5)
+  bootstrapClusterMembership = _messages.StringField(6)
+  controlPlaneNode = _messages.MessageField('VmwareAdminControlPlaneNodeConfig', 7)
+  createTime = _messages.StringField(8)
+  description = _messages.StringField(9)
+  endpoint = _messages.StringField(10)
+  etag = _messages.StringField(11)
+  fleet = _messages.MessageField('Fleet', 12)
+  imageType = _messages.StringField(13)
+  loadBalancer = _messages.MessageField('VmwareAdminLoadBalancerConfig', 14)
+  localName = _messages.StringField(15)
+  name = _messages.StringField(16)
+  networkConfig = _messages.MessageField('VmwareAdminNetworkConfig', 17)
+  onPremVersion = _messages.StringField(18)
+  platformConfig = _messages.MessageField('VmwarePlatformConfig', 19)
+  preparedSecrets = _messages.MessageField('VmwareAdminPreparedSecretsConfig', 20)
+  reconciling = _messages.BooleanField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  status = _messages.MessageField('ResourceStatus', 23)
+  uid = _messages.StringField(24)
+  updateTime = _messages.StringField(25)
+  vcenter = _messages.MessageField('VmwareAdminVCenterConfig', 26)
 
 
 class VmwareAdminControlPlaneNodeConfig(_messages.Message):
@@ -6699,8 +6713,8 @@ class VmwareNetworkConfig(_messages.Message):
       assigned an RFC1918 IPv4 address from these ranges. Only a single range
       is supported. This field cannot be changed after creation.
     staticIpConfig: Configuration settings for a static IP configuration.
-    vcenterNetwork: Output only. vcenter_network specifies vCenter network
-      name. Inherited from the admin cluster.
+    vcenterNetwork: vcenter_network specifies vCenter network name. Inherited
+      from the admin cluster.
   """
 
   controlPlaneV2Config = _messages.MessageField('VmwareControlPlaneV2Config', 1)

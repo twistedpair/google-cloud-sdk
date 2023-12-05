@@ -38,6 +38,7 @@ class Backup(_messages.Message):
     labels: Resource labels to represent user provided metadata.
     name: Output only. The resource name of the backup, in the format
       `projects/{project_number}/locations/{location_id}/backups/{backup_id}`.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     sourceFileShare: Name of the file share in the source Filestore instance
       that the backup is created from.
@@ -137,12 +138,13 @@ class Backup(_messages.Message):
   kmsKey = _messages.StringField(5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  satisfiesPzs = _messages.BooleanField(8)
-  sourceFileShare = _messages.StringField(9)
-  sourceInstance = _messages.StringField(10)
-  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  storageBytes = _messages.IntegerField(13)
+  satisfiesPzi = _messages.BooleanField(8)
+  satisfiesPzs = _messages.BooleanField(9)
+  sourceFileShare = _messages.StringField(10)
+  sourceInstance = _messages.StringField(11)
+  sourceInstanceTier = _messages.EnumField('SourceInstanceTierValueValuesEnum', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  storageBytes = _messages.IntegerField(14)
 
 
 class CancelOperationRequest(_messages.Message):
@@ -1190,6 +1192,7 @@ class Instance(_messages.Message):
       `projects/{project}/locations/{location}/instances/{instance}`.
     networks: VPC networks to which the instance is connected. For this
       version, only a single network is supported.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The instance state.
     statusMessage: Output only. Additional information about the instance
@@ -1307,11 +1310,12 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
   networks = _messages.MessageField('NetworkConfig', 8, repeated=True)
-  satisfiesPzs = _messages.BooleanField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  statusMessage = _messages.StringField(11)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 12, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 13)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  statusMessage = _messages.StringField(12)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 13, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 14)
 
 
 class ListBackupsResponse(_messages.Message):

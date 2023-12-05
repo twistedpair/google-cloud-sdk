@@ -34,7 +34,7 @@ from googlecloudsdk.command_lib.storage import hash_util
 from googlecloudsdk.command_lib.storage import progress_callbacks
 from googlecloudsdk.command_lib.storage import upload_stream
 from googlecloudsdk.command_lib.storage.tasks import task_status
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_task
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import hashing
@@ -213,6 +213,7 @@ def validate_uploaded_object(digesters, uploaded_resource, task_status_queue):
         uploaded_resource.storage_url.url_string, calculated_digest,
         uploaded_resource.md5_hash)
   except errors.HashMismatchError:
-    delete_object_task.DeleteObjectTask(uploaded_resource.storage_url).execute(
-        task_status_queue=task_status_queue)
+    delete_task.DeleteObjectTask(uploaded_resource.storage_url).execute(
+        task_status_queue=task_status_queue
+    )
     raise

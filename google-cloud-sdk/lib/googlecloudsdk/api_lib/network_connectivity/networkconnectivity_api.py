@@ -48,24 +48,6 @@ class SpokesClient(object):
             name=spoke_ref.RelativeName()))
     return self.spoke_service.Deactivate(deactivate_req)
 
-  def Accept(self, spoke_ref):
-    """Call API to activate an existing spoke."""
-    accept_req = (
-        self.messages.NetworkconnectivityProjectsLocationsSpokesAcceptRequest(
-            name=spoke_ref.RelativeName()))
-    return self.spoke_service.Accept(accept_req)
-
-  def Reject(self, spoke_ref, rejection_details):
-    """Call API to reject an existing spoke."""
-    rejection_detailed_req = self.messages.RejectSpokeRequest(
-        details=rejection_details)
-    reject_req = (
-        self.messages
-        .NetworkconnectivityProjectsLocationsSpokesRejectRequest(
-            name=spoke_ref.RelativeName(),
-            rejectSpokeRequest=rejection_detailed_req))
-    return self.spoke_service.Reject(reject_req)
-
   def Delete(self, spoke_ref):
     """Call API to delete an existing spoke."""
     delete_req = (

@@ -145,7 +145,7 @@ def AddFilterFlag(parser):
       'Filter the entities based on (AIP-160)[https://google.aip.dev/160]'
       ' standard. Example: to filter all tables whose name start with'
       ' "Employee" and are present under schema "Company", use filter as'
-      ' "parent = Company and TABLE=Employee*"'
+      ' "Company.Employee```*``` AND type=TABLE"'
   )
   parser.add_argument('--filter', help=help_text)
 

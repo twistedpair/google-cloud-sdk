@@ -446,6 +446,9 @@ class Instance(_messages.Message):
       If not provided, the service will choose an unused /29 block, for
       example, 10.0.0.0/29 or 192.168.0.0/29. For READ_REPLICAS_ENABLED the
       default block size is /28.
+    satisfiesPzi: Optional. Output only. Reserved for future use. Zone
+      Isolation compliance state of the instance. Field name and documentation
+      is obfuscated according to go/per-resource-zi-bit-semantics.
     satisfiesPzs: Optional. Output only. Reserved for future use. Zone
       Separation compliance state of the instance. Field name and
       documentation is obfuscated according to go/zs-resource-status.
@@ -649,14 +652,15 @@ class Instance(_messages.Message):
   redisVersion = _messages.StringField(26)
   replicaCount = _messages.IntegerField(27, variant=_messages.Variant.INT32)
   reservedIpRange = _messages.StringField(28)
-  satisfiesPzs = _messages.BooleanField(29)
-  secondaryIpRange = _messages.StringField(30)
-  serverCaCerts = _messages.MessageField('TlsCertificate', 31, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 32)
-  statusMessage = _messages.StringField(33)
-  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 34, repeated=True)
-  tier = _messages.EnumField('TierValueValuesEnum', 35)
-  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 36)
+  satisfiesPzi = _messages.BooleanField(29)
+  satisfiesPzs = _messages.BooleanField(30)
+  secondaryIpRange = _messages.StringField(31)
+  serverCaCerts = _messages.MessageField('TlsCertificate', 32, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 33)
+  statusMessage = _messages.StringField(34)
+  suspensionReasons = _messages.EnumField('SuspensionReasonsValueListEntryValuesEnum', 35, repeated=True)
+  tier = _messages.EnumField('TierValueValuesEnum', 36)
+  transitEncryptionMode = _messages.EnumField('TransitEncryptionModeValueValuesEnum', 37)
 
 
 class InstanceAuthString(_messages.Message):

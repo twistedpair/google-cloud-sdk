@@ -343,6 +343,8 @@ def AddFunctionArg(parser):
   parser.add_argument(
       '--function',
       hidden=True,
+      nargs='?',
+      const=True,
       help="""\
       Specifies that the deployed object is a function. If a value is
       provided, that value is used as the entrypoint.
@@ -3603,3 +3605,38 @@ def AddDryRunFlag(parser):
           ' will not be applied.'
       ),
   )
+
+
+def FunctionArg():
+  """Specify that the deployed resource is a function."""
+  return base.Argument(
+      '--function',
+      hidden=True,
+      required=True,
+      action='store_true',
+      help=(
+          'Specifies that the deployed object is a function. If a value is'
+          'provided, that value is used as the entrypoint.'
+      ),
+  )
+
+
+# TODO(b/312784518) link to/list supported values
+def RuntimeLanguageArg():
+  return base.Argument(
+      '--runtime-language',
+      hidden=True,
+      required=True,
+      help=(
+          'Specify the language runtime version to be used to build a function'
+          ' deployment. Can only be used when [--function] is also specified.'
+      ),
+  )
+
+
+def AddFunctionAndRuntimeLanguageFlag(parser):
+  """Add --runtime-language flag used with functions."""
+  group = base.ArgumentGroup(hidden=True)
+  group.AddArgument(FunctionArg())
+  group.AddArgument(RuntimeLanguageArg())
+  group.AddToParser(parser)

@@ -6448,10 +6448,6 @@ class Type(_messages.Message):
 
     Values:
       TYPE_ANNOTATION_CODE_UNSPECIFIED: Not specified.
-      INT32: 32-bit signed integer type. This annotation can be used by a
-        client interacting with PostgreSQL-enabled Spanner database to specify
-        that a value should be treated using the semantics of the INTEGER
-        type.
       PG_NUMERIC: PostgreSQL compatible NUMERIC type. This annotation needs to
         be applied to Type instances having NUMERIC type code to specify that
         values of this type should be treated as PostgreSQL NUMERIC values.
@@ -6464,9 +6460,8 @@ class Type(_messages.Message):
         PostgreSQL-enabled Spanner databases.
     """
     TYPE_ANNOTATION_CODE_UNSPECIFIED = 0
-    INT32 = 1
-    PG_NUMERIC = 2
-    PG_JSONB = 3
+    PG_NUMERIC = 1
+    PG_JSONB = 2
 
   arrayElementType = _messages.MessageField('Type', 1)
   code = _messages.EnumField('CodeValueValuesEnum', 2)

@@ -5057,6 +5057,10 @@ class WorkforcePoolProvider(_messages.Message):
       thumbnail photo. This is an optional field. When set, the image will be
       visible as the user's profile picture. If not set, a generic user icon
       will be displayed instead. This attribute cannot be referenced in IAM
+      bindings. * `google.posix_username`: The linux username used by OS
+      login. This is an optional field and the mapped posix username cannot
+      exceed 32 characters, The key must match the regex
+      "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
       bindings. You can also provide custom attributes by specifying
       `attribute.{custom_attribute}`, where {custom_attribute} is the name of
       the custom attribute to be mapped. You can define a maximum of 50 custom
@@ -5091,13 +5095,13 @@ class WorkforcePoolProvider(_messages.Message):
       keywords may be referenced in the expressions: * `assertion`: JSON
       representing the authentication credential issued by the provider. *
       `google`: The Google attributes mapped from the assertion in the
-      `attribute_mappings`. `google.profile_photo` and `google.display_name`
-      are not supported. * `attribute`: The custom attributes mapped from the
-      assertion in the `attribute_mappings`. The maximum length of the
-      attribute condition expression is 4096 characters. If unspecified, all
-      valid authentication credentials will be accepted. The following example
-      shows how to only allow credentials with a mapped `google.groups` value
-      of `admins`: ``` "'admins' in google.groups" ```
+      `attribute_mappings`. `google.profile_photo`, `google.display_name` and
+      `google.posix_username` are not supported. * `attribute`: The custom
+      attributes mapped from the assertion in the `attribute_mappings`. The
+      maximum length of the attribute condition expression is 4096 characters.
+      If unspecified, all valid authentication credentials will be accepted.
+      The following example shows how to only allow credentials with a mapped
+      `google.groups` value of `admins`: ``` "'admins' in google.groups" ```
     attributeMapping: Required. Maps attributes from the authentication
       credentials issued by an external identity provider to Google Cloud
       attributes, such as `subject` and `segment`. Each key must be a string
@@ -5116,6 +5120,10 @@ class WorkforcePoolProvider(_messages.Message):
       thumbnail photo. This is an optional field. When set, the image will be
       visible as the user's profile picture. If not set, a generic user icon
       will be displayed instead. This attribute cannot be referenced in IAM
+      bindings. * `google.posix_username`: The linux username used by OS
+      login. This is an optional field and the mapped posix username cannot
+      exceed 32 characters, The key must match the regex
+      "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
       bindings. You can also provide custom attributes by specifying
       `attribute.{custom_attribute}`, where {custom_attribute} is the name of
       the custom attribute to be mapped. You can define a maximum of 50 custom
@@ -5194,21 +5202,25 @@ class WorkforcePoolProvider(_messages.Message):
     specifies the authenticated user's thumbnail photo. This is an optional
     field. When set, the image will be visible as the user's profile picture.
     If not set, a generic user icon will be displayed instead. This attribute
-    cannot be referenced in IAM bindings. You can also provide custom
-    attributes by specifying `attribute.{custom_attribute}`, where
-    {custom_attribute} is the name of the custom attribute to be mapped. You
-    can define a maximum of 50 custom attributes. The maximum length of a
-    mapped attribute key is 100 characters, and the key may only contain the
-    characters [a-z0-9_]. You can reference these attributes in IAM policies
-    to define fine-grained access for a workforce pool to Google Cloud
-    resources. For example: * `google.subject`: `principal://iam.googleapis.co
-    m/locations/global/workforcePools/{pool}/subject/{value}` *
-    `google.groups`: `principalSet://iam.googleapis.com/locations/global/workf
-    orcePools/{pool}/group/{value}` * `attribute.{custom_attribute}`: `princip
-    alSet://iam.googleapis.com/locations/global/workforcePools/{pool}/attribut
-    e.{custom_attribute}/{value}` Each value must be a [Common Expression
-    Language] (https://opensource.google/projects/cel) function that maps an
-    identity provider credential to the normalized attribute specified by the
+    cannot be referenced in IAM bindings. * `google.posix_username`: The linux
+    username used by OS login. This is an optional field and the mapped posix
+    username cannot exceed 32 characters, The key must match the regex
+    "^a-zA-Z0-9._{0,31}$". This attribute cannot be referenced in IAM
+    bindings. You can also provide custom attributes by specifying
+    `attribute.{custom_attribute}`, where {custom_attribute} is the name of
+    the custom attribute to be mapped. You can define a maximum of 50 custom
+    attributes. The maximum length of a mapped attribute key is 100
+    characters, and the key may only contain the characters [a-z0-9_]. You can
+    reference these attributes in IAM policies to define fine-grained access
+    for a workforce pool to Google Cloud resources. For example: *
+    `google.subject`: `principal://iam.googleapis.com/locations/global/workfor
+    cePools/{pool}/subject/{value}` * `google.groups`: `principalSet://iam.goo
+    gleapis.com/locations/global/workforcePools/{pool}/group/{value}` *
+    `attribute.{custom_attribute}`: `principalSet://iam.googleapis.com/locatio
+    ns/global/workforcePools/{pool}/attribute.{custom_attribute}/{value}` Each
+    value must be a [Common Expression Language]
+    (https://opensource.google/projects/cel) function that maps an identity
+    provider credential to the normalized attribute specified by the
     corresponding map key. You can use the `assertion` keyword in the
     expression to access a JSON representation of the authentication
     credential issued by the provider. The maximum length of an attribute

@@ -14,6 +14,109 @@ from apitools.base.py import extra_types
 package = 'translate'
 
 
+class AdaptiveMtDataset(_messages.Message):
+  r"""An Adaptive MT Dataset.
+
+  Fields:
+    createTime: Output only. Timestamp when this dataset was created.
+    displayName: The name of the dataset to show in the interface. The name
+      can be up to 32 characters long and can consist only of ASCII Latin
+      letters A-Z and a-z, underscores (_), and ASCII digits 0-9.
+    exampleCount: The number of examples in the dataset.
+    name: Required. The resource name of the dataset, in form of
+      `projects/{project-number-or-
+      id}/locations/{location_id}/adaptiveMtDatasets/{dataset_id}`
+    sourceLanguageCode: The BCP-47 language code of the source language.
+    targetLanguageCode: The BCP-47 language code of the target language.
+    updateTime: Output only. Timestamp when this dataset was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  exampleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  sourceLanguageCode = _messages.StringField(5)
+  targetLanguageCode = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
+
+
+class AdaptiveMtFile(_messages.Message):
+  r"""An AdaptiveMtFile.
+
+  Fields:
+    createTime: Output only. Timestamp when this file was created.
+    displayName: The file's display name.
+    entryCount: The number of entries that the file contains.
+    name: Required. The resource name of the file, in form of
+      `projects/{project-number-or-
+      id}/locations/{location_id}/adaptiveMtDatasets/{dataset}/files/{file}`
+    updateTime: Output only. Timestamp when this file was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  displayName = _messages.StringField(2)
+  entryCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  name = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class AdaptiveMtSentence(_messages.Message):
+  r"""An AdaptiveMt sentence entry.
+
+  Fields:
+    createTime: Output only. Timestamp when this sentence was created.
+    name: Required. The resource name of the file, in form of
+      `projects/{project-number-or-id}/locations/{location_id}/adaptiveMtDatas
+      ets/{dataset}/files/{file}/sentences/{sentence}`
+    sourceSentence: Required. The source sentence.
+    targetSentence: Required. The target sentence.
+    updateTime: Output only. Timestamp when this sentence was last updated.
+  """
+
+  createTime = _messages.StringField(1)
+  name = _messages.StringField(2)
+  sourceSentence = _messages.StringField(3)
+  targetSentence = _messages.StringField(4)
+  updateTime = _messages.StringField(5)
+
+
+class AdaptiveMtTranslateRequest(_messages.Message):
+  r"""The request for sending an AdaptiveMt translation query.
+
+  Fields:
+    content: Required. The content of the input in string format. For now only
+      one sentence per request is supported.
+    dataset: Required. The resource name for the dataset to use for adaptive
+      MT. `projects/{project}/locations/{location-
+      id}/adaptiveMtDatasets/{dataset}`
+  """
+
+  content = _messages.StringField(1, repeated=True)
+  dataset = _messages.StringField(2)
+
+
+class AdaptiveMtTranslateResponse(_messages.Message):
+  r"""An AdaptiveMtTranslate response.
+
+  Fields:
+    languageCode: Output only. The translation's language code.
+    translations: Output only. The translation.
+  """
+
+  languageCode = _messages.StringField(1)
+  translations = _messages.MessageField('AdaptiveMtTranslation', 2, repeated=True)
+
+
+class AdaptiveMtTranslation(_messages.Message):
+  r"""An AdaptiveMt translation.
+
+  Fields:
+    translatedText: Output only. The translated text.
+  """
+
+  translatedText = _messages.StringField(1)
+
+
 class BatchDocumentInputConfig(_messages.Message):
   r"""Input configuration for BatchTranslateDocument request.
 
@@ -666,6 +769,20 @@ class ExportDataRequest(_messages.Message):
   outputConfig = _messages.MessageField('DatasetOutputConfig', 1)
 
 
+class FileInputSource(_messages.Message):
+  r"""An inlined file.
+
+  Fields:
+    content: Required. The file's byte contents.
+    displayName: Required. The file's display name.
+    mimeType: Required. The file's mime type.
+  """
+
+  content = _messages.BytesField(1)
+  displayName = _messages.StringField(2)
+  mimeType = _messages.StringField(3)
+
+
 class GcsDestination(_messages.Message):
   r"""The Google Cloud Storage location for the output content.
 
@@ -818,6 +935,28 @@ class GlossaryTermsSet(_messages.Message):
   terms = _messages.MessageField('GlossaryTerm', 1, repeated=True)
 
 
+class ImportAdaptiveMtFileRequest(_messages.Message):
+  r"""The request for importing an AdaptiveMt file along with its sentences.
+
+  Fields:
+    fileInputSource: Inline file source.
+    gcsInputSource: Google Cloud Storage file source.
+  """
+
+  fileInputSource = _messages.MessageField('FileInputSource', 1)
+  gcsInputSource = _messages.MessageField('GcsInputSource', 2)
+
+
+class ImportAdaptiveMtFileResponse(_messages.Message):
+  r"""The response for importing an AdaptiveMtFile
+
+  Fields:
+    adaptiveMtFile: Output only. The Adaptive MT file that was imported.
+  """
+
+  adaptiveMtFile = _messages.MessageField('AdaptiveMtFile', 1)
+
+
 class ImportDataRequest(_messages.Message):
   r"""Request message for ImportData.
 
@@ -894,6 +1033,48 @@ class LanguageCodesSet(_messages.Message):
   """
 
   languageCodes = _messages.StringField(1, repeated=True)
+
+
+class ListAdaptiveMtDatasetsResponse(_messages.Message):
+  r"""A list of AdaptiveMtDatasets.
+
+  Fields:
+    adaptiveMtDatasets: Output only. A list of Adaptive MT datasets.
+    nextPageToken: Optional. A token to retrieve a page of results. Pass this
+      value in the [ListAdaptiveMtDatasetsRequest.page_token] field in the
+      subsequent call to `ListAdaptiveMtDatasets` method to retrieve the next
+      page of results.
+  """
+
+  adaptiveMtDatasets = _messages.MessageField('AdaptiveMtDataset', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListAdaptiveMtFilesResponse(_messages.Message):
+  r"""The response for listing all AdaptiveMt files under a given dataset.
+
+  Fields:
+    adaptiveMtFiles: Output only. The Adaptive MT files.
+    nextPageToken: Optional. A token to retrieve a page of results. Pass this
+      value in the [ListAdaptiveMtFilesRequest.page_token] field in the
+      subsequent call to `ListAdaptiveMtFiles` method to retrieve the next
+      page of results.
+  """
+
+  adaptiveMtFiles = _messages.MessageField('AdaptiveMtFile', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+
+
+class ListAdaptiveMtSentencesResponse(_messages.Message):
+  r"""List AdaptiveMt sentences response.
+
+  Fields:
+    adaptiveMtSentences: Output only. The list of AdaptiveMtSentences.
+    nextPageToken: Optional.
+  """
+
+  adaptiveMtSentences = _messages.MessageField('AdaptiveMtSentence', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListDatasetsResponse(_messages.Message):
@@ -1640,6 +1821,197 @@ class TranslateProjectsGetSupportedLanguagesRequest(_messages.Message):
   displayLanguageCode = _messages.StringField(1)
   model = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSentencesListRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtS
+  entencesListRequest object.
+
+  Fields:
+    pageSize: A integer attribute.
+    pageToken: A token identifying a page of results the server should return.
+      Typically, this is the value of
+      [ListTranslationMemoriesResponse.next_page_token] returned from the
+      previous call to `ListTranslationMemories` method. The first page is
+      returned if `page_token`is empty or missing.
+    parent: Required. The resource name of the project from which to list the
+      Adaptive MT files. The following format lists all sentences under a
+      file. `projects/{project}/locations/{location}/adaptiveMtDatasets/{datas
+      et}/adaptiveMtFiles/{file}` The following format lists all sentences
+      within a dataset.
+      `projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesDeleteRequest(_messages.Message):
+  r"""A
+  TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the file to delete, in form of
+      `projects/{project-number-or-
+      id}/locations/{location_id}/adaptiveMtDatasets/{dataset}/files/{file}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesGetRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the file, in form of
+      `projects/{project-number-or-
+      id}/locations/{location_id}/adaptiveMtDatasets/{dataset}/files/{file}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesListRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesListRequest
+  object.
+
+  Fields:
+    pageSize: Optional.
+    pageToken: Optional. A token identifying a page of results the server
+      should return. Typically, this is the value of
+      [ListAdaptiveMtFilesResponse.next_page_token] returned from the previous
+      call to `ListAdaptiveMtFiles` method. The first page is returned if
+      `page_token`is empty or missing.
+    parent: Required. The resource name of the project from which to list the
+      Adaptive MT files.
+      `projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesListRequest(_messages.Message):
+  r"""A
+  TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesListRequest
+  object.
+
+  Fields:
+    pageSize: A integer attribute.
+    pageToken: A token identifying a page of results the server should return.
+      Typically, this is the value of
+      [ListTranslationMemoriesResponse.next_page_token] returned from the
+      previous call to `ListTranslationMemories` method. The first page is
+      returned if `page_token`is empty or missing.
+    parent: Required. The resource name of the project from which to list the
+      Adaptive MT files. The following format lists all sentences under a
+      file. `projects/{project}/locations/{location}/adaptiveMtDatasets/{datas
+      et}/adaptiveMtFiles/{file}` The following format lists all sentences
+      within a dataset.
+      `projects/{project}/locations/{location}/adaptiveMtDatasets/{dataset}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsCreateRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsAdaptiveMtDatasetsCreateRequest object.
+
+  Fields:
+    adaptiveMtDataset: A AdaptiveMtDataset resource to be passed as the
+      request body.
+    parent: Required. Name of the parent project. In form of
+      `projects/{project-number-or-id}/locations/{location-id}`
+  """
+
+  adaptiveMtDataset = _messages.MessageField('AdaptiveMtDataset', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsDeleteRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsAdaptiveMtDatasetsDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the dataset. In the form of `projects/{project-
+      number-or-id}/locations/{location-id}/adaptiveMtDatasets/{adaptive-mt-
+      dataset-id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsGetRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsAdaptiveMtDatasetsGetRequest object.
+
+  Fields:
+    name: Required. Name of the dataset. In the form of `projects/{project-
+      number-or-id}/locations/{location-id}/adaptiveMtDatasets/{adaptive-mt-
+      dataset-id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsImportAdaptiveMtFileRequest(_messages.Message):
+  r"""A
+  TranslateProjectsLocationsAdaptiveMtDatasetsImportAdaptiveMtFileRequest
+  object.
+
+  Fields:
+    importAdaptiveMtFileRequest: A ImportAdaptiveMtFileRequest resource to be
+      passed as the request body.
+    parent: Required. The resource name of the file, in form of
+      `projects/{project-number-or-
+      id}/locations/{location_id}/adaptiveMtDatasets/{dataset}`
+  """
+
+  importAdaptiveMtFileRequest = _messages.MessageField('ImportAdaptiveMtFileRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtDatasetsListRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsAdaptiveMtDatasetsListRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Filter is not supported yet.
+    pageSize: Optional. Requested page size. The server may return fewer
+      results than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return. Typically, this is the value of
+      [ListAdaptiveMtDatasetsResponse.next_page_token] returned from the
+      previous call to `ListAdaptiveMtDatasets` method. The first page is
+      returned if `page_token`is empty or missing.
+    parent: Required. The resource name of the project from which to list the
+      Adaptive MT datasets. `projects/{project-number-or-
+      id}/locations/{location-id}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class TranslateProjectsLocationsAdaptiveMtTranslateRequest(_messages.Message):
+  r"""A TranslateProjectsLocationsAdaptiveMtTranslateRequest object.
+
+  Fields:
+    adaptiveMtTranslateRequest: A AdaptiveMtTranslateRequest resource to be
+      passed as the request body.
+    parent: Required. Location to make a regional call. Format:
+      `projects/{project-number-or-id}/locations/{location-id}`.
+  """
+
+  adaptiveMtTranslateRequest = _messages.MessageField('AdaptiveMtTranslateRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class TranslateProjectsLocationsBatchTranslateDocumentRequest(_messages.Message):

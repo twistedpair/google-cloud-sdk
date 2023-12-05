@@ -73,6 +73,7 @@ class ConversionWorkspacesClient(object):
 
     if args.global_settings is None:
       args.global_settings = {}
+    args.global_settings['filter'] = '*'
     args.global_settings['v2'] = 'true'
     if (
         args.source_database_engine == 'ORACLE'

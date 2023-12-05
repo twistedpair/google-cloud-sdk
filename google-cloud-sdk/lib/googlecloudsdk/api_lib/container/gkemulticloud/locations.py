@@ -85,5 +85,20 @@ class LocationsClient(client.ClientBase):
         parent=location_ref.RelativeName(),
         attachedClusterId=memberships_id,
         platformVersion=attached_flags.GetPlatformVersion(args),
+        proxyConfig_kubernetesSecret_name=attached_flags.GetProxySecretName(args),
+        proxyConfig_kubernetesSecret_namespace=
+        attached_flags.GetProxySecretNamespace(args),
+    )
+
+    # This is a workaround for the limitation in apitools with nested messages.
+    encoding.AddCustomJsonFieldMapping(
+        self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest,
+        'proxyConfig_kubernetesSecret_name',
+        'proxyConfig.kubernetesSecret.name',
+    )
+    encoding.AddCustomJsonFieldMapping(
+        self._messages.GkemulticloudProjectsLocationsGenerateAttachedClusterInstallManifestRequest,
+        'proxyConfig_kubernetesSecret_namespace',
+        'proxyConfig.kubernetesSecret.namespace',
     )
     return self._service.GenerateAttachedClusterInstallManifest(req)

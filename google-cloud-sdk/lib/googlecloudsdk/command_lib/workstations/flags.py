@@ -298,6 +298,20 @@ def AddShieldedIntegrityMonitoring(parser, use_default=True):
   )
 
 
+def AddEnableAuditAgent(parser, use_default=True):
+  """Adds an --enable-audit-agent flag to the given parser."""
+  help_text = """\
+  Whether to enable Linux `auditd` logging on the workstation. When enabled,
+  a service account must also be specified that has `logging.buckets.write`
+  permission on the project."""
+  parser.add_argument(
+      '--enable-audit-agent',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
+
+
 def AddEnableConfidentialCompute(parser, use_default=True):
   """Adds an --enable-confidential-compute flag to the given parser."""
   help_text = """\

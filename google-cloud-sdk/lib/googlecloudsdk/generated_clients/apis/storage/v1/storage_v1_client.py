@@ -160,7 +160,7 @@ class StorageV1(base_api.BaseApiClient):
         ordered_params=['bucket'],
         path_params=['bucket'],
         query_params=['pageSize', 'pageToken'],
-        relative_path='b/{bucket}/anywhereCache',
+        relative_path='b/{bucket}/anywhereCaches',
         request_field='',
         request_type_name='StorageAnywhereCachesListRequest',
         response_type_name='AnywhereCaches',

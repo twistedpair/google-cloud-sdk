@@ -30,10 +30,9 @@ class AdvanceChildRolloutJobRun(_messages.Message):
   advanceChildRollout `JobRun`.
 
   Fields:
-    rollout: Output only. Name of the `ChildRollout`. Format is
-      projects/{project}/
-      locations/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/a-z{0,62}.
+    rollout: Output only. Name of the `ChildRollout`. Format is `projects/{pro
+      ject}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases
+      /{release}/rollouts/a-z{0,62}`.
     rolloutPhaseId: Output only. the ID of the ChildRollout's Phase.
   """
 
@@ -65,7 +64,7 @@ class AdvanceRolloutRequest(_messages.Message):
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     phaseId: Required. The phase ID to advance the `Rollout` to.
   """
 
@@ -89,7 +88,7 @@ class AdvanceRolloutRule(_messages.Message):
     condition: Output only. Information around the state of the Automation
       rule.
     id: Required. ID of the rule. This id must be unique in the `Automation`
-      resource to which this rule belongs. The format is a-z{0,62}.
+      resource to which this rule belongs. The format is `a-z{0,62}`.
     sourcePhases: Optional. Proceeds only after phase name matched any one in
       the list. This value must consist of lower-case letters, numbers, and
       hyphens, start with a letter and end with a letter or a number, and have
@@ -139,7 +138,7 @@ class ApproveRolloutRequest(_messages.Message):
   Fields:
     approved: Required. True = approve; false = reject
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
   """
 
   approved = _messages.BooleanField(1)
@@ -225,13 +224,14 @@ class Automation(_messages.Message):
       set and used by the user, and not by Cloud Deploy. Annotations must meet
       the following constraints: * Annotations are key/value pairs. * Valid
       annotation keys have two segments: an optional prefix and name,
-      separated by a slash (/). * The name segment is required and must be 63
-      characters or less, beginning and ending with an alphanumeric character
-      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
-      alphanumerics between. * The prefix is optional. If specified, the
-      prefix must be a DNS subdomain: a series of DNS labels separated by
-      dots(.), not longer than 253 characters in total, followed by a slash
-      (/). See https://kubernetes.io/docs/concepts/overview/working-with-
+      separated by a slash (`/`). * The name segment is required and must be
+      63 characters or less, beginning and ending with an alphanumeric
+      character (`[a-z0-9A-Z]`) with dashes (`-`), underscores (`_`), dots
+      (`.`), and alphanumerics between. * The prefix is optional. If
+      specified, the prefix must be a DNS subdomain: a series of DNS labels
+      separated by dots(`.`), not longer than 253 characters in total,
+      followed by a slash (`/`). See
+      https://kubernetes.io/docs/concepts/overview/working-with-
       objects/annotations/#syntax-and-character-set for more details.
     LabelsValue: Optional. Labels are attributes that can be set and used by
       both the user and by Cloud Deploy. Labels must meet the following
@@ -247,13 +247,14 @@ class Automation(_messages.Message):
       and used by the user, and not by Cloud Deploy. Annotations must meet the
       following constraints: * Annotations are key/value pairs. * Valid
       annotation keys have two segments: an optional prefix and name,
-      separated by a slash (/). * The name segment is required and must be 63
-      characters or less, beginning and ending with an alphanumeric character
-      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
-      alphanumerics between. * The prefix is optional. If specified, the
-      prefix must be a DNS subdomain: a series of DNS labels separated by
-      dots(.), not longer than 253 characters in total, followed by a slash
-      (/). See https://kubernetes.io/docs/concepts/overview/working-with-
+      separated by a slash (`/`). * The name segment is required and must be
+      63 characters or less, beginning and ending with an alphanumeric
+      character (`[a-z0-9A-Z]`) with dashes (`-`), underscores (`_`), dots
+      (`.`), and alphanumerics between. * The prefix is optional. If
+      specified, the prefix must be a DNS subdomain: a series of DNS labels
+      separated by dots(`.`), not longer than 253 characters in total,
+      followed by a slash (`/`). See
+      https://kubernetes.io/docs/concepts/overview/working-with-
       objects/annotations/#syntax-and-character-set for more details.
     createTime: Output only. Time at which the automation was created.
     description: Optional. Description of the `Automation`. Max length is 255
@@ -270,9 +271,9 @@ class Automation(_messages.Message):
       start with a lowercase letter or international character. * Each
       resource is limited to a maximum of 64 labels. Both keys and values are
       additionally constrained to be <= 63 characters.
-    name: Output only. Name of the `Automation`. Format is projects/{project}/
-      locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/{
-      automation}.
+    name: Output only. Name of the `Automation`. Format is `projects/{project}
+      /locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/
+      {automation}`.
     rules: Required. List of Automation rules associated with the Automation
       resource. Must have at least one rule and limited to 250 rules per
       Delivery Pipeline. Note: the order of the rules here is not the same as
@@ -292,13 +293,13 @@ class Automation(_messages.Message):
     r"""Optional. User annotations. These attributes can only be set and used
     by the user, and not by Cloud Deploy. Annotations must meet the following
     constraints: * Annotations are key/value pairs. * Valid annotation keys
-    have two segments: an optional prefix and name, separated by a slash (/).
-    * The name segment is required and must be 63 characters or less,
-    beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with
-    dashes (-), underscores (_), dots (.), and alphanumerics between. * The
-    prefix is optional. If specified, the prefix must be a DNS subdomain: a
-    series of DNS labels separated by dots(.), not longer than 253 characters
-    in total, followed by a slash (/). See
+    have two segments: an optional prefix and name, separated by a slash
+    (`/`). * The name segment is required and must be 63 characters or less,
+    beginning and ending with an alphanumeric character (`[a-z0-9A-Z]`) with
+    dashes (`-`), underscores (`_`), dots (`.`), and alphanumerics between. *
+    The prefix is optional. If specified, the prefix must be a DNS subdomain:
+    a series of DNS labels separated by dots(`.`), not longer than 253
+    characters in total, followed by a slash (`/`). See
     https://kubernetes.io/docs/concepts/overview/working-with-
     objects/annotations/#syntax-and-character-set for more details.
 
@@ -473,9 +474,8 @@ class AutomationRuleCondition(_messages.Message):
 
 
 class AutomationRun(_messages.Message):
-  r"""An `AutomationRun` resource in the Cloud Deploy API. An
-  `AutomationResource` represents an automation execution instance of an
-  automation rule.
+  r"""An `AutomationRun` resource in the Cloud Deploy API. An `AutomationRun`
+  represents an automation execution instance of an automation rule.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the `AutomationRun`.
@@ -494,9 +494,9 @@ class AutomationRun(_messages.Message):
       an up-to-date value before proceeding.
     expireTime: Output only. Time the `AutomationRun` will expire. An
       `AutomationRun` will expire after 14 days from its creation date.
-    name: Output only. Name of the `AutomationRun`. Format is projects/{projec
-      t}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automation
-      Runs/{automation_run}.
+    name: Output only. Name of the `AutomationRun`. Format is `projects/{proje
+      ct}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automatio
+      nRuns/{automation_run}`.
     policyViolation: Output only. Contains information about what policies
       prevented the `AutomationRun` to proceed.
     promoteReleaseOperation: Output only. Promotes a release to a specified
@@ -727,7 +727,8 @@ class CancelAutomationRunRequest(_messages.Message):
 
   Fields:
     overrideDeployPolicy: Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/{deploy_policy}.
+      `projects/{project}/
+      locations/{location}/deployPolicies/{deploy_policy}`.
   """
 
   overrideDeployPolicy = _messages.StringField(1, repeated=True)
@@ -746,7 +747,7 @@ class CancelRolloutRequest(_messages.Message):
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
   """
 
   overrideDeployPolicy = _messages.StringField(1, repeated=True)
@@ -798,12 +799,12 @@ class CloudRunMetadata(_messages.Message):
   Fields:
     job: Output only. The name of the Cloud Run job that is associated with a
       `Rollout`. Format is
-      projects/{project}/locations/{location}/jobs/{job_name}.
+      `projects/{project}/locations/{location}/jobs/{job_name}`.
     revision: Output only. The Cloud Run Revision id associated with a
       `Rollout`.
     service: Output only. The name of the Cloud Run Service that is associated
       with a `Rollout`. Format is
-      projects/{project}/locations/{location}/services/{service}.
+      `projects/{project}/locations/{location}/services/{service}`.
     serviceUrls: Output only. The Cloud Run Service urls that are associated
       with a `Rollout`.
   """
@@ -821,7 +822,7 @@ class CloudRunRenderMetadata(_messages.Message):
   Fields:
     service: Output only. The name of the Cloud Run Service in the rendered
       manifest. Format is
-      projects/{project}/locations/{location}/services/{service}.
+      `projects/{project}/locations/{location}/services/{service}`.
   """
 
   service = _messages.StringField(1)
@@ -836,7 +837,7 @@ class ClouddeployProjectsLocationsCustomTargetTypesCreateRequest(_messages.Messa
     customTargetTypeId: Required. ID of the `CustomTargetType`.
     parent: Required. The parent collection in which the `CustomTargetType`
       should be created in. Format should be
-      projects/{project_id}/locations/{location_name}.
+      `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -869,8 +870,8 @@ class ClouddeployProjectsLocationsCustomTargetTypesDeleteRequest(_messages.Messa
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     name: Required. The name of the `CustomTargetType` to delete. Format must
-      be projects/{project_id}/locations/{location_name}/customTargetTypes/{cu
-      stom_target_type}.
+      be `projects/{project_id}/locations/{location_name}/customTargetTypes/{c
+      ustom_target_type}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -897,9 +898,9 @@ class ClouddeployProjectsLocationsCustomTargetTypesGetRequest(_messages.Message)
   r"""A ClouddeployProjectsLocationsCustomTargetTypesGetRequest object.
 
   Fields:
-    name: Required. Name of the `CustomTargetType`. Format must be projects/{p
-      roject_id}/locations/{location_name}/customTargetTypes/{custom_target_ty
-      pe}.
+    name: Required. Name of the `CustomTargetType`. Format must be `projects/{
+      project_id}/locations/{location_name}/customTargetTypes/{custom_target_t
+      ype}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -922,7 +923,7 @@ class ClouddeployProjectsLocationsCustomTargetTypesListRequest(_messages.Message
       page. When paginating, all other provided parameters match the call that
       provided the page token.
     parent: Required. The parent that owns this collection of custom target
-      types. Format must be projects/{project_id}/locations/{location_name}.
+      types. Format must be `projects/{project_id}/locations/{location_name}`.
   """
 
   filter = _messages.StringField(1)
@@ -941,7 +942,7 @@ class ClouddeployProjectsLocationsCustomTargetTypesPatchRequest(_messages.Messag
     customTargetType: A CustomTargetType resource to be passed as the request
       body.
     name: Optional. Name of the `CustomTargetType`. Format is
-      projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}.
+      `projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -978,9 +979,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsCancelRequest(_
   Fields:
     cancelAutomationRunRequest: A CancelAutomationRunRequest resource to be
       passed as the request body.
-    name: Required. Name of the `AutomationRun`. Format is projects/{project}/
-      locations/{location}/deliveryPipelines/{delivery_pipeline}/automationRun
-      s/{automation_run}.
+    name: Required. Name of the `AutomationRun`. Format is `projects/{project}
+      /locations/{location}/deliveryPipelines/{delivery_pipeline}/automationRu
+      ns/{automation_run}`.
   """
 
   cancelAutomationRunRequest = _messages.MessageField('CancelAutomationRunRequest', 1)
@@ -992,9 +993,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsGetRequest(_mes
   object.
 
   Fields:
-    name: Required. Name of the `AutomationRun`. Format must be projects/{proj
-      ect}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automati
-      onRuns/{automation_run}.
+    name: Required. Name of the `AutomationRun`. Format must be `projects/{pro
+      ject}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automat
+      ionRuns/{automation_run}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1016,8 +1017,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsListRequest(_me
       call. Provide this to retrieve the subsequent page. When paginating, all
       other provided parameters match the call that provided the page token.
     parent: Required. The parent, which owns this collection of
-      automationRuns. Format must be projects/{project}/locations/{location}/d
-      eliveryPipelines/{delivery_pipeline}.
+      automationRuns. Format must be `projects/{project}/locations/{location}/
+      deliveryPipelines/{delivery_pipeline}`.
   """
 
   filter = _messages.StringField(1)
@@ -1035,8 +1036,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsCreateRequest(_mes
     automation: A Automation resource to be passed as the request body.
     automationId: Required. ID of the `Automation`.
     parent: Required. The parent collection in which the `Automation` should
-      be created. Format should be projects/{project_id}/locations/{location_n
-      ame}/deliveryPipelines/{pipeline_name}.
+      be created. Format should be `projects/{project_id}/locations/{location_
+      name}/deliveryPipelines/{pipeline_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1070,9 +1071,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsDeleteRequest(_mes
       the server based on the value of other fields, and may be sent on update
       and delete requests to ensure the client has an up-to-date value before
       proceeding.
-    name: Required. The name of the `Automation` to delete. Format should be p
-      rojects/{project_id}/locations/{location_name}/deliveryPipelines/{pipeli
-      ne_name}/automations/{automation_name}.
+    name: Required. The name of the `Automation` to delete. Format should be `
+      projects/{project_id}/locations/{location_name}/deliveryPipelines/{pipel
+      ine_name}/automations/{automation_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1100,9 +1101,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsGetRequest(_messag
   object.
 
   Fields:
-    name: Required. Name of the `Automation`. Format must be projects/{project
-      _id}/locations/{location_name}/deliveryPipelines/{pipeline_name}/automat
-      ions/{automation_name}.
+    name: Required. Name of the `Automation`. Format must be `projects/{projec
+      t_id}/locations/{location_name}/deliveryPipelines/{pipeline_name}/automa
+      tions/{automation_name}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1124,8 +1125,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsListRequest(_messa
       Provide this to retrieve the subsequent page. When paginating, all other
       provided parameters match the call that provided the page token.
     parent: Required. The parent, which owns this collection of automations.
-      Format must be projects/{project_id}/locations/{location_name}/deliveryP
-      ipelines/{pipeline_name}.
+      Format must be `projects/{project_id}/locations/{location_name}/delivery
+      Pipelines/{pipeline_name}`.
   """
 
   filter = _messages.StringField(1)
@@ -1143,9 +1144,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsPatchRequest(_mess
     allowMissing: Optional. If set to true, updating a `Automation` that does
       not exist will result in the creation of a new `Automation`.
     automation: A Automation resource to be passed as the request body.
-    name: Output only. Name of the `Automation`. Format is projects/{project}/
-      locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/{
-      automation}.
+    name: Output only. Name of the `Automation`. Format is `projects/{project}
+      /locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/
+      {automation}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1183,7 +1184,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Messa
     deliveryPipelineId: Required. ID of the `DeliveryPipeline`.
     parent: Required. The parent collection in which the `DeliveryPipeline`
       should be created. Format should be
-      projects/{project_id}/locations/{location_name}.
+      `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1219,8 +1220,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(_messages.Messa
       will also be deleted. Otherwise, the request will only work if the
       pipeline has no child resources.
     name: Required. The name of the `DeliveryPipeline` to delete. Format
-      should be projects/{project_id}/locations/{location_name}/deliveryPipeli
-      nes/{pipeline_name}.
+      should be `projects/{project_id}/locations/{location_name}/deliveryPipel
+      ines/{pipeline_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1275,8 +1276,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesGetRequest(_messages.Message)
   r"""A ClouddeployProjectsLocationsDeliveryPipelinesGetRequest object.
 
   Fields:
-    name: Required. Name of the `DeliveryPipeline`. Format must be projects/{p
-      roject_id}/locations/{location_name}/deliveryPipelines/{pipeline_name}.
+    name: Required. Name of the `DeliveryPipeline`. Format must be `projects/{
+      project_id}/locations/{location_name}/deliveryPipelines/{pipeline_name}`
+      .
   """
 
   name = _messages.StringField(1, required=True)
@@ -1298,7 +1300,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesListRequest(_messages.Message
       call. Provide this to retrieve the subsequent page. When paginating, all
       other provided parameters match the call that provided the page token.
     parent: Required. The parent, which owns this collection of pipelines.
-      Format must be projects/{project_id}/locations/{location_name}.
+      Format must be `projects/{project_id}/locations/{location_name}`.
   """
 
   filter = _messages.StringField(1)
@@ -1317,7 +1319,7 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
     deliveryPipeline: A DeliveryPipeline resource to be passed as the request
       body.
     name: Optional. Name of the `DeliveryPipeline`. Format is
-      projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
+      `projects/{project}/locations/{location}/deliveryPipelines/a-z{0,62}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1353,8 +1355,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesAbandonRequest(_messa
   Fields:
     abandonReleaseRequest: A AbandonReleaseRequest resource to be passed as
       the request body.
-    name: Required. Name of the Release. Format is projects/{project}/location
-      s/{location}/deliveryPipelines/{deliveryPipeline}/ releases/{release}.
+    name: Required. Name of the Release. Format is `projects/{project}/locatio
+      ns/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}`.
   """
 
   abandonReleaseRequest = _messages.MessageField('AbandonReleaseRequest', 1)
@@ -1367,10 +1369,10 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     parent: Required. The parent collection in which the `Release` should be
-      created. Format should be projects/{project_id}/locations/{location_name
-      }/deliveryPipelines/{pipeline_name}.
+      created. Format should be `projects/{project_id}/locations/{location_nam
+      e}/deliveryPipelines/{pipeline_name}`.
     release: A Release resource to be passed as the request body.
     releaseId: Required. ID of the `Release`.
     requestId: Optional. A request ID to identify requests. Specify a unique
@@ -1401,9 +1403,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesGetRequest(_messages.
   object.
 
   Fields:
-    name: Required. Name of the `Release`. Format must be projects/{project_id
-      }/locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/{
-      release_name}.
+    name: Required. Name of the `Release`. Format must be `projects/{project_i
+      d}/locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/
+      {release_name}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1444,9 +1446,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsAdvanceReques
   Fields:
     advanceRolloutRequest: A AdvanceRolloutRequest resource to be passed as
       the request body.
-    name: Required. Name of the Rollout. Format is projects/{project}/location
-      s/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/{rollout}.
+    name: Required. Name of the Rollout. Format is `projects/{project}/locatio
+      ns/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/ro
+      llouts/{rollout}`.
   """
 
   advanceRolloutRequest = _messages.MessageField('AdvanceRolloutRequest', 1)
@@ -1461,9 +1463,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsApproveReques
   Fields:
     approveRolloutRequest: A ApproveRolloutRequest resource to be passed as
       the request body.
-    name: Required. Name of the Rollout. Format is projects/{project}/location
-      s/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/{rollout}.
+    name: Required. Name of the Rollout. Format is `projects/{project}/locatio
+      ns/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/ro
+      llouts/{rollout}`.
   """
 
   approveRolloutRequest = _messages.MessageField('ApproveRolloutRequest', 1)
@@ -1478,9 +1480,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCancelRequest
   Fields:
     cancelRolloutRequest: A CancelRolloutRequest resource to be passed as the
       request body.
-    name: Required. Name of the Rollout. Format is projects/{project}/location
-      s/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/{rollout}.
+    name: Required. Name of the Rollout. Format is `projects/{project}/locatio
+      ns/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/ro
+      llouts/{rollout}`.
   """
 
   cancelRolloutRequest = _messages.MessageField('CancelRolloutRequest', 1)
@@ -1494,10 +1496,10 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     parent: Required. The parent collection in which the `Rollout` should be
-      created. Format should be projects/{project_id}/locations/{location_name
-      }/deliveryPipelines/{pipeline_name}/releases/{release_name}.
+      created. Format should be `projects/{project_id}/locations/{location_nam
+      e}/deliveryPipelines/{pipeline_name}/releases/{release_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1532,9 +1534,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsGetRequest(_m
   object.
 
   Fields:
-    name: Required. Name of the `Rollout`. Format must be projects/{project_id
-      }/locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/{
-      release_name}/rollouts/{rollout_name}.
+    name: Required. Name of the `Rollout`. Format must be `projects/{project_i
+      d}/locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/
+      {release_name}/rollouts/{rollout_name}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1547,9 +1549,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsIgnoreJobRequ
   Fields:
     ignoreJobRequest: A IgnoreJobRequest resource to be passed as the request
       body.
-    rollout: Required. Name of the Rollout. Format is projects/{project}/locat
-      ions/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/{rollout}.
+    rollout: Required. Name of the Rollout. Format is `projects/{project}/loca
+      tions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}
+      /rollouts/{rollout}`.
   """
 
   ignoreJobRequest = _messages.MessageField('IgnoreJobRequest', 1)
@@ -1561,9 +1563,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsGetReq
   tRequest object.
 
   Fields:
-    name: Required. Name of the `JobRun`. Format must be projects/{project_id}
-      /locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/{r
-      elease_name}/rollouts/{rollout_name}/jobRuns/{job_run_name}.
+    name: Required. Name of the `JobRun`. Format must be `projects/{project_id
+      }/locations/{location_name}/deliveryPipelines/{pipeline_name}/releases/{
+      release_name}/rollouts/{rollout_name}/jobRuns/{job_run_name}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1601,9 +1603,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsJobRunsTermin
   rminateRequest object.
 
   Fields:
-    name: Required. Name of the `JobRun`. Format must be projects/{project}/lo
-      cations/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/{rollout}/jobRuns/{jobRun}.
+    name: Required. Name of the `JobRun`. Format must be `projects/{project}/l
+      ocations/{location}/deliveryPipelines/{deliveryPipeline}/releases/{relea
+      se}/rollouts/{rollout}/jobRuns/{jobRun}`.
     terminateJobRunRequest: A TerminateJobRunRequest resource to be passed as
       the request body.
   """
@@ -1648,9 +1650,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsRetryJobReque
   Fields:
     retryJobRequest: A RetryJobRequest resource to be passed as the request
       body.
-    rollout: Required. Name of the Rollout. Format is projects/{project}/locat
-      ions/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/{rollout}.
+    rollout: Required. Name of the Rollout. Format is `projects/{project}/loca
+      tions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}
+      /rollouts/{rollout}`.
   """
 
   retryJobRequest = _messages.MessageField('RetryJobRequest', 1)
@@ -1663,8 +1665,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesRollbackTargetRequest(_messag
 
   Fields:
     name: Required. The `DeliveryPipeline` for which the rollback `Rollout`
-      should be created. Format should be projects/{project_id}/locations/{loc
-      ation_name}/deliveryPipelines/{pipeline_name}.
+      should be created. Format should be `projects/{project_id}/locations/{lo
+      cation_name}/deliveryPipelines/{pipeline_name}`.
     rollbackTargetRequest: A RollbackTargetRequest resource to be passed as
       the request body.
   """
@@ -1715,7 +1717,7 @@ class ClouddeployProjectsLocationsDeployPoliciesCreateRequest(_messages.Message)
     deployPolicyId: Required. ID of the `DeployPolicy`.
     parent: Required. The parent collection in which the `DeployPolicy` should
       be created. Format should be
-      projects/{project_id}/locations/{location_name}.
+      `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1748,8 +1750,8 @@ class ClouddeployProjectsLocationsDeployPoliciesDeleteRequest(_messages.Message)
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     name: Required. The name of the `DeployPolicy` to delete. Format should be
-      projects/{project_id}/locations/{location_name}/deployPolicies/{deploy_p
-      olicy_name}.
+      `projects/{project_id}/locations/{location_name}/deployPolicies/{deploy_
+      policy_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1776,8 +1778,8 @@ class ClouddeployProjectsLocationsDeployPoliciesGetRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsDeployPoliciesGetRequest object.
 
   Fields:
-    name: Required. Name of the `DeployPolicy`. Format must be projects/{proje
-      ct_id}/locations/{location_name}/deployPolicies/{deploy_policy_name}.
+    name: Required. Name of the `DeployPolicy`. Format must be `projects/{proj
+      ect_id}/locations/{location_name}/deployPolicies/{deploy_policy_name}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1801,7 +1803,7 @@ class ClouddeployProjectsLocationsDeployPoliciesListRequest(_messages.Message):
       other provided parameters match the call that provided the page token.
     parent: Required. The parent, which owns this collection of deploy
       policies. Format must be
-      projects/{project_id}/locations/{location_name}.
+      `projects/{project_id}/locations/{location_name}`.
   """
 
   filter = _messages.StringField(1)
@@ -1819,7 +1821,7 @@ class ClouddeployProjectsLocationsDeployPoliciesPatchRequest(_messages.Message):
       does not exist will result in the creation of a new `DeployPolicy`.
     deployPolicy: A DeployPolicy resource to be passed as the request body.
     name: Output only. Name of the `DeployPolicy`. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1943,7 +1945,7 @@ class ClouddeployProjectsLocationsTargetsCreateRequest(_messages.Message):
   Fields:
     parent: Required. The parent collection in which the `Target` should be
       created. Format should be
-      projects/{project_id}/locations/{location_name}.
+      `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -1978,7 +1980,7 @@ class ClouddeployProjectsLocationsTargetsDeleteRequest(_messages.Message):
       of other fields, and may be sent on update and delete requests to ensure
       the client has an up-to-date value before proceeding.
     name: Required. The name of the `Target` to delete. Format should be
-      projects/{project_id}/locations/{location_name}/targets/{target_name}.
+      `projects/{project_id}/locations/{location_name}/targets/{target_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2032,7 +2034,7 @@ class ClouddeployProjectsLocationsTargetsGetRequest(_messages.Message):
 
   Fields:
     name: Required. Name of the `Target`. Format must be
-      projects/{project_id}/locations/{location_name}/targets/{target_name}.
+      `projects/{project_id}/locations/{location_name}/targets/{target_name}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2054,7 +2056,7 @@ class ClouddeployProjectsLocationsTargetsListRequest(_messages.Message):
       call. Provide this to retrieve the subsequent page. When paginating, all
       other provided parameters match the call that provided the page token.
     parent: Required. The parent, which owns this collection of targets.
-      Format must be projects/{project_id}/locations/{location_name}.
+      Format must be `projects/{project_id}/locations/{location_name}`.
   """
 
   filter = _messages.StringField(1)
@@ -2071,7 +2073,7 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
     allowMissing: Optional. If set to true, updating a `Target` that does not
       exist will result in the creation of a new `Target`.
     name: Optional. Name of the `Target`. Format is
-      projects/{project}/locations/{location}/targets/a-z{0,62}.
+      `projects/{project}/locations/{location}/targets/a-z{0,62}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
       to ignore the request if it has already been completed. The server will
@@ -2157,10 +2159,9 @@ class CreateChildRolloutJobRun(_messages.Message):
   createChildRollout `JobRun`.
 
   Fields:
-    rollout: Output only. Name of the `ChildRollout`. Format is
-      projects/{project}/
-      locations/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/a-z{0,62}.
+    rollout: Output only. Name of the `ChildRollout`. Format is `projects/{pro
+      ject}/locations/{location}/deliveryPipelines/{deliveryPipeline}/releases
+      /{release}/rollouts/a-z{0,62}`.
     rolloutPhaseId: Output only. The ID of the childRollout Phase initiated by
       this JobRun.
   """
@@ -2187,7 +2188,7 @@ class CustomTarget(_messages.Message):
   Fields:
     customTargetType: Required. The name of the CustomTargetType. Format must
       be `projects/{project}/locations/{location}/customTargetTypes/{custom_ta
-      rget_type}.
+      rget_type}`.
   """
 
   customTargetType = _messages.StringField(1)
@@ -2256,7 +2257,7 @@ class CustomTargetType(_messages.Message):
       resource is limited to a maximum of 64 labels. Both keys and values are
       additionally constrained to be <= 128 bytes.
     name: Optional. Name of the `CustomTargetType`. Format is
-      projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}.
+      `projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}`.
     uid: Output only. Unique identifier of the `CustomTargetType`.
     updateTime: Output only. Most recent time at which the `CustomTargetType`
       was updated.
@@ -2413,7 +2414,7 @@ class DeliveryPipeline(_messages.Message):
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
     name: Optional. Name of the `DeliveryPipeline`. Format is
-      projects/{project}/ locations/{location}/deliveryPipelines/a-z{0,62}.
+      `projects/{project}/locations/{location}/deliveryPipelines/a-z{0,62}`.
     serialPipeline: SerialPipeline defines a sequential set of stages for a
       `DeliveryPipeline`.
     suspended: When suspended, no new releases or rollouts can be created, but
@@ -2614,7 +2615,7 @@ class DeployJobRun(_messages.Message):
     artifact: Output only. The artifact of a deploy job run, if available.
     build: Output only. The resource name of the Cloud Build `Build` object
       that is used to deploy. Format is
-      projects/{project}/locations/{location}/builds/{build}.
+      `projects/{project}/locations/{location}/builds/{build}`.
     failureCause: Output only. The reason the deploy failed. This will always
       be unspecified while the deploy is in progress or if it succeeded.
     failureMessage: Output only. Additional information about the deploy
@@ -2751,13 +2752,14 @@ class DeployPolicy(_messages.Message):
       used by the user, and not by Cloud Deploy. Annotations must meet the
       following constraints: * Annotations are key/value pairs. * Valid
       annotation keys have two segments: an optional prefix and name,
-      separated by a slash (/). * The name segment is required and must be 63
-      characters or less, beginning and ending with an alphanumeric character
-      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
-      alphanumerics between. * The prefix is optional. If specified, the
-      prefix must be a DNS subdomain: a series of DNS labels separated by
-      dots(.), not longer than 253 characters in total, followed by a slash
-      (/). See https://kubernetes.io/docs/concepts/overview/working-with-
+      separated by a slash (`/`). * The name segment is required and must be
+      63 characters or less, beginning and ending with an alphanumeric
+      character (`[a-z0-9A-Z]`) with dashes (`-`), underscores (`_`), dots
+      (`.`), and alphanumerics between. * The prefix is optional. If
+      specified, the prefix must be a DNS subdomain: a series of DNS labels
+      separated by dots(`.`), not longer than 253 characters in total,
+      followed by a slash (`/`). See
+      https://kubernetes.io/docs/concepts/overview/working-with-
       objects/annotations/#syntax-and-character-set for more details.
     LabelsValue: Labels are attributes that can be set and used by both the
       user and by Cloud Deploy. Labels must meet the following constraints: *
@@ -2773,13 +2775,14 @@ class DeployPolicy(_messages.Message):
       by the user, and not by Cloud Deploy. Annotations must meet the
       following constraints: * Annotations are key/value pairs. * Valid
       annotation keys have two segments: an optional prefix and name,
-      separated by a slash (/). * The name segment is required and must be 63
-      characters or less, beginning and ending with an alphanumeric character
-      ([a-z0-9A-Z]) with dashes (-), underscores (_), dots (.), and
-      alphanumerics between. * The prefix is optional. If specified, the
-      prefix must be a DNS subdomain: a series of DNS labels separated by
-      dots(.), not longer than 253 characters in total, followed by a slash
-      (/). See https://kubernetes.io/docs/concepts/overview/working-with-
+      separated by a slash (`/`). * The name segment is required and must be
+      63 characters or less, beginning and ending with an alphanumeric
+      character (`[a-z0-9A-Z]`) with dashes (`-`), underscores (`_`), dots
+      (`.`), and alphanumerics between. * The prefix is optional. If
+      specified, the prefix must be a DNS subdomain: a series of DNS labels
+      separated by dots(`.`), not longer than 253 characters in total,
+      followed by a slash (`/`). See
+      https://kubernetes.io/docs/concepts/overview/working-with-
       objects/annotations/#syntax-and-character-set for more details.
     createTime: Output only. Time at which the deploy policy was created.
     description: Description of the `DeployPolicy`. Max length is 255
@@ -2797,7 +2800,7 @@ class DeployPolicy(_messages.Message):
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
     name: Output only. Name of the `DeployPolicy`. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     rules: Rules to apply.
     selector: Selected resources to which the policy will be applied.
     selects: Resources to apply the policy to.
@@ -2813,13 +2816,13 @@ class DeployPolicy(_messages.Message):
     r"""User annotations. These attributes can only be set and used by the
     user, and not by Cloud Deploy. Annotations must meet the following
     constraints: * Annotations are key/value pairs. * Valid annotation keys
-    have two segments: an optional prefix and name, separated by a slash (/).
-    * The name segment is required and must be 63 characters or less,
-    beginning and ending with an alphanumeric character ([a-z0-9A-Z]) with
-    dashes (-), underscores (_), dots (.), and alphanumerics between. * The
-    prefix is optional. If specified, the prefix must be a DNS subdomain: a
-    series of DNS labels separated by dots(.), not longer than 253 characters
-    in total, followed by a slash (/). See
+    have two segments: an optional prefix and name, separated by a slash
+    (`/`). * The name segment is required and must be 63 characters or less,
+    beginning and ending with an alphanumeric character (`[a-z0-9A-Z]`) with
+    dashes (`-`), underscores (`_`), dots (`.`), and alphanumerics between. *
+    The prefix is optional. If specified, the prefix must be a DNS subdomain:
+    a series of DNS labels separated by dots(`.`), not longer than 253
+    characters in total, followed by a slash (`/`). See
     https://kubernetes.io/docs/concepts/overview/working-with-
     objects/annotations/#syntax-and-character-set for more details.
 
@@ -3045,7 +3048,7 @@ class GkeCluster(_messages.Message):
 
   Fields:
     cluster: Information specifying a GKE Cluster. Format is
-      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}.
+      `projects/{project_id}/locations/{location_id}/clusters/{cluster_id}`.
     internalIp: Optional. If true, `cluster` is accessed using the private IP
       address of the control plane endpoint. Otherwise, the default IP address
       of the control plane endpoint is used. The default IP address is the
@@ -3065,7 +3068,7 @@ class IgnoreJobRequest(_messages.Message):
   Fields:
     jobId: Required. The job ID for the Job to ignore.
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     phaseId: Required. The phase ID the Job to ignore belongs to.
   """
 
@@ -3155,10 +3158,9 @@ class JobRun(_messages.Message):
       value of other fields, and may be sent on update and delete requests to
       ensure the client has an up-to-date value before proceeding.
     jobId: Output only. ID of the `Rollout` job this `JobRun` corresponds to.
-    name: Optional. Name of the `JobRun`. Format is
-      projects/{project}/locations/{location}/
-      deliveryPipelines/{deliveryPipeline}/releases/{releases}/rollouts/
-      {rollouts}/jobRuns/{uuid}.
+    name: Optional. Name of the `JobRun`. Format is `projects/{project}/locati
+      ons/{location}/deliveryPipelines/{deliveryPipeline}/releases/{releases}/
+      rollouts/{rollouts}/jobRuns/{uuid}`.
     phaseId: Output only. ID of the `Rollout` phase this `JobRun` belongs in.
     postdeployJobRun: Output only. Information specific to a postdeploy
       `JobRun`.
@@ -3899,7 +3901,8 @@ class PolicyViolationDetails(_messages.Message):
   Fields:
     failureMessage: User readable message about why it failed.
     policy: Name of the policy that was violated. Policy resource will be in
-      the format of projects/{project}/locations/{location}/policies/{policy}.
+      the format of
+      `projects/{project}/locations/{location}/policies/{policy}`.
     ruleId: Name of the rule that triggered the policy violation.
     ruleType: Rule type (e.g. rollout restrictions, release requirements) that
       failed.
@@ -3944,7 +3947,7 @@ class PostdeployJobRun(_messages.Message):
     build: Output only. The resource name of the Cloud Build `Build` object
       that is used to execute the custom actions associated with the
       postdeploy Job. Format is
-      projects/{project}/locations/{location}/builds/{build}.
+      `projects/{project}/locations/{location}/builds/{build}`.
     failureCause: Output only. The reason the postdeploy failed. This will
       always be unspecified while the postdeploy is in progress or if it
       succeeded.
@@ -4012,7 +4015,7 @@ class PredeployJobRun(_messages.Message):
   Fields:
     build: Output only. The resource name of the Cloud Build `Build` object
       that is used to execute the custom actions associated with the predeploy
-      Job. Format is projects/{project}/locations/{location}/builds/{build}.
+      Job. Format is `projects/{project}/locations/{location}/builds/{build}`.
     failureCause: Output only. The reason the predeploy failed. This will
       always be unspecified while the predeploy is in progress or if it
       succeeded.
@@ -4110,7 +4113,7 @@ class PromoteReleaseRule(_messages.Message):
       sequence defined in the pipeline. * "@next", the next target in the
       promotion sequence.
     id: Required. ID of the rule. This id must be unique in the `Automation`
-      resource to which this rule belongs. The format is a-z{0,62}.
+      resource to which this rule belongs. The format is `a-z{0,62}`.
     wait: Optional. How long the release need to be paused until being
       promoted to the next target.
     waitPolicy: Optional. WaitForDeployPolicy delays a release promotion when
@@ -4237,9 +4240,9 @@ class Release(_messages.Message):
       letter or international character. * Each resource is limited to a
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
-    name: Optional. Name of the `Release`. Format is projects/{project}/
-      locations/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/a-z{0,62}.
+    name: Optional. Name of the `Release`. Format is `projects/{project}/locat
+      ions/{location}/deliveryPipelines/{deliveryPipeline}/releases/a-
+      z{0,62}`.
     renderEndTime: Output only. Time at which the render completed.
     renderStartTime: Output only. Time at which the render began.
     renderState: Output only. Current state of the render operation.
@@ -4512,14 +4515,34 @@ class ReleaseRenderEvent(_messages.Message):
   r"""Payload proto for "clouddeploy.googleapis.com/release_render" Platform
   Log event that describes the render status change.
 
+  Enums:
+    ReleaseRenderStateValueValuesEnum: The state of the release render.
+
   Fields:
     message: Debug message for when a render transition occurs. Provides
       further details as rendering progresses through render states.
-    release: The name of the `Release`.
+    release: The name of the release.
+    releaseRenderState: The state of the release render.
   """
+
+  class ReleaseRenderStateValueValuesEnum(_messages.Enum):
+    r"""The state of the release render.
+
+    Values:
+      RENDER_STATE_UNSPECIFIED: The render state is unspecified.
+      SUCCEEDED: All rendering operations have completed successfully.
+      FAILED: All rendering operations have completed, and one or more have
+        failed.
+      IN_PROGRESS: Rendering has started and is not complete.
+    """
+    RENDER_STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    IN_PROGRESS = 3
 
   message = _messages.StringField(1)
   release = _messages.StringField(2)
+  releaseRenderState = _messages.EnumField('ReleaseRenderStateValueValuesEnum', 3)
 
 
 class RenderMetadata(_messages.Message):
@@ -4586,7 +4609,7 @@ class RepairRolloutRule(_messages.Message):
     condition: Output only. Information around the state of the 'Automation'
       rule.
     id: Required. ID of the rule. This id must be unique in the `Automation`
-      resource to which this rule belongs. The format is a-z{0,62}.
+      resource to which this rule belongs. The format is `a-z{0,62}`.
     jobs: Optional. Jobs to repair. Proceeds only after job name matched any
       one in the list, or for all jobs if unspecified or empty. The phase that
       includes the job must match the phase ID specified in `source_phase`.
@@ -4785,7 +4808,7 @@ class RetryJobRequest(_messages.Message):
   Fields:
     jobId: Required. The job ID for the Job to retry.
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     phaseId: Required. The phase ID the Job to retry belongs to.
   """
 
@@ -4906,7 +4929,8 @@ class RollbackTargetRequest(_messages.Message):
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/{deploy_policy}.
+      `projects/{project}/locations/{location}/deployPolicies/{deploy_policy}`
+      .
     releaseId: Optional. ID of the `Release` to roll back to. If this isn't
       specified, the previous successful `Rollout` to the specified target
       will be used to determine the `Release`.
@@ -4973,9 +4997,8 @@ class Rollout(_messages.Message):
     approvalState: Output only. Approval state of the `Rollout`.
     approveTime: Output only. Time at which the `Rollout` was approved.
     controllerRollout: Output only. Name of the `ControllerRollout`. Format is
-      projects/{project}/
-      locations/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/a-z{0,62}.
+      `projects/{project}/locations/{location}/deliveryPipelines/{deliveryPipe
+      line}/releases/{release}/rollouts/a-z{0,62}`.
     createTime: Output only. Time at which the `Rollout` was created.
     deployEndTime: Output only. Time at which the `Rollout` finished
       deploying.
@@ -5003,9 +5026,9 @@ class Rollout(_messages.Message):
       maximum of 64 labels. Both keys and values are additionally constrained
       to be <= 128 bytes.
     metadata: Output only. Metadata contains information about the rollout.
-    name: Optional. Name of the `Rollout`. Format is projects/{project}/
-      locations/{location}/deliveryPipelines/{deliveryPipeline}/
-      releases/{release}/rollouts/a-z{0,62}.
+    name: Optional. Name of the `Rollout`. Format is `projects/{project}/locat
+      ions/{location}/deliveryPipelines/{deliveryPipeline}/releases/{release}/
+      rollouts/a-z{0,62}`.
     phases: Output only. The phases that represent the workflows of this
       `Rollout`.
     rollbackOfRollout: Output only. Name of the `Rollout` that is rolled back
@@ -5230,8 +5253,7 @@ class RolloutUpdateEvent(_messages.Message):
   Log event that describes the rollout update event.
 
   Enums:
-    RolloutUpdateTypeValueValuesEnum: Output only. The type of the rollout
-      update.
+    RolloutUpdateTypeValueValuesEnum: The type of the rollout update.
     TypeValueValuesEnum: Type of this notification, e.g. for a rollout update
       event.
 
@@ -5240,13 +5262,13 @@ class RolloutUpdateEvent(_messages.Message):
     pipelineUid: Unique identifier of the pipeline.
     releaseUid: Unique identifier of the release.
     rollout: The name of the rollout.
-    rolloutUpdateType: Output only. The type of the rollout update.
+    rolloutUpdateType: The type of the rollout update.
     targetId: ID of the target.
     type: Type of this notification, e.g. for a rollout update event.
   """
 
   class RolloutUpdateTypeValueValuesEnum(_messages.Enum):
-    r"""Output only. The type of the rollout update.
+    r"""The type of the rollout update.
 
     Values:
       ROLLOUT_UPDATE_TYPE_UNSPECIFIED: Rollout update type unspecified.
@@ -5697,7 +5719,7 @@ class Target(_messages.Message):
       additionally constrained to be <= 128 bytes.
     multiTarget: Optional. Information specifying a multiTarget.
     name: Optional. Name of the `Target`. Format is
-      projects/{project}/locations/{location}/targets/a-z{0,62}.
+      `projects/{project}/locations/{location}/targets/a-z{0,62}`.
     requireApproval: Optional. Whether or not the `Target` requires approval.
     run: Optional. Information specifying a Cloud Run deployment target.
     targetId: Output only. Resource id of the `Target`.
@@ -6034,7 +6056,7 @@ class TargetsPresentCondition(_messages.Message):
 
   Fields:
     missingTargets: The list of Target names that do not exist. For example,
-      projects/{project_id}/locations/{location_name}/targets/{target_name}.
+      `projects/{project_id}/locations/{location_name}/targets/{target_name}`.
     status: True if there aren't any missing Targets.
     updateTime: Last time the condition was updated.
   """
@@ -6064,7 +6086,7 @@ class TerminateJobRunRequest(_messages.Message):
 
   Fields:
     overrideDeployPolicy: Optional. Deploy policies to override. Format is
-      projects/{project}/ locations/{location}/deployPolicies/a-z{0,62}.
+      `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
   """
 
   overrideDeployPolicy = _messages.StringField(1, repeated=True)
@@ -6149,7 +6171,7 @@ class VerifyJobRun(_messages.Message):
       artifacts. This contains the Skaffold event log.
     build: Output only. The resource name of the Cloud Build `Build` object
       that is used to verify. Format is
-      projects/{project}/locations/{location}/builds/{build}.
+      `projects/{project}/locations/{location}/builds/{build}`.
     eventLogPath: Output only. File path of the Skaffold event log relative to
       the artifact URI.
     failureCause: Output only. The reason the verify failed. This will always

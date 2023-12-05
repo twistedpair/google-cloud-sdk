@@ -894,6 +894,16 @@ class AlloydbProjectsLocationsSupportedDatabaseFlagsListRequest(_messages.Messag
   parent = _messages.StringField(3, required=True)
 
 
+class AuthorizedNetwork(_messages.Message):
+  r"""AuthorizedNetwork contains metadata for an authorized network.
+
+  Fields:
+    cidrRange: CIDR range for one authorzied network of the instance.
+  """
+
+  cidrRange = _messages.StringField(1)
+
+
 class AutomatedBackupPolicy(_messages.Message):
   r"""Message describing the user-specified automated backup policy. All
   fields in the automated backup policy are optional. Defaults for each field
@@ -1272,6 +1282,8 @@ class Cluster(_messages.Message):
     initialUser: Input only. Initial user to setup during cluster creation.
       Required. If used in `RestoreCluster` this is ignored.
     labels: Labels as key value pairs
+    maintenanceUpdatePolicy: Optional. The maintenance update policy
+      determines when to allow or deny updates.
     migrationSource: Output only. Cluster created via DMS migration.
     name: Output only. The name of the cluster resource with the format: *
       projects/{project}/locations/{region}/clusters/{cluster_id} where the
@@ -1440,19 +1452,20 @@ class Cluster(_messages.Message):
   etag = _messages.StringField(13)
   initialUser = _messages.MessageField('UserPassword', 14)
   labels = _messages.MessageField('LabelsValue', 15)
-  migrationSource = _messages.MessageField('MigrationSource', 16)
-  name = _messages.StringField(17)
-  network = _messages.StringField(18)
-  networkConfig = _messages.MessageField('NetworkConfig', 19)
-  primaryConfig = _messages.MessageField('PrimaryConfig', 20)
-  pscConfig = _messages.MessageField('PscConfig', 21)
-  reconciling = _messages.BooleanField(22)
-  satisfiesPzs = _messages.BooleanField(23)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 24)
-  sslConfig = _messages.MessageField('SslConfig', 25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  uid = _messages.StringField(27)
-  updateTime = _messages.StringField(28)
+  maintenanceUpdatePolicy = _messages.MessageField('MaintenanceUpdatePolicy', 16)
+  migrationSource = _messages.MessageField('MigrationSource', 17)
+  name = _messages.StringField(18)
+  network = _messages.StringField(19)
+  networkConfig = _messages.MessageField('NetworkConfig', 20)
+  primaryConfig = _messages.MessageField('PrimaryConfig', 21)
+  pscConfig = _messages.MessageField('PscConfig', 22)
+  reconciling = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 25)
+  sslConfig = _messages.MessageField('SslConfig', 26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  uid = _messages.StringField(28)
+  updateTime = _messages.StringField(29)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1561,6 +1574,28 @@ class ContinuousBackupSource(_messages.Message):
 
   cluster = _messages.StringField(1)
   pointInTime = _messages.StringField(2)
+
+
+class DenyMaintenancePeriod(_messages.Message):
+  r"""DenyMaintenancePeriod definition. Excepting emergencies, maintenance
+  will not be scheduled to start within this deny period. The start_date must
+  be less than the end_date.
+
+  Fields:
+    endDate: Deny period end date. This can be: * A full date, with non-zero
+      year, month and day values. * A month and day value, with a zero year
+      for recurring. Date matching this period will have to be before the end.
+    startDate: Deny period start date. This can be: * A full date, with non-
+      zero year, month and day values. * A month and day value, with a zero
+      year for recurring. Date matching this period will have to be the same
+      or after the start.
+    time: Time in UTC when the deny period starts on start_date and ends on
+      end_date. This can be: * Full time. * All zeros for 00:00:00 UTC
+  """
+
+  endDate = _messages.MessageField('GoogleTypeDate', 1)
+  startDate = _messages.MessageField('GoogleTypeDate', 2)
+  time = _messages.MessageField('GoogleTypeTimeOfDay', 3)
 
 
 class Empty(_messages.Message):
@@ -1787,6 +1822,32 @@ class GoogleCloudLocationLocation(_messages.Message):
   name = _messages.StringField(5)
 
 
+class GoogleTypeDate(_messages.Message):
+  r"""Represents a whole or partial calendar date, such as a birthday. The
+  time of day and time zone are either specified elsewhere or are
+  insignificant. The date is relative to the Gregorian Calendar. This can
+  represent one of the following: * A full date, with non-zero year, month,
+  and day values. * A month and day, with a zero year (for example, an
+  anniversary). * A year on its own, with a zero month and a zero day. * A
+  year and month, with a zero day (for example, a credit card expiration
+  date). Related types: * google.type.TimeOfDay * google.type.DateTime *
+  google.protobuf.Timestamp
+
+  Fields:
+    day: Day of a month. Must be from 1 to 31 and valid for the year and
+      month, or 0 to specify a year by itself or a year and month where the
+      day isn't significant.
+    month: Month of a year. Must be from 1 to 12, or 0 to specify a year
+      without a month and day.
+    year: Year of the date. Must be from 1 to 9999, or 0 to specify a date
+      without a year.
+  """
+
+  day = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  month = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  year = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class GoogleTypeTimeOfDay(_messages.Message):
   r"""Represents a time of day. The date and time zone are either not
   significant or are specified elsewhere. An API may choose to allow leap
@@ -1904,7 +1965,8 @@ class Instance(_messages.Message):
     deleteTime: Output only. Delete time stamp
     displayName: User-settable and human-readable display name for the
       Instance.
-    enablePublicIp: Optional. Enabling public ip for the Instance.
+    enablePublicIp: Optional. Enabling public ip for the Instance. Deprecated;
+      use network_config.enable_public_ip instead.
     etag: For Resource freshness validation (https://google.aip.dev/154)
     gceZone: The Compute Engine zone that the instance should serve from, per
       https://cloud.google.com/compute/docs/regions-zones This can ONLY be
@@ -1927,6 +1989,7 @@ class Instance(_messages.Message):
       https://google.aip.dev/122. The prefix of the instance resource name is
       the name of the parent resource: *
       projects/{project}/locations/{region}/clusters/{cluster_id}
+    networkConfig: Optional. Instance level network configuration.
     nodes: Output only. List of available read-only VMs in this instance,
       including the standby for a PRIMARY instance.
     publicIpAddress: Output only. The public IP addresses for the Instance.
@@ -2120,17 +2183,31 @@ class Instance(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 13)
   machineConfig = _messages.MessageField('MachineConfig', 14)
   name = _messages.StringField(15)
-  nodes = _messages.MessageField('Node', 16, repeated=True)
-  publicIpAddress = _messages.StringField(17)
-  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 18)
-  readPoolConfig = _messages.MessageField('ReadPoolConfig', 19)
-  reconciling = _messages.BooleanField(20)
-  satisfiesPzs = _messages.BooleanField(21)
-  state = _messages.EnumField('StateValueValuesEnum', 22)
-  uid = _messages.StringField(23)
-  updatePolicy = _messages.MessageField('UpdatePolicy', 24)
-  updateTime = _messages.StringField(25)
-  writableNode = _messages.MessageField('Node', 26)
+  networkConfig = _messages.MessageField('InstanceNetworkConfig', 16)
+  nodes = _messages.MessageField('Node', 17, repeated=True)
+  publicIpAddress = _messages.StringField(18)
+  queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 19)
+  readPoolConfig = _messages.MessageField('ReadPoolConfig', 20)
+  reconciling = _messages.BooleanField(21)
+  satisfiesPzs = _messages.BooleanField(22)
+  state = _messages.EnumField('StateValueValuesEnum', 23)
+  uid = _messages.StringField(24)
+  updatePolicy = _messages.MessageField('UpdatePolicy', 25)
+  updateTime = _messages.StringField(26)
+  writableNode = _messages.MessageField('Node', 27)
+
+
+class InstanceNetworkConfig(_messages.Message):
+  r"""Metadata related to instance level network configuration.
+
+  Fields:
+    authorizedExternalNetworks: Optional. A list of external network
+      authorized to access this instance.
+    enablePublicIp: Optional. Enabling public ip for the instance.
+  """
+
+  authorizedExternalNetworks = _messages.MessageField('AuthorizedNetwork', 1, repeated=True)
+  enablePublicIp = _messages.BooleanField(2)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2241,6 +2318,59 @@ class MachineConfig(_messages.Message):
   cpuCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
+class MaintenanceUpdatePolicy(_messages.Message):
+  r"""MaintenanceUpdatePolicy defines the policy for system updates.
+
+  Fields:
+    denyMaintenancePeriods: Periods to deny maintenance. Currently limited to
+      1.
+    maintenanceWindows: Preferred windows to perform maintenance. Currently
+      limited to 1.
+  """
+
+  denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 1, repeated=True)
+  maintenanceWindows = _messages.MessageField('MaintenanceWindow', 2, repeated=True)
+
+
+class MaintenanceWindow(_messages.Message):
+  r"""MaintenanceWindow specifies a preferred day and time for maintenance.
+
+  Enums:
+    DayValueValuesEnum: Preferred day of the week for maintenance, e.g.
+      MONDAY, TUESDAY, etc.
+
+  Fields:
+    day: Preferred day of the week for maintenance, e.g. MONDAY, TUESDAY, etc.
+    startTime: Preferred time to start the maintenance operation on the
+      specified day. Maintenance will start within 1 hour of this time.
+  """
+
+  class DayValueValuesEnum(_messages.Enum):
+    r"""Preferred day of the week for maintenance, e.g. MONDAY, TUESDAY, etc.
+
+    Values:
+      DAY_OF_WEEK_UNSPECIFIED: The day of the week is unspecified.
+      MONDAY: Monday
+      TUESDAY: Tuesday
+      WEDNESDAY: Wednesday
+      THURSDAY: Thursday
+      FRIDAY: Friday
+      SATURDAY: Saturday
+      SUNDAY: Sunday
+    """
+    DAY_OF_WEEK_UNSPECIFIED = 0
+    MONDAY = 1
+    TUESDAY = 2
+    WEDNESDAY = 3
+    THURSDAY = 4
+    FRIDAY = 5
+    SATURDAY = 6
+    SUNDAY = 7
+
+  day = _messages.EnumField('DayValueValuesEnum', 1)
+  startTime = _messages.MessageField('GoogleTypeTimeOfDay', 2)
+
+
 class MigrationSource(_messages.Message):
   r"""Subset of the source instance configuration that is available when
   reading the cluster resource.
@@ -2282,7 +2412,7 @@ class NetworkConfig(_messages.Message):
       must be 1-63 characters long and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])?`. Field name is intended to be consistent
       with Cloud SQL.
-    network: Required. The resource link for the VPC network in which cluster
+    network: Optional. The resource link for the VPC network in which cluster
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
       specified in the form:

@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -27,7 +27,7 @@ from google.api_core import operations_v1
 from google.auth import credentials as ga_credentials  # type: ignore
 from google.oauth2 import service_account # type: ignore
 
-from google.longrunning import operations_pb2  # type: ignore
+from google.longrunning import operations_pb2 # type: ignore
 from cloudsdk.google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.types import logging_config
 
@@ -330,6 +330,26 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.list_saved_queries: gapic_v1.method.wrap_method(
+                self.list_saved_queries,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.create_saved_query: gapic_v1.method.wrap_method(
+                self.create_saved_query,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.delete_saved_query: gapic_v1.method.wrap_method(
+                self.delete_saved_query,
+                default_timeout=None,
+                client_info=client_info,
+            ),
+            self.list_recent_queries: gapic_v1.method.wrap_method(
+                self.list_recent_queries,
+                default_timeout=None,
+                client_info=client_info,
+            ),
             self.copy_log_entries: gapic_v1.method.wrap_method(
                 self.copy_log_entries,
                 default_timeout=None,
@@ -627,6 +647,42 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
             Union[
                 logging_config.Settings,
                 Awaitable[logging_config.Settings]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def list_saved_queries(self) -> Callable[
+            [logging_config.ListSavedQueriesRequest],
+            Union[
+                logging_config.ListSavedQueriesResponse,
+                Awaitable[logging_config.ListSavedQueriesResponse]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def create_saved_query(self) -> Callable[
+            [logging_config.CreateSavedQueryRequest],
+            Union[
+                logging_config.SavedQuery,
+                Awaitable[logging_config.SavedQuery]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def delete_saved_query(self) -> Callable[
+            [logging_config.DeleteSavedQueryRequest],
+            Union[
+                empty_pb2.Empty,
+                Awaitable[empty_pb2.Empty]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def list_recent_queries(self) -> Callable[
+            [logging_config.ListRecentQueriesRequest],
+            Union[
+                logging_config.ListRecentQueriesResponse,
+                Awaitable[logging_config.ListRecentQueriesResponse]
             ]]:
         raise NotImplementedError()
 

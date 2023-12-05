@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -40,9 +40,9 @@ except AttributeError:  # pragma: NO COVER
     OptionalRetry = Union[retries.Retry, object]  # type: ignore
 
 
-from google.longrunning import operations_pb2  # type: ignore
 from cloudsdk.google.protobuf import empty_pb2  # type: ignore
 from googlecloudsdk.generated_clients.gapic_clients.logging_v2.types import logging_config
+from google.longrunning import operations_pb2  # type: ignore
 
 from .base import ConfigServiceV2Transport, DEFAULT_CLIENT_INFO as BASE_DEFAULT_CLIENT_INFO
 
@@ -109,6 +109,14 @@ class ConfigServiceV2RestInterceptor:
                 logging.log(f"Received response: {response}")
                 return response
 
+            def pre_create_saved_query(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_create_saved_query(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
             def pre_create_sink(self, request, metadata):
                 logging.log(f"Received request: {request}")
                 return request, metadata
@@ -140,6 +148,10 @@ class ConfigServiceV2RestInterceptor:
             def post_delete_link(self, response):
                 logging.log(f"Received response: {response}")
                 return response
+
+            def pre_delete_saved_query(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
 
             def pre_delete_sink(self, request, metadata):
                 logging.log(f"Received request: {request}")
@@ -226,6 +238,22 @@ class ConfigServiceV2RestInterceptor:
                 return request, metadata
 
             def post_list_links(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
+            def pre_list_recent_queries(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_list_recent_queries(self, response):
+                logging.log(f"Received response: {response}")
+                return response
+
+            def pre_list_saved_queries(self, request, metadata):
+                logging.log(f"Received request: {request}")
+                return request, metadata
+
+            def post_list_saved_queries(self, response):
                 logging.log(f"Received response: {response}")
                 return response
 
@@ -390,6 +418,22 @@ class ConfigServiceV2RestInterceptor:
         it is returned to user code.
         """
         return response
+    def pre_create_saved_query(self, request: logging_config.CreateSavedQueryRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.CreateSavedQueryRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for create_saved_query
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_create_saved_query(self, response: logging_config.SavedQuery) -> logging_config.SavedQuery:
+        """Post-rpc interceptor for create_saved_query
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
     def pre_create_sink(self, request: logging_config.CreateSinkRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.CreateSinkRequest, Sequence[Tuple[str, str]]]:
         """Pre-rpc interceptor for create_sink
 
@@ -454,6 +498,14 @@ class ConfigServiceV2RestInterceptor:
         it is returned to user code.
         """
         return response
+    def pre_delete_saved_query(self, request: logging_config.DeleteSavedQueryRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.DeleteSavedQueryRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for delete_saved_query
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
     def pre_delete_sink(self, request: logging_config.DeleteSinkRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.DeleteSinkRequest, Sequence[Tuple[str, str]]]:
         """Pre-rpc interceptor for delete_sink
 
@@ -624,6 +676,38 @@ class ConfigServiceV2RestInterceptor:
 
     def post_list_links(self, response: logging_config.ListLinksResponse) -> logging_config.ListLinksResponse:
         """Post-rpc interceptor for list_links
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_list_recent_queries(self, request: logging_config.ListRecentQueriesRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.ListRecentQueriesRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for list_recent_queries
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_list_recent_queries(self, response: logging_config.ListRecentQueriesResponse) -> logging_config.ListRecentQueriesResponse:
+        """Post-rpc interceptor for list_recent_queries
+
+        Override in a subclass to manipulate the response
+        after it is returned by the ConfigServiceV2 server but before
+        it is returned to user code.
+        """
+        return response
+    def pre_list_saved_queries(self, request: logging_config.ListSavedQueriesRequest, metadata: Sequence[Tuple[str, str]]) -> Tuple[logging_config.ListSavedQueriesRequest, Sequence[Tuple[str, str]]]:
+        """Pre-rpc interceptor for list_saved_queries
+
+        Override in a subclass to manipulate the request or metadata
+        before they are sent to the ConfigServiceV2 server.
+        """
+        return request, metadata
+
+    def post_list_saved_queries(self, response: logging_config.ListSavedQueriesResponse) -> logging_config.ListSavedQueriesResponse:
+        """Post-rpc interceptor for list_saved_queries
 
         Override in a subclass to manipulate the response
         after it is returned by the ConfigServiceV2 server but before
@@ -1426,6 +1510,108 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             resp = self._interceptor.post_create_link(resp)
             return resp
 
+    class _CreateSavedQuery(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("CreateSavedQuery")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.CreateSavedQueryRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> logging_config.SavedQuery:
+            r"""Call the create saved query method over HTTP.
+
+            Args:
+                request (~.logging_config.CreateSavedQueryRequest):
+                    The request object. The parameters to 'CreateSavedQuery'.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.logging_config.SavedQuery:
+                    Describes a query that has been saved
+                by a user.
+
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'post',
+                'uri': '/v2/{parent=projects/*/locations/*}/savedQueries',
+                'body': 'saved_query',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=folders/*/locations/*}/savedQueries',
+                'body': 'saved_query',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=organizations/*/locations/*}/savedQueries',
+                'body': 'saved_query',
+            },
+{
+                'method': 'post',
+                'uri': '/v2/{parent=billingAccounts/*/locations/*}/savedQueries',
+                'body': 'saved_query',
+            },
+            ]
+            request, metadata = self._interceptor.pre_create_saved_query(request, metadata)
+            pb_request = logging_config.CreateSavedQueryRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            # Jsonify the request body
+
+            body = json_format.MessageToJson(
+                transcoded_request['body'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False
+            )
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                data=body,
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = logging_config.SavedQuery()
+            pb_resp = logging_config.SavedQuery.pb(resp)
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_create_saved_query(resp)
+            return resp
+
     class _CreateSink(ConfigServiceV2RestStub):
         def __hash__(self):
             return hash("CreateSink")
@@ -1904,6 +2090,82 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             json_format.Parse(response.content, resp, ignore_unknown_fields=True)
             resp = self._interceptor.post_delete_link(resp)
             return resp
+
+    class _DeleteSavedQuery(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("DeleteSavedQuery")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.DeleteSavedQueryRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ):
+            r"""Call the delete saved query method over HTTP.
+
+            Args:
+                request (~.logging_config.DeleteSavedQueryRequest):
+                    The request object. The parameters to 'DeleteSavedQuery'.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'delete',
+                'uri': '/v2/{name=projects/*/locations/*/savedQueries/*}',
+            },
+{
+                'method': 'delete',
+                'uri': '/v2/{name=folders/*/locations/*/savedQueries/*}',
+            },
+{
+                'method': 'delete',
+                'uri': '/v2/{name=organizations/*/locations/*/savedQueries/*}',
+            },
+{
+                'method': 'delete',
+                'uri': '/v2/{name=billingAccounts/*/locations/*/savedQueries/*}',
+            },
+            ]
+            request, metadata = self._interceptor.pre_delete_saved_query(request, metadata)
+            pb_request = logging_config.DeleteSavedQueryRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
 
     class _DeleteSink(ConfigServiceV2RestStub):
         def __hash__(self):
@@ -3036,6 +3298,183 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             resp = self._interceptor.post_list_links(resp)
             return resp
 
+    class _ListRecentQueries(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("ListRecentQueries")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.ListRecentQueriesRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> logging_config.ListRecentQueriesResponse:
+            r"""Call the list recent queries method over HTTP.
+
+            Args:
+                request (~.logging_config.ListRecentQueriesRequest):
+                    The request object. The parameters to
+                'ListRecentQueries'.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.logging_config.ListRecentQueriesResponse:
+                    The response from ListRecentQueries.
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'get',
+                'uri': '/v2/{parent=projects/*/locations/*}/recentQueries',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=folders/*/locations/*}/recentQueries',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=organizations/*/locations/*}/recentQueries',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=billingAccounts/*/locations/*}/recentQueries',
+            },
+            ]
+            request, metadata = self._interceptor.pre_list_recent_queries(request, metadata)
+            pb_request = logging_config.ListRecentQueriesRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = logging_config.ListRecentQueriesResponse()
+            pb_resp = logging_config.ListRecentQueriesResponse.pb(resp)
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_list_recent_queries(resp)
+            return resp
+
+    class _ListSavedQueries(ConfigServiceV2RestStub):
+        def __hash__(self):
+            return hash("ListSavedQueries")
+
+        __REQUIRED_FIELDS_DEFAULT_VALUES: Dict[str, Any] =  {
+        }
+
+        @classmethod
+        def _get_unset_required_fields(cls, message_dict):
+            return {k: v for k, v in cls.__REQUIRED_FIELDS_DEFAULT_VALUES.items() if k not in message_dict}
+
+        def __call__(self,
+                request: logging_config.ListSavedQueriesRequest, *,
+                retry: OptionalRetry=gapic_v1.method.DEFAULT,
+                timeout: Optional[float]=None,
+                metadata: Sequence[Tuple[str, str]]=(),
+                ) -> logging_config.ListSavedQueriesResponse:
+            r"""Call the list saved queries method over HTTP.
+
+            Args:
+                request (~.logging_config.ListSavedQueriesRequest):
+                    The request object. The parameters to 'ListSavedQueries'.
+                retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                    should be retried.
+                timeout (float): The timeout for this request.
+                metadata (Sequence[Tuple[str, str]]): Strings which should be
+                    sent along with the request as metadata.
+
+            Returns:
+                ~.logging_config.ListSavedQueriesResponse:
+                    The response from ListSavedQueries.
+            """
+
+            http_options: List[Dict[str, str]] = [{
+                'method': 'get',
+                'uri': '/v2/{parent=projects/*/locations/*}/savedQueries',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=folders/*/locations/*}/savedQueries',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=organizations/*/locations/*}/savedQueries',
+            },
+{
+                'method': 'get',
+                'uri': '/v2/{parent=billingAccounts/*/locations/*}/savedQueries',
+            },
+            ]
+            request, metadata = self._interceptor.pre_list_saved_queries(request, metadata)
+            pb_request = logging_config.ListSavedQueriesRequest.pb(request)
+            transcoded_request = path_template.transcode(http_options, pb_request)
+
+            uri = transcoded_request['uri']
+            method = transcoded_request['method']
+
+            # Jsonify the query params
+            query_params = json.loads(json_format.MessageToJson(
+                transcoded_request['query_params'],
+                including_default_value_fields=False,
+                use_integers_for_enums=False,
+            ))
+            query_params.update(self._get_unset_required_fields(query_params))
+
+            # Send the request
+            headers = dict(metadata)
+            headers['Content-Type'] = 'application/json'
+            response = getattr(self._session, method)(
+                "{host}{uri}".format(host=self._host, uri=uri),
+                timeout=timeout,
+                headers=headers,
+                params=rest_helpers.flatten_query_params(query_params, strict=True),
+                )
+
+            # In case of error, raise the appropriate core_exceptions.GoogleAPICallError exception
+            # subclass.
+            if response.status_code >= 400:
+                raise core_exceptions.from_http_response(response)
+
+            # Return the response
+            resp = logging_config.ListSavedQueriesResponse()
+            pb_resp = logging_config.ListSavedQueriesResponse.pb(resp)
+
+            json_format.Parse(response.content, pb_resp, ignore_unknown_fields=True)
+            resp = self._interceptor.post_list_saved_queries(resp)
+            return resp
+
     class _ListSinks(ConfigServiceV2RestStub):
         def __hash__(self):
             return hash("ListSinks")
@@ -4134,6 +4573,14 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         return self._CreateLink(self._session, self._host, self._interceptor) # type: ignore
 
     @property
+    def create_saved_query(self) -> Callable[
+            [logging_config.CreateSavedQueryRequest],
+            logging_config.SavedQuery]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._CreateSavedQuery(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
     def create_sink(self) -> Callable[
             [logging_config.CreateSinkRequest],
             logging_config.LogSink]:
@@ -4172,6 +4619,14 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._DeleteLink(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def delete_saved_query(self) -> Callable[
+            [logging_config.DeleteSavedQueryRequest],
+            empty_pb2.Empty]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._DeleteSavedQuery(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def delete_sink(self) -> Callable[
@@ -4268,6 +4723,22 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
         # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
         # In C++ this would require a dynamic_cast
         return self._ListLinks(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def list_recent_queries(self) -> Callable[
+            [logging_config.ListRecentQueriesRequest],
+            logging_config.ListRecentQueriesResponse]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._ListRecentQueries(self._session, self._host, self._interceptor) # type: ignore
+
+    @property
+    def list_saved_queries(self) -> Callable[
+            [logging_config.ListSavedQueriesRequest],
+            logging_config.ListSavedQueriesResponse]:
+        # The return type is fine, but mypy isn't sophisticated enough to determine what's going on here.
+        # In C++ this would require a dynamic_cast
+        return self._ListSavedQueries(self._session, self._host, self._interceptor) # type: ignore
 
     @property
     def list_sinks(self) -> Callable[

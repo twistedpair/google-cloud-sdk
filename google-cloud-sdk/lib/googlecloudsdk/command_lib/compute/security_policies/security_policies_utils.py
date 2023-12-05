@@ -292,6 +292,19 @@ def SecurityPolicyFromFile(input_file, messages, file_format):
       if 'enforceOnKeyName' in rate_limit_options:
         security_policy_rule.rateLimitOptions.enforceOnKeyName = (
             rate_limit_options['enforceOnKeyName'])
+      for config in rate_limit_options.get('enforceOnKeyConfigs', []):
+        enforce_on_key_config = (
+            messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig()
+        )
+        if 'enforceOnKeyType' in config:
+          enforce_on_key_config.enforceOnKeyType = messages.SecurityPolicyRuleRateLimitOptionsEnforceOnKeyConfig.EnforceOnKeyTypeValueValuesEnum(
+              config['enforceOnKeyType']
+          )
+        if 'enforceOnKeyName' in config:
+          enforce_on_key_config.enforceOnKeyName = config['enforceOnKeyName']
+        security_policy_rule.rateLimitOptions.enforceOnKeyConfigs.append(
+            enforce_on_key_config
+        )
     if 'preconfiguredWafConfig' in rule:
       preconfig_waf_config = messages.SecurityPolicyRulePreconfiguredWafConfig()
       for exclusion in rule['preconfiguredWafConfig'].get('exclusions', []):
@@ -450,8 +463,7 @@ def CreateAdaptiveProtectionConfigWithAutoDeployConfig(
   return adaptive_protection_config
 
 
-def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config,
-                                support_user_ip):
+def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config):
   """Returns a SecurityPolicyAdvancedOptionsConfig message."""
 
   messages = client.messages
@@ -474,7 +486,7 @@ def CreateAdvancedOptionsConfig(client, args, existing_advanced_options_config,
         messages.SecurityPolicyAdvancedOptionsConfig.LogLevelValueValuesEnum(
             args.log_level))
 
-  if support_user_ip and args.IsSpecified('user_ip_request_headers'):
+  if args.IsSpecified('user_ip_request_headers'):
     advanced_options_config.userIpRequestHeaders = args.user_ip_request_headers
 
   return advanced_options_config

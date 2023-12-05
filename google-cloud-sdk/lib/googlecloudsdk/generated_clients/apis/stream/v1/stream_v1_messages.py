@@ -242,14 +242,23 @@ class LocationConfig(_messages.Message):
   r"""Deployment configuration of an instance in a given location.
 
   Fields:
+    autoscalingBuffer: Optional. The amount of available capacity the
+      autoscaler works to maintain at all times.
+    autoscalingMinCapacity: Optional. The minimum capacity the autoscaler will
+      maintain.
     capacity: The maximum number of concurrent streaming sessions that the
       instance can support in this location.
+    enableAutoscaling: Optional. Whether autoscaling is enabled in this
+      location.
     location: The location in which the instance is deployed. We only use
       region for now.
   """
 
-  capacity = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  location = _messages.StringField(2)
+  autoscalingBuffer = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  autoscalingMinCapacity = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  capacity = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  enableAutoscaling = _messages.BooleanField(4)
+  location = _messages.StringField(5)
 
 
 class Operation(_messages.Message):

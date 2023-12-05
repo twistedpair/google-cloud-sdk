@@ -18,8 +18,10 @@ from __future__ import annotations
 
 import collections
 from collections.abc import Sequence
+from typing import Any
 
 from googlecloudsdk.calliope import base as calliope_base
+from googlecloudsdk.calliope import cli
 from googlecloudsdk.calliope import parser_arguments
 from googlecloudsdk.calliope import parser_errors
 from googlecloudsdk.calliope import parser_extensions
@@ -91,6 +93,7 @@ class ContainerParser(object):
     )
 
     self._container_arg_group.AddToParser(ai)
+    cli.FLAG_INTERNAL_FLAG_FILE_LINE.AddToParser(ai)
     return parser
 
   def _CheckForContainerFlags(self, namespace: parser_extensions.Namespace):
@@ -111,9 +114,9 @@ class ContainerParser(object):
 
   def ParseKnownArgs(
       self,
-      args: Sequence[str],
+      args: Sequence[Any],
       namespace: parser_extensions.Namespace,
-  ) -> tuple[parser_extensions.Namespace, Sequence[str]]:
+  ) -> tuple[parser_extensions.Namespace, Sequence[Any]]:
     """Performs custom --container arg parsing.
 
     Groups arguments after each --container flag to be parsed into that
@@ -142,7 +145,9 @@ class ContainerParser(object):
         else:
           current = containers[args[i]]
           i += 1
-      elif value.startswith(self._CONTAINER_FLAG_NAME + '='):
+      elif isinstance(value, str) and value.startswith(
+          self._CONTAINER_FLAG_NAME + '='
+      ):
         current = containers[value.split(sep='=', maxsplit=1)[1]]
       elif value == '--':
         remaining.append(value)

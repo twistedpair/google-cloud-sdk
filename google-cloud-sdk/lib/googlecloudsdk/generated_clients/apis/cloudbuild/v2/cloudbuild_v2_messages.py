@@ -158,6 +158,31 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class BitbucketCloudConfig(_messages.Message):
+  r"""Configuration for connections to Bitbucket Cloud.
+
+  Fields:
+    authorizerCredential: Required. An http access token with the `webhook`
+      scope access. It can be either a workspace, project or repository access
+      token. It's recommended to use a system account to generate these
+      credentials.
+    readAuthorizerCredential: Required. An http access token with the
+      `repository` access. It can be either a workspace, project or repository
+      access token. It's recommended to use a system account to generate the
+      credentials.
+    webhookSecretSecretVersion: Required. SecretManager resource containing
+      the webhook secret used to verify webhook events, formatted as
+      `projects/*/secrets/*/versions/*`.
+    workspace: Required. The Bitbucket Cloud Workspace ID to be connected to
+      Google Cloud Platform.
+  """
+
+  authorizerCredential = _messages.MessageField('UserCredential', 1)
+  readAuthorizerCredential = _messages.MessageField('UserCredential', 2)
+  webhookSecretSecretVersion = _messages.StringField(3)
+  workspace = _messages.StringField(4)
+
+
 class BitbucketDataCenterConfig(_messages.Message):
   r"""Configuration for connections to Bitbucket Data Center.
 
@@ -952,6 +977,7 @@ class Connection(_messages.Message):
 
   Fields:
     annotations: Allows clients to store small amounts of arbitrary data.
+    bitbucketCloudConfig: Configuration for connections to Bitbucket Cloud.
     bitbucketDataCenterConfig: Configuration for connections to Bitbucket Data
       Center.
     createTime: Output only. Server assigned timestamp for when the connection
@@ -1002,17 +1028,18 @@ class Connection(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  bitbucketDataCenterConfig = _messages.MessageField('BitbucketDataCenterConfig', 2)
-  createTime = _messages.StringField(3)
-  disabled = _messages.BooleanField(4)
-  etag = _messages.StringField(5)
-  githubConfig = _messages.MessageField('GitHubConfig', 6)
-  githubEnterpriseConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig', 7)
-  gitlabConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitLabConfig', 8)
-  installationState = _messages.MessageField('InstallationState', 9)
-  name = _messages.StringField(10)
-  reconciling = _messages.BooleanField(11)
-  updateTime = _messages.StringField(12)
+  bitbucketCloudConfig = _messages.MessageField('BitbucketCloudConfig', 2)
+  bitbucketDataCenterConfig = _messages.MessageField('BitbucketDataCenterConfig', 3)
+  createTime = _messages.StringField(4)
+  disabled = _messages.BooleanField(5)
+  etag = _messages.StringField(6)
+  githubConfig = _messages.MessageField('GitHubConfig', 7)
+  githubEnterpriseConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitHubEnterpriseConfig', 8)
+  gitlabConfig = _messages.MessageField('GoogleDevtoolsCloudbuildV2GitLabConfig', 9)
+  installationState = _messages.MessageField('InstallationState', 10)
+  name = _messages.StringField(11)
+  reconciling = _messages.BooleanField(12)
+  updateTime = _messages.StringField(13)
 
 
 class ContainerStateRunning(_messages.Message):
@@ -2075,6 +2102,9 @@ class PipelineRun(_messages.Message):
     createTime: Output only. Time at which the request to create the
       `PipelineRun` was received.
     etag: Needed for declarative-friendly resources.
+    finallyStartTime: Output only. FinallyStartTime is when all non-finally
+      tasks have been completed and only finally tasks are being executed.
+      +optional
     name: Output only. The `PipelineRun` name with format
       `projects/{project}/locations/{location}/pipelineRuns/{pipeline_run}`
     params: Params is a list of parameter names and values.
@@ -2141,21 +2171,22 @@ class PipelineRun(_messages.Message):
   conditions = _messages.MessageField('GoogleDevtoolsCloudbuildV2Condition', 4, repeated=True)
   createTime = _messages.StringField(5)
   etag = _messages.StringField(6)
-  name = _messages.StringField(7)
-  params = _messages.MessageField('Param', 8, repeated=True)
-  pipelineRef = _messages.MessageField('PipelineRef', 9)
-  pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 10)
-  pipelineSpec = _messages.MessageField('PipelineSpec', 11)
-  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 12)
-  serviceAccount = _messages.StringField(13)
-  skippedTasks = _messages.MessageField('SkippedTask', 14, repeated=True)
-  startTime = _messages.StringField(15)
-  timeouts = _messages.MessageField('TimeoutFields', 16)
-  uid = _messages.StringField(17)
-  updateTime = _messages.StringField(18)
-  workerPool = _messages.StringField(19)
-  workflow = _messages.StringField(20)
-  workspaces = _messages.MessageField('WorkspaceBinding', 21, repeated=True)
+  finallyStartTime = _messages.StringField(7)
+  name = _messages.StringField(8)
+  params = _messages.MessageField('Param', 9, repeated=True)
+  pipelineRef = _messages.MessageField('PipelineRef', 10)
+  pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 11)
+  pipelineSpec = _messages.MessageField('PipelineSpec', 12)
+  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 13)
+  serviceAccount = _messages.StringField(14)
+  skippedTasks = _messages.MessageField('SkippedTask', 15, repeated=True)
+  startTime = _messages.StringField(16)
+  timeouts = _messages.MessageField('TimeoutFields', 17)
+  uid = _messages.StringField(18)
+  updateTime = _messages.StringField(19)
+  workerPool = _messages.StringField(20)
+  workflow = _messages.StringField(21)
+  workspaces = _messages.MessageField('WorkspaceBinding', 22, repeated=True)
 
 
 class PipelineSpec(_messages.Message):
@@ -3109,9 +3140,12 @@ class TaskRun(_messages.Message):
     params: Params is a list of parameter names and values.
     resolvedTaskSpec: Output only. The exact TaskSpec used to instantiate the
       run.
+    results: Output only. List of results written out by the task's containers
     serviceAccount: Required. Service account used in the task.
     sidecars: Output only. State of each Sidecar in the TaskSpec.
     startTime: Output only. Time the task is actually started.
+    statusMessage: Optional. Output only. Status message for cancellation.
+      +optional
     steps: Output only. Steps describes the state of each build step
       container.
     taskRef: TaskRef refer to a specific instance of a task.
@@ -3173,19 +3207,21 @@ class TaskRun(_messages.Message):
   name = _messages.StringField(6)
   params = _messages.MessageField('Param', 7, repeated=True)
   resolvedTaskSpec = _messages.MessageField('TaskSpec', 8)
-  serviceAccount = _messages.StringField(9)
-  sidecars = _messages.MessageField('SidecarState', 10, repeated=True)
-  startTime = _messages.StringField(11)
-  steps = _messages.MessageField('StepState', 12, repeated=True)
-  taskRef = _messages.MessageField('TaskRef', 13)
-  taskRunResults = _messages.MessageField('TaskRunResult', 14, repeated=True)
-  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 15)
-  taskSpec = _messages.MessageField('TaskSpec', 16)
-  timeout = _messages.StringField(17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  workerPool = _messages.StringField(20)
-  workspaces = _messages.MessageField('WorkspaceBinding', 21, repeated=True)
+  results = _messages.MessageField('TaskRunResult', 9, repeated=True)
+  serviceAccount = _messages.StringField(10)
+  sidecars = _messages.MessageField('SidecarState', 11, repeated=True)
+  startTime = _messages.StringField(12)
+  statusMessage = _messages.StringField(13)
+  steps = _messages.MessageField('StepState', 14, repeated=True)
+  taskRef = _messages.MessageField('TaskRef', 15)
+  taskRunResults = _messages.MessageField('TaskRunResult', 16, repeated=True)
+  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 17)
+  taskSpec = _messages.MessageField('TaskSpec', 18)
+  timeout = _messages.StringField(19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
+  workerPool = _messages.StringField(22)
+  workspaces = _messages.MessageField('WorkspaceBinding', 23, repeated=True)
 
 
 class TaskRunResult(_messages.Message):
@@ -3644,12 +3680,16 @@ class WorkspaceBinding(_messages.Message):
   Fields:
     name: Name of the workspace.
     secret: Secret Volume Source.
+    subPath: Optional. SubPath is optionally a directory on the volume which
+      should be used for this binding (i.e. the volume will be mounted at this
+      sub directory). +optional
     volumeClaim: Volume claim that will be created in the same namespace.
   """
 
   name = _messages.StringField(1)
   secret = _messages.MessageField('SecretVolumeSource', 2)
-  volumeClaim = _messages.MessageField('VolumeClaim', 3)
+  subPath = _messages.StringField(3)
+  volumeClaim = _messages.MessageField('VolumeClaim', 4)
 
 
 class WorkspaceDeclaration(_messages.Message):
@@ -3660,13 +3700,17 @@ class WorkspaceDeclaration(_messages.Message):
     mountPath: MountPath overrides the directory that the volume will be made
       available at.
     name: Name is the name by which you can bind the volume at runtime.
+    optional: Optional. Optional marks a Workspace as not being required in
+      TaskRuns. By default this field is false and so declared workspaces are
+      required.
     readOnly: ReadOnly dictates whether a mounted volume is writable.
   """
 
   description = _messages.StringField(1)
   mountPath = _messages.StringField(2)
   name = _messages.StringField(3)
-  readOnly = _messages.BooleanField(4)
+  optional = _messages.BooleanField(4)
+  readOnly = _messages.BooleanField(5)
 
 
 class WorkspacePipelineTaskBinding(_messages.Message):
@@ -3675,11 +3719,15 @@ class WorkspacePipelineTaskBinding(_messages.Message):
 
   Fields:
     name: Name of the workspace as declared by the task.
+    subPath: Optional. SubPath is optionally a directory on the volume which
+      should be used for this binding (i.e. the volume will be mounted at this
+      sub directory). +optional
     workspace: Name of the workspace declared by the pipeline.
   """
 
   name = _messages.StringField(1)
-  workspace = _messages.StringField(2)
+  subPath = _messages.StringField(2)
+  workspace = _messages.StringField(3)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -4339,17 +4339,62 @@ class GoogleCloudDataplexV1DataScanEventDataQualityResult(_messages.Message):
   r"""Data quality result for data scan job.
 
   Messages:
+    ColumnScoreValue: The score of each column scanned in the data scan job.
+      The key of the map is the name of the column. The value is the data
+      quality score for the column.The score ranges between 0, 100 (up to two
+      decimal points).
     DimensionPassedValue: The result of each dimension for data quality
       result. The key of the map is the name of the dimension. The value is
       the bool value depicting whether the dimension result was pass or not.
+    DimensionScoreValue: The score of each dimension for data quality result.
+      The key of the map is the name of the dimension. The value is the data
+      quality score for the dimension.The score ranges between 0, 100 (up to
+      two decimal points).
 
   Fields:
+    columnScore: The score of each column scanned in the data scan job. The
+      key of the map is the name of the column. The value is the data quality
+      score for the column.The score ranges between 0, 100 (up to two decimal
+      points).
     dimensionPassed: The result of each dimension for data quality result. The
       key of the map is the name of the dimension. The value is the bool value
       depicting whether the dimension result was pass or not.
+    dimensionScore: The score of each dimension for data quality result. The
+      key of the map is the name of the dimension. The value is the data
+      quality score for the dimension.The score ranges between 0, 100 (up to
+      two decimal points).
     passed: Whether the data quality result was pass or not.
     rowCount: The count of rows processed in the data scan job.
+    score: The table-level data quality score for the data scan job.The data
+      quality score ranges between 0, 100 (up to two decimal points).
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ColumnScoreValue(_messages.Message):
+    r"""The score of each column scanned in the data scan job. The key of the
+    map is the name of the column. The value is the data quality score for the
+    column.The score ranges between 0, 100 (up to two decimal points).
+
+    Messages:
+      AdditionalProperty: An additional property for a ColumnScoreValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ColumnScoreValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ColumnScoreValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A number attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class DimensionPassedValue(_messages.Message):
@@ -4378,9 +4423,39 @@ class GoogleCloudDataplexV1DataScanEventDataQualityResult(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  dimensionPassed = _messages.MessageField('DimensionPassedValue', 1)
-  passed = _messages.BooleanField(2)
-  rowCount = _messages.IntegerField(3)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DimensionScoreValue(_messages.Message):
+    r"""The score of each dimension for data quality result. The key of the
+    map is the name of the dimension. The value is the data quality score for
+    the dimension.The score ranges between 0, 100 (up to two decimal points).
+
+    Messages:
+      AdditionalProperty: An additional property for a DimensionScoreValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type DimensionScoreValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DimensionScoreValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A number attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  columnScore = _messages.MessageField('ColumnScoreValue', 1)
+  dimensionPassed = _messages.MessageField('DimensionPassedValue', 2)
+  dimensionScore = _messages.MessageField('DimensionScoreValue', 3)
+  passed = _messages.BooleanField(4)
+  rowCount = _messages.IntegerField(5)
+  score = _messages.FloatField(6, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataScanEventPostScanActionsResult(_messages.Message):
@@ -5144,6 +5219,7 @@ class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):
         particular Query.
       GOVERNANCE_RULE_SEARCH_LIMIT_EXCEEDS: Rule processing exceeds the
         allowed limit.
+      GOVERNANCE_RULE_ERRORS: Rule processing errors.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     RESOURCE_IAM_POLICY_UPDATE = 1
@@ -5160,6 +5236,7 @@ class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):
     ACCESS_POLICY_UPDATE = 12
     GOVERNANCE_RULE_MATCHED_RESOURCES = 13
     GOVERNANCE_RULE_SEARCH_LIMIT_EXCEEDS = 14
+    GOVERNANCE_RULE_ERRORS = 15
 
   entity = _messages.MessageField('GoogleCloudDataplexV1GovernanceEventEntity', 1)
   eventType = _messages.EnumField('EventTypeValueValuesEnum', 2)

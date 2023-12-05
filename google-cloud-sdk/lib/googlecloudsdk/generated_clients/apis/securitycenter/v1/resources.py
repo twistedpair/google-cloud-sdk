@@ -261,6 +261,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_SIMULATIONS_VALUEDRESOURCES = (
+      'organizations.simulations.valuedResources',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/simulations/{simulationsId}/'
+              'valuedResources/{valuedResourcesId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_SOURCES = (
       'organizations.sources',
       '{+name}',

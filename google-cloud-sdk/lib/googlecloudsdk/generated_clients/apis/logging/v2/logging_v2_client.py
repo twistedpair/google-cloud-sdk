@@ -45,10 +45,13 @@ class LoggingV2(base_api.BaseApiClient):
     self.billingAccounts_locations_buckets_views = self.BillingAccountsLocationsBucketsViewsService(self)
     self.billingAccounts_locations_buckets = self.BillingAccountsLocationsBucketsService(self)
     self.billingAccounts_locations_operations = self.BillingAccountsLocationsOperationsService(self)
+    self.billingAccounts_locations_recentQueries = self.BillingAccountsLocationsRecentQueriesService(self)
+    self.billingAccounts_locations_savedQueries = self.BillingAccountsLocationsSavedQueriesService(self)
     self.billingAccounts_locations = self.BillingAccountsLocationsService(self)
     self.billingAccounts_logs = self.BillingAccountsLogsService(self)
     self.billingAccounts_sinks = self.BillingAccountsSinksService(self)
     self.billingAccounts = self.BillingAccountsService(self)
+    self.data = self.DataService(self)
     self.entries = self.EntriesService(self)
     self.exclusions = self.ExclusionsService(self)
     self.folders_exclusions = self.FoldersExclusionsService(self)
@@ -57,6 +60,8 @@ class LoggingV2(base_api.BaseApiClient):
     self.folders_locations_buckets_views = self.FoldersLocationsBucketsViewsService(self)
     self.folders_locations_buckets = self.FoldersLocationsBucketsService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
+    self.folders_locations_recentQueries = self.FoldersLocationsRecentQueriesService(self)
+    self.folders_locations_savedQueries = self.FoldersLocationsSavedQueriesService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders_logs = self.FoldersLogsService(self)
     self.folders_sinks = self.FoldersSinksService(self)
@@ -74,6 +79,8 @@ class LoggingV2(base_api.BaseApiClient):
     self.organizations_locations_buckets_views = self.OrganizationsLocationsBucketsViewsService(self)
     self.organizations_locations_buckets = self.OrganizationsLocationsBucketsService(self)
     self.organizations_locations_operations = self.OrganizationsLocationsOperationsService(self)
+    self.organizations_locations_recentQueries = self.OrganizationsLocationsRecentQueriesService(self)
+    self.organizations_locations_savedQueries = self.OrganizationsLocationsSavedQueriesService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations_logs = self.OrganizationsLogsService(self)
     self.organizations_sinks = self.OrganizationsSinksService(self)
@@ -84,6 +91,8 @@ class LoggingV2(base_api.BaseApiClient):
     self.projects_locations_buckets_views = self.ProjectsLocationsBucketsViewsService(self)
     self.projects_locations_buckets = self.ProjectsLocationsBucketsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
+    self.projects_locations_recentQueries = self.ProjectsLocationsRecentQueriesService(self)
+    self.projects_locations_savedQueries = self.ProjectsLocationsSavedQueriesService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_logs = self.ProjectsLogsService(self)
     self.projects_metrics = self.ProjectsMetricsService(self)
@@ -909,6 +918,134 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class BillingAccountsLocationsRecentQueriesService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_recentQueries resource."""
+
+    _NAME = 'billingAccounts_locations_recentQueries'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsLocationsRecentQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the RecentQueries that were created by the user making the request.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsRecentQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRecentQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/recentQueries',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.recentQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/recentQueries',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsRecentQueriesListRequest',
+        response_type_name='ListRecentQueriesResponse',
+        supports_download=False,
+    )
+
+  class BillingAccountsLocationsSavedQueriesService(base_api.BaseApiService):
+    """Service class for the billingAccounts_locations_savedQueries resource."""
+
+    _NAME = 'billingAccounts_locations_savedQueries'
+
+    def __init__(self, client):
+      super(LoggingV2.BillingAccountsLocationsSavedQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SavedQuery for the user making the request.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsSavedQueriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/savedQueries',
+        http_method='POST',
+        method_id='logging.billingAccounts.locations.savedQueries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['savedQueryId'],
+        relative_path='v2/{+parent}/savedQueries',
+        request_field='savedQuery',
+        request_type_name='LoggingBillingAccountsLocationsSavedQueriesCreateRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing SavedQuery that was created by the user making the request.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsSavedQueriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='DELETE',
+        method_id='logging.billingAccounts.locations.savedQueries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsSavedQueriesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the SavedQueries that were created by the user making the request.
+
+      Args:
+        request: (LoggingBillingAccountsLocationsSavedQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSavedQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/billingAccounts/{billingAccountsId}/locations/{locationsId}/savedQueries',
+        http_method='GET',
+        method_id='logging.billingAccounts.locations.savedQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/savedQueries',
+        request_field='',
+        request_type_name='LoggingBillingAccountsLocationsSavedQueriesListRequest',
+        response_type_name='ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
   class BillingAccountsLocationsService(base_api.BaseApiService):
     """Service class for the billingAccounts_locations resource."""
 
@@ -1273,6 +1410,42 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class DataService(base_api.BaseApiService):
+    """Service class for the data resource."""
+
+    _NAME = 'data'
+
+    def __init__(self, client):
+      super(LoggingV2.DataService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def QueryLocal(self, request, global_params=None):
+      r"""Runs a (possibly multi-step) SQL query asynchronously in the customer project and returns handles that can be used to fetch the results of each step. View references are translated to linked dataset tables, and references to other raw BigQuery tables are permitted.
+
+      Args:
+        request: (QueryDataLocalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (QueryDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('QueryLocal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    QueryLocal.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.data.queryLocal',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/data:queryLocal',
+        request_field='<request>',
+        request_type_name='QueryDataLocalRequest',
+        response_type_name='QueryDataResponse',
+        supports_download=False,
+    )
+
   class EntriesService(base_api.BaseApiService):
     """Service class for the entries resource."""
 
@@ -1362,7 +1535,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def QueryData(self, request, global_params=None):
-      r"""Runs a (possibly multi-step) SQL query asynchronously and returns handles that can be used to fetch the results of each step.
+      r"""Runs a (possibly multi-step) SQL query asynchronously and returns handles that can be used to fetch the results of each step. Raw table references are not permitted; all tables must be referenced in the form of views.
 
       Args:
         request: (QueryDataRequest) input message
@@ -2449,6 +2622,134 @@ class LoggingV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='LoggingFoldersLocationsOperationsListRequest',
         response_type_name='ListOperationsResponse',
+        supports_download=False,
+    )
+
+  class FoldersLocationsRecentQueriesService(base_api.BaseApiService):
+    """Service class for the folders_locations_recentQueries resource."""
+
+    _NAME = 'folders_locations_recentQueries'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLocationsRecentQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the RecentQueries that were created by the user making the request.
+
+      Args:
+        request: (LoggingFoldersLocationsRecentQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRecentQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/recentQueries',
+        http_method='GET',
+        method_id='logging.folders.locations.recentQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/recentQueries',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsRecentQueriesListRequest',
+        response_type_name='ListRecentQueriesResponse',
+        supports_download=False,
+    )
+
+  class FoldersLocationsSavedQueriesService(base_api.BaseApiService):
+    """Service class for the folders_locations_savedQueries resource."""
+
+    _NAME = 'folders_locations_savedQueries'
+
+    def __init__(self, client):
+      super(LoggingV2.FoldersLocationsSavedQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SavedQuery for the user making the request.
+
+      Args:
+        request: (LoggingFoldersLocationsSavedQueriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/savedQueries',
+        http_method='POST',
+        method_id='logging.folders.locations.savedQueries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['savedQueryId'],
+        relative_path='v2/{+parent}/savedQueries',
+        request_field='savedQuery',
+        request_type_name='LoggingFoldersLocationsSavedQueriesCreateRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing SavedQuery that was created by the user making the request.
+
+      Args:
+        request: (LoggingFoldersLocationsSavedQueriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='DELETE',
+        method_id='logging.folders.locations.savedQueries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsSavedQueriesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the SavedQueries that were created by the user making the request.
+
+      Args:
+        request: (LoggingFoldersLocationsSavedQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSavedQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/locations/{locationsId}/savedQueries',
+        http_method='GET',
+        method_id='logging.folders.locations.savedQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/savedQueries',
+        request_field='',
+        request_type_name='LoggingFoldersLocationsSavedQueriesListRequest',
+        response_type_name='ListSavedQueriesResponse',
         supports_download=False,
     )
 
@@ -4457,6 +4758,134 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsRecentQueriesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_recentQueries resource."""
+
+    _NAME = 'organizations_locations_recentQueries'
+
+    def __init__(self, client):
+      super(LoggingV2.OrganizationsLocationsRecentQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the RecentQueries that were created by the user making the request.
+
+      Args:
+        request: (LoggingOrganizationsLocationsRecentQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRecentQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/recentQueries',
+        http_method='GET',
+        method_id='logging.organizations.locations.recentQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/recentQueries',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsRecentQueriesListRequest',
+        response_type_name='ListRecentQueriesResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsLocationsSavedQueriesService(base_api.BaseApiService):
+    """Service class for the organizations_locations_savedQueries resource."""
+
+    _NAME = 'organizations_locations_savedQueries'
+
+    def __init__(self, client):
+      super(LoggingV2.OrganizationsLocationsSavedQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SavedQuery for the user making the request.
+
+      Args:
+        request: (LoggingOrganizationsLocationsSavedQueriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/savedQueries',
+        http_method='POST',
+        method_id='logging.organizations.locations.savedQueries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['savedQueryId'],
+        relative_path='v2/{+parent}/savedQueries',
+        request_field='savedQuery',
+        request_type_name='LoggingOrganizationsLocationsSavedQueriesCreateRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing SavedQuery that was created by the user making the request.
+
+      Args:
+        request: (LoggingOrganizationsLocationsSavedQueriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='DELETE',
+        method_id='logging.organizations.locations.savedQueries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsSavedQueriesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the SavedQueries that were created by the user making the request.
+
+      Args:
+        request: (LoggingOrganizationsLocationsSavedQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSavedQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/locations/{locationsId}/savedQueries',
+        http_method='GET',
+        method_id='logging.organizations.locations.savedQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/savedQueries',
+        request_field='',
+        request_type_name='LoggingOrganizationsLocationsSavedQueriesListRequest',
+        response_type_name='ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
 
@@ -5691,6 +6120,134 @@ class LoggingV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsRecentQueriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_recentQueries resource."""
+
+    _NAME = 'projects_locations_recentQueries'
+
+    def __init__(self, client):
+      super(LoggingV2.ProjectsLocationsRecentQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists the RecentQueries that were created by the user making the request.
+
+      Args:
+        request: (LoggingProjectsLocationsRecentQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListRecentQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/recentQueries',
+        http_method='GET',
+        method_id='logging.projects.locations.recentQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/recentQueries',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsRecentQueriesListRequest',
+        response_type_name='ListRecentQueriesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsSavedQueriesService(base_api.BaseApiService):
+    """Service class for the projects_locations_savedQueries resource."""
+
+    _NAME = 'projects_locations_savedQueries'
+
+    def __init__(self, client):
+      super(LoggingV2.ProjectsLocationsSavedQueriesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new SavedQuery for the user making the request.
+
+      Args:
+        request: (LoggingProjectsLocationsSavedQueriesCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SavedQuery) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/savedQueries',
+        http_method='POST',
+        method_id='logging.projects.locations.savedQueries.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['savedQueryId'],
+        relative_path='v2/{+parent}/savedQueries',
+        request_field='savedQuery',
+        request_type_name='LoggingProjectsLocationsSavedQueriesCreateRequest',
+        response_type_name='SavedQuery',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an existing SavedQuery that was created by the user making the request.
+
+      Args:
+        request: (LoggingProjectsLocationsSavedQueriesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/savedQueries/{savedQueriesId}',
+        http_method='DELETE',
+        method_id='logging.projects.locations.savedQueries.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsSavedQueriesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists the SavedQueries that were created by the user making the request.
+
+      Args:
+        request: (LoggingProjectsLocationsSavedQueriesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSavedQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/locations/{locationsId}/savedQueries',
+        http_method='GET',
+        method_id='logging.projects.locations.savedQueries.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/savedQueries',
+        request_field='',
+        request_type_name='LoggingProjectsLocationsSavedQueriesListRequest',
+        response_type_name='ListSavedQueriesResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsService(base_api.BaseApiService):
     """Service class for the projects_locations resource."""
 
@@ -6232,6 +6789,32 @@ class LoggingV2(base_api.BaseApiClient):
         relative_path='v2/query:validate',
         request_field='<request>',
         request_type_name='QueryDataRequest',
+        response_type_name='ValidateQueryResponse',
+        supports_download=False,
+    )
+
+    def ValidateLocal(self, request, global_params=None):
+      r"""Validates a query before passing it to QueryDataLocal and returns query metadata synchronously.
+
+      Args:
+        request: (QueryDataLocalRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValidateQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('ValidateLocal')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ValidateLocal.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.query.validateLocal',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/query:validateLocal',
+        request_field='<request>',
+        request_type_name='QueryDataLocalRequest',
         response_type_name='ValidateQueryResponse',
         supports_download=False,
     )

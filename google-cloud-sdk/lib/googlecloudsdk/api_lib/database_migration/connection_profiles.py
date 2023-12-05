@@ -432,6 +432,15 @@ class ConnectionProfilesClient(object):
     settings = self._GetCloudSqlSettings(args)
     return self.messages.CloudSqlConnectionProfile(settings=settings)
 
+  def _GetAlloyDBDatabaseVersion(self, args):
+    if args.IsKnownAndSpecified('database_version'):
+      return (
+          self.messages.AlloyDbSettings.DatabaseVersionValueValuesEnum
+          .lookup_by_name(args.database_version)
+      )
+    else:
+      return None
+
   def _GetAlloyDBConnectionProfile(self, args, connection_profile_id):
     """Creates an AlloyDB connection profile according to the given args.
 
@@ -470,6 +479,7 @@ class ConnectionProfilesClient(object):
         vpcNetwork=args.network,
         labels=cluster_labels,
         primaryInstanceSettings=primary_settings)
+    cluster_settings.databaseVersion = self._GetAlloyDBDatabaseVersion(args)
 
     kms_key_ref = args.CONCEPTS.kms_key.Parse()
     if kms_key_ref is not None:

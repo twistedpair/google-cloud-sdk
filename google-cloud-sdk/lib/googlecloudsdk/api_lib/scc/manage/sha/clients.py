@@ -14,7 +14,11 @@
 # limitations under the License.
 """Useful commands for interacting with the Cloud SCC API."""
 
+from typing import Generator
+from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.core import log
+from googlecloudsdk.core.console import console_io
 from googlecloudsdk.generated_clients.apis.securitycentermanagement.v1 import securitycentermanagement_v1_messages as messages
 
 
@@ -35,6 +39,62 @@ class SHACustomModuleClient(object):
         name=name
     )
     return self._client.Get(req)
+
+  def Simulate(
+      self, parent, custom_config, resource
+  ) -> messages.SimulateSecurityHealthAnalyticsCustomModuleResponse:
+    """Simulate a SHA custom module."""
+
+    sim_req = messages.SimulateSecurityHealthAnalyticsCustomModuleRequest(
+        customConfig=custom_config, resource=resource
+    )
+    req = messages.SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesSimulateRequest(
+        parent=parent,
+        simulateSecurityHealthAnalyticsCustomModuleRequest=sim_req,
+    )
+    return self._client.Simulate(req)
+
+  def Delete(self, name: str, validate_only: bool):
+    """Delete a SHA custom module."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesDeleteRequest(
+        name=name, validateOnly=validate_only
+    )
+    if validate_only:
+      log.status.Print('Request is valid.')
+      return
+    console_io.PromptContinue(
+        message=(
+            'Are you sure you want to delete the Security Health Analytics'
+            ' custom module {}?\n'.format(name)
+        ),
+        cancel_on_no=True,
+    )
+    response = self._client.Delete(req)
+    log.DeletedResource(name)
+    return response
+
+  def List(
+      self, page_size: int, page_token: str, parent: str, limit: int
+  ) -> Generator[
+      messages.SecurityHealthAnalyticsCustomModule,
+      None,
+      messages.ListSecurityHealthAnalyticsCustomModulesResponse,
+  ]:
+    """List the details of an SHA custom module."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesListRequest(
+        pageSize=page_size, pageToken=page_token, parent=parent
+    )
+    return list_pager.YieldFromList(
+        self._client,
+        request=req,
+        limit=limit,
+        field='securityHealthAnalyticsCustomModules',
+        batch_size=page_size,
+        batch_size_attribute='pageSize',
+        current_token_attribute='pageToken',
+    )
 
 
 class EffectiveSHACustomModuleClient(object):

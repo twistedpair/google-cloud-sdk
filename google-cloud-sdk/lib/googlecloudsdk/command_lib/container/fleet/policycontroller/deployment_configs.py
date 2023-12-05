@@ -33,6 +33,7 @@ SUPPORTED_PROPERTIES = [
     'memory-request',
     'toleration',
     'replica-count',
+    'pod-affinity',
 ]
 
 K8S_SCHEDULING_OPTIONS = [
@@ -264,4 +265,31 @@ def remove_toleration(current, key_value, effect):
 
   # TODO(b/290215626) If empty, set cleared_fields value, ensure it's updated.
   current.podTolerations = [t for t in current_tolerations if not match(t)]
+  return current
+
+
+def update_pod_affinity(messages, current, value):
+  """Configures the pod affinity for the current deployment configuration.
+
+  Args:
+    messages: the set of proto messages for this feature.
+    current: the deployment configuration object being modified.
+    value: The value to set the pod affinity to. If the value is the string
+      "none" or value `None`, the pod affinity will be NO_AFFINITY.
+
+  Returns:
+    The modified deployment configuration object.
+  """
+  if value == 'anti':
+    current.podAffinity = (
+        messages.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.ANTI_AFFINITY
+    )
+  elif value is None or value == 'none':
+    current.podAffinity = (
+        messages.PolicyControllerPolicyControllerDeploymentConfig.PodAffinityValueValuesEnum.NO_AFFINITY
+    )
+  else:
+    raise exceptions.Error(
+        'invalid pod affinity option {} specified.'.format(value)
+    )
   return current

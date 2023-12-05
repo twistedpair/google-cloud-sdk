@@ -222,6 +222,16 @@ def AddOperation(parser):
       help='AlloyDB operation ID')
 
 
+def AddEnablePrivateServicesConnect(parser):
+  """Adds the `--enable-private-services-connect` flag to the parser."""
+  parser.add_argument(
+      '--enable-private-services-connect',
+      required=False,
+      action='store_true',
+      help=('Enable Private Services Connect (PSC) connectivity for the '
+            'cluster.'))
+
+
 def AddNetwork(parser):
   """Adds the `--network` flag to the parser."""
   parser.add_argument(
@@ -801,6 +811,21 @@ def ValidateContinuousBackupFlags(args, update=False):
         '--clear-continuous-backup-encryption-key',
     )
 # LINT.ThenChange()
+
+
+def ValidateConnectivityFlags(args):
+  """Validate the arguments for connectivity, ensure the correct set of flags are passed."""
+  # TODO(b/310733501) Move this to create.yaml or update.yaml files.
+  if (args.enable_private_services_connect and args.network):
+    raise exceptions.ConflictingArgumentsException(
+        '--enable-private-services-connect',
+        '--network',
+    )
+  if (args.enable_private_services_connect and args.allocated_ip_range_name):
+    raise exceptions.ConflictingArgumentsException(
+        '--enable-private-services-connect',
+        '--allocated-ip-range-name',
+    )
 
 
 def GetAutomatedBackupKmsFlagOverrides():

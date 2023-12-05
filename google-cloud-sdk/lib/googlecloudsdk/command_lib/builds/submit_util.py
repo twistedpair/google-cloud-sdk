@@ -273,6 +273,8 @@ def _SetBuildSteps(
           '--pack', 'Image value must be in the *gcr.io* or *pkg.dev* namespace'
       )
     env = buildpack[0].get('env')
+    # envs example: ["key1=value1", "key2=value2"]
+    envs = buildpack[0].get('envs')
     builder = buildpack[0].get('builder')
     steps = []
     pack_args = [
@@ -282,9 +284,14 @@ def _SetBuildSteps(
         'cloudbuild',
     ]
     build_tags = [_GetBuildTag(builder)]
+    # Keep both env and envs for backward compatibility.
     if env is not None:
       pack_args.append('--env')
       pack_args.append(env)
+    if envs is not None:
+      for env in envs:
+        pack_args.append('--env')
+        pack_args.append(env)
     if builder is not None:
       pack_args.append('--builder')
       pack_args.append(builder)

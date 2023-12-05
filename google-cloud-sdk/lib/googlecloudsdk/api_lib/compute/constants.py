@@ -39,6 +39,7 @@ DISK_TYPE_PD_SSD = 'pd-ssd'
 DISK_TYPE_PD_EXTREME = 'pd-extreme'
 DISK_TYPE_HD_EXTREME = 'hyperdisk-extreme'
 DISK_TYPE_HD_THROUGHPUT = 'hyperdisk-throughput'
+DISK_TYPE_HD_BALANCED = 'hyperdisk-balanced'
 
 # Provisioned IOPS for pd-extreme/cs-extreme disks
 MIN_PROVISIONED_IOPS = 2500

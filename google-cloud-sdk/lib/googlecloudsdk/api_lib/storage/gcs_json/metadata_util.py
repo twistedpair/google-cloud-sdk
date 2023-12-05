@@ -211,6 +211,27 @@ def get_metadata_from_bucket_resource(resource):
   return metadata
 
 
+def get_anywhere_cache_resource_from_metadata(metadata):
+  url = storage_url.CloudUrl(
+      scheme=storage_url.ProviderPrefix.GCS,
+      bucket_name=metadata.bucket,
+      object_name=metadata.anywhereCacheId,
+  )
+  return gcs_resource_reference.GcsAnywhereCacheResource(
+      admission_policy=metadata.admissionPolicy,
+      bucket=metadata.bucket,
+      create_time=metadata.createTime,
+      kind=metadata.kind,
+      metadata=metadata,
+      pending_update=metadata.pendingUpdate,
+      state=metadata.state,
+      storage_url=url,
+      ttl=metadata.ttl,
+      update_time=metadata.updateTime,
+      zone=metadata.anywhereCacheId,
+  )
+
+
 def get_object_resource_from_metadata(metadata):
   """Helper method to generate a ObjectResource instance from GCS metadata.
 

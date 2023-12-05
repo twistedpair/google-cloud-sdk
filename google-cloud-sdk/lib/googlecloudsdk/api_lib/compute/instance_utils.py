@@ -259,6 +259,7 @@ def CreateSchedulingMessage(
     termination_time=None,
     local_ssd_recovery_timeout=None,
     availability_domain=None,
+    graceful_shutdown=None,
 ):
   """Create scheduling message for VM."""
   # Note: We always specify automaticRestart=False for preemptible VMs. This
@@ -298,6 +299,15 @@ def CreateSchedulingMessage(
     scheduling.localSsdRecoveryTimeout = messages.Duration(
         seconds=local_ssd_recovery_timeout
     )
+
+  if graceful_shutdown is not None:
+    scheduling.gracefulShutdown = messages.SchedulingGracefulShutdown()
+    if 'enabled' in graceful_shutdown:
+      scheduling.gracefulShutdown.enabled = graceful_shutdown['enabled']
+    if 'maxDuration' in graceful_shutdown:
+      scheduling.gracefulShutdown.maxDuration = messages.Duration(
+          seconds=graceful_shutdown['maxDuration']
+      )
 
   if termination_time:
     scheduling.terminationTime = times.FormatDateTime(termination_time)
@@ -373,9 +383,9 @@ def CreateConfidentialInstanceMessage(messages, args,
             args.confidential_compute_type))
 
     if (not support_confidential_compute_type_tdx and
-        confidential_instance_type == (
+        'TDX' in (
             messages.ConfidentialInstanceConfig
-            .ConfidentialInstanceTypeValueValuesEnum.TDX)):
+            .ConfidentialInstanceTypeValueValuesEnum)):
       enable_confidential_compute = None
       confidential_instance_type = None
 
@@ -570,15 +580,18 @@ def GetSkipDefaults(source_instance_template):
   return source_instance_template is not None
 
 
-def GetScheduling(args,
-                  client,
-                  skip_defaults,
-                  support_node_affinity=False,
-                  support_min_node_cpu=True,
-                  support_node_project=False,
-                  support_host_error_timeout_seconds=False,
-                  support_max_run_duration=False,
-                  support_local_ssd_recovery_timeout=False):
+def GetScheduling(
+    args,
+    client,
+    skip_defaults,
+    support_node_affinity=False,
+    support_min_node_cpu=True,
+    support_node_project=False,
+    support_host_error_timeout_seconds=False,
+    support_max_run_duration=False,
+    support_local_ssd_recovery_timeout=False,
+    support_graceful_shutdown=False,
+):
   """Generate a Scheduling Message or None based on specified args."""
   node_affinities = None
   if support_node_affinity:
@@ -624,6 +637,10 @@ def GetScheduling(args,
           'local_ssd_recovery_timeout'):
     local_ssd_recovery_timeout = args.local_ssd_recovery_timeout
 
+  graceful_shutdown = ExtractGracefulShutdownFromArgs(
+      args, support_graceful_shutdown
+  )
+
   termination_time = None
   if support_max_run_duration and hasattr(args, 'termination_time'):
     termination_time = args.termination_time
@@ -640,12 +657,25 @@ def GetScheduling(args,
   ):
     availability_domain = args.availability_domain
 
-  if (skip_defaults and not IsAnySpecified(
-      args, 'instance_termination_action', 'maintenance_policy', 'preemptible',
-      'provisioning_model') and not restart_on_failure and
-      not node_affinities and not max_run_duration and not termination_time and
-      not freeze_duration and not host_error_timeout_seconds and
-      not maintenance_interval and not local_ssd_recovery_timeout):
+  if (
+      skip_defaults
+      and not IsAnySpecified(
+          args,
+          'instance_termination_action',
+          'maintenance_policy',
+          'preemptible',
+          'provisioning_model',
+      )
+      and not restart_on_failure
+      and not node_affinities
+      and not max_run_duration
+      and not termination_time
+      and not freeze_duration
+      and not host_error_timeout_seconds
+      and not maintenance_interval
+      and not local_ssd_recovery_timeout
+      and not graceful_shutdown
+  ):
     return None
 
   return CreateSchedulingMessage(
@@ -665,6 +695,7 @@ def GetScheduling(args,
       termination_time=termination_time,
       local_ssd_recovery_timeout=local_ssd_recovery_timeout,
       availability_domain=availability_domain,
+      graceful_shutdown=graceful_shutdown,
   )
 
 
@@ -921,6 +952,27 @@ def GetNetworkPerformanceConfig(args, client):
           total_tier)
 
   return network_perf_configs
+
+
+def ExtractGracefulShutdownFromArgs(args, support_graceful_shutdown=False):
+  """Extracts graceful shutdown from args."""
+
+  graceful_shutdown = None
+  if support_graceful_shutdown:
+    if hasattr(args, 'graceful_shutdown') and args.IsSpecified(
+        'graceful_shutdown'
+    ):
+      graceful_shutdown = {'enabled': args.graceful_shutdown}
+
+    if hasattr(args, 'graceful_shutdown_max_duration') and args.IsSpecified(
+        'graceful_shutdown_max_duration'
+    ):
+      if graceful_shutdown is None:
+        graceful_shutdown = {'maxDuration': args.graceful_shutdown_max_duration}
+      else:
+        graceful_shutdown['maxDuration'] = args.graceful_shutdown_max_duration
+
+  return graceful_shutdown
 
 
 _RESERVATION_AFFINITY_KEY = 'compute.googleapis.com/reservation-name'

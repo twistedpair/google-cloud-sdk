@@ -31,6 +31,7 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
+from googlecloudsdk.api_lib.cloudbuild.v2 import client_util as cloudbuildv2_util
 from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
@@ -115,7 +116,7 @@ def Connect(conn_context, already_activated_service=False):
 
   with conn_context as conn_info:
     response_func = (
-        apis.CheckResponseForApiEnablement(already_activated_service)
+        apis.CheckResponse(already_activated_service)
         if conn_context.supports_one_platform
         else None
     )
@@ -1018,15 +1019,28 @@ class ServerlessOperations(object):
       self, tracker, build_messages, build_config, skip_activation_prompt=False
   ):
     """Build an image from source if a user specifies a source when deploying."""
-    build, build_op = submit_util.Build(
+    project = properties.VALUES.core.project.Get(required=True)
+    cloud_build_regions = [
+        location.locationId
+        for location in cloudbuildv2_util.ListLocations(project).locations
+    ]
+    build_region = (
+        self._region
+        if self._region in cloud_build_regions
+        else cloudbuild_util.DEFAULT_REGION
+    )
+    build, _ = submit_util.Build(
         build_messages,
         True,
         build_config,
         hide_logs=True,
+        build_region=build_region,
         skip_activation_prompt=skip_activation_prompt,
     )
+
+    build_op = f'projects/{build.projectId}/locations/{build_region}/operations/{build.id}'
     build_op_ref = resources.REGISTRY.ParseRelativeName(
-        build_op.name, 'cloudbuild.operations'
+        build_op, collection='cloudbuild.projects.locations.operations'
     )
     build_log_url = build.logUrl
     tracker.StartStage(stages.BUILD_READY)
@@ -1037,7 +1051,9 @@ class ServerlessOperations(object):
             build_log_url=build_log_url
         ),
     )
-    return build_op_ref, build_log_url
+
+    response_dict = self._PollUntilBuildCompletes(build_op_ref)
+    return response_dict, build_log_url
 
   def ReleaseService(
       self,
@@ -1112,13 +1128,12 @@ class ServerlessOperations(object):
       build_messages, build_config = self._UploadSource(
           tracker, build_image, build_source, build_pack
       )
-      build_op_ref, build_log_url = self._BuildFromSource(
+      response_dict, build_log_url = self._BuildFromSource(
           tracker,
           build_messages,
           build_config,
           skip_activation_prompt=already_activated_services,
       )
-      response_dict = self._PollUntilBuildCompletes(build_op_ref)
       if response_dict and response_dict['status'] != 'SUCCESS':
         tracker.FailStage(
             stages.BUILD_READY,
@@ -1202,7 +1217,9 @@ class ServerlessOperations(object):
         tracker.AddWarning(msg)
     return created_or_updated_service
 
-  def ListExecutions(self, namespace_ref, job_name, limit=None, page_size=100):
+  def ListExecutions(
+      self, namespace_ref, label_selector='', limit=None, page_size=100
+  ):
     """List all executions for the given job.
 
     Executions list gets sorted by job name, creation timestamp, and completion
@@ -1210,7 +1227,8 @@ class ServerlessOperations(object):
 
     Args:
       namespace_ref: Resource, namespace to list executions in
-      job_name: str, The job for which to list executions.
+      label_selector: Optional[string], extra label selector to filter
+        executions
       limit: Optional[int], max number of executions to list.
       page_size: Optional[int], number of executions to fetch at a time
 
@@ -1226,10 +1244,8 @@ class ServerlessOperations(object):
     request = messages.RunNamespacesExecutionsListRequest(
         parent=namespace_ref.RelativeName()
     )
-    if job_name is not None:
-      request.labelSelector = '{label} = {name}'.format(
-          label=execution.JOB_LABEL, name=job_name
-      )
+    if label_selector:
+      request.labelSelector = label_selector
     try:
       for result in list_pager.YieldFromList(
           service=self._client.namespaces_executions,
@@ -1523,13 +1539,12 @@ class ServerlessOperations(object):
       build_messages, build_config = self._UploadSource(
           tracker, build_image, build_source, build_pack
       )
-      build_op_ref, build_log_url = self._BuildFromSource(
+      response_dict, build_log_url = self._BuildFromSource(
           tracker,
           build_messages,
           build_config,
           skip_activation_prompt=already_activated_services,
       )
-      response_dict = self._PollUntilBuildCompletes(build_op_ref)
       if response_dict and response_dict['status'] != 'SUCCESS':
         tracker.FailStage(
             stages.BUILD_READY,

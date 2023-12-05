@@ -26,11 +26,39 @@ class Error(exceptions.Error):
   """Exceptions for this module."""
 
 
-class ServerTlsPoliciesCompleter(completers.ListCommandCompleter):
+class ServerTlsPoliciesCompleter(completers.MultiResourceCompleter):
 
   def __init__(self, **kwargs):
     super(ServerTlsPoliciesCompleter, self).__init__(
+        completers=[
+            GlobalServerTlsPoliciesCompleter,
+            RegionServerTlsPoliciesCompleter,
+        ],
+        **kwargs
+    )
+
+
+class GlobalServerTlsPoliciesCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(GlobalServerTlsPoliciesCompleter, self).__init__(
         collection='networksecurity.projects.locations.serverTlsPolicies',
         api_version='v1alpha1',
-        list_command='network-security server-tls-policies list --location=global --uri',
-        **kwargs)
+        list_command=(
+            'network-security server-tls-policies list --location=global --uri'
+        ),
+        **kwargs
+    )
+
+
+class RegionServerTlsPoliciesCompleter(completers.ListCommandCompleter):
+
+  def __init__(self, **kwargs):
+    super(RegionServerTlsPoliciesCompleter, self).__init__(
+        collection='networksecurity.projects.locations.serverTlsPolicies',
+        api_version='v1alpha1',
+        list_command=(
+            'network-security server-tls-policies list --filter=region:* --uri'
+        ),
+        **kwargs
+    )

@@ -59,3 +59,16 @@ metrics_scope:
   - parameter_name: metricsScopesId
     attribute_name: metrics_scope
     help: The project ID corresponding to the metrics scope.
+
+uptime_check:
+  name: uptime_check
+  collection: monitoring.projects.uptimeCheckConfigs
+  request_id_field: name
+  attributes:
+  - parameter_name: checkId
+    attribute_name: uptime
+    help: The check ID corresponding to the uptime check config.
+
+uptime_check_ip:
+  name: uptime_check_ip
+  collection: monitoring.uptimeCheckIps

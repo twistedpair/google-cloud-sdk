@@ -26,6 +26,11 @@ import six
 class ArgTypeUsage(six.with_metaclass(abc.ABCMeta, object)):
   """Interface for flags types that need to provide additional usage info."""
 
+  @property
+  @abc.abstractmethod
+  def hidden(self):
+    """Whether the argument is hidden."""
+
   @abc.abstractmethod
   def GetUsageMetavar(self, is_custom_metavar, metavar):
     """Returns the metavar for flag with type self."""
@@ -51,23 +56,50 @@ class DefaultArgTypeWrapper(ArgTypeUsage):
     super(DefaultArgTypeWrapper, self).__init__()
     self.arg_type = arg_type
 
+  @property
+  def _is_usage_type(self):
+    return isinstance(self.arg_type, ArgTypeUsage)
+
+  @property
+  def hidden(self):
+    if self._is_usage_type:
+      return self.arg_type.hidden
+    else:
+      return None
+
   def GetUsageMetavar(self, *args, **kwargs):
     """Forwards default usage metavar for arg_type."""
-    if isinstance(self.arg_type, ArgTypeUsage):
+    if self._is_usage_type:
       return self.arg_type.GetUsageMetavar(*args, **kwargs)
-    return None
+    else:
+      return None
 
   def GetUsageExample(self, *args, **kwargs):
     """Forwards default usage example for arg_type."""
-    if isinstance(self.arg_type, ArgTypeUsage):
+    if self._is_usage_type:
       return self.arg_type.GetUsageExample(*args, **kwargs)
-    return None
+    else:
+      return None
 
   def GetUsageHelpText(self, *args, **kwargs):
     """Forwards default help text for arg_type."""
-    if isinstance(self.arg_type, ArgTypeUsage):
+    if self._is_usage_type:
       return self.arg_type.GetUsageHelpText(*args, **kwargs)
-    return None
+    else:
+      return None
+
+
+def IsHidden(arg_type):
+  """Returns whether arg_type is hidden.
+
+  Args:
+    arg_type: Callable, arg type that may contain hidden attribute
+
+  Returns:
+    bool, whether the type is considered hidden
+  """
+  return (isinstance(arg_type, ArgTypeUsage) and arg_type.hidden) or False
+
 
 ASCII_INDENT = '::\n'
 
@@ -174,8 +206,8 @@ def _GetNestedValueExample(arg_type, shorthand):
   is_string_type = arg_str == _FormatBasicTypeStr(str)
   if not shorthand and (is_string_literal or is_string_type):
     return '"{}"'.format(arg_str)
-
-  return arg_str
+  else:
+    return arg_str
 
 
 def GetNestedKeyValueExample(key_type, value_type, shorthand):
@@ -205,13 +237,14 @@ def GetNestedKeyValueExample(key_type, value_type, shorthand):
   key_str = _GetNestedValueExample(key_type, shorthand)
   value_str = _GetNestedValueExample(value_type, shorthand)
 
-  if not key_str or not value_str:
+  if IsHidden(key_type) or IsHidden(value_type):
+    return None
+  elif not key_str or not value_str:
     return key_str or value_str
-
-  if shorthand:
+  elif shorthand:
     return '{}={}'.format(key_str, value_str)
-
-  return '{}: {}'.format(key_str, value_str)
+  else:
+    return '{}: {}'.format(key_str, value_str)
 
 
 def GetNestedUsageHelpText(field_name, arg_type, required=False):
@@ -238,5 +271,8 @@ def GetNestedUsageHelpText(field_name, arg_type, required=False):
     usage = FormatHelpText(field_name=field_name, required=required)
 
   # Shift (indent) nested content over to the right by one
-  return '*{}*{}{}'.format(
-      field_name, ASCII_INDENT, IndentAsciiDoc(usage, depth=1))
+  if usage:
+    return '*{}*{}{}'.format(
+        field_name, ASCII_INDENT, IndentAsciiDoc(usage, depth=1))
+  else:
+    return None

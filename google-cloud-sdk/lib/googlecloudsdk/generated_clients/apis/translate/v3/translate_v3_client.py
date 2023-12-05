@@ -39,6 +39,10 @@ class TranslateV3(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_adaptiveMtDatasets_adaptiveMtFiles_adaptiveMtSentences = self.ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSentencesService(self)
+    self.projects_locations_adaptiveMtDatasets_adaptiveMtFiles = self.ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesService(self)
+    self.projects_locations_adaptiveMtDatasets_adaptiveMtSentences = self.ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesService(self)
+    self.projects_locations_adaptiveMtDatasets = self.ProjectsLocationsAdaptiveMtDatasetsService(self)
     self.projects_locations_datasets_examples = self.ProjectsLocationsDatasetsExamplesService(self)
     self.projects_locations_datasets = self.ProjectsLocationsDatasetsService(self)
     self.projects_locations_glossaries_glossaryEntries = self.ProjectsLocationsGlossariesGlossaryEntriesService(self)
@@ -47,6 +51,316 @@ class TranslateV3(base_api.BaseApiClient):
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSentencesService(base_api.BaseApiService):
+    """Service class for the projects_locations_adaptiveMtDatasets_adaptiveMtFiles_adaptiveMtSentences resource."""
+
+    _NAME = 'projects_locations_adaptiveMtDatasets_adaptiveMtFiles_adaptiveMtSentences'
+
+    def __init__(self, client):
+      super(TranslateV3.ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSentencesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all AdaptiveMtSentences under a given file/dataset.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSentencesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAdaptiveMtSentencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}/adaptiveMtSentences',
+        http_method='GET',
+        method_id='translate.projects.locations.adaptiveMtDatasets.adaptiveMtFiles.adaptiveMtSentences.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/adaptiveMtSentences',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSentencesListRequest',
+        response_type_name='ListAdaptiveMtSentencesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesService(base_api.BaseApiService):
+    """Service class for the projects_locations_adaptiveMtDatasets_adaptiveMtFiles resource."""
+
+    _NAME = 'projects_locations_adaptiveMtDatasets_adaptiveMtFiles'
+
+    def __init__(self, client):
+      super(TranslateV3.ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Delete(self, request, global_params=None):
+      r"""Deleted an AdaptiveMtFile along with its sentences.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}',
+        http_method='DELETE',
+        method_id='translate.projects.locations.adaptiveMtDatasets.adaptiveMtFiles.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets and AdaptiveMtFile.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AdaptiveMtFile) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/{adaptiveMtFilesId}',
+        http_method='GET',
+        method_id='translate.projects.locations.adaptiveMtDatasets.adaptiveMtFiles.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesGetRequest',
+        response_type_name='AdaptiveMtFile',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all AdaptiveMtFiles associated to an AdaptiveMtDataset.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAdaptiveMtFilesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles',
+        http_method='GET',
+        method_id='translate.projects.locations.adaptiveMtDatasets.adaptiveMtFiles.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/adaptiveMtFiles',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesListRequest',
+        response_type_name='ListAdaptiveMtFilesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesService(base_api.BaseApiService):
+    """Service class for the projects_locations_adaptiveMtDatasets_adaptiveMtSentences resource."""
+
+    _NAME = 'projects_locations_adaptiveMtDatasets_adaptiveMtSentences'
+
+    def __init__(self, client):
+      super(TranslateV3.ProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists all AdaptiveMtSentences under a given file/dataset.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAdaptiveMtSentencesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtSentences',
+        http_method='GET',
+        method_id='translate.projects.locations.adaptiveMtDatasets.adaptiveMtSentences.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/adaptiveMtSentences',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesListRequest',
+        response_type_name='ListAdaptiveMtSentencesResponse',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsAdaptiveMtDatasetsService(base_api.BaseApiService):
+    """Service class for the projects_locations_adaptiveMtDatasets resource."""
+
+    _NAME = 'projects_locations_adaptiveMtDatasets'
+
+    def __init__(self, client):
+      super(TranslateV3.ProjectsLocationsAdaptiveMtDatasetsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates an Adaptive MT dataset.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AdaptiveMtDataset) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets',
+        http_method='POST',
+        method_id='translate.projects.locations.adaptiveMtDatasets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}/adaptiveMtDatasets',
+        request_field='adaptiveMtDataset',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsCreateRequest',
+        response_type_name='AdaptiveMtDataset',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes an Adaptive MT dataset, including all its entries and associated metadata.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}',
+        http_method='DELETE',
+        method_id='translate.projects.locations.adaptiveMtDatasets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the Adaptive MT dataset.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AdaptiveMtDataset) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}',
+        http_method='GET',
+        method_id='translate.projects.locations.adaptiveMtDatasets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v3/{+name}',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsGetRequest',
+        response_type_name='AdaptiveMtDataset',
+        supports_download=False,
+    )
+
+    def ImportAdaptiveMtFile(self, request, global_params=None):
+      r"""Imports an AdaptiveMtFile and adds all of its sentences into the AdaptiveMtDataset.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsImportAdaptiveMtFileRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ImportAdaptiveMtFileResponse) The response message.
+      """
+      config = self.GetMethodConfig('ImportAdaptiveMtFile')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ImportAdaptiveMtFile.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets/{adaptiveMtDatasetsId}:importAdaptiveMtFile',
+        http_method='POST',
+        method_id='translate.projects.locations.adaptiveMtDatasets.importAdaptiveMtFile',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}:importAdaptiveMtFile',
+        request_field='importAdaptiveMtFileRequest',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsImportAdaptiveMtFileRequest',
+        response_type_name='ImportAdaptiveMtFileResponse',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all Adaptive MT datasets for which the caller has read permission.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtDatasetsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAdaptiveMtDatasetsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}/adaptiveMtDatasets',
+        http_method='GET',
+        method_id='translate.projects.locations.adaptiveMtDatasets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v3/{+parent}/adaptiveMtDatasets',
+        request_field='',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtDatasetsListRequest',
+        response_type_name='ListAdaptiveMtDatasetsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsDatasetsExamplesService(base_api.BaseApiService):
     """Service class for the projects_locations_datasets_examples resource."""
@@ -819,6 +1133,33 @@ class TranslateV3(base_api.BaseApiClient):
       super(TranslateV3.ProjectsLocationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AdaptiveMtTranslate(self, request, global_params=None):
+      r"""Translate text using Adaptive MT.
+
+      Args:
+        request: (TranslateProjectsLocationsAdaptiveMtTranslateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AdaptiveMtTranslateResponse) The response message.
+      """
+      config = self.GetMethodConfig('AdaptiveMtTranslate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AdaptiveMtTranslate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v3/projects/{projectsId}/locations/{locationsId}:adaptiveMtTranslate',
+        http_method='POST',
+        method_id='translate.projects.locations.adaptiveMtTranslate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v3/{+parent}:adaptiveMtTranslate',
+        request_field='adaptiveMtTranslateRequest',
+        request_type_name='TranslateProjectsLocationsAdaptiveMtTranslateRequest',
+        response_type_name='AdaptiveMtTranslateResponse',
+        supports_download=False,
+    )
 
     def BatchTranslateDocument(self, request, global_params=None):
       r"""Translates a large volume of document in asynchronous batch mode. This function provides real-time output as the inputs are being processed. If caller cancels a request, the partial results (for an input file, it's all or nothing) may still be available on the specified output location. This call returns immediately and you can use google.longrunning.Operation.name to poll the status of the call.

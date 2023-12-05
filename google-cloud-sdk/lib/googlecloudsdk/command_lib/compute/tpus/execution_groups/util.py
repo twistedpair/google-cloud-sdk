@@ -601,7 +601,8 @@ class SSH(object):
     return options
 
   def _WaitForSSHKeysToPropagate(
-      self, ssh_helper, remote, identity_file, user, instance, options):
+      self, ssh_helper, remote, identity_file, user, instance, options,
+      putty_force_connect=False):
     """Waits for SSH keys to propagate in order to SSH to the instance."""
     ssh_helper.EnsureSSHKeyExists(
         self.client, user, instance,
@@ -614,7 +615,7 @@ class SSH(object):
     try:
       ssh_poller.Poll(
           ssh_helper.env,
-          putty_force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
+          putty_force_connect=putty_force_connect)
     except retry.WaitException:
       raise ssh_utils.NetworkError()
 
@@ -648,11 +649,18 @@ class SSH(object):
         username_requested=False,
         messages=self.client.messages)
     user = oslogin_state.user
-
     remote = ssh.Remote(external_nat, user)
+    # TODO(b/35355795): Don't force connect in general.
+    # At a minimum, avoid injecting 'y' if PuTTY will prompt for a 2FA
+    # authentication method (since we know that won't work), or if the user has
+    # disabled the property.
+    putty_force_connect = (
+        not oslogin_state.oslogin_2fa_enabled and
+        properties.VALUES.ssh.putty_force_connect.GetBool())
+
     if not oslogin_state.oslogin_enabled:
       self._WaitForSSHKeysToPropagate(ssh_helper, remote, identity_file, user,
-                                      instance, options)
+                                      instance, options, putty_force_connect)
 
     extra_flags = []
     # Ctpu seems to be forwarding some other ports on what
@@ -680,7 +688,7 @@ class SSH(object):
         # Errors from SSH itself result in an ssh.CommandError being raised
         return_code = cmd.Run(
             ssh_helper.env,
-            putty_force_connect=properties.VALUES.ssh.putty_force_connect.GetBool())
+            putty_force_connect=putty_force_connect)
         if return_code:
           # This is the return code of the remote command.
           # Problems with SSH itself will result in ssh.CommandError

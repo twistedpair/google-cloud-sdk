@@ -113,3 +113,16 @@ def PopulateAttributes(args):
     attributes.operatorOwners.append(operator_owner)
 
   return attributes
+
+
+def MakeGetUriFunc(collection, release_track=base.ReleaseTrack.ALPHA):
+  """Returns a function which turns a resource into a uri."""
+
+  def _GetUri(resource):
+    api_version = VERSION_MAP.get(release_track)
+    result = resources.Registry().ParseRelativeName(
+        resource.name, collection=collection, api_version=api_version
+    )
+    return result.SelfLink()
+
+  return _GetUri

@@ -286,8 +286,8 @@ class GoogleCloudRecaptchaenterpriseV1Assessment(_messages.Message):
       Prevention when TransactionData is provided.
     fraudSignals: Output only. Fraud Signals specific to the users involved in
       a payment transaction.
-    name: Output only. The resource name for the Assessment in the format
-      `projects/{project}/assessments/{assessment}`.
+    name: Output only. Identifier. The resource name for the Assessment in the
+      format `projects/{project}/assessments/{assessment}`.
     privatePasswordLeakVerification: Optional. The private password leak
       verification field contains the parameters that are used to to check for
       leaks privately without sharing user credentials.
@@ -500,7 +500,7 @@ class GoogleCloudRecaptchaenterpriseV1FirewallPolicy(_messages.Message):
     description: Optional. A description of what this policy aims to achieve,
       for convenience purposes. The description can at most include 256 UTF-8
       characters.
-    name: The resource name for the FirewallPolicy in the format
+    name: Identifier. The resource name for the FirewallPolicy in the format
       `projects/{project}/firewallpolicies/{firewallpolicy}`.
     path: Optional. The path for which this policy applies, specified as a
       glob pattern. For more information on glob, see the [manual
@@ -685,7 +685,7 @@ class GoogleCloudRecaptchaenterpriseV1Key(_messages.Message):
     iosSettings: Settings for keys that can be used by iOS apps.
     labels: Optional. See [Creating and managing labels]
       (https://cloud.google.com/recaptcha-enterprise/docs/labels).
-    name: The resource name for the Key in the format
+    name: Identifier. The resource name for the Key in the format
       `projects/{project}/keys/{key}`.
     testingOptions: Optional. Options for user acceptance testing.
     wafSettings: Optional. Settings for WAF
@@ -787,7 +787,7 @@ class GoogleCloudRecaptchaenterpriseV1Metrics(_messages.Message):
     challengeMetrics: Metrics will be continuous and in order by dates, and in
       the granularity of day. Only challenge-based keys (CHECKBOX, INVISIBLE),
       will have challenge-based data.
-    name: Output only. The name of the metrics, in the format
+    name: Output only. Identifier. The name of the metrics, in the format
       `projects/{project}/keys/{key}/metrics`.
     scoreMetrics: Metrics will be continuous and in order by dates, and in the
       granularity of day. All Key types should have score-based data.
@@ -846,8 +846,8 @@ class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroup(_messages.Message):
   r"""A group of related accounts.
 
   Fields:
-    name: Required. The resource name for the related account group in the
-      format
+    name: Required. Identifier. The resource name for the related account
+      group in the format
       `projects/{project}/relatedaccountgroups/{related_account_group}`.
   """
 
@@ -858,16 +858,21 @@ class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership(_messages.Me
   r"""A membership in a group of related accounts.
 
   Fields:
-    hashedAccountId: The unique stable hashed user identifier of the member.
-      The identifier corresponds to a `hashed_account_id` provided in a
-      previous `CreateAssessment` or `AnnotateAssessment` call.
-    name: Required. The resource name for this membership in the format `proje
-      cts/{project}/relatedaccountgroups/{relatedaccountgroup}/memberships/{me
-      mbership}`.
+    accountId: The unique stable account identifier of the member. The
+      identifier corresponds to an `account_id` provided in a previous
+      `CreateAssessment` or `AnnotateAssessment` call.
+    hashedAccountId: Deprecated: use `account_id` instead. The unique stable
+      hashed account identifier of the member. The identifier corresponds to a
+      `hashed_account_id` provided in a previous `CreateAssessment` or
+      `AnnotateAssessment` call.
+    name: Required. Identifier. The resource name for this membership in the
+      format `projects/{project}/relatedaccountgroups/{relatedaccountgroup}/me
+      mberships/{membership}`.
   """
 
-  hashedAccountId = _messages.BytesField(1)
-  name = _messages.StringField(2)
+  accountId = _messages.StringField(1)
+  hashedAccountId = _messages.BytesField(2)
+  name = _messages.StringField(3)
 
 
 class GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse(_messages.Message):
@@ -1025,10 +1030,15 @@ class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsReques
   r"""The request message to search related account group memberships.
 
   Fields:
-    hashedAccountId: Optional. The unique stable hashed user identifier used
-      to search connections. The identifier should correspond to a
-      `hashed_account_id` provided in a previous `CreateAssessment` or
-      `AnnotateAssessment` call.
+    accountId: Optional. The unique stable account identifier used to search
+      connections. The identifier should correspond to an `account_id`
+      provided in a previous `CreateAssessment` or `AnnotateAssessment` call.
+      Either hashed_account_id or account_id must be set, but not both.
+    hashedAccountId: Optional. Deprecated: use `account_id` instead. The
+      unique stable hashed account identifier used to search connections. The
+      identifier should correspond to a `hashed_account_id` provided in a
+      previous `CreateAssessment` or `AnnotateAssessment` call. Either
+      hashed_account_id or account_id must be set, but not both.
     pageSize: Optional. The maximum number of groups to return. The service
       might return fewer than this value. If unspecified, at most 50 groups
       are returned. The maximum value is 1000; values above 1000 are coerced
@@ -1040,9 +1050,10 @@ class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsReques
       the page token.
   """
 
-  hashedAccountId = _messages.BytesField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
+  accountId = _messages.StringField(1)
+  hashedAccountId = _messages.BytesField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
 
 
 class GoogleCloudRecaptchaenterpriseV1SearchRelatedAccountGroupMembershipsResponse(_messages.Message):
@@ -1481,10 +1492,12 @@ class GoogleCloudRecaptchaenterpriseV1WafSettings(_messages.Message):
       WAF_SERVICE_UNSPECIFIED: Undefined WAF
       CA: Cloud Armor
       FASTLY: Fastly
+      CLOUDFLARE: Cloudflare
     """
     WAF_SERVICE_UNSPECIFIED = 0
     CA = 1
     FASTLY = 2
+    CLOUDFLARE = 3
 
   wafFeature = _messages.EnumField('WafFeatureValueValuesEnum', 1)
   wafService = _messages.EnumField('WafServiceValueValuesEnum', 2)
@@ -1713,7 +1726,7 @@ class RecaptchaenterpriseProjectsFirewallpoliciesPatchRequest(_messages.Message)
     googleCloudRecaptchaenterpriseV1FirewallPolicy: A
       GoogleCloudRecaptchaenterpriseV1FirewallPolicy resource to be passed as
       the request body.
-    name: The resource name for the FirewallPolicy in the format
+    name: Identifier. The resource name for the FirewallPolicy in the format
       `projects/{project}/firewallpolicies/{firewallpolicy}`.
     updateMask: Optional. The mask to control which fields of the policy get
       updated. If the mask is not present, all fields will be updated.
@@ -1809,7 +1822,7 @@ class RecaptchaenterpriseProjectsKeysPatchRequest(_messages.Message):
   Fields:
     googleCloudRecaptchaenterpriseV1Key: A GoogleCloudRecaptchaenterpriseV1Key
       resource to be passed as the request body.
-    name: The resource name for the Key in the format
+    name: Identifier. The resource name for the Key in the format
       `projects/{project}/keys/{key}`.
     updateMask: Optional. The mask to control which fields of the key get
       updated. If the mask is not present, all fields will be updated.

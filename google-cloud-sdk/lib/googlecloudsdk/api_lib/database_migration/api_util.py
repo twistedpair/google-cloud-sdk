@@ -18,8 +18,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import pprint
 import uuid
 
+from apitools.base.py import encoding
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -84,15 +86,39 @@ def HandleLRO(client, result_operation, service, no_resource=False):
     poller = waiter.CloudOperationPollerNoResources(
         client.projects_locations_operations)
   else:
-    poller = waiter.CloudOperationPoller(service,
-                                         client.projects_locations_operations)
+    poller = CloudDmsOperationPoller(
+        service, client.projects_locations_operations
+    )
+
   try:
     waiter.WaitFor(
-        poller, op_resource,
-        'Waiting for operation [{}] to complete'.format(
-            result_operation.name))
+        poller,
+        op_resource,
+        'Waiting for operation [{}] to complete'.format(result_operation.name),
+    )
   except waiter.TimeoutError:
     log.status.Print(
-        'The operations may still be underway remotely and may still succeed. You may check the operation status for the following operation  [{}]'
-        .format(result_operation.name))
+        'The operations may still be underway remotely and may still succeed.'
+        ' You may check the operation status for the following operation  [{}]'
+        .format(result_operation.name)
+    )
     return
+
+
+class CloudDmsOperationPoller(waiter.CloudOperationPoller):
+  """Manages a longrunning Operations for cloud DMS.
+
+  It is needed since we want to return the entire error rather than just the
+  error message as the base class does.
+
+  See https://cloud.google.com/speech/reference/rpc/google.longrunning
+  """
+
+  def IsDone(self, operation):
+    """Overrides."""
+    if operation.done:
+      if operation.error:
+        op_error = encoding.MessageToDict(operation.error)
+        raise waiter.OperationError('\n' + pprint.pformat(op_error))
+      return True
+    return False

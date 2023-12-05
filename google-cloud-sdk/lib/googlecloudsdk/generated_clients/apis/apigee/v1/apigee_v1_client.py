@@ -9108,6 +9108,33 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetSecuritySettings(self, request, global_params=None):
+      r"""GetSecuritySettings gets the security settings for API Security.
+
+      Args:
+        request: (ApigeeOrganizationsGetSecuritySettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecuritySettings) The response message.
+      """
+      config = self.GetMethodConfig('GetSecuritySettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetSecuritySettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securitySettings',
+        http_method='GET',
+        method_id='apigee.organizations.getSecuritySettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsGetSecuritySettingsRequest',
+        response_type_name='GoogleCloudApigeeV1SecuritySettings',
+        supports_download=False,
+    )
+
     def GetSyncAuthorization(self, request, global_params=None):
       r"""Lists the service accounts with the permissions required to allow the Synchronizer to download environment data from the control plane. An ETag is returned in the response to `getSyncAuthorization`. Pass that ETag when calling [setSyncAuthorization](setSyncAuthorization) to ensure that you are updating the correct version. If you don't pass the ETag in the call to `setSyncAuthorization`, then the existing authorization is overwritten indiscriminately. For more information, see [Configure the Synchronizer](https://cloud.google.com/apigee/docs/hybrid/latest/synchronizer-access). **Note**: Available to Apigee hybrid only.
 
@@ -9348,6 +9375,33 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='googleCloudApigeeV1ControlPlaneAccess',
         request_type_name='ApigeeOrganizationsUpdateControlPlaneAccessRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def UpdateSecuritySettings(self, request, global_params=None):
+      r"""UpdateSecuritySettings updates the current security settings for API Security.
+
+      Args:
+        request: (ApigeeOrganizationsUpdateSecuritySettingsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecuritySettings) The response message.
+      """
+      config = self.GetMethodConfig('UpdateSecuritySettings')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateSecuritySettings.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securitySettings',
+        http_method='PATCH',
+        method_id='apigee.organizations.updateSecuritySettings',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1SecuritySettings',
+        request_type_name='ApigeeOrganizationsUpdateSecuritySettingsRequest',
+        response_type_name='GoogleCloudApigeeV1SecuritySettings',
         supports_download=False,
     )
 

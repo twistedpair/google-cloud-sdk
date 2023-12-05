@@ -35,6 +35,11 @@
                 "create_link"
               ]
             },
+            "CreateSavedQuery": {
+              "methods": [
+                "create_saved_query"
+              ]
+            },
             "CreateSink": {
               "methods": [
                 "create_sink"
@@ -58,6 +63,11 @@
             "DeleteLink": {
               "methods": [
                 "delete_link"
+              ]
+            },
+            "DeleteSavedQuery": {
+              "methods": [
+                "delete_saved_query"
               ]
             },
             "DeleteSink": {
@@ -118,6 +128,16 @@
             "ListLinks": {
               "methods": [
                 "list_links"
+              ]
+            },
+            "ListRecentQueries": {
+              "methods": [
+                "list_recent_queries"
+              ]
+            },
+            "ListSavedQueries": {
+              "methods": [
+                "list_saved_queries"
               ]
             },
             "ListSinks": {
@@ -200,6 +220,11 @@
                 "create_link"
               ]
             },
+            "CreateSavedQuery": {
+              "methods": [
+                "create_saved_query"
+              ]
+            },
             "CreateSink": {
               "methods": [
                 "create_sink"
@@ -223,6 +248,11 @@
             "DeleteLink": {
               "methods": [
                 "delete_link"
+              ]
+            },
+            "DeleteSavedQuery": {
+              "methods": [
+                "delete_saved_query"
               ]
             },
             "DeleteSink": {
@@ -283,6 +313,16 @@
             "ListLinks": {
               "methods": [
                 "list_links"
+              ]
+            },
+            "ListRecentQueries": {
+              "methods": [
+                "list_recent_queries"
+              ]
+            },
+            "ListSavedQueries": {
+              "methods": [
+                "list_saved_queries"
               ]
             },
             "ListSinks": {
@@ -365,6 +405,11 @@
                 "create_link"
               ]
             },
+            "CreateSavedQuery": {
+              "methods": [
+                "create_saved_query"
+              ]
+            },
             "CreateSink": {
               "methods": [
                 "create_sink"
@@ -388,6 +433,11 @@
             "DeleteLink": {
               "methods": [
                 "delete_link"
+              ]
+            },
+            "DeleteSavedQuery": {
+              "methods": [
+                "delete_saved_query"
               ]
             },
             "DeleteSink": {
@@ -448,6 +498,16 @@
             "ListLinks": {
               "methods": [
                 "list_links"
+              ]
+            },
+            "ListRecentQueries": {
+              "methods": [
+                "list_recent_queries"
+              ]
+            },
+            "ListSavedQueries": {
+              "methods": [
+                "list_saved_queries"
               ]
             },
             "ListSinks": {

@@ -38,13 +38,13 @@ def LocationAttributeConfig(arg_name='location'):
   )
 
 
-def AddManagementServerResourceArg(parser, verb):
+def AddManagementServerResourceArg(parser, help_text):
   """Adds an argument for management server to parser."""
   name = 'management_server'
   concept_parsers.ConceptParser.ForResource(
       name,
       GetManagementServerResourceSpec(),
-      'Management Server {}.'.format(verb),
+      help_text,
       required=True,
   ).AddToParser(parser)
 
@@ -67,7 +67,7 @@ def AddNetwork(parser, required=True):
           ' allows the management console to communicate with all'
           ' backup/recovery appliances and requires a minimum IP range of /23.'
           ' This value cannot be changed after you deploy the management'
-          ' server. If you don\'t have private service access, configure one.'
+          " server. If you don't have private service access, configure one."
           ' [Learn more]'
           ' (https://cloud.google.com/vpc/docs/configure-private-services-access)'
       ),

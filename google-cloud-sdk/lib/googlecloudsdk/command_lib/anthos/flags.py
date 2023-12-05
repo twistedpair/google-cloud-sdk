@@ -245,6 +245,17 @@ def GetSetPreferredAuthenticationFlag():
       'authentication for given cluster')
 
 
+def GetServerFlag():
+  return base.Argument(
+      '--server',
+      required=False,
+      help=(
+          'Specifies the URL of API server of the cluster to authenticate'
+          ' against.'
+      ),
+  )
+
+
 def GetOutputDirFlag(positional=False,
                      required=False,
                      help_override=None,
@@ -328,7 +339,10 @@ def GetAccessTokenFlag():
   return base.Argument(
       '--access-token',
       required=False,
-      help='Access Token received from identity provider after authorization flow.'
+      help=(
+          'Access Token received from identity provider after authorization'
+          ' flow.'
+      ),
   )
 
 
@@ -337,7 +351,11 @@ def GetAccessTokenExpiryFlag():
   return base.Argument(
       '--access-token-expiry',
       required=False,
-      help='Expiration time of access token received from identity provider after authorization flow. The expected format is the number of seconds elapsed since January 1, 1970 UTC.'
+      help=(
+          'Expiration time of access token received from identity provider'
+          ' after authorization flow. The expected format is the number of'
+          ' seconds elapsed since January 1, 1970 UTC.'
+      ),
   )
 
 
@@ -346,7 +364,10 @@ def GetRefreshTokenFlag():
   return base.Argument(
       '--refresh-token',
       required=False,
-      help='Refresh Token received from identity provider after authorization flow.'
+      help=(
+          'Refresh Token received from identity provider after authorization'
+          ' flow.'
+      ),
   )
 
 
@@ -363,7 +384,10 @@ def GetClientSecretFlag():
   return base.Argument(
       '--client-secret',
       required=False,
-      help='Client Secret is the shared secret between OIDC client application and OIDC provider.'
+      help=(
+          'Client Secret is the shared secret between OIDC client application'
+          ' and OIDC provider.'
+      ),
   )
 
 
@@ -380,7 +404,10 @@ def GetIdpIssuerUrlFlag():
   return base.Argument(
       '--idp-issuer-url',
       required=False,
-      help='URI for the OIDC provider. This URI should point to the level below .well-known/openid-configuration.'
+      help=(
+          'URI for the OIDC provider. This URI should point to the level below'
+          ' .well-known/openid-configuration.'
+      ),
   )
 
 
@@ -389,11 +416,15 @@ def GetKubeconfigPathFlag():
   return base.Argument(
       '--kubeconfig-path',
       required=False,
-      help='Path to the kubeconfig path that would be updated with ID and access token on expiry.'
+      help=(
+          'Path to the kubeconfig path that would be updated with ID and access'
+          ' token on expiry.'
+      ),
   )
 
 
 def GetTokenUserFlag():
   """Anthos auth token user flag, specifies the User used in kubeconfig."""
   return base.Argument(
-      '--user', required=False, help='User used in kubeconfig.')
+      '--user', required=False, help='User used in kubeconfig.'
+  )

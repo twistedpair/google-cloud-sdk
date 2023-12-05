@@ -1152,6 +1152,10 @@ class Workstation(_messages.Message):
       the workstation as HTTP on port 80. To send traffic to a different port,
       clients may prefix the host with the destination port in the format
       `{port}-{host}`.
+    kmsKey: Output only. The name of the Google Cloud KMS encryption key used
+      to encrypt this workstation. The KMS key can only be configured in the
+      WorkstationConfig. The expected format is
+      `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     labels: Optional.
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation and that are also propagated to the
@@ -1269,13 +1273,14 @@ class Workstation(_messages.Message):
   env = _messages.MessageField('EnvValue', 5)
   etag = _messages.StringField(6)
   host = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  kmsKey = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class WorkstationCluster(_messages.Message):

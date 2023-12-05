@@ -3419,8 +3419,7 @@ class Version(_messages.Message):
       if view=FULL is set.
     healthCheck: Configures health checking for instances. Unhealthy instances
       are stopped and replaced with new instances. Only applicable in the App
-      Engine flexible environment.Only returned in GET requests if view=FULL
-      is set.
+      Engine flexible environment.
     id: Relative name of the version within the service. Example: v1. Version
       names can contain only lowercase letters, numbers, or hyphens. Reserved
       names: "default", "latest", and any name with the prefix "ah-".
@@ -3434,8 +3433,7 @@ class Version(_messages.Message):
       required by the application.Only returned in GET requests if view=FULL
       is set.
     livenessCheck: Configures liveness health checking for instances.
-      Unhealthy instances are stopped and replaced with new instancesOnly
-      returned in GET requests if view=FULL is set.
+      Unhealthy instances are stopped and replaced with new instances
     manualScaling: A service with manual scaling runs continuously, allowing
       you to perform complex initialization and rely on the state of its
       memory over time. Manually scaled versions are sometimes referred to as
@@ -3448,8 +3446,7 @@ class Version(_messages.Message):
       this version. Only applicable for Go runtimes.Only returned in GET
       requests if view=FULL is set.
     readinessCheck: Configures readiness health checking for instances.
-      Unhealthy instances are not put into the backend traffic rotation.Only
-      returned in GET requests if view=FULL is set.
+      Unhealthy instances are not put into the backend traffic rotation.
     resources: Machine resources for this version. Only applicable in the App
       Engine flexible environment.
     runtime: Desired runtime. Example: python27.

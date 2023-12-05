@@ -33,8 +33,6 @@ from googlecloudsdk.core import yaml
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import files
 
-import six
-
 LOCATIONS_COLLECTION = 'domains.projects.locations'
 OPERATIONS_COLLECTION = 'domains.projects.locations.operations'
 REGISTRATIONS_COLLECTION = 'domains.projects.locations.registrations'
@@ -230,22 +228,67 @@ def ParseTransferLockState(api_version, transfer_lock_state):
       transfer_lock_state)
 
 
-def PromptForTransferLockState(api_version, transfer_lock=None):
-  """Prompts the user for new transfer lock state."""
-  messages = registrations.GetMessagesModule(api_version)
-  if transfer_lock is not None:
-    log.status.Print('Your current Transfer Lock state is: {}'.format(
-        six.text_type(transfer_lock)))
+def PromptForEnum(enum_mapper, enum_type, current_value):
+  """Prompts the user for the new enum_type value.
 
-  options = list(flags.TransferLockEnumMapper(messages).choices)
+  Args:
+    enum_mapper: Instance of the EnumMapper.
+    enum_type: A string with enum type name to print.
+    current_value: Current value of the enum.
+
+  Returns:
+    The new enum choice or None if the enum shouldn't be updated.
+  """
+  options = list(enum_mapper.choices)
+  update = console_io.PromptContinue(
+      f'Your current {enum_type} is: {current_value}.',
+      'Do you want to change it',
+      default=False,
+  )
+  if not update:
+    return None
+
+  current_choice = 0
+  for i, enum in enumerate(options):
+    if enum == enum_mapper.GetChoiceForEnum(current_value):
+      current_choice = i
   index = console_io.PromptChoice(
       options=options,
-      cancel_option=True,
-      default=len(options),  # Additional 'cancel' option.
-      message='Specify new transfer lock state')
-  if index >= len(options):
+      default=current_choice,
+      message=f'Specify new {enum_type}',
+  )
+  return options[index]
+
+
+def PromptForTransferLockState(api_version, transfer_lock):
+  """Prompts the user for new transfer lock state."""
+  messages = registrations.GetMessagesModule(api_version)
+  enum_mapper = flags.TransferLockEnumMapper(messages)
+  result = PromptForEnum(enum_mapper, 'Transfer Lock state', transfer_lock)
+  if result is None:
     return None
-  return ParseTransferLockState(api_version, options[index])
+  return ParseTransferLockState(api_version, result)
+
+
+def ParseRenewalMethod(api_version, renewal_method):
+  messages = registrations.GetMessagesModule(api_version)
+  if renewal_method is None:
+    return None
+  return flags.RenewalMethodEnumMapper(messages).GetEnumForChoice(
+      renewal_method
+  )
+
+
+def PromptForRenewalMethod(api_version, preferred_renewal_method):
+  """Prompts the user for new renewal method."""
+  messages = registrations.GetMessagesModule(api_version)
+  enum_mapper = flags.RenewalMethodEnumMapper(messages)
+  result = PromptForEnum(
+      enum_mapper, 'preferred Renewal Method', preferred_renewal_method
+  )
+  if result is None:
+    return None
+  return ParseRenewalMethod(api_version, result)
 
 
 def PromptForAuthCode():
@@ -293,8 +336,11 @@ def ParseYearlyPrice(api_version, price_string):
     units, cents, currency = _ParseMoney(price_string)
   except ValueError:
     raise exceptions.Error(
-        ('Yearly price \'{}\' is invalid. Please specify the amount followed '
-         'by the currency code.').format(price_string))
+        (
+            f"Yearly price '{price_string}' is invalid. Please specify the"
+            ' amount followed by the currency code.'
+        )
+    )
 
   if currency == '$':
     currency = 'USD'

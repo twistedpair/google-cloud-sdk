@@ -20,7 +20,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from apitools.base.py import list_pager
-
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import exceptions
@@ -74,12 +73,14 @@ class SubscriptionsClient(object):
       ack_ids (list[str]): List of ack ids for the messages being ack'd.
       subscription_ref (Resource): Relative name of the subscription for which
         to ack messages for.
+
     Returns:
       None:
     """
     ack_req = self.messages.PubsubProjectsSubscriptionsAcknowledgeRequest(
         acknowledgeRequest=self.messages.AcknowledgeRequest(ackIds=ack_ids),
-        subscription=subscription_ref.RelativeName())
+        subscription=subscription_ref.RelativeName(),
+    )
 
     return self._service.Acknowledge(ack_req)
 
@@ -88,44 +89,49 @@ class SubscriptionsClient(object):
 
     Args:
       subscription_ref (Resource): Relative name of the subscription to get.
+
     Returns:
       Subscription: the subscription.
     """
     get_req = self.messages.PubsubProjectsSubscriptionsGetRequest(
-        subscription=subscription_ref.RelativeName())
+        subscription=subscription_ref.RelativeName()
+    )
 
     return self._service.Get(get_req)
 
-  def Create(self,
-             subscription_ref,
-             topic_ref,
-             ack_deadline,
-             push_config=None,
-             retain_acked_messages=None,
-             message_retention_duration=None,
-             labels=None,
-             no_expiration=False,
-             expiration_period=None,
-             enable_message_ordering=None,
-             filter_string=None,
-             dead_letter_topic=None,
-             max_delivery_attempts=None,
-             min_retry_delay=None,
-             max_retry_delay=None,
-             enable_exactly_once_delivery=None,
-             bigquery_table=None,
-             use_topic_schema=None,
-             write_metadata=None,
-             drop_unknown_fields=None,
-             cloud_storage_bucket=None,
-             cloud_storage_file_prefix=None,
-             cloud_storage_file_suffix=None,
-             cloud_storage_max_bytes=None,
-             cloud_storage_max_duration=None,
-             cloud_storage_output_format=None,
-             cloud_storage_write_metadata=None,
-             pubsub_export_topic=None,
-             pubsub_export_topic_region=None):
+  def Create(
+      self,
+      subscription_ref,
+      topic_ref,
+      ack_deadline,
+      push_config=None,
+      retain_acked_messages=None,
+      message_retention_duration=None,
+      labels=None,
+      no_expiration=False,
+      expiration_period=None,
+      enable_message_ordering=None,
+      filter_string=None,
+      dead_letter_topic=None,
+      max_delivery_attempts=None,
+      min_retry_delay=None,
+      max_retry_delay=None,
+      enable_exactly_once_delivery=None,
+      bigquery_table=None,
+      use_topic_schema=None,
+      use_table_schema=None,
+      write_metadata=None,
+      drop_unknown_fields=None,
+      cloud_storage_bucket=None,
+      cloud_storage_file_prefix=None,
+      cloud_storage_file_suffix=None,
+      cloud_storage_max_bytes=None,
+      cloud_storage_max_duration=None,
+      cloud_storage_output_format=None,
+      cloud_storage_write_metadata=None,
+      pubsub_export_topic=None,
+      pubsub_export_topic_region=None,
+  ):
     """Creates a Subscription.
 
     Args:
@@ -157,6 +163,8 @@ class SubscriptionsClient(object):
       bigquery_table (str): BigQuery table to which to write
       use_topic_schema (bool): Whether or not to use the topic schema when
         writing to BigQuery
+      use_table_schema (bool): Whether or not to use the table schema when
+        writing to BigQuery
       write_metadata (bool): Whether or not to write metadata fields when
         writing to BigQuery
       drop_unknown_fields (bool): Whether or not to drop fields that are only in
@@ -187,24 +195,36 @@ class SubscriptionsClient(object):
         retainAckedMessages=retain_acked_messages,
         labels=labels,
         messageRetentionDuration=message_retention_duration,
-        expirationPolicy=self._ExpirationPolicy(no_expiration,
-                                                expiration_period),
+        expirationPolicy=self._ExpirationPolicy(
+            no_expiration, expiration_period
+        ),
         enableMessageOrdering=enable_message_ordering,
         filter=filter_string,
-        deadLetterPolicy=self._DeadLetterPolicy(dead_letter_topic,
-                                                max_delivery_attempts),
+        deadLetterPolicy=self._DeadLetterPolicy(
+            dead_letter_topic, max_delivery_attempts
+        ),
         retryPolicy=self._RetryPolicy(min_retry_delay, max_retry_delay),
         enableExactlyOnceDelivery=enable_exactly_once_delivery,
-        bigqueryConfig=self._BigQueryConfig(bigquery_table, use_topic_schema,
-                                            write_metadata,
-                                            drop_unknown_fields),
+        bigqueryConfig=self._BigQueryConfig(
+            bigquery_table,
+            use_topic_schema,
+            use_table_schema,
+            write_metadata,
+            drop_unknown_fields,
+        ),
         cloudStorageConfig=self._CloudStorageConfig(
-            cloud_storage_bucket, cloud_storage_file_prefix,
-            cloud_storage_file_suffix, cloud_storage_max_bytes,
-            cloud_storage_max_duration, cloud_storage_output_format,
-            cloud_storage_write_metadata),
-        pubsubExportConfig=self._PubsubExportConfig(pubsub_export_topic,
-                                                    pubsub_export_topic_region))
+            cloud_storage_bucket,
+            cloud_storage_file_prefix,
+            cloud_storage_file_suffix,
+            cloud_storage_max_bytes,
+            cloud_storage_max_duration,
+            cloud_storage_output_format,
+            cloud_storage_write_metadata,
+        ),
+        pubsubExportConfig=self._PubsubExportConfig(
+            pubsub_export_topic, pubsub_export_topic_region
+        ),
+    )
     return self._service.Create(subscription)
 
   def Delete(self, subscription_ref):
@@ -213,11 +233,13 @@ class SubscriptionsClient(object):
     Args:
       subscription_ref (Resource): Resource reference for subscription to be
         deleted.
+
     Returns:
       None:
     """
     delete_req = self.messages.PubsubProjectsSubscriptionsDeleteRequest(
-        subscription=subscription_ref.RelativeName())
+        subscription=subscription_ref.RelativeName()
+    )
     return self._service.Delete(delete_req)
 
   def List(self, project_ref, page_size=100):
@@ -228,16 +250,20 @@ class SubscriptionsClient(object):
         subscriptions from.
       page_size (int): the number of entries in each batch (affects requests
         made, but not the yielded results).
+
     Returns:
       A generator of subscriptions in the project.
     """
     list_req = self.messages.PubsubProjectsSubscriptionsListRequest(
-        project=project_ref.RelativeName(),
-        pageSize=page_size
+        project=project_ref.RelativeName(), pageSize=page_size
     )
     return list_pager.YieldFromList(
-        self._service, list_req, batch_size=page_size,
-        field='subscriptions', batch_size_attribute='pageSize')
+        self._service,
+        list_req,
+        batch_size=page_size,
+        field='subscriptions',
+        batch_size_attribute='pageSize',
+    )
 
   def ModifyAckDeadline(self, subscription_ref, ack_ids, ack_deadline):
     """Modifies the ack deadline for messages for a Subscription.
@@ -247,14 +273,16 @@ class SubscriptionsClient(object):
         modified.
       ack_ids (list[str]): List of ack ids to modify.
       ack_deadline (int): The new ack deadline for the messages.
+
     Returns:
       None:
     """
     mod_req = self.messages.PubsubProjectsSubscriptionsModifyAckDeadlineRequest(
         modifyAckDeadlineRequest=self.messages.ModifyAckDeadlineRequest(
-            ackDeadlineSeconds=ack_deadline,
-            ackIds=ack_ids),
-        subscription=subscription_ref.RelativeName())
+            ackDeadlineSeconds=ack_deadline, ackIds=ack_ids
+        ),
+        subscription=subscription_ref.RelativeName(),
+    )
 
     return self._service.ModifyAckDeadline(mod_req)
 
@@ -265,13 +293,16 @@ class SubscriptionsClient(object):
       subscription_ref (Resource): Resource reference for subscription to be
         modified.
       push_config (Message): The new push endpoint for the Subscription.
+
     Returns:
       None:
     """
     mod_req = self.messages.PubsubProjectsSubscriptionsModifyPushConfigRequest(
         modifyPushConfigRequest=self.messages.ModifyPushConfigRequest(
-            pushConfig=push_config),
-        subscription=subscription_ref.RelativeName())
+            pushConfig=push_config
+        ),
+        subscription=subscription_ref.RelativeName(),
+    )
     return self._service.ModifyPushConfig(mod_req)
 
   def Pull(self, subscription_ref, max_messages, return_immediately=True):
@@ -284,13 +315,16 @@ class SubscriptionsClient(object):
       return_immediately (bool): Whether or not to return immediately without
         waiting for a new message for a bounded amount of time if there is
         nothing to pull right now.
+
     Returns:
       PullResponse: proto containing the received messages.
     """
     pull_req = self.messages.PubsubProjectsSubscriptionsPullRequest(
         pullRequest=self.messages.PullRequest(
-            maxMessages=max_messages, returnImmediately=return_immediately),
-        subscription=subscription_ref.RelativeName())
+            maxMessages=max_messages, returnImmediately=return_immediately
+        ),
+        subscription=subscription_ref.RelativeName(),
+    )
     self.client.additional_http_headers[SERVER_TIMEOUT_HEADER] = (
         PULL_RPC_DEADLINE_SECONDS
     )
@@ -306,14 +340,15 @@ class SubscriptionsClient(object):
         seeked on.
       time (str): The time to reset to.
       snapshot_ref (Resource): Resource reference to a snapshot..
+
     Returns:
       None:
     """
     snapshot = snapshot_ref and snapshot_ref.RelativeName()
     seek_req = self.messages.PubsubProjectsSubscriptionsSeekRequest(
-        seekRequest=self.messages.SeekRequest(
-            snapshot=snapshot, time=time),
-        subscription=subscription_ref.RelativeName())
+        seekRequest=self.messages.SeekRequest(snapshot=snapshot, time=time),
+        subscription=subscription_ref.RelativeName(),
+    )
     return self._service.Seek(seek_req)
 
   def _ExpirationPolicy(self, no_expiration, expiration_period):
@@ -322,6 +357,7 @@ class SubscriptionsClient(object):
     Args:
       no_expiration (bool): Whether or not to set no expiration on subscription.
       expiration_period (str): TTL on expiration_policy.
+
     Returns:
       ExpirationPolicy message or None.
     """
@@ -345,7 +381,8 @@ class SubscriptionsClient(object):
     if dead_letter_topic:
       return self.messages.DeadLetterPolicy(
           deadLetterTopic=dead_letter_topic,
-          maxDeliveryAttempts=max_delivery_attempts)
+          maxDeliveryAttempts=max_delivery_attempts,
+      )
     return None
 
   def _RetryPolicy(self, min_retry_delay, max_retry_delay):
@@ -362,16 +399,24 @@ class SubscriptionsClient(object):
     """
     if min_retry_delay or max_retry_delay:
       return self.messages.RetryPolicy(
-          minimumBackoff=min_retry_delay, maximumBackoff=max_retry_delay)
+          minimumBackoff=min_retry_delay, maximumBackoff=max_retry_delay
+      )
     return None
 
-  def _BigQueryConfig(self, table, use_topic_schema, write_metadata,
-                      drop_unknown_fields):
+  def _BigQueryConfig(
+      self,
+      table,
+      use_topic_schema,
+      use_table_schema,
+      write_metadata,
+      drop_unknown_fields,
+  ):
     """Builds BigQueryConfig message from argument values.
 
     Args:
       table (str): The name of the table
       use_topic_schema (bool): Whether or not to use the topic schema
+      use_table_schema (bool): Whether or not to use the table schema
       write_metadata (bool): Whether or not to write metadata fields
       drop_unknown_fields (bool): Whether or not to drop fields that are only in
         the topic schema
@@ -383,12 +428,22 @@ class SubscriptionsClient(object):
       return self.messages.BigQueryConfig(
           table=table,
           useTopicSchema=use_topic_schema,
+          useTableSchema=use_table_schema,
           writeMetadata=write_metadata,
-          dropUnknownFields=drop_unknown_fields)
+          dropUnknownFields=drop_unknown_fields,
+      )
     return None
 
-  def _CloudStorageConfig(self, bucket, file_prefix, file_suffix, max_bytes,
-                          max_duration, output_format, write_metadata):
+  def _CloudStorageConfig(
+      self,
+      bucket,
+      file_prefix,
+      file_suffix,
+      max_bytes,
+      max_duration,
+      output_format,
+      write_metadata,
+  ):
     """Builds CloudStorageConfig message from argument values.
 
     Args:
@@ -465,39 +520,42 @@ class SubscriptionsClient(object):
     if update_setting.value == CLEAR_PUBSUB_EXPORT_CONFIG_VALUE:
       update_setting.value = None
 
-  def Patch(self,
-            subscription_ref,
-            ack_deadline=None,
-            push_config=None,
-            retain_acked_messages=None,
-            message_retention_duration=None,
-            labels=None,
-            no_expiration=False,
-            expiration_period=None,
-            dead_letter_topic=None,
-            max_delivery_attempts=None,
-            clear_dead_letter_policy=False,
-            min_retry_delay=None,
-            max_retry_delay=None,
-            clear_retry_policy=False,
-            enable_exactly_once_delivery=None,
-            bigquery_table=None,
-            use_topic_schema=None,
-            write_metadata=None,
-            drop_unknown_fields=None,
-            clear_bigquery_config=False,
-            cloud_storage_bucket=None,
-            cloud_storage_file_prefix=None,
-            cloud_storage_file_suffix=None,
-            cloud_storage_max_bytes=None,
-            cloud_storage_max_duration=None,
-            cloud_storage_output_format=None,
-            cloud_storage_write_metadata=None,
-            clear_cloud_storage_config=False,
-            clear_push_no_wrapper_config=False,
-            pubsub_export_topic=None,
-            pubsub_export_topic_region=None,
-            clear_pubsub_export_config=False):
+  def Patch(
+      self,
+      subscription_ref,
+      ack_deadline=None,
+      push_config=None,
+      retain_acked_messages=None,
+      message_retention_duration=None,
+      labels=None,
+      no_expiration=False,
+      expiration_period=None,
+      dead_letter_topic=None,
+      max_delivery_attempts=None,
+      clear_dead_letter_policy=False,
+      min_retry_delay=None,
+      max_retry_delay=None,
+      clear_retry_policy=False,
+      enable_exactly_once_delivery=None,
+      bigquery_table=None,
+      use_topic_schema=None,
+      use_table_schema=None,
+      write_metadata=None,
+      drop_unknown_fields=None,
+      clear_bigquery_config=False,
+      cloud_storage_bucket=None,
+      cloud_storage_file_prefix=None,
+      cloud_storage_file_suffix=None,
+      cloud_storage_max_bytes=None,
+      cloud_storage_max_duration=None,
+      cloud_storage_output_format=None,
+      cloud_storage_write_metadata=None,
+      clear_cloud_storage_config=False,
+      clear_push_no_wrapper_config=False,
+      pubsub_export_topic=None,
+      pubsub_export_topic_region=None,
+      clear_pubsub_export_config=False,
+  ):
     """Updates a Subscription.
 
     Args:
@@ -528,6 +586,8 @@ class SubscriptionsClient(object):
       bigquery_table (str): BigQuery table to which to write
       use_topic_schema (bool): Whether or not to use the topic schema when
         writing to BigQuery
+      use_table_schema (bool): Whether or not to use the table schema when
+        writing to BigQuery
       write_metadata (bool): Whether or not to write metadata fields when
         writing to BigQuery
       drop_unknown_fields (bool): Whether or not to drop fields that are only in
@@ -540,15 +600,15 @@ class SubscriptionsClient(object):
       cloud_storage_max_bytes (int): The maximum bytes that can be written to a
         Cloud Storage file before a new file is created.
       cloud_storage_max_duration (str): The maximum duration that can elapse
-      before a new Cloud Storage file is created.
+        before a new Cloud Storage file is created.
       cloud_storage_output_format (str): The output format for data written to
         Cloud Storage.
       cloud_storage_write_metadata (bool): Whether or not to write the
         subscription name and other metadata in the output.
       clear_cloud_storage_config (bool): If set, clear the Cloud Storage config
         from the subscription.
-      clear_push_no_wrapper_config(bool): If set, clear the Push No Wrapper
-        config from the subscription.
+      clear_push_no_wrapper_config(bool): If set, clear
+        the Push No Wrapper config from the subscription.
       pubsub_export_topic (str): The Pubsub topic to which to publish messages.
       pubsub_export_topic_region (str): The Cloud region to which to publish
         messages.
@@ -564,50 +624,81 @@ class SubscriptionsClient(object):
       cloud_storage_config_settings = CLEAR_CLOUD_STORAGE_CONFIG_VALUE
     else:
       cloud_storage_config_settings = self._CloudStorageConfig(
-          cloud_storage_bucket, cloud_storage_file_prefix,
-          cloud_storage_file_suffix, cloud_storage_max_bytes,
-          cloud_storage_max_duration, cloud_storage_output_format,
-          cloud_storage_write_metadata)
+          cloud_storage_bucket,
+          cloud_storage_file_prefix,
+          cloud_storage_file_suffix,
+          cloud_storage_max_bytes,
+          cloud_storage_max_duration,
+          cloud_storage_output_format,
+          cloud_storage_write_metadata,
+      )
+
+    if clear_dead_letter_policy:
+      dead_letter_policy = CLEAR_DEAD_LETTER_VALUE
+    else:
+      dead_letter_policy = self._DeadLetterPolicy(
+          dead_letter_topic, max_delivery_attempts
+      )
+
+    if clear_retry_policy:
+      retry_policy = CLEAR_RETRY_VALUE
+    else:
+      retry_policy = self._RetryPolicy(min_retry_delay, max_retry_delay)
+
+    if clear_bigquery_config:
+      bigquery_config = CLEAR_BIGQUERY_CONFIG_VALUE
+    else:
+      bigquery_config = self._BigQueryConfig(
+          bigquery_table,
+          use_topic_schema,
+          use_table_schema,
+          write_metadata,
+          drop_unknown_fields,
+      )
+
+    if clear_pubsub_export_config:
+      pubsub_export_config = CLEAR_PUBSUB_EXPORT_CONFIG_VALUE
+    else:
+      pubsub_export_config = self._PubsubExportConfig(
+          pubsub_export_topic, pubsub_export_topic_region
+      )
+
+    if clear_push_no_wrapper_config:
+      push_config_no_wrapper = CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE
+    else:
+      push_config_no_wrapper = None
+
     update_settings = [
         _SubscriptionUpdateSetting('ackDeadlineSeconds', ack_deadline),
         _SubscriptionUpdateSetting('pushConfig', push_config),
-        _SubscriptionUpdateSetting('retainAckedMessages',
-                                   retain_acked_messages),
-        _SubscriptionUpdateSetting('enableExactlyOnceDelivery',
-                                   enable_exactly_once_delivery),
-        _SubscriptionUpdateSetting('messageRetentionDuration',
-                                   message_retention_duration),
+        _SubscriptionUpdateSetting(
+            'retainAckedMessages', retain_acked_messages
+        ),
+        _SubscriptionUpdateSetting(
+            'enableExactlyOnceDelivery', enable_exactly_once_delivery
+        ),
+        _SubscriptionUpdateSetting(
+            'messageRetentionDuration', message_retention_duration
+        ),
         _SubscriptionUpdateSetting('labels', labels),
         _SubscriptionUpdateSetting(
             'expirationPolicy',
-            self._ExpirationPolicy(no_expiration, expiration_period)),
+            self._ExpirationPolicy(no_expiration, expiration_period),
+        ),
+        _SubscriptionUpdateSetting('deadLetterPolicy', dead_letter_policy),
+        _SubscriptionUpdateSetting('retryPolicy', retry_policy),
+        _SubscriptionUpdateSetting('bigqueryConfig', bigquery_config),
         _SubscriptionUpdateSetting(
-            'deadLetterPolicy',
-            CLEAR_DEAD_LETTER_VALUE if clear_dead_letter_policy else
-            self._DeadLetterPolicy(dead_letter_topic, max_delivery_attempts)),
+            'cloudStorageConfig', cloud_storage_config_settings
+        ),
         _SubscriptionUpdateSetting(
-            'retryPolicy',
-            CLEAR_RETRY_VALUE if clear_retry_policy else self._RetryPolicy(
-                min_retry_delay, max_retry_delay)),
-        _SubscriptionUpdateSetting(
-            'bigqueryConfig',
-            CLEAR_BIGQUERY_CONFIG_VALUE if clear_bigquery_config else
-            self._BigQueryConfig(bigquery_table, use_topic_schema,
-                                 write_metadata, drop_unknown_fields)),
-        _SubscriptionUpdateSetting(
-            'cloudStorageConfig', cloud_storage_config_settings),
-        _SubscriptionUpdateSetting(
-            'pushConfig.noWrapper',
-            CLEAR_PUSH_NO_WRAPPER_CONFIG_VALUE if clear_push_no_wrapper_config
-            else None),
-        _SubscriptionUpdateSetting(
-            'pubsubExportConfig',
-            CLEAR_PUBSUB_EXPORT_CONFIG_VALUE if clear_pubsub_export_config
-            else self._PubsubExportConfig(
-                pubsub_export_topic, pubsub_export_topic_region)),
+            'pushConfig.noWrapper', push_config_no_wrapper
+        ),
+        _SubscriptionUpdateSetting('pubsubExportConfig', pubsub_export_config),
     ]
     subscription = self.messages.Subscription(
-        name=subscription_ref.RelativeName())
+        name=subscription_ref.RelativeName()
+    )
     update_mask = []
     for update_setting in update_settings:
       if update_setting.value is not None:
@@ -634,9 +725,10 @@ class SubscriptionsClient(object):
       raise NoFieldsSpecifiedError('Must specify at least one field to update.')
     patch_req = self.messages.PubsubProjectsSubscriptionsPatchRequest(
         updateSubscriptionRequest=self.messages.UpdateSubscriptionRequest(
-            subscription=subscription,
-            updateMask=','.join(update_mask)),
-        name=subscription_ref.RelativeName())
+            subscription=subscription, updateMask=','.join(update_mask)
+        ),
+        name=subscription_ref.RelativeName(),
+    )
 
     return self._service.Patch(patch_req)
 
@@ -653,7 +745,8 @@ class SubscriptionsClient(object):
     """
     request = self.messages.PubsubProjectsSubscriptionsSetIamPolicyRequest(
         resource=subscription_ref.RelativeName(),
-        setIamPolicyRequest=self.messages.SetIamPolicyRequest(policy=policy))
+        setIamPolicyRequest=self.messages.SetIamPolicyRequest(policy=policy),
+    )
     return self._service.SetIamPolicy(request)
 
   def GetIamPolicy(self, subscription_ref):
@@ -667,7 +760,8 @@ class SubscriptionsClient(object):
       Policy: the policy for the Subscription.
     """
     request = self.messages.PubsubProjectsSubscriptionsGetIamPolicyRequest(
-        resource=subscription_ref.RelativeName())
+        resource=subscription_ref.RelativeName()
+    )
     return self._service.GetIamPolicy(request)
 
   def AddIamPolicyBinding(self, subscription_ref, member, role):
@@ -678,6 +772,7 @@ class SubscriptionsClient(object):
         IAM policy binding to.
       member (str): The member to add.
       role (str): The role to assign to the member.
+
     Returns:
       Policy: the updated policy.
     Raises:
@@ -691,10 +786,11 @@ class SubscriptionsClient(object):
     """Removes an IAM Policy binding from a Subscription.
 
     Args:
-      subscription_ref (Resource): Resource reference for subscription to
-        remove IAM policy binding from.
+      subscription_ref (Resource): Resource reference for subscription to remove
+        IAM policy binding from.
       member (str): The member to add.
       role (str): The role to assign to the member.
+
     Returns:
       Policy: the updated policy.
     Raises:

@@ -22,11 +22,6 @@ from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.cloudbuild.v2 import client_util
 from googlecloudsdk.api_lib.cloudbuild.v2 import input_util
 from googlecloudsdk.core import log
-
-_PIPELINERUN_UNSUPPORTED_FIELDS = [
-    "podTemplate", "timeOuts", "taskRunSpec", "serviceAccountNames"
-]
-_TASKRUN_UNSUPPORTED_FIELDS = ["resources", "podTemplate"]
 _WORKER_POOL_ANNOTATION = "cloudbuild.googleapis.com/worker-pool"
 _MANAGED_SIDECARS_ANNOTATION = "cloudbuild.googleapis.com/managed-sidecars"
 
@@ -50,16 +45,14 @@ def TektonYamlDataToPipelineRun(data):
         "PipelineResources are dropped because they are deprecated: "
         "https://github.com/tektoncd/pipeline/blob/main/docs/resources.md")
 
-  _ServiceAccountTransform(spec)
+  _ServiceAccountTransformPipelineSpec(spec)
   input_util.ParamDictTransform(spec.get("params", []))
 
-  discarded_fields = _CheckUnsupportedFields(spec,
-                                             _PIPELINERUN_UNSUPPORTED_FIELDS)
   messages = client_util.GetMessagesModule()
   schema_message = encoding.DictToMessage(spec, messages.PipelineRun)
 
   input_util.UnrecognizedFields(schema_message)
-  return schema_message, discarded_fields
+  return schema_message
 
 
 def TektonYamlDataToTaskRun(data):
@@ -78,20 +71,19 @@ def TektonYamlDataToTaskRun(data):
     raise cloudbuild_exceptions.InvalidYamlError(
         "TaskSpec or TaskRef is required.")
 
-  _ServiceAccountTransform(spec)
+  _ServiceAccountTransformTaskSpec(spec)
   input_util.ParamDictTransform(spec.get("params", []))
 
-  discarded_fields = _CheckUnsupportedFields(spec, _TASKRUN_UNSUPPORTED_FIELDS)
   messages = client_util.GetMessagesModule()
   schema_message = encoding.DictToMessage(spec, messages.TaskRun)
 
   input_util.UnrecognizedFields(schema_message)
-  return schema_message, discarded_fields
+  return schema_message
 
 
 def _VersionCheck(data):
   api_version = data.pop("apiVersion")
-  if api_version != "tekton.dev/v1beta1":
+  if api_version != "tekton.dev/v1" and api_version != "tekton.dev/v1beta1":
     raise cloudbuild_exceptions.TektonVersionError()
 
 
@@ -118,15 +110,6 @@ def _MetadataToSidecar(metadata):
       "annotations"]:
     return metadata["annotations"][_MANAGED_SIDECARS_ANNOTATION]
   return None
-
-
-def _CheckUnsupportedFields(spec, unsupported_fields):
-  discarded_fields = []
-  for field in unsupported_fields:
-    if field in spec:
-      spec.pop(field)
-      discarded_fields.append("spec." + field)
-  return discarded_fields
 
 
 def _PipelineSpecTransform(spec):
@@ -170,6 +153,14 @@ def _TaskTransform(task):
   input_util.ParamDictTransform(task.get("params", []))
 
 
-def _ServiceAccountTransform(spec):
+def _ServiceAccountTransformPipelineSpec(spec):
+  if "taskRunTemplate" in spec:
+    if "serviceAccountName" in spec["taskRunTemplate"]:
+      spec["serviceAccount"] = spec.pop("taskRunTemplate").pop(
+          "serviceAccountName"
+      )
+
+
+def _ServiceAccountTransformTaskSpec(spec):
   if "serviceAccountName" in spec:
     spec["serviceAccount"] = spec.pop("serviceAccountName")

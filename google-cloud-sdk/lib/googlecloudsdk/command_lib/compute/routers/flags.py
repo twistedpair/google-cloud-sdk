@@ -162,11 +162,11 @@ def AddBgpIdentifierRangeArg(parser):
       '--bgp-identifier-range',
       type=utils.IPV4RangeArgument,
       help=(
-          'Range of valid BGP Identifiers for this Router. Must be a link-local'
-          ' IPv4 range from 169.254.0.0/16, of size at least /30, even if the'
-          ' BGP sessions are over IPv6. It must not overlap with any IPv4 BGP'
-          ' session ranges. This is commonly called "router ID" by other'
-          ' vendors.'
+          'The range of valid BGP Identifiers for this Router. Must be a'
+          ' link-local IPv4 range from 169.254.0.0/16, of size at least /30,'
+          ' even if the BGP sessions are over IPv6. It must not overlap with'
+          ' any IPv4 BGP session ranges. This is commonly called "router ID" by'
+          ' other vendors.'
       ),
   )
 

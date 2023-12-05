@@ -971,6 +971,8 @@ apis:
       resources:
         projects.alertPolicies.conditions:
           path: projects/{projectsId}/alertPolicies/{alertPoliciesId}/conditions/{conditionsId}
+        uptimeCheckIps:
+          path: uptimeCheckIps
       unelidable_request_methods:
       - monitoring.projects.alertPolicies.create
       - monitoring.projects.notificationChannels.create
@@ -1229,6 +1231,27 @@ apis:
         organizations.securityHealthAnalyticsSettings.customModules:
           path: organizations/{organizationsId}/securityHealthAnalyticsSettings/customModules/{customModulesId}
       default: true
+    v2:
+      discovery_doc: securitycenter_v2.json
+      resources:
+        organizations.sources.locations.findings:
+          path: organizations/{organizationsId}/sources/{sourcesId}/locations/{locationId}/findings/{findingId}
+        organizations.locations.bigQueryExports:
+          path: organizations/{organizationsId}/locations/{locationId}/bigQueryExports/{bigQueryExportId}
+        organizations.locations.notificationConfigs:
+          path: organizations/{organizationsId}/locations/{locationId}/notificationConfigs/{notificationConfigsId}
+        organizations.sources.findings:
+          path: organizations/{organizationsId}/sources/{sourcesId}/findings/{findingId}
+        organizations.bigQueryExports:
+          path: organizations/{organizationsId}/bigQueryExports/{bigQueryExportId}
+        organizations.notificationConfigs:
+          path: organizations/{organizationsId}/notificationConfigs/{notificationConfigsId}
+        # We have to explicitly add this resource collection for bulk mute API.
+        organizations.locations.findings:
+          path: organizations/{organizationsId}/locations/{locationId}/findings/{findingId}
+        organizations.findings:
+          path: organizations/{organizationsId}/findings/{findingId}
+      default: false
   securitycentermanagement:
     v1:
       discovery_doc: securitycentermanagement_v1.json
@@ -1270,6 +1293,8 @@ apis:
       default: true
     v2:
       discovery_doc: serviceusage_v2.json
+    v2alpha:
+      discovery_doc: serviceusage_v2alpha.json
   cloudquotas:
     v1:
       discovery_doc: cloudquotas_v1.json

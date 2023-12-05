@@ -64,7 +64,6 @@ def GetKmsLocationAttributeConfig():
       ## gcloud config get-value netapp/location or netapp/region
       deps.ArgFallthrough('--location'),
       deps.PropertyFallthrough(properties.VALUES.netapp.location),
-      deps.PropertyFallthrough(properties.VALUES.netapp.region),
   ]
   return concepts.ResourceParameterAttributeConfig(
       name='kms-location',

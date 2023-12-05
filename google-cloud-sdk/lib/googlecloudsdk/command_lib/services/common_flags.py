@@ -158,6 +158,12 @@ def display_name_flag(parser, suffix='to act on'):
       help='Display name of the key {0}.'.format(suffix)).AddToParser(parser)
 
 
+def key_id_flag(parser, suffix='to act on'):
+  base.Argument(
+      '--key-id', help='User-specified ID of the key {0}.'.format(suffix)
+  ).AddToParser(parser)
+
+
 def add_key_undelete_args(parser):
   """Adds args for api-keys undelete command."""
   undelete_set_group = parser.add_mutually_exclusive_group(required=True)

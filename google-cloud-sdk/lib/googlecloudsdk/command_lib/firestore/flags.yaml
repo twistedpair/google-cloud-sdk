@@ -79,6 +79,30 @@ api_scope:
   - arg_value: datastore-mode-api
     enum_value: DATASTORE_MODE_API
 
+field_config_alpha:
+  api_field: googleFirestoreAdminV1Index.fields
+  arg_name: field-config
+  type: arg_object
+  required: [field-path]
+  spec:
+  - api_field: fieldPath
+    arg_name: field-path
+    help_text: Specifies the field path (e.g. 'address.city'). This is required.
+  - api_field: arrayConfig
+    arg_name: array-config
+    help_text: Specifies the configuration for an array field. The only valid option is 'contains'.
+      Exactly one of 'order' or 'array-config' must be specified.
+  - api_field: order
+    arg_name: order
+    help_text: Specifies the order. Valid options are 'ascending', 'descending'. Exactly one of
+      order or array-config must be specified.
+  - api_field: vectorConfig
+    arg_name: vector-config
+    help_text: Specifies the vector config.
+    hidden: true
+  help_text: |
+    Configuration for a field.
+
 field_config:
   api_field: googleFirestoreAdminV1Index.fields
   arg_name: field-config

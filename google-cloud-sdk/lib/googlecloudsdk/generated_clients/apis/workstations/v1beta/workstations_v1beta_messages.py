@@ -1123,6 +1123,10 @@ class Workstation(_messages.Message):
       the workstation as HTTP on port 80. To send traffic to a different port,
       clients may prefix the host with the destination port in the format
       `{port}-{host}`.
+    kmsKey: Output only. The name of the Google Cloud KMS encryption key used
+      to encrypt this workstation. The KMS key can only be configured in the
+      WorkstationConfig. The expected format is
+      `projects/*/locations/*/keyRings/*/cryptoKeys/*`.
     labels: Optional.
       [Labels](https://cloud.google.com/workstations/docs/label-resources)
       that are applied to the workstation and that are also propagated to the
@@ -1240,13 +1244,14 @@ class Workstation(_messages.Message):
   env = _messages.MessageField('EnvValue', 5)
   etag = _messages.StringField(6)
   host = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  reconciling = _messages.BooleanField(10)
-  startTime = _messages.StringField(11)
-  state = _messages.EnumField('StateValueValuesEnum', 12)
-  uid = _messages.StringField(13)
-  updateTime = _messages.StringField(14)
+  kmsKey = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  reconciling = _messages.BooleanField(11)
+  startTime = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uid = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class WorkstationCluster(_messages.Message):
@@ -1400,6 +1405,12 @@ class WorkstationConfig(_messages.Message):
       conditions field.
     deleteTime: Output only. Time when this workstation configuration was
       soft-deleted.
+    disableTcpConnections: Optional. Disables support for plain TCP
+      connections in the workstation. By default the service supports TCP
+      connections via a websocket relay. Setting this option to true disables
+      that relay, which prevents the usage of services that require plain tcp
+      connections, such as ssh. When enabled, all communication must occur
+      over https or wss.
     displayName: Optional. Human-readable name for this workstation
       configuration.
     enableAuditAgent: Optional. Whether to enable Linux `auditd` logging on
@@ -1530,22 +1541,23 @@ class WorkstationConfig(_messages.Message):
   createTime = _messages.StringField(4)
   degraded = _messages.BooleanField(5)
   deleteTime = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  enableAuditAgent = _messages.BooleanField(8)
-  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 10, repeated=True)
-  etag = _messages.StringField(11)
-  host = _messages.MessageField('Host', 12)
-  idleTimeout = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 16, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 17, repeated=True)
-  reconciling = _messages.BooleanField(18)
-  replicaZones = _messages.StringField(19, repeated=True)
-  runningTimeout = _messages.StringField(20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  disableTcpConnections = _messages.BooleanField(7)
+  displayName = _messages.StringField(8)
+  enableAuditAgent = _messages.BooleanField(9)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  ephemeralDirectories = _messages.MessageField('EphemeralDirectory', 11, repeated=True)
+  etag = _messages.StringField(12)
+  host = _messages.MessageField('Host', 13)
+  idleTimeout = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 17, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 18, repeated=True)
+  reconciling = _messages.BooleanField(19)
+  replicaZones = _messages.StringField(20, repeated=True)
+  runningTimeout = _messages.StringField(21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class WorkstationsProjectsLocationsOperationsCancelRequest(_messages.Message):

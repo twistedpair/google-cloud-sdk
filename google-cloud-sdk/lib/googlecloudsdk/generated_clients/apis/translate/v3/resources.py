@@ -41,6 +41,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ADAPTIVEMTDATASETS = (
+      'projects.locations.adaptiveMtDatasets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'adaptiveMtDatasets/{adaptiveMtDatasetsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ADAPTIVEMTDATASETS_ADAPTIVEMTFILES = (
+      'projects.locations.adaptiveMtDatasets.adaptiveMtFiles',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'adaptiveMtDatasets/{adaptiveMtDatasetsId}/adaptiveMtFiles/'
+              '{adaptiveMtFilesId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_DATASETS = (
       'projects.locations.datasets',
       '{+name}',

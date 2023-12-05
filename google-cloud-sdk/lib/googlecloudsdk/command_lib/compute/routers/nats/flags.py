@@ -79,8 +79,8 @@ def AddTypeArg(parser):
   help_text = 'Type of the NAT Gateway. Defaults to PUBLIC if not specified.'
   choices = {
       'PUBLIC': (
-          'Used for private-to-public NAT translations. Allows VMs to '
-          'communicate with the Internet.'
+          'Used for private-to-public NAT translations. Allows VM instances '
+          'to communicate with the internet.'
       ),
       'PRIVATE': (
           'Used for private-to-private NAT translations. Allows communication '
@@ -124,13 +124,11 @@ def AddEndpointTypesArg(parser):
   )
 
 
-def AddCommonNatArgs(
-    parser, for_create=False, with_private_nat=False, with_subnet_all=False
-):
+def AddCommonNatArgs(parser, for_create=False):
   """Adds common arguments for creating and updating NATs."""
   _AddAutoNetworkTier(parser)
-  _AddIpAllocationArgs(parser, for_create, with_private_nat)
-  _AddSubnetworkArgs(parser, for_create, with_subnet_all)
+  _AddIpAllocationArgs(parser)
+  _AddSubnetworkArgs(parser, for_create)
   _AddTimeoutsArgs(parser, for_create)
   _AddMinPortsPerVmArg(parser, for_create)
   _AddLoggingArgs(parser)
@@ -174,17 +172,13 @@ def _AddAutoNetworkTier(parser):
       required=False)
 
 
-def _AddIpAllocationArgs(parser, for_create, with_private_nat):
+def _AddIpAllocationArgs(parser):
   """Adds a mutually exclusive group to specify IP allocation options."""
 
-  # If NAT Type is not supported, one of these flags is always required
-  # (old behavior).
-  #
   # If NAT Type is supported: one of these flags is required if type is public,
   # and these flags are not supported if type is private. This is validated
   # when parsing args.
-  ip_allocation = parser.add_mutually_exclusive_group(
-      required=for_create and not with_private_nat)
+  ip_allocation = parser.add_mutually_exclusive_group(required=False)
   ip_allocation.add_argument(
       '--auto-allocate-nat-external-ips',
       help='Automatically allocate external IP addresses for Cloud NAT',
@@ -194,7 +188,7 @@ def _AddIpAllocationArgs(parser, for_create, with_private_nat):
       parser, mutex_group=ip_allocation, cust_metavar='IP_ADDRESS')
 
 
-def _AddSubnetworkArgs(parser, for_create, with_subnet_all):
+def _AddSubnetworkArgs(parser, for_create):
   """Adds a mutually exclusive group to specify subnet options."""
   subnetwork = parser.add_mutually_exclusive_group(required=for_create)
   subnetwork.add_argument(
@@ -219,17 +213,6 @@ def _AddSubnetworkArgs(parser, for_create, with_subnet_all):
     List of subnetwork primary and secondary IP ranges to be allowed to
     use NAT.
 
-    * `SUBNETWORK` - including a subnetwork name includes only the primary
-    subnet range of the subnetwork.
-    * `SUBNETWORK:RANGE_NAME` - specifying a subnetwork and secondary range
-    name includes only that secondary range. It does not include the
-    primary range of the subnet.
-    """
-  if with_subnet_all:
-    custom_subnet_help_text = """\
-    List of subnetwork primary and secondary IP ranges to be allowed to
-    use NAT.
-
     * `SUBNETWORK:ALL` - specifying a subnetwork name with ALL includes the
     primary range and all secondary ranges of the subnet.
     * `SUBNETWORK` - including a subnetwork name includes only the primary
@@ -240,9 +223,7 @@ def _AddSubnetworkArgs(parser, for_create, with_subnet_all):
     """
   subnetwork.add_argument(
       '--nat-custom-subnet-ip-ranges',
-      metavar='SUBNETWORK[:RANGE_NAME|:ALL]'
-      if with_subnet_all
-      else 'SUBNETWORK[:RANGE_NAME]',
+      metavar='SUBNETWORK[:RANGE_NAME|:ALL]',
       help=custom_subnet_help_text,
       type=arg_parsers.ArgList(min_length=1),
   )

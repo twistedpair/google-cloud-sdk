@@ -359,10 +359,12 @@ class AlertPolicy(_messages.Message):
       entries. Each key and value is limited to 63 Unicode characters or 128
       bytes, whichever is smaller. Labels and values can contain only
       lowercase letters, numerals, underscores, and dashes. Keys must begin
-      with a letter.Note that Prometheus and are valid Prometheus label names
-      (https://prometheus.io/docs/concepts/data_model/#metric-names-and-
-      labels). This means that they cannot be stored as is in user labels,
-      because Prometheus labels may contain upper-case letters.
+      with a letter.Note that Prometheus {alert name} is a valid Prometheus
+      label names (https://prometheus.io/docs/concepts/data_model/#metric-
+      names-and-labels), whereas Prometheus {rule group} is an unrestricted
+      UTF-8 string. This means that they cannot be stored as-is in user
+      labels, because they may contain characters that are not allowed in
+      user-label values.
 
   Fields:
     alertStrategy: Control over how this alert policy's notification channels
@@ -383,10 +385,11 @@ class AlertPolicy(_messages.Message):
       dashboards, notifications, and incidents. To avoid confusion, don't use
       the same display name for multiple policies in the same project. The
       name is limited to 512 Unicode characters.The convention for the
-      display_name of a PrometheusQueryLanguageCondition is "/", where the and
-      should be taken from the corresponding Prometheus configuration file.
-      This convention is not enforced. In any case the display_name is not a
-      unique key of the AlertPolicy.
+      display_name of a PrometheusQueryLanguageCondition is "{rule group
+      name}/{alert name}", where the {rule group name} and {alert name} should
+      be taken from the corresponding Prometheus configuration file. This
+      convention is not enforced. In any case the display_name is not a unique
+      key of the AlertPolicy.
     documentation: Documentation that is included with notifications and
       incidents related to this policy. Best practice is for the documentation
       to include information to help responders understand, mitigate,
@@ -420,10 +423,12 @@ class AlertPolicy(_messages.Message):
       entries. Each key and value is limited to 63 Unicode characters or 128
       bytes, whichever is smaller. Labels and values can contain only
       lowercase letters, numerals, underscores, and dashes. Keys must begin
-      with a letter.Note that Prometheus and are valid Prometheus label names
-      (https://prometheus.io/docs/concepts/data_model/#metric-names-and-
-      labels). This means that they cannot be stored as is in user labels,
-      because Prometheus labels may contain upper-case letters.
+      with a letter.Note that Prometheus {alert name} is a valid Prometheus
+      label names (https://prometheus.io/docs/concepts/data_model/#metric-
+      names-and-labels), whereas Prometheus {rule group} is an unrestricted
+      UTF-8 string. This means that they cannot be stored as-is in user
+      labels, because they may contain characters that are not allowed in
+      user-label values.
     validity: Read-only description of how the alert policy is invalid. This
       field is only set when the alert policy is invalid. An invalid alert
       policy will not generate incidents.
@@ -459,10 +464,11 @@ class AlertPolicy(_messages.Message):
     and value is limited to 63 Unicode characters or 128 bytes, whichever is
     smaller. Labels and values can contain only lowercase letters, numerals,
     underscores, and dashes. Keys must begin with a letter.Note that
-    Prometheus and are valid Prometheus label names
-    (https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels).
-    This means that they cannot be stored as is in user labels, because
-    Prometheus labels may contain upper-case letters.
+    Prometheus {alert name} is a valid Prometheus label names
+    (https://prometheus.io/docs/concepts/data_model/#metric-names-and-labels),
+    whereas Prometheus {rule group} is an unrestricted UTF-8 string. This
+    means that they cannot be stored as-is in user labels, because they may
+    contain characters that are not allowed in user-label values.
 
     Messages:
       AdditionalProperty: An additional property for a UserLabelsValue object.
@@ -681,6 +687,22 @@ class CloudEndpoints(_messages.Message):
   """
 
   service = _messages.StringField(1)
+
+
+class CloudFunctionV2Target(_messages.Message):
+  r"""A Synthetic Monitor deployed to a Cloud Functions V2 instance.
+
+  Fields:
+    cloudRunRevision: Output only. The cloud_run_revision Monitored Resource
+      associated with the GCFv2. The Synthetic Monitor execution results
+      (metrics, logs, and spans) are reported against this Monitored Resource.
+      This field is output only.
+    name: Required. Fully qualified GCFv2 resource name i.e.
+      projects/{project}/locations/{location}/functions/{function} Required.
+  """
+
+  cloudRunRevision = _messages.MessageField('MonitoredResource', 1)
+  name = _messages.StringField(2)
 
 
 class CloudRun(_messages.Message):
@@ -1413,7 +1435,8 @@ class ForecastOptions(_messages.Message):
       whether a time series will violate the threshold. If the predicted value
       is found to violate the threshold, and the violation is observed in all
       forecasts made for the configured duration, then the time series is
-      considered to be failing.
+      considered to be failing. The forecast horizon can range from 1 hour to
+      60 hours.
   """
 
   forecastHorizon = _messages.StringField(1)
@@ -5878,7 +5901,7 @@ class MonitoringServicesServiceLevelObjectivesCreateRequest(_messages.Message):
       the request body.
     serviceLevelObjectiveId: Optional. The ServiceLevelObjective id to use for
       this ServiceLevelObjective. If omitted, an id will be generated instead.
-      Must match the pattern [a-z0-9\-]+
+      Must match the pattern ^[a-zA-Z0-9-_:.]+$
   """
 
   parent = _messages.StringField(1, required=True)
@@ -6563,16 +6586,19 @@ class PrometheusQueryLanguageCondition(_messages.Message):
       the definition of the rule group changes in the future.This field is
       optional. If this field is not empty, then it must be a valid Prometheus
       label name (https://prometheus.io/docs/concepts/data_model/#metric-
-      names-and-labels).
+      names-and-labels). This field may not exceed 2048 Unicode characters in
+      length.
     duration: Optional. Alerts are considered firing once their PromQL
       expression was evaluated to be "true" for this long. Alerts whose PromQL
       expression was not evaluated to be "true" for long enough are considered
-      pending. The default value is zero. Must be zero or positive.
-    evaluationInterval: Required. How often this rule should be evaluated.
-      Must be a positive multiple of 30 seconds or missing. The default value
-      is 30 seconds. If this PrometheusQueryLanguageCondition was generated
-      from a Prometheus alerting rule, then this value should be taken from
-      the enclosing rule group.
+      pending. Must be a non-negative duration or missing. This field is
+      optional. Its default value is zero.
+    evaluationInterval: Optional. How often this rule should be evaluated.
+      Must be a positive multiple of 30 seconds or missing. This field is
+      optional. Its default value is 30 seconds. If this
+      PrometheusQueryLanguageCondition was generated from a Prometheus
+      alerting rule, then this value should be taken from the enclosing rule
+      group.
     labels: Optional. Labels to add to or overwrite in the PromQL query
       result. Label names must be valid
       (https://prometheus.io/docs/concepts/data_model/#metric-names-and-
@@ -6589,9 +6615,8 @@ class PrometheusQueryLanguageCondition(_messages.Message):
       original Prometheus configuration file. The rule group name and the
       alert name are necessary to update the relevant AlertPolicies in case
       the definition of the rule group changes in the future.This field is
-      optional. If this field is not empty, then it must be a valid Prometheus
-      label name (https://prometheus.io/docs/concepts/data_model/#metric-
-      names-and-labels).
+      optional. If this field is not empty, then it must contain a valid UTF-8
+      string. This field may not exceed 2048 Unicode characters in length.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -7174,6 +7199,16 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
+class SyntheticMonitorTarget(_messages.Message):
+  r"""Describes a Synthetic Monitor to be invoked by Uptime.
+
+  Fields:
+    cloudFunctionV2: Target a Synthetic Monitor GCFv2 instance.
+  """
+
+  cloudFunctionV2 = _messages.MessageField('CloudFunctionV2Target', 1)
+
+
 class TcpCheck(_messages.Message):
   r"""Information required for a TCP Uptime check request.
 
@@ -7554,6 +7589,7 @@ class UptimeCheckConfig(_messages.Message):
       this field is specified, enough regions must be provided to include a
       minimum of 3 locations. Not specifying this field will result in Uptime
       checks running from all available regions.
+    syntheticMonitor: Specifies a Synthetic Monitor to invoke.
     tcpCheck: Contains information needed to make a TCP check.
     timeout: The maximum amount of time to wait for the request to complete
       (must be between 1 and 60 seconds). Required.
@@ -7653,9 +7689,10 @@ class UptimeCheckConfig(_messages.Message):
   period = _messages.StringField(9)
   resourceGroup = _messages.MessageField('ResourceGroup', 10)
   selectedRegions = _messages.EnumField('SelectedRegionsValueListEntryValuesEnum', 11, repeated=True)
-  tcpCheck = _messages.MessageField('TcpCheck', 12)
-  timeout = _messages.StringField(13)
-  userLabels = _messages.MessageField('UserLabelsValue', 14)
+  syntheticMonitor = _messages.MessageField('SyntheticMonitorTarget', 12)
+  tcpCheck = _messages.MessageField('TcpCheck', 13)
+  timeout = _messages.StringField(14)
+  userLabels = _messages.MessageField('UserLabelsValue', 15)
 
 
 class UptimeCheckIp(_messages.Message):

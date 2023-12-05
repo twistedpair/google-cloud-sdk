@@ -1170,3 +1170,12 @@ def CreateNotificationChannelsFromArgs(args, messages):
   else:
     channels = []
   return channels
+
+
+def ParseUptimeCheck(uptime_check_name, project=None):
+  project = project or properties.VALUES.core.project.Get(required=True)
+  return resources.REGISTRY.Parse(
+      uptime_check_name,
+      params={'projectsId': project},
+      collection='monitoring.projects.uptimeCheckConfigs',
+  )

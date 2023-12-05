@@ -42,7 +42,6 @@ def GetLocationAttributeConfig():
       ## gcloud config get-value netapp/location or netapp/region
       deps.ArgFallthrough('--location'),
       deps.PropertyFallthrough(properties.VALUES.netapp.location),
-      deps.PropertyFallthrough(properties.VALUES.netapp.region),
   ]
 
   return concepts.ResourceParameterAttributeConfig(
@@ -216,7 +215,6 @@ def GetSnapshotResourceSpec(source_snapshot_op=False, positional=True):
   if not positional:
     location_attribute_config.fallthroughs = [
         deps.PropertyFallthrough(properties.VALUES.netapp.location),
-        deps.PropertyFallthrough(properties.VALUES.netapp.region)
     ]
   return concepts.ResourceSpec(
       constants.SNAPSHOTS_COLLECTION,
@@ -278,7 +276,6 @@ def GetBackupResourceSpec(positional=True):
   if not positional:
     location_attribute_config.fallthroughs = [
         deps.PropertyFallthrough(properties.VALUES.netapp.location),
-        deps.PropertyFallthrough(properties.VALUES.netapp.region)
     ]
   return concepts.ResourceSpec(
       constants.BACKUPS_COLLECTION,

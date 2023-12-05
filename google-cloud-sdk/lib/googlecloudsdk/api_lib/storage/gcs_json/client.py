@@ -359,8 +359,106 @@ class JsonClient(cloud_api.CloudApi):
         admissionPolicy=admission_policy,
         ttl=ttl
     )
-    operation = self.client.anywhereCache.Insert(request)
+    with self._apitools_request_headers_context(
+        {'x-goog-gcs-idempotency-token': uuid.uuid4().hex}
+    ):
+      operation = self.client.anywhereCache.Insert(request)
     return operation
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def disable_anywhere_cache(
+      self,
+      bucket_name,
+      zone,
+  ):
+    """See super class."""
+    request = self.messages.StorageAnywhereCachesDisableRequest(
+        bucket=bucket_name,
+        anywhereCacheId=zone,
+    )
+    self.client.anywhereCache.Disable(request)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def get_anywhere_cache(
+      self,
+      bucket_name,
+      zone,
+  ):
+    """See super class."""
+    request = self.messages.StorageAnywhereCachesGetRequest(
+        bucket=bucket_name,
+        anywhereCacheId=zone,
+    )
+    return metadata_util.get_anywhere_cache_resource_from_metadata(
+        self.client.anywhereCache.Get(request)
+    )
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def list_anywhere_caches(
+      self,
+      bucket_name,
+  ):
+    """See super class."""
+    request = self.messages.StorageAnywhereCachesListRequest(
+        bucket=bucket_name,
+        pageSize=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
+        pageToken=None,
+    )
+
+    anywhere_cache_iterator = list_pager.YieldFromList(
+        self.client.anywhereCache,
+        request,
+        batch_size=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
+        batch_size_attribute='pageSize'
+    )
+    try:
+      for anywhere_cache in anywhere_cache_iterator:
+        yield metadata_util.get_anywhere_cache_resource_from_metadata(
+            anywhere_cache
+        )
+    except apitools_exceptions.HttpError as e:
+      core_exceptions.reraise(
+          cloud_errors.translate_error(e, error_util.ERROR_TRANSLATION)
+      )
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def patch_anywhere_cache(
+      self,
+      bucket_name,
+      zone,
+      admission_policy,
+      ttl,
+  ):
+    """See super class."""
+    request = self.messages.AnywhereCache(
+        bucket=bucket_name,
+        anywhereCacheId=zone,
+        admissionPolicy=admission_policy,
+        ttl=ttl
+    )
+    with self._apitools_request_headers_context(
+        {'x-goog-gcs-idempotency-token': uuid.uuid4().hex}
+    ):
+      operation = self.client.anywhereCache.Update(request)
+    return operation
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def pause_anywhere_cache(self, bucket_name, zone):
+    """See super class."""
+    request = self.messages.StorageAnywhereCachesPauseRequest(
+        bucket=bucket_name,
+        anywhereCacheId=zone,
+    )
+    self.client.anywhereCache.Pause(request)
+
+  @error_util.catch_http_error_raise_gcs_api_error()
+  def resume_anywhere_cache(self, bucket_name, zone):
+    """See super class."""
+    request = self.messages.StorageAnywhereCachesResumeRequest(
+        bucket=bucket_name,
+        anywhereCacheId=zone,
+    )
+    self.client.anywhereCache.Resume(request)
 
   @error_util.catch_http_error_raise_gcs_api_error()
   def create_bucket(self,

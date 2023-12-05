@@ -80,3 +80,23 @@ def _GetValidNameFormatForModule(
       resources.REGISTRY.GetCollectionInfo(collection).GetPath('')
       for collection in collections
   ]
+
+
+class InvalidCustomConfigFileError(Error):
+  """Error if a custom config file is improperly formatted."""
+
+
+class InvalidResourceFileError(Error):
+  """Error if a test data file is improperly formatted."""
+
+
+class InvalidConfigValueFileError(Error):
+  """Error if a config value file is improperly formatted."""
+
+
+class InvalidUpdateMaskInputError(Error):
+  """Error if neither a custom configuration or an enablement state were given to update."""
+
+
+class InvalidEnablementStateError(Error):
+  """Error if an enablement state is anything but ENABLED or DISABLED."""

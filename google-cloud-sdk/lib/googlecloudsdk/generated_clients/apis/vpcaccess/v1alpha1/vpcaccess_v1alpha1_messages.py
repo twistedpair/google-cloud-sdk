@@ -32,14 +32,20 @@ class Connector(_messages.Message):
       e2-micro.
     maxInstances: Maximum value of instances in autoscaling group underlying
       the connector.
-    maxThroughput: Maximum throughput of the connector in Mbps. Default is
-      300, max is 1000. If both max-throughput and max-instances are provided,
-      max-instances takes precedence over max-throughput.
+    maxThroughput: Maximum throughput of the connector in Mbps. Refers to the
+      expected throughput when using an `e2-micro` machine type. Value must be
+      a multiple of 100 from 300 through 1000. Must be higher than the value
+      specified by --min-throughput. If both max-throughput and max-instances
+      are provided, max-instances takes precedence over max-throughput. The
+      use of `max-throughput` is discouraged in favor of `max-instances`.
     minInstances: Minimum value of instances in autoscaling group underlying
       the connector.
-    minThroughput: Minimum throughput of the connector in Mbps. Default and
-      min is 200. If both min-throughput and min-instances are provided, min-
-      instances takes precedence over min-throughput.
+    minThroughput: Minimum throughput of the connector in Mbps. Refers to the
+      expected throughput when using an `e2-micro` machine type. Value must be
+      a multiple of 100 from 200 through 900. Must be lower than the value
+      specified by --max-throughput. If both min-throughput and min-instances
+      are provided, min-instances takes precedence over min-throughput. The
+      use of `min-throughput` is discouraged in favor of `min-instances`.
     name: The resource name in the format
       `projects/*/locations/*/connectors/*`.
     network: Name of a VPC network.

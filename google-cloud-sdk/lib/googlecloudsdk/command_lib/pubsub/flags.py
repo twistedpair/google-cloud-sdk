@@ -32,7 +32,8 @@ MAX_ATTRIBUTES = 100
 
 # Format string for deprecation message for renaming positional to flag.
 DEPRECATION_FORMAT_STR = (
-    'Positional argument `{0}` is deprecated. Please use `{1}` instead.')
+    'Positional argument `{0}` is deprecated. Please use `{1}` instead.'
+)
 
 # Help string for duration format flags.
 DURATION_HELP_STR = (
@@ -67,17 +68,22 @@ def AddAckIdFlag(parser, action, add_deprecated=False):
   if add_deprecated:
     group = parser.add_mutually_exclusive_group(required=True)
     group.add_argument(
-        'ack_id', nargs='*', help=help_text,
+        'ack_id',
+        nargs='*',
+        help=help_text,
         action=actions.DeprecationAction(
             'ACK_ID',
             show_message=lambda _: False,  # See ParseAckIdsArgs for reason.
-            warn=DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids')))
+            warn=DEPRECATION_FORMAT_STR.format('ACK_ID', '--ack-ids'),
+        ),
+    )
   group.add_argument(
       '--ack-ids',
       metavar='ACK_ID',
       required=not add_deprecated,
       type=arg_parsers.ArgList(),
-      help=help_text)
+      help=help_text,
+  )
 
 
 def ParseAckIdsArgs(args):
@@ -111,31 +117,38 @@ def ParseAckIdsArgs(args):
 
 
 def AddIamPolicyFileFlag(parser):
-  parser.add_argument('policy_file',
-                      help='JSON or YAML file with the IAM policy')
+  parser.add_argument(
+      'policy_file', help='JSON or YAML file with the IAM policy'
+  )
 
 
 def AddSeekFlags(parser):
   """Adds flags for the seek command to the parser."""
   seek_to_group = parser.add_mutually_exclusive_group(required=True)
   seek_to_group.add_argument(
-      '--time', type=arg_parsers.Datetime.Parse,
+      '--time',
+      type=arg_parsers.Datetime.Parse,
       help="""\
           The time to seek to. Messages in the subscription that
           were published before this time are marked as acknowledged, and
           messages retained in the subscription that were published after
           this time are marked as unacknowledged.
-          See $ gcloud topic datetimes for information on time formats.""")
+          See $ gcloud topic datetimes for information on time formats.""",
+  )
   seek_to_group.add_argument(
       '--snapshot',
-      help='The name of the snapshot. The snapshot\'s topic must be the same '
-           'as that of the subscription.')
+      help=(
+          "The name of the snapshot. The snapshot's topic must be the same "
+          'as that of the subscription.'
+      ),
+  )
   parser.add_argument(
       '--snapshot-project',
       help="""\
           The name of the project the snapshot belongs to (if seeking to
           a snapshot). If not set, it defaults to the currently selected
-          cloud project.""")
+          cloud project.""",
+  )
 
 
 def AddPullFlags(
@@ -144,12 +157,18 @@ def AddPullFlags(
   """Adds the main set of message pulling flags to a parser."""
   if add_deprecated:
     parser.add_argument(
-        '--max-messages', type=int, default=1,
-        help='The maximum number of messages that Cloud Pub/Sub can return '
-             'in this response.',
+        '--max-messages',
+        type=int,
+        default=1,
+        help=(
+            'The maximum number of messages that Cloud Pub/Sub can return '
+            'in this response.'
+        ),
         action=actions.DeprecationAction(
             '--max-messages',
-            warn='`{flag_name}` is deprecated. Please use --limit instead.'))
+            warn='`{flag_name}` is deprecated. Please use --limit instead.',
+        ),
+    )
   AddBooleanFlag(
       parser=parser,
       flag_name='auto-ack',
@@ -194,26 +213,35 @@ def AddPullFlags(
     )
 
 
-def AddPushConfigFlags(
-    parser, required=False, is_update=False):
+def AddPushConfigFlags(parser, required=False, is_update=False):
   """Adds flags for push subscriptions to the parser."""
   parser.add_argument(
-      '--push-endpoint', required=required,
-      help='A URL to use as the endpoint for this subscription. This will '
-           'also automatically set the subscription type to PUSH.')
+      '--push-endpoint',
+      required=required,
+      help=(
+          'A URL to use as the endpoint for this subscription. This will '
+          'also automatically set the subscription type to PUSH.'
+      ),
+  )
   parser.add_argument(
       '--push-auth-service-account',
       required=False,
       dest='SERVICE_ACCOUNT_EMAIL',
-      help='Service account email used as the identity for the generated '
-      'Open ID Connect token for authenticated push.')
+      help=(
+          'Service account email used as the identity for the generated '
+          'Open ID Connect token for authenticated push.'
+      ),
+  )
   parser.add_argument(
       '--push-auth-token-audience',
       required=False,
       dest='OPTIONAL_AUDIENCE_OVERRIDE',
-      help='Audience used in the generated Open ID Connect token for '
-      'authenticated push. If not specified, it will be set to the '
-      'push-endpoint.')
+      help=(
+          'Audience used in the generated Open ID Connect token for '
+          'authenticated push. If not specified, it will be set to the '
+          'push-endpoint.'
+      ),
+  )
   current_group = parser
   if is_update:
     mutual_exclusive_group = current_group.add_mutually_exclusive_group()
@@ -254,9 +282,14 @@ def AddPushConfigFlags(
 
 def AddAckDeadlineFlag(parser, required=False):
   parser.add_argument(
-      '--ack-deadline', type=int, required=required,
-      help='The number of seconds the system will wait for a subscriber to '
-           'acknowledge receiving a message before re-attempting delivery.')
+      '--ack-deadline',
+      type=int,
+      required=required,
+      help=(
+          'The number of seconds the system will wait for a subscriber to '
+          'acknowledge receiving a message before re-attempting delivery.'
+      ),
+  )
 
 
 def AddSubscriptionMessageRetentionFlags(parser, is_update):
@@ -266,8 +299,10 @@ def AddSubscriptionMessageRetentionFlags(parser, is_update):
     retention_default_help = 'Specify "default" to use the default value.'
   else:
     retention_parser = arg_parsers.Duration()
-    retention_default_help = ('The default value is 7 days, the minimum is '
-                              '10 minutes, and the maximum is 7 days.')
+    retention_default_help = (
+        'The default value is 7 days, the minimum is '
+        '10 minutes, and the maximum is 7 days.'
+    )
 
   retention_parser = retention_parser or arg_parsers.Duration()
   AddBooleanFlag(
@@ -289,22 +324,35 @@ def AddSubscriptionMessageRetentionFlags(parser, is_update):
           subscription's backlog, from the moment a message is
           published. If --retain-acked-messages is true, this also
           configures the retention of acknowledged messages. {} {}""".format(
-              retention_default_help, DURATION_HELP_STR))
+          retention_default_help, DURATION_HELP_STR
+      ),
+  )
 
 
 def AddSubscriptionTopicResourceFlags(parser):
   """Adds --topic and --topic-project flags to a parser."""
   parser.add_argument(
-      '--topic', required=True,
-      help='The name of the topic from which this subscription is receiving '
-           'messages. Each subscription is attached to a single topic.')
+      '--topic',
+      required=True,
+      help=(
+          'The name of the topic from which this subscription is receiving '
+          'messages. Each subscription is attached to a single topic.'
+      ),
+  )
   parser.add_argument(
       '--topic-project',
-      help='The name of the project the provided topic belongs to. '
-           'If not set, it defaults to the currently selected cloud project.')
+      help=(
+          'The name of the project the provided topic belongs to. '
+          'If not set, it defaults to the currently selected cloud project.'
+      ),
+  )
 
 
-def AddBigQueryConfigFlags(parser, is_update):
+def AddBigQueryConfigFlags(
+    parser,
+    is_update,
+    enable_use_table_schema=False,
+):
   """Adds BigQuery config flags to parser."""
   current_group = parser
   if is_update:
@@ -321,7 +369,8 @@ def AddBigQueryConfigFlags(parser, is_update):
       help="""BigQuery Config Options. The Cloud Pub/Sub service account
          associated with the enclosing subscription's parent project (i.e.,
          service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
-         must have permission to write to this BigQuery table.""")
+         must have permission to write to this BigQuery table."""
+  )
   bigquery_config_group.add_argument(
       '--bigquery-table',
       required=True,
@@ -330,16 +379,38 @@ def AddBigQueryConfigFlags(parser, is_update):
           ' to which to write messages for this subscription.'
       ),
   )
+
+  bigquery_schema_config_mutually_exclusive_group = (
+      bigquery_config_group.add_mutually_exclusive_group()
+  )
+
+  use_topic_schema_help_text = (
+      "Whether or not to use the schema for the subscription's topic (if it"
+      ' exists) when writing messages to BigQuery.'
+  )
+  if enable_use_table_schema:
+    use_topic_schema_help_text += (
+        ' If --drop-unknown-fields is not set, then the BigQuery schema must'
+        ' contain all fields that are present in the topic schema.'
+    )
   AddBooleanFlag(
-      parser=bigquery_config_group,
+      parser=bigquery_schema_config_mutually_exclusive_group,
       flag_name='use-topic-schema',
       action='store_true',
       default=None,
-      help_text=(
-          "Whether or not to use the schema for the subscription's topic (if it"
-          ' exists) when writing messages to BigQuery.'
-      ),
+      help_text=use_topic_schema_help_text,
   )
+  if enable_use_table_schema:
+    AddBooleanFlag(
+        parser=bigquery_schema_config_mutually_exclusive_group,
+        flag_name='use-table-schema',
+        action='store_true',
+        default=None,
+        help_text=(
+            'Whether or not to use the BigQuery table schema when writing'
+            ' messages to BigQuery.'
+        ),
+    )
   AddBooleanFlag(
       parser=bigquery_config_group,
       flag_name='write-metadata',
@@ -354,17 +425,25 @@ def AddBigQueryConfigFlags(parser, is_update):
           ' JSON object in the attributes column.'
       ),
   )
+  if enable_use_table_schema:
+    drop_unknown_fields_help_text = (
+        'If either --use-topic-schema or --use-table-schema is set, whether or'
+        ' not to ignore fields in the message that do not appear in the'
+        ' BigQuery table schema.'
+    )
+  else:
+    drop_unknown_fields_help_text = (
+        'When --use-topic-schema is set, whether or not to ignore fields in'
+        ' the topic schema that do not appear in the BigQuery schema. If'
+        ' false, then the BigQuery schema must contain all fields that are'
+        ' also present in the topic schema.'
+    )
   AddBooleanFlag(
       parser=bigquery_config_group,
       flag_name='drop-unknown-fields',
       action='store_true',
       default=None,
-      help_text=(
-          'When --use-topic-schema is set, whether or not to ignore fields in'
-          ' the topic schema that do not appear in the BigQuery schema. If'
-          ' false, then the BigQuery schema must contain all fields that are'
-          ' also present in the topic schema.'
-      ),
+      help_text=drop_unknown_fields_help_text,
   )
 
 
@@ -413,11 +492,12 @@ def AddCloudStorageConfigFlags(parser, is_update):
   )
   cloud_storage_config_group.add_argument(
       '--cloud-storage-max-bytes',
-      type=arg_parsers.BinarySize(lower_bound='1KB', upper_bound='10GB',
-                                  default_unit='KB',
-                                  suggested_binary_size_scales=['KB', 'KiB',
-                                                                'MB', 'MiB',
-                                                                'GB', 'GiB']),
+      type=arg_parsers.BinarySize(
+          lower_bound='1KB',
+          upper_bound='10GB',
+          default_unit='KB',
+          suggested_binary_size_scales=['KB', 'KiB', 'MB', 'MiB', 'GB', 'GiB'],
+      ),
       default=None,
       help=(
           ' The maximum bytes that can be written to a Cloud Storage file'
@@ -427,8 +507,9 @@ def AddCloudStorageConfigFlags(parser, is_update):
   )
   cloud_storage_config_group.add_argument(
       '--cloud-storage-max-duration',
-      type=arg_parsers.Duration(lower_bound='1m', upper_bound='10m',
-                                default_unit='s'),
+      type=arg_parsers.Duration(
+          lower_bound='1m', upper_bound='10m', default_unit='s'
+      ),
       help="""The maximum duration that can elapse before a new Cloud Storage
           file is created. The value must be between 1m and 10m.
           {}""".format(DURATION_HELP_STR),
@@ -490,7 +571,7 @@ def AddPubsubExportConfigFlags(parser, is_update):
       help="""Cloud Pub/Sub Export Config Options. The Cloud Pub/Sub service
       account associated with the enclosing subscription's parent project
       (i.e., service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
-      must have permission to publish to the destination Cloud Pub/Sub topic."""
+      must have permission to publish to the destination Cloud Pub/Sub topic.""",
   )
   pubsub_export_topic = resource_args.CreateTopicResourceArg(
       'to publish messages to.',
@@ -531,6 +612,7 @@ def AddSubscriptionSettingsFlags(
     parser,
     is_update=False,
     enable_push_to_cps=False,
+    enable_use_table_schema=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
@@ -539,6 +621,8 @@ def AddSubscriptionSettingsFlags(
     is_update: Whether or not this is for the update operation (vs. create).
     enable_push_to_cps: whether or not to enable Pubsub Export config flags
       support.
+    enable_use_table_schema: whether or not to enable the `use_table_schema`
+      flag support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -547,7 +631,7 @@ def AddSubscriptionSettingsFlags(
   )
 
   mutex_group = parser.add_mutually_exclusive_group()
-  AddBigQueryConfigFlags(mutex_group, is_update)
+  AddBigQueryConfigFlags(mutex_group, is_update, enable_use_table_schema)
   AddCloudStorageConfigFlags(mutex_group, is_update)
   if enable_push_to_cps:
     AddPubsubExportConfigFlags(mutex_group, is_update)
@@ -569,7 +653,8 @@ def AddSubscriptionSettingsFlags(
         help="""Expression to filter messages. If set, Pub/Sub only delivers the
         messages that match the filter. The expression must be a non-empty
         string in the [Pub/Sub filtering
-        language](https://cloud.google.com/pubsub/docs/filtering).""")
+        language](https://cloud.google.com/pubsub/docs/filtering).""",
+    )
   current_group = parser
   if is_update:
     mutual_exclusive_group = current_group.add_mutually_exclusive_group()
@@ -587,28 +672,34 @@ def AddSubscriptionSettingsFlags(
            associated with the enclosing subscription's parent project (i.e.,
            service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com)
            must have permission to Publish() to this topic and Acknowledge()
-           messages on this subscription.""")
+           messages on this subscription."""
+  )
   dead_letter_topic = resource_args.CreateTopicResourceArg(
       'to publish dead letter messages to.',
       flag_name='dead-letter-topic',
       positional=False,
-      required=False)
-  resource_args.AddResourceArgs(set_dead_letter_policy_group,
-                                [dead_letter_topic])
+      required=False,
+  )
+  resource_args.AddResourceArgs(
+      set_dead_letter_policy_group, [dead_letter_topic]
+  )
   set_dead_letter_policy_group.add_argument(
       '--max-delivery-attempts',
       type=arg_parsers.BoundedInt(5, 100),
       default=None,
       help="""Maximum number of delivery attempts for any message. The value
           must be between 5 and 100. Defaults to 5. `--dead-letter-topic`
-          must also be specified.""")
+          must also be specified.""",
+  )
   parser.add_argument(
       '--expiration-period',
       type=ParseExpirationPeriodWithNeverSentinel,
       help="""The subscription will expire if it is inactive for the given
           period. {} This flag additionally accepts the special value "never" to
           indicate that the subscription will never expire.""".format(
-              DURATION_HELP_STR))
+          DURATION_HELP_STR
+      ),
+  )
 
   current_group = parser
   if is_update:
@@ -624,24 +715,29 @@ def AddSubscriptionSettingsFlags(
 
   set_retry_policy_group = current_group.add_argument_group(
       help="""Retry Policy Options. Retry policy specifies how Cloud Pub/Sub
-              retries message delivery for this subscription.""")
+              retries message delivery for this subscription."""
+  )
 
   set_retry_policy_group.add_argument(
       '--min-retry-delay',
       type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
       help="""The minimum delay between consecutive deliveries of a given
           message. Value should be between 0 and 600 seconds. Defaults to 10
-          seconds. {}""".format(DURATION_HELP_STR))
+          seconds. {}""".format(DURATION_HELP_STR),
+  )
   set_retry_policy_group.add_argument(
       '--max-retry-delay',
       type=arg_parsers.Duration(lower_bound='0s', upper_bound='600s'),
       help="""The maximum delay between consecutive deliveries of a given
           message. Value should be between 0 and 600 seconds. Defaults to 10
-          seconds. {}""".format(DURATION_HELP_STR))
+          seconds. {}""".format(DURATION_HELP_STR),
+  )
   help_text_suffix = ''
   if is_update:
-    help_text_suffix = (' To disable exactly-once delivery use '
-                        '`--no-enable-exactly-once-delivery`.')
+    help_text_suffix = (
+        ' To disable exactly-once delivery use '
+        '`--no-enable-exactly-once-delivery`.'
+    )
   AddBooleanFlag(
       parser=parser,
       flag_name='enable-exactly-once-delivery',
@@ -671,26 +767,35 @@ def AddPublishMessageFlags(parser, add_deprecated=False):
       https://cloud.google.com/pubsub/docs/publisher#publish"""
   if add_deprecated:
     parser.add_argument(
-        'message_body', nargs='?', default=None,
+        'message_body',
+        nargs='?',
+        default=None,
         help=message_help_text,
         action=actions.DeprecationAction(
             'MESSAGE_BODY',
             show_message=lambda _: False,
-            warn=DEPRECATION_FORMAT_STR.format('MESSAGE_BODY', '--message')))
-  parser.add_argument(
-      '--message', help=message_help_text)
+            warn=DEPRECATION_FORMAT_STR.format('MESSAGE_BODY', '--message'),
+        ),
+    )
+  parser.add_argument('--message', help=message_help_text)
 
   parser.add_argument(
-      '--attribute', type=arg_parsers.ArgDict(max_length=MAX_ATTRIBUTES),
-      help='Comma-separated list of attributes. Each ATTRIBUTE has the form '
-           'name="value". You can specify up to {0} attributes.'.format(
-               MAX_ATTRIBUTES))
+      '--attribute',
+      type=arg_parsers.ArgDict(max_length=MAX_ATTRIBUTES),
+      help=(
+          'Comma-separated list of attributes. Each ATTRIBUTE has the form '
+          'name="value". You can specify up to {0} attributes.'.format(
+              MAX_ATTRIBUTES
+          )
+      ),
+  )
 
   parser.add_argument(
       '--ordering-key',
       help="""The key for ordering delivery to subscribers. All messages with
           the same ordering key are sent to subscribers in the order that
-          Pub/Sub receives them.""")
+          Pub/Sub receives them.""",
+  )
 
 
 def AddSchemaSettingsFlags(parser, is_update=False):
@@ -714,7 +819,8 @@ def AddSchemaSettingsFlags(parser, is_update=False):
     current_group = mutual_exclusive_group
   set_schema_settings_group = current_group.add_argument_group(
       # pylint: disable=line-too-long
-      help="""Schema settings. The schema that messages published to this topic must conform to and the expected message encoding.""")
+      help="""Schema settings. The schema that messages published to this topic must conform to and the expected message encoding."""
+  )
 
   schema_help_text = 'that messages published to this topic must conform to.'
   schema = resource_args.CreateSchemaResourceArg(
@@ -737,12 +843,14 @@ def AddSchemaSettingsFlags(parser, is_update=False):
       '--first-revision-id',
       help="""The id of the oldest
       revision allowed for the specified schema.""",
-      required=False)
+      required=False,
+  )
   set_schema_settings_group.add_argument(
       '--last-revision-id',
       help="""The id of the most recent
       revision allowed for the specified schema""",
-      required=False)
+      required=False,
+  )
 
 
 def AddIngestionDatasourceFlags(parser, is_update=False):
@@ -761,7 +869,7 @@ def AddIngestionDatasourceFlags(parser, is_update=False):
             'Specify either --clear-ingestion-data-source-settings or a new'
             ' ingestion source.'
         ),
-        hidden=True
+        hidden=True,
     )
     AddBooleanFlag(
         parser=clear_settings_group,
@@ -823,16 +931,25 @@ def AddIngestionDatasourceFlags(parser, is_update=False):
 
 
 def AddCommitSchemaFlags(parser):
+  """Adds the flags for the Schema Definition.
+
+  Args:
+    parser: The argparse parser
+  """
   definition_group = parser.add_group(
-      mutex=True, help='Schema definition', required=True)
+      mutex=True, help='Schema definition', required=True
+  )
   definition_group.add_argument(
-      '--definition', type=str, help='The new definition of the schema.')
+      '--definition', type=str, help='The new definition of the schema.'
+  )
   definition_group.add_argument(
       '--definition-file',
       type=arg_parsers.FileContents(),
-      help='File containing the new schema definition.')
+      help='File containing the new schema definition.',
+  )
   parser.add_argument(
-      '--type', type=str, help='The type of the schema.', required=True)
+      '--type', type=str, help='The type of the schema.', required=True
+  )
 
 
 def AddTopicMessageRetentionFlags(parser, is_update):
@@ -865,7 +982,68 @@ def AddTopicMessageRetentionFlags(parser, is_update):
           seek to a timestamp that is up to MESSAGE_RETENTION_DURATION in the
           past. If this field is not set, message retention is controlled by
           settings on individual subscriptions. The minimum is 10 minutes and
-          the maximum is 31 days. {}""".format(DURATION_HELP_STR))
+          the maximum is 31 days. {}""".format(DURATION_HELP_STR),
+  )
+
+
+def AddTopicMessageStoragePolicyFlags(
+    parser, is_update, enforce_in_transit_flag_supported
+):
+  """Add flags for the Message Storage Policy.
+
+  Args:
+    parser: The argparse parser.
+    is_update: Whether the operation is for updating message storage policy.
+    enforce_in_transit_flag_supported: Whether or not to allow the enforce
+      in-transit flag to be set.
+  """
+  current_group = parser
+  help_message = (
+      'Options for explicitly specifying the message storage policy for a'
+      ' topic.'
+  )
+
+  if is_update:
+    recompute_msp_group = current_group.add_group(
+        mutex=True, help='Message storage policy options.'
+    )
+    recompute_msp_group.add_argument(
+        '--recompute-message-storage-policy',
+        action='store_true',
+        help=(
+            'If given, Pub/Sub recomputes the regions where messages'
+            ' can be stored at rest, based on your organization\'s "Resource '
+            ' Location Restriction" policy.'
+        ),
+    )
+    current_group = recompute_msp_group
+    help_message = (
+        f'{help_message} These fields can be set only if the'
+        ' `--recompute-message-storage-policy` flag is not set.'
+    )
+
+  explicit_msp_group = current_group.add_argument_group(help=(help_message))
+  explicit_msp_group.add_argument(
+      '--message-storage-policy-allowed-regions',
+      metavar='REGION',
+      type=arg_parsers.ArgList(),
+      required=True,
+      help=(
+          'A list of one or more Cloud regions where messages are allowed to'
+          ' be stored at rest.'
+      ),
+  )
+  if enforce_in_transit_flag_supported:
+    # TODO(b/301085678): Add documentation for in-transit guarantees when
+    #                    available
+    explicit_msp_group.add_argument(
+        '--message-storage-policy-enforce-in-transit',
+        action='store_true',
+        help=(
+            'Whether or not to enforce in-transit guarantees for this topic'
+            ' using the allowed regions.'
+        ),
+    )
 
 
 def ParseMessageBody(args):
@@ -910,8 +1088,9 @@ def ValidateFilterString(args):
   if args.message_filter is not None and not args.message_filter:
     raise exceptions.InvalidArgumentException(
         '--message-filter',
-        'Filter string must be non-empty. If you do not want a filter, ' +
-        'do not set the --message-filter argument.')
+        'Filter string must be non-empty. If you do not want a filter, '
+        + 'do not set the --message-filter argument.',
+    )
 
 
 def ValidateDeadLetterPolicy(args):
@@ -925,5 +1104,6 @@ def ValidateDeadLetterPolicy(args):
       dead_letter_topic being present.
   """
   if args.max_delivery_attempts and not args.dead_letter_topic:
-    raise exceptions.RequiredArgumentException('DEAD_LETTER_TOPIC',
-                                               '--dead-letter-topic')
+    raise exceptions.RequiredArgumentException(
+        'DEAD_LETTER_TOPIC', '--dead-letter-topic'
+    )

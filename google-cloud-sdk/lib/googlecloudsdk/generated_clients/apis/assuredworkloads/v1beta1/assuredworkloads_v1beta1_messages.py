@@ -49,7 +49,7 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(
       under the source resource. If empty, all assets are analyzed. The
       complete list of asset types is available
       [here](https://cloud.google.com/asset-inventory/docs/supported-asset-
-      types#searchable_asset_types).
+      types).
     pageSize: Optional. Page size. If a value is not specified, the default
       value of 10 is used.
     pageToken: Optional. The page token from the previous response. It needs
@@ -245,7 +245,7 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest(_mess
 
 
 class GoogleCloudAssuredworkloadsV1beta1AcknowledgeViolationRequest(_messages.Message):
-  r"""Request for acknowledging the violation Next Id: 5
+  r"""Request for acknowledging the violation
 
   Enums:
     AcknowledgeTypeValueValuesEnum: Optional. Acknowledge type of specified
@@ -308,7 +308,7 @@ class GoogleCloudAssuredworkloadsV1beta1AssetMoveAnalysis(_messages.Message):
       e1
     assetType: Type of the asset being analyzed. Possible values will be among
       the ones listed [here](https://cloud.google.com/asset-
-      inventory/docs/supported-asset-types#searchable_asset_types).
+      inventory/docs/supported-asset-types).
   """
 
   analysisGroups = _messages.MessageField('GoogleCloudAssuredworkloadsV1beta1MoveAnalysisGroup', 1, repeated=True)
@@ -501,7 +501,7 @@ class GoogleCloudAssuredworkloadsV1beta1RestrictAllowedResourcesResponse(_messag
 
 
 class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
-  r"""Workload monitoring Violation. Next Id: 28
+  r"""Workload monitoring Violation.
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation
@@ -605,7 +605,7 @@ class GoogleCloudAssuredworkloadsV1beta1Violation(_messages.Message):
 
 
 class GoogleCloudAssuredworkloadsV1beta1ViolationExceptionContext(_messages.Message):
-  r"""Violation exception detail. Next Id: 6
+  r"""Violation exception detail.
 
   Fields:
     acknowledgementTime: Timestamp when the violation was acknowledged.

@@ -20,7 +20,6 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.container import api_adapter
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
-from googlecloudsdk.command_lib.container import flags
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
@@ -413,7 +412,5 @@ def ParseUpdateOptionsBase(args, locations):
           'currently protected will no longer be updated for high availability '
           'configuration.',
           cancel_on_no=True)
-
-  flags.WarnForLocationPolicyDefault(args)
 
   return opts

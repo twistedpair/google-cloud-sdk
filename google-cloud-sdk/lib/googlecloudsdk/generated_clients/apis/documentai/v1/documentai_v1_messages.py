@@ -494,14 +494,11 @@ class GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsMetadataIndividualAutoLabe
   Fields:
     documentId: The document id of the auto-labeled document. This will
       replace the gcs_uri.
-    gcsUri: The gcs_uri of the auto-labeling document, which uniquely
-      identifies a dataset document.
     status: The status of the document auto-labeling.
   """
 
   documentId = _messages.MessageField('GoogleCloudDocumentaiUiv1beta3DocumentId', 1)
-  gcsUri = _messages.StringField(2)
-  status = _messages.MessageField('GoogleRpcStatus', 3)
+  status = _messages.MessageField('GoogleRpcStatus', 2)
 
 
 class GoogleCloudDocumentaiUiv1beta3AutoLabelDocumentsResponse(_messages.Message):

@@ -3629,6 +3629,17 @@ class ApigeeOrganizationsGetRuntimeConfigRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsGetSecuritySettingsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsGetSecuritySettingsRequest object.
+
+  Fields:
+    name: Required. The name of the SecuritySettings to retrieve. This will
+      always be: 'organizations/{org}/securitySettings'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsGetSyncAuthorizationRequest(_messages.Message):
   r"""A ApigeeOrganizationsGetSyncAuthorizationRequest object.
 
@@ -4774,6 +4785,23 @@ class ApigeeOrganizationsUpdateControlPlaneAccessRequest(_messages.Message):
   """
 
   googleCloudApigeeV1ControlPlaneAccess = _messages.MessageField('GoogleCloudApigeeV1ControlPlaneAccess', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ApigeeOrganizationsUpdateSecuritySettingsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsUpdateSecuritySettingsRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecuritySettings: A GoogleCloudApigeeV1SecuritySettings
+      resource to be passed as the request body.
+    name: Identifier. Full resource name is always
+      `organizations/{org}/securitySettings`.
+    updateMask: Optional. The list of fields to update. Allowed fields are: -
+      ml_retraining_feedback_enabled
+  """
+
+  googleCloudApigeeV1SecuritySettings = _messages.MessageField('GoogleCloudApigeeV1SecuritySettings', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -8210,7 +8238,7 @@ class GoogleCloudApigeeV1KeystoreConfig(_messages.Message):
 
 
 class GoogleCloudApigeeV1ListApiCategoriesResponse(_messages.Message):
-  r"""The response for `ListApiCategoriesRequest`.
+  r"""The response for `ListApiCategoriesRequest`. Next ID: 6
 
   Fields:
     data: The API category resources.
@@ -9210,7 +9238,7 @@ class GoogleCloudApigeeV1Organization(_messages.Message):
       BILLING_TYPE_UNSPECIFIED: Billing type not specified.
       SUBSCRIPTION: A pre-paid subscription to Apigee.
       EVALUATION: Free and limited access to Apigee for evaluation purposes
-        only. only.
+        only.
       PAYG: Access to Apigee using a Pay-As-You-Go plan.
     """
     BILLING_TYPE_UNSPECIFIED = 0
@@ -11116,6 +11144,21 @@ class GoogleCloudApigeeV1SecurityReportResultView(_messages.Message):
   metadata = _messages.MessageField('GoogleCloudApigeeV1SecurityReportMetadata', 3)
   rows = _messages.MessageField('extra_types.JsonValue', 4, repeated=True)
   state = _messages.StringField(5)
+
+
+class GoogleCloudApigeeV1SecuritySettings(_messages.Message):
+  r"""SecuritySettings reflects the current state of the SecuritySettings
+  feature.
+
+  Fields:
+    mlRetrainingFeedbackEnabled: Optional. If true the user consents to the
+      use of ML models for Abuse detection.
+    name: Identifier. Full resource name is always
+      `organizations/{org}/securitySettings`.
+  """
+
+  mlRetrainingFeedbackEnabled = _messages.BooleanField(1)
+  name = _messages.StringField(2)
 
 
 class GoogleCloudApigeeV1ServiceIssuersMapping(_messages.Message):

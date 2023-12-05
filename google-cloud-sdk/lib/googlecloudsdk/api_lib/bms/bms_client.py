@@ -119,7 +119,8 @@ class BmsClient(object):
         field='instances')
 
   def UpdateInstance(self, instance_resource, labels, os_image,
-                     enable_hyperthreading, ssh_keys, kms_key_version):
+                     enable_hyperthreading, ssh_keys, kms_key_version,
+                     clear_ssh_keys):
     """Update an existing instance resource."""
     updated_fields = []
     if labels is not None:
@@ -128,7 +129,7 @@ class BmsClient(object):
       updated_fields.append('os_image')
     if enable_hyperthreading is not None:
       updated_fields.append('hyperthreading_enabled')
-    if ssh_keys:
+    if ssh_keys or clear_ssh_keys:
       updated_fields.append('ssh_keys')
     if kms_key_version is not None:
       updated_fields.append('kms_key_version')

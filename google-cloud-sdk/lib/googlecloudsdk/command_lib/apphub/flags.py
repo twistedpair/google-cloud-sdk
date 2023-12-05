@@ -26,15 +26,6 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
-def GetGlobalLocationResourceSpec():
-  return concepts.ResourceSpec(
-      'apphub.projects.locations',
-      resource_name='location',
-      locationsId=_DefaultToGlobalLocationAttributeConfig(),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-  )
-
-
 def _DefaultToGlobalLocationAttributeConfig(help_text=None):
   """Create basic attributes that fallthrough location to global in resource argument.
 
@@ -56,6 +47,15 @@ def _DefaultToGlobalLocationAttributeConfig(help_text=None):
   )
 
 
+def GetGlobalLocationResourceSpec():
+  return concepts.ResourceSpec(
+      'apphub.projects.locations',
+      resource_name='location',
+      locationsId=_DefaultToGlobalLocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+  )
+
+
 def GetGlobalLocationResourceArg(
     arg_name='location',
     help_text=None,
@@ -64,7 +64,7 @@ def GetGlobalLocationResourceArg(
 ):
   """Constructs and returns the Location Resource Argument."""
 
-  help_text = help_text or 'Location'
+  help_text = help_text or 'Location.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -98,7 +98,7 @@ def GetLocationResourceArg(
 ):
   """Constructs and returns the Location Resource Argument."""
 
-  help_text = help_text or 'Location'
+  help_text = help_text or 'Location.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -131,7 +131,7 @@ def GetServiceProjectResourceArg(
 ):
   """Constructs and returns the Service Project Resource Argument."""
 
-  help_text = help_text or 'Name for the Service Project'
+  help_text = help_text or 'The Service Project ID.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -167,7 +167,7 @@ def GetApplicationResourceArg(
 ):
   """Constructs and returns the Application ID Resource Argument."""
 
-  help_text = help_text or 'Id of the Application'
+  help_text = help_text or 'The Application ID.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -200,7 +200,10 @@ def AddServiceProjectFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -222,7 +225,10 @@ def CreateApplicationFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -237,7 +243,7 @@ def UpdateApplicationFlags(parser):
       type=arg_parsers.ArgDict(
           spec={
               'level': str,
-              'mission-critical': bool,
+              'mission-critical': arg_parsers.ArgBoolean(),
           },
           required_keys=['level', 'mission-critical'],
       ),
@@ -288,7 +294,10 @@ def UpdateApplicationFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -299,7 +308,10 @@ def AddRemoveServiceProjectFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -332,7 +344,7 @@ def GetDiscoveredServiceResourceArg(
 ):
   """Constructs and returns the Discovered Service Resource Argument."""
 
-  help_text = help_text or 'Name for the Discovered Service'
+  help_text = help_text or 'The Discovered Service ID.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -370,7 +382,7 @@ def GetDiscoveredWorkloadResourceArg(
 ):
   """Constructs and returns the Discovered Workload Resource Argument."""
 
-  help_text = help_text or 'Name for the Discovered Workload'
+  help_text = help_text or 'The Discovered Workload ID.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -412,7 +424,7 @@ def GetApplicationWorkloadResourceArg(
 ):
   """Constructs and returns the application workload Resource Argument."""
 
-  help_text = help_text or 'Name for the workload'
+  help_text = help_text or 'The Workload ID.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -454,7 +466,7 @@ def GetApplicationServiceResourceArg(
 ):
   """Constructs and returns the application service Resource Argument."""
 
-  help_text = help_text or 'Name for the service'
+  help_text = help_text or 'The Service ID.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -495,7 +507,10 @@ def AddDeleteApplicationFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -528,7 +543,7 @@ def GetOperationResourceArg(
 ):
   """Constructs and returns the Operation Resource Argument."""
 
-  help_text = help_text or 'Name for the Operation'
+  help_text = help_text or 'The Operation ID.'
 
   return concept_parsers.ConceptParser.ForResource(
       '{}{}'.format('' if positional else '--', arg_name),
@@ -561,7 +576,10 @@ def AddDeleteApplicationWorkloadFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -610,7 +628,10 @@ def AddCreateApplicationWorkloadFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -628,7 +649,10 @@ def AddUpdateApplicationWorkloadFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -639,7 +663,7 @@ def AddAttributesFlags(parser, resource_name='application'):
       type=arg_parsers.ArgDict(
           spec={
               'level': str,
-              'mission-critical': bool,
+              'mission-critical': arg_parsers.ArgBoolean(),
           },
           required_keys=['level', 'mission-critical'],
       ),
@@ -704,7 +728,10 @@ def AddDeleteApplicationServiceFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -753,7 +780,10 @@ def AddCreateApplicationServiceFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 
@@ -771,7 +801,10 @@ def AddUpdateApplicationServiceFlags(parser):
       dest='async_',
       action='store_true',
       default=False,
-      help='async operation.',
+      help=(
+          'Return immediately, without waiting for the operation in progress to'
+          ' complete.'
+      ),
   )
 
 

@@ -1143,7 +1143,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         method_id='sql.operations.list',
         ordered_params=['project'],
         path_params=['project'],
-        query_params=['instance', 'maxResults', 'pageToken'],
+        query_params=['filter', 'instance', 'maxResults', 'pageToken'],
         relative_path='sql/v1beta4/projects/{project}/operations',
         request_field='',
         request_type_name='SqlOperationsListRequest',

@@ -533,28 +533,6 @@ class ApphubProjectsLocationsGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
-class ApphubProjectsLocationsGetTelemetryRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGetTelemetryRequest object.
-
-  Fields:
-    name: Required. The full resource name of the telemetry object in the
-      format of: "projects/{project}/locations/global/telemetry".
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class ApphubProjectsLocationsGetTopologyRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsGetTopologyRequest object.
-
-  Fields:
-    name: Required. The full resource name of the topology object in the
-      format of: "projects/{project}/locations/global/topology"
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class ApphubProjectsLocationsListRequest(_messages.Message):
   r"""A ApphubProjectsLocationsListRequest object.
 
@@ -715,38 +693,6 @@ class ApphubProjectsLocationsServiceProjectAttachmentsListRequest(_messages.Mess
   parent = _messages.StringField(5, required=True)
 
 
-class ApphubProjectsLocationsUpdateTelemetryRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsUpdateTelemetryRequest object.
-
-  Fields:
-    name: The full resource name of the telemetry object in the format of:
-      "projects/{project}/locations/global/telemetry".
-    telemetry: A Telemetry resource to be passed as the request body.
-    updateMask: Optional. The mask to control which fields of the telemetry
-      get updated. If the mask is not present, all fields will be updated.
-  """
-
-  name = _messages.StringField(1, required=True)
-  telemetry = _messages.MessageField('Telemetry', 2)
-  updateMask = _messages.StringField(3)
-
-
-class ApphubProjectsLocationsUpdateTopologyRequest(_messages.Message):
-  r"""A ApphubProjectsLocationsUpdateTopologyRequest object.
-
-  Fields:
-    name: The full resource name of the topology object in the format of:
-      "projects/{project}/locations/global/topology"
-    topology: A Topology resource to be passed as the request body.
-    updateMask: Optional. The mask to control which fields of the topology get
-      updated. If the mask is not present, all fields will be updated.
-  """
-
-  name = _messages.StringField(1, required=True)
-  topology = _messages.MessageField('Topology', 2)
-  updateMask = _messages.StringField(3)
-
-
 class Application(_messages.Message):
   r"""Application defines the governance boundary for App Hub Entities that
   perform a logical end-to-end business function. We support Application level
@@ -763,8 +709,8 @@ class Application(_messages.Message):
     displayName: Optional. Human-friendly display name.
     name: Optional. The resource name of an Application.
       projects//locations//applications/
-    scope: Required. Defines which data can be included into this application.
-      Limits which services and workloads can be registered.
+    scope: Required. Immutable. Defines which data can be included into this
+      application. Limits which services and workloads can be registered.
     state: Output only. Application state.
     uid: Output only. A globally unique identifier (in UUID4 format) for the
       application.
@@ -778,14 +724,12 @@ class Application(_messages.Message):
       STATE_UNSPECIFIED: Unspecified state
       CREATING: The application is being created.
       ACTIVE: The application is ready for registering services and workloads.
-      UPDATING: The application is being updated.
       DELETING: The application is being deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
-    UPDATING = 3
-    DELETING = 4
+    DELETING = 3
 
   attributes = _messages.MessageField('Attributes', 1)
   createTime = _messages.StringField(2)
@@ -1584,16 +1528,14 @@ class Service(_messages.Message):
       STATE_UNSPECIFIED: Unspecified state
       CREATING: The service is being created.
       ACTIVE: The service is ready.
-      UPDATING: The service is being updated.
       DELETING: The service is being deleted.
       DETACHED: The underlying networking resources are deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
-    UPDATING = 3
-    DELETING = 4
-    DETACHED = 5
+    DELETING = 3
+    DETACHED = 4
 
   attributes = _messages.MessageField('Attributes', 1)
   createTime = _messages.StringField(2)
@@ -1816,23 +1758,6 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class Telemetry(_messages.Message):
-  r"""Message describing Telemetry object.
-
-  Fields:
-    monitoringEnabled: Optional. Enablement status of the telemetry monitoring
-      configuration.
-    name: The full resource name of the telemetry object in the format of:
-      "projects/{project}/locations/global/telemetry".
-    project: Output only. Project number which the telemetry configuration is
-      associated with Format: projects/{project}
-  """
-
-  monitoringEnabled = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  project = _messages.StringField(3)
-
-
 class TestIamPermissionsRequest(_messages.Message):
   r"""Request message for `TestIamPermissions` method.
 
@@ -1855,22 +1780,6 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
-
-
-class Topology(_messages.Message):
-  r"""Message describing Topology object
-
-  Fields:
-    enabled: Optional. Whether or not Topology is enabled for the project
-    name: The full resource name of the topology object in the format of:
-      "projects/{project}/locations/global/topology"
-    project: Output only. Project number which the topology configuration is
-      associated with Format: projects/{project}
-  """
-
-  enabled = _messages.BooleanField(1)
-  name = _messages.StringField(2)
-  project = _messages.StringField(3)
 
 
 class Workload(_messages.Message):
@@ -1905,16 +1814,14 @@ class Workload(_messages.Message):
       STATE_UNSPECIFIED: Unspecified state
       CREATING: The workload is being created.
       ACTIVE: The workload is ready.
-      UPDATING: The workload is being updated.
       DELETING: The workload is being deleted.
       DETACHED: The underlying compute resources are deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
-    UPDATING = 3
-    DELETING = 4
-    DETACHED = 5
+    DELETING = 3
+    DETACHED = 4
 
   attributes = _messages.MessageField('Attributes', 1)
   createTime = _messages.StringField(2)

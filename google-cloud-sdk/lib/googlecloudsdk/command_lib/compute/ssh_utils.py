@@ -963,7 +963,7 @@ class BaseSSHCLIHelper(BaseSSHHelper):
                                 allow_passphrase=True)
 
   def PreliminarilyVerifyInstance(self, instance_id, remote, identity_file,
-                                  options):
+                                  options, putty_force_connect=False):
     """Verify the instance's identity by connecting and running a command.
 
     Args:
@@ -971,6 +971,10 @@ class BaseSSHCLIHelper(BaseSSHHelper):
       remote: ssh.Remote, remote to connect to.
       identity_file: str, optional key file.
       options: dict, optional ssh options.
+      putty_force_connect: bool, whether to inject 'y' into the prompts for
+        `plink`, which is insecure and not recommended. It serves legacy
+        compatibility purposes for existing usages only; DO NOT SET THIS IN NEW
+        CODE.
 
     Raises:
       ssh.CommandError: The ssh command failed.
@@ -1004,7 +1008,7 @@ class BaseSSHCLIHelper(BaseSSHHelper):
     null_err = FileWriter(os.devnull)
     return_code = cmd.Run(
         self.env,
-        putty_force_connect=properties.VALUES.ssh.putty_force_connect.GetBool(),
+        putty_force_connect=putty_force_connect,
         explicit_output_file=null_out,
         explicit_error_file=null_err,
         explicit_input_file=null_in)

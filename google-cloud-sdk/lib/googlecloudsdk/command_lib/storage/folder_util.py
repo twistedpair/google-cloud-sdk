@@ -41,24 +41,20 @@ class ManagedFolderSetting(enum.Enum):
   LIST_WITHOUT_OBJECTS = 'list_without_objects'
 
 
-def _contains(potential_container, potential_containee):
+def _contains(potential_container_url, potential_containee_url):
   """Checks containment based on string representations."""
-  potential_container_string = (
-      potential_container.storage_url.versionless_url_string
-  )
-  potential_containee_string = (
-      potential_containee.storage_url.versionless_url_string
-  )
+  potential_container_string = potential_container_url.versionless_url_string
+  potential_containee_string = potential_containee_url.versionless_url_string
 
   # Simple substring matching does not handle the ordering between
   # gs://bucket/object and gs://bucket/object2 correctly: they should not
   # be treated as if they stand in a containment relationship.
-  delimiter = potential_container.storage_url.delimiter
+  delimiter = potential_container_url.delimiter
   prefix = potential_container_string.rstrip(delimiter) + delimiter
   return potential_containee_string.startswith(prefix)
 
 
-def reverse_containment_order(ordered_iterator, get_resource_function=None):
+def reverse_containment_order(ordered_iterator, get_url_function=None):
   """Reorders resources so containees are yielded before containers.
 
   For example, an iterator with the following:
@@ -84,17 +80,17 @@ def reverse_containment_order(ordered_iterator, get_resource_function=None):
       s.t. container resources are yielded before and contiguous with all of
       their containee resources. Bucket/folder/object resources ordered
       alphabetically by storage URL safisfy this constraint.
-    get_resource_function (None|object -> resource_reference.Resource): Maps
-      objects yielded by `iterator` to resources. Defaults to assuming yielded
-      objects are resources. Similar to the `key` attribute on the built-in
+    get_url_function (None|object -> storage_url.StorageUrl): Maps objects
+      yielded by `iterator` to storage URLs. Defaults to assuming yielded
+      objects are URLs. Similar to the `key` attribute on the built-in
       list.sort() method.
 
   Yields:
     Resources s.t. containees are yielded before their containers, and
       contiguous with other containees.
   """
-  if not get_resource_function:
-    get_resource_function = lambda resource: resource
+  if not get_url_function:
+    get_url_function = lambda url: url
 
   # This function is mostly used to ensure managed folder deletion tasks are
   # yielded after tasks for the resources they contain. The nesting depth for
@@ -103,8 +99,8 @@ def reverse_containment_order(ordered_iterator, get_resource_function=None):
   for resource_container in ordered_iterator:
     while True:
       if not stack or _contains(
-          get_resource_function(stack[-1]),
-          get_resource_function(resource_container),
+          get_url_function(stack[-1]),
+          get_url_function(resource_container),
       ):
         stack.append(resource_container)
         break

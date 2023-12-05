@@ -72,7 +72,9 @@ class AllocationPolicy(_messages.Message):
       "google-" are reserved.
     location: Location where compute resources should be allocated for the
       Job.
-    network: The network policy.
+    network: The network policy. If you define an instance template in the
+      InstancePolicyOrTemplate field, Batch will use the network settings in
+      the instance template instead of this field.
     placement: The placement policy.
     serviceAccount: Service account that VMs will run as.
   """

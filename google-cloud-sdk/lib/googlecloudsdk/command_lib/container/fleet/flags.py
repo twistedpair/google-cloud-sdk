@@ -151,7 +151,6 @@ class FleetFlags:
       self, default_cluster_config_group: parser_arguments.ArgumentInterceptor
   ):
     binary_authorization_config_group = default_cluster_config_group.add_group(
-        hidden=True,
         help='Binary Authorization config.',
     )
     self._AddBinauthzEvaluationMode(binary_authorization_config_group)
@@ -165,7 +164,6 @@ class FleetFlags:
         '--binauthz-evaluation-mode',
         choices=['DISABLED', 'POLICY_BINDINGS'],
         default=None,
-        hidden=True,
         help=textwrap.dedent("""\
           Configure binary authorization mode for clusters to onboard the fleet,
 
@@ -186,7 +184,6 @@ class FleetFlags:
     binary_authorization_config_group.add_argument(
         '--binauthz-policy-bindings',
         default=None,
-        hidden=True,
         metavar='name=BINAUTHZ_POLICY',
         help=textwrap.dedent("""\
           The relative resource name of the Binary Authorization policy to audit

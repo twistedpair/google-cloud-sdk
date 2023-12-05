@@ -149,6 +149,7 @@ class ClustersClient(_AttachedClientBase):
             fleetMembership=fleet_membership_ref.RelativeName(),
             platformVersion=attached_flags.GetPlatformVersion(args),
             distribution=attached_flags.GetDistribution(args),
+            proxyConfig=self._ProxyConfig(args),
             validateOnly=flags.GetValidateOnly(args),
         ),
     )

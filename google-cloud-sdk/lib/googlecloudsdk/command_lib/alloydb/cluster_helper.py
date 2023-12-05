@@ -107,19 +107,23 @@ def _ConstructClusterForCreateRequestGA(alloydb_messages, args):
         network=args.network, allocatedIpRange=args.allocated_ip_range_name
     )
 
+  cluster.databaseVersion = args.database_version
+
   return cluster
 
 
 def _ConstructClusterForCreateRequestBeta(alloydb_messages, args):
   """Returns the cluster for beta create request based on args."""
-  cluster = _ConstructClusterForCreateRequestGA(alloydb_messages, args)
-  cluster.databaseVersion = args.database_version
-  return cluster
+  return _ConstructClusterForCreateRequestGA(alloydb_messages, args)
 
 
 def _ConstructClusterForCreateRequestAlpha(alloydb_messages, args):
   """Returns the cluster for alpha create request based on args."""
-  return _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
+  flags.ValidateConnectivityFlags(args)
+  cluster = _ConstructClusterForCreateRequestBeta(alloydb_messages, args)
+  if args.enable_private_services_connect:
+    cluster.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
+  return cluster
 
 
 def ConstructCreateRequestFromArgsGA(alloydb_messages, location_ref, args):

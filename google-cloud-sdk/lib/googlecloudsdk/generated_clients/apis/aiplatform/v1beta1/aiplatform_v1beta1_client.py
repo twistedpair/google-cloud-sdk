@@ -2872,6 +2872,60 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def DirectPredict(self, request, global_params=None):
+      r"""Perform an unary online prediction request for Vertex first-party products and frameworks.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsDirectPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1DirectPredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('DirectPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DirectPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:directPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.directPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:directPredict',
+        request_field='googleCloudAiplatformV1beta1DirectPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsDirectPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1DirectPredictResponse',
+        supports_download=False,
+    )
+
+    def DirectRawPredict(self, request, global_params=None):
+      r"""Perform an online prediction request through gRPC.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsDirectRawPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1DirectRawPredictResponse) The response message.
+      """
+      config = self.GetMethodConfig('DirectRawPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DirectRawPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:directRawPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.directRawPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1beta1/{+endpoint}:directRawPredict',
+        request_field='googleCloudAiplatformV1beta1DirectRawPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsDirectRawPredictRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1DirectRawPredictResponse',
+        supports_download=False,
+    )
+
     def Explain(self, request, global_params=None):
       r"""Perform an online explanation. If deployed_model_id is specified, the corresponding DeployModel must have explanation_spec populated. If deployed_model_id is not specified, all DeployedModels must have explanation_spec populated.
 

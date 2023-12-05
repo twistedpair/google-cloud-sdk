@@ -296,8 +296,7 @@ class AttachedResource(_messages.Message):
     assetType: The type of this attached resource. Example:
       `osconfig.googleapis.com/Inventory` You can find the supported attached
       asset types of each resource in this table:
-      `https://cloud.google.com/asset-inventory/docs/supported-asset-
-      types#searchable_asset_types`
+      `https://cloud.google.com/asset-inventory/docs/supported-asset-types`
     versionedResources: Versioned resource representations of this attached
       resource. This is repeated because there could be multiple versions of
       the attached resource representations during version migration.
@@ -1023,8 +1022,8 @@ class CloudassetEffectiveIamPoliciesBatchGetRequest(_messages.Message):
     names: Required. The names refer to the [full_resource_names]
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
       [searchable asset types](https://cloud.google.com/asset-
-      inventory/docs/supported-asset-types#searchable_asset_types). A maximum
-      of 20 resources' effective policies can be retrieved in a batch.
+      inventory/docs/supported-asset-types). A maximum of 20 resources'
+      effective policies can be retrieved in a batch.
     scope: Required. Only IAM policies on or below the scope will be returned.
       This can only be an organization number (such as "organizations/123"), a
       folder number (such as "folders/123"), a project ID (such as
@@ -1261,12 +1260,12 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
     assetTypes: Optional. A list of asset types that the IAM policies are
       attached to. If empty, it will search the IAM policies that are attached
       to all the [searchable asset types](https://cloud.google.com/asset-
-      inventory/docs/supported-asset-types#searchable_asset_types). Regular
-      expressions are also supported. For example: *
-      "compute.googleapis.com.*" snapshots IAM policies attached to asset type
-      starts with "compute.googleapis.com". * ".*Instance" snapshots IAM
-      policies attached to asset type ends with "Instance". * ".*Instance.*"
-      snapshots IAM policies attached to asset type contains "Instance". See
+      inventory/docs/supported-asset-types). Regular expressions are also
+      supported. For example: * "compute.googleapis.com.*" snapshots IAM
+      policies attached to asset type starts with "compute.googleapis.com". *
+      ".*Instance" snapshots IAM policies attached to asset type ends with
+      "Instance". * ".*Instance.*" snapshots IAM policies attached to asset
+      type contains "Instance". See
       [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
       regular expression syntax. If the regular expression does not match any
       supported asset type, an INVALID_ARGUMENT error will be returned.
@@ -1347,12 +1346,12 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
     assetTypes: Optional. A list of asset types that this request searches
       for. If empty, it will search all the [searchable asset
       types](https://cloud.google.com/asset-inventory/docs/supported-asset-
-      types#searchable_asset_types). Regular expressions are also supported.
-      For example: * "compute.googleapis.com.*" snapshots resources whose
-      asset type starts with "compute.googleapis.com". * ".*Instance"
-      snapshots resources whose asset type ends with "Instance". *
-      ".*Instance.*" snapshots resources whose asset type contains "Instance".
-      See [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
+      types). Regular expressions are also supported. For example: *
+      "compute.googleapis.com.*" snapshots resources whose asset type starts
+      with "compute.googleapis.com". * ".*Instance" snapshots resources whose
+      asset type ends with "Instance". * ".*Instance.*" snapshots resources
+      whose asset type contains "Instance". See
+      [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
       regular expression syntax. If the regular expression does not match any
       supported asset type, an INVALID_ARGUMENT error will be returned.
     orderBy: Optional. A comma-separated list of fields specifying the sorting
@@ -5021,14 +5020,14 @@ class ResourceSearchResult(_messages.Message):
       returned by the List or Get APIs provided by the corresponding Google
       Cloud service (e.g., Compute Engine). see [API references and supported
       searchable attributes](https://cloud.google.com/asset-
-      inventory/docs/supported-asset-types#searchable_asset_types) to see
-      which fields are included. You can search values of these fields through
-      free text search. However, you should not consume the field
-      programically as the field names and values may change as the Google
-      Cloud service updates to a new incompatible API version. To search
-      against the `additional_attributes`: * Use a free text query to match
-      the attributes values. Example: to search `additional_attributes = {
-      dnsName: "foobar" }`, you can issue a query `foobar`.
+      inventory/docs/supported-asset-types) to see which fields are included.
+      You can search values of these fields through free text search. However,
+      you should not consume the field programically as the field names and
+      values may change as the Google Cloud service updates to a new
+      incompatible API version. To search against the `additional_attributes`:
+      * Use a free text query to match the attributes values. Example: to
+      search `additional_attributes = { dnsName: "foobar" }`, you can issue a
+      query `foobar`.
     LabelsValue: Labels associated with this resource. See [Labelling and
       grouping Google Cloud
       resources](https://cloud.google.com/blog/products/gcp/labelling-and-
@@ -5058,14 +5057,14 @@ class ResourceSearchResult(_messages.Message):
       returned by the List or Get APIs provided by the corresponding Google
       Cloud service (e.g., Compute Engine). see [API references and supported
       searchable attributes](https://cloud.google.com/asset-
-      inventory/docs/supported-asset-types#searchable_asset_types) to see
-      which fields are included. You can search values of these fields through
-      free text search. However, you should not consume the field
-      programically as the field names and values may change as the Google
-      Cloud service updates to a new incompatible API version. To search
-      against the `additional_attributes`: * Use a free text query to match
-      the attributes values. Example: to search `additional_attributes = {
-      dnsName: "foobar" }`, you can issue a query `foobar`.
+      inventory/docs/supported-asset-types) to see which fields are included.
+      You can search values of these fields through free text search. However,
+      you should not consume the field programically as the field names and
+      values may change as the Google Cloud service updates to a new
+      incompatible API version. To search against the `additional_attributes`:
+      * Use a free text query to match the attributes values. Example: to
+      search `additional_attributes = { dnsName: "foobar" }`, you can issue a
+      query `foobar`.
     assetType: The type of this resource. Example:
       `compute.googleapis.com/Disk`. To search against the `asset_type`: *
       Specify the `asset_type` field in your search request.
@@ -5252,14 +5251,13 @@ class ResourceSearchResult(_messages.Message):
     provided by the corresponding Google Cloud service (e.g., Compute Engine).
     see [API references and supported searchable
     attributes](https://cloud.google.com/asset-inventory/docs/supported-asset-
-    types#searchable_asset_types) to see which fields are included. You can
-    search values of these fields through free text search. However, you
-    should not consume the field programically as the field names and values
-    may change as the Google Cloud service updates to a new incompatible API
-    version. To search against the `additional_attributes`: * Use a free text
-    query to match the attributes values. Example: to search
-    `additional_attributes = { dnsName: "foobar" }`, you can issue a query
-    `foobar`.
+    types) to see which fields are included. You can search values of these
+    fields through free text search. However, you should not consume the field
+    programically as the field names and values may change as the Google Cloud
+    service updates to a new incompatible API version. To search against the
+    `additional_attributes`: * Use a free text query to match the attributes
+    values. Example: to search `additional_attributes = { dnsName: "foobar"
+    }`, you can issue a query `foobar`.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -5812,7 +5810,7 @@ class VersionedResource(_messages.Message):
       `https://cloud.google.com/compute/docs/reference/rest/v1/instances`. You
       can find the resource definition for each supported resource type in
       this table: `https://cloud.google.com/asset-inventory/docs/supported-
-      asset-types#searchable_asset_types`
+      asset-types`
 
   Fields:
     resource: JSON representation of the resource as defined by the
@@ -5822,7 +5820,7 @@ class VersionedResource(_messages.Message):
       `https://cloud.google.com/compute/docs/reference/rest/v1/instances`. You
       can find the resource definition for each supported resource type in
       this table: `https://cloud.google.com/asset-inventory/docs/supported-
-      asset-types#searchable_asset_types`
+      asset-types`
     version: API version of the resource. Example: If the resource is an
       instance provided by Compute Engine v1 API as defined in
       `https://cloud.google.com/compute/docs/reference/rest/v1/instances`,
@@ -5838,7 +5836,7 @@ class VersionedResource(_messages.Message):
     `https://cloud.google.com/compute/docs/reference/rest/v1/instances`. You
     can find the resource definition for each supported resource type in this
     table: `https://cloud.google.com/asset-inventory/docs/supported-asset-
-    types#searchable_asset_types`
+    types`
 
     Messages:
       AdditionalProperty: An additional property for a ResourceValue object.

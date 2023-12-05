@@ -2194,10 +2194,11 @@ class ResourceFilter(_messages.Message):
 
 class ResourceSelector(_messages.Message):
   r"""Defines a selector to identify a single or a group of resources.
-  Conditions in the selector are optional, if a condition is not specified, no
-  restrictions will be applied on that dimension. If more than one condition
-  is specified, a resource will be selected if and only if all conditions are
-  met. Next id: 5
+  Conditions in the selector are optional, but at least one field should be
+  set to a non-empty value. If a condition is not specified, no restrictions
+  will be applied on that dimension. If more than one condition is specified,
+  a resource will be selected if and only if all conditions are met. Next id:
+  5
 
   Messages:
     LabelsValue: Optional. Selects resources using Kubernetes
@@ -2262,7 +2263,7 @@ class ResourceSelector(_messages.Message):
 
 class Restore(_messages.Message):
   r"""Represents both a request to Restore some portion of a Backup into a
-  target GKE cluster and a record of the restore operation itself. Next id: 19
+  target GKE cluster and a record of the restore operation itself. Next id: 20
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the Restore.
@@ -2319,6 +2320,9 @@ class Restore(_messages.Message):
       format.
     updateTime: Output only. The timestamp when this Restore resource was last
       updated.
+    volumeDataRestorePolicyOverrides: Optional. Immutable. Overrides the
+      volume data restore policies selected in the Restore Config for
+      override-scoped resources.
     volumesRestoredCount: Output only. Number of volumes restored during the
       restore execution.
   """
@@ -2386,11 +2390,12 @@ class Restore(_messages.Message):
   stateReason = _messages.StringField(15)
   uid = _messages.StringField(16)
   updateTime = _messages.StringField(17)
-  volumesRestoredCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  volumeDataRestorePolicyOverrides = _messages.MessageField('VolumeDataRestorePolicyOverride', 18, repeated=True)
+  volumesRestoredCount = _messages.IntegerField(19, variant=_messages.Variant.INT32)
 
 
 class RestoreConfig(_messages.Message):
-  r"""Configuration of a restore. Next id: 12
+  r"""Configuration of a restore. Next id: 13
 
   Enums:
     ClusterResourceConflictPolicyValueValuesEnum: Optional. Defines the
@@ -2445,6 +2450,10 @@ class RestoreConfig(_messages.Message):
     volumeDataRestorePolicy: Optional. Specifies the mechanism to be used to
       restore volume data. Default: VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED
       (will be treated as NO_VOLUME_DATA_RESTORATION).
+    volumeDataRestorePolicyBindings: Optional. A table that binds volumes by
+      their scope to a restore policy. Bindings must have a unique scope. Any
+      volumes not scoped in the bindings are subject to the policy defined in
+      volume_data_restore_policy.
   """
 
   class ClusterResourceConflictPolicyValueValuesEnum(_messages.Enum):
@@ -2561,6 +2570,7 @@ class RestoreConfig(_messages.Message):
   substitutionRules = _messages.MessageField('SubstitutionRule', 9, repeated=True)
   transformationRules = _messages.MessageField('TransformationRule', 10, repeated=True)
   volumeDataRestorePolicy = _messages.EnumField('VolumeDataRestorePolicyValueValuesEnum', 11)
+  volumeDataRestorePolicyBindings = _messages.MessageField('VolumeDataRestorePolicyBinding', 12, repeated=True)
 
 
 class RestorePlan(_messages.Message):
@@ -3096,6 +3106,103 @@ class VolumeBackup(_messages.Message):
   uid = _messages.StringField(11)
   updateTime = _messages.StringField(12)
   volumeBackupHandle = _messages.StringField(13)
+
+
+class VolumeDataRestorePolicyBinding(_messages.Message):
+  r"""Binds resources in the scope to the given VolumeDataRestorePolicy.
+
+  Enums:
+    PolicyValueValuesEnum: Required. The VolumeDataRestorePolicy to apply when
+      restoring volumes in scope.
+    VolumeTypeValueValuesEnum: The volume type, as determined by the PVC's
+      bound PV, to apply the policy to.
+
+  Fields:
+    policy: Required. The VolumeDataRestorePolicy to apply when restoring
+      volumes in scope.
+    volumeType: The volume type, as determined by the PVC's bound PV, to apply
+      the policy to.
+  """
+
+  class PolicyValueValuesEnum(_messages.Enum):
+    r"""Required. The VolumeDataRestorePolicy to apply when restoring volumes
+    in scope.
+
+    Values:
+      VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED: Unspecified (illegal).
+      RESTORE_VOLUME_DATA_FROM_BACKUP: For each PVC to be restored, create a
+        new underlying volume and PV from the corresponding VolumeBackup
+        contained within the Backup.
+      REUSE_VOLUME_HANDLE_FROM_BACKUP: For each PVC to be restored, attempt to
+        reuse the original PV contained in the Backup (with its original
+        underlying volume). This option is likely only usable when restoring a
+        workload to its original cluster.
+      NO_VOLUME_DATA_RESTORATION: For each PVC to be restored, create PVC
+        without any particular action to restore data. In this case, the
+        normal Kubernetes provisioning logic would kick in, and this would
+        likely result in either dynamically provisioning blank PVs or binding
+        to statically provisioned PVs.
+    """
+    VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED = 0
+    RESTORE_VOLUME_DATA_FROM_BACKUP = 1
+    REUSE_VOLUME_HANDLE_FROM_BACKUP = 2
+    NO_VOLUME_DATA_RESTORATION = 3
+
+  class VolumeTypeValueValuesEnum(_messages.Enum):
+    r"""The volume type, as determined by the PVC's bound PV, to apply the
+    policy to.
+
+    Values:
+      VOLUME_TYPE_UNSPECIFIED: Default
+      GCE_PERSISTENT_DISK: Compute Engine Persistent Disk volume
+    """
+    VOLUME_TYPE_UNSPECIFIED = 0
+    GCE_PERSISTENT_DISK = 1
+
+  policy = _messages.EnumField('PolicyValueValuesEnum', 1)
+  volumeType = _messages.EnumField('VolumeTypeValueValuesEnum', 2)
+
+
+class VolumeDataRestorePolicyOverride(_messages.Message):
+  r"""Defines an override to apply a VolumeDataRestorePolicy for scoped
+  resources.
+
+  Enums:
+    PolicyValueValuesEnum: Required. The VolumeDataRestorePolicy to apply when
+      restoring volumes in scope.
+
+  Fields:
+    policy: Required. The VolumeDataRestorePolicy to apply when restoring
+      volumes in scope.
+    selectedPvcs: A list of PVCs to apply the policy override to.
+  """
+
+  class PolicyValueValuesEnum(_messages.Enum):
+    r"""Required. The VolumeDataRestorePolicy to apply when restoring volumes
+    in scope.
+
+    Values:
+      VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED: Unspecified (illegal).
+      RESTORE_VOLUME_DATA_FROM_BACKUP: For each PVC to be restored, create a
+        new underlying volume and PV from the corresponding VolumeBackup
+        contained within the Backup.
+      REUSE_VOLUME_HANDLE_FROM_BACKUP: For each PVC to be restored, attempt to
+        reuse the original PV contained in the Backup (with its original
+        underlying volume). This option is likely only usable when restoring a
+        workload to its original cluster.
+      NO_VOLUME_DATA_RESTORATION: For each PVC to be restored, create PVC
+        without any particular action to restore data. In this case, the
+        normal Kubernetes provisioning logic would kick in, and this would
+        likely result in either dynamically provisioning blank PVs or binding
+        to statically provisioned PVs.
+    """
+    VOLUME_DATA_RESTORE_POLICY_UNSPECIFIED = 0
+    RESTORE_VOLUME_DATA_FROM_BACKUP = 1
+    REUSE_VOLUME_HANDLE_FROM_BACKUP = 2
+    NO_VOLUME_DATA_RESTORATION = 3
+
+  policy = _messages.EnumField('PolicyValueValuesEnum', 1)
+  selectedPvcs = _messages.MessageField('NamespacedNames', 2)
 
 
 class VolumeRestore(_messages.Message):

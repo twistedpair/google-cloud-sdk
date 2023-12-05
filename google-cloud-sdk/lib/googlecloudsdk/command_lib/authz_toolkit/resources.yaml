@@ -44,3 +44,15 @@ binding:
     parameter_name: bindingsId
     attribute_name: binding
     help: Id of the binding.
+
+target_association:
+  name: target_association
+  collection: authztoolkit.projects.locations.targetAssociations
+  request_id_field: targetAssociationId
+  attributes:
+  - *project
+  - *location
+  - &target_association
+    parameter_name: targetAssociationsId
+    attribute_name: target_association
+    help: Id of the targetAssociation.

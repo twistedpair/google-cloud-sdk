@@ -86,6 +86,7 @@ definitions:
         api_field: {type: string}
         arg_name: {type: string}
         help_text: {type: string}
+        hidden: {type: boolean}
         spec: {$ref: "#/definitions/flag_spec"}
 
   fallthrough:

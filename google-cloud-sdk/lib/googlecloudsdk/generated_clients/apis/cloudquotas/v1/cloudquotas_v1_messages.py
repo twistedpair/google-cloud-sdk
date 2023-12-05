@@ -1,6 +1,6 @@
 """Generated message classes for cloudquotas version v1.
 
-Cloud Quotas API provides GCP service consumers with management and
+Cloud Quotas API provides Google Cloud service consumers with management and
 observability for resource usage, quotas, and restrictions of the services
 they consume.
 """
@@ -628,8 +628,8 @@ class QuotaConfig(_messages.Message):
     requestOrigin: Output only. The origin of the quota preference request.
     stateDetail: Output only. Optional details about the state of this quota
       preference.
-    traceId: Output only. The trace id that the GCP uses to provision the
-      requested quota. This trace id may be used by the client to contact
+    traceId: Output only. The trace id that the Google Cloud uses to provision
+      the requested quota. This trace id may be used by the client to contact
       Cloud support to track the state of a quota preference request. The
       trace id is only produced for increase requests and is unique for each
       request. The quota decrease requests do not have a trace id.
@@ -716,11 +716,12 @@ class QuotaIncreaseEligibility(_messages.Message):
     Values:
       INELIGIBILITY_REASON_UNSPECIFIED: Default value when is_eligible is
         true.
-      NO_BILLING_ACCOUNT: The container is not linked with a billing account.
+      NO_VALID_BILLING_ACCOUNT: The container is not linked with a valid
+        billing account.
       OTHER: Other reasons.
     """
     INELIGIBILITY_REASON_UNSPECIFIED = 0
-    NO_BILLING_ACCOUNT = 1
+    NO_VALID_BILLING_ACCOUNT = 1
     OTHER = 2
 
   ineligibilityReason = _messages.EnumField('IneligibilityReasonValueValuesEnum', 1)
@@ -824,6 +825,16 @@ class QuotaPreference(_messages.Message):
       service specific dimension.
 
   Fields:
+    contactEmail: Optional. Input only. An optional email address that can be
+      used for quota related communication between the Google Cloud and the
+      user in case the Google Cloud needs further information to make a
+      decision on whether the user preferred quota can be granted. The Google
+      account for the email address must have quota update permission for the
+      project, folder or organization this quota preference is for. If no
+      contact email address is provided, or the provided email address does
+      not have the required quota update permission, the quota preference
+      request will be denied in case further information is required to make a
+      decision.
     createTime: Output only. Create time stamp
     dimensions: The dimensions that this quota preference applies to. The key
       of the map entry is the name of a dimension, such as "region", "zone",
@@ -849,8 +860,8 @@ class QuotaPreference(_messages.Message):
     quotaId: Required. The id of the quota to which the quota preference is
       applied. A quota name is unique in the service. Example:
       `CpusPerProjectPerRegion`
-    reconciling: Output only. Is the quota preference pending GCP approval and
-      fulfillment.
+    reconciling: Output only. Is the quota preference pending Google Cloud
+      approval and fulfillment.
     service: Required. The name of the service to which the quota preference
       is applied.
     updateTime: Output only. Update time stamp
@@ -888,16 +899,17 @@ class QuotaPreference(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  dimensions = _messages.MessageField('DimensionsValue', 2)
-  etag = _messages.StringField(3)
-  justification = _messages.StringField(4)
-  name = _messages.StringField(5)
-  quotaConfig = _messages.MessageField('QuotaConfig', 6)
-  quotaId = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  service = _messages.StringField(9)
-  updateTime = _messages.StringField(10)
+  contactEmail = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  dimensions = _messages.MessageField('DimensionsValue', 3)
+  etag = _messages.StringField(4)
+  justification = _messages.StringField(5)
+  name = _messages.StringField(6)
+  quotaConfig = _messages.MessageField('QuotaConfig', 7)
+  quotaId = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  service = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class StandardQueryParameters(_messages.Message):

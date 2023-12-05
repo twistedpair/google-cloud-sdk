@@ -305,10 +305,9 @@ def ValidateRuntimeOrRaise(client, runtime, region):
 
   if len(response.runtimes) < 1:
     raise exceptions.FunctionsError(
-        'argument `--runtime`: {} is not a supported runtime. Use `gcloud'
-        ' functions runtimes list` to get a list of available runtimes'.format(
-            runtime
-        )
+        'argument `--runtime`: {} is not a supported runtime on'
+        ' GCF 1st gen. Use `gcloud functions runtimes list` to get a list'
+        ' of available runtimes'.format(runtime)
     )
   runtime_info = response.runtimes[0]
 

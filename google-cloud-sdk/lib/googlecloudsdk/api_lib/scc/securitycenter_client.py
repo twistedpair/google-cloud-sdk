@@ -25,6 +25,7 @@ API_NAME = 'securitycenter'
 BETA_API_VERSION = 'v1beta1'
 V1_API_VERSION = 'v1'
 V1P1BETA1_API_VERSION = 'v1p1beta1'
+V2_API_VERSION = 'v2'
 
 
 def GetClient(version=V1_API_VERSION):

@@ -39,7 +39,7 @@ from googlecloudsdk.command_lib.storage.tasks import task
 from googlecloudsdk.command_lib.storage.tasks import task_status
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import upload_util
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
@@ -615,8 +615,8 @@ class DaisyChainCopyTask(copy_util.ObjectCopyTaskWithExitHandler):
 
     if self._delete_source:
       return task.Output(
-          additional_task_iterators=[[
-              delete_object_task.DeleteObjectTask(
-                  self._source_resource.storage_url)
-          ]],
-          messages=None)
+          additional_task_iterators=[
+              [delete_task.DeleteObjectTask(self._source_resource.storage_url)]
+          ],
+          messages=None,
+      )

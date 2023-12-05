@@ -41,7 +41,7 @@ from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.cp import download_util
 from googlecloudsdk.command_lib.storage.tasks.cp import file_part_download_task
 from googlecloudsdk.command_lib.storage.tasks.cp import finalize_sliced_download_task
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import scaled_integer
@@ -311,7 +311,7 @@ class FileDownloadTask(copy_util.ObjectCopyTaskWithExitHandler):
     if self._delete_source:
       return task.Output(
           additional_task_iterators=[[
-              delete_object_task.DeleteObjectTask(
-                  self._source_resource.storage_url),
+              delete_task.DeleteObjectTask(self._source_resource.storage_url),
           ]],
-          messages=None)
+          messages=None,
+      )

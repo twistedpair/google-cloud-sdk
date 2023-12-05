@@ -14,6 +14,25 @@ from apitools.base.py import extra_types
 package = 'storageinsights'
 
 
+class BucketErrors(_messages.Message):
+  r"""Provides a summary of the bucket level error stats.
+
+  Fields:
+    internalErrorCount: Optional. Buckets that were not validated due to
+      internal errors and will be automatically retried.
+    permissionDeniedBucketIds: Optional. Subset of bucket names that have
+      permission denied.
+    permissionDeniedCount: Optional. Count of buckets with permission denied
+      errors.
+    validatedCount: Optional. Count of successfully validated buckets.
+  """
+
+  internalErrorCount = _messages.IntegerField(1)
+  permissionDeniedBucketIds = _messages.StringField(2, repeated=True)
+  permissionDeniedCount = _messages.IntegerField(3)
+  validatedCount = _messages.IntegerField(4)
+
+
 class CSVOptions(_messages.Message):
   r"""Options to configure CSV formatted reports.
 
@@ -687,6 +706,25 @@ class ParquetOptions(_messages.Message):
   r"""Options to configure Parquet formatted reports."""
 
 
+class ProjectErrors(_messages.Message):
+  r"""Provides a summary of the project level error stats.
+
+  Fields:
+    internalErrorCount: Optional. Projects that were not validated for
+      internal errors and will be automatically retried.
+    outsideOrgErrorCount: Optional. Count of projects which are not in the
+      same organization.
+    outsideOrgProjectNumbers: Optional. Subset of project numbers which are
+      not in the same organization.
+    validatedCount: Optional. Count of successfully validated projects.
+  """
+
+  internalErrorCount = _messages.IntegerField(1)
+  outsideOrgErrorCount = _messages.IntegerField(2)
+  outsideOrgProjectNumbers = _messages.IntegerField(3, repeated=True)
+  validatedCount = _messages.IntegerField(4)
+
+
 class ReportConfig(_messages.Message):
   r"""Message describing ReportConfig object. ReportConfig is the
   configuration to generate reports. See
@@ -1325,6 +1363,21 @@ class TimeZone(_messages.Message):
 
 class UnlinkDatasetRequest(_messages.Message):
   r"""A UnlinkDatasetRequest object."""
+
+
+class ValidationErrorsBeforeIngestion(_messages.Message):
+  r"""Summary of validation errors that occurred during the Verification
+  phase. Next ID: 3
+
+  Fields:
+    bucketErrors: Optional. Provides a summary of the bucket level error
+      stats.
+    projectErrors: Optional. Provides a summary of the project level error
+      stats.
+  """
+
+  bucketErrors = _messages.MessageField('BucketErrors', 1)
+  projectErrors = _messages.MessageField('ProjectErrors', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

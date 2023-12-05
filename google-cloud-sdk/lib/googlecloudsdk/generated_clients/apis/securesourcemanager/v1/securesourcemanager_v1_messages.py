@@ -397,12 +397,14 @@ class Instance(_messages.Message):
       ACTIVE: Instance is ready.
       DELETING: Instance is being deleted.
       PAUSED: Instance is paused.
+      UNKNOWN: Instance is unknown, we are not sure if it's functioning.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
     ACTIVE = 2
     DELETING = 3
     PAUSED = 4
+    UNKNOWN = 5
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):

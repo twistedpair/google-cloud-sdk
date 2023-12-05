@@ -57,7 +57,7 @@ def ListOperations(project, limit=None, operation_filter=None):
   """
   list_request = GetMessages().DatastoreProjectsOperationsListRequest(
       filter=operation_filter, name='projects/{0}'.format(project))
-  batch_size = min(limit, DEFAULT_PAGE_SIZE) if limit else DEFAULT_PAGE_SIZE
+  batch_size = limit if limit else DEFAULT_PAGE_SIZE
   return list_pager.YieldFromList(
       GetService(),
       list_request,

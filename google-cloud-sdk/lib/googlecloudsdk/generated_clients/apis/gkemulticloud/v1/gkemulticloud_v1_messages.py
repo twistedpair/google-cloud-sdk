@@ -78,6 +78,21 @@ class GkemulticloudProjectsLocationsAttachedClustersDeleteRequest(_messages.Mess
   validateOnly = _messages.BooleanField(5)
 
 
+class GkemulticloudProjectsLocationsAttachedClustersGenerateAttachedClusterAgentTokenRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAttachedClustersGenerateAttachedClusterA
+  gentTokenRequest object.
+
+  Fields:
+    attachedCluster: Required.
+    googleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenRequest: A
+      GoogleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenRequest
+      resource to be passed as the request body.
+  """
+
+  attachedCluster = _messages.StringField(1, required=True)
+  googleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenRequest = _messages.MessageField('GoogleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenRequest', 2)
+
+
 class GkemulticloudProjectsLocationsAttachedClustersGetRequest(_messages.Message):
   r"""A GkemulticloudProjectsLocationsAttachedClustersGetRequest object.
 
@@ -289,7 +304,10 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
       `config.autoscaling_metrics_collection`. *
       `config.autoscaling_metrics_collection.granularity`. *
       `config.autoscaling_metrics_collection.metrics`. *
-      `config.instance_type`. * `management.auto_repair`. * `management`.
+      `config.instance_type`. * `management.auto_repair`. * `management`. *
+      `update_settings`. * `update_settings.surge_settings`. *
+      `update_settings.surge_settings.max_surge`. *
+      `update_settings.surge_settings.max_unavailable`.
     validateOnly: If set, only validate the request, but don't actually update
       the node pool.
   """
@@ -298,6 +316,25 @@ class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsPatchRequest(_message
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
+
+
+class GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsRollbackRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsRollbackRequest
+  object.
+
+  Fields:
+    googleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest: A
+      GoogleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest resource to
+      be passed as the request body.
+    name: Required. The name of the AwsNodePool resource to rollback.
+      `AwsNodePool` names are formatted as
+      `projects//locations//awsClusters//awsNodePools/`. See [Resource
+      Names](https://cloud.google.com/apis/design/resource_names) for more
+      details on Google Cloud resource names.
+  """
+
+  googleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest = _messages.MessageField('GoogleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class GkemulticloudProjectsLocationsAwsClustersCreateRequest(_messages.Message):
@@ -369,6 +406,22 @@ class GkemulticloudProjectsLocationsAwsClustersGenerateAwsAccessTokenRequest(_me
   """
 
   awsCluster = _messages.StringField(1, required=True)
+
+
+class GkemulticloudProjectsLocationsAwsClustersGenerateAwsClusterAgentTokenRequest(_messages.Message):
+  r"""A
+  GkemulticloudProjectsLocationsAwsClustersGenerateAwsClusterAgentTokenRequest
+  object.
+
+  Fields:
+    awsCluster: Required.
+    googleCloudGkemulticloudV1GenerateAwsClusterAgentTokenRequest: A
+      GoogleCloudGkemulticloudV1GenerateAwsClusterAgentTokenRequest resource
+      to be passed as the request body.
+  """
+
+  awsCluster = _messages.StringField(1, required=True)
+  googleCloudGkemulticloudV1GenerateAwsClusterAgentTokenRequest = _messages.MessageField('GoogleCloudGkemulticloudV1GenerateAwsClusterAgentTokenRequest', 2)
 
 
 class GkemulticloudProjectsLocationsAwsClustersGetJwksRequest(_messages.Message):
@@ -749,6 +802,21 @@ class GkemulticloudProjectsLocationsAzureClustersGenerateAzureAccessTokenRequest
   """
 
   azureCluster = _messages.StringField(1, required=True)
+
+
+class GkemulticloudProjectsLocationsAzureClustersGenerateAzureClusterAgentTokenRequest(_messages.Message):
+  r"""A GkemulticloudProjectsLocationsAzureClustersGenerateAzureClusterAgentTo
+  kenRequest object.
+
+  Fields:
+    azureCluster: Required.
+    googleCloudGkemulticloudV1GenerateAzureClusterAgentTokenRequest: A
+      GoogleCloudGkemulticloudV1GenerateAzureClusterAgentTokenRequest resource
+      to be passed as the request body.
+  """
+
+  azureCluster = _messages.StringField(1, required=True)
+  googleCloudGkemulticloudV1GenerateAzureClusterAgentTokenRequest = _messages.MessageField('GoogleCloudGkemulticloudV1GenerateAzureClusterAgentTokenRequest', 2)
 
 
 class GkemulticloudProjectsLocationsAzureClustersGetJwksRequest(_messages.Message):
@@ -2972,6 +3040,46 @@ class GoogleCloudGkemulticloudV1Fleet(_messages.Message):
   project = _messages.StringField(2)
 
 
+class GoogleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenRequest(_messages.Message):
+  r"""A GoogleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenRequest
+  object.
+
+  Fields:
+    audience: Optional.
+    grantType: Optional.
+    options: Optional.
+    requestedTokenType: Optional.
+    scope: Optional.
+    subjectToken: Required.
+    subjectTokenType: Required.
+    version: Required.
+  """
+
+  audience = _messages.StringField(1)
+  grantType = _messages.StringField(2)
+  options = _messages.StringField(3)
+  requestedTokenType = _messages.StringField(4)
+  scope = _messages.StringField(5)
+  subjectToken = _messages.StringField(6)
+  subjectTokenType = _messages.StringField(7)
+  version = _messages.StringField(8)
+
+
+class GoogleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenResponse(_messages.Message):
+  r"""A GoogleCloudGkemulticloudV1GenerateAttachedClusterAgentTokenResponse
+  object.
+
+  Fields:
+    access_token: A string attribute.
+    expires_in: A integer attribute.
+    token_type: A string attribute.
+  """
+
+  access_token = _messages.StringField(1)
+  expires_in = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  token_type = _messages.StringField(3)
+
+
 class GoogleCloudGkemulticloudV1GenerateAttachedClusterInstallManifestResponse(_messages.Message):
   r"""Response message for
   `AttachedClusters.GenerateAttachedClusterInstallManifest` method.
@@ -2996,6 +3104,46 @@ class GoogleCloudGkemulticloudV1GenerateAwsAccessTokenResponse(_messages.Message
   expirationTime = _messages.StringField(2)
 
 
+class GoogleCloudGkemulticloudV1GenerateAwsClusterAgentTokenRequest(_messages.Message):
+  r"""A GoogleCloudGkemulticloudV1GenerateAwsClusterAgentTokenRequest object.
+
+  Fields:
+    audience: Optional.
+    grantType: Optional.
+    nodePoolId: Optional.
+    options: Optional.
+    requestedTokenType: Optional.
+    scope: Optional.
+    subjectToken: Required.
+    subjectTokenType: Required.
+    version: Required.
+  """
+
+  audience = _messages.StringField(1)
+  grantType = _messages.StringField(2)
+  nodePoolId = _messages.StringField(3)
+  options = _messages.StringField(4)
+  requestedTokenType = _messages.StringField(5)
+  scope = _messages.StringField(6)
+  subjectToken = _messages.StringField(7)
+  subjectTokenType = _messages.StringField(8)
+  version = _messages.StringField(9)
+
+
+class GoogleCloudGkemulticloudV1GenerateAwsClusterAgentTokenResponse(_messages.Message):
+  r"""A GoogleCloudGkemulticloudV1GenerateAwsClusterAgentTokenResponse object.
+
+  Fields:
+    access_token: A string attribute.
+    expires_in: A integer attribute.
+    token_type: A string attribute.
+  """
+
+  access_token = _messages.StringField(1)
+  expires_in = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  token_type = _messages.StringField(3)
+
+
 class GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse(_messages.Message):
   r"""Response message for `AzureClusters.GenerateAzureAccessToken` method.
 
@@ -3006,6 +3154,48 @@ class GoogleCloudGkemulticloudV1GenerateAzureAccessTokenResponse(_messages.Messa
 
   accessToken = _messages.StringField(1)
   expirationTime = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1GenerateAzureClusterAgentTokenRequest(_messages.Message):
+  r"""A GoogleCloudGkemulticloudV1GenerateAzureClusterAgentTokenRequest
+  object.
+
+  Fields:
+    audience: Optional.
+    grantType: Optional.
+    nodePoolId: Optional.
+    options: Optional.
+    requestedTokenType: Optional.
+    scope: Optional.
+    subjectToken: Required.
+    subjectTokenType: Required.
+    version: Required.
+  """
+
+  audience = _messages.StringField(1)
+  grantType = _messages.StringField(2)
+  nodePoolId = _messages.StringField(3)
+  options = _messages.StringField(4)
+  requestedTokenType = _messages.StringField(5)
+  scope = _messages.StringField(6)
+  subjectToken = _messages.StringField(7)
+  subjectTokenType = _messages.StringField(8)
+  version = _messages.StringField(9)
+
+
+class GoogleCloudGkemulticloudV1GenerateAzureClusterAgentTokenResponse(_messages.Message):
+  r"""A GoogleCloudGkemulticloudV1GenerateAzureClusterAgentTokenResponse
+  object.
+
+  Fields:
+    access_token: A string attribute.
+    expires_in: A integer attribute.
+    token_type: A string attribute.
+  """
+
+  access_token = _messages.StringField(1)
+  expires_in = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  token_type = _messages.StringField(3)
 
 
 class GoogleCloudGkemulticloudV1ImportAttachedClusterRequest(_messages.Message):
@@ -3305,6 +3495,18 @@ class GoogleCloudGkemulticloudV1ReplicaPlacement(_messages.Message):
 
   azureAvailabilityZone = _messages.StringField(1)
   subnetId = _messages.StringField(2)
+
+
+class GoogleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest(_messages.Message):
+  r"""Request message for `AwsClusters.RollbackAwsNodePoolUpdate` method.
+
+  Fields:
+    respectPdb: Optional. Option for rollback to ignore the
+      PodDisruptionBudget when draining the node pool nodes. Default value is
+      false.
+  """
+
+  respectPdb = _messages.BooleanField(1)
 
 
 class GoogleCloudGkemulticloudV1SpotConfig(_messages.Message):

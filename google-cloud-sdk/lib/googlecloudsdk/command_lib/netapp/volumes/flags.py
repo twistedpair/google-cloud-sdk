@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.netapp import util as netapp_api_util
+from googlecloudsdk.calliope import actions
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.command_lib.netapp import flags
@@ -292,16 +293,22 @@ def AddVolumeMonthlySnapshotArg(parser):
   parser.add_argument(
       '--snapshot-monthly',
       type=arg_parsers.ArgDict(spec=monthly_snapshot_arg_spec),
-      help=monthly_snapshot_help)
+      help=monthly_snapshot_help,
+  )
 
 
 def AddVolumeSnapReserveArg(parser):
   """Adds the --snap-reserve arg to the arg parser."""
+  action = actions.DeprecationAction(
+      'snap-reserve', warn='The {flag_name} option is deprecated', removed=False
+  )
   parser.add_argument(
       '--snap-reserve',
       type=float,
       help="""The percentage of volume storage reserved for snapshot storage.
-      The default value for this is 0 percent""")
+      The default value for this is 0 percent""",
+      action=action,
+  )
 
 
 def AddVolumeSnapshotDirectoryArg(parser):

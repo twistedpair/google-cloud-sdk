@@ -291,6 +291,33 @@ class AssuredworkloadsV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def EnableResourceMonitoring(self, request, global_params=None):
+      r"""Enable resource violation monitoring for a workload.
+
+      Args:
+        request: (AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAssuredworkloadsV1EnableResourceMonitoringResponse) The response message.
+      """
+      config = self.GetMethodConfig('EnableResourceMonitoring')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    EnableResourceMonitoring.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/locations/{locationsId}/workloads/{workloadsId}:enableResourceMonitoring',
+        http_method='POST',
+        method_id='assuredworkloads.organizations.locations.workloads.enableResourceMonitoring',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:enableResourceMonitoring',
+        request_field='',
+        request_type_name='AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest',
+        response_type_name='GoogleCloudAssuredworkloadsV1EnableResourceMonitoringResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets Assured Workload associated with a CRM Node.
 

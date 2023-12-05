@@ -49,7 +49,7 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsAnalyzeWorkloadMoveRequest(
       under the source resource. If empty, all assets are analyzed. The
       complete list of asset types is available
       [here](https://cloud.google.com/asset-inventory/docs/supported-asset-
-      types#searchable_asset_types).
+      types).
     pageSize: Optional. Page size. If a value is not specified, the default
       value of 10 is used.
     pageToken: Optional. The page token from the previous response. It needs
@@ -106,6 +106,18 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsDeleteRequest(_messages.Mes
 
   etag = _messages.StringField(1)
   name = _messages.StringField(2, required=True)
+
+
+class AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitoringRequest(_messages.Message):
+  r"""A AssuredworkloadsOrganizationsLocationsWorkloadsEnableResourceMonitorin
+  gRequest object.
+
+  Fields:
+    name: Required. The `name` field is used to identify the workload. Format:
+      organizations/{org_id}/locations/{location_id}/workloads/{workload_id}
+  """
+
+  name = _messages.StringField(1, required=True)
 
 
 class AssuredworkloadsOrganizationsLocationsWorkloadsGetRequest(_messages.Message):
@@ -249,7 +261,7 @@ class AssuredworkloadsOrganizationsLocationsWorkloadsViolationsListRequest(_mess
 
 
 class GoogleCloudAssuredworkloadsV1AcknowledgeViolationRequest(_messages.Message):
-  r"""Request for acknowledging the violation Next Id: 5
+  r"""Request for acknowledging the violation
 
   Enums:
     AcknowledgeTypeValueValuesEnum: Optional. Acknowledge type of specified
@@ -312,7 +324,7 @@ class GoogleCloudAssuredworkloadsV1AssetMoveAnalysis(_messages.Message):
       e1
     assetType: Type of the asset being analyzed. Possible values will be among
       the ones listed [here](https://cloud.google.com/asset-
-      inventory/docs/supported-asset-types#searchable_asset_types).
+      inventory/docs/supported-asset-types).
   """
 
   analysisGroups = _messages.MessageField('GoogleCloudAssuredworkloadsV1MoveAnalysisGroup', 1, repeated=True)
@@ -388,6 +400,10 @@ class GoogleCloudAssuredworkloadsV1CreateWorkloadOperationMetadata(_messages.Mes
   createTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
   parent = _messages.StringField(4)
+
+
+class GoogleCloudAssuredworkloadsV1EnableResourceMonitoringResponse(_messages.Message):
+  r"""Response for EnableResourceMonitoring endpoint."""
 
 
 class GoogleCloudAssuredworkloadsV1ListViolationsResponse(_messages.Message):
@@ -514,7 +530,7 @@ class GoogleCloudAssuredworkloadsV1RestrictAllowedResourcesResponse(_messages.Me
 
 
 class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
-  r"""Workload monitoring Violation. Next Id: 28
+  r"""Workload monitoring Violation.
 
   Enums:
     StateValueValuesEnum: Output only. State of the violation
@@ -618,7 +634,7 @@ class GoogleCloudAssuredworkloadsV1Violation(_messages.Message):
 
 
 class GoogleCloudAssuredworkloadsV1ViolationExceptionContext(_messages.Message):
-  r"""Violation exception detail. Next Id: 6
+  r"""Violation exception detail.
 
   Fields:
     acknowledgementTime: Timestamp when the violation was acknowledged.

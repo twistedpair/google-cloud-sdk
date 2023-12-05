@@ -76,6 +76,22 @@ class Collections(enum.Enum):
       ['billing_account', 'location', 'bucket', 'view'],
       True
   )
+  BILLINGACCOUNTS_LOCATIONS_RECENTQUERIES = (
+      'billingAccounts.locations.recentQueries',
+      'billingAccounts/{billing_account}/locations/{location}/recentQueries/'
+      '{saved_query}',
+      {},
+      ['billing_account', 'location', 'saved_query'],
+      True
+  )
+  BILLINGACCOUNTS_LOCATIONS_SAVEDQUERIES = (
+      'billingAccounts.locations.savedQueries',
+      'billingAccounts/{billing_account}/locations/{location}/savedQueries/'
+      '{saved_query}',
+      {},
+      ['billing_account', 'location', 'saved_query'],
+      True
+  )
   BILLINGACCOUNTS_LOGS = (
       'billingAccounts.logs',
       'billingAccounts/{billing_account}/logs/{log}',
@@ -144,6 +160,20 @@ class Collections(enum.Enum):
       'folders/{folder}/locations/{location}/buckets/{bucket}/views/{view}',
       {},
       ['folder', 'location', 'bucket', 'view'],
+      True
+  )
+  FOLDERS_LOCATIONS_RECENTQUERIES = (
+      'folders.locations.recentQueries',
+      'folders/{folder}/locations/{location}/recentQueries/{saved_query}',
+      {},
+      ['folder', 'location', 'saved_query'],
+      True
+  )
+  FOLDERS_LOCATIONS_SAVEDQUERIES = (
+      'folders.locations.savedQueries',
+      'folders/{folder}/locations/{location}/savedQueries/{saved_query}',
+      {},
+      ['folder', 'location', 'saved_query'],
       True
   )
   FOLDERS_LOGS = (
@@ -218,6 +248,22 @@ class Collections(enum.Enum):
       ['organization', 'location', 'bucket', 'view'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_RECENTQUERIES = (
+      'organizations.locations.recentQueries',
+      'organizations/{organization}/locations/{location}/recentQueries/'
+      '{saved_query}',
+      {},
+      ['organization', 'location', 'saved_query'],
+      True
+  )
+  ORGANIZATIONS_LOCATIONS_SAVEDQUERIES = (
+      'organizations.locations.savedQueries',
+      'organizations/{organization}/locations/{location}/savedQueries/'
+      '{saved_query}',
+      {},
+      ['organization', 'location', 'saved_query'],
+      True
+  )
   ORGANIZATIONS_LOGS = (
       'organizations.logs',
       'organizations/{organization}/logs/{log}',
@@ -286,6 +332,20 @@ class Collections(enum.Enum):
       'projects/{project}/locations/{location}/buckets/{bucket}/views/{view}',
       {},
       ['project', 'location', 'bucket', 'view'],
+      True
+  )
+  PROJECTS_LOCATIONS_RECENTQUERIES = (
+      'projects.locations.recentQueries',
+      'projects/{project}/locations/{location}/recentQueries/{recent_query}',
+      {},
+      ['project', 'location', 'recent_query'],
+      True
+  )
+  PROJECTS_LOCATIONS_SAVEDQUERIES = (
+      'projects.locations.savedQueries',
+      'projects/{project}/locations/{location}/savedQueries/{saved_query}',
+      {},
+      ['project', 'location', 'saved_query'],
       True
   )
   PROJECTS_LOGS = (

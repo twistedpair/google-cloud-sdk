@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -231,6 +231,28 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
     def parse_log_view_path(path: str) -> Dict[str,str]:
         """Parses a log_view path into its component segments."""
         m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/buckets/(?P<bucket>.+?)/views/(?P<view>.+?)$", path)
+        return m.groupdict() if m else {}
+
+    @staticmethod
+    def recent_query_path(project: str,location: str,recent_query: str,) -> str:
+        """Returns a fully-qualified recent_query string."""
+        return "projects/{project}/locations/{location}/recentQueries/{recent_query}".format(project=project, location=location, recent_query=recent_query, )
+
+    @staticmethod
+    def parse_recent_query_path(path: str) -> Dict[str,str]:
+        """Parses a recent_query path into its component segments."""
+        m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/recentQueries/(?P<recent_query>.+?)$", path)
+        return m.groupdict() if m else {}
+
+    @staticmethod
+    def saved_query_path(project: str,location: str,saved_query: str,) -> str:
+        """Returns a fully-qualified saved_query string."""
+        return "projects/{project}/locations/{location}/savedQueries/{saved_query}".format(project=project, location=location, saved_query=saved_query, )
+
+    @staticmethod
+    def parse_saved_query_path(path: str) -> Dict[str,str]:
+        """Parses a saved_query path into its component segments."""
+        m = re.match(r"^projects/(?P<project>.+?)/locations/(?P<location>.+?)/savedQueries/(?P<saved_query>.+?)$", path)
         return m.groupdict() if m else {}
 
     @staticmethod
@@ -516,6 +538,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.config_service_v2.pagers.ListBucketsPager:
                 The response from ListBuckets.
+
                 Iterating over this object will yield
                 results and resolve additional pages
                 automatically.
@@ -1230,6 +1253,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.config_service_v2.pagers.ListViewsPager:
                 The response from ListViews.
+
                 Iterating over this object will yield
                 results and resolve additional pages
                 automatically.
@@ -2580,6 +2604,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.config_service_v2.pagers.ListLinksPager:
                 The response from ListLinks.
+
                 Iterating over this object will yield
                 results and resolve additional pages
                 automatically.
@@ -3845,6 +3870,521 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             request,
             retry=retry,
             timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def list_saved_queries(self,
+            request: Optional[Union[logging_config.ListSavedQueriesRequest, dict]] = None,
+            *,
+            parent: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> pagers.ListSavedQueriesPager:
+        r"""Lists the SavedQueries that were created by the user
+        making the request.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_list_saved_queries():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListSavedQueriesRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_saved_queries(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListSavedQueriesRequest, dict]):
+                The request object. The parameters to 'ListSavedQueries'.
+            parent (str):
+                Required. The resource to which the listed queries
+                belong.
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+                    "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+                    "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+                    "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+
+                For example:
+
+                ::
+
+                    "projects/my-project/locations/us-central1"
+
+                Note: The locations portion of the resource must be
+                specified. To get a list of all saved queries, a
+                wildcard character ``-`` can be used for [LOCATION_ID],
+                for example:
+
+                ::
+
+                    "projects/my-project/locations/-"
+
+                This corresponds to the ``parent`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.config_service_v2.pagers.ListSavedQueriesPager:
+                The response from ListSavedQueries.
+
+                Iterating over this object will yield
+                results and resolve additional pages
+                automatically.
+
+        """
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([parent])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # Minor optimization to avoid making a copy if the user passes
+        # in a logging_config.ListSavedQueriesRequest.
+        # There's no risk of modifying the input as we've already verified
+        # there are no flattened fields.
+        if not isinstance(request, logging_config.ListSavedQueriesRequest):
+            request = logging_config.ListSavedQueriesRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if parent is not None:
+                request.parent = parent
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.list_saved_queries]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("parent", request.parent),
+            )),
+        )
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # This method is paged; wrap the response in a pager, which provides
+        # an `__iter__` convenience method.
+        response = pagers.ListSavedQueriesPager(
+            method=rpc,
+            request=request,
+            response=response,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def create_saved_query(self,
+            request: Optional[Union[logging_config.CreateSavedQueryRequest, dict]] = None,
+            *,
+            parent: Optional[str] = None,
+            saved_query: Optional[logging_config.SavedQuery] = None,
+            saved_query_id: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> logging_config.SavedQuery:
+        r"""Creates a new SavedQuery for the user making the
+        request.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_create_saved_query():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                saved_query = logging_v2.SavedQuery()
+                saved_query.logging_query.summary_field_start = 2046
+
+                request = logging_v2.CreateSavedQueryRequest(
+                    parent="parent_value",
+                    saved_query=saved_query,
+                )
+
+                # Make the request
+                response = client.create_saved_query(request=request)
+
+                # Handle the response
+                print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateSavedQueryRequest, dict]):
+                The request object. The parameters to 'CreateSavedQuery'.
+            parent (str):
+                Required. The parent resource in which to create the
+                saved query:
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+                    "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+                    "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+                    "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+
+                For example:
+
+                ::
+
+                    "projects/my-project/locations/global"
+                    "organizations/123456789/locations/us-central1"
+
+                This corresponds to the ``parent`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            saved_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery):
+                Required. The new saved query.
+                This corresponds to the ``saved_query`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            saved_query_id (str):
+                Optional. The ID to use for the saved query, which will
+                become the final component of the saved query's resource
+                name.
+
+                If the ``saved_query_id`` is not provided, the system
+                will generate an alphanumeric ID.
+
+                The ``saved_query_id`` is limited to 100 characters and
+                can include only the following characters: upper and
+                lower-case alphanumeric characters, underscores,
+                hyphens, and periods. First character has to be
+                alphanumeric.
+
+                This corresponds to the ``saved_query_id`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery:
+                Describes a query that has been saved
+                by a user.
+
+        """
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([parent, saved_query, saved_query_id])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # Minor optimization to avoid making a copy if the user passes
+        # in a logging_config.CreateSavedQueryRequest.
+        # There's no risk of modifying the input as we've already verified
+        # there are no flattened fields.
+        if not isinstance(request, logging_config.CreateSavedQueryRequest):
+            request = logging_config.CreateSavedQueryRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if parent is not None:
+                request.parent = parent
+            if saved_query is not None:
+                request.saved_query = saved_query
+            if saved_query_id is not None:
+                request.saved_query_id = saved_query_id
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.create_saved_query]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("parent", request.parent),
+            )),
+        )
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # Done; return the response.
+        return response
+
+    def delete_saved_query(self,
+            request: Optional[Union[logging_config.DeleteSavedQueryRequest, dict]] = None,
+            *,
+            name: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> None:
+        r"""Deletes an existing SavedQuery that was created by
+        the user making the request.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_delete_saved_query():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.DeleteSavedQueryRequest(
+                    name="name_value",
+                )
+
+                # Make the request
+                client.delete_saved_query(request=request)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.DeleteSavedQueryRequest, dict]):
+                The request object. The parameters to 'DeleteSavedQuery'.
+            name (str):
+                Required. The full resource name of the saved query to
+                delete.
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                    "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+
+                For example:
+
+                ::
+
+                    "projects/my-project/locations/global/savedQueries/my-saved-query"
+
+                This corresponds to the ``name`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+        """
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([name])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # Minor optimization to avoid making a copy if the user passes
+        # in a logging_config.DeleteSavedQueryRequest.
+        # There's no risk of modifying the input as we've already verified
+        # there are no flattened fields.
+        if not isinstance(request, logging_config.DeleteSavedQueryRequest):
+            request = logging_config.DeleteSavedQueryRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if name is not None:
+                request.name = name
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.delete_saved_query]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("name", request.name),
+            )),
+        )
+
+        # Send the request.
+        rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+    def list_recent_queries(self,
+            request: Optional[Union[logging_config.ListRecentQueriesRequest, dict]] = None,
+            *,
+            parent: Optional[str] = None,
+            retry: OptionalRetry = gapic_v1.method.DEFAULT,
+            timeout: Union[float, object] = gapic_v1.method.DEFAULT,
+            metadata: Sequence[Tuple[str, str]] = (),
+            ) -> pagers.ListRecentQueriesPager:
+        r"""Lists the RecentQueries that were created by the user
+        making the request.
+
+        .. code-block:: python
+
+            # This snippet has been automatically generated and should be regarded as a
+            # code template only.
+            # It will require modifications to work:
+            # - It may require correct/in-range values for request initialization.
+            # - It may require specifying regional endpoints when creating the service
+            #   client as shown in:
+            #   https://googleapis.dev/python/google-api-core/latest/client_options.html
+            from googlecloudsdk.generated_clients.gapic_clients import logging_v2
+
+            def sample_list_recent_queries():
+                # Create a client
+                client = logging_v2.ConfigServiceV2Client()
+
+                # Initialize request argument(s)
+                request = logging_v2.ListRecentQueriesRequest(
+                    parent="parent_value",
+                )
+
+                # Make the request
+                page_result = client.list_recent_queries(request=request)
+
+                # Handle the response
+                for response in page_result:
+                    print(response)
+
+        Args:
+            request (Union[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.ListRecentQueriesRequest, dict]):
+                The request object. The parameters to
+                'ListRecentQueries'.
+            parent (str):
+                Required. The resource to which the listed queries
+                belong.
+
+                ::
+
+                    "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+                    "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+                    "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+                    "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+
+                For example:
+
+                ``projects/my-project/locations/us-central1``
+
+                Note: The location portion of the resource must be
+                specified, but supplying the character ``-`` in place of
+                [LOCATION_ID] will return all recent queries.
+
+                This corresponds to the ``parent`` field
+                on the ``request`` instance; if ``request`` is provided, this
+                should not be set.
+            retry (google.api_core.retry.Retry): Designation of what errors, if any,
+                should be retried.
+            timeout (float): The timeout for this request.
+            metadata (Sequence[Tuple[str, str]]): Strings which should be
+                sent along with the request as metadata.
+
+        Returns:
+            googlecloudsdk.generated_clients.gapic_clients.logging_v2.services.config_service_v2.pagers.ListRecentQueriesPager:
+                The response from ListRecentQueries.
+
+                Iterating over this object will yield
+                results and resolve additional pages
+                automatically.
+
+        """
+        # Create or coerce a protobuf request object.
+        # Quick check: If we got a request object, we should *not* have
+        # gotten any keyword arguments that map to the request.
+        has_flattened_params = any([parent])
+        if request is not None and has_flattened_params:
+            raise ValueError('If the `request` argument is set, then none of '
+                             'the individual field arguments should be set.')
+
+        # Minor optimization to avoid making a copy if the user passes
+        # in a logging_config.ListRecentQueriesRequest.
+        # There's no risk of modifying the input as we've already verified
+        # there are no flattened fields.
+        if not isinstance(request, logging_config.ListRecentQueriesRequest):
+            request = logging_config.ListRecentQueriesRequest(request)
+            # If we have keyword arguments corresponding to fields on the
+            # request, apply these.
+            if parent is not None:
+                request.parent = parent
+
+        # Wrap the RPC method; this adds retry and timeout information,
+        # and friendly error handling.
+        rpc = self._transport._wrapped_methods[self._transport.list_recent_queries]
+
+         # Certain fields should be provided within the metadata header;
+        # add these here.
+        metadata = tuple(metadata) + (
+            gapic_v1.routing_header.to_grpc_metadata((
+                ("parent", request.parent),
+            )),
+        )
+
+        # Send the request.
+        response = rpc(
+            request,
+            retry=retry,
+            timeout=timeout,
+            metadata=metadata,
+        )
+
+        # This method is paged; wrap the response in a pager, which provides
+        # an `__iter__` convenience method.
+        response = pagers.ListRecentQueriesPager(
+            method=rpc,
+            request=request,
+            response=response,
             metadata=metadata,
         )
 

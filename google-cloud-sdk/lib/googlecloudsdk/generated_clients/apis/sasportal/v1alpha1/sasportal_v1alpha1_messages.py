@@ -472,7 +472,6 @@ class SasPortalInstallationParams(_messages.Message):
       A devices and conditional for Category B devices.
     antennaGain: Peak antenna gain in dBi. This parameter is an integer with a
       value between -127 and +128 (dBi) inclusive.
-    antennaGainNewField: As above, but as a DoubleValue.
     antennaModel: If an external antenna is used, the antenna model is
       optionally provided in this field. The string has a maximum length of
       128 octets.
@@ -482,7 +481,6 @@ class SasPortalInstallationParams(_messages.Message):
       dBm/10MHz and is an integer with a value between -127 and +47 (dBm/10
       MHz) inclusive. If not included, SAS interprets it as maximum allowable
       EIRP in units of dBm/10MHz for device category.
-    eirpCapabilityNewField: As above, but as a DoubleValue.
     height: Device antenna height in meters. When the `heightType` parameter
       value is "AGL", the antenna height should be given relative to ground
       level. When the `heightType` parameter value is "AMSL", it is given with
@@ -524,18 +522,16 @@ class SasPortalInstallationParams(_messages.Message):
   antennaBeamwidth = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   antennaDowntilt = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   antennaGain = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  antennaGainNewField = _messages.FloatField(5)
-  antennaModel = _messages.StringField(6)
-  cpeCbsdIndication = _messages.BooleanField(7)
-  eirpCapability = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  eirpCapabilityNewField = _messages.FloatField(9)
-  height = _messages.FloatField(10)
-  heightType = _messages.EnumField('HeightTypeValueValuesEnum', 11)
-  horizontalAccuracy = _messages.FloatField(12)
-  indoorDeployment = _messages.BooleanField(13)
-  latitude = _messages.FloatField(14)
-  longitude = _messages.FloatField(15)
-  verticalAccuracy = _messages.FloatField(16)
+  antennaModel = _messages.StringField(5)
+  cpeCbsdIndication = _messages.BooleanField(6)
+  eirpCapability = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  height = _messages.FloatField(8)
+  heightType = _messages.EnumField('HeightTypeValueValuesEnum', 9)
+  horizontalAccuracy = _messages.FloatField(10)
+  indoorDeployment = _messages.BooleanField(11)
+  latitude = _messages.FloatField(12)
+  longitude = _messages.FloatField(13)
+  verticalAccuracy = _messages.FloatField(14)
 
 
 class SasPortalListCustomersResponse(_messages.Message):

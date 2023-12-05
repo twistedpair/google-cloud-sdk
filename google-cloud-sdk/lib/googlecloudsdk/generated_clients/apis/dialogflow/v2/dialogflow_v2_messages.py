@@ -4383,6 +4383,39 @@ class GoogleCloudDialogflowCxV3AudioInput(_messages.Message):
   config = _messages.MessageField('GoogleCloudDialogflowCxV3InputAudioConfig', 2)
 
 
+class GoogleCloudDialogflowCxV3BargeInConfig(_messages.Message):
+  r"""Configuration of the barge-in behavior. Barge-in instructs the API to
+  return a detected utterance at a proper time while the client is playing
+  back the response audio from a previous request. When the client sees the
+  utterance, it should stop the playback and immediately get ready for
+  receiving the responses for the current request. The barge-in handling
+  requires the client to start streaming audio input as soon as it starts
+  playing back the audio from the previous response. The playback is modeled
+  into two phases: * No barge-in phase: which goes first and during which
+  speech detection should not be carried out. * Barge-in phase: which follows
+  the no barge-in phase and during which the API starts speech detection and
+  may inform the client that an utterance has been detected. Note that no-
+  speech event is not expected in this phase. The client provides this
+  configuration in terms of the durations of those two phases. The durations
+  are measured in terms of the audio length fromt the the start of the input
+  audio. The flow goes like below: --> Time without speech detection |
+  utterance only | utterance or no-speech event | | +-------------+ |
+  +------------+ | +---------------+ ----------+ no barge-in +-|-+ barge-in
+  +-|-+ normal period +----------- +-------------+ | +------------+ |
+  +---------------+ No-speech event is a response with END_OF_UTTERANCE
+  without any transcript following up.
+
+  Fields:
+    noBargeInDuration: Duration that is not eligible for barge-in at the
+      beginning of the input audio.
+    totalDuration: Total duration for the playback at the beginning of the
+      input audio.
+  """
+
+  noBargeInDuration = _messages.StringField(1)
+  totalDuration = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3BatchRunTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.BatchRunTestCases long running
   operation.
@@ -5227,6 +5260,8 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
 
   Fields:
     audioEncoding: Required. Audio encoding of the audio content to process.
+    bargeInConfig: Configuration of barge-in behavior during the streaming of
+      input audio.
     enableWordInfo: Optional. If `true`, Dialogflow returns SpeechWordInfo in
       StreamingRecognitionResult with information about the recognized speech
       words, e.g. start and end time offsets. If false or unspecified, Speech
@@ -5337,12 +5372,13 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
     USE_ENHANCED = 3
 
   audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
-  enableWordInfo = _messages.BooleanField(2)
-  model = _messages.StringField(3)
-  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 4)
-  phraseHints = _messages.StringField(5, repeated=True)
-  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  singleUtterance = _messages.BooleanField(7)
+  bargeInConfig = _messages.MessageField('GoogleCloudDialogflowCxV3BargeInConfig', 2)
+  enableWordInfo = _messages.BooleanField(3)
+  model = _messages.StringField(4)
+  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 5)
+  phraseHints = _messages.StringField(6, repeated=True)
+  sampleRateHertz = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(8)
 
 
 class GoogleCloudDialogflowCxV3Intent(_messages.Message):
@@ -6926,6 +6962,39 @@ class GoogleCloudDialogflowCxV3beta1AudioInput(_messages.Message):
   config = _messages.MessageField('GoogleCloudDialogflowCxV3beta1InputAudioConfig', 2)
 
 
+class GoogleCloudDialogflowCxV3beta1BargeInConfig(_messages.Message):
+  r"""Configuration of the barge-in behavior. Barge-in instructs the API to
+  return a detected utterance at a proper time while the client is playing
+  back the response audio from a previous request. When the client sees the
+  utterance, it should stop the playback and immediately get ready for
+  receiving the responses for the current request. The barge-in handling
+  requires the client to start streaming audio input as soon as it starts
+  playing back the audio from the previous response. The playback is modeled
+  into two phases: * No barge-in phase: which goes first and during which
+  speech detection should not be carried out. * Barge-in phase: which follows
+  the no barge-in phase and during which the API starts speech detection and
+  may inform the client that an utterance has been detected. Note that no-
+  speech event is not expected in this phase. The client provides this
+  configuration in terms of the durations of those two phases. The durations
+  are measured in terms of the audio length fromt the the start of the input
+  audio. The flow goes like below: --> Time without speech detection |
+  utterance only | utterance or no-speech event | | +-------------+ |
+  +------------+ | +---------------+ ----------+ no barge-in +-|-+ barge-in
+  +-|-+ normal period +----------- +-------------+ | +------------+ |
+  +---------------+ No-speech event is a response with END_OF_UTTERANCE
+  without any transcript following up.
+
+  Fields:
+    noBargeInDuration: Duration that is not eligible for barge-in at the
+      beginning of the input audio.
+    totalDuration: Total duration for the playback at the beginning of the
+      input audio.
+  """
+
+  noBargeInDuration = _messages.StringField(1)
+  totalDuration = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3beta1BatchRunTestCasesMetadata(_messages.Message):
   r"""Metadata returned for the TestCases.BatchRunTestCases long running
   operation.
@@ -7770,6 +7839,8 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
 
   Fields:
     audioEncoding: Required. Audio encoding of the audio content to process.
+    bargeInConfig: Configuration of barge-in behavior during the streaming of
+      input audio.
     enableWordInfo: Optional. If `true`, Dialogflow returns SpeechWordInfo in
       StreamingRecognitionResult with information about the recognized speech
       words, e.g. start and end time offsets. If false or unspecified, Speech
@@ -7880,12 +7951,13 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
     USE_ENHANCED = 3
 
   audioEncoding = _messages.EnumField('AudioEncodingValueValuesEnum', 1)
-  enableWordInfo = _messages.BooleanField(2)
-  model = _messages.StringField(3)
-  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 4)
-  phraseHints = _messages.StringField(5, repeated=True)
-  sampleRateHertz = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  singleUtterance = _messages.BooleanField(7)
+  bargeInConfig = _messages.MessageField('GoogleCloudDialogflowCxV3beta1BargeInConfig', 2)
+  enableWordInfo = _messages.BooleanField(3)
+  model = _messages.StringField(4)
+  modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 5)
+  phraseHints = _messages.StringField(6, repeated=True)
+  sampleRateHertz = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(8)
 
 
 class GoogleCloudDialogflowCxV3beta1Intent(_messages.Message):

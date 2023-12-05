@@ -34,16 +34,26 @@ def TranslateSecureTagsForFirewallPolicy(client, secure_tags):
 
   ret_secure_tags = []
   for tag in secure_tags:
-    if tag.startswith('tagValues/'):
-      ret_secure_tags.append(
-          client.messages.FirewallPolicyRuleSecureTag(name=tag))
-    else:
-      ret_secure_tags.append(
-          client.messages.FirewallPolicyRuleSecureTag(
-              name=tag_utils.GetNamespacedResource(
-                  tag, tag_utils.TAG_VALUES
-              ).name
-          )
-      )
+    name = TranslateSecureTag(tag)
+    ret_secure_tags.append(
+        client.messages.FirewallPolicyRuleSecureTag(name=name)
+    )
 
   return ret_secure_tags
+
+
+def TranslateSecureTag(secure_tag: str):
+  """Returns a unified secure tag identifier.
+
+  Translates the namespaced tag if required.
+
+  Args:
+    secure_tag: secure tag value in format tagValues/ID or
+      ORG_ID/TAG_KEY_NAME/TAG_VALUE_NAME
+
+  Returns:
+    Secure tag name in unified format tagValues/ID
+  """
+  if secure_tag.startswith('tagValues/'):
+    return secure_tag
+  return tag_utils.GetNamespacedResource(secure_tag, tag_utils.TAG_VALUES).name

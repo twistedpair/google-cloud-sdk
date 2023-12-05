@@ -1739,7 +1739,7 @@ class Lun(_messages.Message):
     name: Output only. The name of the LUN.
     shareable: Display if this LUN can be shared between multiple physical
       servers.
-    sizeGb: The size of this LUN, in gigabytes.
+    sizeGb: The size of this LUN, in GiB.
     state: The state of this storage volume.
     storageType: The storage type for this LUN.
     storageVolume: Display the storage volume for this LUN.

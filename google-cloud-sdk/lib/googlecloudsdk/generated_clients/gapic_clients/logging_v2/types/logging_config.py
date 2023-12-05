@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*-
-# Copyright 2022 Google LLC
+# Copyright 2023 Google LLC
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -73,6 +73,16 @@ __protobuf__ = proto.module(
         'GetSettingsRequest',
         'UpdateSettingsRequest',
         'Settings',
+        'LoggingQuery',
+        'OpsAnalyticsQuery',
+        'SavedQuery',
+        'RecentQuery',
+        'ListSavedQueriesRequest',
+        'ListSavedQueriesResponse',
+        'CreateSavedQueryRequest',
+        'DeleteSavedQueryRequest',
+        'ListRecentQueriesRequest',
+        'ListRecentQueriesResponse',
         'CopyLogEntriesRequest',
         'CopyLogEntriesMetadata',
         'CopyLogEntriesResponse',
@@ -240,6 +250,7 @@ class LogBucket(proto.Message):
             days will be used.
         locked (bool):
             Whether the bucket is locked.
+
             The retention period on a locked bucket cannot
             be changed. Locked buckets may only be deleted
             if they are empty.
@@ -431,6 +442,7 @@ class LogSink(proto.Message):
             ``logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR``
         description (str):
             Optional. A description of this sink.
+
             The maximum length of the description is 8000
             characters.
         disabled (bool):
@@ -614,6 +626,7 @@ class Link(proto.Message):
             \`projects/my-project/locations/global/buckets/my-bucket/links/my_link
         description (str):
             Describes this link.
+
             The maximum length of the description is 8000
             characters.
         create_time (google.protobuf.timestamp_pb2.Timestamp):
@@ -1321,11 +1334,11 @@ class UpdateSinkRequest(proto.Message):
                is set to false or defaulted to false.
         custom_writer_identity (str):
             Optional. A service account provided by the caller that will
-            be used to write the log entries. Must be of format
-            ``serviceAccount:some@email``. This can only be specified if
-            writing to a destination outside the sink's project. If not
-            specified, a p4 service account will automatically be
-            generated.
+            be used to write the log entries. The format must be
+            ``serviceAccount:some@email``. This field can only be
+            specified if you are routing logs to a destination outside
+            this sink's project. If not specified, a Logging service
+            account will automatically be generated.
         update_mask (google.protobuf.field_mask_pb2.FieldMask):
             Optional. Field mask that specifies the fields in ``sink``
             that need an update. A sink field will be overwritten if,
@@ -2184,17 +2197,88 @@ class Settings(proto.Message):
             where a location is explicitly provided when created, such
             as custom log buckets.
         disable_default_sink (bool):
-            Optional. If set to true, the \_Default sink in newly
+            Optional. If set to true, the ``_Default`` sink in newly
             created projects and folders will created in a disabled
             state. This can be used to automatically disable log storage
             if there is already an aggregated sink configured in the
-            hierarchy. The \_Default sink can be re-enabled manually if
-            needed.
+            hierarchy. The ``_Default`` sink can be re-enabled manually
+            if needed.
+        default_sink_config (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings.DefaultSinkConfig):
+            Optional. Overrides the built-in configuration for
+            ``_Default`` sink.
         logging_service_account_id (str):
-            Output only. The service account for the given container.
-            Sinks use this service account as their ``writer_identity``
-            if no custom service account is provided.
+            Output only. The service account for the given resource
+            container, such as project or folder. Log sinks use this
+            service account as their ``writer_identity`` if no custom
+            service account is provided in the request when calling the
+            create sink method.
     """
+
+    class DefaultSinkConfig(proto.Message):
+        r"""Describes the custom ``_Default`` sink configuration that is used to
+        override the built-in ``_Default`` sink configuration in newly
+        created resource containers, such as projects or folders.
+
+        Attributes:
+            filter (str):
+                Optional. An `advanced logs
+                filter <https://cloud.google.com/logging/docs/view/advanced-queries>`__.
+                The only exported log entries are those that are in the
+                resource owning the sink and that match the filter.
+
+                For example:
+
+                ``logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR``
+
+                Cannot be empty or unset if ``mode`` == OVERWRITE. In order
+                to match all logs, use the following line as the value of
+                ``filter`` and do not use exclusions:
+
+                ``logName:*``
+            exclusions (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
+                Optional. Specifies the set of exclusions to be added to the
+                ``_Default`` sink in newly created resource containers.
+            mode (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings.DefaultSinkConfig.FilterWriteMode):
+                Required. Determines the behavior to apply to the built-in
+                ``_Default`` sink inclusion filter.
+
+                Exclusions are always appended, as built-in ``_Default``
+                sinks have no exclusions.
+        """
+        class FilterWriteMode(proto.Enum):
+            r"""Behavior to apply to the built-in ``_Default`` sink inclusion
+            filter.
+
+            Values:
+                FILTER_WRITE_MODE_UNSPECIFIED (0):
+                    The filter's write mode is unspecified. This
+                    mode must not be used.
+                APPEND (1):
+                    The contents of ``filter`` will be appended to the built-in
+                    ``_Default`` sink filter. Using the append mode with an
+                    empty filter will keep the sink inclusion filter unchanged.
+                OVERWRITE (2):
+                    The contents of ``filter`` will overwrite the built-in
+                    ``_Default`` sink filter.
+            """
+            FILTER_WRITE_MODE_UNSPECIFIED = 0
+            APPEND = 1
+            OVERWRITE = 2
+
+        filter: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+        exclusions: MutableSequence['LogExclusion'] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=2,
+            message='LogExclusion',
+        )
+        mode: 'Settings.DefaultSinkConfig.FilterWriteMode' = proto.Field(
+            proto.ENUM,
+            number=3,
+            enum='Settings.DefaultSinkConfig.FilterWriteMode',
+        )
 
     name: str = proto.Field(
         proto.STRING,
@@ -2216,9 +2300,543 @@ class Settings(proto.Message):
         proto.BOOL,
         number=5,
     )
+    default_sink_config: DefaultSinkConfig = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=DefaultSinkConfig,
+    )
     logging_service_account_id: str = proto.Field(
         proto.STRING,
         number=7,
+    )
+
+
+class LoggingQuery(proto.Message):
+    r"""Describes a Cloud Logging query that can be run in Logs
+    Explorer UI or via the logging API.
+
+    In addition to the query itself, additional information may be
+    stored to capture the display configuration and other UI state
+    used in association with analysis of query results.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        filter (str):
+            An `advanced query using the Logging Query
+            Language <https://cloud.google.com/logging/docs/view/logging-query-language>`__.
+            The maximum length of the filter is 20000 characters.
+        summary_fields (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery.SummaryField]):
+            The set of summary fields to display for this
+            saved query.
+        summary_field_start (int):
+            Characters will be counted from the start of
+            the string.
+
+            This field is a member of `oneof`_ ``summary_field_width``.
+        summary_field_end (int):
+            Characters will be counted from the end of
+            the string.
+
+            This field is a member of `oneof`_ ``summary_field_width``.
+    """
+
+    class SummaryField(proto.Message):
+        r"""A field from the LogEntry that is `added to the summary
+        line <https://cloud.google.com/logging/docs/view/logs-explorer-interface#add-summary-fields>`__
+        for a query in the Logs Explorer.
+
+        Attributes:
+            field (str):
+                The field from the LogEntry to include in the summary line,
+                for example ``resource.type`` or ``jsonPayload.name``.
+        """
+
+        field: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+
+    filter: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    summary_fields: MutableSequence[SummaryField] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=2,
+        message=SummaryField,
+    )
+    summary_field_start: int = proto.Field(
+        proto.INT32,
+        number=3,
+        oneof='summary_field_width',
+    )
+    summary_field_end: int = proto.Field(
+        proto.INT32,
+        number=4,
+        oneof='summary_field_width',
+    )
+
+
+class OpsAnalyticsQuery(proto.Message):
+    r"""Describes an analytics query that can be run in the Log
+    Analytics page of Google Cloud console.
+
+    Preview: This is a preview feature and may be subject to change
+    before final release.
+
+    Attributes:
+        sql_query_text (str):
+            Required. A logs analytics SQL query, which
+            generally follows BigQuery format.
+
+            This is the SQL query that appears in the Log
+            Analytics UI's query editor.
+    """
+
+    sql_query_text: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+
+
+class SavedQuery(proto.Message):
+    r"""Describes a query that has been saved by a user.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        name (str):
+            Output only. Resource name of the saved query.
+
+            In the format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+
+            For a list of supported locations, see `Supported
+            Regions <https://cloud.google.com/logging/docs/region-support#bucket-regions>`__
+
+            After the saved query is created, the location cannot be
+            changed.
+
+            If the user doesn't provide a [QUERY_ID], the system will
+            generate an alphanumeric ID.
+        display_name (str):
+            The user specified title for the SavedQuery.
+        description (str):
+            A human readable description of the saved
+            query.
+        logging_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery):
+            Logging query that can be executed in Logs
+            Explorer or via Logging API.
+
+            This field is a member of `oneof`_ ``query_oneof``.
+        ops_analytics_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OpsAnalyticsQuery):
+            Analytics query that can be executed in Log
+            Analytics.
+
+            This field is a member of `oneof`_ ``query_oneof``.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The timestamp when the saved
+            query was created.
+        update_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The timestamp when the saved
+            query was last updated.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    display_name: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    description: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    logging_query: 'LoggingQuery' = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        oneof='query_oneof',
+        message='LoggingQuery',
+    )
+    ops_analytics_query: 'OpsAnalyticsQuery' = proto.Field(
+        proto.MESSAGE,
+        number=10,
+        oneof='query_oneof',
+        message='OpsAnalyticsQuery',
+    )
+    create_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=timestamp_pb2.Timestamp,
+    )
+
+
+class RecentQuery(proto.Message):
+    r"""Describes a recent query executed on the Logs Explorer or Log
+    Analytics page within the last ~ 30 days.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        name (str):
+            Output only. Resource name of the recent query.
+
+            In the format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/recentQueries/[QUERY_ID]"
+
+            For a list of supported locations, see `Supported
+            Regions <https://cloud.google.com/logging/docs/region-support>`__
+
+            The [QUERY_ID] is a system generated alphanumeric ID.
+        logging_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery):
+            Logging query that can be executed in Logs
+            Explorer or via Logging API.
+
+            This field is a member of `oneof`_ ``query_oneof``.
+        ops_analytics_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OpsAnalyticsQuery):
+            Analytics query that can be executed in Log
+            Analytics.
+
+            This field is a member of `oneof`_ ``query_oneof``.
+        last_run_time (google.protobuf.timestamp_pb2.Timestamp):
+            The timestamp when this query was last run.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    logging_query: 'LoggingQuery' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        oneof='query_oneof',
+        message='LoggingQuery',
+    )
+    ops_analytics_query: 'OpsAnalyticsQuery' = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        oneof='query_oneof',
+        message='OpsAnalyticsQuery',
+    )
+    last_run_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=timestamp_pb2.Timestamp,
+    )
+
+
+class ListSavedQueriesRequest(proto.Message):
+    r"""The parameters to 'ListSavedQueries'.
+
+    Attributes:
+        parent (str):
+            Required. The resource to which the listed queries belong.
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+
+            For example:
+
+            ::
+
+                "projects/my-project/locations/us-central1"
+
+            Note: The locations portion of the resource must be
+            specified. To get a list of all saved queries, a wildcard
+            character ``-`` can be used for [LOCATION_ID], for example:
+
+            ::
+
+                "projects/my-project/locations/-".
+        page_token (str):
+            Optional. If present, then retrieve the next batch of
+            results from the preceding call to this method.
+            ``pageToken`` must be the value of ``nextPageToken`` from
+            the previous response. The values of other method parameters
+            should be identical to those in the previous call.
+        page_size (int):
+            Optional. The maximum number of results to return from this
+            request.
+
+            Non-positive values are ignored. The presence of
+            ``nextPageToken`` in the response indicates that more
+            results might be available.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size: int = proto.Field(
+        proto.INT32,
+        number=3,
+    )
+
+
+class ListSavedQueriesResponse(proto.Message):
+    r"""The response from ListSavedQueries.
+
+    Attributes:
+        saved_queries (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery]):
+            A list of saved queries.
+        next_page_token (str):
+            If there might be more results than appear in this response,
+            then ``nextPageToken`` is included. To get the next set of
+            results, call the same method again using the value of
+            ``nextPageToken`` as ``pageToken``.
+        unreachable (MutableSequence[str]):
+            The unreachable resources. It can be either 1) a saved query
+            if a specific query is unreachable or 2) a location if a
+            specific location is unreachabe.
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+
+            For example:
+
+            ::
+
+                "projects/my-project/locations/global/savedQueries/12345678"
+                "projects/my-project/locations/global"
+
+            If there are unreachable resources, the response will first
+            return pages that contain saved queries, and then return
+            pages that contain the unreachable resources.
+    """
+
+    @property
+    def raw_page(self):
+        return self
+
+    saved_queries: MutableSequence['SavedQuery'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message='SavedQuery',
+    )
+    next_page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    unreachable: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=3,
+    )
+
+
+class CreateSavedQueryRequest(proto.Message):
+    r"""The parameters to 'CreateSavedQuery'.
+
+    Attributes:
+        parent (str):
+            Required. The parent resource in which to create the saved
+            query:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+
+            For example:
+
+            ::
+
+                "projects/my-project/locations/global"
+                "organizations/123456789/locations/us-central1".
+        saved_query_id (str):
+            Optional. The ID to use for the saved query, which will
+            become the final component of the saved query's resource
+            name.
+
+            If the ``saved_query_id`` is not provided, the system will
+            generate an alphanumeric ID.
+
+            The ``saved_query_id`` is limited to 100 characters and can
+            include only the following characters: upper and lower-case
+            alphanumeric characters, underscores, hyphens, and periods.
+            First character has to be alphanumeric.
+        saved_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery):
+            Required. The new saved query.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    saved_query_id: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    saved_query: 'SavedQuery' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='SavedQuery',
+    )
+
+
+class DeleteSavedQueryRequest(proto.Message):
+    r"""The parameters to 'DeleteSavedQuery'.
+
+    Attributes:
+        name (str):
+            Required. The full resource name of the saved query to
+            delete.
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+
+            For example:
+
+            ::
+
+                "projects/my-project/locations/global/savedQueries/my-saved-query".
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class ListRecentQueriesRequest(proto.Message):
+    r"""The parameters to 'ListRecentQueries'.
+
+    Attributes:
+        parent (str):
+            Required. The resource to which the listed queries belong.
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]"
+
+            For example:
+
+            ``projects/my-project/locations/us-central1``
+
+            Note: The location portion of the resource must be
+            specified, but supplying the character ``-`` in place of
+            [LOCATION_ID] will return all recent queries.
+        page_token (str):
+            Optional. If present, then retrieve the next batch of
+            results from the preceding call to this method.
+            ``pageToken`` must be the value of ``nextPageToken`` from
+            the previous response. The values of other method parameters
+            should be identical to those in the previous call.
+        page_size (int):
+            Optional. The maximum number of results to return from this
+            request. Non-positive values are ignored. The presence of
+            ``nextPageToken`` in the response indicates that more
+            results might be available.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size: int = proto.Field(
+        proto.INT32,
+        number=3,
+    )
+
+
+class ListRecentQueriesResponse(proto.Message):
+    r"""The response from ListRecentQueries.
+
+    Attributes:
+        recent_queries (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.RecentQuery]):
+            A list of recent queries.
+        next_page_token (str):
+            If there might be more results than appear in this response,
+            then ``nextPageToken`` is included. To get the next set of
+            results, call the same method again using the value of
+            ``nextPageToken`` as ``pageToken``.
+        unreachable (MutableSequence[str]):
+            The unreachable resources. Each resource can be either 1) a
+            saved query if a specific query is unreachable or 2) a
+            location if a specific location is unreachable.
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/recentQueries/[QUERY_ID]"
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]"
+
+            For example:
+
+            ``"projects/my-project/locations/global/recentQueries/12345678"``
+            ``"projects/my-project/locations/global"``
+
+            If there are unreachable resources, the response will first
+            return pages that contain recent queries, and then return
+            pages that contain the unreachable resources.
+    """
+
+    @property
+    def raw_page(self):
+        return self
+
+    recent_queries: MutableSequence['RecentQuery'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message='RecentQuery',
+    )
+    next_page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    unreachable: MutableSequence[str] = proto.RepeatedField(
+        proto.STRING,
+        number=3,
     )
 
 

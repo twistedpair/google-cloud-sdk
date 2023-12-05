@@ -18,14 +18,14 @@ class ApplyPowerInstancePowerActionRequest(_messages.Message):
   instance.
 
   Enums:
-    ActionValueValuesEnum: The action to perform on the instance.
+    ActionValueValuesEnum: Required. The action to perform on the instance.
 
   Fields:
-    action: The action to perform on the instance.
+    action: Required. The action to perform on the instance.
   """
 
   class ActionValueValuesEnum(_messages.Enum):
-    r"""The action to perform on the instance.
+    r"""Required. The action to perform on the instance.
 
     Values:
       ACTION_UNSPECIFIED: No action was specified.
@@ -337,10 +337,12 @@ class MarketplacesolutionsProjectsLocationsPowerImagesListRequest(_messages.Mess
   r"""A MarketplacesolutionsProjectsLocationsPowerImagesListRequest object.
 
   Fields:
-    filter: List filter.
-    pageSize: Requested page size. The server might return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results from the server.
+    filter: Optional. List filter.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, server will pick an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results from the
+      server.
     parent: Required. Parent value for ListPowerImagesRequest.
   """
 
@@ -408,10 +410,12 @@ class MarketplacesolutionsProjectsLocationsPowerInstancesListRequest(_messages.M
   r"""A MarketplacesolutionsProjectsLocationsPowerInstancesListRequest object.
 
   Fields:
-    filter: List filter.
-    pageSize: Requested page size. server may return fewer items than
-      requested. If unspecified, the server will pick an appropriate default.
-    pageToken: A token identifying a page of results from the server.
+    filter: Optional. List filter.
+    pageSize: Optional. Requested page size. server may return fewer items
+      than requested. If unspecified, the server will pick an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results from the
+      server.
     parent: Required. Parent of the resource.
   """
 
@@ -426,13 +430,13 @@ class MarketplacesolutionsProjectsLocationsPowerInstancesPatchRequest(_messages.
   object.
 
   Fields:
-    name: Output only. The resource name of this PowerInstance. Resource names
+    name: Identifier. The resource name of this PowerInstance. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format: `projects/{
       project}/locations/{location}/powerInstances/{power_instance}`
     powerInstance: A PowerInstance resource to be passed as the request body.
-    updateMask: The list of fields to update. The currently supported fields
-      are: - 'memory_gib' - 'virtual_cpu_cores'
+    updateMask: Required. The list of fields to update. The currently
+      supported fields are: - 'memory_gib' - 'virtual_cpu_cores'
   """
 
   name = _messages.StringField(1, required=True)
@@ -468,10 +472,12 @@ class MarketplacesolutionsProjectsLocationsPowerNetworksListRequest(_messages.Me
   r"""A MarketplacesolutionsProjectsLocationsPowerNetworksListRequest object.
 
   Fields:
-    filter: List filter.
-    pageSize: Requested page size. The server might return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results from the server.
+    filter: Optional. List filter.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, server will pick an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results from the
+      server.
     parent: Required. Parent value for ListPowerNetworksRequest.
   """
 
@@ -495,10 +501,12 @@ class MarketplacesolutionsProjectsLocationsPowerSshKeysListRequest(_messages.Mes
   r"""A MarketplacesolutionsProjectsLocationsPowerSshKeysListRequest object.
 
   Fields:
-    filter: List filter.
-    pageSize: Requested page size. The server might return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results from the server.
+    filter: Optional. List filter.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, server will pick an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results from the
+      server.
     parent: Required. Parent value for ListPowerSSHKeysRequest.
   """
 
@@ -522,10 +530,12 @@ class MarketplacesolutionsProjectsLocationsPowerVolumesListRequest(_messages.Mes
   r"""A MarketplacesolutionsProjectsLocationsPowerVolumesListRequest object.
 
   Fields:
-    filter: List filter.
-    pageSize: Requested page size. The server might return fewer items than
-      requested. If unspecified, server will pick an appropriate default.
-    pageToken: A token identifying a page of results from the server.
+    filter: Optional. List filter.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, server will pick an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results from the
+      server.
     parent: Required. Parent value for ListPowerVolumesRequest.
   """
 
@@ -720,15 +730,15 @@ class OsImage(_messages.Message):
   r"""The OS image information.
 
   Enums:
-    TypeValueValuesEnum: The OS image type.
+    TypeValueValuesEnum: Required. The OS image type.
 
   Fields:
-    type: The OS image type.
-    version: The OS image detailed information.
+    type: Required. The OS image type.
+    version: Optional. The OS image detailed information.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The OS image type.
+    r"""Required. The OS image type.
 
     Values:
       OS_TYPE_UNSPECIFIED: The OS image type is not specified.
@@ -778,19 +788,19 @@ class PowerImage(_messages.Message):
 
   Enums:
     ImageTypeValueValuesEnum: The image type of this PowerImage.
-    StateValueValuesEnum: The state of the image.
+    StateValueValuesEnum: Output only. The state of the image.
     StorageTypeValueValuesEnum: Storage type of this image.
 
   Fields:
     createTime: Output only. Time the Power Image was created.
     imageType: The image type of this PowerImage.
-    name: Output only. The resource name of this PowerImage. Resource names
-      are schemeless URIs that follow the conventions in
+    name: Identifier. The resource name of this PowerImage. Resource names are
+      schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/powerImages/{image}`
     operatingSystem: The operating system type of this PowerImage.
     sizeGib: Size of image
-    state: The state of the image.
+    state: Output only. The state of the image.
     storagePool: Storage Pool that the image is in.
     storageType: Storage type of this image.
     uid: Output only. An unique identifier for this PowerImage, generated by
@@ -817,7 +827,7 @@ class PowerImage(_messages.Message):
     CAPTURE = 4
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of the image.
+    r"""Output only. The state of the image.
 
     Values:
       STATE_UNSPECIFIED: The state is not specified.
@@ -878,7 +888,7 @@ class PowerInstance(_messages.Message):
   r"""A Power instance.
 
   Enums:
-    StateValueValuesEnum: The state of the instance.
+    StateValueValuesEnum: Output only. The state of the instance.
     VirtualCpuTypeValueValuesEnum: Required. The processor type of this
       instance.
 
@@ -888,28 +898,28 @@ class PowerInstance(_messages.Message):
     bootImage: Required. The name of the boot image used to create this
       instance.
     createTime: Output only. Instance creation time.
-    healthStatus: Last health status for instance.
-    memoryGib: Memory size for the instance.
-    name: Output only. The resource name of this PowerInstance. Resource names
+    healthStatus: Output only. Last health status for instance.
+    memoryGib: Required. Memory size for the instance.
+    name: Identifier. The resource name of this PowerInstance. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format: `projects/{
       project}/locations/{location}/powerInstances/{power_instance}`
     networkAttachments: Optional. List of network attachments associated with
       this instance, corresponds to `networks` field from Power's API.
-    osImage: The OS image currently installed on this instance.
-    state: The state of the instance.
+    osImage: Required. The OS image currently installed on this instance.
+    state: Output only. The state of the instance.
     systemType: Required. IBM Power System type, most commonly s922.
     uid: Output only. An unique identifier generated for the PowerInstance.
     updateTime: Output only. Instance update time.
-    virtualCpuCores: Processor for the instance.
+    virtualCpuCores: Required. Processor for the instance.
     virtualCpuType: Required. The processor type of this instance.
-    volumeIds: List of volumes IDs associated with this instance.
+    volumeIds: Optional. List of volumes IDs associated with this instance.
     volumes: Output only. List of volumes associated with this instance,
       retrieved by calling ListVolumes API.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of the instance.
+    r"""Output only. The state of the instance.
 
     Values:
       STATE_UNSPECIFIED: The state of the instance is unknown.
@@ -982,7 +992,7 @@ class PowerNetwork(_messages.Message):
     ipAddressMetrics: IPAddressMetrics information for Power Network
     ipAddressRanges: List of IP address ranges for the network
     jumboFramesEnabled: Whether jumbo frames are enabled.
-    name: Output only. The resource name of this PowerNetwork. Resource names
+    name: Identifier. The resource name of this PowerNetwork. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/powerNetworks/{power_network}`
@@ -1020,7 +1030,7 @@ class PowerSSHKey(_messages.Message):
 
   Fields:
     createTime: Output only. SSH Key creation time
-    name: Output only. The resource name of this PowerSSHKey. Resource names
+    name: Identifier. The resource name of this PowerSSHKey. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       'projects/{project}/locations/{location}/powerSshKey/{ssh_key}'
@@ -1039,34 +1049,36 @@ class PowerVolume(_messages.Message):
   r"""A PowerVolume.
 
   Enums:
-    DiskTypeValueValuesEnum: The disk type for this volume.
-    StateValueValuesEnum: The state of the volume.
+    DiskTypeValueValuesEnum: Output only. The disk type for this volume.
+    StateValueValuesEnum: Output only. The state of the volume.
 
   Fields:
-    bootVolume: An option indicates whether the volume is the server's boot
-      volume.
-    bootable: An option indicates whether the volume is bootable.
+    bootVolume: Output only. An option indicates whether the volume is the
+      server's boot volume.
+    bootable: Output only. An option indicates whether the volume is bootable.
     createTime: Output only. Volume creation time.
-    diskType: The disk type for this volume.
-    groupId: The group id this volume attached to.
-    name: Output only. The resource name of this PowerVolume. Resource names
+    diskType: Output only. The disk type for this volume.
+    groupId: Output only. The group id this volume attached to.
+    name: Identifier. The resource name of this PowerVolume. Resource names
       are schemeless URIs that follow the conventions in
       https://cloud.google.com/apis/design/resource_names. Format:
       `projects/{project}/locations/{location}/powerVolumes/{volume}`
-    shareable: An option indicates whether the volume is shareable.
-    sizeGib: The size of the volume.
-    state: The state of the volume.
+    shareable: Output only. An option indicates whether the volume is
+      shareable.
+    sizeGib: Optional. The size of the volume.
+    state: Output only. The state of the volume.
     uid: Output only. An unique identifier for this PowerVolume, generated by
       the backend.
     updateTime: Output only. Volume update time.
-    virtualMachines: A list of pvm instances associated with the volume
-    volumePool: Volume pool information.
-    volumeType: Volume type information. @TODO(user) make this ENUM
-    wwn: The world wide name for the volume.
+    virtualMachines: Output only. A list of pvm instances associated with the
+      volume
+    volumePool: Output only. Volume pool information.
+    volumeType: Output only. Volume type information.
+    wwn: Output only. The world wide name for the volume.
   """
 
   class DiskTypeValueValuesEnum(_messages.Enum):
-    r"""The disk type for this volume.
+    r"""Output only. The disk type for this volume.
 
     Values:
       DISK_TYPE_UNSPECIFIED: This disk type for this volume is Unspecified.
@@ -1078,7 +1090,7 @@ class PowerVolume(_messages.Message):
     SSD = 2
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""The state of the volume.
+    r"""Output only. The state of the volume.
 
     Values:
       STATE_UNSPECIFIED: The state of this volume is unknown.

@@ -180,8 +180,8 @@ def GetTierArg(messages):
       'BASIC_SSD': ('basic-ssd', 'Performant NFS storage system using SSD.'),
       'ENTERPRISE': (
           'enterprise',
-          """Enterprise instances offer the features\
-          and availability needed for mission-critical workloads.""",
+          """Enterprise instance.
+            Use REGIONAL instead whenever possible.""",
       ),
       'HIGH_SCALE_SSD': (
           'high-scale-ssd',
@@ -236,7 +236,7 @@ def GetProtocolArg(messages):
   return protocol_arg
 
 
-def AddManagedActiveDirectoryArg(parser):
+def AddConnectManagedActiveDirectoryArg(parser):
   """Adds a --managed-ad flag to the parser.
 
   Args:
@@ -249,9 +249,9 @@ def AddManagedActiveDirectoryArg(parser):
   }
 
   managed_ad_help = """\
-        Managed Active Directory configuration for an instance. Specifying both
-        domain name and a computer name (unique to the domain) to be created by
-        filestore instance.
+        Managed Active Directory configuration for an instance. Specifies both
+        the domain name and a computer name (unique to the domain) to be created
+        by the filestore instance.
 
          domain
             The desired domain full uri. i.e:
@@ -259,7 +259,7 @@ def AddManagedActiveDirectoryArg(parser):
 
          computer
             The desired active directory computer name to be created by
-            filestore instance when connecting to the domain.
+            the filestore instance when connecting to the domain.
   """
 
   parser.add_argument(
@@ -270,6 +270,35 @@ def AddManagedActiveDirectoryArg(parser):
       required=False,
       help=managed_ad_help,
   )
+
+
+def AddDisconnectManagedActiveDirectoryArg(parser):
+  """Adds a --disconnect-managed-ad flag to the parser.
+
+  Args:
+    parser: argparse parser.
+  """
+
+  disconnnect_managed_ad_help = """\
+        Disconnect the instance from Managed Active Directory."""
+
+  parser.add_argument(
+      '--disconnect-managed-ad',
+      action='store_true',
+      required=False,
+      help=disconnnect_managed_ad_help)
+
+
+def AddManagedActiveDirectoryConnectionArgs(parser):
+  """Adds a --managed-ad flag to the parser.
+
+  Args:
+    parser: argparse parser.
+  """
+
+  connection_arg_group = parser.add_mutually_exclusive_group()
+  AddConnectManagedActiveDirectoryArg(connection_arg_group)
+  AddDisconnectManagedActiveDirectoryArg(connection_arg_group)
 
 
 def AddNetworkArg(parser):
@@ -513,7 +542,7 @@ def AddInstanceCreateArgs(parser, api_version):
   GetTierArg(messages).choice_arg.AddToParser(parser)
   if api_version == filestore_client.BETA_API_VERSION:
     GetProtocolArg(messages).choice_arg.AddToParser(parser)
-    AddManagedActiveDirectoryArg(parser)
+    AddConnectManagedActiveDirectoryArg(parser)
   AddFileShareArg(
       parser,
       api_version,
@@ -535,6 +564,8 @@ def AddInstanceUpdateArgs(parser, api_version):
   AddRegionArg(parser)
   AddAsyncFlag(parser)
   labels_util.AddUpdateLabelsFlags(parser)
+  if api_version == filestore_client.BETA_API_VERSION:
+    AddManagedActiveDirectoryConnectionArgs(parser)
   AddFileShareArg(
       parser,
       api_version,

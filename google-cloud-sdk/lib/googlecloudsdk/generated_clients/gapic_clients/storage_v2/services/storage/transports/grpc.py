@@ -389,10 +389,8 @@ class StorageGrpcTransport(StorageTransport):
             policy_pb2.Policy]:
         r"""Return a callable for the get iam policy method over gRPC.
 
-        Gets the IAM policy for a specified bucket or object. The
-        ``resource`` field in the request should be
-        ``projects/_/buckets/{bucket}`` for a bucket or
-        ``projects/_/buckets/{bucket}/objects/{object}`` for an object.
+        Gets the IAM policy for a specified bucket. The ``resource``
+        field in the request should be ``projects/_/buckets/{bucket}``.
 
         Returns:
             Callable[[~.GetIamPolicyRequest],
@@ -418,10 +416,8 @@ class StorageGrpcTransport(StorageTransport):
             policy_pb2.Policy]:
         r"""Return a callable for the set iam policy method over gRPC.
 
-        Updates an IAM policy for the specified bucket or object. The
-        ``resource`` field in the request should be
-        ``projects/_/buckets/{bucket}`` for a bucket or
-        ``projects/_/buckets/{bucket}/objects/{object}`` for an object.
+        Updates an IAM policy for the specified bucket. The ``resource``
+        field in the request should be ``projects/_/buckets/{bucket}``.
 
         Returns:
             Callable[[~.SetIamPolicyRequest],

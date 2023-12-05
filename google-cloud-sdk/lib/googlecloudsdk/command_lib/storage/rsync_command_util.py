@@ -38,7 +38,7 @@ from googlecloudsdk.command_lib.storage.tasks import patch_file_posix_task
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_task_factory
 from googlecloudsdk.command_lib.storage.tasks.cp import copy_util
 from googlecloudsdk.command_lib.storage.tasks.objects import patch_object_task
-from googlecloudsdk.command_lib.storage.tasks.rm import delete_object_task
+from googlecloudsdk.command_lib.storage.tasks.rm import delete_task
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.util import files
@@ -651,6 +651,20 @@ def _print_would_remove(resource):
   log.status.Print('Would remove {}'.format(resource))
 
 
+def _get_delete_task(resource, user_request_args):
+  url = resource.storage_url
+  if isinstance(url, storage_url.FileUrl):
+    return delete_task.DeleteFileTask(
+        url,
+        user_request_args=user_request_args,
+    )
+  else:
+    return delete_task.DeleteObjectTask(
+        url,
+        user_request_args=user_request_args,
+    )
+
+
 def _get_task_and_iteration_instruction(
     user_request_args,
     source_resource,
@@ -695,7 +709,7 @@ def _get_task_and_iteration_instruction(
 
     First entry:
     None: Don't do anything for these resources.
-    DeleteObjectTask: Remove an extra object from the destination.
+    DeleteTask: Remove an extra resource from the destination.
     FileDownloadTask|FileUploadTask|IntraCloudCopyTask|ManagedFolderCopyTask:
       Update the destination with a copy of the source object.
     PatchFilePosixTask: Update the file destination POSIX data with the source's
@@ -722,10 +736,7 @@ def _get_task_and_iteration_instruction(
         _print_would_remove(destination_resource)
       else:
         return (
-            delete_object_task.DeleteObjectTask(
-                destination_resource.storage_url,
-                user_request_args=user_request_args,
-            ),
+            _get_delete_task(destination_resource, user_request_args),
             _IterateResource.DESTINATION,
         )
     return (None, _IterateResource.DESTINATION)
@@ -791,10 +802,7 @@ def _get_task_and_iteration_instruction(
         _print_would_remove(destination_resource)
       else:
         return (
-            delete_object_task.DeleteObjectTask(
-                destination_resource.storage_url,
-                user_request_args=user_request_args,
-            ),
+            _get_delete_task(destination_resource, user_request_args),
             _IterateResource.DESTINATION,
         )
     return (None, _IterateResource.DESTINATION)

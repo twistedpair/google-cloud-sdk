@@ -766,8 +766,9 @@ class RecognitionConfig(_messages.Message):
         kbps). When using this encoding, `sample_rate_hertz` has to match the
         sample rate of the file being used.
       WEBM_OPUS: Opus encoded audio frames in WebM container
-        ([OggOpus](https://wiki.xiph.org/OggOpus)). `sample_rate_hertz` must
-        be one of 8000, 12000, 16000, 24000, or 48000.
+        ([WebM](https://www.webmproject.org/docs/container/)).
+        `sample_rate_hertz` must be one of 8000, 12000, 16000, 24000, or
+        48000.
     """
     ENCODING_UNSPECIFIED = 0
     LINEAR16 = 1

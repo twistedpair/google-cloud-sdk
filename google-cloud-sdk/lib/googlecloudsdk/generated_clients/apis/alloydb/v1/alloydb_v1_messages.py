@@ -2235,7 +2235,7 @@ class NetworkConfig(_messages.Message):
       must be 1-63 characters long and match the regular expression
       `[a-z]([-a-z0-9]*[a-z0-9])?`. Field name is intended to be consistent
       with Cloud SQL.
-    network: Required. The resource link for the VPC network in which cluster
+    network: Optional. The resource link for the VPC network in which cluster
       resources are created and from which they are accessible via Private IP.
       The network must belong to the same project as the cluster. It is
       specified in the form:

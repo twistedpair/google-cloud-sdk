@@ -47,27 +47,6 @@ class AcceptHubSpokeResponse(_messages.Message):
   spoke = _messages.MessageField('Spoke', 1)
 
 
-class AcceptSpokeRequest(_messages.Message):
-  r"""The request for HubService.AcceptSpoke.
-
-  Fields:
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server knows to
-      ignore the request if it has already been completed. The server
-      guarantees that a request doesn't result in creation of duplicate
-      commitments for at least 60 minutes. For example, consider a situation
-      where you make an initial request and the request times out. If you make
-      the request again with the same request ID, the server can check to see
-      whether the original operation was received. If it was, the server
-      ignores the second request. This behavior prevents clients from
-      mistakenly creating duplicate commitments. The request ID must be a
-      valid UUID, with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  requestId = _messages.StringField(1)
-
-
 class ActivateSpokeRequest(_messages.Message):
   r"""The request for HubService.ActivateSpoke.
 
@@ -839,6 +818,10 @@ class Hub(_messages.Message):
   Fields:
     createTime: Output only. The time the hub was created.
     description: An optional description of the hub.
+    exportPsc: Optional. Whether Private Service Connect transitivity is
+      enabled for the hub. If true, Private Service Connect endpoints in VPC
+      spokes attached to the hub are made accessible to other VPC spokes
+      attached to the hub. The default value is false.
     labels: Optional labels in key-value pair format. For more information
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
@@ -968,16 +951,17 @@ class Hub(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  policyMode = _messages.EnumField('PolicyModeValueValuesEnum', 5)
-  presetTopology = _messages.EnumField('PresetTopologyValueValuesEnum', 6)
-  routeTables = _messages.StringField(7, repeated=True)
-  routingVpcs = _messages.MessageField('RoutingVPC', 8, repeated=True)
-  spokeSummary = _messages.MessageField('SpokeSummary', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  uniqueId = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  exportPsc = _messages.BooleanField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  policyMode = _messages.EnumField('PolicyModeValueValuesEnum', 6)
+  presetTopology = _messages.EnumField('PresetTopologyValueValuesEnum', 7)
+  routeTables = _messages.StringField(8, repeated=True)
+  routingVpcs = _messages.MessageField('RoutingVPC', 9, repeated=True)
+  spokeSummary = _messages.MessageField('SpokeSummary', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  uniqueId = _messages.StringField(12)
+  updateTime = _messages.StringField(13)
 
 
 class InterconnectAttachment(_messages.Message):
@@ -3023,19 +3007,6 @@ class NetworkconnectivityProjectsLocationsServiceConnectionTokensListRequest(_me
   parent = _messages.StringField(5, required=True)
 
 
-class NetworkconnectivityProjectsLocationsSpokesAcceptRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsSpokesAcceptRequest object.
-
-  Fields:
-    acceptSpokeRequest: A AcceptSpokeRequest resource to be passed as the
-      request body.
-    name: Required. The name of the spoke to accept.
-  """
-
-  acceptSpokeRequest = _messages.MessageField('AcceptSpokeRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class NetworkconnectivityProjectsLocationsSpokesActivateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsSpokesActivateRequest object.
 
@@ -3197,19 +3168,6 @@ class NetworkconnectivityProjectsLocationsSpokesPatchRequest(_messages.Message):
   requestId = _messages.StringField(2)
   spoke = _messages.MessageField('Spoke', 3)
   updateMask = _messages.StringField(4)
-
-
-class NetworkconnectivityProjectsLocationsSpokesRejectRequest(_messages.Message):
-  r"""A NetworkconnectivityProjectsLocationsSpokesRejectRequest object.
-
-  Fields:
-    name: Required. The name of the spoke to reject.
-    rejectSpokeRequest: A RejectSpokeRequest resource to be passed as the
-      request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  rejectSpokeRequest = _messages.MessageField('RejectSpokeRequest', 2)
 
 
 class NetworkconnectivityProjectsLocationsSpokesSetIamPolicyRequest(_messages.Message):
@@ -3591,30 +3549,6 @@ class RejectHubSpokeResponse(_messages.Message):
   """
 
   spoke = _messages.MessageField('Spoke', 1)
-
-
-class RejectSpokeRequest(_messages.Message):
-  r"""The request for HubService.RejectSpoke.
-
-  Fields:
-    details: Optional. Additional information provided by the hub
-      administrator in the `RejectSpoke` call.
-    requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server knows to
-      ignore the request if it has already been completed. The server
-      guarantees that a request doesn't result in creation of duplicate
-      commitments for at least 60 minutes. For example, consider a situation
-      where you make an initial request and the request times out. If you make
-      the request again with the same request ID, the server can check to see
-      whether the original operation was received. If it was, the server
-      ignores the second request. This behavior prevents clients from
-      mistakenly creating duplicate commitments. The request ID must be a
-      valid UUID, with the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
-  """
-
-  details = _messages.StringField(1)
-  requestId = _messages.StringField(2)
 
 
 class Route(_messages.Message):

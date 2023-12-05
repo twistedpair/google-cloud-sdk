@@ -44,7 +44,7 @@ def remove_managed_folders(
       plurality_checkable_iterator.PluralityCheckableIterator(
           folder_util.reverse_containment_order(
               task_iterator_factory.managed_folder_iterator(),
-              get_resource_function=lambda task: task.managed_folder_resource,
+              get_url_function=(lambda task: task.managed_folder_url),
           )
       )
   )
