@@ -361,18 +361,21 @@ class EthereumDetails(_messages.Message):
       `admin` namespace. Defaults to `false`.
     apiEnableDebug: Immutable. Enables JSON-RPC access to functions in the
       `debug` namespace. Defaults to `false`.
-    beaconFeeRecipient: An Ethereum address which the beacon client will send
-      fee rewards to if no recipient is configured in the validator client.
-      See https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html
-      or https://docs.prylabs.network/docs/execution-node/fee-recipient for
-      examples of how this is used. Note that while this is often described as
-      "suggested", as we run the execution node we can trust the execution
-      node, and therefore this is considered enforced.
+    beaconFeeRecipient: Deprecated: Use the same field in the ValidatorConfig
+      message as replacement. An Ethereum address which the beacon client will
+      send fee rewards to if no recipient is configured in the validator
+      client. See https://lighthouse-book.sigmaprime.io/suggested-fee-
+      recipient.html or https://docs.prylabs.network/docs/execution-node/fee-
+      recipient for examples of how this is used. Note that while this is
+      often described as "suggested", as we run the execution node we can
+      trust the execution node, and therefore this is considered enforced.
     consensusClient: Immutable. The consensus client.
     executionClient: Immutable. The execution client
     gethDetails: Details for the Geth execution client.
     network: Immutable. The Ethereum environment being accessed.
     nodeType: Immutable. The type of Ethereum node.
+    validatorConfig: Configuration for validator-related parameters on the
+      beacon client, and for any GCP-managed validator client.
   """
 
   class ConsensusClientValueValuesEnum(_messages.Enum):
@@ -453,6 +456,7 @@ class EthereumDetails(_messages.Message):
   gethDetails = _messages.MessageField('GethDetails', 7)
   network = _messages.EnumField('NetworkValueValuesEnum', 8)
   nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 9)
+  validatorConfig = _messages.MessageField('ValidatorConfig', 10)
 
 
 class EthereumEndpoints(_messages.Message):
@@ -887,6 +891,18 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class ValidatorConfig(_messages.Message):
+  r"""Configuration for validator-related parameters on the beacon client, and
+  for any GCP-managed validator client.
+
+  Fields:
+    mevRelayUrls: URLs for MEV-relay services to use for block building. When
+      set, a GCP-managed MEV-boost service is configured on the beacon client.
+  """
+
+  mevRelayUrls = _messages.StringField(1, repeated=True)
 
 
 encoding.AddCustomJsonFieldMapping(

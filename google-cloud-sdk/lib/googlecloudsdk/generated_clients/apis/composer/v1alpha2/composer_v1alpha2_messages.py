@@ -689,6 +689,129 @@ class ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest(_messages.M
   stopAirflowCommandRequest = _messages.MessageField('StopAirflowCommandRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsCreateRequest(_messages.Message):
+  r"""A
+  ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The environment name to create a ConfigMap for, in the
+      form: "projects/{projectId}/locations/{locationId}/environments/{environ
+      mentId}"
+    userWorkloadsConfigMap: A UserWorkloadsConfigMap resource to be passed as
+      the request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  userWorkloadsConfigMap = _messages.MessageField('UserWorkloadsConfigMap', 2)
+
+
+class ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsDeleteRequest(_messages.Message):
+  r"""A
+  ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The ConfigMap to delete, in the form: "projects/{projectId
+      }/locations/{locationId}/environments/{environmentId}/userWorkloadsConfi
+      gMaps/{userWorkloadsConfigMapId}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsGetRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the ConfigMap to get, in the form: "p
+      rojects/{projectId}/locations/{locationId}/environments/{environmentId}/
+      userWorkloadsConfigMaps/{userWorkloadsConfigMapId}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsListRequest(_messages.Message):
+  r"""A
+  ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of ConfigMaps to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. List ConfigMaps in the given environment, in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsCreateRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsCreateRequest
+  object.
+
+  Fields:
+    parent: Required. The environment name to create a Secret for, in the
+      form: "projects/{projectId}/locations/{locationId}/environments/{environ
+      mentId}"
+    userWorkloadsSecret: A UserWorkloadsSecret resource to be passed as the
+      request body.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  userWorkloadsSecret = _messages.MessageField('UserWorkloadsSecret', 2)
+
+
+class ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsDeleteRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The Secret to delete, in the form: "projects/{projectId}/l
+      ocations/{locationId}/environments/{environmentId}/userWorkloadsSecrets/
+      {userWorkloadsSecretId}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsGetRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsGetRequest
+  object.
+
+  Fields:
+    name: Required. The resource name of the Secret to get, in the form: "proj
+      ects/{projectId}/locations/{locationId}/environments/{environmentId}/use
+      rWorkloadsSecrets/{userWorkloadsSecretId}"
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsListRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsListRequest
+  object.
+
+  Fields:
+    pageSize: Optional. The maximum number of Secrets to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. List Secrets in the given environment, in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
 class ComposerProjectsLocationsEnvironmentsWorkloadsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsWorkloadsListRequest object.
 
@@ -1634,6 +1757,34 @@ class ListTasksResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   tasks = _messages.MessageField('Task', 2, repeated=True)
+
+
+class ListUserWorkloadsConfigMapsResponse(_messages.Message):
+  r"""The user workloads ConfigMaps for a given environment.
+
+  Fields:
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+    userWorkloadsConfigMaps: The list of ConfigMaps returned by a
+      ListUserWorkloadsConfigMapsRequest.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  userWorkloadsConfigMaps = _messages.MessageField('UserWorkloadsConfigMap', 2, repeated=True)
+
+
+class ListUserWorkloadsSecretsResponse(_messages.Message):
+  r"""The user workloads Secrets for a given environment.
+
+  Fields:
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+    userWorkloadsSecrets: The list of Secrets returned by a
+      ListUserWorkloadsSecretsRequest.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  userWorkloadsSecrets = _messages.MessageField('UserWorkloadsSecret', 2, repeated=True)
 
 
 class ListWorkloadsResponse(_messages.Message):
@@ -2954,6 +3105,108 @@ class TriggererResource(_messages.Message):
   count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
   memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+
+
+class UserWorkloadsConfigMap(_messages.Message):
+  r"""User workloads ConfigMap used by Airflow tasks that run with Kubernetes
+  executor or KubernetesPodOperator.
+
+  Messages:
+    DataValue: Optional. The "data" field of Kubernetes ConfigMap, organized
+      in key-value pairs. For details see:
+      https://kubernetes.io/docs/concepts/configuration/configmap/
+
+  Fields:
+    data: Optional. The "data" field of Kubernetes ConfigMap, organized in
+      key-value pairs. For details see:
+      https://kubernetes.io/docs/concepts/configuration/configmap/
+    name: Identifier. The resource name of the ConfigMap, in the form: "projec
+      ts/{projectId}/locations/{locationId}/environments/{environmentId}/userW
+      orkloadsConfigMaps/{userWorkloadsConfigMapId}"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""Optional. The "data" field of Kubernetes ConfigMap, organized in key-
+    value pairs. For details see:
+    https://kubernetes.io/docs/concepts/configuration/configmap/
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  data = _messages.MessageField('DataValue', 1)
+  name = _messages.StringField(2)
+
+
+class UserWorkloadsSecret(_messages.Message):
+  r"""User workloads Secret used by Airflow tasks that run with Kubernetes
+  executor or KubernetesPodOperator.
+
+  Messages:
+    DataValue: Optional. The "data" field of Kubernetes Secret, organized in
+      key-value pairs, which can contain sensitive values such as a password,
+      a token, or a key. The values for all keys have to be base64-encoded
+      strings. For details see:
+      https://kubernetes.io/docs/concepts/configuration/secret/
+
+  Fields:
+    data: Optional. The "data" field of Kubernetes Secret, organized in key-
+      value pairs, which can contain sensitive values such as a password, a
+      token, or a key. The values for all keys have to be base64-encoded
+      strings. For details see:
+      https://kubernetes.io/docs/concepts/configuration/secret/
+    name: Identifier. The resource name of the Secret, in the form: "projects/
+      {projectId}/locations/{locationId}/environments/{environmentId}/userWork
+      loadsSecrets/{userWorkloadsSecretId}"
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DataValue(_messages.Message):
+    r"""Optional. The "data" field of Kubernetes Secret, organized in key-
+    value pairs, which can contain sensitive values such as a password, a
+    token, or a key. The values for all keys have to be base64-encoded
+    strings. For details see:
+    https://kubernetes.io/docs/concepts/configuration/secret/
+
+    Messages:
+      AdditionalProperty: An additional property for a DataValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type DataValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DataValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  data = _messages.MessageField('DataValue', 1)
+  name = _messages.StringField(2)
 
 
 class WebServerConfig(_messages.Message):

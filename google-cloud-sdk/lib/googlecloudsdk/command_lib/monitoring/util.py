@@ -1179,3 +1179,354 @@ def ParseUptimeCheck(uptime_check_name, project=None):
       params={'projectsId': project},
       collection='monitoring.projects.uptimeCheckConfigs',
   )
+
+
+def ModifyUptimeCheck(
+    uptime_check,
+    messages,
+    args,
+    regions,
+    user_labels,
+    headers,
+    status_classes,
+    status_codes,
+    update=False,
+):
+  """Modifies an UptimeCheckConfig based on the args and other inputs.
+
+  Args:
+    uptime_check: UptimeCheckConfig that is being modified.
+    messages: Object containing information about all message types allowed.
+    args: Flags provided by the user.
+    regions: Potentially updated selected regions.
+    user_labels: Potentially updated user labels.
+    headers: Potentially updated HTTP headers.
+    status_classes: Potentially updated allowed status classes.
+    status_codes: Potentially updated allowed status codes.
+    update: If this is an update operation (true) or a create operation (false).
+
+  Returns:
+     The updated UptimeCheckConfig object.
+  """
+  if args.display_name is not None:
+    uptime_check.displayName = args.display_name
+  if args.timeout is not None:
+    uptime_check.timeout = str(args.timeout) + 's'
+  if args.period is not None:
+    period_mapping = {
+        '1': '60s',
+        '5': '300s',
+        '10': '600s',
+        '15': '900s',
+    }
+    uptime_check.period = period_mapping.get(args.period)
+  if regions is not None:
+    region_mapping = {
+        'usa-oregon': (
+            messages.UptimeCheckConfig.SelectedRegionsValueListEntryValuesEnum.USA_OREGON
+        ),
+        'usa-iowa': (
+            messages.UptimeCheckConfig.SelectedRegionsValueListEntryValuesEnum.USA_IOWA
+        ),
+        'usa-virginia': (
+            messages.UptimeCheckConfig.SelectedRegionsValueListEntryValuesEnum.USA_VIRGINIA
+        ),
+        'europe': (
+            messages.UptimeCheckConfig.SelectedRegionsValueListEntryValuesEnum.EUROPE
+        ),
+        'south-america': (
+            messages.UptimeCheckConfig.SelectedRegionsValueListEntryValuesEnum.SOUTH_AMERICA
+        ),
+        'asia-pacific': (
+            messages.UptimeCheckConfig.SelectedRegionsValueListEntryValuesEnum.ASIA_PACIFIC
+        ),
+    }
+    uptime_check.selectedRegions = []
+    for region in regions:
+      uptime_check.selectedRegions.append(region_mapping.get(region))
+    uptime_check.userLabels = user_labels
+
+  SetUptimeCheckMatcherFields(args, messages, uptime_check)
+  SetUptimeCheckProtocolFields(
+      args,
+      messages,
+      uptime_check,
+      headers,
+      status_classes,
+      status_codes,
+      update,
+  )
+  return uptime_check
+
+
+def CreateUptimeFromArgs(args, messages):
+  """Builds an Uptime message from args."""
+  uptime_base_flags = ['--resource-labels', '--group-id', '--synthetic-target']
+  ValidateAtleastOneSpecified(args, uptime_base_flags)
+
+  uptime_check = messages.UptimeCheckConfig()
+
+  if args.IsSpecified('resource_labels'):
+    SetUptimeCheckMonitoredResourceFields(args, messages, uptime_check)
+  elif args.IsSpecified('group_id'):
+    SetUptimeCheckGroupFields(args, messages, uptime_check)
+  else:
+    SetUptimeCheckSyntheticFields(args, messages, uptime_check)
+
+  user_labels = None
+  if args.IsSpecified('user_labels'):
+    user_labels = messages.UptimeCheckConfig.UserLabelsValue()
+    for k, v in args.user_labels.items():
+      user_labels.additionalProperties.append(
+          messages.UptimeCheckConfig.UserLabelsValue.AdditionalProperty(
+              key=k, value=v
+          )
+      )
+  headers = None
+  if args.IsSpecified('headers'):
+    headers = messages.HttpCheck.HeadersValue()
+    if headers is not None:
+      for k, v in args.headers.items():
+        headers.additionalProperties.append(
+            messages.HttpCheck.HeadersValue.AdditionalProperty(key=k, value=v)
+        )
+  uptime_check.timeout = '60s'
+  uptime_check.period = '60s'
+
+  ModifyUptimeCheck(
+      uptime_check,
+      messages,
+      args,
+      regions=args.regions,
+      user_labels=user_labels,
+      headers=headers,
+      status_classes=args.status_classes,
+      status_codes=args.status_codes,
+  )
+
+  return uptime_check
+
+
+def SetUptimeCheckMonitoredResourceFields(args, messages, uptime_check):
+  """Set Monitored Resource fields based on args."""
+  resource_mapping = {
+      'uptime-url': 'uptime_url',
+      'gce-instance': 'gce_instance',
+      'gae-app': 'gae_app',
+      'aws-ec2-instance': 'aws_ec2_instance',
+      'aws-elb-load-balancer': 'aws_elb_load_balancer',
+      'servicedirectory-service': 'servicedirectory_service',
+      'cloud-run-revision': 'cloud_run_revision',
+      None: 'uptime_url',
+  }
+  uptime_check.monitoredResource = messages.MonitoredResource()
+  uptime_check.monitoredResource.type = resource_mapping.get(args.resource_type)
+  uptime_check.monitoredResource.labels = (
+      messages.MonitoredResource.LabelsValue()
+  )
+  for k, v in args.resource_labels.items():
+    uptime_check.monitoredResource.labels.additionalProperties.append(
+        messages.MonitoredResource.LabelsValue.AdditionalProperty(
+            key=k, value=v
+        )
+    )
+
+
+def SetUptimeCheckGroupFields(args, messages, uptime_check):
+  """Set Group fields based on args."""
+  group_mapping = {
+      'gce-instance': 'INSTANCE',
+      'aws-elb-load-balancer': 'AWS_ELB_LOAD_BALANCER',
+      None: 'INSTANCE',
+  }
+  uptime_check.resourceGroup = messages.ResourceGroup()
+  uptime_check.resourceGroup.groupId = args.group_id
+  uptime_check.resourceGroup.resourceType = arg_utils.ChoiceToEnum(
+      group_mapping.get(args.group_type),
+      messages.ResourceGroup.ResourceTypeValueValuesEnum,
+      item_type='group type',
+  )
+
+
+def SetUptimeCheckSyntheticFields(args, messages, uptime_check):
+  """Set Synthetic Monitor fields based on args."""
+  uptime_check.syntheticMonitor = messages.SyntheticMonitorTarget()
+  uptime_check.syntheticMonitor.cloudFunctionV2 = (
+      messages.CloudFunctionV2Target()
+  )
+  uptime_check.syntheticMonitor.cloudFunctionV2.name = args.synthetic_target
+
+
+def SetUptimeCheckMatcherFields(args, messages, uptime_check):
+  """Set Matcher fields based on args."""
+  if args.IsSpecified('matcher_content'):
+    content_matcher = messages.ContentMatcher()
+    content_matcher.content = args.matcher_content
+    matcher_mapping = {
+        'contains-string': (
+            messages.ContentMatcher.MatcherValueValuesEnum.CONTAINS_STRING
+        ),
+        'not-contains-string': (
+            messages.ContentMatcher.MatcherValueValuesEnum.NOT_CONTAINS_STRING
+        ),
+        'matches-regex': (
+            messages.ContentMatcher.MatcherValueValuesEnum.MATCHES_REGEX
+        ),
+        'not-matches-regex': (
+            messages.ContentMatcher.MatcherValueValuesEnum.NOT_MATCHES_REGEX
+        ),
+        'matches-json-path': (
+            messages.ContentMatcher.MatcherValueValuesEnum.MATCHES_JSON_PATH
+        ),
+        'not-matches-json-path': (
+            messages.ContentMatcher.MatcherValueValuesEnum.NOT_MATCHES_JSON_PATH
+        ),
+        None: messages.ContentMatcher.MatcherValueValuesEnum.CONTAINS_STRING,
+    }
+    content_matcher.matcher = matcher_mapping.get(args.matcher_type)
+    if args.IsSpecified('json_path'):
+      content_matcher.jsonPathMatcher = messages.JsonPathMatcher()
+      content_matcher.jsonPathMatcher.jsonPath = args.json_path
+      jsonpath_matcher_mapping = {
+          'exact-match': (
+              messages.JsonPathMatcher.JsonMatcherValueValuesEnum.EXACT_MATCH
+          ),
+          'regex-match': (
+              messages.JsonPathMatcher.JsonMatcherValueValuesEnum.REGEX_MATCH
+          ),
+          None: messages.JsonPathMatcher.JsonMatcherValueValuesEnum.EXACT_MATCH,
+      }
+      content_matcher.jsonPathMatcher.jsonMatcher = (
+          jsonpath_matcher_mapping.get(args.json_path_matcher_type)
+      )
+    # Content matcher is always full replace
+    uptime_check.contentMatchers = []
+    uptime_check.contentMatchers.append(content_matcher)
+
+
+def SetUptimeCheckProtocolFields(
+    args,
+    messages,
+    uptime_check,
+    headers,
+    status_classes,
+    status_codes,
+    update=False,
+):
+  """Set Protocol fields based on args."""
+  if (
+      not update and args.IsSpecified('synthetic_target')
+  ) or uptime_check.syntheticMonitor is not None:
+    return
+
+  if (
+      not update and args.protocol == 'tcp'
+  ) or uptime_check.tcpCheck is not None:
+    if args.port is None and uptime_check.tcpCheck is None:
+      raise MissingRequiredFieldError('Missing required field "port"')
+
+    if uptime_check.tcpCheck is None:
+      uptime_check.tcpCheck = messages.TcpCheck()
+    tcp_check = uptime_check.tcpCheck
+    if args.port is not None:
+      tcp_check.port = args.port
+    if args.pings_count is not None:
+      tcp_check.pingConfig = messages.PingConfig()
+      tcp_check.pingConfig.pingsCount = args.pings_count
+  else:
+    if uptime_check.httpCheck is None:
+      uptime_check.httpCheck = messages.HttpCheck()
+    http_check = uptime_check.httpCheck
+    if args.path is not None:
+      http_check.path = args.path
+    if args.validate_ssl is not None:
+      http_check.validateSsl = args.validate_ssl
+    if args.mask_headers is not None:
+      http_check.maskHeaders = args.mask_headers
+    if args.custom_content_type is not None:
+      http_check.customContentType = args.custom_content_type
+    if http_check.authInfo is None:
+      http_check.authInfo = messages.BasicAuthentication()
+    if args.username is not None:
+      http_check.authInfo.username = args.username
+    if args.password is not None:
+      http_check.authInfo.password = args.password
+    if args.pings_count is not None:
+      http_check.pingConfig = messages.PingConfig()
+      http_check.pingConfig.pingsCount = args.pings_count
+    if args.body is not None:
+      http_check.body = args.body.encode()
+    if (not update and args.protocol == 'https') or http_check.useSsl:
+      http_check.useSsl = True
+      if args.port is not None:
+        http_check.port = args.port
+      if http_check.port is None:
+        http_check.port = 443
+    else:
+      http_check.useSsl = False
+      if args.port is not None:
+        http_check.port = args.port
+      if http_check.port is None:
+        http_check.port = 80
+    method_mapping = {
+        'get': messages.HttpCheck.RequestMethodValueValuesEnum.GET,
+        'post': messages.HttpCheck.RequestMethodValueValuesEnum.POST,
+        None: messages.HttpCheck.RequestMethodValueValuesEnum.GET,
+    }
+    if http_check.requestMethod is None or args.request_method is not None:
+      http_check.requestMethod = method_mapping.get(args.request_method)
+    content_mapping = {
+        'unspecified': (
+            messages.HttpCheck.ContentTypeValueValuesEnum.TYPE_UNSPECIFIED
+        ),
+        'url-encoded': (
+            messages.HttpCheck.ContentTypeValueValuesEnum.URL_ENCODED
+        ),
+        'user-provided': (
+            messages.HttpCheck.ContentTypeValueValuesEnum.USER_PROVIDED
+        ),
+        None: messages.HttpCheck.ContentTypeValueValuesEnum.TYPE_UNSPECIFIED,
+    }
+    if http_check.contentType is None or args.content_type is not None:
+      http_check.contentType = content_mapping.get(args.content_type)
+    http_check.headers = headers
+    status_mapping = {
+        '1xx': (
+            messages.ResponseStatusCode.StatusClassValueValuesEnum.STATUS_CLASS_1XX
+        ),
+        '2xx': (
+            messages.ResponseStatusCode.StatusClassValueValuesEnum.STATUS_CLASS_2XX
+        ),
+        '3xx': (
+            messages.ResponseStatusCode.StatusClassValueValuesEnum.STATUS_CLASS_3XX
+        ),
+        '4xx': (
+            messages.ResponseStatusCode.StatusClassValueValuesEnum.STATUS_CLASS_4XX
+        ),
+        '5xx': (
+            messages.ResponseStatusCode.StatusClassValueValuesEnum.STATUS_CLASS_5XX
+        ),
+        'any': (
+            messages.ResponseStatusCode.StatusClassValueValuesEnum.STATUS_CLASS_ANY
+        ),
+        None: (
+            messages.ResponseStatusCode.StatusClassValueValuesEnum.STATUS_CLASS_UNSPECIFIED
+        ),
+    }
+    if status_classes is not None:
+      http_check.acceptedResponseStatusCodes = []
+      for status in status_classes:
+        http_check.acceptedResponseStatusCodes.append(
+            messages.ResponseStatusCode(statusClass=status_mapping.get(status))
+        )
+    elif status_codes is not None:
+      http_check.acceptedResponseStatusCodes = []
+      for status in status_codes:
+        http_check.acceptedResponseStatusCodes.append(
+            messages.ResponseStatusCode(statusValue=status)
+        )
+    elif http_check.acceptedResponseStatusCodes is None:
+      http_check.acceptedResponseStatusCodes = []
+      http_check.acceptedResponseStatusCodes.append(
+          messages.ResponseStatusCode(statusClass=status_mapping.get('2xx'))
+      )

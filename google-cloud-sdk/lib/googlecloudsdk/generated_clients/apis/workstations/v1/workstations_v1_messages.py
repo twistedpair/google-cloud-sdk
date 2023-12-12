@@ -227,6 +227,16 @@ class CustomerEncryptionKey(_messages.Message):
   kmsKeyServiceAccount = _messages.StringField(2)
 
 
+class DomainConfig(_messages.Message):
+  r"""Configuration options for a custom domain.
+
+  Fields:
+    domain: Immutable. Domain used by Workstations for HTTP ingress.
+  """
+
+  domain = _messages.StringField(1)
+
+
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -1310,6 +1320,7 @@ class WorkstationCluster(_messages.Message):
     deleteTime: Output only. Time when this workstation cluster was soft-
       deleted.
     displayName: Optional. Human-readable name for this workstation cluster.
+    domainConfig: Optional. Configuration options for a custom domain.
     etag: Optional. Checksum computed by the server. May be sent on update and
       delete requests to make sure that the client has an up-to-date value
       before proceeding.
@@ -1391,15 +1402,16 @@ class WorkstationCluster(_messages.Message):
   degraded = _messages.BooleanField(5)
   deleteTime = _messages.StringField(6)
   displayName = _messages.StringField(7)
-  etag = _messages.StringField(8)
-  labels = _messages.MessageField('LabelsValue', 9)
-  name = _messages.StringField(10)
-  network = _messages.StringField(11)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 12)
-  reconciling = _messages.BooleanField(13)
-  subnetwork = _messages.StringField(14)
-  uid = _messages.StringField(15)
-  updateTime = _messages.StringField(16)
+  domainConfig = _messages.MessageField('DomainConfig', 8)
+  etag = _messages.StringField(9)
+  labels = _messages.MessageField('LabelsValue', 10)
+  name = _messages.StringField(11)
+  network = _messages.StringField(12)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 13)
+  reconciling = _messages.BooleanField(14)
+  subnetwork = _messages.StringField(15)
+  uid = _messages.StringField(16)
+  updateTime = _messages.StringField(17)
 
 
 class WorkstationConfig(_messages.Message):
@@ -1432,6 +1444,12 @@ class WorkstationConfig(_messages.Message):
       conditions field.
     deleteTime: Output only. Time when this workstation configuration was
       soft-deleted.
+    disableTcpConnections: Optional. Disables support for plain TCP
+      connections in the workstation. By default the service supports TCP
+      connections via a websocket relay. Setting this option to true disables
+      that relay, which prevents the usage of services that require plain tcp
+      connections, such as ssh. When enabled, all communication must occur
+      over https or wss.
     displayName: Optional. Human-readable name for this workstation
       configuration.
     encryptionKey: Immutable. Encrypts resources of this workstation
@@ -1555,20 +1573,21 @@ class WorkstationConfig(_messages.Message):
   createTime = _messages.StringField(4)
   degraded = _messages.BooleanField(5)
   deleteTime = _messages.StringField(6)
-  displayName = _messages.StringField(7)
-  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 8)
-  etag = _messages.StringField(9)
-  host = _messages.MessageField('Host', 10)
-  idleTimeout = _messages.StringField(11)
-  labels = _messages.MessageField('LabelsValue', 12)
-  name = _messages.StringField(13)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 14, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 15, repeated=True)
-  reconciling = _messages.BooleanField(16)
-  replicaZones = _messages.StringField(17, repeated=True)
-  runningTimeout = _messages.StringField(18)
-  uid = _messages.StringField(19)
-  updateTime = _messages.StringField(20)
+  disableTcpConnections = _messages.BooleanField(7)
+  displayName = _messages.StringField(8)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
+  etag = _messages.StringField(10)
+  host = _messages.MessageField('Host', 11)
+  idleTimeout = _messages.StringField(12)
+  labels = _messages.MessageField('LabelsValue', 13)
+  name = _messages.StringField(14)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 15, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 16, repeated=True)
+  reconciling = _messages.BooleanField(17)
+  replicaZones = _messages.StringField(18, repeated=True)
+  runningTimeout = _messages.StringField(19)
+  uid = _messages.StringField(20)
+  updateTime = _messages.StringField(21)
 
 
 class WorkstationsProjectsLocationsGetRequest(_messages.Message):

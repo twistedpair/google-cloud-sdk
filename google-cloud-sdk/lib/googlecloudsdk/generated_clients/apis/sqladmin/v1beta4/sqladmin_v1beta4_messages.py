@@ -3230,6 +3230,8 @@ class SqlExternalSyncSettingError(_messages.Message):
       SOURCE_MAX_SUBSCRIPTIONS: This warning message indicates that Cloud SQL
         uses the maximum number of subscriptions to migrate data from the
         source to the destination.
+      UNABLE_TO_VERIFY_DEFINERS: Unable to verify definers on the source for
+        MySQL.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3270,6 +3272,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     TURN_ON_PITR_AFTER_PROMOTE = 36
     INCOMPATIBLE_DATABASE_MINOR_VERSION = 37
     SOURCE_MAX_SUBSCRIPTIONS = 38
+    UNABLE_TO_VERIFY_DEFINERS = 39
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

@@ -583,6 +583,42 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicyRule(_messages.Message):
   resources = _messages.StringField(3, repeated=True)
 
 
+class GoogleIamV3betaSearchApplicablePoliciesResponse(_messages.Message):
+  r"""Response message for SearchApplicablePolicies
+
+  Fields:
+    bindingsAndPolicies: A list of Bindings and the policies associated with
+      those bindings The bindings will be ordered by enforcement point
+      starting from the lowest at the target level and up the CRM hierarchy.
+      No order is guaranteed for bindings for a given enforcement point.
+    nextPageToken: The page token to use in a follow up
+      SearchApplicablePolicies request
+    responseComplete: Does the response contain the full list of all bindings
+      and policies applicable or were some excluded due to lack of permissions
+  """
+
+  bindingsAndPolicies = _messages.MessageField('GoogleIamV3betaSearchApplicablePoliciesResponseBindingAndPolicy', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  responseComplete = _messages.BooleanField(3)
+
+
+class GoogleIamV3betaSearchApplicablePoliciesResponseBindingAndPolicy(_messages.Message):
+  r"""A pair of a binding and a policy referenced by that binding (if
+  accessible)
+
+  Fields:
+    binding: A binding between a target and a policy
+    policy: The policy associated with the above binding. Omitted if the
+      policy cannot be retrieved due to lack of permissions
+    policyAccessible: Will be set to false if there was a permission error
+      getting the policy (even though the binding was accessible).
+  """
+
+  binding = _messages.MessageField('GoogleIamV3betaPolicyBinding', 1)
+  policy = _messages.MessageField('GoogleIamV3betaPolicy', 2)
+  policyAccessible = _messages.BooleanField(3)
+
+
 class GoogleLongrunningOperation(_messages.Message):
   r"""This resource represents a long-running operation that is the result of
   a network API call.
@@ -1703,6 +1739,34 @@ class IamProjectsLocationsPolicyBindingsPatchRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
   validateOnly = _messages.BooleanField(4)
+
+
+class IamSearchApplicablePoliciesSearchRequest(_messages.Message):
+  r"""A IamSearchApplicablePoliciesSearchRequest object.
+
+  Fields:
+    filter: Optional. Filtering currently only supports the kind of policies
+      to return, and must be in the format "kind:[policyKind1] OR
+      kind:[policyKind2]". New policy kinds may be added in the future without
+      notice. Example value: "kind:principalAccessBoundaryPolicies"
+    pageSize: Optional. The limit of number of items (binding+policy pairs) to
+      return. The default and maximum is 100 and values above 100 are
+      truncated to 100.
+    pageToken: Optional. A page token, received from a previous
+      `SearchApplicablePolicies` call.
+    targetQuery: Required. The target for which to list the policies and
+      bindings for. Binding conditions will not be evaluated and all bindings
+      that are bound to the target will be returned. All targets from the
+      CreatePolicyBinding request are supported, as well as principals that
+      are part of the principalSet. e.g.
+      principalSet://iam.googleapis.com/projects/1234/*
+      principal:alice@acme.com
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  targetQuery = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

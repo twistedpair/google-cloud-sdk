@@ -1157,8 +1157,7 @@ class ConfigManagementConfigSync(_messages.Message):
       and Cloud Monarch when Workload Identity is enabled. The GSA should have
       the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
       The Kubernetes ServiceAccount `default` in the namespace `config-
-      management-monitoring` should be bound to the GSA. This field is
-      required when automatic Feature management is enabled.
+      management-monitoring` should be bound to the GSA.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
@@ -2037,8 +2036,8 @@ class DefaultClusterConfig(_messages.Message):
   applied to all clusters born-in-fleet.
 
   Fields:
-    binaryAuthorizationConfig: Enable/Disable binary authorization features
-      for the cluster.
+    binaryAuthorizationConfig: Optional. Enable/Disable binary authorization
+      features for the cluster.
     securityPostureConfig: Enable/Disable Security Posture features for the
       cluster.
   """
@@ -6587,7 +6586,8 @@ class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
   Fields:
     containerResources: Container resource requirements.
     podAffinity: Pod affinity configuration.
-    podAntiAffinity: Pod anti-affinity enablement.
+    podAntiAffinity: Pod anti-affinity enablement. Deprecated: use
+      `pod_affinity` instead.
     podTolerations: Pod tolerations of node taints.
     replicaCount: Pod replica count.
   """
@@ -7038,9 +7038,11 @@ class Rollout(_messages.Message):
       Rollout.
 
   Messages:
+    AnnotationsValue: Optional. Annotations for this Rollout.
     LabelsValue: Optional. Labels for this Rollout.
 
   Fields:
+    annotations: Optional. Annotations for this Rollout.
     clusterStatus: Output only. Metadata about the cluster status which are
       part of the Rollout. Provided by the server.
     completeTime: Output only. The timestamp at which the Rollout was
@@ -7079,6 +7081,31 @@ class Rollout(_messages.Message):
     COMPLETED = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
+  class AnnotationsValue(_messages.Message):
+    r"""Optional. Annotations for this Rollout.
+
+    Messages:
+      AdditionalProperty: An additional property for a AnnotationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type AnnotationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AnnotationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. Labels for this Rollout.
 
@@ -7102,19 +7129,20 @@ class Rollout(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  clusterStatus = _messages.MessageField('ClusterStatus', 1, repeated=True)
-  completeTime = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deleteTime = _messages.StringField(4)
-  displayName = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  feature = _messages.MessageField('FeatureUpdate', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  managedRolloutConfig = _messages.MessageField('ManagedRolloutConfig', 9)
-  name = _messages.StringField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  annotations = _messages.MessageField('AnnotationsValue', 1)
+  clusterStatus = _messages.MessageField('ClusterStatus', 2, repeated=True)
+  completeTime = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  deleteTime = _messages.StringField(5)
+  displayName = _messages.StringField(6)
+  etag = _messages.StringField(7)
+  feature = _messages.MessageField('FeatureUpdate', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  managedRolloutConfig = _messages.MessageField('ManagedRolloutConfig', 10)
+  name = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
 
 
 class Rule(_messages.Message):

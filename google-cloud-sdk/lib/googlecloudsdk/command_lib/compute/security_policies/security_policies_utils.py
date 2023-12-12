@@ -656,7 +656,9 @@ def ConvertEnforceOnKey(enforce_on_key):
       'http-cookie': 'HTTP_COOKIE',
       'http-path': 'HTTP_PATH',
       'sni': 'SNI',
-      'region-code': 'REGION_CODE'
+      'region-code': 'REGION_CODE',
+      'tls-ja3-fingerprint': 'TLS_JA3_FINGERPRINT',
+      'user-ip': 'USER_IP',
   }.get(enforce_on_key, enforce_on_key)
 
 

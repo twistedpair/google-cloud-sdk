@@ -2133,9 +2133,8 @@ def AddResourceManagerTagsNodePoolUpdate(parser):
       parser,
       """\
 Replaces all the user specified resource manager tags on all nodes in an
-existing standard or auto-provisioned node pool in a Standard cluster with
-the given comma-separated resource manager tags that has the GCE_FIREWALL
-purpose.
+existing node pool in a Standard cluster with the given comma-separated
+resource manager tags that has the GCE_FIREWALL purpose.
 
 Examples:
 
@@ -2334,7 +2333,6 @@ def AddClusterDNSFlags(
   --cluster-dns={clouddns|kubedns|default},
   --cluster-dns-scope={cluster|vpc},
   --cluster-dns-domain=string
-  --enable-additive-vpc-scope,
   --additive-vpc-scope-dns-domain=string,
   --disable-additive-vpc-scope
 
@@ -2374,25 +2372,13 @@ def AddClusterDNSFlags(
         'ClusterDNS_AdditiveVPCScope_EnabledDisable', hidden=True, mutex=True
     )
     mutex.add_argument(
-        '--enable-additive-vpc-scope',
-        default=None,
-        action='store_true',
-        hidden=True,
-        help=textwrap.dedent("""\
-        Enables Additive VPC Scope.
-
-        Default value is false. Only works with Cluster Scope.
-        """),
-    )
-    mutex.add_argument(
         '--disable-additive-vpc-scope',
         default=None,
         action='store_true',
         hidden=True,
         help='Disables Additive VPC Scope.',
     )
-
-    group.add_argument(
+    mutex.add_argument(
         '--additive-vpc-scope-dns-domain',
         default=None,
         hidden=True,
@@ -3419,7 +3405,13 @@ def AddAddonsFlagsWithOptions(parser, addon_options):
   visible_addon_options = [
       addon
       for addon in addon_options
-      if addon not in [api_adapter.APPLICATIONMANAGER, api_adapter.STATEFULHA]
+      if addon
+      not in [
+          api_adapter.APPLICATIONMANAGER,
+          api_adapter.STATEFULHA,
+          # TODO(b/314808639): Remove at AGA time
+          api_adapter.PARALLELSTORECSIDRIVER,
+      ]
   ]
   visible_addon_options += api_adapter.VISIBLE_CLOUDRUN_ADDONS
   parser.add_argument(

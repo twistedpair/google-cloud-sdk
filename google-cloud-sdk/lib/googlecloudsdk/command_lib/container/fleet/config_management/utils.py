@@ -27,6 +27,7 @@ from googlecloudsdk.command_lib.container.fleet.features import info
 APPLY_SPEC_VERSION_1 = """
 applySpecVersion: 1
 spec:
+  cluster:
   configSync:
     enabled: true
     sourceFormat: hierarchy
@@ -55,6 +56,7 @@ spec:
      enableHierarchicalResourceQuota: false
 """
 
+CLUSTER = 'cluster'
 CONFIG_SYNC = 'configSync'
 POLICY_CONTROLLER = 'policyController'
 HNC = 'hierarchyController'

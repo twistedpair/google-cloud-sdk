@@ -59,6 +59,17 @@ enable_external_ips:
     Indicate that the IP addresses for the node should be internal. The default is that external IP
     addresses will be associated with the TPU workers.
 
+queue_count:
+  api_field: node.networkConfig.queueCount
+  arg_name: queue-count
+  type: int
+  required: false
+  help_text: |
+    Specifies the networking queue count for TPU VM instances. Both Rx and Tx queues will be set to
+    this number. If it's not specified, a default queue count will be assigned. For Virtio-net,
+    each interface will get min(floor(#vCPU / #vNIC), 32) queues. For gVNIC, each interface will
+    get min(floor(#vCPU / #vNIC / 2), 16) queues.
+
 version:
   api_field: node.runtimeVersion
   arg_name: version

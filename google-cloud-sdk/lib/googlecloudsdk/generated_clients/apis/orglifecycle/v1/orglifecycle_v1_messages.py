@@ -161,9 +161,9 @@ class ManagedOrganization(_messages.Message):
       created.
     deleteTime: Output only. The timestamp that the managed organization was
       soft deleted.
-    name: Output only. The resource name of the managed organization. Format:
-      organizations/{organization_id}/locations/{location}/managedOrganization
-      s/{managed_organization_id}
+    name: Identifier. The resource name of the managed organization. Format: o
+      rganizations/{organization_id}/locations/{location}/managedOrganizations
+      /{managed_organization_id}
     organizationDisplayName: Required. Immutable. The display name of the
       cloudresourcemanager.googleapis.com/Organization created on behalf of
       the customer.
@@ -471,9 +471,9 @@ class OrglifecycleOrganizationsLocationsManagedOrganizationsPatchRequest(_messag
   Fields:
     managedOrganization: A ManagedOrganization resource to be passed as the
       request body.
-    name: Output only. The resource name of the managed organization. Format:
-      organizations/{organization_id}/locations/{location}/managedOrganization
-      s/{managed_organization_id}
+    name: Identifier. The resource name of the managed organization. Format: o
+      rganizations/{organization_id}/locations/{location}/managedOrganizations
+      /{managed_organization_id}
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the ManagedOrganization resource by the update. The list
       of fields to update. Supported field: ManagedOrganization.admins;

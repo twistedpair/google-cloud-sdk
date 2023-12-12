@@ -415,9 +415,7 @@ def AddCreateNegArgsToParser(
 
 
 def _AddAddEndpoint(
-    endpoint_group,
-    endpoint_spec,
-    support_ipv6,
+    endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
 ):
   """Adds add endpoint argument for updating network endpoint groups."""
   help_text = """\
@@ -454,6 +452,15 @@ def _AddAddEndpoint(
   help_text += """\
 
               *port* - Required endpoint port unless NEG default port is set.
+               """
+  if support_port_mapping_neg:
+    help_text += """\
+
+              *clientPort* - Required endpoint client port only for the port
+              mapping NEG.
+               """
+
+  help_text += """\
 
           `internet-ip-port`
                """
@@ -552,9 +559,7 @@ def _AddAddEndpoint(
 
 
 def _AddRemoveEndpoint(
-    endpoint_group,
-    endpoint_spec,
-    support_ipv6,
+    endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
 ):
   """Adds remove endpoint argument for updating network endpoint groups."""
   help_text = """\
@@ -579,6 +584,15 @@ def _AddRemoveEndpoint(
   help_text += """\
 
               *port* - Optional port of the network endpoint to detach.
+    """
+
+  if support_port_mapping_neg:
+    help_text += """\
+
+              *clientPort* - Optional client port, only for port mapping NEGs.
+               """
+
+  help_text += """\
 
           `internet-ip-port`
 
@@ -643,7 +657,9 @@ def _AddRemoveEndpoint(
   )
 
 
-def AddUpdateNegArgsToParser(parser, support_ipv6=False):
+def AddUpdateNegArgsToParser(
+    parser, support_ipv6=False, support_port_mapping_neg=False
+):
   """Adds flags for updating a network endpoint group to the parser."""
   endpoint_group = parser.add_group(
       mutex=True,
@@ -657,14 +673,11 @@ def AddUpdateNegArgsToParser(parser, support_ipv6=False):
   endpoint_spec = {'instance': str, 'ip': str, 'port': int, 'fqdn': str}
   if support_ipv6:
     endpoint_spec['ipv6'] = str
-
+  if support_port_mapping_neg:
+    endpoint_spec['client_port'] = int
   _AddAddEndpoint(
-      endpoint_group,
-      endpoint_spec,
-      support_ipv6,
+      endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
   )
   _AddRemoveEndpoint(
-      endpoint_group,
-      endpoint_spec,
-      support_ipv6,
+      endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
   )

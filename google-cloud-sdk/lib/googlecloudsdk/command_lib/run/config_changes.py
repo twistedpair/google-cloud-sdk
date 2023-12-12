@@ -1477,6 +1477,23 @@ class DefaultUrlChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class InvokerIamChange(TemplateConfigChanger):
+  """Sets the invoker-iam-disabled annotation on the service template.
+
+  Attributes:
+    invoker_iam_check: Boolean indicating whether invoker iam should be enabled
+  """
+
+  invoker_iam_check: bool
+
+  def Adjust(self, resource):
+    resource.annotations[container_resource.DISABLE_IAM_ANNOTATION] = str(
+        not self.invoker_iam_check
+    )
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class NetworkInterfacesChange(TemplateConfigChanger):
   """Sets or updates the network interfaces annotation on the template.
 

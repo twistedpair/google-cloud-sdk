@@ -160,6 +160,12 @@ class CheckValuePermissionDeniedException(Error):
   pass
 
 
+class ListDescendantServicesPermissionDeniedException(Error):
+  """Permission denied exception for list descendant services."""
+
+  pass
+
+
 class OperationErrorException(Error):
   """Exception for operation error."""
   pass

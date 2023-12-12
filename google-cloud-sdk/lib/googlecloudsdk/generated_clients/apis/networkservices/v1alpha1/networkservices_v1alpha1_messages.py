@@ -621,7 +621,7 @@ class Connection(_messages.Message):
 
   Fields:
     connectionType: Required. VPC connection type.
-    nccHub: Required. Reference to a [NCC](https://cloud.google.com/network-
+    nccHub: Optional. Reference to a [NCC](https://cloud.google.com/network-
       connectivity-center) hub. References should have the following format:
       `projects/{project}/locations/global/hubs/{hub}`.
   """
@@ -1205,8 +1205,13 @@ class ExtensionChainExtension(_messages.Message):
       maximum length of 63 characters. Additionally, the first character must
       be a letter and the last a letter or a number.
     service: Required. The reference to the service that runs the extension.
-      Must be a reference to a [backend service](https://cloud.google.com/comp
-      ute/docs/reference/rest/v1/backendServices).
+      Currently only Callout extensions are supported here. To configure a
+      Callout extension, `service` must be a fully-qualified reference to a
+      [backend service](https://cloud.google.com/compute/docs/reference/rest/v
+      1/backendServices) in the format: `https://www.googleapis.com/compute/v1
+      /projects/{project}/regions/{region}/backendServices/{backendService}`
+      or `https://www.googleapis.com/compute/v1/projects/{project}/global/back
+      endServices/{backendService}`.
     supportedEvents: Optional. A set of events during request or response
       processing for which this extension is called. This field is required
       for the `LbTrafficExtension` resource. It's not relevant for the
@@ -1250,7 +1255,9 @@ class ExtensionChainMatchCondition(_messages.Message):
   Fields:
     celExpression: Required. A Common Expression Language (CEL) expression
       that is used to match requests for which the extension chain is
-      executed.
+      executed. For more information, see [CEL matcher language
+      reference](https://cloud.google.com/service-extensions/docs/cel-matcher-
+      language-reference).
   """
 
   celExpression = _messages.StringField(1)
@@ -1260,7 +1267,8 @@ class Gateway(_messages.Message):
   r"""Gateway represents the configuration for a proxy, typically a load
   balancer. It captures the ip:port over which the services are exposed by the
   proxy, along with any policy configurations. Routes have reference to to
-  Gateways to dictate how requests should be routed by this Gateway.
+  Gateways to dictate how requests should be routed by this Gateway. Next id:
+  29
 
   Enums:
     IpVersionValueValuesEnum: Optional. The IP Version that will be used by
@@ -1336,6 +1344,7 @@ class Gateway(_messages.Message):
 
     Values:
       IP_VERSION_UNSPECIFIED: The type when IP version is not specified.
+        Defaults to IPV4.
       IPV4: The type for IP version 4.
       IPV6: The type for IP version 6.
     """
@@ -3475,14 +3484,18 @@ class MulticastDomain(_messages.Message):
     LabelsValue: Optional. Labels as key value pairs.
 
   Fields:
+    adminNetwork: Required. URI of the multicast admin VPC network. The URI
+      must be in the following format:
+      `projects/{project}/global/networks/{network}`.
     connection: Required. VPC connectivity type for this domain.
     createTime: Output only. [Output only] Create time stamp.
     description: Optional. Optional text description of the resource.
     labels: Optional. Labels as key value pairs.
     name: Name of the resource.
-    network: Required. URI of the multicast producer VPC network. The URI must
+    network: Optional. URI of the multicast producer VPC network. The URI must
       be in the following format:
-      `projects/{project}/global/networks/{network}`.
+      `projects/{project}/global/networks/{network}`. [Deprecated] Use
+      admin_network instead.
     updateTime: Output only. [Output only] Update time stamp.
   """
 
@@ -3510,13 +3523,14 @@ class MulticastDomain(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  connection = _messages.MessageField('Connection', 1)
-  createTime = _messages.StringField(2)
-  description = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  network = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  adminNetwork = _messages.StringField(1)
+  connection = _messages.MessageField('Connection', 2)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  network = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class MulticastDomainActivation(_messages.Message):

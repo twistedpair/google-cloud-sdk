@@ -357,17 +357,21 @@ class LogView(proto.Message):
             Filter that restricts which log entries in a bucket are
             visible in this view.
 
-            Filters are restricted to be a logical AND of ==/!= of any
-            of the following:
+            Filters must be logical conjunctions that use the AND
+            operator, and they can use any of the following qualifiers:
 
-            -  originating project/folder/organization/billing account.
-            -  resource type
-            -  log id
+            -  ``SOURCE()``, which specifies a project, folder,
+               organization, or billing account of origin.
+            -  ``resource.type``, which specifies the resource type.
+            -  ``LOG_ID()``, which identifies the log.
+
+            They can also use the negations of these qualifiers with the
+            NOT operator.
 
             For example:
 
             SOURCE("projects/myproject") AND resource.type =
-            "gce_instance" AND LOG_ID("stdout")
+            "gce_instance" AND NOT LOG_ID("stdout")
     """
 
     name: str = proto.Field(
@@ -395,12 +399,18 @@ class LogView(proto.Message):
 
 
 class LogSink(proto.Message):
-    r"""Describes a sink used to export log entries to one of the
-    following destinations in any project: a Cloud Storage bucket, a
-    BigQuery dataset, a Pub/Sub topic or a Cloud Logging log bucket.
-    A logs filter controls which log entries are exported. The sink
-    must be created within a project, organization, billing account,
-    or folder.
+    r"""Describes a sink used to export log entries to one of the following
+    destinations:
+
+    -  a Cloud Logging log bucket,
+    -  a Cloud Storage bucket,
+    -  a BigQuery dataset,
+    -  a Pub/Sub topic,
+    -  a Cloud project.
+
+    A logs filter controls which log entries are exported. The sink must
+    be created within a project, organization, billing account, or
+    folder.
 
 
     .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
@@ -410,10 +420,16 @@ class LogSink(proto.Message):
             Required. The client-assigned sink identifier, unique within
             the project.
 
-            For example: ``"my-syslog-errors-to-pubsub"``. Sink
-            identifiers are limited to 100 characters and can include
-            only the following characters: upper and lower-case
-            alphanumeric characters, underscores, hyphens, and periods.
+            For example: ``"my-syslog-errors-to-pubsub"``.
+
+            Sink identifiers are limited to 100 characters and can
+            include only the following characters:
+
+            -  upper and lower-case alphanumeric characters,
+            -  underscores,
+            -  hyphens,
+            -  periods.
+
             First character has to be alphanumeric.
         destination (str):
             Required. The export destination:
@@ -1856,9 +1872,9 @@ class GetCmekSettingsRequest(proto.Message):
             ``"organizations/12345/cmekSettings"``
 
             Note: CMEK for the Log Router can be configured for Google
-            Cloud projects, folders, organizations and billing accounts.
-            Once configured for an organization, it applies to all
-            projects and folders in the Google Cloud organization.
+            Cloud projects, folders, organizations, and billing
+            accounts. Once configured for an organization, it applies to
+            all projects and folders in the Google Cloud organization.
     """
 
     name: str = proto.Field(
@@ -2037,8 +2053,8 @@ class GetSettingsRequest(proto.Message):
     r"""The parameters to
     [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings].
 
-    See `Enabling CMEK for Log
-    Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+    See [View default resource settings for Logging]
+    (https://cloud.google.com/logging/docs/default-settings#view-org-settings)
     for more information.
 
     Attributes:
@@ -2056,11 +2072,8 @@ class GetSettingsRequest(proto.Message):
 
             ``"organizations/12345/settings"``
 
-            Note: Settings for the Log Router can be get for Google
-            Cloud projects, folders, organizations and billing accounts.
-            Currently it can only be configured for organizations. Once
-            configured for an organization, it applies to all projects
-            and folders in the Google Cloud organization.
+            Note: Settings can be retrieved for Google Cloud projects,
+            folders, organizations, and billing accounts.
     """
 
     name: str = proto.Field(
@@ -2073,9 +2086,9 @@ class UpdateSettingsRequest(proto.Message):
     r"""The parameters to
     [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings].
 
-    See `Enabling CMEK for Log
-    Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
-    for more information.
+    See [Configure default settings for organizations and folders]
+    (https://cloud.google.com/logging/docs/default-settings) for more
+    information.
 
     Attributes:
         name (str):
@@ -2088,11 +2101,6 @@ class UpdateSettingsRequest(proto.Message):
             For example:
 
             ``"organizations/12345/settings"``
-
-            Note: Settings for the Log Router can currently only be
-            configured for Google Cloud organizations. Once configured,
-            it applies to all projects and folders in the Google Cloud
-            organization.
         settings (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings):
             Required. The settings to update.
 
@@ -2129,7 +2137,7 @@ class UpdateSettingsRequest(proto.Message):
 
 class Settings(proto.Message):
     r"""Describes the settings associated with a project, folder,
-    organization, billing account, or flexible resource.
+    organization, or billing account.
 
     Attributes:
         name (str):
@@ -2149,19 +2157,13 @@ class Settings(proto.Message):
 
             ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"``
 
-            To enable CMEK for the Log Router, set this field to a valid
-            ``kms_key_name`` for which the associated service account
-            has the required
+            To enable CMEK, set this field to a valid ``kms_key_name``
+            for which the associated service account has the required
             ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned
             for the key.
 
             The Cloud KMS key used by the Log Router can be updated by
             changing the ``kms_key_name`` to a new valid key name.
-            Encryption operations that are in progress will be completed
-            with the key that was in use when they started. Decryption
-            operations will be completed using the key that was used at
-            the time of encryption unless access to that key has been
-            revoked.
 
             To disable CMEK for the Log Router, set this field to an
             empty string.
@@ -2173,10 +2175,10 @@ class Settings(proto.Message):
             Output only. The service account that will be used by the
             Log Router to access your Cloud KMS key.
 
-            Before enabling CMEK for Log Router, you must first assign
-            the role ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` to
-            the service account that the Log Router will use to access
-            your Cloud KMS key. Use
+            Before enabling CMEK, you must first assign the role
+            ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` to the
+            service account that will be used to access your Cloud KMS
+            key. Use
             [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings]
             to obtain the service account ID.
 
@@ -2184,12 +2186,9 @@ class Settings(proto.Message):
             Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
             for more information.
         storage_location (str):
-            Optional. The storage location that Cloud Logging will use
-            to create new resources when a location is needed but not
-            explicitly provided. The use cases includes:
-
-            -  The location of ``_Default`` and ``_Required`` log bucket
-               for newly created projects and folders.
+            Optional. The storage location for the ``_Default`` and
+            ``_Required`` log buckets of newly created projects and
+            folders, unless the storage location is explicitly provided.
 
             Example value: ``europe-west1``.
 
@@ -2230,11 +2229,13 @@ class Settings(proto.Message):
 
                 ``logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR``
 
-                Cannot be empty or unset if ``mode`` == OVERWRITE. In order
-                to match all logs, use the following line as the value of
-                ``filter`` and do not use exclusions:
+                To match all logs, don't add exclusions and use the
+                following line as the value of ``filter``:
 
                 ``logName:*``
+
+                Cannot be empty or unset when the value of ``mode`` is
+                ``OVERWRITE``.
             exclusions (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
                 Optional. Specifies the set of exclusions to be added to the
                 ``_Default`` sink in newly created resource containers.
@@ -2692,8 +2693,13 @@ class CreateSavedQueryRequest(proto.Message):
             generate an alphanumeric ID.
 
             The ``saved_query_id`` is limited to 100 characters and can
-            include only the following characters: upper and lower-case
-            alphanumeric characters, underscores, hyphens, and periods.
+            include only the following characters:
+
+            -  upper and lower-case alphanumeric characters,
+            -  underscores,
+            -  hyphens,
+            -  periods.
+
             First character has to be alphanumeric.
         saved_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.SavedQuery):
             Required. The new saved query.

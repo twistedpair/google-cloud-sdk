@@ -367,3 +367,13 @@ class NodePoolsClient(_AwsClientBase):
         validateOnly=flags.GetValidateOnly(args),
     )
     return self._service.Patch(req)
+
+  def Rollback(self, node_pool_ref, args):
+    """Rolls back a node pool in an Anthos cluster on AWS."""
+    req = self._messages.GkemulticloudProjectsLocationsAwsClustersAwsNodePoolsRollbackRequest(
+        name=node_pool_ref.RelativeName(),
+        googleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest=self._messages.GoogleCloudGkemulticloudV1RollbackAwsNodePoolUpdateRequest(
+            respectPdb=flags.GetRespectPodDisruptionBudget(args),
+        ),
+    )
+    return self._service.Rollback(req)

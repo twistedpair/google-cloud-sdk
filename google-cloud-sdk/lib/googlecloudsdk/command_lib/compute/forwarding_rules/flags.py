@@ -257,9 +257,11 @@ def TargetHttpProxyArg():
       global_collection='compute.targetHttpProxies',
       regional_collection='compute.regionTargetHttpProxies',
       short_help='Target HTTP proxy that receives the traffic.',
-      detailed_help=('Target HTTP proxy that receives the traffic. '
-                     'Acceptable values for --ports flag are: 80, 8080.'),
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+      detailed_help=textwrap.dedent("""\
+      Target HTTP proxy that receives the traffic. For the acceptable ports, see [Port specifications](https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#port_specifications).
+      """),
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+  )
   return target_http_proxy_arg
 
 
@@ -273,9 +275,11 @@ def TargetHttpsProxyArg():
       global_collection='compute.targetHttpsProxies',
       regional_collection='compute.regionTargetHttpsProxies',
       short_help='Target HTTPS proxy that receives the traffic.',
-      detailed_help=('Target HTTPS proxy that receives the traffic. '
-                     'Acceptable values for --ports flag are: 443.'),
-      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION)
+      detailed_help=textwrap.dedent("""\
+      Target HTTPS proxy that receives the traffic. For the acceptable ports, see [Port specifications](https://cloud.google.com/load-balancing/docs/forwarding-rule-concepts#port_specifications).
+      """),
+      region_explanation=compute_flags.REGION_PROPERTY_EXPLANATION,
+  )
   return target_https_proxy_arg
 
 

@@ -164,6 +164,10 @@ def BackupConfiguration(sql_messages,
 
   if enable_point_in_time_recovery is not None:
     backup_config.pointInTimeRecoveryEnabled = enable_point_in_time_recovery
+    if backup_config.replicationLogArchivingEnabled is not None:
+      backup_config.replicationLogArchivingEnabled = (
+          enable_point_in_time_recovery
+      )
 
   # retainedTransactionLogDays is only valid when we have transaction logs,
   # i.e, have binlog or pitr.

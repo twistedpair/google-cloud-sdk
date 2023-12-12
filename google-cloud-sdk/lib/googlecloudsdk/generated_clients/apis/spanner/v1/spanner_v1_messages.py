@@ -63,7 +63,7 @@ class AutoscalingTargets(_messages.Message):
     storageUtilizationPercent: Required. The target storage utilization
       percentage that the autoscaler should be trying to achieve for the
       instance. This number is on a scale from 0 (no utilization) to 100 (full
-      utilization). The valid range is [10, 100] inclusive.
+      utilization). The valid range is [10, 99] inclusive.
   """
 
   highPriorityCpuUtilizationPercent = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -193,7 +193,6 @@ class BackupSchedule(_messages.Message):
   a Spanner database.
 
   Fields:
-    cronSpec: Cron style schedule specification.
     encryptionConfig: Optional. The encryption configuration that will be used
       to encrypt the backup. If this field is not specified, the backup will
       use the same encryption configuration as the database.
@@ -206,12 +205,24 @@ class BackupSchedule(_messages.Message):
     retentionDuration: Required. The retention duration of a backup that must
       be at least 1 day and at most 365 days. The backup is eligible to be
       automatically deleted once the retention period has elapsed.
+    spec: Required. The schedule specification based on which the backup
+      creations are triggered.
+  """
+
+  encryptionConfig = _messages.MessageField('CreateBackupEncryptionConfig', 1)
+  name = _messages.StringField(2)
+  retentionDuration = _messages.StringField(3)
+  spec = _messages.MessageField('BackupScheduleSpec', 4)
+
+
+class BackupScheduleSpec(_messages.Message):
+  r"""Defines specifications of the backup schedule.
+
+  Fields:
+    cronSpec: Cron style schedule specification.
   """
 
   cronSpec = _messages.MessageField('CrontabSpec', 1)
-  encryptionConfig = _messages.MessageField('CreateBackupEncryptionConfig', 2)
-  name = _messages.StringField(3)
-  retentionDuration = _messages.StringField(4)
 
 
 class BatchCreateSessionsRequest(_messages.Message):

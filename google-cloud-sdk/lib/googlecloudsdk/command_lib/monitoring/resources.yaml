@@ -65,8 +65,8 @@ uptime_check:
   collection: monitoring.projects.uptimeCheckConfigs
   request_id_field: name
   attributes:
-  - parameter_name: checkId
-    attribute_name: uptime
+  - parameter_name: uptimeCheckConfigsId
+    attribute_name: check_id
     help: The check ID corresponding to the uptime check config.
 
 uptime_check_ip:

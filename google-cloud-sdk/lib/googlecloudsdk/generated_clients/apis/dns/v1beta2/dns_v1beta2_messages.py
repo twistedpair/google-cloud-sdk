@@ -2154,6 +2154,9 @@ class RRSetRoutingPolicy(_messages.Message):
   Fields:
     geo: A RRSetRoutingPolicyGeoPolicy attribute.
     geoPolicy: A RRSetRoutingPolicyGeoPolicy attribute.
+    healthCheck: The selfLink attribute of the HealthCheck resource to use for
+      this RRSetRoutingPolicy.
+      https://cloud.google.com/compute/docs/reference/rest/v1/healthChecks
     kind: A string attribute.
     primaryBackup: A RRSetRoutingPolicyPrimaryBackupPolicy attribute.
     wrr: A RRSetRoutingPolicyWrrPolicy attribute.
@@ -2162,10 +2165,11 @@ class RRSetRoutingPolicy(_messages.Message):
 
   geo = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 1)
   geoPolicy = _messages.MessageField('RRSetRoutingPolicyGeoPolicy', 2)
-  kind = _messages.StringField(3, default='dns#rRSetRoutingPolicy')
-  primaryBackup = _messages.MessageField('RRSetRoutingPolicyPrimaryBackupPolicy', 4)
-  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 5)
-  wrrPolicy = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 6)
+  healthCheck = _messages.StringField(3)
+  kind = _messages.StringField(4, default='dns#rRSetRoutingPolicy')
+  primaryBackup = _messages.MessageField('RRSetRoutingPolicyPrimaryBackupPolicy', 5)
+  wrr = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 6)
+  wrrPolicy = _messages.MessageField('RRSetRoutingPolicyWrrPolicy', 7)
 
 
 class RRSetRoutingPolicyGeoPolicy(_messages.Message):
@@ -2217,13 +2221,19 @@ class RRSetRoutingPolicyGeoPolicyGeoPolicyItem(_messages.Message):
 class RRSetRoutingPolicyHealthCheckTargets(_messages.Message):
   r"""HealthCheckTargets describes endpoints to health-check when responding
   to Routing Policy queries. Only the healthy endpoints will be included in
-  the response.
+  the response. Only one of internal_load_balancer and external_endpoints
+  should be set.
 
   Fields:
-    internalLoadBalancers: A RRSetRoutingPolicyLoadBalancerTarget attribute.
+    externalEndpoints: The Internet IP addresses to be health checked. The
+      format matches the format of ResourceRecordSet.rrdata as defined in RFC
+      1035 (section 5) and RFC 1034 (section 3.6.1)
+    internalLoadBalancers: Configuration for internal load balancers to be
+      health checked.
   """
 
-  internalLoadBalancers = _messages.MessageField('RRSetRoutingPolicyLoadBalancerTarget', 1, repeated=True)
+  externalEndpoints = _messages.StringField(1, repeated=True)
+  internalLoadBalancers = _messages.MessageField('RRSetRoutingPolicyLoadBalancerTarget', 2, repeated=True)
 
 
 class RRSetRoutingPolicyLoadBalancerTarget(_messages.Message):

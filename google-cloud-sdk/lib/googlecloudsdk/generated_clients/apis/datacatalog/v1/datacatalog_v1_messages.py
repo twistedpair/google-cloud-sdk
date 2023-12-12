@@ -949,7 +949,7 @@ class DatacatalogProjectsLocationsTaxonomiesPatchRequest(_messages.Message):
   Fields:
     googleCloudDatacatalogV1Taxonomy: A GoogleCloudDatacatalogV1Taxonomy
       resource to be passed as the request body.
-    name: Output only. Resource name of this taxonomy in URL format. Note:
+    name: Identifier. Resource name of this taxonomy in URL format. Note:
       Policy tag manager generates unique taxonomy IDs.
     updateMask: Specifies fields to update. If not set, defaults to all fields
       you can update. For more information, see [FieldMask]
@@ -1038,7 +1038,7 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest(_messages.Mes
   Fields:
     googleCloudDatacatalogV1PolicyTag: A GoogleCloudDatacatalogV1PolicyTag
       resource to be passed as the request body.
-    name: Output only. Resource name of this policy tag in the URL format. The
+    name: Identifier. Resource name of this policy tag in the URL format. The
       policy tag manager generates unique taxonomy IDs and policy tag IDs.
     updateMask: Specifies the fields to update. You can update only display
       name, description, and parent policy tag. If not set, defaults to all
@@ -2524,7 +2524,7 @@ class GoogleCloudDatacatalogV1PolicyTag(_messages.Message):
       can't start or end with spaces and must be unique within the parent
       taxonomy, contain only Unicode letters, numbers, underscores, dashes and
       spaces, and be at most 200 bytes long when encoded in UTF-8.
-    name: Output only. Resource name of this policy tag in the URL format. The
+    name: Identifier. Resource name of this policy tag in the URL format. The
       policy tag manager generates unique taxonomy IDs and policy tag IDs.
     parentPolicyTag: Resource name of this policy tag's parent policy tag. If
       empty, this is a top level tag. If not set, defaults to an empty string.
@@ -3359,7 +3359,7 @@ class GoogleCloudDatacatalogV1Taxonomy(_messages.Message):
       underscores, dashes, and spaces, and be at most 200 bytes long when
       encoded in UTF-8. The taxonomy display name must be unique within an
       organization.
-    name: Output only. Resource name of this taxonomy in URL format. Note:
+    name: Identifier. Resource name of this taxonomy in URL format. Note:
       Policy tag manager generates unique taxonomy IDs.
     policyTagCount: Output only. Number of policy tags in this taxonomy.
     service: Output only. Identity of the service which owns the Taxonomy.

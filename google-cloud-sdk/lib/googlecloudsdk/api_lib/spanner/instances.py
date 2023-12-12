@@ -193,6 +193,7 @@ def Patch(
     autoscaling_storage_target=None,
     instance_type=None,
     expire_behavior=None,
+    ssd_cache_id=None,
 ):
   """Update an instance."""
   fields = []
@@ -261,6 +262,14 @@ def Patch(
     fields.append('freeInstanceMetadata.expireBehavior')
     instance_obj.freeInstanceMetadata = msgs.FreeInstanceMetadata(
         expireBehavior=expire_behavior)
+
+  if ssd_cache_id is not None:
+    fields.append('ssdCache')
+    ssd_cache = ''
+    if ssd_cache_id.strip():
+      instance_res = Get(instance)
+      ssd_cache = instance_res.config + '/ssdCaches/' + ssd_cache_id.strip()
+    instance_obj.ssdCache = ssd_cache
 
   ref = resources.REGISTRY.Parse(
       instance,

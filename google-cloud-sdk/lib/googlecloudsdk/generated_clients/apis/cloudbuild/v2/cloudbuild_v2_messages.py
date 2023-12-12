@@ -3293,7 +3293,7 @@ class TaskSpec(_messages.Message):
   params = _messages.MessageField('ParamSpec', 3, repeated=True)
   results = _messages.MessageField('TaskResult', 4, repeated=True)
   sidecars = _messages.MessageField('Sidecar', 5, repeated=True)
-  stepTemplate = _messages.MessageField('StepTemplate', 6, repeated=True)
+  stepTemplate = _messages.MessageField('StepTemplate', 6)
   steps = _messages.MessageField('Step', 7, repeated=True)
   volumes = _messages.MessageField('VolumeSource', 8, repeated=True)
   workspaces = _messages.MessageField('WorkspaceDeclaration', 9, repeated=True)

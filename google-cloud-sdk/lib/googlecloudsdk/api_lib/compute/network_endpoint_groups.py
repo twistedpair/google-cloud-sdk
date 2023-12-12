@@ -71,17 +71,12 @@ class NetworkEndpointGroupsClient(object):
     network_uri = None
     # Zonal, PSC NEG, Port Mapping NEG and Internet NEGs will pass
     # the network parameter to Arcus
-    is_internet_neg = self._IsInternetNeg(
-        network_endpoint_type
-    )
+    is_internet_neg = self._IsInternetNeg(network_endpoint_type)
     is_port_mapping_neg = is_regional and self._IsPortMappingNeg(
         network_endpoint_type, client_port_mapping_mode
     )
     if network and (
-        is_zonal
-        or psc_target_service
-        or is_internet_neg
-        or is_port_mapping_neg
+        is_zonal or psc_target_service or is_internet_neg or is_port_mapping_neg
     ):
       network_ref = self.resources.Parse(
           network, {'project': neg_ref.project}, collection='compute.networks'
@@ -264,6 +259,13 @@ class NetworkEndpointGroupsClient(object):
     )
     return self._zonal_service.AttachNetworkEndpoints(request)
 
+  def _HasAnyInstanceOnlyEndpoint(self, endpoints):
+    """Checks if endpoint list has an endpoint with instance only."""
+    for arg_endpoint in endpoints:
+      if 'instance' in arg_endpoint and len(arg_endpoint) == 1:
+        return True
+    return False
+
   def _DetachZonalEndpoints(self, neg_ref, endpoints):
     """Detaches network endpoints from a zonal network endpoint group."""
     request_class = (
@@ -367,6 +369,8 @@ class NetworkEndpointGroupsClient(object):
         message_endpoint.port = arg_endpoint.get('port')
       if 'fqdn' in arg_endpoint:
         message_endpoint.fqdn = arg_endpoint.get('fqdn')
+      if 'client_port' in arg_endpoint:
+        message_endpoint.clientPort = arg_endpoint.get('client_port')
       output_list.append(message_endpoint)
 
     return output_list
@@ -434,13 +438,23 @@ class NetworkEndpointGroupsClient(object):
         )
         or result
     )
+
+    if remove_endpoints and self._HasAnyInstanceOnlyEndpoint(remove_endpoints):
+      remove_endpoints_error_message = 'Detaching endpoints from [{0}].'.format(
+          neg_name
+      )
+    else:
+      remove_endpoints_error_message = (
+          'Detaching {0} endpoints from [{1}].'.format(
+              len(remove_endpoints) if remove_endpoints else 0, neg_name
+          )
+      )
+
     result = (
         self._WaitForResult(
             operation_poller,
             detach_endpoints_ref,
-            'Detaching {0} endpoints from [{1}].'.format(
-                len(remove_endpoints) if remove_endpoints else 0, neg_name
-            ),
+            remove_endpoints_error_message,
         )
         or result
     )

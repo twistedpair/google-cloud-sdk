@@ -1240,8 +1240,9 @@ class SecuritycentermanagementFoldersLocationsSecurityHealthAnalyticsCustomModul
 
   Fields:
     parent: Required. The relative resource name of the organization, project,
-      or folder. See: https://cloud.google.com/apis/design/resource_names#rela
-      tive_resource_name An example is: "organizations/{organization_id}".
+      or folder. For more information about relative resource names, see
+      [Relative Resource Name](https://cloud.google.com/apis/design/resource_n
+      ames#relative_resource_name) Example: `organizations/{organization_id}`.
     simulateSecurityHealthAnalyticsCustomModuleRequest: A
       SimulateSecurityHealthAnalyticsCustomModuleRequest resource to be passed
       as the request body.
@@ -1633,8 +1634,9 @@ class SecuritycentermanagementOrganizationsLocationsSecurityHealthAnalyticsCusto
 
   Fields:
     parent: Required. The relative resource name of the organization, project,
-      or folder. See: https://cloud.google.com/apis/design/resource_names#rela
-      tive_resource_name An example is: "organizations/{organization_id}".
+      or folder. For more information about relative resource names, see
+      [Relative Resource Name](https://cloud.google.com/apis/design/resource_n
+      ames#relative_resource_name) Example: `organizations/{organization_id}`.
     simulateSecurityHealthAnalyticsCustomModuleRequest: A
       SimulateSecurityHealthAnalyticsCustomModuleRequest resource to be passed
       as the request body.
@@ -2056,8 +2058,9 @@ class SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModu
 
   Fields:
     parent: Required. The relative resource name of the organization, project,
-      or folder. See: https://cloud.google.com/apis/design/resource_names#rela
-      tive_resource_name An example is: "organizations/{organization_id}".
+      or folder. For more information about relative resource names, see
+      [Relative Resource Name](https://cloud.google.com/apis/design/resource_n
+      ames#relative_resource_name) Example: `organizations/{organization_id}`.
     simulateSecurityHealthAnalyticsCustomModuleRequest: A
       SimulateSecurityHealthAnalyticsCustomModuleRequest resource to be passed
       as the request body.
@@ -2072,7 +2075,7 @@ class SimulateSecurityHealthAnalyticsCustomModuleRequest(_messages.Message):
   resource. Maximum size of the request is 4 MB by default.
 
   Fields:
-    customConfig: Required. The user specified custom configuration to test.
+    customConfig: Required. The custom configuration that you need to test.
     resource: Required. Resource data to simulate custom module against.
   """
 
@@ -2081,7 +2084,7 @@ class SimulateSecurityHealthAnalyticsCustomModuleRequest(_messages.Message):
 
 
 class SimulateSecurityHealthAnalyticsCustomModuleResponse(_messages.Message):
-  r"""Response message for simulating a SecurityHealthAnalyticsCustomModule
+  r"""Response message for simulating a `SecurityHealthAnalyticsCustomModule`
   against a given resource.
 
   Fields:
@@ -2274,26 +2277,27 @@ class SimulatedFinding(_messages.Message):
 
 
 class SimulatedResource(_messages.Message):
-  r"""Manually constructed resource. If the custom module only evaluates
-  against the resource data, the iam_policy_data field can be omitted, and
-  vice versa.
+  r"""Manually constructed resource name. If the custom module evaluates
+  against only the resource data, you can omit the `iam_policy_data` field. If
+  it evaluates only the `iam_policy_data` field, you can omit the resource
+  data.
 
   Messages:
-    ResourceDataValue: Optional. A representation of the GCP resource. Should
-      match the GCP resource JSON format.
+    ResourceDataValue: Optional. A representation of the Google Cloud
+      resource. Should match the Google Cloud resource JSON format.
 
   Fields:
     iamPolicyData: Optional. A representation of the IAM policy.
-    resourceData: Optional. A representation of the GCP resource. Should match
-      the GCP resource JSON format.
-    resourceType: Required. The type of the resource, e.g.
+    resourceData: Optional. A representation of the Google Cloud resource.
+      Should match the Google Cloud resource JSON format.
+    resourceType: Required. The type of the resource, for example,
       `compute.googleapis.com/Disk`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceDataValue(_messages.Message):
-    r"""Optional. A representation of the GCP resource. Should match the GCP
-    resource JSON format.
+    r"""Optional. A representation of the Google Cloud resource. Should match
+    the Google Cloud resource JSON format.
 
     Messages:
       AdditionalProperty: An additional property for a ResourceDataValue

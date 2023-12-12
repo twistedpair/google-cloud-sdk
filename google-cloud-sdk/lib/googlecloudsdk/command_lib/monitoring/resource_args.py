@@ -47,6 +47,12 @@ def SnoozeAttributeConfig():
       help_text='Name of the snooze.')
 
 
+def UptimeCheckAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='uptime_check',
+      help_text='Name of the uptime check.')
+
+
 def GetAlertPolicyResourceSpec():
   return concepts.ResourceSpec(
       'monitoring.projects.alertPolicies',
@@ -77,6 +83,14 @@ def GetSnoozeResourceSpec():
       'monitoring.projects.snoozes',
       resource_name='Snooze',
       snoozesId=SnoozeAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
+
+
+def GetUptimeCheckResourceSpec():
+  return concepts.ResourceSpec(
+      'monitoring.projects.uptimeCheckConfigs',
+      resource_name='Uptime Check',
+      uptimeCheckConfigsId=UptimeCheckAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG)
 
 
@@ -138,6 +152,17 @@ def CreateSnoozeResourceArg(verb):
   return presentation_specs.ResourcePresentationSpec(
       name,
       GetSnoozeResourceSpec(),
+      help_text,
+      required=True)
+
+
+def CreateUptimeResourceArg(verb):
+  name = 'check_id'
+  help_text = 'Name of the Uptime Check ' + verb
+
+  return presentation_specs.ResourcePresentationSpec(
+      name,
+      GetUptimeCheckResourceSpec(),
       help_text,
       required=True)
 

@@ -1068,8 +1068,8 @@ class FetchCaCertsResponse(_messages.Message):
   r"""Response message for CertificateAuthorityService.FetchCaCerts.
 
   Fields:
-    caCerts: The PEM encoded CA certificate chains of all ACTIVE
-      CertificateAuthority resources in this CaPool.
+    caCerts: The PEM encoded CA certificate chains of all Certificate
+      Authorities in this CaPool in the ENABLED, DISABLED, or STAGED states.
   """
 
   caCerts = _messages.MessageField('CertChain', 1, repeated=True)

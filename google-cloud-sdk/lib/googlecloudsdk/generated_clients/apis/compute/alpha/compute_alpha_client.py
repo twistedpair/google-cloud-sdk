@@ -6712,6 +6712,32 @@ class ComputeAlpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def AddNetworkInterface(self, request, global_params=None):
+      r"""Adds a network interface to an instance.
+
+      Args:
+        request: (ComputeInstancesAddNetworkInterfaceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('AddNetworkInterface')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AddNetworkInterface.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.addNetworkInterface',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/addNetworkInterface',
+        request_field='instancesAddNetworkInterfaceRequest',
+        request_type_name='ComputeInstancesAddNetworkInterfaceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def AddResourcePolicies(self, request, global_params=None):
       r"""Adds existing resource policies to an instance. You can only add one policy right now which will be applied to this instance for scheduling live migrations.
 

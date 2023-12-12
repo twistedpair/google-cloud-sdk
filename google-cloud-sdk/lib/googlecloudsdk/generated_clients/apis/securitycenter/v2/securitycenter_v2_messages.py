@@ -105,6 +105,22 @@ class AccessReview(_messages.Message):
   version = _messages.StringField(7)
 
 
+class Application(_messages.Message):
+  r"""Represents an application associated with a finding.
+
+  Fields:
+    baseUri: The base URI that identifies the network location of the
+      application in which the vulnerability was detected. Examples:
+      http://11.22.33.44, http://foo.com, http://11.22.33.44:8080
+    fullUri: The full URI with payload that can be used to reproduce the
+      vulnerability. Example: http://11.22.33.44/reflected/parameter/attribute
+      /singlequoted/js?p=aMmYgI6H
+  """
+
+  baseUri = _messages.StringField(1)
+  fullUri = _messages.StringField(2)
+
+
 class AttackExposure(_messages.Message):
   r"""An attack exposure contains the results of an attack path simulation
   run.
@@ -335,6 +351,67 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class BackupDisasterRecovery(_messages.Message):
+  r"""Information related to Google Cloud Backup and DR Service findings.
+
+  Fields:
+    appliance: The name of the Backup and DR appliance that captures, moves,
+      and manages the lifecycle of backup data. For example, "backup-
+      server-57137".
+    applications: The names of Backup and DR applications. An application is a
+      VM, database, or file system on a managed host monitored by a backup and
+      recovery appliance. For example, "centos7-01-vol00", "centos7-01-vol01",
+      "centos7-01-vol02".
+    backupCreateTime: The timestamp at which the Backup and DR backup was
+      created.
+    backupTemplate: The name of a Backup and DR template which comprises one
+      or more backup policies. See the [Backup and DR
+      documentation](https://cloud.google.com/backup-disaster-
+      recovery/docs/concepts/backup-plan#temp) for more information. For
+      example, "snap-ov".
+    backupType: The backup type of the Backup and DR image. For example,
+      "Snapshot", "Remote Snapshot", "OnVault".
+    host: The name of a Backup and DR host, which is managed by the backup and
+      recovery appliance and known to the management console. The host can be
+      of type Generic (for example, Compute Engine, SQL Server, Oracle DB, SMB
+      file system, etc.), vCenter, or an ESX server. See the [Backup and DR
+      documentation on hosts](https://cloud.google.com/backup-disaster-
+      recovery/docs/configuration/manage-hosts-and-their-applications) for
+      more information. For example, "centos7-01".
+    policies: The names of Backup and DR policies that are associated with a
+      template and that define when to run a backup, how frequently to run a
+      backup, and how long to retain the backup image. For example,
+      "onvaults".
+    policyOptions: The names of Backup and DR advanced policy options of a
+      policy applying to an application. See the [Backup and DR documentation
+      on policy options](https://cloud.google.com/backup-disaster-
+      recovery/docs/create-plan/policy-settings). For example,
+      "skipofflineappsincongrp, nounmap".
+    profile: The name of the Backup and DR resource profile that specifies the
+      storage media for backups of application and VM data. See the [Backup
+      and DR documentation on profiles](https://cloud.google.com/backup-
+      disaster-recovery/docs/concepts/backup-plan#profile). For example,
+      "GCP".
+    storagePool: The name of the Backup and DR storage pool that the backup
+      and recovery appliance is storing data in. The storage pool could be of
+      type Cloud, Primary, Snapshot, or OnVault. See the [Backup and DR
+      documentation on storage pools](https://cloud.google.com/backup-
+      disaster-recovery/docs/concepts/storage-pools). For example,
+      "DiskPoolOne".
+  """
+
+  appliance = _messages.StringField(1)
+  applications = _messages.StringField(2, repeated=True)
+  backupCreateTime = _messages.StringField(3)
+  backupTemplate = _messages.StringField(4)
+  backupType = _messages.StringField(5)
+  host = _messages.StringField(6)
+  policies = _messages.StringField(7, repeated=True)
+  policyOptions = _messages.StringField(8, repeated=True)
+  profile = _messages.StringField(9)
+  storagePool = _messages.StringField(10)
 
 
 class BatchCreateResourceValueConfigsRequest(_messages.Message):
@@ -1092,8 +1169,10 @@ class Finding(_messages.Message):
   Fields:
     access: Access details associated with the finding, such as more
       information on the caller, which method was accessed, and from where.
+    application: Represents an application associated with the finding.
     attackExposure: The results of an attack path simulation relevant to this
       finding.
+    backupDisasterRecovery: Fields related to Backup and DR findings.
     canonicalName: The canonical name of the finding. It's either "organizatio
       ns/{organization_id}/sources/{source_id}/findings/{finding_id}",
       "folders/{folder_id}/sources/{source_id}/findings/{finding_id}" or
@@ -1391,48 +1470,50 @@ class Finding(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   access = _messages.MessageField('Access', 1)
-  attackExposure = _messages.MessageField('AttackExposure', 2)
-  canonicalName = _messages.StringField(3)
-  category = _messages.StringField(4)
-  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 5)
-  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 6)
-  compliances = _messages.MessageField('Compliance', 7, repeated=True)
-  connections = _messages.MessageField('Connection', 8, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 9)
-  containers = _messages.MessageField('Container', 10, repeated=True)
-  createTime = _messages.StringField(11)
-  database = _messages.MessageField('Database', 12)
-  description = _messages.StringField(13)
-  eventTime = _messages.StringField(14)
-  exfiltration = _messages.MessageField('Exfiltration', 15)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 16)
-  externalUri = _messages.StringField(17)
-  files = _messages.MessageField('File', 18, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 19)
-  iamBindings = _messages.MessageField('IamBinding', 20, repeated=True)
-  indicator = _messages.MessageField('Indicator', 21)
-  kernelRootkit = _messages.MessageField('KernelRootkit', 22)
-  kubernetes = _messages.MessageField('Kubernetes', 23)
-  loadBalancers = _messages.MessageField('LoadBalancer', 24, repeated=True)
-  logEntries = _messages.MessageField('LogEntry', 25, repeated=True)
-  mitreAttack = _messages.MessageField('MitreAttack', 26)
-  moduleName = _messages.StringField(27)
-  mute = _messages.EnumField('MuteValueValuesEnum', 28)
-  muteInitiator = _messages.StringField(29)
-  muteUpdateTime = _messages.StringField(30)
-  name = _messages.StringField(31)
-  nextSteps = _messages.StringField(32)
-  orgPolicies = _messages.MessageField('OrgPolicy', 33, repeated=True)
-  parent = _messages.StringField(34)
-  parentDisplayName = _messages.StringField(35)
-  processes = _messages.MessageField('Process', 36, repeated=True)
-  resourceName = _messages.StringField(37)
-  securityMarks = _messages.MessageField('SecurityMarks', 38)
-  securityPosture = _messages.MessageField('SecurityPosture', 39)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 40)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 41)
-  state = _messages.EnumField('StateValueValuesEnum', 42)
-  vulnerability = _messages.MessageField('Vulnerability', 43)
+  application = _messages.MessageField('Application', 2)
+  attackExposure = _messages.MessageField('AttackExposure', 3)
+  backupDisasterRecovery = _messages.MessageField('BackupDisasterRecovery', 4)
+  canonicalName = _messages.StringField(5)
+  category = _messages.StringField(6)
+  cloudDlpDataProfile = _messages.MessageField('CloudDlpDataProfile', 7)
+  cloudDlpInspection = _messages.MessageField('CloudDlpInspection', 8)
+  compliances = _messages.MessageField('Compliance', 9, repeated=True)
+  connections = _messages.MessageField('Connection', 10, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 11)
+  containers = _messages.MessageField('Container', 12, repeated=True)
+  createTime = _messages.StringField(13)
+  database = _messages.MessageField('Database', 14)
+  description = _messages.StringField(15)
+  eventTime = _messages.StringField(16)
+  exfiltration = _messages.MessageField('Exfiltration', 17)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 18)
+  externalUri = _messages.StringField(19)
+  files = _messages.MessageField('File', 20, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 21)
+  iamBindings = _messages.MessageField('IamBinding', 22, repeated=True)
+  indicator = _messages.MessageField('Indicator', 23)
+  kernelRootkit = _messages.MessageField('KernelRootkit', 24)
+  kubernetes = _messages.MessageField('Kubernetes', 25)
+  loadBalancers = _messages.MessageField('LoadBalancer', 26, repeated=True)
+  logEntries = _messages.MessageField('LogEntry', 27, repeated=True)
+  mitreAttack = _messages.MessageField('MitreAttack', 28)
+  moduleName = _messages.StringField(29)
+  mute = _messages.EnumField('MuteValueValuesEnum', 30)
+  muteInitiator = _messages.StringField(31)
+  muteUpdateTime = _messages.StringField(32)
+  name = _messages.StringField(33)
+  nextSteps = _messages.StringField(34)
+  orgPolicies = _messages.MessageField('OrgPolicy', 35, repeated=True)
+  parent = _messages.StringField(36)
+  parentDisplayName = _messages.StringField(37)
+  processes = _messages.MessageField('Process', 38, repeated=True)
+  resourceName = _messages.StringField(39)
+  securityMarks = _messages.MessageField('SecurityMarks', 40)
+  securityPosture = _messages.MessageField('SecurityPosture', 41)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 42)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 43)
+  state = _messages.EnumField('StateValueValuesEnum', 44)
+  vulnerability = _messages.MessageField('Vulnerability', 45)
 
 
 class Folder(_messages.Message):
@@ -2418,6 +2499,22 @@ class GoogleCloudSecuritycenterV2AccessReview(_messages.Message):
   version = _messages.StringField(7)
 
 
+class GoogleCloudSecuritycenterV2Application(_messages.Message):
+  r"""Represents an application associated with a finding.
+
+  Fields:
+    baseUri: The base URI that identifies the network location of the
+      application in which the vulnerability was detected. Examples:
+      http://11.22.33.44, http://foo.com, http://11.22.33.44:8080
+    fullUri: The full URI with payload that could be used to reproduce the
+      vulnerability. Example: http://11.22.33.44/reflected/parameter/attribute
+      /singlequoted/js?p=aMmYgI6H
+  """
+
+  baseUri = _messages.StringField(1)
+  fullUri = _messages.StringField(2)
+
+
 class GoogleCloudSecuritycenterV2AttackExposure(_messages.Message):
   r"""An attack exposure contains the results of an attack path simulation
   run.
@@ -2466,6 +2563,67 @@ class GoogleCloudSecuritycenterV2AttackExposure(_messages.Message):
   latestCalculationTime = _messages.StringField(5)
   score = _messages.FloatField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
+
+
+class GoogleCloudSecuritycenterV2BackupDisasterRecovery(_messages.Message):
+  r"""Information related to Google Cloud Backup and DR Service findings.
+
+  Fields:
+    appliance: The name of the Backup and DR appliance that captures, moves,
+      and manages the lifecycle of backup data. For example, "backup-
+      server-57137".
+    applications: The names of Backup and DR applications. An application is a
+      VM, database, or file system on a managed host monitored by a backup and
+      recovery appliance. For example, "centos7-01-vol00", "centos7-01-vol01",
+      "centos7-01-vol02".
+    backupCreateTime: The timestamp at which the Backup and DR backup was
+      created.
+    backupTemplate: The name of a Backup and DR template which comprises one
+      or more backup policies. See the [Backup and DR
+      documentation](https://cloud.google.com/backup-disaster-
+      recovery/docs/concepts/backup-plan#temp) for more information. For
+      example, "snap-ov".
+    backupType: The backup type of the Backup and DR image. For example,
+      "Snapshot", "Remote Snapshot", "OnVault".
+    host: The name of a Backup and DR host, which is managed by the backup and
+      recovery appliance and known to the management console. The host can be
+      of type Generic (for example, Compute Engine, SQL Server, Oracle DB, SMB
+      file system, etc.), vCenter, or an ESX server. See the [Backup and DR
+      documentation on hosts](https://cloud.google.com/backup-disaster-
+      recovery/docs/configuration/manage-hosts-and-their-applications) for
+      more information. For example, "centos7-01".
+    policies: The names of Backup and DR policies that are associated with a
+      template and that define when to run a backup, how frequently to run a
+      backup, and how long to retain the backup image. For example,
+      "onvaults".
+    policyOptions: The names of Backup and DR advanced policy options of a
+      policy applying to an application. See the [Backup and DR documentation
+      on policy options](https://cloud.google.com/backup-disaster-
+      recovery/docs/create-plan/policy-settings). For example,
+      "skipofflineappsincongrp, nounmap".
+    profile: The name of the Backup and DR resource profile that specifies the
+      storage media for backups of application and VM data. See the [Backup
+      and DR documentation on profiles](https://cloud.google.com/backup-
+      disaster-recovery/docs/concepts/backup-plan#profile). For example,
+      "GCP".
+    storagePool: The name of the Backup and DR storage pool that the backup
+      and recovery appliance is storing data in. The storage pool could be of
+      type Cloud, Primary, Snapshot, or OnVault. See the [Backup and DR
+      documentation on storage pools](https://cloud.google.com/backup-
+      disaster-recovery/docs/concepts/storage-pools). For example,
+      "DiskPoolOne".
+  """
+
+  appliance = _messages.StringField(1)
+  applications = _messages.StringField(2, repeated=True)
+  backupCreateTime = _messages.StringField(3)
+  backupTemplate = _messages.StringField(4)
+  backupType = _messages.StringField(5)
+  host = _messages.StringField(6)
+  policies = _messages.StringField(7, repeated=True)
+  policyOptions = _messages.StringField(8, repeated=True)
+  profile = _messages.StringField(9)
+  storagePool = _messages.StringField(10)
 
 
 class GoogleCloudSecuritycenterV2BigQueryExport(_messages.Message):
@@ -3138,8 +3296,10 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   Fields:
     access: Access details associated with the finding, such as more
       information on the caller, which method was accessed, and from where.
+    application: Represents an application associated with the finding.
     attackExposure: The results of an attack path simulation relevant to this
       finding.
+    backupDisasterRecovery: Fields related to Backup and DR findings.
     canonicalName: Output only. The canonical name of the finding. The
       following list shows some examples: + `organizations/{organization_id}/s
       ources/{source_id}/findings/{finding_id}` + `organizations/{organization
@@ -3452,48 +3612,50 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   access = _messages.MessageField('GoogleCloudSecuritycenterV2Access', 1)
-  attackExposure = _messages.MessageField('GoogleCloudSecuritycenterV2AttackExposure', 2)
-  canonicalName = _messages.StringField(3)
-  category = _messages.StringField(4)
-  cloudDlpDataProfile = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpDataProfile', 5)
-  cloudDlpInspection = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpInspection', 6)
-  compliances = _messages.MessageField('GoogleCloudSecuritycenterV2Compliance', 7, repeated=True)
-  connections = _messages.MessageField('GoogleCloudSecuritycenterV2Connection', 8, repeated=True)
-  contacts = _messages.MessageField('ContactsValue', 9)
-  containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 10, repeated=True)
-  createTime = _messages.StringField(11)
-  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 12)
-  description = _messages.StringField(13)
-  eventTime = _messages.StringField(14)
-  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 15)
-  externalSystems = _messages.MessageField('ExternalSystemsValue', 16)
-  externalUri = _messages.StringField(17)
-  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 18, repeated=True)
-  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 19)
-  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 20, repeated=True)
-  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 21)
-  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 22)
-  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 23)
-  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 24, repeated=True)
-  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 25, repeated=True)
-  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 26)
-  moduleName = _messages.StringField(27)
-  mute = _messages.EnumField('MuteValueValuesEnum', 28)
-  muteInitiator = _messages.StringField(29)
-  muteUpdateTime = _messages.StringField(30)
-  name = _messages.StringField(31)
-  nextSteps = _messages.StringField(32)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 33, repeated=True)
-  parent = _messages.StringField(34)
-  parentDisplayName = _messages.StringField(35)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 36, repeated=True)
-  resourceName = _messages.StringField(37)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 38)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 39)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 40)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 41)
-  state = _messages.EnumField('StateValueValuesEnum', 42)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 43)
+  application = _messages.MessageField('GoogleCloudSecuritycenterV2Application', 2)
+  attackExposure = _messages.MessageField('GoogleCloudSecuritycenterV2AttackExposure', 3)
+  backupDisasterRecovery = _messages.MessageField('GoogleCloudSecuritycenterV2BackupDisasterRecovery', 4)
+  canonicalName = _messages.StringField(5)
+  category = _messages.StringField(6)
+  cloudDlpDataProfile = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpDataProfile', 7)
+  cloudDlpInspection = _messages.MessageField('GoogleCloudSecuritycenterV2CloudDlpInspection', 8)
+  compliances = _messages.MessageField('GoogleCloudSecuritycenterV2Compliance', 9, repeated=True)
+  connections = _messages.MessageField('GoogleCloudSecuritycenterV2Connection', 10, repeated=True)
+  contacts = _messages.MessageField('ContactsValue', 11)
+  containers = _messages.MessageField('GoogleCloudSecuritycenterV2Container', 12, repeated=True)
+  createTime = _messages.StringField(13)
+  database = _messages.MessageField('GoogleCloudSecuritycenterV2Database', 14)
+  description = _messages.StringField(15)
+  eventTime = _messages.StringField(16)
+  exfiltration = _messages.MessageField('GoogleCloudSecuritycenterV2Exfiltration', 17)
+  externalSystems = _messages.MessageField('ExternalSystemsValue', 18)
+  externalUri = _messages.StringField(19)
+  files = _messages.MessageField('GoogleCloudSecuritycenterV2File', 20, repeated=True)
+  findingClass = _messages.EnumField('FindingClassValueValuesEnum', 21)
+  iamBindings = _messages.MessageField('GoogleCloudSecuritycenterV2IamBinding', 22, repeated=True)
+  indicator = _messages.MessageField('GoogleCloudSecuritycenterV2Indicator', 23)
+  kernelRootkit = _messages.MessageField('GoogleCloudSecuritycenterV2KernelRootkit', 24)
+  kubernetes = _messages.MessageField('GoogleCloudSecuritycenterV2Kubernetes', 25)
+  loadBalancers = _messages.MessageField('GoogleCloudSecuritycenterV2LoadBalancer', 26, repeated=True)
+  logEntries = _messages.MessageField('GoogleCloudSecuritycenterV2LogEntry', 27, repeated=True)
+  mitreAttack = _messages.MessageField('GoogleCloudSecuritycenterV2MitreAttack', 28)
+  moduleName = _messages.StringField(29)
+  mute = _messages.EnumField('MuteValueValuesEnum', 30)
+  muteInitiator = _messages.StringField(31)
+  muteUpdateTime = _messages.StringField(32)
+  name = _messages.StringField(33)
+  nextSteps = _messages.StringField(34)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 35, repeated=True)
+  parent = _messages.StringField(36)
+  parentDisplayName = _messages.StringField(37)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 38, repeated=True)
+  resourceName = _messages.StringField(39)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 40)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 41)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 42)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 43)
+  state = _messages.EnumField('StateValueValuesEnum', 44)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 45)
 
 
 class GoogleCloudSecuritycenterV2Geolocation(_messages.Message):

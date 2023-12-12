@@ -51,8 +51,17 @@ class ModelsClient(object):
                     container_args=None,
                     container_env_vars=None,
                     container_ports=None,
+                    container_grpc_ports=None,
                     container_predict_route=None,
                     container_health_route=None,
+                    container_deployment_timeout_seconds=None,
+                    container_shared_memory_size_mb=None,
+                    container_startup_probe_exec=None,
+                    container_startup_probe_period_seconds=None,
+                    container_startup_probe_timeout_seconds=None,
+                    container_health_probe_exec=None,
+                    container_health_probe_period_seconds=None,
+                    container_health_probe_timeout_seconds=None,
                     explanation_spec=None,
                     parent_model=None,
                     model_id=None,
@@ -63,12 +72,12 @@ class ModelsClient(object):
     Args:
       region_ref: The resource reference for a given region. None if the region
         reference is not provided.
-      display_name: The display name of the Model. The name can be up
-        to 128 characters long and can be consist of any UTF-8 characters.
+      display_name: The display name of the Model. The name can be up to 128
+        characters long and can be consist of any UTF-8 characters.
       description: The description of the Model.
       version_description: The description of the Model version.
-      artifact_uri: The path to the directory containing the Model
-        artifact and any of its supporting files. Not present for AutoML Models.
+      artifact_uri: The path to the directory containing the Model artifact and
+        any of its supporting files. Not present for AutoML Models.
       container_image_uri: Immutable. URI of the Docker image to be used as the
         custom container for serving predictions. This URI must identify an
         image in Artifact Registry or Container Registry. Learn more about the
@@ -158,14 +167,24 @@ class ModelsClient(object):
         API](https://kubernetes.io/docs/reference/generated/kubernetes-
         api/v1.23/#container-v1-core).
       container_ports: List of ports to expose from the container. Vertex AI
-        sends any prediction requests that it receives to the first port on this
-        list. Vertex AI also sends [liveness and health
+        sends any http prediction requests that it receives to the first port on
+        this list. Vertex AI also sends [liveness and health
         checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
         container-requirements#liveness) to this port. If you do not specify
         this field, it defaults to following value: ```json [ { "containerPort":
         8080 } ] ``` Vertex AI does not use ports other than the first one
         listed. This field corresponds to the `ports` field of the Kubernetes
         Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core).
+      container_grpc_ports: List of ports to expose from the container. Vertex
+        AI sends any grpc prediction requests that it receives to the first port
+        on this list. Vertex AI also sends [liveness and health
+        checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#liveness) to this port. If you do not specify
+        this field, gRPC requests to the container will be disabled. Vertex AI
+        does not use ports other than the first one listed. This field
+        corresponds to the `ports` field of the Kubernetes Containers [v1 core
         API](https://kubernetes.io/docs/reference/generated/kubernetes-
         api/v1.23/#container-v1-core).
       container_predict_route: HTTP path on the container to send prediction
@@ -210,6 +229,25 @@ class ModelsClient(object):
         available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
         environment variable](https://cloud.google.com/vertex-
         ai/docs/predictions/custom-container-requirements#aip-variables).)
+      container_deployment_timeout_seconds (int): Deployment timeout in seconds.
+      container_shared_memory_size_mb (int): The amount of the VM memory to
+        reserve as the shared memory for the model in megabytes.
+      container_startup_probe_exec (Sequence[str]): Exec specifies the action to
+        take. Used by startup probe. An example of this argument would be
+        ["cat", "/tmp/healthy"]
+      container_startup_probe_period_seconds (int): How often (in seconds) to
+        perform the startup probe. Default to 10 seconds. Minimum value is 1.
+      container_startup_probe_timeout_seconds (int): Number of seconds after
+        which the startup probe times out. Defaults to 1 second. Minimum value
+        is 1.
+      container_health_probe_exec (Sequence[str]): Exec specifies the action to
+        take. Used by health probe. An example of this argument would be ["cat",
+        "/tmp/healthy"]
+      container_health_probe_period_seconds (int): How often (in seconds) to
+        perform the health probe. Default to 10 seconds. Minimum value is 1.
+      container_health_probe_timeout_seconds (int): Number of seconds after
+        which the health probe times out. Defaults to 1 second. Minimum value is
+        1.
       explanation_spec: The default explanation specification for this Model.
         The Model can be used for requesting explanation after being deployed if
         it is populated. The Model can be used for batch explanation if it is
@@ -264,6 +302,55 @@ class ModelsClient(object):
           self.messages.GoogleCloudAiplatformV1beta1Port(containerPort=port)
           for port in container_ports
       ]
+    if container_grpc_ports:
+      container_spec.grpcPorts = [
+          self.messages.GoogleCloudAiplatformV1beta1Port(containerPort=port)
+          for port in container_grpc_ports
+      ]
+    if container_deployment_timeout_seconds:
+      container_spec.deploymentTimeout = (
+          str(container_deployment_timeout_seconds) + 's'
+      )
+    if container_shared_memory_size_mb:
+      container_spec.sharedMemorySizeMb = container_shared_memory_size_mb
+    if (
+        container_startup_probe_exec
+        or container_startup_probe_period_seconds
+        or container_startup_probe_timeout_seconds
+    ):
+      startup_probe_exec = None
+      if container_startup_probe_exec:
+        startup_probe_exec = (
+            self.messages.GoogleCloudAiplatformV1beta1ProbeExecAction(
+                command=container_startup_probe_exec
+            )
+        )
+      container_spec.startupProbe = (
+          self.messages.GoogleCloudAiplatformV1beta1Probe(
+              exec_=startup_probe_exec,
+              periodSeconds=container_startup_probe_period_seconds,
+              timeoutSeconds=container_startup_probe_timeout_seconds,
+          )
+      )
+    if (
+        container_health_probe_exec
+        or container_health_probe_period_seconds
+        or container_health_probe_timeout_seconds
+    ):
+      health_probe_exec = None
+      if container_health_probe_exec:
+        health_probe_exec = (
+            self.messages.GoogleCloudAiplatformV1beta1ProbeExecAction(
+                command=container_health_probe_exec
+            )
+        )
+      container_spec.healthProbe = (
+          self.messages.GoogleCloudAiplatformV1beta1Probe(
+              exec_=health_probe_exec,
+              periodSeconds=container_health_probe_period_seconds,
+              timeoutSeconds=container_health_probe_timeout_seconds,
+          )
+      )
 
     model = self.messages.GoogleCloudAiplatformV1beta1Model(
         artifactUri=artifact_uri,
@@ -302,8 +389,17 @@ class ModelsClient(object):
                container_args=None,
                container_env_vars=None,
                container_ports=None,
+               container_grpc_ports=None,
                container_predict_route=None,
                container_health_route=None,
+               container_deployment_timeout_seconds=None,
+               container_shared_memory_size_mb=None,
+               container_startup_probe_exec=None,
+               container_startup_probe_period_seconds=None,
+               container_startup_probe_timeout_seconds=None,
+               container_health_probe_exec=None,
+               container_health_probe_period_seconds=None,
+               container_health_probe_timeout_seconds=None,
                explanation_spec=None,
                parent_model=None,
                model_id=None,
@@ -314,12 +410,12 @@ class ModelsClient(object):
     Args:
       region_ref: The resource reference for a given region. None if the region
         reference is not provided.
-      display_name: The display name of the Model. The name can be up
-        to 128 characters long and can be consist of any UTF-8 characters.
+      display_name: The display name of the Model. The name can be up to 128
+        characters long and can be consist of any UTF-8 characters.
       description: The description of the Model.
       version_description: The description of the Model version.
-      artifact_uri: The path to the directory containing the Model
-        artifact and any of its supporting files. Not present for AutoML Models.
+      artifact_uri: The path to the directory containing the Model artifact and
+        any of its supporting files. Not present for AutoML Models.
       container_image_uri: Immutable. URI of the Docker image to be used as the
         custom container for serving predictions. This URI must identify an
         image in Artifact Registry or Container Registry. Learn more about the
@@ -409,14 +505,24 @@ class ModelsClient(object):
         API](https://kubernetes.io/docs/reference/generated/kubernetes-
         api/v1.23/#container-v1-core).
       container_ports: List of ports to expose from the container. Vertex AI
-        sends any prediction requests that it receives to the first port on this
-        list. Vertex AI also sends [liveness and health
+        sends any http prediction requests that it receives to the first port on
+        this list. Vertex AI also sends [liveness and health
         checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
         container-requirements#liveness) to this port. If you do not specify
         this field, it defaults to following value: ```json [ { "containerPort":
         8080 } ] ``` Vertex AI does not use ports other than the first one
         listed. This field corresponds to the `ports` field of the Kubernetes
         Containers [v1 core
+        API](https://kubernetes.io/docs/reference/generated/kubernetes-
+        api/v1.23/#container-v1-core).
+      container_grpc_ports: List of ports to expose from the container. Vertex
+        AI sends any grpc prediction requests that it receives to the first port
+        on this list. Vertex AI also sends [liveness and health
+        checks](https://cloud.google.com/vertex-ai/docs/predictions/custom-
+        container-requirements#liveness) to this port. If you do not specify
+        this field, gRPC requests to the container will be disabled. Vertex AI
+        does not use ports other than the first one listed. This field
+        corresponds to the `ports` field of the Kubernetes Containers [v1 core
         API](https://kubernetes.io/docs/reference/generated/kubernetes-
         api/v1.23/#container-v1-core).
       container_predict_route: HTTP path on the container to send prediction
@@ -461,6 +567,25 @@ class ModelsClient(object):
         available to your container code as the [`AIP_DEPLOYED_MODEL_ID`
         environment variable](https://cloud.google.com/vertex-
         ai/docs/predictions/custom-container-requirements#aip-variables).)
+      container_deployment_timeout_seconds (int): Deployment timeout in seconds.
+      container_shared_memory_size_mb (int): The amount of the VM memory to
+        reserve as the shared memory for the model in megabytes.
+      container_startup_probe_exec (Sequence[str]): Exec specifies the action to
+        take. Used by startup probe. An example of this argument would be
+        ["cat", "/tmp/healthy"]
+      container_startup_probe_period_seconds (int): How often (in seconds) to
+        perform the startup probe. Default to 10 seconds. Minimum value is 1.
+      container_startup_probe_timeout_seconds (int): Number of seconds after
+        which the startup probe times out. Defaults to 1 second. Minimum value
+        is 1.
+      container_health_probe_exec (Sequence[str]): Exec specifies the action to
+        take. Used by health probe. An example of this argument would be ["cat",
+        "/tmp/healthy"]
+      container_health_probe_period_seconds (int): How often (in seconds) to
+        perform the health probe. Default to 10 seconds. Minimum value is 1.
+      container_health_probe_timeout_seconds (int): Number of seconds after
+        which the health probe times out. Defaults to 1 second. Minimum value is
+        1.
       explanation_spec: The default explanation specification for this Model.
         The Model can be used for requesting explanation after being deployed if
         it is populated. The Model can be used for batch explanation if it is
@@ -512,6 +637,55 @@ class ModelsClient(object):
           self.messages.GoogleCloudAiplatformV1Port(containerPort=port)
           for port in container_ports
       ]
+    if container_grpc_ports:
+      container_spec.grpcPorts = [
+          self.messages.GoogleCloudAiplatformV1Port(containerPort=port)
+          for port in container_grpc_ports
+      ]
+    if container_deployment_timeout_seconds:
+      container_spec.deploymentTimeout = (
+          str(container_deployment_timeout_seconds) + 's'
+      )
+    if container_shared_memory_size_mb:
+      container_spec.sharedMemorySizeMb = container_shared_memory_size_mb
+    if (
+        container_startup_probe_exec
+        or container_startup_probe_period_seconds
+        or container_startup_probe_timeout_seconds
+    ):
+      startup_probe_exec = None
+      if container_startup_probe_exec:
+        startup_probe_exec = (
+            self.messages.GoogleCloudAiplatformV1ProbeExecAction(
+                command=container_startup_probe_exec
+            )
+        )
+      container_spec.startupProbe = (
+          self.messages.GoogleCloudAiplatformV1Probe(
+              exec_=startup_probe_exec,
+              periodSeconds=container_startup_probe_period_seconds,
+              timeoutSeconds=container_startup_probe_timeout_seconds,
+          )
+      )
+    if (
+        container_health_probe_exec
+        or container_health_probe_period_seconds
+        or container_health_probe_timeout_seconds
+    ):
+      health_probe_exec = None
+      if container_health_probe_exec:
+        health_probe_exec = (
+            self.messages.GoogleCloudAiplatformV1ProbeExecAction(
+                command=container_health_probe_exec
+            )
+        )
+      container_spec.healthProbe = (
+          self.messages.GoogleCloudAiplatformV1Probe(
+              exec_=health_probe_exec,
+              periodSeconds=container_health_probe_period_seconds,
+              timeoutSeconds=container_health_probe_timeout_seconds,
+          )
+      )
 
     model = self.messages.GoogleCloudAiplatformV1Model(
         artifactUri=artifact_uri,
@@ -710,4 +884,3 @@ class ModelsClient(object):
             parentModel=destination_parent_model,
             modelId=destination_model_id))
     return self._service.Copy(request)
-

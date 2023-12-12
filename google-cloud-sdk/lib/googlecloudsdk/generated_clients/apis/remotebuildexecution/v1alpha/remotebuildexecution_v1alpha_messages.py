@@ -1372,6 +1372,30 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDeleteWorkerPoolRequest(_mes
   name = _messages.StringField(1)
 
 
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisks(_messages.Message):
+  r"""Disks defines the disks that would be attached to the workers.
+
+  Fields:
+    localSsd: Optional. Specifies the number of local SSDs to be attached. If
+      specified, local SSDs will be used as the working directory.
+  """
+
+  localSsd = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisksLocalSSD', 1)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisksLocalSSD(_messages.Message):
+  r"""LocalSSD specifies how to attach local SSD to the workers.
+
+  Fields:
+    count: Optional. The number of Local SSDs to be attached.
+    sizeGb: Output only. The size of the local SSD in gb. Intended for
+      informational purposes only.
+  """
+
+  count = _messages.IntegerField(1)
+  sizeGb = _messages.IntegerField(2)
+
+
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Message):
   r"""FeaturePolicy defines features allowed to be used on RBE instances, as
   well as instance-wide behavior changes that take effect without opt-in or
@@ -1824,6 +1848,7 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
 
   Fields:
     accelerator: The accelerator card attached to each VM.
+    attachedDisks: Optional. Specifies the disks that will be attached.
     diskSizeGb: Required. Size of the disk attached to the worker, in GB. See
       https://cloud.google.com/compute/docs/disks/
     diskType: Required. Disk Type to use for the worker. See [Storage
@@ -1886,17 +1911,18 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerConfig(_messages.Messa
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   accelerator = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaAcceleratorConfig', 1)
-  diskSizeGb = _messages.IntegerField(2)
-  diskType = _messages.StringField(3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  machineType = _messages.StringField(5)
-  maxConcurrentActions = _messages.IntegerField(6)
-  minCpuPlatform = _messages.StringField(7)
-  networkAccess = _messages.StringField(8)
-  reserved = _messages.BooleanField(9)
-  soleTenantNodeType = _messages.StringField(10)
-  vmImage = _messages.StringField(11)
-  zones = _messages.StringField(12, repeated=True)
+  attachedDisks = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisks', 2)
+  diskSizeGb = _messages.IntegerField(3)
+  diskType = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  machineType = _messages.StringField(6)
+  maxConcurrentActions = _messages.IntegerField(7)
+  minCpuPlatform = _messages.StringField(8)
+  networkAccess = _messages.StringField(9)
+  reserved = _messages.BooleanField(10)
+  soleTenantNodeType = _messages.StringField(11)
+  vmImage = _messages.StringField(12)
+  zones = _messages.StringField(13, repeated=True)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaWorkerPool(_messages.Message):

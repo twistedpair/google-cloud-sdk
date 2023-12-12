@@ -1481,11 +1481,12 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogView:
-        r"""Updates a view on a log bucket. This method replaces the
-        following fields in the existing view with values from the new
-        view: ``filter``. If an ``UNAVAILABLE`` error is returned, this
-        indicates that system is not in a state where it can update the
-        view. If this occurs, please try again in a few minutes.
+        r"""Updates a view on a log bucket. This method replaces the value
+        of the ``filter`` field from the existing view with the
+        corresponding value from the new view. If an ``UNAVAILABLE``
+        error is returned, this indicates that system is not in a state
+        where it can update the view. If this occurs, please try again
+        in a few minutes.
 
         .. code-block:: python
 
@@ -1814,15 +1815,18 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogSink:
-                Describes a sink used to export log
-                entries to one of the following
-                destinations in any project: a Cloud
-                Storage bucket, a BigQuery dataset, a
-                Pub/Sub topic or a Cloud Logging log
-                bucket. A logs filter controls which log
-                entries are exported. The sink must be
-                created within a project, organization,
-                billing account, or folder.
+                Describes a sink used to export log entries to one of the following
+                   destinations:
+
+                   -  a Cloud Logging log bucket,
+                   -  a Cloud Storage bucket,
+                   -  a BigQuery dataset,
+                   -  a Pub/Sub topic,
+                   -  a Cloud project.
+
+                   A logs filter controls which log entries are
+                   exported. The sink must be created within a project,
+                   organization, billing account, or folder.
 
         """
         # Create or coerce a protobuf request object.
@@ -1948,15 +1952,18 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogSink:
-                Describes a sink used to export log
-                entries to one of the following
-                destinations in any project: a Cloud
-                Storage bucket, a BigQuery dataset, a
-                Pub/Sub topic or a Cloud Logging log
-                bucket. A logs filter controls which log
-                entries are exported. The sink must be
-                created within a project, organization,
-                billing account, or folder.
+                Describes a sink used to export log entries to one of the following
+                   destinations:
+
+                   -  a Cloud Logging log bucket,
+                   -  a Cloud Storage bucket,
+                   -  a BigQuery dataset,
+                   -  a Pub/Sub topic,
+                   -  a Cloud project.
+
+                   A logs filter controls which log entries are
+                   exported. The sink must be created within a project,
+                   organization, billing account, or folder.
 
         """
         # Create or coerce a protobuf request object.
@@ -2013,9 +2020,9 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.LogSink:
-        r"""Updates a sink. This method replaces the following fields in the
-        existing sink with values from the new sink: ``destination``,
-        and ``filter``.
+        r"""Updates a sink. This method replaces the values of the
+        ``destination`` and ``filter`` fields of the existing sink with
+        the corresponding values from the new sink.
 
         The updated sink might also have a new ``writer_identity``; see
         the ``unique_writer_identity`` field.
@@ -2109,15 +2116,18 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogSink:
-                Describes a sink used to export log
-                entries to one of the following
-                destinations in any project: a Cloud
-                Storage bucket, a BigQuery dataset, a
-                Pub/Sub topic or a Cloud Logging log
-                bucket. A logs filter controls which log
-                entries are exported. The sink must be
-                created within a project, organization,
-                billing account, or folder.
+                Describes a sink used to export log entries to one of the following
+                   destinations:
+
+                   -  a Cloud Logging log bucket,
+                   -  a Cloud Storage bucket,
+                   -  a BigQuery dataset,
+                   -  a Pub/Sub topic,
+                   -  a Cloud project.
+
+                   A logs filter controls which log entries are
+                   exported. The sink must be created within a project,
+                   organization, billing account, or folder.
 
         """
         # Create or coerce a protobuf request object.
@@ -3395,7 +3405,7 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         r"""Gets the Logging CMEK settings for the given resource.
 
         Note: CMEK for the Log Router can be configured for Google Cloud
-        projects, folders, organizations and billing accounts. Once
+        projects, folders, organizations, and billing accounts. Once
         configured for an organization, it applies to all projects and
         folders in the Google Cloud organization.
 
@@ -3504,10 +3514,13 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         all projects and folders in the Google Cloud organization.
 
         [UpdateCmekSettings][google.logging.v2.ConfigServiceV2.UpdateCmekSettings]
-        will fail if 1) ``kms_key_name`` is invalid, or 2) the
-        associated service account does not have the required
-        ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned for
-        the key, or 3) access to the key is disabled.
+        fails when any of the following are true:
+
+        -  The value of ``kms_key_name`` is invalid.
+        -  The associated service account doesn't have the required
+           ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned
+           for the key.
+        -  Access to the key is disabled.
 
         See `Enabling CMEK for Log
         Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
@@ -3608,16 +3621,13 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.Settings:
-        r"""Gets the Log Router settings for the given resource.
+        r"""Gets the settings for the given resource.
 
-        Note: Settings for the Log Router can be get for Google Cloud
-        projects, folders, organizations and billing accounts. Currently
-        it can only be configured for organizations. Once configured for
-        an organization, it applies to all projects and folders in the
-        Google Cloud organization.
+        Note: Settings can be retrieved for Google Cloud projects,
+        folders, organizations, and billing accounts.
 
-        See `Enabling CMEK for Log
-        Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+        See [View default resource settings for Logging]
+        (https://cloud.google.com/logging/docs/default-settings#view-org-settings)
         for more information.
 
         .. code-block:: python
@@ -3651,8 +3661,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
                 The request object. The parameters to
                 [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings].
 
-                See `Enabling CMEK for Log
-                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+                See [View default resource settings for Logging]
+                (https://cloud.google.com/logging/docs/default-settings#view-org-settings)
                 for more information.
             name (str):
                 Required. The resource for which to retrieve settings.
@@ -3668,12 +3678,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
 
                 ``"organizations/12345/settings"``
 
-                Note: Settings for the Log Router can be get for Google
-                Cloud projects, folders, organizations and billing
-                accounts. Currently it can only be configured for
-                organizations. Once configured for an organization, it
-                applies to all projects and folders in the Google Cloud
-                organization.
+                Note: Settings can be retrieved for Google Cloud
+                projects, folders, organizations, and billing accounts.
 
                 This corresponds to the ``name`` field
                 on the ``request`` instance; if ``request`` is provided, this
@@ -3687,8 +3693,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings:
                 Describes the settings associated
-                with a project, folder, organization,
-                billing account, or flexible resource.
+                with a project, folder, organization, or
+                billing account.
 
         """
         # Create or coerce a protobuf request object.
@@ -3742,24 +3748,25 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
             timeout: Union[float, object] = gapic_v1.method.DEFAULT,
             metadata: Sequence[Tuple[str, str]] = (),
             ) -> logging_config.Settings:
-        r"""Updates the Log Router settings for the given resource.
-
-        Note: Settings for the Log Router can currently only be
-        configured for Google Cloud organizations. Once configured, it
-        applies to all projects and folders in the Google Cloud
-        organization.
+        r"""Updates the settings for the given resource. This method applies
+        to all feature configurations for organization and folders.
 
         [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings]
-        will fail if 1) ``kms_key_name`` is invalid, or 2) the
-        associated service account does not have the required
-        ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned for
-        the key, or 3) access to the key is disabled. 4) ``location_id``
-        is not supported by Logging. 5) ``location_id`` violate
-        OrgPolicy.
+        fails when any of the following are true:
 
-        See `Enabling CMEK for Log
-        Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
-        for more information.
+        -  The value of ``storage_location`` either isn't supported by
+           Logging or violates the location OrgPolicy.
+        -  The ``default_sink_config`` field is set, but it has an
+           unspecified filter write mode.
+        -  The value of ``kms_key_name`` is invalid.
+        -  The associated service account doesn't have the required
+           ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned
+           for the key.
+        -  Access to the key is disabled.
+
+        See [Configure default settings for organizations and folders]
+        (https://cloud.google.com/logging/docs/default-settings) for
+        more information.
 
         .. code-block:: python
 
@@ -3792,8 +3799,9 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
                 The request object. The parameters to
                 [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings].
 
-                See `Enabling CMEK for Log
-                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+                See [Configure default settings for organizations and
+                folders]
+                (https://cloud.google.com/logging/docs/default-settings)
                 for more information.
             settings (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings):
                 Required. The settings to update.
@@ -3828,8 +3836,8 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
         Returns:
             googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings:
                 Describes the settings associated
-                with a project, folder, organization,
-                billing account, or flexible resource.
+                with a project, folder, organization, or
+                billing account.
 
         """
         # Create or coerce a protobuf request object.
@@ -4093,10 +4101,14 @@ class ConfigServiceV2Client(metaclass=ConfigServiceV2ClientMeta):
                 will generate an alphanumeric ID.
 
                 The ``saved_query_id`` is limited to 100 characters and
-                can include only the following characters: upper and
-                lower-case alphanumeric characters, underscores,
-                hyphens, and periods. First character has to be
-                alphanumeric.
+                can include only the following characters:
+
+                -  upper and lower-case alphanumeric characters,
+                -  underscores,
+                -  hyphens,
+                -  periods.
+
+                First character has to be alphanumeric.
 
                 This corresponds to the ``saved_query_id`` field
                 on the ``request`` instance; if ``request`` is provided, this

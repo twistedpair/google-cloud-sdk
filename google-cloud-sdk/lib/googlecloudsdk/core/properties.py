@@ -1244,7 +1244,7 @@ class _SectionApiEndpointOverrides(_Section):
         'krmapihosting', command='gcloud anthos config controller')
     self.kubernetespolicy = self._Add('kubernetespolicy', hidden=True)
     self.inframanager = self._Add(
-        'inframanager', command='gcloud infra-manager')
+        'config', command='gcloud infra-manager')
     self.language = self._Add('language', command='gcloud ml language')
     self.lifesciences = self._Add('lifesciences', command='gcloud lifesciences')
     self.logging = self._Add('logging', command='gcloud logging')
@@ -1336,6 +1336,7 @@ class _SectionApiEndpointOverrides(_Section):
     # Aliased to `storagetransfer` in `api_lib/apis/apis_util.py`.
     self.transfer = self._Add('transfer', command='gcloud transfer')
     self.vision = self._Add('vision', command='gcloud ml vision')
+    self.vmmigration = self._Add('vmmigration', command='gcloud migration vms')
     self.vmwareengine = self._Add('vmwareengine', command='gcloud vmware')
     self.vpcaccess = self._Add('vpcaccess', hidden=True)
     self.workflowexecutions = self._Add(

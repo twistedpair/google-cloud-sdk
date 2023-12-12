@@ -19,7 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import textwrap
-from typing import List
+from typing import Iterator, List
 
 from apitools.base.protorpclite import messages
 from googlecloudsdk.api_lib.container.fleet import util
@@ -47,6 +47,7 @@ Cannot specify --{opt} without --{prerequisite}.
 """
 
 
+# TODO(b/312311133): Deduplicate shared code between fleet and rollout commands.
 class FleetFlags:
   """Add flags to the fleet command surface."""
 
@@ -162,12 +163,15 @@ class FleetFlags:
   ):
     binary_authorization_config_group.add_argument(
         '--binauthz-evaluation-mode',
-        choices=['DISABLED', 'POLICY_BINDINGS'],
+        choices=['disabled', 'policy-bindings'],
+        # Convert values to lower case before checking against the list of
+        # options. This allows users to pass evaluation mode in enum form.
+        type=lambda x: x.replace('_', '-').lower(),
         default=None,
         help=textwrap.dedent("""\
           Configure binary authorization mode for clusters to onboard the fleet,
 
-            $ {command} --binauthz-evaluation-mode=POLICY_BINDINGS
+            $ {command} --binauthz-evaluation-mode=policy-bindings
 
           """),
     )
@@ -184,6 +188,7 @@ class FleetFlags:
     binary_authorization_config_group.add_argument(
         '--binauthz-policy-bindings',
         default=None,
+        action='append',
         metavar='name=BINAUTHZ_POLICY',
         help=textwrap.dedent("""\
           The relative resource name of the Binary Authorization policy to audit
@@ -194,6 +199,7 @@ class FleetFlags:
                 'name': platform_policy_type,
             },
             required_keys=['name'],
+            max_length=1,
         ),
     )
 
@@ -335,7 +341,7 @@ class FleetFlagParser:
     """Construct binauthz config from args."""
     new_binauthz = self.messages.BinaryAuthorizationConfig()
     new_binauthz.evaluationMode = self._EvaluationMode()
-    new_binauthz.policyBindings = self._PolicyBindings()
+    new_binauthz.policyBindings = list(self._PolicyBindings())
 
     # Merge new with existing binauthz config.
     if existing_binauthz is None:
@@ -378,16 +384,19 @@ class FleetFlagParser:
         self.messages.BinaryAuthorizationConfig.EvaluationModeValueValuesEnum
     )
     mapping = {
-        'DISABLED': enum_type.DISABLED,
-        'POLICY_BINDINGS': enum_type.POLICY_BINDINGS,
+        'disabled': enum_type.DISABLED,
+        'policy-bindings': enum_type.POLICY_BINDINGS,
     }
     return mapping[self.args.binauthz_evaluation_mode]
 
-  def _PolicyBindings(self) -> [fleet_messages.PolicyBinding]:
+  def _PolicyBindings(self) -> Iterator[fleet_messages.PolicyBinding]:
     """Parses --binauthz-policy-bindings."""
-    policy_binding = self.args.binauthz_policy_bindings
-    if policy_binding is not None:
-      return [fleet_messages.PolicyBinding(name=policy_binding['name'])]
+    policy_bindings = self.args.binauthz_policy_bindings
+    if policy_bindings is not None:
+      return (
+          fleet_messages.PolicyBinding(name=binding['name'])
+          for binding in policy_bindings
+      )
     return []
 
   def _DefaultClusterConfig(

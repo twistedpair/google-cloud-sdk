@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import errno
 import http.client
 import logging
 import select
@@ -147,11 +146,7 @@ class SecurityGatewayTunnel(object):
     while sent_data < data_len:
       try:
         sent_data += self._sock.send(data)
-      except OSError as e:
-        # Don't fail when the socket is temporarily unavailable due to it being
-        # non-blocking.
-        if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
-          raise
+      except ssl.SSLWantWriteError:
         select.select((), [self._sock], (), SEND_TIMEOUT_SECONDS)
 
   def _RunReceive(self):
@@ -160,8 +155,10 @@ class SecurityGatewayTunnel(object):
       while not self._stopping:
         if not self._sock:
           break
-        ready = select.select([self._sock, self._rpair], (), (),
-                              RECV_TIMEOUT_SECONDS)
+        ready = [[self._sock]]
+        if not self._sock.pending():
+          ready = select.select([self._sock, self._rpair], (), (),
+                                RECV_TIMEOUT_SECONDS)
         for s in ready[0]:
           if s is self._rpair:
             # Another thread is calling Close(), so this thread should stop.
@@ -189,10 +186,6 @@ class SecurityGatewayTunnel(object):
     data = b''
     try:
       data = self._sock.recv(MAX_BYTES_SOCKET_READ)
-    except OSError as e:
-      # Don't fail when the socket is temporarily unavailable due to it being
-      # non-blocking.
-      if e.errno not in (errno.EAGAIN, errno.EWOULDBLOCK):
-        raise
+    except ssl.SSLWantReadError:
       return data, -1
     return data, len(data)

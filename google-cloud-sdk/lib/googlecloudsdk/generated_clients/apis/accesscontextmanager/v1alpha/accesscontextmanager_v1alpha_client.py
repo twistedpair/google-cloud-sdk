@@ -46,6 +46,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     self.operations = self.OperationsService(self)
     self.organizations_gcpUserAccessBindings = self.OrganizationsGcpUserAccessBindingsService(self)
     self.organizations = self.OrganizationsService(self)
+    self.services = self.ServicesService(self)
 
   class AccessPoliciesAccessLevelsService(base_api.BaseApiService):
     """Service class for the accessPolicies_accessLevels resource."""
@@ -1032,3 +1033,65 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
       super(AccesscontextmanagerV1alpha.OrganizationsService, self).__init__(client)
       self._upload_configs = {
           }
+
+  class ServicesService(base_api.BaseApiService):
+    """Service class for the services resource."""
+
+    _NAME = 'services'
+
+    def __init__(self, client):
+      super(AccesscontextmanagerV1alpha.ServicesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get a {{vpcsvcctl_name_short}} Supported Service by name.
+
+      Args:
+        request: (AccesscontextmanagerServicesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SupportedService) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='accesscontextmanager.services.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/services/{name}',
+        request_field='',
+        request_type_name='AccesscontextmanagerServicesGetRequest',
+        response_type_name='SupportedService',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all {{vpcsvcctl_name_short}} supported services.
+
+      Args:
+        request: (AccesscontextmanagerServicesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListSupportedServicesResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='accesscontextmanager.services.list',
+        ordered_params=[],
+        path_params=[],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/services',
+        request_field='',
+        request_type_name='AccesscontextmanagerServicesListRequest',
+        response_type_name='ListSupportedServicesResponse',
+        supports_download=False,
+    )

@@ -157,22 +157,37 @@ def ConstructCreateRequestFromArgsAlpha(alloydb_messages, location_ref, args):
   )
 
 
-def _ConstructBackupSourceForRestoreRequest(
+def _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
     alloydb_messages, resource_parser, args
 ):
-  """Returns the backup source for restore request."""
-  backup_ref = resource_parser.Parse(
-      collection='alloydb.projects.locations.backups',
-      line=args.backup,
-      params={
-          'projectsId': properties.VALUES.core.project.GetOrFail,
-          'locationsId': args.region,
-      },
-  )
-  backup_source = alloydb_messages.BackupSource(
-      backupName=backup_ref.RelativeName()
-  )
-  return backup_source
+  """Returns the backup and continuous backup source for restore request."""
+  backup_source, continuous_backup_source = None, None
+  if args.backup:
+    backup_ref = resource_parser.Parse(
+        collection='alloydb.projects.locations.backups',
+        line=args.backup,
+        params={
+            'projectsId': properties.VALUES.core.project.GetOrFail,
+            'locationsId': args.region,
+        },
+    )
+    backup_source = alloydb_messages.BackupSource(
+        backupName=backup_ref.RelativeName()
+    )
+  else:
+    cluster_ref = resource_parser.Parse(
+        collection='alloydb.projects.locations.clusters',
+        line=args.source_cluster,
+        params={
+            'projectsId': properties.VALUES.core.project.GetOrFail,
+            'locationsId': args.region,
+        },
+    )
+    continuous_backup_source = alloydb_messages.ContinuousBackupSource(
+        cluster=cluster_ref.RelativeName(),
+        pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
+    )
+  return backup_source, continuous_backup_source
 
 
 def _ConstructClusterResourceForRestoreRequest(alloydb_messages, args):
@@ -199,23 +214,11 @@ def ConstructRestoreRequestFromArgsGA(alloydb_messages, location_ref,
   cluster_resource = _ConstructClusterResourceForRestoreRequest(
       alloydb_messages, args)
 
-  backup_source, continuous_backup_source = None, None
-  if args.backup:
-    backup_source = _ConstructBackupSourceForRestoreRequest(
-        alloydb_messages, resource_parser, args)
-  else:
-    cluster_ref = resource_parser.Parse(
-        collection='alloydb.projects.locations.clusters',
-        line=args.source_cluster,
-        params={
-            'projectsId': properties.VALUES.core.project.GetOrFail,
-            'locationsId': args.region,
-        },
-    )
-    continuous_backup_source = alloydb_messages.ContinuousBackupSource(
-        cluster=cluster_ref.RelativeName(),
-        pointInTime=args.point_in_time.strftime('%Y-%m-%dT%H:%M:%S.%fZ'),
-    )
+  backup_source, continuous_backup_source = (
+      _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
+          alloydb_messages, resource_parser, args
+      )
+  )
 
   return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
       parent=location_ref.RelativeName(),
@@ -225,6 +228,41 @@ def ConstructRestoreRequestFromArgsGA(alloydb_messages, location_ref,
           clusterId=args.cluster,
           cluster=cluster_resource,
       ))
+
+
+def _ConstructClusterResourceForRestoreRequestAlpha(alloydb_messages, args):
+  """Returns the cluster resource for restore request."""
+  cluster_resource = _ConstructClusterResourceForRestoreRequest(
+      alloydb_messages, args
+  )
+  if args.enable_private_services_connect:
+    cluster_resource.pscConfig = alloydb_messages.PscConfig(pscEnabled=True)
+
+  return cluster_resource
+
+
+def ConstructRestoreRequestFromArgsAlpha(
+    alloydb_messages, location_ref, resource_parser, args
+):
+  """Returns the cluster restore request for Alpha track based on args."""
+  cluster_resource = _ConstructClusterResourceForRestoreRequestAlpha(
+      alloydb_messages, args
+  )
+
+  backup_source, continuous_backup_source = (
+      _ConstructBackupAndContinuousBackupSourceForRestoreRequest(
+          alloydb_messages, resource_parser, args
+      )
+  )
+  return alloydb_messages.AlloydbProjectsLocationsClustersRestoreRequest(
+      parent=location_ref.RelativeName(),
+      restoreClusterRequest=alloydb_messages.RestoreClusterRequest(
+          backupSource=backup_source,
+          continuousBackupSource=continuous_backup_source,
+          clusterId=args.cluster,
+          cluster=cluster_resource,
+      ),
+  )
 
 
 def _ConstructClusterAndMaskForPatchRequestGA(alloydb_messages, args):

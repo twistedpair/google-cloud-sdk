@@ -46,7 +46,7 @@ class _ImageVersionItem(object):
   """Class used to dissect and analyze image version components and strings."""
 
   def __init__(self, image_ver=None, composer_ver=None, airflow_ver=None):
-    image_version_regex = r'^composer-(\d+(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?|latest)-airflow-(\d+(?:\.\d+(?:\.\d+)?)?)'
+    image_version_regex = r'^composer-(\d+(?:(?:\.\d+\.\d+(?:-[a-z]+\.\d+)?)?)?|latest)-airflow-(\d+(?:\.\d+(?:\.\d+)?)?)'
     composer_version_alias_regex = r'^(\d+|latest)$'
     airflow_version_alias_regex = r'^(\d+|\d+\.\d+)$'
 
@@ -82,19 +82,23 @@ def ListImageVersionUpgrades(env_ref, release_track=base.ReleaseTrack.GA):
                                     cur_python_version, release_track)
 
 
-def IsValidImageVersionUpgrade(env_ref,
-                               image_version_id,
-                               release_track=base.ReleaseTrack.GA):
+def IsValidImageVersionUpgrade(cur_image_version_str,
+                               image_version_id):
   """Checks if image version candidate is a valid upgrade for environment."""
 
   # Checks for the use of an alias and confirms that a valid airflow upgrade has
   # been requested.
-  cand_image_ver = _ImageVersionItem(image_ver=image_version_id)
-  env_details = environments_api_util.Get(env_ref, release_track)
   cur_image_ver = _ImageVersionItem(
-      image_ver=env_details.config.softwareConfig.imageVersion)
-  if not (CompareVersions(MIN_UPGRADEABLE_COMPOSER_VER,
-                          cur_image_ver.composer_ver) <= 0):
+      image_ver=cur_image_version_str)
+  cand_image_ver = _ImageVersionItem(image_ver=image_version_id)
+
+  is_composer3 = IsVersionComposer3Compatible(
+      cur_image_version_str
+  )
+  if not is_composer3 and not (
+      CompareVersions(MIN_UPGRADEABLE_COMPOSER_VER, cur_image_ver.composer_ver)
+      <= 0
+  ):
     raise InvalidImageVersionError(
         'This environment does not support upgrades.')
   return _ValidateCandidateImageVersionId(
@@ -102,11 +106,21 @@ def IsValidImageVersionUpgrade(env_ref,
       cand_image_ver.GetImageVersionString())
 
 
-def ImageVersionFromAirflowVersion(airflow_version):
+def ImageVersionFromAirflowVersion(new_airflow_version, cur_image_version=None):
   """Converts airflow-version string into a image-version string."""
+
+  is_composer3 = cur_image_version and IsVersionComposer3Compatible(
+      cur_image_version
+  )
+  composer_ver = (
+      _ImageVersionItem(cur_image_version).composer_ver
+      if is_composer3
+      else 'latest'
+  )
+
   return _ImageVersionItem(
-      composer_ver='latest',
-      airflow_ver=airflow_version).GetImageVersionString()
+      composer_ver=composer_ver,
+      airflow_ver=new_airflow_version).GetImageVersionString()
 
 
 def IsImageVersionStringComposerV1(image_version):
@@ -192,6 +206,8 @@ def IsVersionComposer3Compatible(image_version):
     version_item = _ImageVersionItem(image_version)
     if version_item and version_item.composer_ver:
       composer_version = version_item.composer_ver
+      if composer_version == '3':
+        return True
       if composer_version == 'latest':
         composer_version = COMPOSER_LATEST_VERSION_PLACEHOLDER
       return IsVersionInRange(

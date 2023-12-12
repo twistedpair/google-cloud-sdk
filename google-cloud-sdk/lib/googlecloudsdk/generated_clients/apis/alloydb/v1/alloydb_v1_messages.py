@@ -1000,6 +1000,7 @@ class Backup(_messages.Message):
       (https://google.aip.dev/128#reconciliation), if true, indicates that the
       service is actively updating the resource. This can happen due to user-
       triggered updates or system actions like failover or maintenance.
+    satisfiesPzs: Output only. Reserved for future use.
     sizeBytes: Output only. The size of the backup in bytes.
     state: Output only. The current state of the backup.
     type: The backup type, which suggests the trigger for the backup.
@@ -1124,11 +1125,12 @@ class Backup(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 14)
   name = _messages.StringField(15)
   reconciling = _messages.BooleanField(16)
-  sizeBytes = _messages.IntegerField(17)
-  state = _messages.EnumField('StateValueValuesEnum', 18)
-  type = _messages.EnumField('TypeValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
+  satisfiesPzs = _messages.BooleanField(17)
+  sizeBytes = _messages.IntegerField(18)
+  state = _messages.EnumField('StateValueValuesEnum', 19)
+  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class BackupSource(_messages.Message):
@@ -1278,6 +1280,7 @@ class Cluster(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
+    satisfiesPzs: Output only. Reserved for future use.
     secondaryConfig: Cross Region replication config specific to SECONDARY
       cluster.
     sslConfig: SSL configuration for this AlloyDB cluster.
@@ -1427,11 +1430,12 @@ class Cluster(_messages.Message):
   networkConfig = _messages.MessageField('NetworkConfig', 19)
   primaryConfig = _messages.MessageField('PrimaryConfig', 20)
   reconciling = _messages.BooleanField(21)
-  secondaryConfig = _messages.MessageField('SecondaryConfig', 22)
-  sslConfig = _messages.MessageField('SslConfig', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
-  uid = _messages.StringField(25)
-  updateTime = _messages.StringField(26)
+  satisfiesPzs = _messages.BooleanField(22)
+  secondaryConfig = _messages.MessageField('SecondaryConfig', 23)
+  sslConfig = _messages.MessageField('SslConfig', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
+  uid = _messages.StringField(26)
+  updateTime = _messages.StringField(27)
 
 
 class ConnectionInfo(_messages.Message):
@@ -1903,6 +1907,7 @@ class Instance(_messages.Message):
       service is actively updating the resource to reconcile them. This can
       happen due to user-triggered updates or system actions like failover or
       maintenance.
+    satisfiesPzs: Output only. Reserved for future use.
     state: Output only. The current serving state of the instance.
     uid: Output only. The system-generated UID of the resource. The UID is
       assigned when the resource is created, and it is retained until it is
@@ -2080,10 +2085,11 @@ class Instance(_messages.Message):
   queryInsightsConfig = _messages.MessageField('QueryInsightsInstanceConfig', 16)
   readPoolConfig = _messages.MessageField('ReadPoolConfig', 17)
   reconciling = _messages.BooleanField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  writableNode = _messages.MessageField('Node', 22)
+  satisfiesPzs = _messages.BooleanField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
+  writableNode = _messages.MessageField('Node', 23)
 
 
 class IntegerRestrictions(_messages.Message):
@@ -2931,8 +2937,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
     resourceContainer: Closest parent container of this resource. In GCP,
       'container' refers to a Cloud Resource Manager project. It must be
       resource name of a Cloud Resource Manager project with the format of
-      "provider//", such as "gcp/projects/123". For GCP provided resources,
-      number should be project number.
+      "provider//", such as "projects/123". For GCP provided resources, number
+      should be project number.
     resourceName: Required. Database resource name associated with the signal.
       Resource name to follow CAIS resource_name format as noted here
       go/condor-common-datamodel
@@ -3036,9 +3042,9 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
         ISO-27001.
       SIGNAL_TYPE_VIOLATES_PCI_DSS_V3_2_1: Represents if a resource violates
         PCI-DSS v3.2.1.
-      SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING:
-        LINT.IfChange(scc_signals) Represents if log_checkpoints database flag
-        for a Cloud SQL for PostgreSQL instance is not set to on.
+      SIGNAL_TYPE_LOGS_NOT_OPTIMIZED_FOR_TROUBLESHOOTING: Represents if
+        log_checkpoints database flag for a Cloud SQL for PostgreSQL instance
+        is not set to on.
       SIGNAL_TYPE_QUERY_DURATIONS_NOT_LOGGED: Represents if the log_duration
         database flag for a Cloud SQL for PostgreSQL instance is not set to
         on.
@@ -3122,9 +3128,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceHealthSignalData(_mes
       SIGNAL_TYPE_SENSITIVE_TRACE_INFO_NOT_MASKED: Represents if the 3625
         (trace flag) database flag for a Cloud SQL for SQL Server instance is
         not set to on.
-      SIGNAL_TYPE_PUBLIC_IP_ENABLED: Represents if public IP is enabled. LINT.
-        ThenChange(//depot/google3/storage/databasecenter/ingestion/borgjob/me
-        ssage_adapter/health_signal_feed/health_signal_mapping.h)
+      SIGNAL_TYPE_PUBLIC_IP_ENABLED: Represents if public IP is enabled.
     """
     SIGNAL_TYPE_UNSPECIFIED = 0
     SIGNAL_TYPE_NOT_PROTECTED_BY_AUTOMATIC_FAILOVER = 1
@@ -3323,8 +3327,8 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     product: The product this resource represents.
     resourceContainer: Closest parent Cloud Resource Manager container of this
       resource. It must be resource name of a Cloud Resource Manager project
-      with the format of "provider//", such as "gcp/projects/123". For GCP
-      provided resources, number should be project number.
+      with the format of "/", such as "projects/123". For GCP provided
+      resources, number should be project number.
     resourceName: Required. Different from DatabaseResourceId.unique_id, a
       resource name can be reused over time. That is, after a resource named
       "ABC" is deleted, the name "ABC" can be used to to create a new resource
@@ -3379,16 +3383,27 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
 
     Values:
       INSTANCE_TYPE_UNSPECIFIED: <no description>
+      SUB_RESOURCE_TYPE_UNSPECIFIED: For rest of the other categories.
       PRIMARY: A regular primary database instance.
       SECONDARY: A cluster or an instance acting as a secondary.
       READ_REPLICA: An instance acting as a read-replica.
       OTHER: For rest of the other categories.
+      SUB_RESOURCE_TYPE_PRIMARY: A regular primary database instance.
+      SUB_RESOURCE_TYPE_SECONDARY: A cluster or an instance acting as a
+        secondary.
+      SUB_RESOURCE_TYPE_READ_REPLICA: An instance acting as a read-replica.
+      SUB_RESOURCE_TYPE_OTHER: For rest of the other categories.
     """
     INSTANCE_TYPE_UNSPECIFIED = 0
-    PRIMARY = 1
-    SECONDARY = 2
-    READ_REPLICA = 3
-    OTHER = 4
+    SUB_RESOURCE_TYPE_UNSPECIFIED = 1
+    PRIMARY = 2
+    SECONDARY = 3
+    READ_REPLICA = 4
+    OTHER = 5
+    SUB_RESOURCE_TYPE_PRIMARY = 6
+    SUB_RESOURCE_TYPE_SECONDARY = 7
+    SUB_RESOURCE_TYPE_READ_REPLICA = 8
+    SUB_RESOURCE_TYPE_OTHER = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class CustomMetadataValue(_messages.Message):
@@ -3527,21 +3542,34 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     Values:
       ENGINE_UNSPECIFIED: UNSPECIFIED means engine type is not known or
         available.
+      ENGINE_MYSQL: MySQL binary running as an engine in the database
+        instance.
       MYSQL: MySQL binary running as engine in database instance.
+      ENGINE_POSTGRES: Postgres binary running as engine in database instance.
       POSTGRES: Postgres binary running as engine in database instance.
+      ENGINE_SQL_SERVER: SQLServer binary running as engine in database
+        instance.
       SQL_SERVER: SQLServer binary running as engine in database instance.
+      ENGINE_NATIVE: Native database binary running as engine in instance.
       NATIVE: Native database binary running as engine in instance.
+      ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT: Cloud Spanner with Postgres
+        dialect.
       SPANGRES: Cloud Spanner with Postgres dialect.
       ENGINE_OTHER: Other refers to rest of other database engine. This is to
         be when engine is known, but it is not present in this enum.
     """
     ENGINE_UNSPECIFIED = 0
-    MYSQL = 1
-    POSTGRES = 2
-    SQL_SERVER = 3
-    NATIVE = 4
-    SPANGRES = 5
-    ENGINE_OTHER = 6
+    ENGINE_MYSQL = 1
+    MYSQL = 2
+    ENGINE_POSTGRES = 3
+    POSTGRES = 4
+    ENGINE_SQL_SERVER = 5
+    SQL_SERVER = 6
+    ENGINE_NATIVE = 7
+    NATIVE = 8
+    ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT = 9
+    SPANGRES = 10
+    ENGINE_OTHER = 11
 
   class TypeValueValuesEnum(_messages.Enum):
     r"""Type of specific database product. It could be CloudSQL, AlloyDB etc..
@@ -3549,19 +3577,27 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     Values:
       PRODUCT_TYPE_UNSPECIFIED: UNSPECIFIED means product type is not known or
         available.
+      PRODUCT_TYPE_CLOUD_SQL: Cloud SQL product area in GCP
       CLOUD_SQL: Cloud SQL product area in GCP
+      PRODUCT_TYPE_ALLOYDB: AlloyDB product area in GCP
       ALLOYDB: AlloyDB product area in GCP
+      PRODUCT_TYPE_SPANNER: Spanner product area in GCP
       SPANNER: Spanner product area in GCP
+      PRODUCT_TYPE_ON_PREM: On premises database product.
       ON_PREM: On premises database product.
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
         to be when product type is known, but it is not present in this enum.
     """
     PRODUCT_TYPE_UNSPECIFIED = 0
-    CLOUD_SQL = 1
-    ALLOYDB = 2
-    SPANNER = 3
-    ON_PREM = 4
-    PRODUCT_TYPE_OTHER = 5
+    PRODUCT_TYPE_CLOUD_SQL = 1
+    CLOUD_SQL = 2
+    PRODUCT_TYPE_ALLOYDB = 3
+    ALLOYDB = 4
+    PRODUCT_TYPE_SPANNER = 5
+    SPANNER = 6
+    PRODUCT_TYPE_ON_PREM = 7
+    ON_PREM = 8
+    PRODUCT_TYPE_OTHER = 9
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

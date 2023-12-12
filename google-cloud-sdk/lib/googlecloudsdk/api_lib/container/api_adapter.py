@@ -285,6 +285,7 @@ GCEPDCSIDRIVER = 'GcePersistentDiskCsiDriver'
 GCPFILESTORECSIDRIVER = 'GcpFilestoreCsiDriver'
 GCSFUSECSIDRIVER = 'GcsFuseCsiDriver'
 STATEFULHA = 'StatefulHA'
+PARALLELSTORECSIDRIVER = 'ParallelstoreCsiDriver'
 ISTIO = 'Istio'
 NETWORK_POLICY = 'NetworkPolicy'
 NODELOCALDNS = 'NodeLocalDNS'
@@ -320,6 +321,7 @@ ADDONS_OPTIONS = DEFAULT_ADDONS + [
     BACKUPRESTORE,
     GCSFUSECSIDRIVER,
     STATEFULHA,
+    PARALLELSTORECSIDRIVER,
 ]
 BETA_ADDONS_OPTIONS = ADDONS_OPTIONS + [
     ISTIO,
@@ -661,7 +663,6 @@ class CreateClusterOptions(object):
       cluster_dns=None,
       cluster_dns_scope=None,
       cluster_dns_domain=None,
-      enable_additive_vpc_scope=None,
       additive_vpc_scope_dns_domain=None,
       disable_additive_vpc_scope=None,
       kubernetes_objects_changes_target=None,
@@ -872,7 +873,6 @@ class CreateClusterOptions(object):
     self.cluster_dns = cluster_dns
     self.cluster_dns_scope = cluster_dns_scope
     self.cluster_dns_domain = cluster_dns_domain
-    self.enable_additive_vpc_scope = enable_additive_vpc_scope
     self.additive_vpc_scope_dns_domain = additive_vpc_scope_dns_domain
     self.disable_additive_vpc_scope = disable_additive_vpc_scope
     self.kubernetes_objects_changes_target = kubernetes_objects_changes_target
@@ -955,7 +955,6 @@ class UpdateClusterOptions(object):
       cluster_dns=None,
       cluster_dns_scope=None,
       cluster_dns_domain=None,
-      enable_additive_vpc_scope=None,
       disable_additive_vpc_scope=None,
       additive_vpc_scope_dns_domain=None,
       enable_autoscaling=None,
@@ -1094,7 +1093,6 @@ class UpdateClusterOptions(object):
     self.cluster_dns = cluster_dns
     self.cluster_dns_scope = cluster_dns_scope
     self.cluster_dns_domain = cluster_dns_domain
-    self.enable_additive_vpc_scope = enable_additive_vpc_scope
     self.disable_additive_vpc_scope = disable_additive_vpc_scope
     self.additive_vpc_scope_dns_domain = additive_vpc_scope_dns_domain
     self.enable_autoscaling = enable_autoscaling
@@ -1824,6 +1822,9 @@ class APIAdapter(object):
           enable_backup_restore=(BACKUPRESTORE in options.addons),
           enable_gcsfuse_csi_driver=(GCSFUSECSIDRIVER in options.addons),
           enable_stateful_ha=(STATEFULHA in options.addons),
+          enable_parallelstore_csi_driver=(
+              PARALLELSTORECSIDRIVER in options.addons
+          ),
       )
       # CONFIGCONNECTOR is disabled by default.
       if CONFIGCONNECTOR in options.addons:
@@ -1907,20 +1908,15 @@ class APIAdapter(object):
 
     if options.binauthz_evaluation_mode is not None:
       if options.binauthz_policy_bindings is not None:
-        if len(options.binauthz_policy_bindings) > 1:
-          raise util.Error(
-              'Flag --binauthz-policy-bindings can only be specified once.'
-          )
         cluster.binaryAuthorization = self.messages.BinaryAuthorization(
             evaluationMode=util.GetBinauthzEvaluationModeMapper(
                 self.messages, hidden=False
             ).GetEnumForChoice(options.binauthz_evaluation_mode),
-            policyBindings=[
-                self.messages.PolicyBinding(
-                    name=options.binauthz_policy_bindings[0]['name']
-                )
-            ],
         )
+        for binding in options.binauthz_policy_bindings:
+          cluster.binaryAuthorization.policyBindings.append(
+              self.messages.PolicyBinding(name=binding['name'])
+          )
       else:
         cluster.binaryAuthorization = self.messages.BinaryAuthorization(
             evaluationMode=util.GetBinauthzEvaluationModeMapper(
@@ -2041,6 +2037,12 @@ class APIAdapter(object):
               self.messages.WorkloadPolicyConfig())
         if options.workload_policies == 'allow-net-admin':
           cluster.autopilot.workloadPolicyConfig.allowNetAdmin = True
+
+      if options.enable_secret_manager:
+        if cluster.secretManagerConfig is None:
+          cluster.secretManagerConfig = self.messages.SecretManagerConfig(
+              enabled=False
+          )
 
       if options.enable_insecure_kubelet_readonly_port is not None:
         if cluster.autoscaling is None:
@@ -2805,7 +2807,6 @@ class APIAdapter(object):
         options.cluster_dns is None
         and options.cluster_dns_scope is None
         and options.cluster_dns_domain is None
-        and options.enable_additive_vpc_scope is None
         and (not is_update or options.disable_additive_vpc_scope is None)
         and options.additive_vpc_scope_dns_domain is None
     ):
@@ -2832,33 +2833,12 @@ class APIAdapter(object):
     if options.cluster_dns_domain is not None:
       dns_config.clusterDnsDomain = options.cluster_dns_domain
 
-    if options.enable_additive_vpc_scope is not None:
-      # Domain must be specified when enabling additive VPC.
-      if not options.additive_vpc_scope_dns_domain:
-        raise util.Error(
-            PREREQUISITE_OPTION_ERROR_MSG.format(
-                opt='enable-additive-vpc-scope',
-                prerequisite='additive-vpc-scope-dns-domain',
-            )
-        )
-      dns_config.enableAdditiveVpcScope = options.enable_additive_vpc_scope
-
     if options.additive_vpc_scope_dns_domain is not None:
-      # During create only, additive VPC must be enabled when specifying
-      # its domain.
-      if not is_update and not options.enable_additive_vpc_scope:
-        raise util.Error(
-            PREREQUISITE_OPTION_ERROR_MSG.format(
-                opt='additive-vpc-scope-dns-domain',
-                prerequisite='enable-additive-vpc-scope %s',
-            )
-        )
       dns_config.additiveVpcScopeDnsDomain = (
           options.additive_vpc_scope_dns_domain
       )
 
     if is_update and options.disable_additive_vpc_scope:
-      dns_config.enableAdditiveVpcScope = False
       dns_config.additiveVpcScopeDnsDomain = ''
 
     return dns_config
@@ -3339,6 +3319,12 @@ class APIAdapter(object):
         addons.statefulHaConfig = (
             self.messages.StatefulHAConfig(
                 enabled=not options.disable_addons.get(STATEFULHA)))
+      if options.disable_addons.get(PARALLELSTORECSIDRIVER) is not None:
+        addons.parallelstoreCsiDriverConfig = (
+            self.messages.ParallelstoreCsiDriverConfig(
+                enabled=not options.disable_addons.get(PARALLELSTORECSIDRIVER)
+            )
+        )
       if options.disable_addons.get(BACKUPRESTORE) is not None:
         addons.gkeBackupAgentConfig = (
             self.messages.GkeBackupAgentConfig(
@@ -3839,7 +3825,8 @@ class APIAdapter(object):
                     enable_cloud_build=None,
                     enable_backup_restore=None,
                     enable_gcsfuse_csi_driver=None,
-                    enable_stateful_ha=None):
+                    enable_stateful_ha=None,
+                    enable_parallelstore_csi_driver=None):
     """Generates an AddonsConfig object given specific parameters.
 
     Args:
@@ -3855,6 +3842,7 @@ class APIAdapter(object):
       enable_backup_restore: whether to enable BackupRestore.
       enable_gcsfuse_csi_driver: whether to enable GcsFuseCsiDriver.
       enable_stateful_ha: whether to enable StatefulHA addon.
+      enable_parallelstore_csi_driver: whether to enable ParallelstoreCsiDriver.
 
     Returns:
       An AddonsConfig object that contains the options defining what addons to
@@ -3895,6 +3883,10 @@ class APIAdapter(object):
           enabled=True)
     if enable_stateful_ha:
       addons.statefulHaConfig = self.messages.StatefulHAConfig(enabled=True)
+    if enable_parallelstore_csi_driver:
+      addons.parallelstoreCsiDriverConfig = (
+          self.messages.ParallelstoreCsiDriverConfig(enabled=True)
+      )
 
     return addons
 
@@ -5277,15 +5269,13 @@ class APIAdapter(object):
         ):
           binary_authorization.policyBindings = []
       if binauthz_policy_bindings is not None:
-        if len(binauthz_policy_bindings) > 1:
-          raise util.Error(
-              'Flag --binauthz-policy-bindings can only be specified once.'
+        # New policy bindings passed to the cluster update command override
+        # existing policy bindings.
+        binary_authorization.policyBindings = []
+        for binding in binauthz_policy_bindings:
+          binary_authorization.policyBindings.append(
+              self.messages.PolicyBinding(name=binding['name'])
           )
-        binary_authorization.policyBindings = [
-            self.messages.PolicyBinding(
-                name=binauthz_policy_bindings[0]['name']
-            )
-        ]
     update = self.messages.ClusterUpdate(
         desiredBinaryAuthorization=binary_authorization)
     op = self.client.projects_locations_clusters.Update(

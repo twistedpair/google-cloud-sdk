@@ -567,7 +567,9 @@ def IsAnySpecified(args, *dests):
 def GetSourceInstanceTemplate(args, resources, source_instance_template_arg):
   if not args.IsSpecified('source_instance_template'):
     return None
-  ref = source_instance_template_arg.ResolveAsResource(args, resources)
+  ref = source_instance_template_arg.ResolveAsResource(
+      args, resources, default_scope=flags.compute_scope.ScopeEnum.GLOBAL
+  )
   return ref.SelfLink()
 
 

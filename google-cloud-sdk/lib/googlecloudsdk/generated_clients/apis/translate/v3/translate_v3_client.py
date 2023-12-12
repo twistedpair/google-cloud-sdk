@@ -100,7 +100,7 @@ class TranslateV3(base_api.BaseApiClient):
           }
 
     def Delete(self, request, global_params=None):
-      r"""Deleted an AdaptiveMtFile along with its sentences.
+      r"""Deletes an AdaptiveMtFile along with its sentences.
 
       Args:
         request: (TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesDeleteRequest) input message

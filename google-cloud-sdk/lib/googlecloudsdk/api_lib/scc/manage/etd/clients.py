@@ -19,7 +19,6 @@ from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.scc import util as scc_util
 from googlecloudsdk.core import log
-from googlecloudsdk.core.console import console_io
 from googlecloudsdk.generated_clients.apis.securitycentermanagement.v1 import securitycentermanagement_v1_messages as messages
 
 
@@ -47,17 +46,10 @@ class ETDCustomModuleClient(object):
     req = messages.SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesDeleteRequest(
         name=name, validateOnly=validate_only
     )
+    response = self._client.Delete(req)
     if validate_only:
       log.status.Print('Request is valid.')
-      return
-    console_io.PromptContinue(
-        message=(
-            'Are you sure you want to delete the Event Threat Detection custom'
-            ' module {}?\n'.format(name)
-        ),
-        cancel_on_no=True,
-    )
-    response = self._client.Delete(req)
+      return response
     log.DeletedResource(name)
     return response
 
@@ -85,18 +77,44 @@ class ETDCustomModuleClient(object):
         updateMask=scc_util.CleanUpUserMaskInput(update_mask),
         validateOnly=validate_only,
     )
+    response = self._client.Patch(req)
     if validate_only:
       log.status.Print('Request is valid.')
-      return
-    console_io.PromptContinue(
-        message=(
-            'Are you sure you want to update the Event Threat Detection custom'
-            ' module {}?\n'.format(name)
-        ),
-        cancel_on_no=True,
-    )
-    response = self._client.Patch(req)
+      return response
     log.UpdatedResource(name)
+    return response
+
+  def Create(
+      self,
+      parent: str,
+      validate_only: bool,
+      custom_config: messages.EventThreatDetectionCustomModule.ConfigValue,
+      enablement_state: messages.EventThreatDetectionCustomModule.EnablementStateValueValuesEnum,
+      module_type: str,
+      display_name: str,
+  ) -> messages.EventThreatDetectionCustomModule:
+    """Create an ETD custom module."""
+
+    event_threat_detection_custom_module = (
+        messages.EventThreatDetectionCustomModule(
+            config=custom_config,
+            enablementState=enablement_state,
+            displayName=display_name,
+            type=module_type,
+        )
+    )
+
+    req = messages.SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesCreateRequest(
+        eventThreatDetectionCustomModule=event_threat_detection_custom_module,
+        parent=parent,
+        validateOnly=validate_only,
+    )
+
+    response = self._client.Create(req)
+    if validate_only:
+      log.status.Print('Request is valid.')
+      return response
+    log.CreatedResource(display_name)
     return response
 
   def List(
@@ -113,6 +131,28 @@ class ETDCustomModuleClient(object):
     )
     return list_pager.YieldFromList(
         self._client,
+        request=req,
+        limit=limit,
+        field='eventThreatDetectionCustomModules',
+        batch_size=page_size,
+        batch_size_attribute='pageSize',
+    )
+
+  def ListDescendant(
+      self, page_size: int, parent: str, limit: int
+  ) -> Generator[
+      messages.EventThreatDetectionCustomModule,
+      None,
+      messages.ListEventThreatDetectionCustomModulesResponse,
+  ]:
+    """List the details of the resident and descendant ETD custom modules."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesListDescendantRequest(
+        pageSize=page_size, parent=parent
+    )
+    return list_pager.YieldFromList(
+        self._client,
+        method='ListDescendant',
         request=req,
         limit=limit,
         field='eventThreatDetectionCustomModules',
@@ -137,3 +177,24 @@ class EffectiveETDCustomModuleClient(object):
         name=name
     )
     return self._client.Get(req)
+
+  def List(
+      self, page_size: int, parent: str, limit: int
+  ) -> Generator[
+      messages.EffectiveEventThreatDetectionCustomModule,
+      None,
+      messages.ListEffectiveEventThreatDetectionCustomModulesResponse,
+  ]:
+    """List the details of the resident and descendant ETD effective custom modules."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsEffectiveEventThreatDetectionCustomModulesListRequest(
+        pageSize=page_size, parent=parent
+    )
+    return list_pager.YieldFromList(
+        self._client,
+        request=req,
+        limit=limit,
+        field='effectiveEventThreatDetectionCustomModules',
+        batch_size=page_size,
+        batch_size_attribute='pageSize',
+    )

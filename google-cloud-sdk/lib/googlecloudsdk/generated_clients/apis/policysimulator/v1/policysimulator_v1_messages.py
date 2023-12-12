@@ -140,13 +140,13 @@ class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
   constraints for configurations of Google Cloud resources.
 
   Fields:
-    etag: An opaque tag indicating the current version of the policy, used for
-      concurrency control. This field is ignored if used in a `CreatePolicy`
-      request. When the policy` is returned from either a `GetPolicy` or a
-      `ListPolicies` request, this `etag` indicates the version of the current
-      policy to use when executing a read-modify-write loop. When the policy
-      is returned from a `GetEffectivePolicy` request, the `etag` will be
-      unset.
+    etag: An opaque tag indicating the current version of the policySpec, used
+      for concurrency control. This field is ignored if used in a
+      `CreatePolicy` request. When the policy is returned from either a
+      `GetPolicy` or a `ListPolicies` request, this `etag` indicates the
+      version of the current policySpec to use when executing a read-modify-
+      write loop. When the policy is returned from a `GetEffectivePolicy`
+      request, the `etag` will be unset.
     inheritFromParent: Determines the inheritance behavior for this policy. If
       `inherit_from_parent` is true, policy rules set higher up in the
       hierarchy (up to the closest root) are inherited and present in the

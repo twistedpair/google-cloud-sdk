@@ -1785,6 +1785,10 @@ class PackageData(_messages.Message):
       GO_STDLIB: Go toolchain + standard library packages.
       PYPI: Python packages.
       NPM: NPM packages.
+      NUGET: Nuget (C#/.NET) packages.
+      RUBYGEMS: Ruby packges (from RubyGems package manager).
+      RUST: Rust packages from Cargo (Github ecosystem is `RUST`).
+      COMPOSER: PHP packages from Composer package manager.
     """
     PACKAGE_TYPE_UNSPECIFIED = 0
     OS = 1
@@ -1793,6 +1797,10 @@ class PackageData(_messages.Message):
     GO_STDLIB = 4
     PYPI = 5
     NPM = 6
+    NUGET = 7
+    RUBYGEMS = 8
+    RUST = 9
+    COMPOSER = 10
 
   architecture = _messages.StringField(1)
   binarySourceInfo = _messages.MessageField('BinarySourceInfo', 2, repeated=True)

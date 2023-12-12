@@ -3636,6 +3636,21 @@ class GoogleCloudDataplexV1DataProfileSpecSelectedFields(_messages.Message):
   fieldNames = _messages.StringField(1, repeated=True)
 
 
+class GoogleCloudDataplexV1DataQualityColumnResult(_messages.Message):
+  r"""DataQualityColumnResult provides a more detailed, per-column view of the
+  results.
+
+  Fields:
+    column: Output only. The column specified in the DataQualityRule.
+    score: Output only. The column-level data quality score for this data scan
+      job if and only if the 'column' field is set.The score ranges between
+      between 0, 100 (up to two decimal points).
+  """
+
+  column = _messages.StringField(1)
+  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
 class GoogleCloudDataplexV1DataQualityDimension(_messages.Message):
   r"""A dimension captures data quality intent about a defined subset of the
   rules specified.
@@ -3657,16 +3672,23 @@ class GoogleCloudDataplexV1DataQualityDimensionResult(_messages.Message):
     dimension: Output only. The dimension config specified in the
       DataQualitySpec, as is.
     passed: Whether the dimension passed or failed.
+    score: Output only. The dimension-level data quality score for this data
+      scan job if and only if the 'dimension' field is set.The score ranges
+      between 0, 100 (up to two decimal points).
   """
 
   dimension = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimension', 1)
   passed = _messages.BooleanField(2)
+  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
   r"""The output of a DataQualityScan.
 
   Fields:
+    columns: Output only. A list of results at the column level.A column will
+      have a corresponding DataQualityColumnResult if and only if there is at
+      least one rule with the 'column' field set to it.
     dimensions: A list of results at the dimension level.A dimension will have
       a corresponding DataQualityDimensionResult if and only if there is at
       least one rule with the 'dimension' field set to it.
@@ -3675,14 +3697,18 @@ class GoogleCloudDataplexV1DataQualityResult(_messages.Message):
     rowCount: The count of rows processed.
     rules: A list of all the rules in a job, and their results.
     scannedData: The data scanned for this result.
+    score: Output only. The overall data quality score.The score ranges
+      between 0, 100 (up to two decimal points).
   """
 
-  dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 1, repeated=True)
-  passed = _messages.BooleanField(2)
-  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultPostScanActionsResult', 3)
-  rowCount = _messages.IntegerField(4)
-  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 5, repeated=True)
-  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 6)
+  columns = _messages.MessageField('GoogleCloudDataplexV1DataQualityColumnResult', 1, repeated=True)
+  dimensions = _messages.MessageField('GoogleCloudDataplexV1DataQualityDimensionResult', 2, repeated=True)
+  passed = _messages.BooleanField(3)
+  postScanActionsResult = _messages.MessageField('GoogleCloudDataplexV1DataQualityResultPostScanActionsResult', 4)
+  rowCount = _messages.IntegerField(5)
+  rules = _messages.MessageField('GoogleCloudDataplexV1DataQualityRuleResult', 6, repeated=True)
+  scannedData = _messages.MessageField('GoogleCloudDataplexV1ScannedData', 7)
+  score = _messages.FloatField(8, variant=_messages.Variant.FLOAT)
 
 
 class GoogleCloudDataplexV1DataQualityResultPostScanActionsResult(_messages.Message):
@@ -5220,6 +5246,7 @@ class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):
       GOVERNANCE_RULE_SEARCH_LIMIT_EXCEEDS: Rule processing exceeds the
         allowed limit.
       GOVERNANCE_RULE_ERRORS: Rule processing errors.
+      GOVERNANCE_RULE_PROCESSING: Governance rule prcoessing Event.
     """
     EVENT_TYPE_UNSPECIFIED = 0
     RESOURCE_IAM_POLICY_UPDATE = 1
@@ -5237,6 +5264,7 @@ class GoogleCloudDataplexV1GovernanceEvent(_messages.Message):
     GOVERNANCE_RULE_MATCHED_RESOURCES = 13
     GOVERNANCE_RULE_SEARCH_LIMIT_EXCEEDS = 14
     GOVERNANCE_RULE_ERRORS = 15
+    GOVERNANCE_RULE_PROCESSING = 16
 
   entity = _messages.MessageField('GoogleCloudDataplexV1GovernanceEventEntity', 1)
   eventType = _messages.EnumField('EventTypeValueValuesEnum', 2)

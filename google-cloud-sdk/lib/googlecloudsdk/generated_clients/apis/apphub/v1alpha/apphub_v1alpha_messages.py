@@ -18,7 +18,7 @@ class ApphubProjectsLocationsApplicationsCreateRequest(_messages.Message):
 
   Fields:
     application: A Application resource to be passed as the request body.
-    applicationId: Required. The application identifier
+    applicationId: Required. The Application identifier.
     parent: Required. Value for parent.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -43,7 +43,7 @@ class ApphubProjectsLocationsApplicationsDeleteRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -91,7 +91,7 @@ class ApphubProjectsLocationsApplicationsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -107,7 +107,7 @@ class ApphubProjectsLocationsApplicationsListRequest(_messages.Message):
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListApplicationsRequest
+    parent: Required. Value for parent.
   """
 
   filter = _messages.StringField(1)
@@ -122,8 +122,9 @@ class ApphubProjectsLocationsApplicationsPatchRequest(_messages.Message):
 
   Fields:
     application: A Application resource to be passed as the request body.
-    name: Optional. The resource name of an Application.
-      projects//locations//applications/
+    name: Identifier. The resource name of an Application. Format:
+      "projects/{host-project-
+      id}/locations/{location}/applications/{application-id}"
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -168,7 +169,7 @@ class ApphubProjectsLocationsApplicationsServicesCreateRequest(_messages.Message
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     service: A Service resource to be passed as the request body.
-    serviceId: Required. The service identifier
+    serviceId: Required. The Service identifier.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -181,7 +182,7 @@ class ApphubProjectsLocationsApplicationsServicesDeleteRequest(_messages.Message
   r"""A ApphubProjectsLocationsApplicationsServicesDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -203,7 +204,7 @@ class ApphubProjectsLocationsApplicationsServicesGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsServicesGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -219,7 +220,7 @@ class ApphubProjectsLocationsApplicationsServicesListRequest(_messages.Message):
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListServicesRequest
+    parent: Required. Value for parent.
   """
 
   filter = _messages.StringField(1)
@@ -233,8 +234,9 @@ class ApphubProjectsLocationsApplicationsServicesPatchRequest(_messages.Message)
   r"""A ApphubProjectsLocationsApplicationsServicesPatchRequest object.
 
   Fields:
-    name: Full resource identifier of a registered Service.
-      projects//locations//applications//services/
+    name: Identifier. The resource name of a Service. Format: "projects/{host-
+      project-id}/locations/{location}/applications/{application-
+      id}/services/{service-id}"
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -312,7 +314,7 @@ class ApphubProjectsLocationsApplicationsWorkloadsCreateRequest(_messages.Messag
       The request ID must be a valid UUID with the exception that zero UUID is
       not supported (00000000-0000-0000-0000-000000000000).
     workload: A Workload resource to be passed as the request body.
-    workloadId: Required. The workload identifier
+    workloadId: Required. The Workload identifier.
   """
 
   parent = _messages.StringField(1, required=True)
@@ -325,7 +327,7 @@ class ApphubProjectsLocationsApplicationsWorkloadsDeleteRequest(_messages.Messag
   r"""A ApphubProjectsLocationsApplicationsWorkloadsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -347,7 +349,7 @@ class ApphubProjectsLocationsApplicationsWorkloadsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsApplicationsWorkloadsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -363,7 +365,7 @@ class ApphubProjectsLocationsApplicationsWorkloadsListRequest(_messages.Message)
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListWorkloadsRequest
+    parent: Required. Value for parent.
   """
 
   filter = _messages.StringField(1)
@@ -377,8 +379,10 @@ class ApphubProjectsLocationsApplicationsWorkloadsPatchRequest(_messages.Message
   r"""A ApphubProjectsLocationsApplicationsWorkloadsPatchRequest object.
 
   Fields:
-    name: Full resource identifier of a registered Workload
-      projects//locations//applications//workloads/
+    name: Identifier. The resource name of the Workload. Format:
+      "projects/{host-project-
+      id}/locations/{location}/applications/{application-
+      id}/workloads/{workload-id}"
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -414,7 +418,7 @@ class ApphubProjectsLocationsDetachServiceProjectAttachmentRequest(_messages.Mes
     detachServiceProjectAttachmentRequest: A
       DetachServiceProjectAttachmentRequest resource to be passed as the
       request body.
-    name: Required. Name value of the service project to detach.
+    name: Required. Value for name.
   """
 
   detachServiceProjectAttachmentRequest = _messages.MessageField('DetachServiceProjectAttachmentRequest', 1)
@@ -432,7 +436,7 @@ class ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest(_messages
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for FindUnregisteredServicesRequest
+    parent: Required. Value for parent.
   """
 
   filter = _messages.StringField(1)
@@ -446,7 +450,7 @@ class ApphubProjectsLocationsDiscoveredServicesGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredServicesGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -462,7 +466,7 @@ class ApphubProjectsLocationsDiscoveredServicesListRequest(_messages.Message):
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListDiscoveredServicesRequest
+    parent: Required. Value for parent.
   """
 
   filter = _messages.StringField(1)
@@ -483,7 +487,7 @@ class ApphubProjectsLocationsDiscoveredWorkloadsFindUnregisteredRequest(_message
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListWorkloadsRequest
+    parent: Required. Value for parent.
   """
 
   filter = _messages.StringField(1)
@@ -497,7 +501,7 @@ class ApphubProjectsLocationsDiscoveredWorkloadsGetRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredWorkloadsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -513,7 +517,7 @@ class ApphubProjectsLocationsDiscoveredWorkloadsListRequest(_messages.Message):
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListWorkloadsRequest
+    parent: Required. Value for parent.
   """
 
   filter = _messages.StringField(1)
@@ -557,7 +561,7 @@ class ApphubProjectsLocationsLookupServiceProjectAttachmentRequest(_messages.Mes
   r"""A ApphubProjectsLocationsLookupServiceProjectAttachmentRequest object.
 
   Fields:
-    name: Required. Name value of the project to check attachment for.
+    name: Required. Value for name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -631,8 +635,9 @@ class ApphubProjectsLocationsServiceProjectAttachmentsCreateRequest(_messages.Me
     serviceProjectAttachment: A ServiceProjectAttachment resource to be passed
       as the request body.
     serviceProjectAttachmentId: Required. The service project attachment
-      identifier. This is a required field that must contain the project id of
-      the service project specified in the service_project field.
+      identifier must contain the project_id of the service project specified
+      in the service_project_attachment.service_project field. Hint:
+      "projects/{project_id}"
   """
 
   parent = _messages.StringField(1, required=True)
@@ -645,7 +650,7 @@ class ApphubProjectsLocationsServiceProjectAttachmentsDeleteRequest(_messages.Me
   r"""A ApphubProjectsLocationsServiceProjectAttachmentsDeleteRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -667,7 +672,7 @@ class ApphubProjectsLocationsServiceProjectAttachmentsGetRequest(_messages.Messa
   r"""A ApphubProjectsLocationsServiceProjectAttachmentsGetRequest object.
 
   Fields:
-    name: Required. Name of the resource
+    name: Required. Value for name.
   """
 
   name = _messages.StringField(1, required=True)
@@ -683,7 +688,7 @@ class ApphubProjectsLocationsServiceProjectAttachmentsListRequest(_messages.Mess
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
       should return.
-    parent: Required. Parent value for ListServiceProjectAttachmentsRequest
+    parent: Required. Value for parent.
   """
 
   filter = _messages.StringField(1)
@@ -695,36 +700,36 @@ class ApphubProjectsLocationsServiceProjectAttachmentsListRequest(_messages.Mess
 
 class Application(_messages.Message):
   r"""Application defines the governance boundary for App Hub Entities that
-  perform a logical end-to-end business function. We support Application level
-  IAM permission to align with governance requirements.
+  perform a logical end-to-end business function. App Hub supports application
+  level IAM permission to align with governance requirements.
 
   Enums:
     StateValueValuesEnum: Output only. Application state.
 
   Fields:
-    attributes: Optional. Consumer Attributes that are configured by
-      customers.
-    createTime: Output only. Application creation time.
-    description: Optional. User-provided description of an application.
-    displayName: Optional. Human-friendly display name.
-    name: Optional. The resource name of an Application.
-      projects//locations//applications/
-    scope: Required. Immutable. Defines which data can be included into this
-      application. Limits which services and workloads can be registered.
+    attributes: Optional. Consumer provided attributes.
+    createTime: Output only. Create time.
+    description: Optional. User-defined description of an Application.
+    displayName: Optional. User-defined name for the Application.
+    name: Identifier. The resource name of an Application. Format:
+      "projects/{host-project-
+      id}/locations/{location}/applications/{application-id}"
+    scope: Required. Immutable. Defines what data can be included into this
+      Application. Limits which Services and Workloads can be registered.
     state: Output only. Application state.
-    uid: Output only. A globally unique identifier (in UUID4 format) for the
-      application.
-    updateTime: Output only. Application update time.
+    uid: Output only. A universally unique identifier (in UUID4 format) for
+      the `Application`.
+    updateTime: Output only. Update time.
   """
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Application state.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified state
-      CREATING: The application is being created.
-      ACTIVE: The application is ready for registering services and workloads.
-      DELETING: The application is being deleted.
+      STATE_UNSPECIFIED: Unspecified state.
+      CREATING: The Application is being created.
+      ACTIVE: The Application is ready to register Services and Workloads.
+      DELETING: The Application is being deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -746,13 +751,14 @@ class Attributes(_messages.Message):
   r"""Consumer provided attributes.
 
   Fields:
-    businessOwners: Optional. Business owner such as managers, directors etc.
-    criticality: Optional. Criticality.
-    developerOwners: Optional. List of owner contacts. Development owner such
-      as software Development Engineers
-    environment: Optional. User-provided environment information.
-    operatorOwners: Optional. Operation owner such as Site Reliability
-      Engineers
+    businessOwners: Optional. Business team that ensures user needs are met
+      and value is delivered
+    criticality: Optional. User-defined criticality information.
+    developerOwners: Optional. Developer team that owns development and
+      coding.
+    environment: Optional. User-defined environment information.
+    operatorOwners: Optional. Operator team that ensures runtime and
+      operations.
   """
 
   businessOwners = _messages.MessageField('ContactInfo', 1, repeated=True)
@@ -890,17 +896,17 @@ class CancelOperationRequest(_messages.Message):
 
 
 class Channel(_messages.Message):
-  r"""Separate message to accommodate custom formats across IRC, Slack etc.
+  r"""Separate message to accommodate custom formats across IRC and Slack.
 
   Fields:
-    uri: Required. IRC, Slack
+    uri: Required. URI of the channel.
   """
 
   uri = _messages.StringField(1)
 
 
 class ContactInfo(_messages.Message):
-  r"""Contact information of stakeholders
+  r"""Contact information of stakeholders.
 
   Fields:
     channel: Optional. Communication channel of the contacts.
@@ -914,12 +920,12 @@ class ContactInfo(_messages.Message):
 
 
 class Criticality(_messages.Message):
-  r"""Criticality of the application, serivice, or workload
+  r"""Criticality of the Application, Service, or Workload
 
   Fields:
-    level: Required. Criticality level name.
-    missionCritical: Required. Indicates mission-critical services and
-      workloads.
+    level: Required. Criticality level.
+    missionCritical: Required. Indicates mission-critical Application,
+      Service, or Workload.
   """
 
   level = _messages.StringField(1)
@@ -927,23 +933,26 @@ class Criticality(_messages.Message):
 
 
 class DetachServiceProjectAttachmentRequest(_messages.Message):
-  r"""Message for looking up a service project attachment."""
+  r"""Request for DetachServiceProjectAttachment."""
 
 
 class DetachServiceProjectAttachmentResponse(_messages.Message):
-  r"""Response for DetachServiceProjectAttachmentResponse."""
+  r"""Response for DetachServiceProjectAttachment."""
 
 
 class DiscoveredService(_messages.Message):
-  r"""Message represents a discovered service container.
+  r"""DiscoveredService is a network/api interface that exposes some
+  functionality to clients for consumption over the network. A discovered
+  service can be registered to a App Hub service.
 
   Fields:
-    name: Identifier. Full resource identifier of a discovered Service.
-      projects//locations//discoveredServices/
+    name: Identifier. The resource name of the discovered service. Format:
+      "projects/{host-project-
+      id}/locations/{location}/discoveredServices/{uuid}""
     serviceProperties: Output only. Properties of an underlying compute
-      resource that can comprise a service. These are immutable.
+      resource that can comprise a Service. These are immutable.
     serviceReference: Output only. Reference to an underlying networking
-      resource that can comprise a service. These are immutable.
+      resource that can comprise a Service. These are immutable.
   """
 
   name = _messages.StringField(1)
@@ -952,15 +961,19 @@ class DiscoveredService(_messages.Message):
 
 
 class DiscoveredWorkload(_messages.Message):
-  r"""Message represents a discovered workload container.
+  r"""DiscoveredWorkload is a binary deployment (such as managed instance
+  groups (MIGs) and GKE deployments) that performs the smallest logical subset
+  of business functionality. A discovered workload can be registered to an App
+  Hub Workload.
 
   Fields:
-    name: Identifier. Full resource identifier of a discovered Workload.
-      projects//locations//discoveredWorkloads/
+    name: Identifier. The resource name of the discovered workload. Format:
+      "projects/{host-project-
+      id}/locations/{location}/discoveredWorkloads/{uuid}"
     workloadProperties: Output only. Properties of an underlying compute
-      resource represented by the workload. These are immutable.
-    workloadReference: Output only. References an underlying compute resource
-      represented by the workload. These are immutable.
+      resource represented by the Workload. These are immutable.
+    workloadReference: Output only. Reference of an underlying compute
+      resource represented by the Workload. These are immutable.
   """
 
   name = _messages.StringField(1)
@@ -978,7 +991,7 @@ class Empty(_messages.Message):
 
 
 class Environment(_messages.Message):
-  r"""User-defined environment information.
+  r"""Environment of the Application, Service, or Workload
 
   Fields:
     environment: Required. Environment name.
@@ -1024,10 +1037,10 @@ class Expr(_messages.Message):
 
 
 class FindUnregisteredServicesResponse(_messages.Message):
-  r"""Message for response to listing Services
+  r"""Response for FindUnregisteredServices.
 
   Fields:
-    discoveredServices: The list of discovered Services
+    discoveredServices: List of discovered services.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1039,10 +1052,10 @@ class FindUnregisteredServicesResponse(_messages.Message):
 
 
 class FindUnregisteredWorkloadsResponse(_messages.Message):
-  r"""Message for response to listing Workloads
+  r"""Response for FindUnregisteredWorkloads.
 
   Fields:
-    discoveredWorkloads: The list of Telemetry
+    discoveredWorkloads: List of discovered workloads.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1054,10 +1067,10 @@ class FindUnregisteredWorkloadsResponse(_messages.Message):
 
 
 class ListApplicationsResponse(_messages.Message):
-  r"""Message for response to listing Applications.
+  r"""Response for ListApplications.
 
   Fields:
-    applications: The list of Applications
+    applications: List of Applications.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1069,10 +1082,10 @@ class ListApplicationsResponse(_messages.Message):
 
 
 class ListDiscoveredServicesResponse(_messages.Message):
-  r"""Message for response to listing Services
+  r"""Response for ListDiscoveredServices.
 
   Fields:
-    discoveredServices: The list of discovered Services
+    discoveredServices: List of discovered services.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1084,10 +1097,10 @@ class ListDiscoveredServicesResponse(_messages.Message):
 
 
 class ListDiscoveredWorkloadsResponse(_messages.Message):
-  r"""Message for response to listing Workloads
+  r"""Response for ListDiscoveredWorkloads.
 
   Fields:
-    discoveredWorkloads: The list of Telemetry
+    discoveredWorkloads: List of discovered workloads.
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
@@ -1125,12 +1138,12 @@ class ListOperationsResponse(_messages.Message):
 
 
 class ListServiceProjectAttachmentsResponse(_messages.Message):
-  r"""Message for response to listing service project attachments.
+  r"""Response for ListServiceProjectAttachments.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    serviceProjectAttachments: The list of service project attachments
+    serviceProjectAttachments: List of service project attachments.
     unreachable: Locations that could not be reached.
   """
 
@@ -1140,12 +1153,12 @@ class ListServiceProjectAttachmentsResponse(_messages.Message):
 
 
 class ListServicesResponse(_messages.Message):
-  r"""Message for response to listing Services
+  r"""Response for ListServices.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
-    services: The list of Services
+    services: List of Services.
     unreachable: Locations that could not be reached.
   """
 
@@ -1155,13 +1168,13 @@ class ListServicesResponse(_messages.Message):
 
 
 class ListWorkloadsResponse(_messages.Message):
-  r"""Message for response to listing Workloads
+  r"""Response for ListWorkloads.
 
   Fields:
     nextPageToken: A token identifying a page of results the server should
       return.
     unreachable: Locations that could not be reached.
-    workloads: The list of Telemetry
+    workloads: List of Workloads.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -1250,11 +1263,11 @@ class Location(_messages.Message):
 
 
 class LookupServiceProjectAttachmentResponse(_messages.Message):
-  r"""Message with response for service project attachment lookup.
+  r"""Response for LookupServiceProjectAttachment.
 
   Fields:
-    serviceProjectAttachment: Service project attachment if exists for a
-      service project.
+    serviceProjectAttachment: Service project attachment for a project if
+      exists, empty otherwise.
   """
 
   serviceProjectAttachment = _messages.MessageField('ServiceProjectAttachment', 1)
@@ -1474,21 +1487,21 @@ class Policy(_messages.Message):
 
 
 class Scope(_messages.Message):
-  r"""The scope of the Application
+  r"""Scope of an application.
 
   Enums:
-    TypeValueValuesEnum: Required. Scope Type
+    TypeValueValuesEnum: Required. Scope Type.
 
   Fields:
-    type: Required. Scope Type
+    type: Required. Scope Type.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. Scope Type
+    r"""Required. Scope Type.
 
     Values:
-      TYPE_UNSPECIFIED: Unspecified type
-      REGIONAL: Regional application
+      TYPE_UNSPECIFIED: Unspecified type.
+      REGIONAL: Regional type.
     """
     TYPE_UNSPECIFIED = 0
     REGIONAL = 1
@@ -1497,39 +1510,42 @@ class Scope(_messages.Message):
 
 
 class Service(_messages.Message):
-  r"""Message represents a service.
+  r"""Service is an App Hub data model that contains a discovered service,
+  which represents a network/api interface that exposes some functionality to
+  clients for consumption over the network.
 
   Enums:
     StateValueValuesEnum: Output only. Service state.
 
   Fields:
-    attributes: Optional. Customer Attributes.
-    createTime: Output only. Service create time.
-    description: Optional. User-provided description of a service.
-    discoveredService: Required. Immutable. Resource name of the original
-      discovered service. projects//locations//discoveredServices/
-    displayName: Optional. Human-friendly display name
-    name: Full resource identifier of a registered Service.
-      projects//locations//applications//services/
+    attributes: Optional. Consumer provided attributes.
+    createTime: Output only. Create time.
+    description: Optional. User-defined description of a Service.
+    discoveredService: Required. Immutable. The resource name of the original
+      discovered service.
+    displayName: Optional. User-defined name for the Service.
+    name: Identifier. The resource name of a Service. Format: "projects/{host-
+      project-id}/locations/{location}/applications/{application-
+      id}/services/{service-id}"
     serviceProperties: Output only. Properties of an underlying compute
-      resource that can comprise a service. These are immutable.
+      resource that can comprise a Service. These are immutable.
     serviceReference: Output only. Reference to an underlying networking
-      resource that can comprise a service. These are immutable.
+      resource that can comprise a Service. These are immutable.
     state: Output only. Service state.
-    uid: Output only. A globally unique identifier (in UUID4 format) for the
-      `Service`.
-    updateTime: Output only. Service update time.
+    uid: Output only. A universally unique identifier (UUID) for the `Service`
+      in the UUID4 format.
+    updateTime: Output only. Update time.
   """
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Service state.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified state
+      STATE_UNSPECIFIED: Unspecified state.
       CREATING: The service is being created.
       ACTIVE: The service is ready.
       DELETING: The service is being deleted.
-      DETACHED: The underlying networking resources are deleted.
+      DETACHED: The underlying networking resources have been deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1551,34 +1567,37 @@ class Service(_messages.Message):
 
 
 class ServiceProjectAttachment(_messages.Message):
-  r"""Message represents a service project attachment.
+  r"""ServiceProjectAttachment represents an attachment from a service project
+  to a host project. Service projects contain the underlying cloud
+  infrastructure resources, and expose these resources to the host project
+  through a ServiceProjectAttachment. With the attachments, the host project
+  can provide an aggregated view of resources across all service projects.
 
   Enums:
-    StateValueValuesEnum: Output only. State of the service project
-      attachment.
+    StateValueValuesEnum: Output only. ServiceProjectAttachment state.
 
   Fields:
-    createTime: Output only. Service project attachment registration time.
-    name: Full resource identifier of a service project attachment in the
-      format of projects//locations/global/serviceProjectAttachments/ . Note
-      that service_project_id is the project id of the service project.
+    createTime: Output only. Create time.
+    name: Identifier. The resource name of a ServiceProjectAttachment. Format:
+      "projects/{host-project-
+      id}/locations/global/serviceProjectAttachments/{service-project-id}."
     serviceProject: Required. Immutable. Service project name in the format:
-      projects/abc or projects/123. As input, project name with either project
-      id or number are accepted. As output, this field will contain project
-      number.
-    state: Output only. State of the service project attachment.
+      "projects/abc" or "projects/123". As input, project name with either
+      project id or number are accepted. As output, this field will contain
+      project number.
+    state: Output only. ServiceProjectAttachment state.
     uid: Output only. A globally unique identifier (in UUID4 format) for the
       `ServiceProjectAttachment`.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""Output only. State of the service project attachment.
+    r"""Output only. ServiceProjectAttachment state.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified State
+      STATE_UNSPECIFIED: Unspecified state.
       CREATING: The ServiceProjectAttachment is being created.
-      ACTIVE: The ServiceProjectAttachment is created. This means services and
-        workloads under the corresponding Service Project Attachment is ready
+      ACTIVE: The ServiceProjectAttachment is ready. This means Services and
+        Workloads under the corresponding ServiceProjectAttachment is ready
         for registration.
       DELETING: The ServiceProjectAttachment is being deleted.
     """
@@ -1595,15 +1614,15 @@ class ServiceProjectAttachment(_messages.Message):
 
 
 class ServiceProperties(_messages.Message):
-  r"""Properties of an underlying GCP resource that can comprise a service.
+  r"""Properties of an underlying cloud resource that can comprise a Service.
 
   Fields:
-    gcpProject: Output only. The service project identifier of the underlying
-      GCP resource resides in.
-    location: Output only. The location of the underlying resource resides in,
-      i.e. us-west1.
-    zone: Output only. The location of the underlying resource if it is zonal,
-      i.e. us-west1-a.
+    gcpProject: Output only. The service project identifier that the
+      underlying cloud resource resides in.
+    location: Output only. The location that the underlying resource resides
+      in, for example, us-west1.
+    zone: Output only. The location that the underlying resource resides in if
+      it is zonal, for example, us-west1-a).
   """
 
   gcpProject = _messages.StringField(1)
@@ -1613,14 +1632,14 @@ class ServiceProperties(_messages.Message):
 
 class ServiceReference(_messages.Message):
   r"""Reference to an underlying networking resource that can comprise a
-  service.
+  Service.
 
   Fields:
-    path: Output only. Additional path under the resource uri (i.e.
-      demultiplexing one resource uri into multiple entries). Smallest unit a
-      policy can be attached to. Examples: URL Map path entry.
-    uri: Output only. The underlying resource uri e.g. URI of Forwarding Rule,
-      URL Map, Backend Service
+    path: Output only. Additional path under the resource URI (demultiplexing
+      one resource URI into multiple entries). Smallest unit a policy can be
+      attached to. Examples: URL Map path entry.
+    uri: Output only. The underlying resource URI (For example, URI of
+      Forwarding Rule, URL Map, and Backend Service).
   """
 
   path = _messages.StringField(1)
@@ -1783,39 +1802,44 @@ class TestIamPermissionsResponse(_messages.Message):
 
 
 class Workload(_messages.Message):
-  r"""Message represents a workload.
+  r"""Workload is an App Hub data model that contains a discovered workload,
+  which represents a binary deployment (such as managed instance groups (MIGs)
+  and GKE deployments) that performs the smallest logical subset of business
+  functionality.
 
   Enums:
     StateValueValuesEnum: Output only. Workload state.
 
   Fields:
-    attributes: Optional. Consumer Attributes.
-    createTime: Output only. Workload create time.
-    description: Optional. User-provided description of a workload.
-    discoveredWorkload: Required. Immutable. Resource name of the original
-      discovered workload. projects//locations//discoveredWorkloads/
-    displayName: Optional. Human-friendly display name
-    name: Full resource identifier of a registered Workload
-      projects//locations//applications//workloads/
+    attributes: Optional. Consumer provided attributes.
+    createTime: Output only. Create time.
+    description: Optional. User-defined description of a Workload.
+    discoveredWorkload: Required. Immutable. The resource name of the original
+      discovered workload.
+    displayName: Optional. User-defined name for the Workload.
+    name: Identifier. The resource name of the Workload. Format:
+      "projects/{host-project-
+      id}/locations/{location}/applications/{application-
+      id}/workloads/{workload-id}"
     state: Output only. Workload state.
-    uid: Output only. A globally unique identifier (in UUID4 format) for the
-      `Workload`.
-    updateTime: Output only. Workload update time.
+    uid: Output only. A universally unique identifier (UUID) for the
+      `Workload` in the UUID4 format.
+    updateTime: Output only. Update time.
     workloadProperties: Output only. Properties of an underlying compute
-      resource represented by the workload. These are immutable.
-    workloadReference: Output only. References an underlying compute resource
-      represented by the workload. These are immutable.
+      resource represented by the Workload. These are immutable.
+    workloadReference: Output only. Reference of an underlying compute
+      resource represented by the Workload. These are immutable.
   """
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Workload state.
 
     Values:
-      STATE_UNSPECIFIED: Unspecified state
-      CREATING: The workload is being created.
-      ACTIVE: The workload is ready.
-      DELETING: The workload is being deleted.
-      DETACHED: The underlying compute resources are deleted.
+      STATE_UNSPECIFIED: Unspecified state.
+      CREATING: The Workload is being created.
+      ACTIVE: The Workload is ready.
+      DELETING: The Workload is being deleted.
+      DETACHED: The underlying compute resources have been deleted.
     """
     STATE_UNSPECIFIED = 0
     CREATING = 1
@@ -1837,16 +1861,16 @@ class Workload(_messages.Message):
 
 
 class WorkloadProperties(_messages.Message):
-  r"""Properties of an underlying compute resource that can comprise a
-  workload.
+  r"""Properties of an underlying compute resource represented by the
+  Workload.
 
   Fields:
-    gcpProject: Output only. The service project identifier of the underlying
-      GCP resource resides in. Empty for non-GCP resources.
-    location: Output only. The location of the underlying compute resource
-      resides in.
-    zone: Output only. The location of the underlying compute resource if it
-      is zonal.
+    gcpProject: Output only. The service project identifier that the
+      underlying cloud resource resides in. Empty for non cloud resources.
+    location: Output only. The location that the underlying compute resource
+      resides in (e.g us-west1).
+    zone: Output only. The location that the underlying compute resource
+      resides in if it is zonal (e.g us-west1-a).
   """
 
   gcpProject = _messages.StringField(1)
@@ -1855,8 +1879,7 @@ class WorkloadProperties(_messages.Message):
 
 
 class WorkloadReference(_messages.Message):
-  r"""Reference of an underlying compute resource that can comprise a
-  workload.
+  r"""Reference of an underlying compute resource represented by the Workload.
 
   Fields:
     uri: Output only. The underlying compute resource uri.

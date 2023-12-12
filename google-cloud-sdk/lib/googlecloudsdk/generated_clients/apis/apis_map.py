@@ -3501,6 +3501,16 @@ MAP = {
                 mtls_endpoint_override=''),
     },
     'telcoautomation': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.telcoautomation.v1',
+                    client_classpath='telcoautomation_v1_client.TelcoautomationV1',
+                    base_url='https://telcoautomation.googleapis.com/',
+                    messages_modulepath='telcoautomation_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
         'v1alpha1':
             APIDef(
                 apitools=ApitoolsClientDef(
@@ -3508,7 +3518,7 @@ MAP = {
                     client_classpath='telcoautomation_v1alpha1_client.TelcoautomationV1alpha1',
                     base_url='https://telcoautomation.googleapis.com/',
                     messages_modulepath='telcoautomation_v1alpha1_messages'),
-                default_version=True,
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
@@ -3645,6 +3655,28 @@ MAP = {
                     base_url='https://vision.googleapis.com/',
                     messages_modulepath='vision_v1_messages'),
                 default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
+    'vmmigration': {
+        'v1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.vmmigration.v1',
+                    client_classpath='vmmigration_v1_client.VmmigrationV1',
+                    base_url='https://vmmigration.googleapis.com/',
+                    messages_modulepath='vmmigration_v1_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1alpha1':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.vmmigration.v1alpha1',
+                    client_classpath='vmmigration_v1alpha1_client.VmmigrationV1alpha1',
+                    base_url='https://vmmigration.googleapis.com/',
+                    messages_modulepath='vmmigration_v1alpha1_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

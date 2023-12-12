@@ -86,6 +86,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_PREVIEWS = (
+      'projects.locations.previews',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/previews/'
+              '{previewsId}',
+      },
+      ['name'],
+      True
+  )
 
   def __init__(self, collection_name, path, flat_paths, params,
                enable_uri_parsing):

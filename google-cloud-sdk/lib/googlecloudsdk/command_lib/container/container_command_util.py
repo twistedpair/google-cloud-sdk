@@ -365,7 +365,10 @@ def ParseUpdateOptionsBase(args, locations):
       min_accelerator=args.min_accelerator,
       max_accelerator=args.max_accelerator,
       logging_variant=args.logging_variant,
-      in_transit_encryption=getattr(args, 'in_transit_encryption', None))
+      in_transit_encryption=getattr(args, 'in_transit_encryption', None),
+      autoprovisioning_resource_manager_tags=(
+          args.autoprovisioning_resource_manager_tags),
+      )
 
   if (args.disable_addons and
       api_adapter.GCEPDCSIDRIVER in args.disable_addons):
@@ -411,6 +414,18 @@ def ParseUpdateOptionsBase(args, locations):
           message='If the StatefulHA Addon is disabled, then any applications '
           'currently protected will no longer be updated for high availability '
           'configuration.',
+          cancel_on_no=True)
+
+  if (args.disable_addons and
+      api_adapter.PARALLELSTORECSIDRIVER in args.disable_addons):
+    parallelstorecsi_disabled = args.disable_addons[
+        api_adapter.PARALLELSTORECSIDRIVER]
+    if parallelstorecsi_disabled:
+      console_io.PromptContinue(
+          message='If the Parallelstore CSI Driver is disabled, then any '
+          'pods currently using PersistentVolumes owned by the driver '
+          'will fail to terminate. Any new pods that try to use those '
+          'PersistentVolumes will also fail to start.',
           cancel_on_no=True)
 
   return opts

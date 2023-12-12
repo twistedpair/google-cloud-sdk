@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 import re
 
 from googlecloudsdk.command_lib.scc import errors
+from googlecloudsdk.command_lib.scc import util as scc_util
 
 
 def ValidateAndGetParent(args):
@@ -153,14 +154,20 @@ def GetParentFromFullResourceName(mute_config, version="v1"):
     )
 
 
-def GenerateMuteConfigName(args, req):
+def GenerateMuteConfigName(args, req, version="v1"):
   """Generates the name of the mute config."""
   parent = ValidateAndGetParent(args)
   if parent is not None:
+    if version == "v2":
+      parent = ValidateAndGetRegionalizedParent(args, parent)
     mute_config_id = ValidateAndGetMuteConfigId(args)
     req.name = parent + "/muteConfigs/" + mute_config_id
   else:
-    mute_config = ValidateAndGetMuteConfigFullResourceName(args)
+    # TODO: b/308449641 - Delete this if version == "v2" check after adding
+    # location flag to mute config commands that use this method.
+    if version == "v2":
+      args.location = scc_util.ValidateAndGetLocation(args, version)
+    mute_config = ValidateAndGetMuteConfigFullResourceName(args, version)
     req.name = mute_config
   return req
 

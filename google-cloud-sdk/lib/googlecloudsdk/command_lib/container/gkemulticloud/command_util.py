@@ -256,3 +256,36 @@ def Import(
   _LogAndWaitForOperation(op, async_, message)
   op_target = _GetOperationTarget(op)
   log.ImportResource(op_target, kind=kind, is_async=async_)
+
+
+def _RollbackPrompt(items):
+  """Generates a rollback prompt for the node pool resource."""
+  title = 'The following node pool will be rolled back.'
+  console_io.PromptContinue(
+      message=gke_util.ConstructList(title, items),
+      throw_if_unattended=True,
+      cancel_on_no=True,
+  )
+
+
+def Rollback(
+    resource_ref=None, resource_client=None, args=None, kind=None, message=None
+):
+  """Runs a rollback command for gkemulticloud.
+
+  Args:
+    resource_ref: obj, resource reference.
+    resource_client: obj, client for the resource.
+    args: obj, arguments parsed from the command.
+    kind: str, the kind of resource e.g. AWS Cluster, Azure Node Pool.
+    message: str, message to display while waiting for LRO to complete.
+
+  Returns:
+    The details of the updated resource.
+  """
+  _RollbackPrompt([message])
+  async_ = getattr(args, 'async_', False)
+  op = resource_client.Rollback(resource_ref, args)
+  _LogAndWaitForOperation(op, async_, 'Rolling back ' + message)
+  log.UpdatedResource(resource_ref, kind=kind, is_async=async_)
+  return resource_client.Get(resource_ref)

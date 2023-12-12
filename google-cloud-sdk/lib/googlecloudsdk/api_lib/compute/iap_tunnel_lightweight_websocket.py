@@ -339,6 +339,9 @@ class IapLightWeightWebsocket(object):
 
   def _wait_for_socket_to_ready(self, timeout):
     """Wait for socket to be ready and treat some special errors cases."""
+    # Handle case where data is already present in the SSL buffers.
+    if self.sock.pending():
+      return
     try:
       _ = select.select([self.sock], (), (), timeout)
     except TypeError as e:

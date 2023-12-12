@@ -1288,6 +1288,19 @@ def AddDefaultUrlFlag(parser):
   )
 
 
+def AddInvokerIamCheckFlag(parser):
+  """Add flag enable and disable invoker iam check."""
+  parser.add_argument(
+      '--invoker-iam-check',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Indicates whether an IAM check should occur when invoking the '
+          'container. This is Enabled by default. It can only be disabled on '
+          'services with internal, and internal+load-balancer ingress settings.'
+      ),
+  )
+
+
 def AddClientNameAndVersionFlags(parser):
   """Add flags for specifying the client name and version annotations."""
   parser.add_argument(
@@ -2408,6 +2421,12 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(
         config_changes.DefaultUrlChange(default_url=args.default_url)
     )
+  if FlagIsExplicitlySet(args, 'invoker_iam_check'):
+    changes.append(
+        config_changes.InvokerIamChange(
+            invoker_iam_check=args.invoker_iam_check
+        )
+    )
   if FlagIsExplicitlySet(args, 'session_affinity'):
     if args.session_affinity:
       changes.append(
@@ -3400,12 +3419,9 @@ def GetAndValidatePlatform(args, release_track, product):
         'Invalid target platform specified: [{}].\n'
         'Available platforms:\n{}'.format(
             platform,
-            '\n'.join(
-                [
-                    '- {}: {}'.format(k, v)
-                    for k, v in platforms.PLATFORMS.items()
-                ]
-            ),
+            '\n'.join([
+                '- {}: {}'.format(k, v) for k, v in platforms.PLATFORMS.items()
+            ]),
         )
     )
   return platform
@@ -3612,11 +3628,9 @@ def FunctionArg():
   return base.Argument(
       '--function',
       hidden=True,
-      required=True,
-      action='store_true',
       help=(
-          'Specifies that the deployed object is a function. If a value is'
-          'provided, that value is used as the entrypoint.'
+          'Specifies that the deployed object is a function. If a value'
+          ' is provided, that value is used as the entrypoint.'
       ),
   )
 
@@ -3634,9 +3648,9 @@ def RuntimeLanguageArg():
   )
 
 
-def AddFunctionAndRuntimeLanguageFlag(parser):
-  """Add --runtime-language flag used with functions."""
-  group = base.ArgumentGroup(hidden=True)
+def AddCommandAndFunctionFlag():
+  """Add --function and --command flag, which are mutually exclusive."""
+  group = base.ArgumentGroup(mutex=True)
   group.AddArgument(FunctionArg())
-  group.AddArgument(RuntimeLanguageArg())
-  group.AddToParser(parser)
+  group.AddArgument(CommandFlag())
+  return group

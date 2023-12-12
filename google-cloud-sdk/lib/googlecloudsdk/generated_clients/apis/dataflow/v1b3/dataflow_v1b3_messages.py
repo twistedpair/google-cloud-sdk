@@ -3526,7 +3526,7 @@ class Job(_messages.Message):
       created in the `JOB_STATE_STOPPED` state unless otherwise specified. A
       job in the `JOB_STATE_RUNNING` state may asynchronously enter a terminal
       state. After a job has reached a terminal state, no further state
-      updates may be made. This field may be mutated by the Cloud Dataflow
+      updates may be made. This field might be mutated by the Dataflow
       service; callers cannot mutate it.
     RequestedStateValueValuesEnum: The job's requested state. Applies to
       `UpdateJob` requests. Set `requested_state` with `UpdateJob` requests to
@@ -3536,7 +3536,7 @@ class Job(_messages.Message):
       `JOB_STATE_DRAINED`. These states irrevocably terminate the job if it
       hasn't already reached a terminal state. This field has no effect on
       `CreateJob` requests.
-    TypeValueValuesEnum: The type of Cloud Dataflow job.
+    TypeValueValuesEnum: The type of Dataflow job.
 
   Messages:
     LabelsValue: User-defined labels for this job. The labels map can contain
@@ -3564,14 +3564,13 @@ class Job(_messages.Message):
       `JOB_STATE_STOPPED` state unless otherwise specified. A job in the
       `JOB_STATE_RUNNING` state may asynchronously enter a terminal state.
       After a job has reached a terminal state, no further state updates may
-      be made. This field may be mutated by the Cloud Dataflow service;
-      callers cannot mutate it.
+      be made. This field might be mutated by the Dataflow service; callers
+      cannot mutate it.
     currentStateTime: The timestamp associated with the current state.
     environment: The environment for the job.
     executionInfo: Deprecated.
-    id: The unique ID of this job. This field is set by the Cloud Dataflow
-      service when the Job is created, and is immutable for the life of the
-      job.
+    id: The unique ID of this job. This field is set by the Dataflow service
+      when the job is created, and is immutable for the life of the job.
     jobMetadata: This field is populated by the Dataflow service to support
       filtering jobs by the metadata values provided here. Populated for
       ListJobs and all GetJob views SUMMARY and higher.
@@ -3584,17 +3583,17 @@ class Job(_messages.Message):
     location: The [regional endpoint]
       (https://cloud.google.com/dataflow/docs/concepts/regional-endpoints)
       that contains this job.
-    name: The user-specified Cloud Dataflow job name. Only one Job with a
+    name: The user-specified Dataflow job name. Only one active job with a
       given name can exist in a project within one region at any given time.
       Jobs in different regions can have the same name. If a caller attempts
-      to create a Job with the same name as an already-existing Job, the
-      attempt returns the existing Job. The name must match the regular
+      to create a job with the same name as an active job that already exists,
+      the attempt returns the existing job. The name must match the regular
       expression `[a-z]([-a-z0-9]{0,1022}[a-z0-9])?`
     pipelineDescription: Preliminary field: The format of this data may change
       at any time. A description of the user pipeline and stages through which
       it is executed. Created by Cloud Dataflow service. Only retrieved with
       JOB_VIEW_DESCRIPTION or JOB_VIEW_ALL.
-    projectId: The ID of the Cloud Platform project that the job belongs to.
+    projectId: The ID of the Google Cloud project that the job belongs to.
     replaceJobId: If this job is an update of an existing job, this field is
       the job ID of the job it replaced. When sending a `CreateJobRequest`,
       you can update a job by specifying it here. The job named here is
@@ -3637,7 +3636,7 @@ class Job(_messages.Message):
       bucket.storage.googleapis.com/{object}
     transformNameMapping: The map of transform name prefixes of the job to be
       replaced to the corresponding name prefixes of the new job.
-    type: The type of Cloud Dataflow job.
+    type: The type of Dataflow job.
   """
 
   class CurrentStateValueValuesEnum(_messages.Enum):
@@ -3645,8 +3644,8 @@ class Job(_messages.Message):
     `JOB_STATE_STOPPED` state unless otherwise specified. A job in the
     `JOB_STATE_RUNNING` state may asynchronously enter a terminal state. After
     a job has reached a terminal state, no further state updates may be made.
-    This field may be mutated by the Cloud Dataflow service; callers cannot
-    mutate it.
+    This field might be mutated by the Dataflow service; callers cannot mutate
+    it.
 
     Values:
       JOB_STATE_UNKNOWN: The job's run state isn't specified.
@@ -3788,7 +3787,7 @@ class Job(_messages.Message):
     JOB_STATE_RESOURCE_CLEANING_UP = 12
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""The type of Cloud Dataflow job.
+    r"""The type of Dataflow job.
 
     Values:
       JOB_TYPE_UNKNOWN: The type of the job is unspecified, or unknown.
@@ -5809,10 +5808,14 @@ class RuntimeUpdatableParams(_messages.Message):
       field is currently only supported for Streaming Engine jobs.
     minNumWorkers: The minimum number of workers to scale down to. This field
       is currently only supported for Streaming Engine jobs.
+    workerUtilizationHint: Target worker utilization, compared against the
+      aggregate utilization of the worker pool by autoscaler, to determine
+      upscaling and downscaling when absent other constraints such as backlog.
   """
 
   maxNumWorkers = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   minNumWorkers = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  workerUtilizationHint = _messages.FloatField(3)
 
 
 class SDKInfo(_messages.Message):
@@ -7220,6 +7223,26 @@ class StreamingConfigTask(_messages.Message):
   windmillServicePort = _messages.IntegerField(7)
 
 
+class StreamingScalingReport(_messages.Message):
+  r"""Contains per-user worker telemetry used in streaming autoscaling.
+
+  Fields:
+    activeBundleCount: Current acive bundle count.
+    activeThreadCount: Current acive thread count.
+    maximumBundleCount: Maximum bundle count limit.
+    maximumBytesCount: Maximum bytes count limit.
+    maximumThreadCount: Maximum thread count limit.
+    outstandingBytesCount: Current outstanding bytes count.
+  """
+
+  activeBundleCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  activeThreadCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  maximumBundleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  maximumBytesCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  maximumThreadCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  outstandingBytesCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+
+
 class StreamingSetupTask(_messages.Message):
   r"""A task which initializes part of a streaming Dataflow job.
 
@@ -7996,6 +8019,8 @@ class WorkerMessage(_messages.Message):
       typically correspond to Label enum values. However, for ease of
       development other strings can be used as tags. LABEL_UNSPECIFIED should
       not be used here.
+    streamingScalingReport: Contains per-user worker telemetry used in
+      streaming autoscaling.
     time: The timestamp of the worker_message.
     workerHealthReport: The health of a worker.
     workerLifecycleEvent: Record of worker lifecycle events.
@@ -8036,13 +8061,14 @@ class WorkerMessage(_messages.Message):
 
   dataSamplingReport = _messages.MessageField('DataSamplingReport', 1)
   labels = _messages.MessageField('LabelsValue', 2)
-  time = _messages.StringField(3)
-  workerHealthReport = _messages.MessageField('WorkerHealthReport', 4)
-  workerLifecycleEvent = _messages.MessageField('WorkerLifecycleEvent', 5)
-  workerMessageCode = _messages.MessageField('WorkerMessageCode', 6)
-  workerMetrics = _messages.MessageField('ResourceUtilizationReport', 7)
-  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 8)
-  workerThreadScalingReport = _messages.MessageField('WorkerThreadScalingReport', 9)
+  streamingScalingReport = _messages.MessageField('StreamingScalingReport', 3)
+  time = _messages.StringField(4)
+  workerHealthReport = _messages.MessageField('WorkerHealthReport', 5)
+  workerLifecycleEvent = _messages.MessageField('WorkerLifecycleEvent', 6)
+  workerMessageCode = _messages.MessageField('WorkerMessageCode', 7)
+  workerMetrics = _messages.MessageField('ResourceUtilizationReport', 8)
+  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 9)
+  workerThreadScalingReport = _messages.MessageField('WorkerThreadScalingReport', 10)
 
 
 class WorkerMessageCode(_messages.Message):

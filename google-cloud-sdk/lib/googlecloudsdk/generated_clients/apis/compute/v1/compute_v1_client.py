@@ -107,6 +107,7 @@ class ComputeV1(base_api.BaseApiClient):
     self.regionTargetHttpsProxies = self.RegionTargetHttpsProxiesService(self)
     self.regionTargetTcpProxies = self.RegionTargetTcpProxiesService(self)
     self.regionUrlMaps = self.RegionUrlMapsService(self)
+    self.regionZones = self.RegionZonesService(self)
     self.regions = self.RegionsService(self)
     self.reservations = self.ReservationsService(self)
     self.resourcePolicies = self.ResourcePoliciesService(self)
@@ -6677,7 +6678,7 @@ class ComputeV1(base_api.BaseApiClient):
         method_id='compute.instances.simulateMaintenanceEvent',
         ordered_params=['project', 'zone', 'instance'],
         path_params=['instance', 'project', 'zone'],
-        query_params=['requestId'],
+        query_params=['requestId', 'withExtendedNotifications'],
         relative_path='projects/{project}/zones/{zone}/instances/{instance}/simulateMaintenanceEvent',
         request_field='',
         request_type_name='ComputeInstancesSimulateMaintenanceEventRequest',
@@ -15240,6 +15241,42 @@ class ComputeV1(base_api.BaseApiClient):
         request_field='regionUrlMapsValidateRequest',
         request_type_name='ComputeRegionUrlMapsValidateRequest',
         response_type_name='UrlMapsValidateResponse',
+        supports_download=False,
+    )
+
+  class RegionZonesService(base_api.BaseApiService):
+    """Service class for the regionZones resource."""
+
+    _NAME = 'regionZones'
+
+    def __init__(self, client):
+      super(ComputeV1.RegionZonesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Retrieves the list of Zone resources under the specific region available to the specified project.
+
+      Args:
+        request: (ComputeRegionZonesListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ZoneList) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='compute.regionZones.list',
+        ordered_params=['project', 'region'],
+        path_params=['project', 'region'],
+        query_params=['filter', 'maxResults', 'orderBy', 'pageToken', 'returnPartialSuccess'],
+        relative_path='projects/{project}/regions/{region}/zones',
+        request_field='',
+        request_type_name='ComputeRegionZonesListRequest',
+        response_type_name='ZoneList',
         supports_download=False,
     )
 

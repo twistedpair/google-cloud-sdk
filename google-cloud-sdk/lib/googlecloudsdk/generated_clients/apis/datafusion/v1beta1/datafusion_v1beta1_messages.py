@@ -215,6 +215,34 @@ class CryptoKeyConfig(_messages.Message):
   keyReference = _messages.StringField(1)
 
 
+class DataResidencyAugmentedView(_messages.Message):
+  r"""Next tag: 7
+
+  Fields:
+    crGopoGuris: Cloud resource to Google owned production object mapping in
+      the form of GURIs. The GURIs should be available in DG KB storage/cns
+      tables. This is the preferred way of providing cloud resource mappings.
+      For further details please read go/cloud-resource-monitoring_sig
+    crGopoPrefixes: Cloud resource to Google owned production object mapping
+      in the form of prefixes. These should be available in DG KB storage/cns
+      tables. The entity type, which is the part of the string before the
+      first colon in the GURI, must be completely specified in prefix. For
+      details about GURI please read go/guri. For further details about the
+      field please read go/cloud-resource-monitoring_sig.
+    serviceData: Service-specific data. Only required for pre-determined
+      services. Generally used to bind a Cloud Resource to some a TI container
+      that uniquely specifies a customer. See milestone 2 of DRZ KR8 SIG for
+      more information.
+    tpIds: The list of project_id's of the tenant projects in the 'google.com'
+      org which serve the Cloud Resource. See go/drz-mst-sig for more details.
+  """
+
+  crGopoGuris = _messages.StringField(1, repeated=True)
+  crGopoPrefixes = _messages.StringField(2, repeated=True)
+  serviceData = _messages.MessageField('ServiceData', 3)
+  tpIds = _messages.StringField(4, repeated=True)
+
+
 class DatafusionProjectsLocationsGetRequest(_messages.Message):
   r"""A DatafusionProjectsLocationsGetRequest object.
 
@@ -772,6 +800,8 @@ class Instance(_messages.Message):
     createTime: Output only. The time the instance was created.
     cryptoKeyConfig: The crypto key configuration. This field is used by the
       Customer-Managed Encryption Keys (CMEK) feature.
+    dataplexDataLineageIntegrationEnabled: Optional. Option to enable the
+      Dataplex Lineage Integration feature.
     dataprocServiceAccount: User-managed service account to set on Dataproc
       when Cloud Data Fusion creates Dataproc to run data processing
       pipelines. This allows users to have fine-grained access control on
@@ -938,34 +968,35 @@ class Instance(_messages.Message):
   availableVersion = _messages.MessageField('Version', 3, repeated=True)
   createTime = _messages.StringField(4)
   cryptoKeyConfig = _messages.MessageField('CryptoKeyConfig', 5)
-  dataprocServiceAccount = _messages.StringField(6)
-  description = _messages.StringField(7)
-  disabledReason = _messages.EnumField('DisabledReasonValueListEntryValuesEnum', 8, repeated=True)
-  displayName = _messages.StringField(9)
-  enableRbac = _messages.BooleanField(10)
-  enableStackdriverLogging = _messages.BooleanField(11)
-  enableStackdriverMonitoring = _messages.BooleanField(12)
-  enableZoneSeparation = _messages.BooleanField(13)
-  eventPublishConfig = _messages.MessageField('EventPublishConfig', 14)
-  gcsBucket = _messages.StringField(15)
-  labels = _messages.MessageField('LabelsValue', 16)
-  name = _messages.StringField(17)
-  networkConfig = _messages.MessageField('NetworkConfig', 18)
-  options = _messages.MessageField('OptionsValue', 19)
-  p4ServiceAccount = _messages.StringField(20)
-  patchRevision = _messages.StringField(21)
-  privateInstance = _messages.BooleanField(22)
-  satisfiesPzs = _messages.BooleanField(23)
-  serviceAccount = _messages.StringField(24)
-  serviceEndpoint = _messages.StringField(25)
-  state = _messages.EnumField('StateValueValuesEnum', 26)
-  stateMessage = _messages.StringField(27)
-  tenantProjectId = _messages.StringField(28)
-  type = _messages.EnumField('TypeValueValuesEnum', 29)
-  updateTime = _messages.StringField(30)
-  version = _messages.StringField(31)
-  workforceIdentityServiceEndpoint = _messages.StringField(32)
-  zone = _messages.StringField(33)
+  dataplexDataLineageIntegrationEnabled = _messages.BooleanField(6)
+  dataprocServiceAccount = _messages.StringField(7)
+  description = _messages.StringField(8)
+  disabledReason = _messages.EnumField('DisabledReasonValueListEntryValuesEnum', 9, repeated=True)
+  displayName = _messages.StringField(10)
+  enableRbac = _messages.BooleanField(11)
+  enableStackdriverLogging = _messages.BooleanField(12)
+  enableStackdriverMonitoring = _messages.BooleanField(13)
+  enableZoneSeparation = _messages.BooleanField(14)
+  eventPublishConfig = _messages.MessageField('EventPublishConfig', 15)
+  gcsBucket = _messages.StringField(16)
+  labels = _messages.MessageField('LabelsValue', 17)
+  name = _messages.StringField(18)
+  networkConfig = _messages.MessageField('NetworkConfig', 19)
+  options = _messages.MessageField('OptionsValue', 20)
+  p4ServiceAccount = _messages.StringField(21)
+  patchRevision = _messages.StringField(22)
+  privateInstance = _messages.BooleanField(23)
+  satisfiesPzs = _messages.BooleanField(24)
+  serviceAccount = _messages.StringField(25)
+  serviceEndpoint = _messages.StringField(26)
+  state = _messages.EnumField('StateValueValuesEnum', 27)
+  stateMessage = _messages.StringField(28)
+  tenantProjectId = _messages.StringField(29)
+  type = _messages.EnumField('TypeValueValuesEnum', 30)
+  updateTime = _messages.StringField(31)
+  version = _messages.StringField(32)
+  workforceIdentityServiceEndpoint = _messages.StringField(33)
+  zone = _messages.StringField(34)
 
 
 class ListAvailableVersionsResponse(_messages.Message):
@@ -1161,12 +1192,12 @@ class NetworkConfig(_messages.Message):
       corresponding tenant project from a predefined list of available
       connection modes. If this field is unspecified for a private instance,
       VPC peering is used.
-    ipAllocation: Required. The IP range in CIDR notation to use for the
+    ipAllocation: Optional. The IP range in CIDR notation to use for the
       managed Data Fusion instance nodes. This range must not overlap with any
       other ranges used in the Data Fusion instance network. This is required
       only when using connection type VPC_PEERING. Format: a.b.c.d/22 Example:
       192.168.0.0/22
-    network: Required. Name of the network in the customer project with which
+    network: Optional. Name of the network in the customer project with which
       the Tenant Project will be peered for executing pipelines. This is
       required only when using connection type VPC peering. In case of shared
       VPC where the network resides in another host project the network should
@@ -1374,6 +1405,34 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
+class PersistentDiskData(_messages.Message):
+  r"""Persistent Disk service-specific Data. Contains information that may not
+  be appropriate for the generic DRZ Augmented View. This currently includes
+  LSV Colossus Roots and GCS Buckets.
+
+  Fields:
+    cfsRoots: Path to Colossus root for an LSV. NOTE: Unlike `cr_ti_guris` and
+      `cr_ti_prefixes`, the field `cfs_roots` below does not need to be a GUri
+      or GUri prefix. It can simply be any valid CFS or CFS2 Path. The DRZ KR8
+      SIG has more details overall, but generally the `cfs_roots` provided
+      here should be scoped to an individual Persistent Disk. An example for a
+      PD Disk with a disk ID 3277719120423414466, follows: * `cr_ti_guris`
+      could be '/cfs2/pj/pd-cloud-prod' as this is a valid GUri present in the
+      DG KB and contains enough information to perform location monitoring and
+      scope ownership of the Production Object. * `cfs_roots` would be:
+      '/cfs2/pj/pd-cloud-staging/lsv000001234@/
+      lsv/projects~773365403387~zones~2700~disks~3277719120423414466 ~bank-
+      blue-careful-3526-lsv00054DB1B7254BA3/' as this allows us to enumerate
+      the files on CFS2 that belong to an individual Disk.
+    gcsBucketNames: The GCS Buckets that back this snapshot or image. This is
+      required as `cr_ti_prefixes` and `cr_ti_guris` only accept TI resources.
+      This should be the globally unique bucket name.
+  """
+
+  cfsRoots = _messages.StringField(1, repeated=True)
+  gcsBucketNames = _messages.StringField(2, repeated=True)
+
+
 class Policy(_messages.Message):
   r"""An Identity and Access Management (IAM) policy, which specifies access
   controls for Google Cloud resources. A `Policy` is a collection of
@@ -1492,6 +1551,19 @@ class RemoveIamPolicyResponse(_messages.Message):
 
 class RestartInstanceRequest(_messages.Message):
   r"""Request message for restarting a Data Fusion instance."""
+
+
+class ServiceData(_messages.Message):
+  r"""This message defines service-specific data that certain service teams
+  must provide as part of the Data Residency Augmented View for a resource.
+  Next ID: 2
+
+  Fields:
+    pd: Auxiliary data for the persistent disk pipeline provided to provide
+      the LSV Colossus Roots and GCS Buckets.
+  """
+
+  pd = _messages.MessageField('PersistentDiskData', 1)
 
 
 class SetIamPolicyRequest(_messages.Message):

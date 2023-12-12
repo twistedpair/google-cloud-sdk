@@ -1974,6 +1974,8 @@ class AttachedDiskInitializeParams(_messages.Message):
       zones/zone/diskTypes/diskType If you specify this field when creating or
       updating an instance template or all-instances configuration, specify
       the type of the disk, not the URL. For example: pd-standard.
+    enableConfidentialCompute: Whether this disk is using confidential compute
+      mode.
     labels: Labels to apply to this disk. These can be later modified by the
       disks.setLabels method. This field is only applicable for persistent
       disks.
@@ -2118,18 +2120,19 @@ class AttachedDiskInitializeParams(_messages.Message):
   diskName = _messages.StringField(3)
   diskSizeGb = _messages.IntegerField(4)
   diskType = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  licenses = _messages.StringField(7, repeated=True)
-  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 8)
-  provisionedIops = _messages.IntegerField(9)
-  provisionedThroughput = _messages.IntegerField(10)
-  replicaZones = _messages.StringField(11, repeated=True)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 12)
-  resourcePolicies = _messages.StringField(13, repeated=True)
-  sourceImage = _messages.StringField(14)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 15)
-  sourceSnapshot = _messages.StringField(16)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 17)
+  enableConfidentialCompute = _messages.BooleanField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  licenses = _messages.StringField(8, repeated=True)
+  onUpdateAction = _messages.EnumField('OnUpdateActionValueValuesEnum', 9)
+  provisionedIops = _messages.IntegerField(10)
+  provisionedThroughput = _messages.IntegerField(11)
+  replicaZones = _messages.StringField(12, repeated=True)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTagsValue', 13)
+  resourcePolicies = _messages.StringField(14, repeated=True)
+  sourceImage = _messages.StringField(15)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 16)
+  sourceSnapshot = _messages.StringField(17)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 18)
 
 
 class AuditConfig(_messages.Message):
@@ -3990,13 +3993,13 @@ class BackendService(_messages.Message):
 
   Fields:
     affinityCookieTtlSec: Lifetime of cookies in seconds. This setting is
-      applicable to external and internal HTTP(S) load balancers and Traffic
-      Director and requires GENERATED_COOKIE or HTTP_COOKIE session affinity.
-      If set to 0, the cookie is non-persistent and lasts only until the end
-      of the browser session (or equivalent). The maximum allowed value is two
-      weeks (1,209,600). Not supported when the backend service is referenced
-      by a URL map that is bound to target gRPC proxy that has
-      validateForProxyless field set to true.
+      applicable to Application Load Balancers and Traffic Director and
+      requires GENERATED_COOKIE or HTTP_COOKIE session affinity. If set to 0,
+      the cookie is non-persistent and lasts only until the end of the browser
+      session (or equivalent). The maximum allowed value is two weeks
+      (1,209,600). Not supported when the backend service is referenced by a
+      URL map that is bound to target gRPC proxy that has validateForProxyless
+      field set to true.
     backends: The list of backends that serve this BackendService.
     cdnPolicy: Cloud CDN configuration for this BackendService. Only available
       for specified load balancer types.
@@ -4006,7 +4009,8 @@ class BackendService(_messages.Message):
     connectionDraining: A ConnectionDraining attribute.
     connectionTrackingPolicy: Connection Tracking configuration for this
       BackendService. Connection tracking policy settings are only available
-      for Network Load Balancing and Internal TCP/UDP Load Balancing.
+      for external passthrough Network Load Balancers and internal passthrough
+      Network Load Balancers.
     consistentHash: Consistent Hash-based load balancing can be used to
       provide soft session affinity based on HTTP headers, cookies or other
       properties. This load balancing policy is applicable only for HTTP
@@ -4030,14 +4034,14 @@ class BackendService(_messages.Message):
       property when you create the resource.
     edgeSecurityPolicy: [Output Only] The resource URL for the edge security
       policy associated with this backend service.
-    enableCDN: If true, enables Cloud CDN for the backend service of an
-      external HTTP(S) load balancer.
+    enableCDN: If true, enables Cloud CDN for the backend service of a global
+      external Application Load Balancer.
     failoverPolicy: Requires at least one backend instance group to be defined
       as a backup (failover) backend. For load balancers that have
-      configurable failover: [Internal TCP/UDP Load
-      Balancing](https://cloud.google.com/load-
-      balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](https://cloud.google.com/load-
+      configurable failover: [Internal passthrough Network Load
+      Balancers](https://cloud.google.com/load-
+      balancing/docs/internal/failover-overview) and [external passthrough
+      Network Load Balancers](https://cloud.google.com/load-
       balancing/docs/network/networklb-failover-overview).
     fingerprint: Fingerprint of this resource. A hash of the contents stored
       in this object. This field is used in optimistic locking. This field
@@ -4054,8 +4058,8 @@ class BackendService(_messages.Message):
       group or zonal NEG backends must have a health check. Backend services
       with internet or serverless NEG backends must not have a health check.
     iap: The configurations for Identity-Aware Proxy on this resource. Not
-      available for Internal TCP/UDP Load Balancing and Network Load
-      Balancing.
+      available for internal passthrough Network Load Balancers and external
+      passthrough Network Load Balancers.
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of resource. Always compute#backendService for
@@ -4148,15 +4152,15 @@ class BackendService(_messages.Message):
       the backend service is referenced by a URL map that is bound to target
       gRPC proxy that has validateForProxyless field set to true.
     port: Deprecated in favor of portName. The TCP port to connect on the
-      backend. The default value is 80. For Internal TCP/UDP Load Balancing
-      and Network Load Balancing, omit port.
+      backend. The default value is 80. For internal passthrough Network Load
+      Balancers and external passthrough Network Load Balancers, omit port.
     portName: A named port on a backend instance group representing the port
       for communication to the backend VMs in that group. The named port must
       be [defined on each backend instance
       group](https://cloud.google.com/load-balancing/docs/backend-
       service#named_ports). This parameter has no meaning if the backends are
-      NEGs. For Internal TCP/UDP Load Balancing and Network Load Balancing,
-      omit port_name.
+      NEGs. For internal passthrough Network Load Balancers and external
+      passthrough Network Load Balancers, omit port_name.
     protocol: The protocol this BackendService uses to communicate with
       backends. Possible values are HTTP, HTTPS, HTTP2, TCP, SSL, UDP or GRPC.
       depending on the chosen load balancer or Traffic Director configuration.
@@ -4213,14 +4217,16 @@ class BackendService(_messages.Message):
     refer to Choosing a load balancer.
 
     Values:
-      EXTERNAL: Signifies that this will be used for external HTTP(S), SSL
-        Proxy, TCP Proxy, or Network Load Balancing
-      EXTERNAL_MANAGED: Signifies that this will be used for External Managed
-        HTTP(S) Load Balancing.
-      INTERNAL: Signifies that this will be used for Internal TCP/UDP Load
-        Balancing.
-      INTERNAL_MANAGED: Signifies that this will be used for Internal HTTP(S)
-        Load Balancing.
+      EXTERNAL: Signifies that this will be used for classic Application Load
+        Balancers, global external proxy Network Load Balancers, or external
+        passthrough Network Load Balancers.
+      EXTERNAL_MANAGED: Signifies that this will be used for global external
+        Application Load Balancers, regional external Application Load
+        Balancers, or regional external proxy Network Load Balancers.
+      INTERNAL: Signifies that this will be used for internal passthrough
+        Network Load Balancers.
+      INTERNAL_MANAGED: Signifies that this will be used for internal
+        Application Load Balancers.
       INTERNAL_SELF_MANAGED: Signifies that this will be used by Traffic
         Director.
       INVALID_LOAD_BALANCING_SCHEME: <no description>
@@ -4876,16 +4882,17 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
       and [Connection Persistence for Internal TCP/UDP Load
       Balancing](https://cloud.google.com/load-
       balancing/docs/internal#connection-persistence).
-    enableStrongAffinity: Enable Strong Session Affinity for Network Load
-      Balancing. This option is not available publicly.
-    idleTimeoutSec: Specifies how long to keep a Connection Tracking entry
-      while there is no matching traffic (in seconds). For Internal TCP/UDP
-      Load Balancing: - The minimum (default) is 10 minutes and the maximum is
-      16 hours. - It can be set only if Connection Tracking is less than
-      5-tuple (i.e. Session Affinity is CLIENT_IP_NO_DESTINATION, CLIENT_IP or
-      CLIENT_IP_PROTO, and Tracking Mode is PER_SESSION). For Network Load
-      Balancer the default is 60 seconds. This option is not available
+    enableStrongAffinity: Enable Strong Session Affinity for external
+      passthrough Network Load Balancers. This option is not available
       publicly.
+    idleTimeoutSec: Specifies how long to keep a Connection Tracking entry
+      while there is no matching traffic (in seconds). For internal
+      passthrough Network Load Balancers: - The minimum (default) is 10
+      minutes and the maximum is 16 hours. - It can be set only if Connection
+      Tracking is less than 5-tuple (i.e. Session Affinity is
+      CLIENT_IP_NO_DESTINATION, CLIENT_IP or CLIENT_IP_PROTO, and Tracking
+      Mode is PER_SESSION). For external passthrough Network Load Balancers
+      the default is 60 seconds. This option is not available publicly.
     trackingMode: Specifies the key used for connection tracking. There are
       two options: - PER_CONNECTION: This is the default mode. The Connection
       Tracking is performed as per the Connection Key (default Hash Method)
@@ -4955,17 +4962,18 @@ class BackendServiceConnectionTrackingPolicy(_messages.Message):
 
 
 class BackendServiceFailoverPolicy(_messages.Message):
-  r"""For load balancers that have configurable failover: [Internal TCP/UDP
-  Load Balancing](https://cloud.google.com/load-
-  balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-  Balancing](https://cloud.google.com/load-balancing/docs/network/networklb-
-  failover-overview). On failover or failback, this field indicates whether
-  connection draining will be honored. Google Cloud has a fixed connection
-  draining timeout of 10 minutes. A setting of true terminates existing TCP
-  connections to the active pool during failover and failback, immediately
-  draining traffic. A setting of false allows existing TCP connections to
-  persist, even on VMs no longer in the active pool, for up to the duration of
-  the connection draining timeout (10 minutes).
+  r"""For load balancers that have configurable failover: [Internal
+  passthrough Network Load Balancers](https://cloud.google.com/load-
+  balancing/docs/internal/failover-overview) and [external passthrough Network
+  Load Balancers](https://cloud.google.com/load-
+  balancing/docs/network/networklb-failover-overview). On failover or
+  failback, this field indicates whether connection draining will be honored.
+  Google Cloud has a fixed connection draining timeout of 10 minutes. A
+  setting of true terminates existing TCP connections to the active pool
+  during failover and failback, immediately draining traffic. A setting of
+  false allows existing TCP connections to persist, even on VMs no longer in
+  the active pool, for up to the duration of the connection draining timeout
+  (10 minutes).
 
   Fields:
     disableConnectionDrainOnFailover: This can be set to true only if the
@@ -4974,10 +4982,10 @@ class BackendServiceFailoverPolicy(_messages.Message):
       are dropped when all primary and all backup backend VMs are unhealthy.If
       set to false, connections are distributed among all primary VMs when all
       primary and all backup backend VMs are unhealthy. For load balancers
-      that have configurable failover: [Internal TCP/UDP Load
-      Balancing](https://cloud.google.com/load-
-      balancing/docs/internal/failover-overview) and [external TCP/UDP Load
-      Balancing](https://cloud.google.com/load-
+      that have configurable failover: [Internal passthrough Network Load
+      Balancers](https://cloud.google.com/load-
+      balancing/docs/internal/failover-overview) and [external passthrough
+      Network Load Balancers](https://cloud.google.com/load-
       balancing/docs/network/networklb-failover-overview). The default is
       false.
     failoverRatio: The value of the field must be in the range [0, 1]. If the
@@ -6311,6 +6319,13 @@ class Commitment(_messages.Message):
     description: An optional description of this resource. Provide this
       property when you create the resource.
     endTimestamp: [Output Only] Commitment end time in RFC3339 text format.
+    existingReservations: Specifies the already existing reservations to
+      attach to the Commitment. This field is optional, and it can be a full
+      or partial URL. For example, the following are valid URLs to an
+      reservation: -
+      https://www.googleapis.com/compute/v1/projects/project/zones/zone
+      /reservations/reservation -
+      projects/project/zones/zone/reservations/reservation
     id: [Output Only] The unique identifier for the resource. This identifier
       is defined by the server.
     kind: [Output Only] Type of the resource. Always compute#commitment for
@@ -6330,7 +6345,7 @@ class Commitment(_messages.Message):
       rate. The currently supported plans are TWELVE_MONTH (1 year), and
       THIRTY_SIX_MONTH (3 years).
     region: [Output Only] URL of the region where this commitment may be used.
-    reservations: List of create-on-create reseravtions for this commitment.
+    reservations: List of create-on-create reservations for this commitment.
     resources: A list of commitment amounts for particular resources. Note
       that VCPU and MEMORY resource commitments must occur together.
     selfLink: [Output Only] Server-defined URL for the resource.
@@ -6446,21 +6461,22 @@ class Commitment(_messages.Message):
   creationTimestamp = _messages.StringField(3)
   description = _messages.StringField(4)
   endTimestamp = _messages.StringField(5)
-  id = _messages.IntegerField(6, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(7, default='compute#commitment')
-  licenseResource = _messages.MessageField('LicenseResourceCommitment', 8)
-  mergeSourceCommitments = _messages.StringField(9, repeated=True)
-  name = _messages.StringField(10)
-  plan = _messages.EnumField('PlanValueValuesEnum', 11)
-  region = _messages.StringField(12)
-  reservations = _messages.MessageField('Reservation', 13, repeated=True)
-  resources = _messages.MessageField('ResourceCommitment', 14, repeated=True)
-  selfLink = _messages.StringField(15)
-  splitSourceCommitment = _messages.StringField(16)
-  startTimestamp = _messages.StringField(17)
-  status = _messages.EnumField('StatusValueValuesEnum', 18)
-  statusMessage = _messages.StringField(19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
+  existingReservations = _messages.StringField(6, repeated=True)
+  id = _messages.IntegerField(7, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(8, default='compute#commitment')
+  licenseResource = _messages.MessageField('LicenseResourceCommitment', 9)
+  mergeSourceCommitments = _messages.StringField(10, repeated=True)
+  name = _messages.StringField(11)
+  plan = _messages.EnumField('PlanValueValuesEnum', 12)
+  region = _messages.StringField(13)
+  reservations = _messages.MessageField('Reservation', 14, repeated=True)
+  resources = _messages.MessageField('ResourceCommitment', 15, repeated=True)
+  selfLink = _messages.StringField(16)
+  splitSourceCommitment = _messages.StringField(17)
+  startTimestamp = _messages.StringField(18)
+  status = _messages.EnumField('StatusValueValuesEnum', 19)
+  statusMessage = _messages.StringField(20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
 
 
 class CommitmentAggregatedList(_messages.Message):
@@ -14516,13 +14532,16 @@ class ComputeInstancesSimulateMaintenanceEventRequest(_messages.Message):
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       ( 00000000-0000-0000-0000-000000000000).
+    withExtendedNotifications: Determines whether the customers receive
+      notifications before migration. Only applicable to SF vms.
     zone: The name of the zone for this request.
   """
 
   instance = _messages.StringField(1, required=True)
   project = _messages.StringField(2, required=True)
   requestId = _messages.StringField(3)
-  zone = _messages.StringField(4, required=True)
+  withExtendedNotifications = _messages.BooleanField(4)
+  zone = _messages.StringField(5, required=True)
 
 
 class ComputeInstancesStartRequest(_messages.Message):
@@ -14583,8 +14602,10 @@ class ComputeInstancesStopRequest(_messages.Message):
   r"""A ComputeInstancesStopRequest object.
 
   Fields:
-    discardLocalSsd: If true, discard the contents of any attached localSSD
-      partitions. Default value is false.
+    discardLocalSsd: This property is required if the instance has any
+      attached Local SSD disks. If false, Local SSD data will be preserved
+      when the instance is suspended. If true, the contents of any attached
+      Local SSD disks will be discarded.
     instance: Name of the instance resource to stop.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -14611,8 +14632,10 @@ class ComputeInstancesSuspendRequest(_messages.Message):
   r"""A ComputeInstancesSuspendRequest object.
 
   Fields:
-    discardLocalSsd: If true, discard the contents of any attached localSSD
-      partitions. Default value is false.
+    discardLocalSsd: This property is required if the instance has any
+      attached Local SSD disks. If false, Local SSD data will be preserved
+      when the instance is suspended. If true, the contents of any attached
+      Local SSD disks will be discarded.
     instance: Name of the instance resource to suspend.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -24515,6 +24538,74 @@ class ComputeRegionUrlMapsValidateRequest(_messages.Message):
   urlMap = _messages.StringField(4, required=True)
 
 
+class ComputeRegionZonesListRequest(_messages.Message):
+  r"""A ComputeRegionZonesListRequest object.
+
+  Fields:
+    filter: A filter expression that filters resources listed in the response.
+      Most Compute resources support two types of filter expressions:
+      expressions that support regular expressions and expressions that follow
+      API improvement proposal AIP-160. These two types of filter expressions
+      cannot be mixed in one request. If you want to use AIP-160, your
+      expression must specify the field name, an operator, and the value that
+      you want to use for filtering. The value must be a string, a number, or
+      a boolean. The operator must be either `=`, `!=`, `>`, `<`, `<=`, `>=`
+      or `:`. For example, if you are filtering Compute Engine instances, you
+      can exclude instances named `example-instance` by specifying `name !=
+      example-instance`. The `:*` comparison can be used to test whether a key
+      has been defined. For example, to find all objects with `owner` label
+      use: ``` labels.owner:* ``` You can also filter nested fields. For
+      example, you could specify `scheduling.automaticRestart = false` to
+      include instances only if they are not scheduled for automatic restarts.
+      You can use filtering on nested fields to filter based on resource
+      labels. To filter on multiple expressions, provide each separate
+      expression within parentheses. For example: ```
+      (scheduling.automaticRestart = true) (cpuPlatform = "Intel Skylake") ```
+      By default, each expression is an `AND` expression. However, you can
+      include `AND` and `OR` expressions explicitly. For example: ```
+      (cpuPlatform = "Intel Skylake") OR (cpuPlatform = "Intel Broadwell") AND
+      (scheduling.automaticRestart = true) ``` If you want to use a regular
+      expression, use the `eq` (equal) or `ne` (not equal) operator against a
+      single un-parenthesized expression with or without quotes or against
+      multiple parenthesized expressions. Examples: `fieldname eq unquoted
+      literal` `fieldname eq 'single quoted literal'` `fieldname eq "double
+      quoted literal"` `(fieldname1 eq literal) (fieldname2 ne "literal")` The
+      literal value is interpreted as a regular expression using Google RE2
+      library syntax. The literal value must match the entire field. For
+      example, to filter for instances that do not end with name "instance",
+      you would use `name ne .*instance`. You cannot combine constraints on
+      multiple fields using regular expressions.
+    maxResults: The maximum number of results per page that should be
+      returned. If the number of available results is larger than
+      `maxResults`, Compute Engine returns a `nextPageToken` that can be used
+      to get the next page of results in subsequent list requests. Acceptable
+      values are `0` to `500`, inclusive. (Default: `500`)
+    orderBy: Sorts list results by a certain order. By default, results are
+      returned in alphanumerical order based on the resource name. You can
+      also sort results in descending order based on the creation timestamp
+      using `orderBy="creationTimestamp desc"`. This sorts results based on
+      the `creationTimestamp` field in reverse chronological order (newest
+      result first). Use this to sort resources like operations so that the
+      newest operation is returned first. Currently, only sorting by `name` or
+      `creationTimestamp desc` is supported.
+    pageToken: Specifies a page token to use. Set `pageToken` to the
+      `nextPageToken` returned by a previous list request to get the next page
+      of results.
+    project: Project ID for this request.
+    region: Region for this request.
+    returnPartialSuccess: Opt-in for partial success behavior which provides
+      partial results in case of failure. The default value is false.
+  """
+
+  filter = _messages.StringField(1)
+  maxResults = _messages.IntegerField(2, variant=_messages.Variant.UINT32, default=500)
+  orderBy = _messages.StringField(3)
+  pageToken = _messages.StringField(4)
+  project = _messages.StringField(5, required=True)
+  region = _messages.StringField(6, required=True)
+  returnPartialSuccess = _messages.BooleanField(7)
+
+
 class ComputeRegionsGetRequest(_messages.Message):
   r"""A ComputeRegionsGetRequest object.
 
@@ -31022,6 +31113,8 @@ class Disk(_messages.Message):
       provide an encryption key when creating the disk, then the disk is
       encrypted using an automatically generated key and you don't need to
       provide a key to use the disk later.
+    enableConfidentialCompute: Whether this disk is using confidential compute
+      mode.
     guestOsFeatures: A list of features to enable on the guest operating
       system. Applicable only for bootable images. Read Enabling guest
       operating system features to see a list of available options.
@@ -31256,44 +31349,45 @@ class Disk(_messages.Message):
   creationTimestamp = _messages.StringField(4)
   description = _messages.StringField(5)
   diskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 6)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 7, repeated=True)
-  id = _messages.IntegerField(8, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(9, default='compute#disk')
-  labelFingerprint = _messages.BytesField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  lastAttachTimestamp = _messages.StringField(12)
-  lastDetachTimestamp = _messages.StringField(13)
-  licenseCodes = _messages.IntegerField(14, repeated=True)
-  licenses = _messages.StringField(15, repeated=True)
-  locationHint = _messages.StringField(16)
-  name = _messages.StringField(17)
-  options = _messages.StringField(18)
-  params = _messages.MessageField('DiskParams', 19)
-  physicalBlockSizeBytes = _messages.IntegerField(20)
-  provisionedIops = _messages.IntegerField(21)
-  provisionedThroughput = _messages.IntegerField(22)
-  region = _messages.StringField(23)
-  replicaZones = _messages.StringField(24, repeated=True)
-  resourcePolicies = _messages.StringField(25, repeated=True)
-  resourceStatus = _messages.MessageField('DiskResourceStatus', 26)
-  satisfiesPzs = _messages.BooleanField(27)
-  selfLink = _messages.StringField(28)
-  sizeGb = _messages.IntegerField(29)
-  sourceConsistencyGroupPolicy = _messages.StringField(30)
-  sourceConsistencyGroupPolicyId = _messages.StringField(31)
-  sourceDisk = _messages.StringField(32)
-  sourceDiskId = _messages.StringField(33)
-  sourceImage = _messages.StringField(34)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 35)
-  sourceImageId = _messages.StringField(36)
-  sourceSnapshot = _messages.StringField(37)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 38)
-  sourceSnapshotId = _messages.StringField(39)
-  sourceStorageObject = _messages.StringField(40)
-  status = _messages.EnumField('StatusValueValuesEnum', 41)
-  type = _messages.StringField(42)
-  users = _messages.StringField(43, repeated=True)
-  zone = _messages.StringField(44)
+  enableConfidentialCompute = _messages.BooleanField(7)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
+  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(10, default='compute#disk')
+  labelFingerprint = _messages.BytesField(11)
+  labels = _messages.MessageField('LabelsValue', 12)
+  lastAttachTimestamp = _messages.StringField(13)
+  lastDetachTimestamp = _messages.StringField(14)
+  licenseCodes = _messages.IntegerField(15, repeated=True)
+  licenses = _messages.StringField(16, repeated=True)
+  locationHint = _messages.StringField(17)
+  name = _messages.StringField(18)
+  options = _messages.StringField(19)
+  params = _messages.MessageField('DiskParams', 20)
+  physicalBlockSizeBytes = _messages.IntegerField(21)
+  provisionedIops = _messages.IntegerField(22)
+  provisionedThroughput = _messages.IntegerField(23)
+  region = _messages.StringField(24)
+  replicaZones = _messages.StringField(25, repeated=True)
+  resourcePolicies = _messages.StringField(26, repeated=True)
+  resourceStatus = _messages.MessageField('DiskResourceStatus', 27)
+  satisfiesPzs = _messages.BooleanField(28)
+  selfLink = _messages.StringField(29)
+  sizeGb = _messages.IntegerField(30)
+  sourceConsistencyGroupPolicy = _messages.StringField(31)
+  sourceConsistencyGroupPolicyId = _messages.StringField(32)
+  sourceDisk = _messages.StringField(33)
+  sourceDiskId = _messages.StringField(34)
+  sourceImage = _messages.StringField(35)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 36)
+  sourceImageId = _messages.StringField(37)
+  sourceSnapshot = _messages.StringField(38)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
+  sourceSnapshotId = _messages.StringField(40)
+  sourceStorageObject = _messages.StringField(41)
+  status = _messages.EnumField('StatusValueValuesEnum', 42)
+  type = _messages.StringField(43)
+  users = _messages.StringField(44, repeated=True)
+  zone = _messages.StringField(45)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -34284,8 +34378,8 @@ class ForwardingRule(_messages.Message):
   loud.google.com/compute/docs/reference/rest/v1/globalForwardingRules) * [Reg
   ional](https://cloud.google.com/compute/docs/reference/rest/v1/forwardingRul
   es) A forwarding rule and its corresponding IP address represent the
-  frontend configuration of a Google Cloud Platform load balancer. Forwarding
-  rules can also reference target instances and Cloud VPN Classic gateways
+  frontend configuration of a Google Cloud load balancer. Forwarding rules can
+  also reference target instances and Cloud VPN Classic gateways
   (targetVpnGateway). For more information, read Forwarding rule concepts and
   Using protocol forwarding.
 
@@ -34360,22 +34454,24 @@ class ForwardingRule(_messages.Message):
       true.
     allowGlobalAccess: This field is used along with the backend_service field
       for internal load balancing or with the target field for internal
-      TargetInstance. If set to true, clients can access the Internal TCP/UDP
-      Load Balancer, Internal HTTP(S) and TCP Proxy Load Balancer from all
-      regions. If false, only allows access from the local region the load
-      balancer is located at. Note that for INTERNAL_MANAGED forwarding rules,
-      this field cannot be changed after the forwarding rule is created.
+      TargetInstance. If set to true, clients can access the internal
+      passthrough Network Load Balancers, the regional internal Application
+      Load Balancer, and the regional internal proxy Network Load Balancer
+      from all regions. If false, only allows access from the local region the
+      load balancer is located at. Note that for INTERNAL_MANAGED forwarding
+      rules, this field cannot be changed after the forwarding rule is
+      created.
     allowPscGlobalAccess: This is used in PSC consumer ForwardingRule to
       control whether the PSC endpoint can be accessed from another region.
     backendService: Identifies the backend service to which the forwarding
-      rule sends traffic. Required for Internal TCP/UDP Load Balancing and
-      Network Load Balancing; must be omitted for all other load balancer
+      rule sends traffic. Required for internal and external passthrough
+      Network Load Balancers; must be omitted for all other load balancer
       types.
     baseForwardingRule: [Output Only] The URL for the corresponding base
-      Forwarding Rule. By base Forwarding Rule, we mean the Forwarding Rule
+      forwarding rule. By base forwarding rule, we mean the forwarding rule
       that has the same IP address, protocol, and port settings with the
-      current Forwarding Rule, but without sourceIPRanges specified. Always
-      empty if the current Forwarding Rule does not have sourceIPRanges
+      current forwarding rule, but without sourceIPRanges specified. Always
+      empty if the current forwarding rule does not have sourceIPRanges
       specified.
     creationTimestamp: [Output Only] Creation timestamp in RFC3339 text
       format.
@@ -34398,7 +34494,7 @@ class ForwardingRule(_messages.Message):
       true for load balancers that have their loadBalancingScheme set to
       INTERNAL.
     kind: [Output Only] Type of the resource. Always compute#forwardingRule
-      for Forwarding Rule resources.
+      for forwarding rule resources.
     labelFingerprint: A fingerprint for the labels being applied to this
       resource, which is essentially a hash of the labels set used for
       optimistic locking. The fingerprint is initially generated by Compute
@@ -34440,12 +34536,12 @@ class ForwardingRule(_messages.Message):
       characters string with lowercase letters and numbers and must start with
       a letter.
     network: This field is not used for global external load balancing. For
-      Internal TCP/UDP Load Balancing, this field identifies the network that
-      the load balanced IP should belong to for this Forwarding Rule. If the
-      subnetwork is specified, the network of the subnetwork will be used. If
-      neither subnetwork nor this field is specified, the default network will
-      be used. For Private Service Connect forwarding rules that forward
-      traffic to Google APIs, a network must be provided.
+      internal passthrough Network Load Balancers, this field identifies the
+      network that the load balanced IP should belong to for this forwarding
+      rule. If the subnetwork is specified, the network of the subnetwork will
+      be used. If neither subnetwork nor this field is specified, the default
+      network will be used. For Private Service Connect forwarding rules that
+      forward traffic to Google APIs, a network must be provided.
     networkTier: This signifies the networking tier used for configuring this
       load balancer and can only take the following values: PREMIUM, STANDARD.
       For regional ForwardingRule, the valid values are PREMIUM and STANDARD.
@@ -34486,8 +34582,8 @@ class ForwardingRule(_messages.Message):
       network, two or more forwarding rules cannot use the same [IPAddress,
       IPProtocol] pair if they share at least one port number. @pattern:
       \\d+(?:-\\d+)?
-    pscConnectionId: [Output Only] The PSC connection id of the PSC Forwarding
-      Rule.
+    pscConnectionId: [Output Only] The PSC connection id of the PSC forwarding
+      rule.
     pscConnectionStatus: A PscConnectionStatusValueValuesEnum attribute.
     region: [Output Only] URL of the region where the regional forwarding rule
       resides. This field is not applicable to global forwarding rules. You
@@ -34497,8 +34593,8 @@ class ForwardingRule(_messages.Message):
     serviceDirectoryRegistrations: Service Directory resources to register
       this forwarding rule with. Currently, only supports a single Service
       Directory resource.
-    serviceLabel: An optional prefix to the service name for this Forwarding
-      Rule. If specified, the prefix is the first label of the fully qualified
+    serviceLabel: An optional prefix to the service name for this forwarding
+      rule. If specified, the prefix is the first label of the fully qualified
       service name. The label must be 1-63 characters long, and comply with
       RFC1035. Specifically, the label must be 1-63 characters long and match
       the regular expression `[a-z]([-a-z0-9]*[a-z0-9])?` which means the
@@ -34507,21 +34603,21 @@ class ForwardingRule(_messages.Message):
       which cannot be a dash. This field is only used for internal load
       balancing.
     serviceName: [Output Only] The internal fully qualified service name for
-      this Forwarding Rule. This field is only used for internal load
+      this forwarding rule. This field is only used for internal load
       balancing.
-    sourceIpRanges: If not empty, this Forwarding Rule will only forward the
+    sourceIpRanges: If not empty, this forwarding rule will only forward the
       traffic when the source IP address matches one of the IP addresses or
-      CIDR ranges set here. Note that a Forwarding Rule can only have up to 64
+      CIDR ranges set here. Note that a forwarding rule can only have up to 64
       source IP ranges, and this field can only be used with a regional
-      Forwarding Rule whose scheme is EXTERNAL. Each source_ip_range entry
+      forwarding rule whose scheme is EXTERNAL. Each source_ip_range entry
       should be either an IP address (for example, 1.2.3.4) or a CIDR range
       (for example, 1.2.3.0/24).
     subnetwork: This field identifies the subnetwork that the load balanced IP
-      should belong to for this Forwarding Rule, used in internal load
-      balancing and network load balancing with IPv6. If the network specified
-      is in auto subnet mode, this field is optional. However, a subnetwork
-      must be specified if the network is in custom subnet mode or when
-      creating external forwarding rule with IPv6.
+      should belong to for this forwarding rule, used with internal load
+      balancers and external passthrough Network Load Balancers with IPv6. If
+      the network specified is in auto subnet mode, this field is optional.
+      However, a subnetwork must be specified if the network is in custom
+      subnet mode or when creating external forwarding rule with IPv6.
     target: The URL of the target resource to receive the matched traffic. For
       regional forwarding rules, this target must be in the same region as the
       forwarding rule. For global forwarding rules, this target must be a
@@ -35062,9 +35158,9 @@ class ForwardingRuleReference(_messages.Message):
 
 
 class ForwardingRuleServiceDirectoryRegistration(_messages.Message):
-  r"""Describes the auto-registration of the Forwarding Rule to Service
+  r"""Describes the auto-registration of the forwarding rule to Service
   Directory. The region and project of the Service Directory resource
-  generated from this registration will be the same as this Forwarding Rule.
+  generated from this registration will be the same as this forwarding rule.
 
   Fields:
     namespace: Service Directory namespace to register the forwarding rule
@@ -35072,7 +35168,7 @@ class ForwardingRuleServiceDirectoryRegistration(_messages.Message):
     service: Service Directory service to register the forwarding rule under.
     serviceDirectoryRegion: [Optional] Service Directory region to register
       this global forwarding rule under. Default to "us-central1". Only used
-      for PSC for Google APIs. All PSC for Google APIs Forwarding Rules on the
+      for PSC for Google APIs. All PSC for Google APIs forwarding rules on the
       same network should use the same Service Directory region.
   """
 
@@ -35240,7 +35336,7 @@ class GRPCHealthCheck(_messages.Message):
     PortSpecificationValueValuesEnum: Specifies how a port is selected for
       health checking. Can be one of the following values: USE_FIXED_PORT:
       Specifies a port number explicitly using the port field in the health
-      check. Supported by backend services for pass-through load balancers and
+      check. Supported by backend services for passthrough load balancers and
       backend services for proxy load balancers. Not supported by target
       pools. The health check supports all backends supported by the backend
       service provided the backend can be health checked. For example,
@@ -35249,14 +35345,14 @@ class GRPCHealthCheck(_messages.Message):
       USE_SERVING_PORT: Provides an indirect method of specifying the health
       check port by referring to the backend service. Only supported by
       backend services for proxy load balancers. Not supported by target
-      pools. Not supported by backend services for pass-through load
-      balancers. Supports all backends that can be health checked; for
-      example, GCE_VM_IP_PORT network endpoint groups and instance group
-      backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-      check uses the port number specified for each endpoint in the network
-      endpoint group. For instance group backends, the health check uses the
-      port number determined by looking up the backend service's named port in
-      the instance group's list of named ports.
+      pools. Not supported by backend services for passthrough load balancers.
+      Supports all backends that can be health checked; for example,
+      GCE_VM_IP_PORT network endpoint groups and instance group backends. For
+      GCE_VM_IP_PORT network endpoint group backends, the health check uses
+      the port number specified for each endpoint in the network endpoint
+      group. For instance group backends, the health check uses the port
+      number determined by looking up the backend service's named port in the
+      instance group's list of named ports.
 
   Fields:
     grpcServiceName: The gRPC service name for the health check. This field is
@@ -35271,19 +35367,19 @@ class GRPCHealthCheck(_messages.Message):
     portSpecification: Specifies how a port is selected for health checking.
       Can be one of the following values: USE_FIXED_PORT: Specifies a port
       number explicitly using the port field in the health check. Supported by
-      backend services for pass-through load balancers and backend services
-      for proxy load balancers. Not supported by target pools. The health
-      check supports all backends supported by the backend service provided
-      the backend can be health checked. For example, GCE_VM_IP network
-      endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance
-      group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT:
-      Provides an indirect method of specifying the health check port by
-      referring to the backend service. Only supported by backend services for
-      proxy load balancers. Not supported by target pools. Not supported by
-      backend services for pass-through load balancers. Supports all backends
-      that can be health checked; for example, GCE_VM_IP_PORT network endpoint
-      groups and instance group backends. For GCE_VM_IP_PORT network endpoint
-      group backends, the health check uses the port number specified for each
+      backend services for passthrough load balancers and backend services for
+      proxy load balancers. Not supported by target pools. The health check
+      supports all backends supported by the backend service provided the
+      backend can be health checked. For example, GCE_VM_IP network endpoint
+      groups, GCE_VM_IP_PORT network endpoint groups, and instance group
+      backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an
+      indirect method of specifying the health check port by referring to the
+      backend service. Only supported by backend services for proxy load
+      balancers. Not supported by target pools. Not supported by backend
+      services for passthrough load balancers. Supports all backends that can
+      be health checked; for example, GCE_VM_IP_PORT network endpoint groups
+      and instance group backends. For GCE_VM_IP_PORT network endpoint group
+      backends, the health check uses the port number specified for each
       endpoint in the network endpoint group. For instance group backends, the
       health check uses the port number determined by looking up the backend
       service's named port in the instance group's list of named ports.
@@ -35293,7 +35389,7 @@ class GRPCHealthCheck(_messages.Message):
     r"""Specifies how a port is selected for health checking. Can be one of
     the following values: USE_FIXED_PORT: Specifies a port number explicitly
     using the port field in the health check. Supported by backend services
-    for pass-through load balancers and backend services for proxy load
+    for passthrough load balancers and backend services for proxy load
     balancers. Not supported by target pools. The health check supports all
     backends supported by the backend service provided the backend can be
     health checked. For example, GCE_VM_IP network endpoint groups,
@@ -35301,14 +35397,14 @@ class GRPCHealthCheck(_messages.Message):
     USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect
     method of specifying the health check port by referring to the backend
     service. Only supported by backend services for proxy load balancers. Not
-    supported by target pools. Not supported by backend services for pass-
-    through load balancers. Supports all backends that can be health checked;
-    for example, GCE_VM_IP_PORT network endpoint groups and instance group
-    backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-    check uses the port number specified for each endpoint in the network
-    endpoint group. For instance group backends, the health check uses the
-    port number determined by looking up the backend service's named port in
-    the instance group's list of named ports.
+    supported by target pools. Not supported by backend services for
+    passthrough load balancers. Supports all backends that can be health
+    checked; for example, GCE_VM_IP_PORT network endpoint groups and instance
+    group backends. For GCE_VM_IP_PORT network endpoint group backends, the
+    health check uses the port number specified for each endpoint in the
+    network endpoint group. For instance group backends, the health check uses
+    the port number determined by looking up the backend service's named port
+    in the instance group's list of named ports.
 
     Values:
       USE_FIXED_PORT: The port number in the health check's port is used for
@@ -35570,7 +35666,7 @@ class HTTP2HealthCheck(_messages.Message):
     PortSpecificationValueValuesEnum: Specifies how a port is selected for
       health checking. Can be one of the following values: USE_FIXED_PORT:
       Specifies a port number explicitly using the port field in the health
-      check. Supported by backend services for pass-through load balancers and
+      check. Supported by backend services for passthrough load balancers and
       backend services for proxy load balancers. Not supported by target
       pools. The health check supports all backends supported by the backend
       service provided the backend can be health checked. For example,
@@ -35579,14 +35675,14 @@ class HTTP2HealthCheck(_messages.Message):
       USE_SERVING_PORT: Provides an indirect method of specifying the health
       check port by referring to the backend service. Only supported by
       backend services for proxy load balancers. Not supported by target
-      pools. Not supported by backend services for pass-through load
-      balancers. Supports all backends that can be health checked; for
-      example, GCE_VM_IP_PORT network endpoint groups and instance group
-      backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-      check uses the port number specified for each endpoint in the network
-      endpoint group. For instance group backends, the health check uses the
-      port number determined by looking up the backend service's named port in
-      the instance group's list of named ports.
+      pools. Not supported by backend services for passthrough load balancers.
+      Supports all backends that can be health checked; for example,
+      GCE_VM_IP_PORT network endpoint groups and instance group backends. For
+      GCE_VM_IP_PORT network endpoint group backends, the health check uses
+      the port number specified for each endpoint in the network endpoint
+      group. For instance group backends, the health check uses the port
+      number determined by looking up the backend service's named port in the
+      instance group's list of named ports.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -35604,19 +35700,19 @@ class HTTP2HealthCheck(_messages.Message):
     portSpecification: Specifies how a port is selected for health checking.
       Can be one of the following values: USE_FIXED_PORT: Specifies a port
       number explicitly using the port field in the health check. Supported by
-      backend services for pass-through load balancers and backend services
-      for proxy load balancers. Not supported by target pools. The health
-      check supports all backends supported by the backend service provided
-      the backend can be health checked. For example, GCE_VM_IP network
-      endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance
-      group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT:
-      Provides an indirect method of specifying the health check port by
-      referring to the backend service. Only supported by backend services for
-      proxy load balancers. Not supported by target pools. Not supported by
-      backend services for pass-through load balancers. Supports all backends
-      that can be health checked; for example, GCE_VM_IP_PORT network endpoint
-      groups and instance group backends. For GCE_VM_IP_PORT network endpoint
-      group backends, the health check uses the port number specified for each
+      backend services for passthrough load balancers and backend services for
+      proxy load balancers. Not supported by target pools. The health check
+      supports all backends supported by the backend service provided the
+      backend can be health checked. For example, GCE_VM_IP network endpoint
+      groups, GCE_VM_IP_PORT network endpoint groups, and instance group
+      backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an
+      indirect method of specifying the health check port by referring to the
+      backend service. Only supported by backend services for proxy load
+      balancers. Not supported by target pools. Not supported by backend
+      services for passthrough load balancers. Supports all backends that can
+      be health checked; for example, GCE_VM_IP_PORT network endpoint groups
+      and instance group backends. For GCE_VM_IP_PORT network endpoint group
+      backends, the health check uses the port number specified for each
       endpoint in the network endpoint group. For instance group backends, the
       health check uses the port number determined by looking up the backend
       service's named port in the instance group's list of named ports.
@@ -35636,7 +35732,7 @@ class HTTP2HealthCheck(_messages.Message):
     r"""Specifies how a port is selected for health checking. Can be one of
     the following values: USE_FIXED_PORT: Specifies a port number explicitly
     using the port field in the health check. Supported by backend services
-    for pass-through load balancers and backend services for proxy load
+    for passthrough load balancers and backend services for proxy load
     balancers. Not supported by target pools. The health check supports all
     backends supported by the backend service provided the backend can be
     health checked. For example, GCE_VM_IP network endpoint groups,
@@ -35644,14 +35740,14 @@ class HTTP2HealthCheck(_messages.Message):
     USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect
     method of specifying the health check port by referring to the backend
     service. Only supported by backend services for proxy load balancers. Not
-    supported by target pools. Not supported by backend services for pass-
-    through load balancers. Supports all backends that can be health checked;
-    for example, GCE_VM_IP_PORT network endpoint groups and instance group
-    backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-    check uses the port number specified for each endpoint in the network
-    endpoint group. For instance group backends, the health check uses the
-    port number determined by looking up the backend service's named port in
-    the instance group's list of named ports.
+    supported by target pools. Not supported by backend services for
+    passthrough load balancers. Supports all backends that can be health
+    checked; for example, GCE_VM_IP_PORT network endpoint groups and instance
+    group backends. For GCE_VM_IP_PORT network endpoint group backends, the
+    health check uses the port number specified for each endpoint in the
+    network endpoint group. For instance group backends, the health check uses
+    the port number determined by looking up the backend service's named port
+    in the instance group's list of named ports.
 
     Values:
       USE_FIXED_PORT: The port number in the health check's port is used for
@@ -35695,7 +35791,7 @@ class HTTPHealthCheck(_messages.Message):
     PortSpecificationValueValuesEnum: Specifies how a port is selected for
       health checking. Can be one of the following values: USE_FIXED_PORT:
       Specifies a port number explicitly using the port field in the health
-      check. Supported by backend services for pass-through load balancers and
+      check. Supported by backend services for passthrough load balancers and
       backend services for proxy load balancers. Also supported in legacy HTTP
       health checks for target pools. The health check supports all backends
       supported by the backend service provided the backend can be health
@@ -35729,16 +35825,16 @@ class HTTPHealthCheck(_messages.Message):
     portSpecification: Specifies how a port is selected for health checking.
       Can be one of the following values: USE_FIXED_PORT: Specifies a port
       number explicitly using the port field in the health check. Supported by
-      backend services for pass-through load balancers and backend services
-      for proxy load balancers. Also supported in legacy HTTP health checks
-      for target pools. The health check supports all backends supported by
-      the backend service provided the backend can be health checked. For
-      example, GCE_VM_IP network endpoint groups, GCE_VM_IP_PORT network
-      endpoint groups, and instance group backends. USE_NAMED_PORT: Not
-      supported. USE_SERVING_PORT: Provides an indirect method of specifying
-      the health check port by referring to the backend service. Only
-      supported by backend services for proxy load balancers. Not supported by
-      target pools. Not supported by backend services for pass-through load
+      backend services for passthrough load balancers and backend services for
+      proxy load balancers. Also supported in legacy HTTP health checks for
+      target pools. The health check supports all backends supported by the
+      backend service provided the backend can be health checked. For example,
+      GCE_VM_IP network endpoint groups, GCE_VM_IP_PORT network endpoint
+      groups, and instance group backends. USE_NAMED_PORT: Not supported.
+      USE_SERVING_PORT: Provides an indirect method of specifying the health
+      check port by referring to the backend service. Only supported by
+      backend services for proxy load balancers. Not supported by target
+      pools. Not supported by backend services for pass-through load
       balancers. Supports all backends that can be health checked; for
       example, GCE_VM_IP_PORT network endpoint groups and instance group
       backends. For GCE_VM_IP_PORT network endpoint group backends, the health
@@ -35762,7 +35858,7 @@ class HTTPHealthCheck(_messages.Message):
     r"""Specifies how a port is selected for health checking. Can be one of
     the following values: USE_FIXED_PORT: Specifies a port number explicitly
     using the port field in the health check. Supported by backend services
-    for pass-through load balancers and backend services for proxy load
+    for passthrough load balancers and backend services for proxy load
     balancers. Also supported in legacy HTTP health checks for target pools.
     The health check supports all backends supported by the backend service
     provided the backend can be health checked. For example, GCE_VM_IP network
@@ -35821,7 +35917,7 @@ class HTTPSHealthCheck(_messages.Message):
     PortSpecificationValueValuesEnum: Specifies how a port is selected for
       health checking. Can be one of the following values: USE_FIXED_PORT:
       Specifies a port number explicitly using the port field in the health
-      check. Supported by backend services for pass-through load balancers and
+      check. Supported by backend services for passthrough load balancers and
       backend services for proxy load balancers. Not supported by target
       pools. The health check supports all backends supported by the backend
       service provided the backend can be health checked. For example,
@@ -35830,14 +35926,14 @@ class HTTPSHealthCheck(_messages.Message):
       USE_SERVING_PORT: Provides an indirect method of specifying the health
       check port by referring to the backend service. Only supported by
       backend services for proxy load balancers. Not supported by target
-      pools. Not supported by backend services for pass-through load
-      balancers. Supports all backends that can be health checked; for
-      example, GCE_VM_IP_PORT network endpoint groups and instance group
-      backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-      check uses the port number specified for each endpoint in the network
-      endpoint group. For instance group backends, the health check uses the
-      port number determined by looking up the backend service's named port in
-      the instance group's list of named ports.
+      pools. Not supported by backend services for passthrough load balancers.
+      Supports all backends that can be health checked; for example,
+      GCE_VM_IP_PORT network endpoint groups and instance group backends. For
+      GCE_VM_IP_PORT network endpoint group backends, the health check uses
+      the port number specified for each endpoint in the network endpoint
+      group. For instance group backends, the health check uses the port
+      number determined by looking up the backend service's named port in the
+      instance group's list of named ports.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -35855,19 +35951,19 @@ class HTTPSHealthCheck(_messages.Message):
     portSpecification: Specifies how a port is selected for health checking.
       Can be one of the following values: USE_FIXED_PORT: Specifies a port
       number explicitly using the port field in the health check. Supported by
-      backend services for pass-through load balancers and backend services
-      for proxy load balancers. Not supported by target pools. The health
-      check supports all backends supported by the backend service provided
-      the backend can be health checked. For example, GCE_VM_IP network
-      endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance
-      group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT:
-      Provides an indirect method of specifying the health check port by
-      referring to the backend service. Only supported by backend services for
-      proxy load balancers. Not supported by target pools. Not supported by
-      backend services for pass-through load balancers. Supports all backends
-      that can be health checked; for example, GCE_VM_IP_PORT network endpoint
-      groups and instance group backends. For GCE_VM_IP_PORT network endpoint
-      group backends, the health check uses the port number specified for each
+      backend services for passthrough load balancers and backend services for
+      proxy load balancers. Not supported by target pools. The health check
+      supports all backends supported by the backend service provided the
+      backend can be health checked. For example, GCE_VM_IP network endpoint
+      groups, GCE_VM_IP_PORT network endpoint groups, and instance group
+      backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an
+      indirect method of specifying the health check port by referring to the
+      backend service. Only supported by backend services for proxy load
+      balancers. Not supported by target pools. Not supported by backend
+      services for passthrough load balancers. Supports all backends that can
+      be health checked; for example, GCE_VM_IP_PORT network endpoint groups
+      and instance group backends. For GCE_VM_IP_PORT network endpoint group
+      backends, the health check uses the port number specified for each
       endpoint in the network endpoint group. For instance group backends, the
       health check uses the port number determined by looking up the backend
       service's named port in the instance group's list of named ports.
@@ -35887,7 +35983,7 @@ class HTTPSHealthCheck(_messages.Message):
     r"""Specifies how a port is selected for health checking. Can be one of
     the following values: USE_FIXED_PORT: Specifies a port number explicitly
     using the port field in the health check. Supported by backend services
-    for pass-through load balancers and backend services for proxy load
+    for passthrough load balancers and backend services for proxy load
     balancers. Not supported by target pools. The health check supports all
     backends supported by the backend service provided the backend can be
     health checked. For example, GCE_VM_IP network endpoint groups,
@@ -35895,14 +35991,14 @@ class HTTPSHealthCheck(_messages.Message):
     USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect
     method of specifying the health check port by referring to the backend
     service. Only supported by backend services for proxy load balancers. Not
-    supported by target pools. Not supported by backend services for pass-
-    through load balancers. Supports all backends that can be health checked;
-    for example, GCE_VM_IP_PORT network endpoint groups and instance group
-    backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-    check uses the port number specified for each endpoint in the network
-    endpoint group. For instance group backends, the health check uses the
-    port number determined by looking up the backend service's named port in
-    the instance group's list of named ports.
+    supported by target pools. Not supported by backend services for
+    passthrough load balancers. Supports all backends that can be health
+    checked; for example, GCE_VM_IP_PORT network endpoint groups and instance
+    group backends. For GCE_VM_IP_PORT network endpoint group backends, the
+    health check uses the port number specified for each endpoint in the
+    network endpoint group. For instance group backends, the health check uses
+    the port number determined by looking up the backend service's named port
+    in the instance group's list of named ports.
 
     Values:
       USE_FIXED_PORT: The port number in the health check's port is used for
@@ -35945,18 +36041,14 @@ class HealthCheck(_messages.Message):
   [Regional](/compute/docs/reference/rest/v1/regionHealthChecks) *
   [Global](/compute/docs/reference/rest/v1/healthChecks) These health check
   resources can be used for load balancing and for autohealing VMs in a
-  managed instance group (MIG). **Load balancing** The following load balancer
-  can use either regional or global health check: * Internal TCP/UDP load
-  balancer The following load balancers require regional health check: *
-  Internal HTTP(S) load balancer * Backend service-based network load balancer
-  Traffic Director and the following load balancers require global health
-  check: * External HTTP(S) load balancer * TCP proxy load balancer * SSL
-  proxy load balancer The following load balancer require [legacy HTTP health
-  checks](/compute/docs/reference/rest/v1/httpHealthChecks): * Target pool-
-  based network load balancer **Autohealing in MIGs** The health checks that
-  you use for autohealing VMs in a MIG can be either regional or global. For
-  more information, see Set up an application health check and autohealing.
-  For more information, see Health checks overview.
+  managed instance group (MIG). **Load balancing** Health check requirements
+  vary depending on the type of load balancer. For details about the type of
+  health check supported for each load balancer and corresponding backend
+  type, see Health checks overview: Load balancer guide. **Autohealing in
+  MIGs** The health checks that you use for autohealing VMs in a MIG can be
+  either regional or global. For more information, see Set up an application
+  health check and autohealing. For more information, see Health checks
+  overview.
 
   Enums:
     TypeValueValuesEnum: Specifies the type of the healthCheck, either TCP,
@@ -38027,6 +38119,9 @@ class Image(_messages.Message):
       property when you create the resource.
     diskSizeGb: Size of the image when restored onto a persistent disk (in
       GB).
+    enableConfidentialCompute: Whether this image is created from a
+      confidential compute mode disk. [Output Only]: This field is not set by
+      user, but from source disk.
     family: The name of the image family to which this image belongs. The
       image family name can be from a publicly managed image family provided
       by Compute Engine, or from a custom image family you create. For
@@ -38235,32 +38330,33 @@ class Image(_messages.Message):
   deprecated = _messages.MessageField('DeprecationStatus', 4)
   description = _messages.StringField(5)
   diskSizeGb = _messages.IntegerField(6)
-  family = _messages.StringField(7)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 8, repeated=True)
-  id = _messages.IntegerField(9, variant=_messages.Variant.UINT64)
-  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
-  kind = _messages.StringField(11, default='compute#image')
-  labelFingerprint = _messages.BytesField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  licenseCodes = _messages.IntegerField(14, repeated=True)
-  licenses = _messages.StringField(15, repeated=True)
-  name = _messages.StringField(16)
-  rawDisk = _messages.MessageField('RawDiskValue', 17)
-  satisfiesPzs = _messages.BooleanField(18)
-  selfLink = _messages.StringField(19)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 20)
-  sourceDisk = _messages.StringField(21)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
-  sourceDiskId = _messages.StringField(23)
-  sourceImage = _messages.StringField(24)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
-  sourceImageId = _messages.StringField(26)
-  sourceSnapshot = _messages.StringField(27)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 28)
-  sourceSnapshotId = _messages.StringField(29)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 30, default='RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 31)
-  storageLocations = _messages.StringField(32, repeated=True)
+  enableConfidentialCompute = _messages.BooleanField(7)
+  family = _messages.StringField(8)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 9, repeated=True)
+  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
+  imageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 11)
+  kind = _messages.StringField(12, default='compute#image')
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  licenseCodes = _messages.IntegerField(15, repeated=True)
+  licenses = _messages.StringField(16, repeated=True)
+  name = _messages.StringField(17)
+  rawDisk = _messages.MessageField('RawDiskValue', 18)
+  satisfiesPzs = _messages.BooleanField(19)
+  selfLink = _messages.StringField(20)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 21)
+  sourceDisk = _messages.StringField(22)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
+  sourceDiskId = _messages.StringField(24)
+  sourceImage = _messages.StringField(25)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
+  sourceImageId = _messages.StringField(27)
+  sourceSnapshot = _messages.StringField(28)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
+  sourceSnapshotId = _messages.StringField(30)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 31, default='RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 32)
+  storageLocations = _messages.StringField(33, repeated=True)
 
 
 class ImageFamilyView(_messages.Message):
@@ -38573,6 +38669,7 @@ class Instance(_messages.Message):
     resourceStatus: [Output Only] Specifies values set for instance attributes
       as compared to the values requested by user in the corresponding input
       only field.
+    satisfiesPzi: [Output Only] Reserved for future use.
     satisfiesPzs: [Output Only] Reserved for future use.
     scheduling: Sets the scheduling options for this instance.
     selfLink: [Output Only] Server-defined URL for this resource.
@@ -38730,19 +38827,20 @@ class Instance(_messages.Message):
   reservationAffinity = _messages.MessageField('ReservationAffinity', 30)
   resourcePolicies = _messages.StringField(31, repeated=True)
   resourceStatus = _messages.MessageField('ResourceStatus', 32)
-  satisfiesPzs = _messages.BooleanField(33)
-  scheduling = _messages.MessageField('Scheduling', 34)
-  selfLink = _messages.StringField(35)
-  serviceAccounts = _messages.MessageField('ServiceAccount', 36, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 37)
-  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 38)
-  sourceMachineImage = _messages.StringField(39)
-  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
-  startRestricted = _messages.BooleanField(41)
-  status = _messages.EnumField('StatusValueValuesEnum', 42)
-  statusMessage = _messages.StringField(43)
-  tags = _messages.MessageField('Tags', 44)
-  zone = _messages.StringField(45)
+  satisfiesPzi = _messages.BooleanField(33)
+  satisfiesPzs = _messages.BooleanField(34)
+  scheduling = _messages.MessageField('Scheduling', 35)
+  selfLink = _messages.StringField(36)
+  serviceAccounts = _messages.MessageField('ServiceAccount', 37, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 38)
+  shieldedInstanceIntegrityPolicy = _messages.MessageField('ShieldedInstanceIntegrityPolicy', 39)
+  sourceMachineImage = _messages.StringField(40)
+  sourceMachineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 41)
+  startRestricted = _messages.BooleanField(42)
+  status = _messages.EnumField('StatusValueValuesEnum', 43)
+  statusMessage = _messages.StringField(44)
+  tags = _messages.MessageField('Tags', 45)
+  zone = _messages.StringField(46)
 
 
 class InstanceAggregatedList(_messages.Message):
@@ -61825,7 +61923,7 @@ class SSLHealthCheck(_messages.Message):
     PortSpecificationValueValuesEnum: Specifies how a port is selected for
       health checking. Can be one of the following values: USE_FIXED_PORT:
       Specifies a port number explicitly using the port field in the health
-      check. Supported by backend services for pass-through load balancers and
+      check. Supported by backend services for passthrough load balancers and
       backend services for proxy load balancers. Not supported by target
       pools. The health check supports all backends supported by the backend
       service provided the backend can be health checked. For example,
@@ -61834,14 +61932,14 @@ class SSLHealthCheck(_messages.Message):
       USE_SERVING_PORT: Provides an indirect method of specifying the health
       check port by referring to the backend service. Only supported by
       backend services for proxy load balancers. Not supported by target
-      pools. Not supported by backend services for pass-through load
-      balancers. Supports all backends that can be health checked; for
-      example, GCE_VM_IP_PORT network endpoint groups and instance group
-      backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-      check uses the port number specified for each endpoint in the network
-      endpoint group. For instance group backends, the health check uses the
-      port number determined by looking up the backend service's named port in
-      the instance group's list of named ports.
+      pools. Not supported by backend services for passthrough load balancers.
+      Supports all backends that can be health checked; for example,
+      GCE_VM_IP_PORT network endpoint groups and instance group backends. For
+      GCE_VM_IP_PORT network endpoint group backends, the health check uses
+      the port number specified for each endpoint in the network endpoint
+      group. For instance group backends, the health check uses the port
+      number determined by looking up the backend service's named port in the
+      instance group's list of named ports.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -61853,19 +61951,19 @@ class SSLHealthCheck(_messages.Message):
     portSpecification: Specifies how a port is selected for health checking.
       Can be one of the following values: USE_FIXED_PORT: Specifies a port
       number explicitly using the port field in the health check. Supported by
-      backend services for pass-through load balancers and backend services
-      for proxy load balancers. Not supported by target pools. The health
-      check supports all backends supported by the backend service provided
-      the backend can be health checked. For example, GCE_VM_IP network
-      endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance
-      group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT:
-      Provides an indirect method of specifying the health check port by
-      referring to the backend service. Only supported by backend services for
-      proxy load balancers. Not supported by target pools. Not supported by
-      backend services for pass-through load balancers. Supports all backends
-      that can be health checked; for example, GCE_VM_IP_PORT network endpoint
-      groups and instance group backends. For GCE_VM_IP_PORT network endpoint
-      group backends, the health check uses the port number specified for each
+      backend services for passthrough load balancers and backend services for
+      proxy load balancers. Not supported by target pools. The health check
+      supports all backends supported by the backend service provided the
+      backend can be health checked. For example, GCE_VM_IP network endpoint
+      groups, GCE_VM_IP_PORT network endpoint groups, and instance group
+      backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an
+      indirect method of specifying the health check port by referring to the
+      backend service. Only supported by backend services for proxy load
+      balancers. Not supported by target pools. Not supported by backend
+      services for passthrough load balancers. Supports all backends that can
+      be health checked; for example, GCE_VM_IP_PORT network endpoint groups
+      and instance group backends. For GCE_VM_IP_PORT network endpoint group
+      backends, the health check uses the port number specified for each
       endpoint in the network endpoint group. For instance group backends, the
       health check uses the port number determined by looking up the backend
       service's named port in the instance group's list of named ports.
@@ -61886,7 +61984,7 @@ class SSLHealthCheck(_messages.Message):
     r"""Specifies how a port is selected for health checking. Can be one of
     the following values: USE_FIXED_PORT: Specifies a port number explicitly
     using the port field in the health check. Supported by backend services
-    for pass-through load balancers and backend services for proxy load
+    for passthrough load balancers and backend services for proxy load
     balancers. Not supported by target pools. The health check supports all
     backends supported by the backend service provided the backend can be
     health checked. For example, GCE_VM_IP network endpoint groups,
@@ -61894,14 +61992,14 @@ class SSLHealthCheck(_messages.Message):
     USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect
     method of specifying the health check port by referring to the backend
     service. Only supported by backend services for proxy load balancers. Not
-    supported by target pools. Not supported by backend services for pass-
-    through load balancers. Supports all backends that can be health checked;
-    for example, GCE_VM_IP_PORT network endpoint groups and instance group
-    backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-    check uses the port number specified for each endpoint in the network
-    endpoint group. For instance group backends, the health check uses the
-    port number determined by looking up the backend service's named port in
-    the instance group's list of named ports.
+    supported by target pools. Not supported by backend services for
+    passthrough load balancers. Supports all backends that can be health
+    checked; for example, GCE_VM_IP_PORT network endpoint groups and instance
+    group backends. For GCE_VM_IP_PORT network endpoint group backends, the
+    health check uses the port number specified for each endpoint in the
+    network endpoint group. For instance group backends, the health check uses
+    the port number determined by looking up the backend service's named port
+    in the instance group's list of named ports.
 
     Values:
       USE_FIXED_PORT: The port number in the health check's port is used for
@@ -64911,6 +65009,9 @@ class Snapshot(_messages.Message):
     diskSizeGb: [Output Only] Size of the source disk, specified in GB.
     downloadBytes: [Output Only] Number of bytes downloaded to restore a
       snapshot to a disk.
+    enableConfidentialCompute: Whether this snapshot is created from a
+      confidential compute mode disk. [Output Only]: This field is not set by
+      user, but from source disk.
     guestOsFeatures: [Output Only] A list of features to enable on the guest
       operating system. Applicable only for bootable images. Read Enabling
       guest operating system features to see a list of available options.
@@ -65069,29 +65170,30 @@ class Snapshot(_messages.Message):
   description = _messages.StringField(6)
   diskSizeGb = _messages.IntegerField(7)
   downloadBytes = _messages.IntegerField(8)
-  guestOsFeatures = _messages.MessageField('GuestOsFeature', 9, repeated=True)
-  id = _messages.IntegerField(10, variant=_messages.Variant.UINT64)
-  kind = _messages.StringField(11, default='compute#snapshot')
-  labelFingerprint = _messages.BytesField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  licenseCodes = _messages.IntegerField(14, repeated=True)
-  licenses = _messages.StringField(15, repeated=True)
-  locationHint = _messages.StringField(16)
-  name = _messages.StringField(17)
-  satisfiesPzs = _messages.BooleanField(18)
-  selfLink = _messages.StringField(19)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 20)
-  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 21)
-  sourceDisk = _messages.StringField(22)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceDiskForRecoveryCheckpoint = _messages.StringField(24)
-  sourceDiskId = _messages.StringField(25)
-  sourceSnapshotSchedulePolicy = _messages.StringField(26)
-  sourceSnapshotSchedulePolicyId = _messages.StringField(27)
-  status = _messages.EnumField('StatusValueValuesEnum', 28)
-  storageBytes = _messages.IntegerField(29)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 30)
-  storageLocations = _messages.StringField(31, repeated=True)
+  enableConfidentialCompute = _messages.BooleanField(9)
+  guestOsFeatures = _messages.MessageField('GuestOsFeature', 10, repeated=True)
+  id = _messages.IntegerField(11, variant=_messages.Variant.UINT64)
+  kind = _messages.StringField(12, default='compute#snapshot')
+  labelFingerprint = _messages.BytesField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  licenseCodes = _messages.IntegerField(15, repeated=True)
+  licenses = _messages.StringField(16, repeated=True)
+  locationHint = _messages.StringField(17)
+  name = _messages.StringField(18)
+  satisfiesPzs = _messages.BooleanField(19)
+  selfLink = _messages.StringField(20)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
+  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 22)
+  sourceDisk = _messages.StringField(23)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceDiskForRecoveryCheckpoint = _messages.StringField(25)
+  sourceDiskId = _messages.StringField(26)
+  sourceSnapshotSchedulePolicy = _messages.StringField(27)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(28)
+  status = _messages.EnumField('StatusValueValuesEnum', 29)
+  storageBytes = _messages.IntegerField(30)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 31)
+  storageLocations = _messages.StringField(32, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -68244,7 +68346,7 @@ class TCPHealthCheck(_messages.Message):
     PortSpecificationValueValuesEnum: Specifies how a port is selected for
       health checking. Can be one of the following values: USE_FIXED_PORT:
       Specifies a port number explicitly using the port field in the health
-      check. Supported by backend services for pass-through load balancers and
+      check. Supported by backend services for passthrough load balancers and
       backend services for proxy load balancers. Not supported by target
       pools. The health check supports all backends supported by the backend
       service provided the backend can be health checked. For example,
@@ -68253,14 +68355,14 @@ class TCPHealthCheck(_messages.Message):
       USE_SERVING_PORT: Provides an indirect method of specifying the health
       check port by referring to the backend service. Only supported by
       backend services for proxy load balancers. Not supported by target
-      pools. Not supported by backend services for pass-through load
-      balancers. Supports all backends that can be health checked; for
-      example, GCE_VM_IP_PORT network endpoint groups and instance group
-      backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-      check uses the port number specified for each endpoint in the network
-      endpoint group. For instance group backends, the health check uses the
-      port number determined by looking up the backend service's named port in
-      the instance group's list of named ports.
+      pools. Not supported by backend services for passthrough load balancers.
+      Supports all backends that can be health checked; for example,
+      GCE_VM_IP_PORT network endpoint groups and instance group backends. For
+      GCE_VM_IP_PORT network endpoint group backends, the health check uses
+      the port number specified for each endpoint in the network endpoint
+      group. For instance group backends, the health check uses the port
+      number determined by looking up the backend service's named port in the
+      instance group's list of named ports.
     ProxyHeaderValueValuesEnum: Specifies the type of proxy header to append
       before sending data to the backend, either NONE or PROXY_V1. The default
       is NONE.
@@ -68272,19 +68374,19 @@ class TCPHealthCheck(_messages.Message):
     portSpecification: Specifies how a port is selected for health checking.
       Can be one of the following values: USE_FIXED_PORT: Specifies a port
       number explicitly using the port field in the health check. Supported by
-      backend services for pass-through load balancers and backend services
-      for proxy load balancers. Not supported by target pools. The health
-      check supports all backends supported by the backend service provided
-      the backend can be health checked. For example, GCE_VM_IP network
-      endpoint groups, GCE_VM_IP_PORT network endpoint groups, and instance
-      group backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT:
-      Provides an indirect method of specifying the health check port by
-      referring to the backend service. Only supported by backend services for
-      proxy load balancers. Not supported by target pools. Not supported by
-      backend services for pass-through load balancers. Supports all backends
-      that can be health checked; for example, GCE_VM_IP_PORT network endpoint
-      groups and instance group backends. For GCE_VM_IP_PORT network endpoint
-      group backends, the health check uses the port number specified for each
+      backend services for passthrough load balancers and backend services for
+      proxy load balancers. Not supported by target pools. The health check
+      supports all backends supported by the backend service provided the
+      backend can be health checked. For example, GCE_VM_IP network endpoint
+      groups, GCE_VM_IP_PORT network endpoint groups, and instance group
+      backends. USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an
+      indirect method of specifying the health check port by referring to the
+      backend service. Only supported by backend services for proxy load
+      balancers. Not supported by target pools. Not supported by backend
+      services for passthrough load balancers. Supports all backends that can
+      be health checked; for example, GCE_VM_IP_PORT network endpoint groups
+      and instance group backends. For GCE_VM_IP_PORT network endpoint group
+      backends, the health check uses the port number specified for each
       endpoint in the network endpoint group. For instance group backends, the
       health check uses the port number determined by looking up the backend
       service's named port in the instance group's list of named ports.
@@ -68304,7 +68406,7 @@ class TCPHealthCheck(_messages.Message):
     r"""Specifies how a port is selected for health checking. Can be one of
     the following values: USE_FIXED_PORT: Specifies a port number explicitly
     using the port field in the health check. Supported by backend services
-    for pass-through load balancers and backend services for proxy load
+    for passthrough load balancers and backend services for proxy load
     balancers. Not supported by target pools. The health check supports all
     backends supported by the backend service provided the backend can be
     health checked. For example, GCE_VM_IP network endpoint groups,
@@ -68312,14 +68414,14 @@ class TCPHealthCheck(_messages.Message):
     USE_NAMED_PORT: Not supported. USE_SERVING_PORT: Provides an indirect
     method of specifying the health check port by referring to the backend
     service. Only supported by backend services for proxy load balancers. Not
-    supported by target pools. Not supported by backend services for pass-
-    through load balancers. Supports all backends that can be health checked;
-    for example, GCE_VM_IP_PORT network endpoint groups and instance group
-    backends. For GCE_VM_IP_PORT network endpoint group backends, the health
-    check uses the port number specified for each endpoint in the network
-    endpoint group. For instance group backends, the health check uses the
-    port number determined by looking up the backend service's named port in
-    the instance group's list of named ports.
+    supported by target pools. Not supported by backend services for
+    passthrough load balancers. Supports all backends that can be health
+    checked; for example, GCE_VM_IP_PORT network endpoint groups and instance
+    group backends. For GCE_VM_IP_PORT network endpoint group backends, the
+    health check uses the port number specified for each endpoint in the
+    network endpoint group. For instance group backends, the health check uses
+    the port number determined by looking up the backend service's named port
+    in the instance group's list of named ports.
 
     Values:
       USE_FIXED_PORT: The port number in the health check's port is used for
@@ -70324,10 +70426,10 @@ class TargetInstancesScopedList(_messages.Message):
 
 
 class TargetPool(_messages.Message):
-  r"""Represents a Target Pool resource. Target pools are used for network
-  TCP/UDP load balancing. A target pool references member instances, an
-  associated legacy HttpHealthCheck resource, and, optionally, a backup target
-  pool. For more information, read Using target pools.
+  r"""Represents a Target Pool resource. Target pools are used with external
+  passthrough Network Load Balancers. A target pool references member
+  instances, an associated legacy HttpHealthCheck resource, and, optionally, a
+  backup target pool. For more information, read Using target pools.
 
   Enums:
     SessionAffinityValueValuesEnum: Session affinity option, must be one of

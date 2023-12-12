@@ -4966,7 +4966,6 @@ class Resource(_messages.Message):
       value is the parent resource defined in the [IAM policy
       hierarchy](https://cloud.google.com/iam/docs/overview#policy_hierarchy).
       Example: `//cloudresourcemanager.googleapis.com/projects/my_project_123`
-      For third-party assets, this field may be set differently.
     resourceUrl: The REST URL for accessing the resource. An HTTP `GET`
       request using this URL returns the resource itself. Example:
       `https://cloudresourcemanager.googleapis.com/v1/projects/my-project-123`

@@ -37,6 +37,84 @@ COMPARISON_TO_ENUM = {
     '!=': 'COMPARISON_NE',
 }
 
+UPTIME_MONITORED_RESOURCES = {
+    'uptime-url': 'Uptime Check against a URL.',
+    'gce-instance': 'Uptime Check against a Compute Engine instance.',
+    'gae-app': 'Uptime Check against an App Engine module.',
+    'aws-ec2-instance': 'Uptime Check against an AWS EC2 instance.',
+    'aws-elb-load-balancer': 'Uptime Check against an ElasticLoadBalancer.',
+    'servicedirectory-service': (
+        'Uptime Check against a Service Directory service.'
+    ),
+    'cloud-run-revision': 'Uptime Check against a Cloud Run revision.',
+}
+
+UPTIME_GROUP_RESOURCES = {
+    'gce-instance': (
+        'Uptime Check against a group of instances from Google Cloud'
+        ' or Amazon Web Services.'
+    ),
+    'aws-elb-load-balancer': (
+        'Uptime Check against a group of Amazon ELB load balancers.'
+    ),
+}
+
+UPTIME_PROTOCOLS = {
+    'http': 'An HTTP check.',
+    'https': 'An HTTPS check.',
+    'tcp': 'A TCP check.',
+}
+
+UPTIME_REQUEST_METHODS = {
+    'get': 'HTTP GET method',
+    'post': 'HTTP POST method',
+}
+
+UPTIME_CONTENT_TYPES = {
+    'unspecified': 'Not specified',
+    'url-encoded': 'URL encoded',
+    'user-provided': 'User provided',
+}
+
+UPTIME_STATUS_CLASSES = {
+    '1xx': 'Any response code from 100-199 inclusive',
+    '2xx': 'Any response code from 200-299 inclusive',
+    '3xx': 'Any response code from 300-399 inclusive',
+    '4xx': 'Any response code from 400-499 inclusive',
+    '5xx': 'Any response code from 500-599 inclusive',
+    'any': 'Any response code',
+}
+
+UPTIME_PERIODS = {
+    '1': 'One minute',
+    '5': 'Five minutes',
+    '10': 'Ten minutes',
+    '15': 'Fifteen minutes',
+}
+
+UPTIME_REGIONS = {
+    'usa-oregon': 'us-west1',
+    'usa-virginia': 'us-east4',
+    'usa-iowa': 'us-central1',
+    'europe': 'europe-west1',
+    'south-america': 'southamerica-east1',
+    'asia-pacific': 'asia-southeast1',
+}
+
+UPTIME_MATCHER_TYPES = {
+    'contains-string': 'Response contains string',
+    'not-contains-string': 'Response does not contain string',
+    'matches-regex': 'Response matches regex',
+    'not-matches-regex': 'Response does not match regex',
+    'matches-json-path': 'Response matches at JSONPath',
+    'not-matches-json-path': 'Response does not match at JSONPath',
+}
+
+UPTIME_JSON_MATCHER_TYPES = {
+    'exact-match': 'Response matches exact string at JSONPath',
+    'regex-match': 'Response matches regex at JSONPath',
+}
+
 
 def AddFileMessageFlag(parser, resource, flag=None):
   """Adds flags for specifying a message as a file to the parser."""
@@ -61,9 +139,17 @@ def AddMessageFlags(parser, resource, flag=None):
           resource))
 
 
-def AddDisplayNameFlag(parser, resource):
-  parser.add_argument(
-      '--display-name', help='The display name for the {}.'.format(resource))
+def AddDisplayNameFlag(parser, resource, positional=False):
+  if positional:
+    base.Argument(
+        'display_name',
+        metavar='DISPLAY_NAME',
+        help='Display name for the Uptime Check.',
+    ).AddToParser(parser)
+  else:
+    parser.add_argument(
+        '--display-name', help='The display name for the {}.'.format(resource)
+    )
 
 
 def AddCombinerFlag(parser, resource):
@@ -348,6 +434,365 @@ def AddSnoozeSettingsFlags(parser, update=False):
     AddCriteriaPoliciesFlag(snooze_settings_group, resource='Snooze')
   AddStartTimeFlag(snooze_settings_group, resource='Snooze')
   AddEndTimeFlag(snooze_settings_group, resource='Snooze')
+
+
+def AddUptimeSettingsFlags(parser, update=False):
+  """Adds uptime settings flags to the parser."""
+  if not update:
+    AddUptimeResourceFlags(parser)
+
+  AddUptimeProtocolFlags(parser, update)
+  AddUptimeRunFlags(parser, update)
+  AddUptimeMatcherFlags(parser)
+
+
+def AddUptimeResourceFlags(parser):
+  """Adds uptime resource settings flags to the parser."""
+  uptime_resource_group = parser.add_group(
+      help='Uptime check resource',
+      mutex=True,
+      required=True,
+  )
+  monitored_resource_group = uptime_resource_group.add_group(
+      help='Monitored resource'
+  )
+  monitored_resource_group.add_argument(
+      '--resource-type',
+      help='Type of monitored resource, defaults to "uptime-url".',
+      choices=UPTIME_MONITORED_RESOURCES,
+  )
+  base.Argument(
+      '--resource-labels',
+      metavar='KEY=VALUE',
+      type=arg_parsers.ArgDict(key_type=str, value_type=str),
+      action=arg_parsers.UpdateAction,
+      required=True,
+      help=(
+          """Values for all of the labels listed in the associated monitored resource descriptor.
+            See https://cloud.google.com/monitoring/api/resources for more information and allowed
+            keys."""
+      ),
+  ).AddToParser(monitored_resource_group)
+  group_resource_group = uptime_resource_group.add_group(
+      help='Monitored resource group'
+  )
+  group_resource_group.add_argument(
+      '--group-type',
+      help=(
+          'The resource type of the group members, defaults to "gce-instance".'
+      ),
+      choices=UPTIME_GROUP_RESOURCES,
+  )
+  group_resource_group.add_argument(
+      '--group-id',
+      help='The group of resources being monitored.',
+      required=True,
+      type=str,
+  )
+  uptime_resource_group.add_argument(
+      '--synthetic-target',
+      help="""The target of the Synthetic Monitor.
+        This is the fully qualified GCFv2 resource name.""",
+      type=str,
+  )
+
+
+def AddUptimeProtocolFlags(parser, update=False):
+  """Adds uptime protocol settings flags to the parser."""
+  uptime_protocol_group = parser.add_group(
+      help='Uptime check protocol settings'
+  )
+  if not update:
+    uptime_protocol_group.add_argument(
+        '--protocol',
+        help='The protocol of the request, defaults to "http".',
+        choices=UPTIME_PROTOCOLS,
+    )
+  uptime_protocol_group.add_argument(
+      '--port',
+      help="""The port on the server against which to run the check.
+        Defaults to "80" when --protocol is "http".
+        Defaults to "443" when --protocol is "https".
+        Required if --protocol is "tcp".""",
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=65535),
+  )
+  uptime_protocol_group.add_argument(
+      '--pings-count',
+      help='Number of ICMP pings to send alongside the request.',
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=3),
+  )
+  uptime_protocol_group.add_argument(
+      '--request-method',
+      help="""The HTTP request method to use, defaults to "get".
+        Can only be set if --protocol is "http" or "https".""",
+      choices=UPTIME_REQUEST_METHODS,
+  )
+  uptime_protocol_group.add_argument(
+      '--path',
+      help="""The path to the page against which to run the check, defaults to "/".
+        Can only be set if --protocol is "http" or "https".""",
+      type=str,
+  )
+  uptime_protocol_group.add_argument(
+      '--username',
+      help="""The username to use when authenticating with the HTTP server.
+        Can only be set if --protocol is "http" or "https".""",
+      type=str,
+  )
+  uptime_protocol_group.add_argument(
+      '--password',
+      help="""The password to use when authenticating with the HTTP server.
+        Can only be set if --protocol is "http" or "https".""",
+      type=str,
+  )
+  uptime_protocol_group.add_argument(
+      '--mask-headers',
+      help="""Whether to encrypt the header information, defaults to "false".
+        Can only be set if --protocol is "http" or "https".""",
+      type=bool,
+  )
+  if update:
+    uptime_headers_group = uptime_protocol_group.add_group(
+        help='Uptime Headers'
+    )
+    base.Argument(
+        '--update-headers',
+        metavar='KEY=VALUE',
+        type=arg_parsers.ArgDict(key_type=str, value_type=str),
+        action=arg_parsers.UpdateAction,
+        help=("""The list of headers to add to the Uptime Check. Any existing
+              headers with matching "key" will be overridden by the provided
+              values."""),
+    ).AddToParser(uptime_headers_group)
+    uptime_remove_header_group = uptime_headers_group.add_group(
+        help='Uptime remove Headers',
+        mutex=True,
+    )
+    uptime_remove_header_group.add_argument(
+        '--remove-headers',
+        metavar='KEY',
+        help="""The list of header keys to remove from the Uptime Check.""",
+        type=arg_parsers.ArgList(str),
+    )
+    uptime_remove_header_group.add_argument(
+        '--clear-headers',
+        help="""Clear all headers on the Uptime Check.""",
+        type=bool,
+    )
+  else:
+    base.Argument(
+        '--headers',
+        metavar='KEY=VALUE',
+        type=arg_parsers.ArgDict(key_type=str, value_type=str),
+        action=arg_parsers.UpdateAction,
+        help=("""The list of headers to send as part of the Uptime Check
+              request. Can only be set if --protocol is "http" or "https"."""),
+    ).AddToParser(uptime_protocol_group)
+  uptime_protocol_group.add_argument(
+      '--content-type',
+      help="""The content type header to use for the check, defaults to "unspecified".
+        Can only be set if --protocol is "http" or "https".""",
+      choices=UPTIME_CONTENT_TYPES,
+  )
+  uptime_protocol_group.add_argument(
+      '--custom-content-type',
+      help="""A user-provided content type header to use for the check.
+        Can only be set if --protocol is "http" or "https".""",
+      type=str,
+  )
+  uptime_protocol_group.add_argument(
+      '--validate-ssl',
+      help="""Whether to include SSL certificate validation as a part of the Uptime Check,
+        defaults to "false".
+        Can only be set if --protocol is "https".""",
+      type=bool,
+  )
+  uptime_protocol_group.add_argument(
+      '--body',
+      help="""The request body associated with the HTTP POST request.
+        Can only be set if --protocol is "http" or "https".""",
+      type=str,
+  )
+  uptime_status_group = uptime_protocol_group.add_group(
+      help='Uptime Status',
+      mutex=True,
+  )
+  if update:
+    uptime_status_classes_group = uptime_status_group.add_group(
+        help='Uptime Status Classes',
+        mutex=True,
+    )
+    uptime_status_classes_group.add_argument(
+        '--set-status-classes',
+        metavar='status-class',
+        help="""List of HTTP Status Classes. The Uptime Check will only pass if the response
+                code is contained in this list.""",
+        type=arg_parsers.ArgList(choices=UPTIME_STATUS_CLASSES),
+    )
+    uptime_status_classes_group.add_argument(
+        '--add-status-classes',
+        metavar='status-class',
+        help="""The list of HTTP Status Classes to add to the Uptime Check.""",
+        type=arg_parsers.ArgList(choices=UPTIME_STATUS_CLASSES),
+    )
+    uptime_status_classes_group.add_argument(
+        '--remove-status-classes',
+        metavar='status-class',
+        help="""The list of HTTP Status Classes to remove from the Uptime Check.""",
+        type=arg_parsers.ArgList(choices=UPTIME_STATUS_CLASSES),
+    )
+    uptime_status_classes_group.add_argument(
+        '--clear-status-classes',
+        help="""Clear all HTTP Status Classes on the Uptime Check. This will act the same as
+                if only "2xx" was selected.""",
+        type=bool,
+    )
+    uptime_status_codes_group = uptime_status_group.add_group(
+        help='Uptime Status Codes',
+        mutex=True,
+    )
+    uptime_status_codes_group.add_argument(
+        '--set-status-codes',
+        metavar='status-code',
+        help="""List of HTTP Status Codes. The Uptime Check will only pass if the response
+                code is present in this list.""",
+        type=arg_parsers.ArgList(int),
+    )
+    uptime_status_codes_group.add_argument(
+        '--add-status-codes',
+        metavar='status-code',
+        help="""The list of HTTP Status Codes to add to the Uptime Check.""",
+        type=arg_parsers.ArgList(int),
+    )
+    uptime_status_codes_group.add_argument(
+        '--remove-status-codes',
+        metavar='status-code',
+        help="""The list of HTTP Status Codes to remove from the Uptime Check.""",
+        type=arg_parsers.ArgList(int),
+    )
+    uptime_status_codes_group.add_argument(
+        '--clear-status-codes',
+        help="""Clear all HTTP Status Codes on the Uptime Check. This will act the same as
+                if only the "2xx" HTTP Status Class was selected.""",
+        type=bool,
+    )
+  else:
+    uptime_status_group.add_argument(
+        '--status-classes',
+        metavar='status-class',
+        help="""List of HTTP Status Classes. The Uptime Check will only pass if the response
+              code is contained in this list. Defaults to "2xx".
+              Can only be set if --protocol is "http" or "https".""",
+        type=arg_parsers.ArgList(choices=UPTIME_STATUS_CLASSES),
+    )
+    uptime_status_group.add_argument(
+        '--status-codes',
+        metavar='status-code',
+        help="""List of HTTP Status Codes. The Uptime Check will only pass if the response code
+              is present in this list.
+              Can only be set if --protocol is "http" or "https".""",
+        type=arg_parsers.ArgList(int),
+    )
+
+
+def AddUptimeRunFlags(parser, update=False):
+  """Adds uptime run flags to the parser."""
+  uptime_settings_group = parser.add_group(help='Uptime check settings')
+  uptime_settings_group.add_argument(
+      '--period',
+      help=(
+          'How often, in minutes, the Uptime check is performed, defaults to'
+          ' "1".'
+      ),
+      choices=UPTIME_PERIODS,
+  )
+  uptime_settings_group.add_argument(
+      '--timeout',
+      help=(
+          'The maximum amount of time in seconds to wait for the request to'
+          ' complete, defaults to "60".'
+      ),
+      type=arg_parsers.BoundedInt(lower_bound=1, upper_bound=60),
+  )
+  if update:
+    AddDisplayNameFlag(
+        uptime_settings_group, resource='Uptime Check', positional=False
+    )
+    uptime_regions_group = uptime_settings_group.add_group(
+        help='Uptime Selected Regions',
+        mutex=True,
+    )
+    uptime_regions_group.add_argument(
+        '--set-regions',
+        metavar='region',
+        help="""The list of regions from which the check will be run. At least 3 regions must be
+            selected.""",
+        type=arg_parsers.ArgList(choices=UPTIME_REGIONS),
+    )
+    uptime_regions_group.add_argument(
+        '--add-regions',
+        metavar='region',
+        help="""The list of regions to add to the Uptime Check.""",
+        type=arg_parsers.ArgList(choices=UPTIME_REGIONS),
+    )
+    uptime_regions_group.add_argument(
+        '--remove-regions',
+        metavar='region',
+        help="""The list of regions to remove from the Uptime Check.""",
+        type=arg_parsers.ArgList(choices=UPTIME_REGIONS),
+    )
+    uptime_regions_group.add_argument(
+        '--clear-regions',
+        help="""Clear all regions on the Uptime Check. This will act the same as if all available
+            regions were selected.""",
+        type=bool,
+    )
+  else:
+    uptime_settings_group.add_argument(
+        '--regions',
+        metavar='field',
+        help="""The list of regions from which the check will be run. At least 3 regions must be selected.
+          Defaults to all available regions.""",
+        type=arg_parsers.ArgList(choices=UPTIME_REGIONS),
+    )
+  if update:
+    AddUpdateLabelsFlags('user-labels', uptime_settings_group, 'uptime check')
+  else:
+    AddCreateLabelsFlag(uptime_settings_group, 'user-labels', 'uptime check')
+
+
+def AddUptimeMatcherFlags(parser):
+  """Adds uptime matcher flags to the parser."""
+  uptime_matcher_group = parser.add_group(help='Uptime matcher settings')
+  uptime_matcher_group.add_argument(
+      '--matcher-content',
+      required=True,
+      type=str,
+      help='String, regex or JSON content to match.',
+  )
+  uptime_matcher_group.add_argument(
+      '--matcher-type',
+      choices=UPTIME_MATCHER_TYPES,
+      help="""The type of content matcher that will be applied to the server output, defaults to
+        "contains-string".""",
+  )
+  uptime_json_matcher_group = uptime_matcher_group.add_group(
+      help='Uptime matcher settings for JSON responses'
+  )
+  uptime_json_matcher_group.add_argument(
+      '--json-path',
+      type=str,
+      required=True,
+      help="""JSONPath within the response output pointing to the expected content to match.
+            Only used if `matcher-type` is "matches-json-path" or "not-matches-json-path".""",
+  )
+  uptime_json_matcher_group.add_argument(
+      '--json-path-matcher-type',
+      choices=UPTIME_JSON_MATCHER_TYPES,
+      help="""The type of JSONPath match that will be applied to the JSON output, defaults to
+            "exact-match".
+            Only used if `matcher-type` is "matches-json-path" or "not-matches-json-path".""",
+  )
 
 
 def ValidateSnoozeUpdateArgs(args):

@@ -1185,8 +1185,6 @@ apis:
   run:
     v1alpha1:
       discovery_doc: run_v1alpha1.json
-    v1beta1:
-      discovery_doc: run_v1beta1.json
     v1:
       discovery_doc: run_v1.json
       default: true
@@ -1545,6 +1543,8 @@ apis:
   telcoautomation:
     v1alpha1:
       discovery_doc: telcoautomation_v1alpha1.json
+    v1:
+      discovery_doc: telcoautomation_v1.json
       default: true
   workloadcertificate:
     v1alpha1:
@@ -1579,6 +1579,12 @@ apis:
     v1alpha1:
       discovery_doc: faultinjectiontesting_v1alpha1.json
       default: true
+  vmmigration:
+    v1:
+      discovery_doc: vmmigration_v1.json
+      default: true
+    v1alpha1:
+      discovery_doc: vmmigration_v1alpha1.json
 canonical_surfaces:
   accessapproval:
     name: accessapproval
@@ -2048,6 +2054,9 @@ canonical_surfaces:
   vision:
     name: vision
     command: ml vision
+  vmmigration:
+    name: vmmigration
+    command: migration vms
   vmwareengine:
     name: vmwareengine
     command: vmware

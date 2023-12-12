@@ -77,25 +77,20 @@ def Delete(app_profile_ref, force=False):
   return client.projects_instances_appProfiles.Delete(msg)
 
 
-def Create(
-    app_profile_ref,
+def _AppProfileChecks(
     cluster=None,
-    description='',
     multi_cluster=False,
     restrict_to=None,
     failover_radius=None,
     transactional_writes=None,
-    force=False,
-    priority=None,
     row_affinity=False,
+    data_boost=False,
 ):
   """Create an app profile.
 
   Args:
-    app_profile_ref: A resource reference of the new app profile.
     cluster: string, The cluster id for the new app profile to route to using
       single cluster routing.
-    description: string, A description of the new app profile.
     multi_cluster: bool, Whether this app profile should route to multiple
       clusters, instead of single cluster.
     restrict_to: list[string] The list of cluster ids for the new app profile to
@@ -104,24 +99,31 @@ def Create(
       by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
       writes enabled. This is only possible when using single cluster routing.
-    force: bool, Whether to ignore API warnings and create forcibly.
-    priority: string, The request priority of the new app profile.
     row_affinity: bool, Whether to use row affinity sticky routing.
+    data_boost: bool, If the app profile should use Data Boost Read-only
+      Isolation.
 
   Raises:
     ConflictingArgumentsException:
         If both cluster and multi_cluster are present.
         If both multi_cluster and transactional_writes are present.
+        If both cluster and row_affinity are present.
         If both cluster and restrict_to are present.
         If both cluster and failover_radius are present.
+        If both multi_cluster and data_boost are present.
+        If both transactional_writes and data_boost are present.
+
     OneOfArgumentsRequiredException: If neither cluster or multi_cluster are
         present.
-
-  Returns:
-    Created app profile resource object.
   """
   if multi_cluster and cluster:
     raise exceptions.ConflictingArgumentsException('--route-to', '--route-any')
+  if not multi_cluster and not cluster:
+    raise exceptions.OneOfArgumentsRequiredException(
+        ['--route-to', '--route-any'],
+        'Either --route-to or --route-any must be specified.',
+    )
+
   if multi_cluster and transactional_writes:
     raise exceptions.ConflictingArgumentsException(
         '--route-any', '--transactional-writes'
@@ -138,11 +140,70 @@ def Create(
     raise exceptions.ConflictingArgumentsException(
         '--route-to', '--failover-radius'
     )
-  if not multi_cluster and not cluster:
-    raise exceptions.OneOfArgumentsRequiredException(
-        ['--route-to', '--route-any'],
-        'Either --route-to or --route-any must be specified.',
+
+  # Data Boost.
+  if multi_cluster and data_boost:
+    raise exceptions.ConflictingArgumentsException(
+        '--route-any', '--data-boost'
     )
+  if transactional_writes and data_boost:
+    raise exceptions.ConflictingArgumentsException(
+        '--transactional-writes', '--data-boost'
+    )
+
+
+def Create(
+    app_profile_ref,
+    cluster=None,
+    description='',
+    multi_cluster=False,
+    restrict_to=None,
+    failover_radius=None,
+    transactional_writes=None,
+    row_affinity=False,
+    priority=None,
+    data_boost=False,
+    data_boost_billing_owner=None,
+    force=False,
+):
+  """Create an app profile.
+
+  Args:
+    app_profile_ref: A resource reference of the new app profile.
+    cluster: string, The cluster id for the new app profile to route to using
+      single cluster routing.
+    description: string, A description of the new app profile.
+    multi_cluster: bool, Whether this app profile should route to multiple
+      clusters, instead of single cluster.
+    restrict_to: list[string] The list of cluster ids for the new app profile to
+      route to using multi cluster routing.
+    failover_radius: string, Restricts clusters that requests can fail over to
+      by proximity with multi cluster routing.
+    transactional_writes: bool, Whether this app profile has transactional
+      writes enabled. This is only possible when using single cluster routing.
+    row_affinity: bool, Whether to use row affinity sticky routing.
+    priority: string, The request priority of the new app profile.
+    data_boost: bool, If the app profile should use Standard Isolation.
+    data_boost_billing_owner: string, The billing owner for Data Boost.
+    force: bool, Whether to ignore API warnings and create forcibly.
+
+  Raises:
+    ConflictingArgumentsException,
+    OneOfArgumentsRequiredException:
+      See _AppProfileChecks(...)
+
+  Returns:
+    Created app profile resource object.
+  """
+  _AppProfileChecks(
+      cluster=cluster,
+      multi_cluster=multi_cluster,
+      restrict_to=restrict_to,
+      failover_radius=failover_radius,
+      transactional_writes=transactional_writes,
+      row_affinity=row_affinity,
+      data_boost=data_boost,
+  )
 
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
@@ -165,13 +226,24 @@ def Create(
     )
   elif cluster:
     single_cluster_routing = msgs.SingleClusterRouting(
-        clusterId=cluster, allowTransactionalWrites=transactional_writes
+        clusterId=cluster,
+        allowTransactionalWrites=transactional_writes,
     )
 
   standard_isolation = None
+  data_boost_isolation = None
   if priority:
     priority_enum = msgs.StandardIsolation.PriorityValueValuesEnum(priority)
     standard_isolation = msgs.StandardIsolation(priority=priority_enum)
+  elif data_boost:
+    data_boost_enum = (
+        msgs.DataboostIsolationReadOnly.BillingOwnerValueValuesEnum(
+            data_boost_billing_owner
+        )
+    )
+    data_boost_isolation = msgs.DataboostIsolationReadOnly(
+        billingOwner=data_boost_enum
+    )
 
   msg = msgs.BigtableadminProjectsInstancesAppProfilesCreateRequest(
       appProfile=msgs.AppProfile(
@@ -179,6 +251,7 @@ def Create(
           multiClusterRoutingUseAny=multi_cluster_routing,
           singleClusterRouting=single_cluster_routing,
           standardIsolation=standard_isolation,
+          databoostIsolationReadOnly=data_boost_isolation,
       ),
       appProfileId=app_profile_ref.Name(),
       parent=instance_ref.RelativeName(),
@@ -195,9 +268,11 @@ def Update(
     restrict_to=None,
     failover_radius=None,
     transactional_writes=None,
-    force=False,
-    priority=None,
     row_affinity=None,
+    priority=None,
+    data_boost=False,
+    data_boost_billing_owner=None,
+    force=False,
 ):
   """Update an app profile.
 
@@ -214,46 +289,30 @@ def Update(
       by proximity with multi cluster routing.
     transactional_writes: bool, Whether this app profile has transactional
       writes enabled. This is only possible when using single cluster routing.
-    force: bool, Whether to ignore API warnings and create forcibly.
-    priority: string, The request priority of the app profile.
     row_affinity: bool, Whether to use row affinity sticky routing. If None,
       then no change should be made.
+    priority: string, The request priority of the new app profile.
+    data_boost: bool, If the app profile should use Standard Isolation.
+    data_boost_billing_owner: string, The billing owner for Data Boost.
+    force: bool, Whether to ignore API warnings and create forcibly.
 
   Raises:
-    ConflictingArgumentsException:
-        If both cluster and multi_cluster are present.
-        If both multi_cluster and transactional_writes are present.
-        If both cluster and restrict_to are present.
-        If both cluster and failover_radius are present.
-    OneOfArgumentsRequiredException: If neither cluster or multi_cluster are
-        present.
+    ConflictingArgumentsException,
+    OneOfArgumentsRequiredException:
+      See _AppProfileChecks(...)
 
   Returns:
     Long running operation.
   """
-  if multi_cluster and cluster:
-    raise exceptions.ConflictingArgumentsException('--route-to', '--route-any')
-  if multi_cluster and transactional_writes:
-    raise exceptions.ConflictingArgumentsException(
-        '--route-any', '--transactional-writes'
-    )
-  if cluster and restrict_to:
-    raise exceptions.ConflictingArgumentsException(
-        '--route-to', '--restrict-to'
-    )
-  if cluster and failover_radius:
-    raise exceptions.ConflictingArgumentsException(
-        '--route-to', '--failover-radius'
-    )
-  if cluster and row_affinity:
-    raise exceptions.ConflictingArgumentsException(
-        '--route-to', '--row-affinity'
-    )
-  if not multi_cluster and not cluster:
-    raise exceptions.OneOfArgumentsRequiredException(
-        ['--route-to', '--route-any'],
-        'Either --route-to or --route-any must be specified.',
-    )
+  _AppProfileChecks(
+      cluster=cluster,
+      multi_cluster=multi_cluster,
+      restrict_to=restrict_to,
+      failover_radius=failover_radius,
+      transactional_writes=transactional_writes,
+      row_affinity=row_affinity,
+      data_boost=data_boost,
+  )
 
   client = util.GetAdminClient()
   msgs = util.GetAdminMessages()
@@ -305,6 +364,17 @@ def Update(
     changed_fields.append('standardIsolation.priority')
     app_profile.standardIsolation = msgs.StandardIsolation(
         priority=priority_enum
+    )
+
+  elif data_boost:
+    data_boost_enum = (
+        msgs.DataboostIsolationReadOnly.BillingOwnerValueValuesEnum(
+            data_boost_billing_owner
+        )
+    )
+    changed_fields.append('databoostIsolationReadOnly')
+    app_profile.databoostIsolationReadOnly = msgs.DataboostIsolationReadOnly(
+        billingOwner=data_boost_enum
     )
 
   msg = msgs.BigtableadminProjectsInstancesAppProfilesPatchRequest(

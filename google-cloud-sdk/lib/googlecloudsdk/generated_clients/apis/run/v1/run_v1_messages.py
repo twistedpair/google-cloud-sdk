@@ -1383,7 +1383,6 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
-      `run.googleapis.com/disable-default-url`: Service. *
       `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
@@ -1419,7 +1418,6 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
-      `run.googleapis.com/disable-default-url`: Service. *
       `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
       `run.googleapis.com/encryption-key`: Revision, Execution. *
       `run.googleapis.com/execution-environment`: Revision, Execution. *
@@ -1482,11 +1480,11 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/container-dependencies`: Revision. *
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
-    `run.googleapis.com/description`: Service. * `run.googleapis.com/disable-
-    default-url`: Service. * `run.googleapis.com/encryption-key-shutdown-
-    hours`: Revision * `run.googleapis.com/encryption-key`: Revision,
-    Execution. * `run.googleapis.com/execution-environment`: Revision,
-    Execution. * `run.googleapis.com/gc-traffic-tags`: Service. *
+    `run.googleapis.com/description`: Service. *
+    `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
+    `run.googleapis.com/encryption-key`: Revision, Execution. *
+    `run.googleapis.com/execution-environment`: Revision, Execution. *
+    `run.googleapis.com/gc-traffic-tags`: Service. *
     `run.googleapis.com/ingress`: Service. * `run.googleapis.com/launch-
     stage`: Service, Job. * `run.googleapis.com/minScale`: Service (ALPHA) *
     `run.googleapis.com/network-interfaces`: Revision, Execution. *
@@ -3509,10 +3507,9 @@ class Service(_messages.Message):
       Service.metadata.annotations. * `run.googleapis.com/binary-
       authorization-breakglass` * `run.googleapis.com/binary-authorization` *
       `run.googleapis.com/client-name` * `run.googleapis.com/custom-audiences`
-      * `run.googleapis.com/description` * `run.googleapis.com/disable-
-      default-url` * `run.googleapis.com/gc-traffic-tags` *
-      `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets the
-      ingress settings for the Service. See [the ingress settings
+      * `run.googleapis.com/description` * `run.googleapis.com/gc-traffic-
+      tags` * `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets
+      the ingress settings for the Service. See [the ingress settings
       documentation](/run/docs/securing/ingress) for details on configuring
       ingress settings. * `run.googleapis.com/ingress-status` is output-only
       and contains the currently active ingress settings for the Service.
@@ -3803,8 +3800,7 @@ class TaskSpec(_messages.Message):
 
   Fields:
     containers: Optional. List of containers belonging to the task. We
-      disallow a number of fields on this Container. Only a single container
-      may be provided.
+      disallow a number of fields on this Container.
     maxRetries: Optional. Number of retries allowed per task, before marking
       this job failed. Defaults to 3.
     serviceAccountName: Optional. Email address of the IAM service account

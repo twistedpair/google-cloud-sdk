@@ -156,13 +156,14 @@ def _IsPossibleResourceName(name: str) -> bool:
 
 def GetCustomConfigFromArgs(file):
   """Process the custom config file for the custom module."""
-  try:
-    config_dict = yaml.load(file)
-    return encoding.DictToMessage(config_dict, messages.CustomConfig)
-  except yaml.YAMLParseError as ype:
-    raise errors.InvalidCustomConfigFileError(
-        'Error parsing custom config file [{}]'.format(ype)
-    )
+  if file is not None:
+    try:
+      config_dict = yaml.load(file)
+      return encoding.DictToMessage(config_dict, messages.CustomConfig)
+    except yaml.YAMLParseError as ype:
+      raise errors.InvalidCustomConfigFileError(
+          'Error parsing custom config file [{}]'.format(ype)
+      )
 
 
 def GetTestResourceFromArgs(file):
@@ -194,7 +195,8 @@ def GetConfigValueFromArgs(file):
 
 
 def GetEnablementStateFromArgs(
-    enablement_state: str, module_type: constants.CustomModuleType
+    enablement_state: str,
+    module_type: constants.CustomModuleType
 ):
   """Parse the enablement state."""
   if module_type == constants.CustomModuleType.SHA:

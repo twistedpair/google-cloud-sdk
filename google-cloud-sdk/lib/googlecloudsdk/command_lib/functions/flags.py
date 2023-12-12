@@ -905,12 +905,15 @@ def AddIgnoreFileFlag(parser):
 # Flags for Runtime Updates
 def AddRuntimeUpdatePolicy(parser, track):
   """Adds flags for selecting the runtime update policy."""
-  if track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
+  if track in (
+      base.ReleaseTrack.ALPHA,
+      base.ReleaseTrack.BETA,
+      base.ReleaseTrack.GA,
+  ):
     parser.add_argument(
         '--runtime-update-policy',
-        hidden=True,
         help="""\
-        Runtime update policy for the function being deployed.
+        Runtime update policy for the 1st Gen function being deployed.
         The option `on-deploy` is used by default.
       """,
     )

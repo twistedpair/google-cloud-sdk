@@ -365,16 +365,30 @@ def MakeRequests(
           operation_service = service.client.globalOperations
       else:
         operation_service = service.client.globalOrganizationOperations
-
-      operations_data.append(
-          waiters.OperationData(
-              response,
-              operation_service,
-              resource_service,
-              project=project,
-              no_followup=no_followup,
-              followup_override=followup_override,
-              always_return_operation=always_return_operation))
+      # TODO: b/313849714 - Leave only else block once the bug is fixed.
+      if hasattr(request_body, 'instanceGroupManagerResizeRequest'):
+        operations_data.append(
+            waiters.OperationData(
+                response,
+                operation_service,
+                resource_service,
+                project=project,
+                resize_request_name=request_body.instanceGroupManagerResizeRequest.name,
+                no_followup=no_followup,
+                followup_override=followup_override,
+                always_return_operation=always_return_operation,
+            )
+        )
+      else:
+        operations_data.append(
+            waiters.OperationData(
+                response,
+                operation_service,
+                resource_service,
+                project=project,
+                no_followup=no_followup,
+                followup_override=followup_override,
+                always_return_operation=always_return_operation))
 
     else:
       yield response

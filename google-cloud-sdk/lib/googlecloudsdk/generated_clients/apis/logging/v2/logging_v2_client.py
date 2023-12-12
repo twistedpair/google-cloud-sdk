@@ -521,7 +521,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
+      r"""Updates a view on a log bucket. This method replaces the value of the filter field from the existing view with the corresponding value from the new view. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingBillingAccountsLocationsBucketsViewsPatchRequest) input message
@@ -693,7 +693,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
+      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: It's a _Default or _Required bucket. It has a location of "global". It has a non-project parent when it's a _Default bucket.
 
       Args:
         request: (MoveBucketRequest) input message
@@ -1293,7 +1293,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingBillingAccountsSinksPatchRequest) input message
@@ -1320,7 +1320,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingBillingAccountsSinksUpdateRequest) input message
@@ -1357,7 +1357,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations, and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingBillingAccountsGetCmekSettingsRequest) input message
@@ -1384,7 +1384,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def GetSettings(self, request, global_params=None):
-      r"""Gets the Log Router settings for the given resource.Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the settings for the given resource.Note: Settings can be retrieved for Google Cloud projects, folders, organizations, and billing accounts.See View default resource settings for Logging (https://cloud.google.com/logging/docs/default-settings#view-org-settings) for more information.
 
       Args:
         request: (LoggingBillingAccountsGetSettingsRequest) input message
@@ -2228,7 +2228,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
+      r"""Updates a view on a log bucket. This method replaces the value of the filter field from the existing view with the corresponding value from the new view. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingFoldersLocationsBucketsViewsPatchRequest) input message
@@ -2400,7 +2400,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
+      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: It's a _Default or _Required bucket. It has a location of "global". It has a non-project parent when it's a _Default bucket.
 
       Args:
         request: (MoveBucketRequest) input message
@@ -3000,7 +3000,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingFoldersSinksPatchRequest) input message
@@ -3027,7 +3027,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingFoldersSinksUpdateRequest) input message
@@ -3064,7 +3064,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations, and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingFoldersGetCmekSettingsRequest) input message
@@ -3091,7 +3091,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def GetSettings(self, request, global_params=None):
-      r"""Gets the Log Router settings for the given resource.Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the settings for the given resource.Note: Settings can be retrieved for Google Cloud projects, folders, organizations, and billing accounts.See View default resource settings for Logging (https://cloud.google.com/logging/docs/default-settings#view-org-settings) for more information.
 
       Args:
         request: (LoggingFoldersGetSettingsRequest) input message
@@ -3118,7 +3118,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateSettings(self, request, global_params=None):
-      r"""Updates the Log Router settings for the given resource.Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled. 4) location_id is not supported by Logging. 5) location_id violate OrgPolicy.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the settings for the given resource. This method applies to all feature configurations for organization and folders.UpdateSettings fails when any of the following are true: The value of storage_location either isn't supported by Logging or violates the location OrgPolicy. The default_sink_config field is set, but it has an unspecified filter write mode. The value of kms_key_name is invalid. The associated service account doesn't have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key. Access to the key is disabled.See Configure default settings for organizations and folders (https://cloud.google.com/logging/docs/default-settings) for more information.
 
       Args:
         request: (LoggingFoldersUpdateSettingsRequest) input message
@@ -3381,7 +3381,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
+      r"""Updates a view on a log bucket. This method replaces the value of the filter field from the existing view with the corresponding value from the new view. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingLocationsBucketsViewsPatchRequest) input message
@@ -3553,7 +3553,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
+      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: It's a _Default or _Required bucket. It has a location of "global". It has a non-project parent when it's a _Default bucket.
 
       Args:
         request: (MoveBucketRequest) input message
@@ -4361,7 +4361,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
+      r"""Updates a view on a log bucket. This method replaces the value of the filter field from the existing view with the corresponding value from the new view. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingOrganizationsLocationsBucketsViewsPatchRequest) input message
@@ -4533,7 +4533,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
+      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: It's a _Default or _Required bucket. It has a location of "global". It has a non-project parent when it's a _Default bucket.
 
       Args:
         request: (MoveBucketRequest) input message
@@ -5133,7 +5133,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingOrganizationsSinksPatchRequest) input message
@@ -5160,7 +5160,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingOrganizationsSinksUpdateRequest) input message
@@ -5197,7 +5197,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations, and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingOrganizationsGetCmekSettingsRequest) input message
@@ -5224,7 +5224,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def GetSettings(self, request, global_params=None):
-      r"""Gets the Log Router settings for the given resource.Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the settings for the given resource.Note: Settings can be retrieved for Google Cloud projects, folders, organizations, and billing accounts.See View default resource settings for Logging (https://cloud.google.com/logging/docs/default-settings#view-org-settings) for more information.
 
       Args:
         request: (LoggingOrganizationsGetSettingsRequest) input message
@@ -5251,7 +5251,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings fails when any of the following are true: The value of kms_key_name is invalid. The associated service account doesn't have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key. Access to the key is disabled.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingOrganizationsUpdateCmekSettingsRequest) input message
@@ -5278,7 +5278,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateSettings(self, request, global_params=None):
-      r"""Updates the Log Router settings for the given resource.Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled. 4) location_id is not supported by Logging. 5) location_id violate OrgPolicy.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the settings for the given resource. This method applies to all feature configurations for organization and folders.UpdateSettings fails when any of the following are true: The value of storage_location either isn't supported by Logging or violates the location OrgPolicy. The default_sink_config field is set, but it has an unspecified filter write mode. The value of kms_key_name is invalid. The associated service account doesn't have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key. Access to the key is disabled.See Configure default settings for organizations and folders (https://cloud.google.com/logging/docs/default-settings) for more information.
 
       Args:
         request: (LoggingOrganizationsUpdateSettingsRequest) input message
@@ -5723,7 +5723,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a view on a log bucket. This method replaces the following fields in the existing view with values from the new view: filter. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
+      r"""Updates a view on a log bucket. This method replaces the value of the filter field from the existing view with the corresponding value from the new view. If an UNAVAILABLE error is returned, this indicates that system is not in a state where it can update the view. If this occurs, please try again in a few minutes.
 
       Args:
         request: (LoggingProjectsLocationsBucketsViewsPatchRequest) input message
@@ -5895,7 +5895,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Move(self, request, global_params=None):
-      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: Be a _Default or _Required bucket Have a location of "global" Have a non-project parent when it is a _Default bucket.
+      r"""Moves a bucket from one location to another location. This method creates a new bucket at the new location with an ACTIVE state. The bucket at the old location will remain available with an ARCHIVED state such that it is queryable but can no longer be used as a sink destination. All corresponding sinks are updated to point to the new bucket. Currently, the contents of the old bucket are not copied to the new one. In order to be movable, a bucket must satisfy the following restrictions: It's a _Default or _Required bucket. It has a location of "global". It has a non-project parent when it's a _Default bucket.
 
       Args:
         request: (MoveBucketRequest) input message
@@ -6640,7 +6640,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingProjectsSinksPatchRequest) input message
@@ -6667,7 +6667,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingProjectsSinksUpdateRequest) input message
@@ -6704,7 +6704,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations, and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingProjectsGetCmekSettingsRequest) input message
@@ -6731,7 +6731,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def GetSettings(self, request, global_params=None):
-      r"""Gets the Log Router settings for the given resource.Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the settings for the given resource.Note: Settings can be retrieved for Google Cloud projects, folders, organizations, and billing accounts.See View default resource settings for Logging (https://cloud.google.com/logging/docs/default-settings#view-org-settings) for more information.
 
       Args:
         request: (LoggingProjectsGetSettingsRequest) input message
@@ -6938,7 +6938,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def Update(self, request, global_params=None):
-      r"""Updates a sink. This method replaces the following fields in the existing sink with values from the new sink: destination, and filter.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
+      r"""Updates a sink. This method replaces the values of the destination and filter fields of the existing sink with the corresponding values from the new sink.The updated sink might also have a new writer_identity; see the unique_writer_identity field.
 
       Args:
         request: (LoggingSinksUpdateRequest) input message
@@ -6975,7 +6975,7 @@ class LoggingV2(base_api.BaseApiClient):
           }
 
     def GetCmekSettings(self, request, global_params=None):
-      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the Logging CMEK settings for the given resource.Note: CMEK for the Log Router can be configured for Google Cloud projects, folders, organizations, and billing accounts. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingGetCmekSettingsRequest) input message
@@ -7002,7 +7002,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def GetSettings(self, request, global_params=None):
-      r"""Gets the Log Router settings for the given resource.Note: Settings for the Log Router can be get for Google Cloud projects, folders, organizations and billing accounts. Currently it can only be configured for organizations. Once configured for an organization, it applies to all projects and folders in the Google Cloud organization.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Gets the settings for the given resource.Note: Settings can be retrieved for Google Cloud projects, folders, organizations, and billing accounts.See View default resource settings for Logging (https://cloud.google.com/logging/docs/default-settings#view-org-settings) for more information.
 
       Args:
         request: (LoggingGetSettingsRequest) input message
@@ -7029,7 +7029,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateCmekSettings(self, request, global_params=None):
-      r"""Updates the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the Log Router CMEK settings for the given resource.Note: CMEK for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateCmekSettings fails when any of the following are true: The value of kms_key_name is invalid. The associated service account doesn't have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key. Access to the key is disabled.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
 
       Args:
         request: (LoggingUpdateCmekSettingsRequest) input message
@@ -7056,7 +7056,7 @@ class LoggingV2(base_api.BaseApiClient):
     )
 
     def UpdateSettings(self, request, global_params=None):
-      r"""Updates the Log Router settings for the given resource.Note: Settings for the Log Router can currently only be configured for Google Cloud organizations. Once configured, it applies to all projects and folders in the Google Cloud organization.UpdateSettings will fail if 1) kms_key_name is invalid, or 2) the associated service account does not have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key, or 3) access to the key is disabled. 4) location_id is not supported by Logging. 5) location_id violate OrgPolicy.See Enabling CMEK for Log Router (https://cloud.google.com/logging/docs/routing/managed-encryption) for more information.
+      r"""Updates the settings for the given resource. This method applies to all feature configurations for organization and folders.UpdateSettings fails when any of the following are true: The value of storage_location either isn't supported by Logging or violates the location OrgPolicy. The default_sink_config field is set, but it has an unspecified filter write mode. The value of kms_key_name is invalid. The associated service account doesn't have the required roles/cloudkms.cryptoKeyEncrypterDecrypter role assigned for the key. Access to the key is disabled.See Configure default settings for organizations and folders (https://cloud.google.com/logging/docs/default-settings) for more information.
 
       Args:
         request: (LoggingUpdateSettingsRequest) input message

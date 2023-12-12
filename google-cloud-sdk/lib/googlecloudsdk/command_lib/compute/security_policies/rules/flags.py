@@ -160,6 +160,12 @@ _RATE_LIMIT_ENFORCE_ON_KEY_TYPES_DESCRIPTION = """
                   TLS session of the HTTPS request
       - ``region-code'': key type takes the value of the region code from which
                          the request originates
+      - ``tls-ja3-fingerprint'': key type takes the value of JA3 TLS/SSL
+                                 fingerprint if the client connects using HTTPS,
+                                 HTTP/2 or HTTP/3
+      - ``user-ip'': key type takes the IP address of the originating client,
+                     which is resolved based on user-ip-request-headers
+                     configured with the security policy
 """
 
 
@@ -447,8 +453,16 @@ def AddRateLimitOptions(
         """)
 
   enforce_on_key = [
-      'ip', 'all', 'http-header', 'xff-ip', 'http-cookie', 'http-path', 'sni',
-      'region-code'
+      'ip',
+      'all',
+      'http-header',
+      'xff-ip',
+      'http-cookie',
+      'http-path',
+      'sni',
+      'region-code',
+      'tls-ja3-fingerprint',
+      'user-ip',
   ]
   parser.add_argument(
       '--enforce-on-key',
@@ -482,8 +496,10 @@ def AddRateLimitOptions(
         # The default renders as follows:
         # [all=ALL],[http-cookie=HTTP-COOKIE],
         # [http-header=HTTP-HEADER],[http-path=HTTP-PATH],
-        # [ip=IP],[region-code=REGION-CODE],[sni=SNI],[xff-ip=XFF-IP]]
-        metavar='[[all],[ip],[xff-ip],[http-cookie=HTTP_COOKIE],[http-header=HTTP_HEADER],[http-path],[sni],[region-code]]',
+        # [ip=IP],[region-code=REGION-CODE],[sni=SNI],
+        # [tls-ja3-fingerprint=TLS-JA3-FINGERPRINT],[user-ip=USER-IP],
+        # [xff-ip=XFF-IP]]
+        metavar='[[all],[ip],[xff-ip],[http-cookie=HTTP_COOKIE],[http-header=HTTP_HEADER],[http-path],[sni],[region-code],[tls-ja3-fingerprint],[user-ip]]',
         help="""\
         Specify up to 3 key type/name pairs to rate limit.
         Valid key types are:

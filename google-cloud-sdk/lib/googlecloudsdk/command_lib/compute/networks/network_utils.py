@@ -129,8 +129,19 @@ def AddBgpBestPathSelectionArgGroup(parser):
   group.add_argument(
       '--bgp-best-path-selection-mode',
       choices={
-          'LEGACY': 'LEGACY mode (default)',
-          'STANDARD': 'STANDARD mode',
+          'LEGACY': (
+              'Dynamic routes are ranked based on MED BGP attribute. When'
+              ' global routing is enabled, MED of the routes received from'
+              ' other regions is original MED plus region-to-region cost.'
+          ),
+          'STANDARD': (
+              'Dynamic routes are ranked based on AS Path, Origin, Neighbor ASN'
+              ' and MED BGP attributes. When global routing is enabled,'
+              ' region-to-region cost is used as a tiebreaker. This mode offers'
+              ' customizations to fine-tune BGP best path routing with'
+              ' additional knobs like --bgp-bps-always-compare-med and'
+              ' --bgp-bps-inter-region-cost'
+          ),
       },
       help="""The BGP best selection algorithm to be employed. MODE can be LEGACY or STANDARD.""",
       type=arg_utils.ChoiceToEnumName,

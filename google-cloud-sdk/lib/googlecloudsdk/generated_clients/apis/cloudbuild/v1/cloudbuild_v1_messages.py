@@ -2961,12 +2961,14 @@ class GitFileSource(_messages.Message):
         GitHub Enterprise).
       BITBUCKET_SERVER: A Bitbucket Server-hosted repo.
       GITLAB: A GitLab-hosted repo.
+      BITBUCKET_CLOUD: A Bitbucket Cloud-hosted repo.
     """
     UNKNOWN = 0
     CLOUD_SOURCE_REPOSITORIES = 1
     GITHUB = 2
     BITBUCKET_SERVER = 3
     GITLAB = 4
+    BITBUCKET_CLOUD = 5
 
   bitbucketServerConfig = _messages.StringField(1)
   githubEnterpriseConfig = _messages.StringField(2)
@@ -3292,12 +3294,14 @@ class GitRepoSource(_messages.Message):
         GitHub Enterprise).
       BITBUCKET_SERVER: A Bitbucket Server-hosted repo.
       GITLAB: A GitLab-hosted repo.
+      BITBUCKET_CLOUD: A Bitbucket Cloud-hosted repo.
     """
     UNKNOWN = 0
     CLOUD_SOURCE_REPOSITORIES = 1
     GITHUB = 2
     BITBUCKET_SERVER = 3
     GITLAB = 4
+    BITBUCKET_CLOUD = 5
 
   bitbucketServerConfig = _messages.StringField(1)
   githubEnterpriseConfig = _messages.StringField(2)
@@ -4372,12 +4376,14 @@ class RepositoryEventConfig(_messages.Message):
       GITHUB_ENTERPRISE: The SCM repo is GITHUB Enterprise.
       GITLAB_ENTERPRISE: The SCM repo is GITLAB Enterprise.
       BITBUCKET_DATA_CENTER: The SCM repo is BITBUCKET Data Center.
+      BITBUCKET_CLOUD: The SCM repo is BITBUCKET Cloud.
     """
     REPOSITORY_TYPE_UNSPECIFIED = 0
     GITHUB = 1
     GITHUB_ENTERPRISE = 2
     GITLAB_ENTERPRISE = 3
     BITBUCKET_DATA_CENTER = 4
+    BITBUCKET_CLOUD = 5
 
   pullRequest = _messages.MessageField('PullRequestFilter', 1)
   push = _messages.MessageField('PushFilter', 2)

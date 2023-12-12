@@ -351,7 +351,6 @@ def AddSubscriptionTopicResourceFlags(parser):
 def AddBigQueryConfigFlags(
     parser,
     is_update,
-    enable_use_table_schema=False,
 ):
   """Adds BigQuery config flags to parser."""
   current_group = parser
@@ -384,33 +383,28 @@ def AddBigQueryConfigFlags(
       bigquery_config_group.add_mutually_exclusive_group()
   )
 
-  use_topic_schema_help_text = (
-      "Whether or not to use the schema for the subscription's topic (if it"
-      ' exists) when writing messages to BigQuery.'
-  )
-  if enable_use_table_schema:
-    use_topic_schema_help_text += (
-        ' If --drop-unknown-fields is not set, then the BigQuery schema must'
-        ' contain all fields that are present in the topic schema.'
-    )
   AddBooleanFlag(
       parser=bigquery_schema_config_mutually_exclusive_group,
       flag_name='use-topic-schema',
       action='store_true',
       default=None,
-      help_text=use_topic_schema_help_text,
+      help_text=(
+          "Whether or not to use the schema for the subscription's topic (if it"
+          ' exists) when writing messages to BigQuery. If --drop-unknown-fields'
+          ' is not set, then the BigQuery schema must contain all fields that'
+          ' are present in the topic schema.'
+      ),
   )
-  if enable_use_table_schema:
-    AddBooleanFlag(
-        parser=bigquery_schema_config_mutually_exclusive_group,
-        flag_name='use-table-schema',
-        action='store_true',
-        default=None,
-        help_text=(
-            'Whether or not to use the BigQuery table schema when writing'
-            ' messages to BigQuery.'
-        ),
-    )
+  AddBooleanFlag(
+      parser=bigquery_schema_config_mutually_exclusive_group,
+      flag_name='use-table-schema',
+      action='store_true',
+      default=None,
+      help_text=(
+          'Whether or not to use the BigQuery table schema when writing'
+          ' messages to BigQuery.'
+      ),
+  )
   AddBooleanFlag(
       parser=bigquery_config_group,
       flag_name='write-metadata',
@@ -425,25 +419,16 @@ def AddBigQueryConfigFlags(
           ' JSON object in the attributes column.'
       ),
   )
-  if enable_use_table_schema:
-    drop_unknown_fields_help_text = (
-        'If either --use-topic-schema or --use-table-schema is set, whether or'
-        ' not to ignore fields in the message that do not appear in the'
-        ' BigQuery table schema.'
-    )
-  else:
-    drop_unknown_fields_help_text = (
-        'When --use-topic-schema is set, whether or not to ignore fields in'
-        ' the topic schema that do not appear in the BigQuery schema. If'
-        ' false, then the BigQuery schema must contain all fields that are'
-        ' also present in the topic schema.'
-    )
   AddBooleanFlag(
       parser=bigquery_config_group,
       flag_name='drop-unknown-fields',
       action='store_true',
       default=None,
-      help_text=drop_unknown_fields_help_text,
+      help_text=(
+          'If either --use-topic-schema or --use-table-schema is set, whether'
+          ' or not to ignore fields in the message that do not appear in the'
+          ' BigQuery table schema.'
+      ),
   )
 
 
@@ -612,7 +597,6 @@ def AddSubscriptionSettingsFlags(
     parser,
     is_update=False,
     enable_push_to_cps=False,
-    enable_use_table_schema=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
@@ -621,8 +605,6 @@ def AddSubscriptionSettingsFlags(
     is_update: Whether or not this is for the update operation (vs. create).
     enable_push_to_cps: whether or not to enable Pubsub Export config flags
       support.
-    enable_use_table_schema: whether or not to enable the `use_table_schema`
-      flag support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -631,7 +613,7 @@ def AddSubscriptionSettingsFlags(
   )
 
   mutex_group = parser.add_mutually_exclusive_group()
-  AddBigQueryConfigFlags(mutex_group, is_update, enable_use_table_schema)
+  AddBigQueryConfigFlags(mutex_group, is_update)
   AddCloudStorageConfigFlags(mutex_group, is_update)
   if enable_push_to_cps:
     AddPubsubExportConfigFlags(mutex_group, is_update)

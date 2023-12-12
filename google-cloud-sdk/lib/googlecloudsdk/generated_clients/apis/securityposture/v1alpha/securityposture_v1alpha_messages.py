@@ -36,7 +36,9 @@ class Constraint(_messages.Message):
 
   Fields:
     orgPolicyCannedConstraint: Optional. Org Policy canned constraint.
+      Deprecated, use org_policy_constraint instead.
     orgPolicyCustomConstraint: Optional. Org Policy custom constraint.
+      Deprecated, use org_policy_constraint_custom instead.
   """
 
   orgPolicyCannedConstraint = _messages.MessageField('OrgPolicyCannedConstraint', 1)
@@ -480,7 +482,8 @@ class OperationMetadata(_messages.Message):
 
 
 class OrgPolicyCannedConstraint(_messages.Message):
-  r"""Message for Org Policy Canned Constraint.
+  r"""Message for Org Policy Canned Constraint. Deprecated, use
+  OrgPolicyConstraint instead
 
   Fields:
     cannedConstraintId: Required. Org Policy Canned Constraint id.
@@ -492,7 +495,8 @@ class OrgPolicyCannedConstraint(_messages.Message):
 
 
 class OrgPolicyCustomConstraint(_messages.Message):
-  r"""Message for Org Policy Custom Constraint.
+  r"""Message for Org Policy Custom Constraint. Deprecated, use
+  OrgPolicyConstraintCustom instead
 
   Fields:
     customConstraint: Required. Org Policy Custom Constraint.
@@ -511,7 +515,8 @@ class Policy(_messages.Message):
       standard and control.
     constraint: Required. Constraint details.
     description: Optional. Description of the Policy.
-    policyId: Required. ID of the Policy.
+    policyId: Required. ID of the Policy that is user generated, immutable and
+      unique within the scope of a policy set.
   """
 
   complianceStandards = _messages.MessageField('ComplianceStandard', 1, repeated=True)
@@ -693,8 +698,8 @@ class PostureDeployment(_messages.Message):
       will be filled in case where PostureDeployment enters a failure state
       like UPDATE_FAILED or CREATE_FAILED or DELETE_FAILED.
     name: Required. The name of this PostureDeployment resource, in the format
-      of projects/{project_id}/locations/{location_id}/postureDeployments/{pos
-      tureDeployment}.
+      of organizations/{organization}/locations/{location_id}/postureDeploymen
+      ts/{postureDeployment}.
     postureId: Required. Posture that needs to be deployed. Format:
       organizations/{org_id}/locations/{location_id}/postures/ Example:
       organizations/99/locations/global/postures/les-miserables.
@@ -784,9 +789,9 @@ class PostureTemplate(_messages.Message):
 
   Fields:
     description: Output only. Description of the Posture template.
-    name: Output only. The name of the Posture template will be of the format
-      organizations/{organization}/locations/{location}/postureTemplates/{post
-      ureTemplate}
+    name: Output only. Identifier. The name of the Posture template will be of
+      the format organizations/{organization}/locations/{location}/postureTemp
+      lates/{postureTemplate}
     policySets: Output only. Policy_sets to be used by the user.
     revisionId: Output only. The revision_id of a PostureTemplate.
     state: Output only. State of PostureTemplate resource.
@@ -811,87 +816,6 @@ class PostureTemplate(_messages.Message):
   policySets = _messages.MessageField('PolicySet', 3, repeated=True)
   revisionId = _messages.StringField(4)
   state = _messages.EnumField('StateValueValuesEnum', 5)
-
-
-class SecuritypostureFoldersLocationsPostureDeploymentsCreateRequest(_messages.Message):
-  r"""A SecuritypostureFoldersLocationsPostureDeploymentsCreateRequest object.
-
-  Fields:
-    parent: Required. Value for parent. Format:
-      organizations/{org_id}/locations/{location},
-      folders/{folder_id}/locations/{location},
-      projects/{project_id}/locations/{location}
-    postureDeployment: A PostureDeployment resource to be passed as the
-      request body.
-    postureDeploymentId: Required. User provided identifier. It should be
-      unique in scope of an Organization and location.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  postureDeployment = _messages.MessageField('PostureDeployment', 2)
-  postureDeploymentId = _messages.StringField(3)
-
-
-class SecuritypostureFoldersLocationsPostureDeploymentsDeleteRequest(_messages.Message):
-  r"""A SecuritypostureFoldersLocationsPostureDeploymentsDeleteRequest object.
-
-  Fields:
-    etag: Optional. Etag value of the PostureDeployment to be deleted.
-    name: Required. Name of the resource.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class SecuritypostureFoldersLocationsPostureDeploymentsGetRequest(_messages.Message):
-  r"""A SecuritypostureFoldersLocationsPostureDeploymentsGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuritypostureFoldersLocationsPostureDeploymentsListRequest(_messages.Message):
-  r"""A SecuritypostureFoldersLocationsPostureDeploymentsListRequest object.
-
-  Fields:
-    filter: Optional. Filter to be applied on the resource, defined by EBNF
-      grammar https://google.aip.dev/assets/misc/ebnf-filtering.txt.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListPostureDeploymentsRequest.
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-
-
-class SecuritypostureFoldersLocationsPostureDeploymentsPatchRequest(_messages.Message):
-  r"""A SecuritypostureFoldersLocationsPostureDeploymentsPatchRequest object.
-
-  Fields:
-    name: Required. The name of this PostureDeployment resource, in the format
-      of projects/{project_id}/locations/{location_id}/postureDeployments/{pos
-      tureDeployment}.
-    postureDeployment: A PostureDeployment resource to be passed as the
-      request body.
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the PostureDeployment resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  postureDeployment = _messages.MessageField('PostureDeployment', 2)
-  updateMask = _messages.StringField(3)
 
 
 class SecuritypostureOrganizationsLocationsGetRequest(_messages.Message):
@@ -979,9 +903,7 @@ class SecuritypostureOrganizationsLocationsPostureDeploymentsCreateRequest(_mess
 
   Fields:
     parent: Required. Value for parent. Format:
-      organizations/{org_id}/locations/{location},
-      folders/{folder_id}/locations/{location},
-      projects/{project_id}/locations/{location}
+      organizations/{org_id}/locations/{location}
     postureDeployment: A PostureDeployment resource to be passed as the
       request body.
     postureDeploymentId: Required. User provided identifier. It should be
@@ -1043,8 +965,8 @@ class SecuritypostureOrganizationsLocationsPostureDeploymentsPatchRequest(_messa
 
   Fields:
     name: Required. The name of this PostureDeployment resource, in the format
-      of projects/{project_id}/locations/{location_id}/postureDeployments/{pos
-      tureDeployment}.
+      of organizations/{organization}/locations/{location_id}/postureDeploymen
+      ts/{postureDeployment}.
     postureDeployment: A PostureDeployment resource to be passed as the
       request body.
     updateMask: Required. Field mask is used to specify the fields to be
@@ -1197,89 +1119,6 @@ class SecuritypostureOrganizationsLocationsPosturesPatchRequest(_messages.Messag
   posture = _messages.MessageField('Posture', 2)
   revisionId = _messages.StringField(3)
   updateMask = _messages.StringField(4)
-
-
-class SecuritypostureProjectsLocationsPostureDeploymentsCreateRequest(_messages.Message):
-  r"""A SecuritypostureProjectsLocationsPostureDeploymentsCreateRequest
-  object.
-
-  Fields:
-    parent: Required. Value for parent. Format:
-      organizations/{org_id}/locations/{location},
-      folders/{folder_id}/locations/{location},
-      projects/{project_id}/locations/{location}
-    postureDeployment: A PostureDeployment resource to be passed as the
-      request body.
-    postureDeploymentId: Required. User provided identifier. It should be
-      unique in scope of an Organization and location.
-  """
-
-  parent = _messages.StringField(1, required=True)
-  postureDeployment = _messages.MessageField('PostureDeployment', 2)
-  postureDeploymentId = _messages.StringField(3)
-
-
-class SecuritypostureProjectsLocationsPostureDeploymentsDeleteRequest(_messages.Message):
-  r"""A SecuritypostureProjectsLocationsPostureDeploymentsDeleteRequest
-  object.
-
-  Fields:
-    etag: Optional. Etag value of the PostureDeployment to be deleted.
-    name: Required. Name of the resource.
-  """
-
-  etag = _messages.StringField(1)
-  name = _messages.StringField(2, required=True)
-
-
-class SecuritypostureProjectsLocationsPostureDeploymentsGetRequest(_messages.Message):
-  r"""A SecuritypostureProjectsLocationsPostureDeploymentsGetRequest object.
-
-  Fields:
-    name: Required. Name of the resource.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class SecuritypostureProjectsLocationsPostureDeploymentsListRequest(_messages.Message):
-  r"""A SecuritypostureProjectsLocationsPostureDeploymentsListRequest object.
-
-  Fields:
-    filter: Optional. Filter to be applied on the resource, defined by EBNF
-      grammar https://google.aip.dev/assets/misc/ebnf-filtering.txt.
-    pageSize: Optional. Requested page size. Server may return fewer items
-      than requested. If unspecified, server will pick an appropriate default.
-    pageToken: Optional. A token identifying a page of results the server
-      should return.
-    parent: Required. Parent value for ListPostureDeploymentsRequest.
-  """
-
-  filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
-
-
-class SecuritypostureProjectsLocationsPostureDeploymentsPatchRequest(_messages.Message):
-  r"""A SecuritypostureProjectsLocationsPostureDeploymentsPatchRequest object.
-
-  Fields:
-    name: Required. The name of this PostureDeployment resource, in the format
-      of projects/{project_id}/locations/{location_id}/postureDeployments/{pos
-      tureDeployment}.
-    postureDeployment: A PostureDeployment resource to be passed as the
-      request body.
-    updateMask: Required. Field mask is used to specify the fields to be
-      overwritten in the PostureDeployment resource by the update. The fields
-      specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
-  """
-
-  name = _messages.StringField(1, required=True)
-  postureDeployment = _messages.MessageField('PostureDeployment', 2)
-  updateMask = _messages.StringField(3)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -644,10 +644,13 @@ class ExclusionWindow(_messages.Message):
     daily: The exclusion window occurs every day if set to "True". Specifying
       this field to "False" is an error.
     daysOfWeek: The exclusion window occurs on these days of each week in UTC.
-    duration: Required. Specifies duration of the window. Duration must be at
-      most 23 hours for daily recurrence windows and days of week recurrence
-      windows that includes all seven days a week to allow at least one hour
-      for backup to happen.
+    duration: Required. Specifies duration of the window. Restrictions for
+      duration based on the recurrence type to allow some time for backup to
+      happen: - single_occurrence_date: no restriction, but UI may warn about
+      this when duration >= target RPO - daily window: duration < 24 hours -
+      weekly window: - days of week includes all seven days of a week:
+      duration < 24 hours - all other weekly window: duration < 168 hours
+      (i.e., 24 * 7 hours)
     singleOccurrenceDate: No recurrence. The exclusion window occurs only once
       and on this date in UTC.
     startTime: Required. Specifies the start time of the window using time of
@@ -1844,6 +1847,20 @@ class GroupKind(_messages.Message):
   resourceKind = _messages.StringField(2)
 
 
+class GroupKindDependency(_messages.Message):
+  r"""Defines a dependency between two group kinds.
+
+  Fields:
+    requiring: Required. The requiring group kind requires that the other
+      group kind be restored first.
+    satisfying: Required. The satisfying group kind must be restored first in
+      order to satisfy the dependency.
+  """
+
+  requiring = _messages.MessageField('GroupKind', 1)
+  satisfying = _messages.MessageField('GroupKind', 2)
+
+
 class ListBackupPlansResponse(_messages.Message):
   r"""Response message for ListBackupPlans.
 
@@ -2395,7 +2412,7 @@ class Restore(_messages.Message):
 
 
 class RestoreConfig(_messages.Message):
-  r"""Configuration of a restore. Next id: 13
+  r"""Configuration of a restore. Next id: 14
 
   Enums:
     ClusterResourceConflictPolicyValueValuesEnum: Optional. Defines the
@@ -2431,6 +2448,8 @@ class RestoreConfig(_messages.Message):
       NAMESPACED_RESOURCE_RESTORE_MODE_UNSPECIFIED.
     noNamespaces: Do not restore any namespaced resources if set to "True".
       Specifying this field to "False" is not allowed.
+    restoreOrder: Optional. RestoreOrder contains custom ordering to use on a
+      Restore.
     selectedApplications: A list of selected ProtectedApplications to restore.
       The listed ProtectedApplications and all the resources to which they
       refer will be restored.
@@ -2565,12 +2584,26 @@ class RestoreConfig(_messages.Message):
   excludedNamespaces = _messages.MessageField('Namespaces', 4)
   namespacedResourceRestoreMode = _messages.EnumField('NamespacedResourceRestoreModeValueValuesEnum', 5)
   noNamespaces = _messages.BooleanField(6)
-  selectedApplications = _messages.MessageField('NamespacedNames', 7)
-  selectedNamespaces = _messages.MessageField('Namespaces', 8)
-  substitutionRules = _messages.MessageField('SubstitutionRule', 9, repeated=True)
-  transformationRules = _messages.MessageField('TransformationRule', 10, repeated=True)
-  volumeDataRestorePolicy = _messages.EnumField('VolumeDataRestorePolicyValueValuesEnum', 11)
-  volumeDataRestorePolicyBindings = _messages.MessageField('VolumeDataRestorePolicyBinding', 12, repeated=True)
+  restoreOrder = _messages.MessageField('RestoreOrder', 7)
+  selectedApplications = _messages.MessageField('NamespacedNames', 8)
+  selectedNamespaces = _messages.MessageField('Namespaces', 9)
+  substitutionRules = _messages.MessageField('SubstitutionRule', 10, repeated=True)
+  transformationRules = _messages.MessageField('TransformationRule', 11, repeated=True)
+  volumeDataRestorePolicy = _messages.EnumField('VolumeDataRestorePolicyValueValuesEnum', 12)
+  volumeDataRestorePolicyBindings = _messages.MessageField('VolumeDataRestorePolicyBinding', 13, repeated=True)
+
+
+class RestoreOrder(_messages.Message):
+  r"""Allows customers to specify dependencies between resources that Backup
+  for GKE can use to compute a resasonable restore order.
+
+  Fields:
+    groupKindDependencies: Optional. Contains a list of group kind dependency
+      pairs provided by the customer, that is used by Backup for GKE to
+      generate a group kind restore order.
+  """
+
+  groupKindDependencies = _messages.MessageField('GroupKindDependency', 1, repeated=True)
 
 
 class RestorePlan(_messages.Message):

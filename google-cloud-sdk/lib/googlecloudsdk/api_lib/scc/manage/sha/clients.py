@@ -17,8 +17,8 @@
 from typing import Generator
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.command_lib.scc import util as scc_util
 from googlecloudsdk.core import log
-from googlecloudsdk.core.console import console_io
 from googlecloudsdk.generated_clients.apis.securitycentermanagement.v1 import securitycentermanagement_v1_messages as messages
 
 
@@ -54,37 +54,91 @@ class SHACustomModuleClient(object):
     )
     return self._client.Simulate(req)
 
+  def Update(
+      self,
+      name: str,
+      validate_only: bool,
+      custom_config: messages.CustomConfig,
+      enablement_state: messages.SecurityHealthAnalyticsCustomModule.EnablementStateValueValuesEnum,
+      update_mask: str,
+  ) -> messages.SecurityHealthAnalyticsCustomModule:
+    """Update a SHA custom module."""
+
+    security_health_analytics_custom_module = (
+        messages.SecurityHealthAnalyticsCustomModule(
+            customConfig=custom_config,
+            enablementState=enablement_state,
+            name=name,
+        )
+    )
+
+    req = messages.SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesPatchRequest(
+        securityHealthAnalyticsCustomModule=security_health_analytics_custom_module,
+        name=name,
+        updateMask=scc_util.CleanUpUserMaskInput(update_mask),
+        validateOnly=validate_only,
+    )
+    response = self._client.Patch(req)
+    if validate_only:
+      log.status.Print('Request is valid.')
+      return response
+    log.UpdatedResource(name)
+    return response
+
+  def Create(
+      self,
+      parent: str,
+      validate_only: bool,
+      custom_config: messages.CustomConfig,
+      enablement_state: messages.SecurityHealthAnalyticsCustomModule.EnablementStateValueValuesEnum,
+      display_name: str,
+  ) -> messages.SecurityHealthAnalyticsCustomModule:
+    """Create an SHA custom module."""
+
+    security_health_analytics_custom_module = (
+        messages.SecurityHealthAnalyticsCustomModule(
+            customConfig=custom_config,
+            enablementState=enablement_state,
+            displayName=display_name,
+        )
+    )
+
+    req = messages.SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesCreateRequest(
+        securityHealthAnalyticsCustomModule=security_health_analytics_custom_module,
+        parent=parent,
+        validateOnly=validate_only,
+    )
+    response = self._client.Create(req)
+    if validate_only:
+      log.status.Print('Request is valid.')
+      return response
+    log.CreatedResource(display_name)
+    return response
+
   def Delete(self, name: str, validate_only: bool):
     """Delete a SHA custom module."""
 
     req = messages.SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesDeleteRequest(
         name=name, validateOnly=validate_only
     )
+    response = self._client.Delete(req)
     if validate_only:
       log.status.Print('Request is valid.')
-      return
-    console_io.PromptContinue(
-        message=(
-            'Are you sure you want to delete the Security Health Analytics'
-            ' custom module {}?\n'.format(name)
-        ),
-        cancel_on_no=True,
-    )
-    response = self._client.Delete(req)
+      return response
     log.DeletedResource(name)
     return response
 
   def List(
-      self, page_size: int, page_token: str, parent: str, limit: int
+      self, page_size: int, parent: str, limit: int
   ) -> Generator[
       messages.SecurityHealthAnalyticsCustomModule,
       None,
       messages.ListSecurityHealthAnalyticsCustomModulesResponse,
   ]:
-    """List the details of an SHA custom module."""
+    """List the details of a SHA custom module."""
 
     req = messages.SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesListRequest(
-        pageSize=page_size, pageToken=page_token, parent=parent
+        pageSize=page_size, parent=parent
     )
     return list_pager.YieldFromList(
         self._client,
@@ -93,7 +147,28 @@ class SHACustomModuleClient(object):
         field='securityHealthAnalyticsCustomModules',
         batch_size=page_size,
         batch_size_attribute='pageSize',
-        current_token_attribute='pageToken',
+    )
+
+  def ListDescendant(
+      self, page_size: int, parent: str, limit: int
+  ) -> Generator[
+      messages.SecurityHealthAnalyticsCustomModule,
+      None,
+      messages.ListDescendantSecurityHealthAnalyticsCustomModulesResponse,
+  ]:
+    """List the details of the resident and descendant SHA custom modules."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsSecurityHealthAnalyticsCustomModulesListDescendantRequest(
+        pageSize=page_size, parent=parent
+    )
+    return list_pager.YieldFromList(
+        self._client,
+        method='ListDescendant',
+        request=req,
+        limit=limit,
+        field='securityHealthAnalyticsCustomModules',
+        batch_size=page_size,
+        batch_size_attribute='pageSize',
     )
 
 
@@ -113,3 +188,24 @@ class EffectiveSHACustomModuleClient(object):
         name=name
     )
     return self._client.Get(req)
+
+  def List(
+      self, page_size: int, parent: str, limit: int
+  ) -> Generator[
+      messages.EffectiveSecurityHealthAnalyticsCustomModule,
+      None,
+      messages.ListEffectiveSecurityHealthAnalyticsCustomModulesResponse,
+  ]:
+    """List the details of the resident and descendant SHA effective custom modules."""
+
+    req = messages.SecuritycentermanagementProjectsLocationsEffectiveSecurityHealthAnalyticsCustomModulesListRequest(
+        pageSize=page_size, parent=parent
+    )
+    return list_pager.YieldFromList(
+        self._client,
+        request=req,
+        limit=limit,
+        field='effectiveSecurityHealthAnalyticsCustomModules',
+        batch_size=page_size,
+        batch_size_attribute='pageSize',
+    )

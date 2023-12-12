@@ -83,6 +83,29 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_ENVIRONMENTS_USERWORKLOADSCONFIGMAPS = (
+      'projects.locations.environments.userWorkloadsConfigMaps',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/environments/'
+              '{environmentsId}/userWorkloadsConfigMaps/'
+              '{userWorkloadsConfigMapsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_ENVIRONMENTS_USERWORKLOADSSECRETS = (
+      'projects.locations.environments.userWorkloadsSecrets',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/environments/'
+              '{environmentsId}/userWorkloadsSecrets/{userWorkloadsSecretsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

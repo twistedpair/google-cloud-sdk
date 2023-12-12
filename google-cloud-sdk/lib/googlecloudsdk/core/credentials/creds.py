@@ -296,7 +296,18 @@ class SqliteCredentialStore(CredentialStore):
       return None
 
     if use_google_auth:
-      return FromJsonGoogleAuth(item[0])
+      creds = FromJsonGoogleAuth(item[0])
+      universe_domain_from_property = (
+          properties.VALUES.core.universe_domain.Get()
+      )
+      if creds.universe_domain != universe_domain_from_property:
+        log.warning(
+            'Your credentials are from "%s", but your [core/universe_domain]'
+            ' property is set to "%s".',
+            creds.universe_domain,
+            universe_domain_from_property,
+        )
+      return creds
 
     return FromJson(item[0])
 
@@ -1231,6 +1242,9 @@ def FromJsonGoogleAuth(json_value):
     cred._universe_domain = json_key.get(  # pylint: disable=protected-access
         'universe_domain', properties.VALUES.core.universe_domain.default
     )
+    # Set _universe_domain_cached to True to re-use the _universe_domain value
+    # instead of fetching it from metadata server.
+    cred._universe_domain_cached = True  # pylint: disable=protected-access
     return cred
 
   raise UnknownCredentialsType(
@@ -1434,7 +1448,11 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
   """Converts a google-auth credentials to application default credentials."""
   creds_type = CredentialTypeGoogleAuth.FromCredentials(credentials)
   if creds_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
-    adc = credentials.to_json(strip=('token', 'token_uri', 'scopes', 'expiry'))
+    # TODO: b/296263194 - For now just skip the universe_domain field in the
+    # output ADC file. Will revisit here when doing the ADC file work.
+    adc = credentials.to_json(
+        strip=('token', 'token_uri', 'scopes', 'expiry', 'universe_domain')
+    )
     adc = json.loads(adc)
     adc['type'] = creds_type.key
     return adc

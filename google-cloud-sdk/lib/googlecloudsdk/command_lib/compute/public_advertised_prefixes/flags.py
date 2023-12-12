@@ -34,12 +34,17 @@ def AddCreatePapArgsToParser(parser, support_pdp_scope_input):
   parser.add_argument(
       '--range',
       required=True,
-      help='IPv4 range allocated to this public advertised prefix, in CIDR format.'
+      help=(
+          'IP range allocated to this public advertised prefix, in CIDR format.'
+      ),
   )
   parser.add_argument(
       '--dns-verification-ip',
       required=True,
-      help='IPv4 address to use for verification. It must be within the IPv4 range specified in --range.'
+      help=(
+          'IP address to use for verification. It must be within the IP range'
+          ' specified in --range.'
+      ),
   )
   parser.add_argument(
       '--description', help='Description of this public advertised prefix.')

@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.sql import constants
 from googlecloudsdk.api_lib.sql import instance_prop_reducers as reducers
+from googlecloudsdk.api_lib.sql import instances as api_util
 from googlecloudsdk.api_lib.sql import validate
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import exceptions
@@ -870,6 +871,28 @@ class _BaseInstances(object):
       instance_resource.sqlNetworkArchitecture = (
           sql_messages.DatabaseInstance.SqlNetworkArchitectureValueValuesEnum.NEW_NETWORK_ARCHITECTURE
       )
+
+    if _IsAlpha(release_track):
+      if args.IsSpecified('simulate_maintenance_event'):
+        # Throw expection if both simulate maintenance event flag is enabled and
+        # maintenance version flag is found but not set to current version.
+        if (
+            args.IsSpecified('maintenance_version')
+            and args.maintenance_version != original.maintenanceVersion
+        ):
+          raise exceptions.ConflictingArgumentsException(
+              '--simulate_maintenance_event', '--maintenance_version'
+          )
+        instance_resource.maintenanceVersion = original.maintenanceVersion
+        api_util.InstancesV1Beta4.PrintAndConfirmSimulatedMaintenanceEvent()
+    # Have the simulate maintenance event flag take precedence.
+    # Maintenance_version flag is not exclusive to Alpha so print warning
+    # regardless of the release track.
+    if (
+        args.IsSpecified('maintenance_version')
+        and args.maintenance_version == original.maintenanceVersion
+    ):
+      api_util.InstancesV1Beta4.PrintAndConfirmSimulatedMaintenanceEvent()
 
     return instance_resource
 

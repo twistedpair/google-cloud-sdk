@@ -142,12 +142,18 @@ class BillingAccount(_messages.Message):
       be charged for any usage on associated projects. False if the billing
       account is closed, and therefore projects associated with it will be
       unable to use paid services.
+    parent: Output only. The billing account's parent resource identifier. Use
+      the `MoveBillingAccount` method to update the account's parent resource
+      if it is a organization. Format: - organizations/{organization_id}, for
+      example: organizations/12345678 - billingAccounts/{billing_account_id},
+      for example: `billingAccounts/012345-567890-ABCDEF`
   """
 
   displayName = _messages.StringField(1)
   masterBillingAccount = _messages.StringField(2)
   name = _messages.StringField(3)
   open = _messages.BooleanField(4)
+  parent = _messages.StringField(5)
 
 
 class Binding(_messages.Message):
@@ -377,22 +383,6 @@ class CloudbillingBillingAccountsSetIamPolicyRequest(_messages.Message):
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
-class CloudbillingBillingAccountsSubAccountsCreateRequest(_messages.Message):
-  r"""A CloudbillingBillingAccountsSubAccountsCreateRequest object.
-
-  Fields:
-    billingAccount: A BillingAccount resource to be passed as the request
-      body.
-    parent: Optional. The parent to create a billing account from. Format: -
-      organizations/{organization_id} eg organizations/12345678 -
-      billingAccounts/{billing_account_id} eg
-      `billingAccounts/012345-567890-ABCDEF`
-  """
-
-  billingAccount = _messages.MessageField('BillingAccount', 1)
-  parent = _messages.StringField(2, required=True)
-
-
 class CloudbillingBillingAccountsSubAccountsListRequest(_messages.Message):
   r"""A CloudbillingBillingAccountsSubAccountsListRequest object.
 
@@ -434,22 +424,6 @@ class CloudbillingBillingAccountsTestIamPermissionsRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
-
-
-class CloudbillingOrganizationsBillingAccountsCreateRequest(_messages.Message):
-  r"""A CloudbillingOrganizationsBillingAccountsCreateRequest object.
-
-  Fields:
-    billingAccount: A BillingAccount resource to be passed as the request
-      body.
-    parent: Optional. The parent to create a billing account from. Format: -
-      organizations/{organization_id} eg organizations/12345678 -
-      billingAccounts/{billing_account_id} eg
-      `billingAccounts/012345-567890-ABCDEF`
-  """
-
-  billingAccount = _messages.MessageField('BillingAccount', 1)
-  parent = _messages.StringField(2, required=True)
 
 
 class CloudbillingOrganizationsBillingAccountsListRequest(_messages.Message):

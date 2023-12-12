@@ -44,6 +44,7 @@ SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
 CPU_THROTTLE_ANNOTATION = 'run.googleapis.com/cpu-throttling'
 COLD_START_BOOST_ANNOTATION = 'run.googleapis.com/startup-cpu-boost'
 DISABLE_URL_ANNOTATION = 'run.googleapis.com/default-url-disabled'
+DISABLE_IAM_ANNOTATION = 'run.googleapis.com/invoker-iam-disabled'
 
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 EGRESS_SETTINGS_ALL = 'all'

@@ -1459,13 +1459,16 @@ class BidiWriteObjectRequest(proto.Message):
             used to decide what data is safe for the client to drop.
             Note that the object's current size reported by the
             BidiWriteObjectResponse may lag behind the number of bytes
-            written by the client.
+            written by the client. This field is ignored if
+            ``finish_write`` is set to true.
         flush (bool):
             Persists data written on the stream, up to and including the
             current message, to permanent storage. This option should be
             used sparingly as it may reduce performance. Ongoing writes
             will periodically be persisted on the server even when
-            ``flush`` is not set.
+            ``flush`` is not set. This field is ignored if
+            ``finish_write`` is set to true since there's no need to
+            checkpoint or flush if this message completes the write.
         finish_write (bool):
             If ``true``, this indicates that the write is complete.
             Sending any ``WriteObjectRequest``\ s subsequent to one in

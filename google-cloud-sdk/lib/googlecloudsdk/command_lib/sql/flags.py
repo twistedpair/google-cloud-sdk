@@ -826,6 +826,17 @@ def AddMaintenanceVersion(parser):
   )
 
 
+def AddSimulateMaintenanceEvent(parser):
+  """Adds the `--simulate-maintenance-event` flag to the parser."""
+  parser.add_argument(
+      '--simulate-maintenance-event',
+      action='store_true',
+      required=False,
+      hidden=True,
+      help='Simulate a maintenance event without changing the version.',
+  )
+
+
 def AddSqlServerAudit(parser):
   """Adds SQL Server audit related flags to the parser."""
   parser.add_argument(

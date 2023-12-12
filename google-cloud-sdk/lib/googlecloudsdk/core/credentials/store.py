@@ -688,7 +688,11 @@ def _LoadAccessTokenCredsFromValue(access_token, use_google_auth):
   # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
   # pylint: enable=g-import-not-at-top
-  return c_google_auth.AccessTokenCredentials(access_token)
+  creds = c_google_auth.AccessTokenCredentials(access_token)
+  # TODO: b/314826985 - Use with_universe_domain method instead once google-auth
+  # lib is updated in gcloud.
+  creds._universe_domain = properties.VALUES.core.universe_domain.Get()  # pylint: disable=protected-access
+  return creds
 
 
 def _LoadAccessTokenCredsFromFile(token_file, use_google_auth):
@@ -710,7 +714,9 @@ def _LoadAccessTokenCredsFromFile(token_file, use_google_auth):
   # pylint: disable=g-import-not-at-top
   from googlecloudsdk.core.credentials import google_auth_credentials as c_google_auth
   # pylint: enable=g-import-not-at-top
-  return c_google_auth.AccessTokenCredentials(content)
+  creds = c_google_auth.AccessTokenCredentials(content)
+  creds._universe_domain = properties.VALUES.core.universe_domain.Get()  # pylint: disable=protected-access
+  return creds
 
 
 def _Load(account,
@@ -1418,6 +1424,11 @@ def AcquireFromGCE(account=None, use_google_auth=True, refresh=True):
   if use_google_auth:
     email = account or 'default'
     credentials = google_auth_gce.Credentials(service_account_email=email)
+    # TODO: b/296263194 - Here we need to fetch universe domain from metadata
+    # server and set credentials._universe_domain. Will revisit here in the
+    # future. Currently just set _universe_domain_cached to True to avoid
+    # calling metadata server universe domain endpoint.
+    credentials._universe_domain_cached = True  # pylint: disable=protected-access
   else:
     credentials = oauth2client_gce.AppAssertionCredentials(email=account)
   if refresh:

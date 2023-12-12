@@ -82,6 +82,117 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AutoscalingPolicy(_messages.Message):
+  r"""Autoscaling policy describes the behavior of the autoscaling with
+  respect to the resource utilization. The scale-out operation is initiated if
+  the utilization exceeds ANY of the respective thresholds. The scale-in
+  operation is initiated if the utilization is below ALL of the respective
+  thresholds.
+
+  Fields:
+    consumedMemoryThresholds: Optional. Utilization thresholds pertaining to
+      amount of consumed memory.
+    cpuThresholds: Optional. Utilization thresholds pertaining to CPU
+      utilization.
+    grantedMemoryThresholds: Optional. Utilization thresholds pertaining to
+      amount of granted memory.
+    maxNodeCount: Optional. Maximum number of nodes of the given type in a
+      cluster. The number is coerced to the maximum nodes of nodes of any type
+      in the cluster.
+    minNodeCount: Optional. Minimum number of nodes of the given type in a
+      cluster. The number is coerced to the minimum number of nodes of any
+      type in the cluster.
+    nodeTypeId: Required. The canonical identifier of the node type to add or
+      remove. Corresponds to the `NodeType`.
+    scaleOutSize: Required. Number of nodes to add to a cluster during a
+      scale-out operation. Must be divisible by 2 for stretched clusters.
+      During a scale-in operation only one node (or 2 for stretched clusters)
+      are removed in a single iteration.
+    storageThresholds: Optional. Utilization thresholds pertaining to amount
+      of consumed storage.
+  """
+
+  consumedMemoryThresholds = _messages.MessageField('Thresholds', 1)
+  cpuThresholds = _messages.MessageField('Thresholds', 2)
+  grantedMemoryThresholds = _messages.MessageField('Thresholds', 3)
+  maxNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  minNodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  nodeTypeId = _messages.StringField(6)
+  scaleOutSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  storageThresholds = _messages.MessageField('Thresholds', 8)
+
+
+class AutoscalingSettings(_messages.Message):
+  r"""Autoscaling settings define the rules used by VMware Engine to
+  automatically scale-out and scale-in the clusters in a private cloud.
+
+  Messages:
+    AutoscalingPoliciesValue: Required. The map with autoscaling policies
+      applied to the cluster. The key is the identifier of the policy. It must
+      meet the following requirements: * Only contains 1-63 alphanumeric
+      characters and hyphens * Begins with an alphabetical character * Ends
+      with a non-hyphen character * Not formatted as a UUID * Complies with
+      [RFC 1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+      Currently there map must contain only one element that describes the
+      autoscaling policy for compute nodes.
+
+  Fields:
+    autoscalingPolicies: Required. The map with autoscaling policies applied
+      to the cluster. The key is the identifier of the policy. It must meet
+      the following requirements: * Only contains 1-63 alphanumeric characters
+      and hyphens * Begins with an alphabetical character * Ends with a non-
+      hyphen character * Not formatted as a UUID * Complies with [RFC
+      1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+      Currently there map must contain only one element that describes the
+      autoscaling policy for compute nodes.
+    coolDownPeriod: Optional. The minimum duration between consecutive
+      autoscale operations. It starts once addition or removal of nodes is
+      fully completed. Defaults to 0 if not specified.
+    maxClusterNodeCount: Optional. Maximum number of nodes of any type in a
+      cluster. If not specified the default limits apply.
+    minClusterNodeCount: Optional. Minimum number of nodes of any type in a
+      cluster. If not specified the default limits apply.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AutoscalingPoliciesValue(_messages.Message):
+    r"""Required. The map with autoscaling policies applied to the cluster.
+    The key is the identifier of the policy. It must meet the following
+    requirements: * Only contains 1-63 alphanumeric characters and hyphens *
+    Begins with an alphabetical character * Ends with a non-hyphen character *
+    Not formatted as a UUID * Complies with [RFC
+    1034](https://datatracker.ietf.org/doc/html/rfc1034) (section 3.5)
+    Currently there map must contain only one element that describes the
+    autoscaling policy for compute nodes.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AutoscalingPoliciesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AutoscalingPoliciesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AutoscalingPoliciesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A AutoscalingPolicy attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('AutoscalingPolicy', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  autoscalingPolicies = _messages.MessageField('AutoscalingPoliciesValue', 1)
+  coolDownPeriod = _messages.StringField(2)
+  maxClusterNodeCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  minClusterNodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -154,6 +265,8 @@ class Cluster(_messages.Message):
       (corresponds to the `NodeType`).
 
   Fields:
+    autoscalingSettings: Optional. Configuration of the autoscaling applied to
+      this cluster.
     createTime: Output only. Creation time of this resource.
     management: Output only. True if the cluster is a management cluster;
       false otherwise. There can only be one management cluster in a private
@@ -226,17 +339,18 @@ class Cluster(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  createTime = _messages.StringField(1)
-  management = _messages.BooleanField(2)
-  name = _messages.StringField(3)
-  nodeCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  nodeCustomCoreCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 6)
-  nodeTypeId = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  stretchedClusterConfig = _messages.MessageField('StretchedClusterConfig', 9)
-  uid = _messages.StringField(10)
-  updateTime = _messages.StringField(11)
+  autoscalingSettings = _messages.MessageField('AutoscalingSettings', 1)
+  createTime = _messages.StringField(2)
+  management = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  nodeCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  nodeCustomCoreCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  nodeTypeConfigs = _messages.MessageField('NodeTypeConfigsValue', 7)
+  nodeTypeId = _messages.StringField(8)
+  state = _messages.EnumField('StateValueValuesEnum', 9)
+  stretchedClusterConfig = _messages.MessageField('StretchedClusterConfig', 10)
+  uid = _messages.StringField(11)
+  updateTime = _messages.StringField(12)
 
 
 class Credentials(_messages.Message):
@@ -2724,6 +2838,21 @@ class TestIamPermissionsResponse(_messages.Message):
   """
 
   permissions = _messages.StringField(1, repeated=True)
+
+
+class Thresholds(_messages.Message):
+  r"""Thresholds define the utilization of resources triggering scale-out and
+  scale-in operations.
+
+  Fields:
+    scaleIn: Required. The utilization triggering the scale-in operation in
+      percent.
+    scaleOut: Required. The utilization triggering the scale-out operation in
+      percent.
+  """
+
+  scaleIn = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  scaleOut = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class UndeletePrivateCloudRequest(_messages.Message):

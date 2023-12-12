@@ -44,8 +44,7 @@ class AdvanceRolloutOperation(_messages.Message):
   r"""Contains the information of an automated advance-rollout operation.
 
   Fields:
-    destinationPhase: Output only. The phase to which the rollout will be
-      advanced to.
+    destinationPhase: Output only. The phase the rollout will be advanced to.
     rollout: Output only. The name of the rollout that initiates the
       `AutomationRun`.
     sourcePhase: Output only. The phase of a deployment that initiated the
@@ -215,7 +214,7 @@ class AuditLogConfig(_messages.Message):
 class Automation(_messages.Message):
   r"""An `Automation` resource in the Cloud Deploy API. An `Automation`
   enables the automation of manually driven actions for a Delivery Pipeline,
-  which includes Release promotion amongst Targets, Rollout repair and Rollout
+  which includes Release promotion among Targets, Rollout repair and Rollout
   deployment strategy advancement. The intention of Automation is to reduce
   manual intervention in the continuous delivery process.
 
@@ -475,7 +474,7 @@ class AutomationRuleCondition(_messages.Message):
 
 class AutomationRun(_messages.Message):
   r"""An `AutomationRun` resource in the Cloud Deploy API. An `AutomationRun`
-  represents an automation execution instance of an automation rule.
+  represents an execution instance of an automation rule.
 
   Enums:
     StateValueValuesEnum: Output only. Current state of the `AutomationRun`.
@@ -492,8 +491,8 @@ class AutomationRun(_messages.Message):
       checksum is computed by the server based on the value of other fields,
       and may be sent on update and delete requests to ensure the client has
       an up-to-date value before proceeding.
-    expireTime: Output only. Time the `AutomationRun` will expire. An
-      `AutomationRun` will expire after 14 days from its creation date.
+    expireTime: Output only. Time the `AutomationRun` expires. An
+      `AutomationRun` expires after 14 days from its creation date.
     name: Output only. Name of the `AutomationRun`. Format is `projects/{proje
       ct}/locations/{location}/deliveryPipelines/{delivery_pipeline}/automatio
       nRuns/{automation_run}`.
@@ -508,7 +507,7 @@ class AutomationRun(_messages.Message):
       account that performs the operations against Cloud Deploy resources.
     state: Output only. Current state of the `AutomationRun`.
     stateDescription: Output only. Explains the current state of the
-      `AutomationRun`. Present only an explanation is needed.
+      `AutomationRun`. Present only when an explanation is needed.
     targetId: Output only. The ID of the target that represents the promotion
       stage that initiates the `AutomationRun`. The value of this field is the
       last segment of a target name.
@@ -777,9 +776,18 @@ class CloudRunConfig(_messages.Message):
       stanza in a Cloud Run Service on the user's behalf to facilitate traffic
       splitting. This is required to be true for CanaryDeployments, but
       optional for CustomCanaryDeployments.
+    canaryRevisionTags: Optional. A list of tags that are added to the canary
+      revision while the canary deployment is in progress.
+    priorRevisionTags: Optional. A list of tags that are added to the prior
+      revision while the canary deployment is in progress.
+    stableRevisionTags: Optional. A list of tags that are added to the final
+      stable revision after the canary deployment is completed.
   """
 
   automaticTrafficControl = _messages.BooleanField(1)
+  canaryRevisionTags = _messages.StringField(2, repeated=True)
+  priorRevisionTags = _messages.StringField(3, repeated=True)
+  stableRevisionTags = _messages.StringField(4, repeated=True)
 
 
 class CloudRunLocation(_messages.Message):
@@ -1016,9 +1024,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsListRequest(_me
     pageToken: A page token, received from a previous `ListAutomationRuns`
       call. Provide this to retrieve the subsequent page. When paginating, all
       other provided parameters match the call that provided the page token.
-    parent: Required. The parent, which owns this collection of
-      automationRuns. Format must be `projects/{project}/locations/{location}/
-      deliveryPipelines/{delivery_pipeline}`.
+    parent: Required. The parent `Delivery Pipeline`, which owns this
+      collection of automationRuns. Format must be `projects/{project}/locatio
+      ns/{location}/deliveryPipelines/{delivery_pipeline}`.
   """
 
   filter = _messages.StringField(1)
@@ -1124,9 +1132,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsListRequest(_messa
     pageToken: A page token, received from a previous `ListAutomations` call.
       Provide this to retrieve the subsequent page. When paginating, all other
       provided parameters match the call that provided the page token.
-    parent: Required. The parent, which owns this collection of automations.
-      Format must be `projects/{project_id}/locations/{location_name}/delivery
-      Pipelines/{pipeline_name}`.
+    parent: Required. The parent `Delivery Pipeline`, which owns this
+      collection of automations. Format must be `projects/{project_id}/locatio
+      ns/{location_name}/deliveryPipelines/{pipeline_name}`.
   """
 
   filter = _messages.StringField(1)
@@ -2182,6 +2190,45 @@ class CustomCanaryDeployment(_messages.Message):
   phaseConfigs = _messages.MessageField('PhaseConfig', 1, repeated=True)
 
 
+class CustomMetadata(_messages.Message):
+  r"""CustomMetadata contains information from a user defined operation.
+
+  Messages:
+    ValuesValue: Output only. Key-value pairs provided by the user defined
+      operation.
+
+  Fields:
+    values: Output only. Key-value pairs provided by the user defined
+      operation.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ValuesValue(_messages.Message):
+    r"""Output only. Key-value pairs provided by the user defined operation.
+
+    Messages:
+      AdditionalProperty: An additional property for a ValuesValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type ValuesValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ValuesValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  values = _messages.MessageField('ValuesValue', 1)
+
+
 class CustomTarget(_messages.Message):
   r"""Information specifying a Custom Target.
 
@@ -2192,6 +2239,18 @@ class CustomTarget(_messages.Message):
   """
 
   customTargetType = _messages.StringField(1)
+
+
+class CustomTargetDeployMetadata(_messages.Message):
+  r"""CustomTargetDeployMetadata contains information from a Custom Target
+  deploy operation.
+
+  Fields:
+    skipMessage: Output only. Skip message provided in the results of a custom
+      deploy operation.
+  """
+
+  skipMessage = _messages.StringField(1)
 
 
 class CustomTargetSkaffoldActions(_messages.Message):
@@ -2643,6 +2702,8 @@ class DeployJobRun(_messages.Message):
         Build logs for more information.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
         request. See failure_message for additional details.
+      DEPLOY_FEATURE_NOT_SUPPORTED: The deploy operation had a feature
+        configured that is not supported.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -2650,6 +2711,7 @@ class DeployJobRun(_messages.Message):
     DEADLINE_EXCEEDED = 3
     MISSING_RESOURCES_FOR_CANARY = 4
     CLOUD_BUILD_REQUEST_FAILED = 5
+    DEPLOY_FEATURE_NOT_SUPPORTED = 6
 
   artifact = _messages.MessageField('DeployArtifact', 1)
   build = _messages.StringField(2)
@@ -2665,9 +2727,15 @@ class DeployJobRunMetadata(_messages.Message):
   Fields:
     cloudRun: Output only. The name of the Cloud Run Service that is
       associated with a `DeployJobRun`.
+    custom: Output only. Custom metadata provided by user defined deploy
+      operation.
+    customTarget: Output only. Custom Target metadata associated with a
+      `DeployJobRun`.
   """
 
   cloudRun = _messages.MessageField('CloudRunMetadata', 1)
+  custom = _messages.MessageField('CustomMetadata', 2)
+  customTarget = _messages.MessageField('CustomTargetDeployMetadata', 3)
 
 
 class DeployParameters(_messages.Message):
@@ -2801,9 +2869,9 @@ class DeployPolicy(_messages.Message):
       to be <= 128 bytes.
     name: Output only. Name of the `DeployPolicy`. Format is
       `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
-    rules: Rules to apply.
-    selector: Selected resources to which the policy will be applied.
-    selects: Resources to apply the policy to.
+    rules: Required. Rules to apply. At least one rule must be present.
+    selector: Required. Selected resources to which the policy will be
+      applied. At least one resource is required to be selected.
     suspended: When suspended, the policy will not prevent actions from
       occurring, even if the action violates the policy.
     uid: Output only. Unique identifier of the `DeployPolicy`.
@@ -2886,10 +2954,9 @@ class DeployPolicy(_messages.Message):
   name = _messages.StringField(6)
   rules = _messages.MessageField('PolicyRule', 7, repeated=True)
   selector = _messages.MessageField('DeployPolicyResourceSelector', 8)
-  selects = _messages.MessageField('Resource', 9)
-  suspended = _messages.BooleanField(10)
-  uid = _messages.StringField(11)
-  updateTime = _messages.StringField(12)
+  suspended = _messages.BooleanField(9)
+  uid = _messages.StringField(10)
+  updateTime = _messages.StringField(11)
 
 
 class DeployPolicyResourceSelector(_messages.Message):
@@ -3290,7 +3357,7 @@ class ListAutomationsResponse(_messages.Message):
   r"""The response object from `ListAutomations`.
 
   Fields:
-    automations: The `Automations` objects.
+    automations: The `Automation` objects.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
     unreachable: Locations that could not be reached.
@@ -3521,10 +3588,13 @@ class Metadata(_messages.Message):
       rollout.
     cloudRun: Output only. The name of the Cloud Run Service that is
       associated with a `Rollout`.
+    custom: Output only. Custom metadata provided by user defined `Rollout`
+      operations.
   """
 
   automation = _messages.MessageField('AutomationRolloutMetadata', 1)
   cloudRun = _messages.MessageField('CloudRunMetadata', 2)
+  custom = _messages.MessageField('CustomMetadata', 3)
 
 
 class MultiTarget(_messages.Message):
@@ -4445,7 +4515,7 @@ class ReleaseCondition(_messages.Message):
   Fields:
     releaseReadyCondition: Details around the Releases's overall status.
     skaffoldSupportedCondition: Details around the support state of the
-      release's skaffold version.
+      release's Skaffold version.
   """
 
   releaseReadyCondition = _messages.MessageField('ReleaseReadyCondition', 1)
@@ -4550,9 +4620,12 @@ class RenderMetadata(_messages.Message):
 
   Fields:
     cloudRun: Output only. Metadata associated with rendering for Cloud Run.
+    custom: Output only. Custom metadata provided by user defined render
+      operation.
   """
 
   cloudRun = _messages.MessageField('CloudRunRenderMetadata', 1)
+  custom = _messages.MessageField('CustomMetadata', 2)
 
 
 class RepairMode(_messages.Message):
@@ -4586,6 +4659,9 @@ class RepairRolloutOperation(_messages.Message):
   Fields:
     currentRepairModeIndex: Output only. The index of the current repair
       action in the repair sequence.
+    jobId: Output only. The job ID for the Job to repair.
+    phaseId: Output only. The phase ID of the phase that includes the job
+      being repaired.
     repairPhases: Output only. Records of the repair attempts. Each repair
       phase may have multiple retry attempts or single rollback attempt.
     rollout: Output only. The name of the rollout that initiates the
@@ -4593,8 +4669,10 @@ class RepairRolloutOperation(_messages.Message):
   """
 
   currentRepairModeIndex = _messages.IntegerField(1)
-  repairPhases = _messages.MessageField('RepairPhase', 2, repeated=True)
-  rollout = _messages.StringField(3)
+  jobId = _messages.StringField(2)
+  phaseId = _messages.StringField(3)
+  repairPhases = _messages.MessageField('RepairPhase', 4, repeated=True)
+  rollout = _messages.StringField(5)
 
 
 class RepairRolloutRule(_messages.Message):
@@ -4652,18 +4730,6 @@ class RepairRolloutRule(_messages.Message):
   waitPolicy = _messages.EnumField('WaitPolicyValueValuesEnum', 6)
 
 
-class Resource(_messages.Message):
-  r"""Contains information on the resources to select for a deploy policy.
-
-  Fields:
-    deliveryPipelines: Contains attributes about a delivery pipeline.
-    targets: Contains attributes about a target.
-  """
-
-  deliveryPipelines = _messages.MessageField('DeliveryPipelineAttribute', 1, repeated=True)
-  targets = _messages.MessageField('TargetAttribute', 2, repeated=True)
-
-
 class RestrictRollout(_messages.Message):
   r"""Rollout restrictions.
 
@@ -4676,7 +4742,8 @@ class RestrictRollout(_messages.Message):
       empty, all actions will be restricted.
     invoker: What invoked the action. If left empty, all invoker types will be
       restricted.
-    name: Restriction name.
+    name: Required. Restriction rule name. Required and must be unique within
+      a DeployPolicy.
     timeWindows: Time Windows within which actions are restricted.
   """
 
@@ -4736,8 +4803,8 @@ class Retry(_messages.Message):
       0.
 
   Fields:
-    attempts: Required. Total number of retries. Retry will skipped if set to
-      0; The minimum value is 1, and the maximum value is 10.
+    attempts: Required. Total number of retries. Retry is skipped if set to 0;
+      The minimum value is 1, and the maximum value is 10.
     backoffMode: Optional. The pattern of how wait time will be increased.
       Default is linear. Backoff mode will be ignored if `wait` is 0.
     wait: Optional. How long to wait for the first retry. Default is 0, and
@@ -5072,10 +5139,12 @@ class Rollout(_messages.Message):
       DEADLINE_EXCEEDED: Deployment did not complete within the alloted time.
       RELEASE_FAILED: Release is in a failed state.
       RELEASE_ABANDONED: Release is abandoned.
-      VERIFICATION_CONFIG_NOT_FOUND: No skaffold verify configuration was
+      VERIFICATION_CONFIG_NOT_FOUND: No Skaffold verify configuration was
         found.
       CLOUD_BUILD_REQUEST_FAILED: Cloud Build failed to fulfill Cloud Deploy's
         request. See failure_message for additional details.
+      OPERATION_FEATURE_NOT_SUPPORTED: A Rollout operation had a feature
+        configured that is not supported.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -5085,6 +5154,7 @@ class Rollout(_messages.Message):
     RELEASE_ABANDONED = 5
     VERIFICATION_CONFIG_NOT_FOUND = 6
     CLOUD_BUILD_REQUEST_FAILED = 7
+    OPERATION_FEATURE_NOT_SUPPORTED = 8
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the `Rollout`.
@@ -5442,32 +5512,32 @@ class SkaffoldModules(_messages.Message):
 
 class SkaffoldSupportedCondition(_messages.Message):
   r"""SkaffoldSupportedCondition contains information about when support for
-  the release's version of skaffold ends.
+  the release's version of Skaffold ends.
 
   Enums:
-    SkaffoldSupportStateValueValuesEnum: The skaffold support state for this
-      release's version of skaffold.
+    SkaffoldSupportStateValueValuesEnum: The Skaffold support state for this
+      release's version of Skaffold.
 
   Fields:
-    maintenanceModeTime: The time at which this release's version of skaffold
+    maintenanceModeTime: The time at which this release's version of Skaffold
       will enter maintenance mode.
-    skaffoldSupportState: The skaffold support state for this release's
-      version of skaffold.
-    status: True if the version of skaffold used by this release is supported.
+    skaffoldSupportState: The Skaffold support state for this release's
+      version of Skaffold.
+    status: True if the version of Skaffold used by this release is supported.
     supportExpirationTime: The time at which this release's version of
-      skaffold will no longer be supported.
+      Skaffold will no longer be supported.
   """
 
   class SkaffoldSupportStateValueValuesEnum(_messages.Enum):
-    r"""The skaffold support state for this release's version of skaffold.
+    r"""The Skaffold support state for this release's version of Skaffold.
 
     Values:
       SKAFFOLD_SUPPORT_STATE_UNSPECIFIED: Default value. This value is unused.
-      SKAFFOLD_SUPPORT_STATE_SUPPORTED: This skaffold version is currently
+      SKAFFOLD_SUPPORT_STATE_SUPPORTED: This Skaffold version is currently
         supported.
-      SKAFFOLD_SUPPORT_STATE_MAINTENANCE_MODE: This skaffold version is in
+      SKAFFOLD_SUPPORT_STATE_MAINTENANCE_MODE: This Skaffold version is in
         maintenance mode.
-      SKAFFOLD_SUPPORT_STATE_UNSUPPORTED: This skaffold version is no longer
+      SKAFFOLD_SUPPORT_STATE_UNSUPPORTED: This Skaffold version is no longer
         supported.
     """
     SKAFFOLD_SUPPORT_STATE_UNSPECIFIED = 0
@@ -5485,11 +5555,11 @@ class SkaffoldVersion(_messages.Message):
   r"""Details of a supported Skaffold version.
 
   Fields:
-    maintenanceModeTime: The time at which this version of skaffold will enter
+    maintenanceModeTime: The time at which this version of Skaffold will enter
       maintenance mode.
     supportEndDate: Date when this version is expected to no longer be
       supported.
-    supportExpirationTime: The time at which this version of skaffold will no
+    supportExpirationTime: The time at which this version of Skaffold will no
       longer be supported.
     version: Release version number. For example, "1.20.3".
   """
@@ -6011,14 +6081,16 @@ class TargetRender(_messages.Message):
         request. See failure_message for additional details.
       VERIFICATION_CONFIG_NOT_FOUND: The render operation did not complete
         successfully because the verification stanza required for verify was
-        not found on the skaffold configuration.
+        not found on the Skaffold configuration.
       CUSTOM_ACTION_NOT_FOUND: The render operation did not complete
         successfully because the custom action required for predeploy or
-        postdeploy was not found in the skaffold configuration. See
+        postdeploy was not found in the Skaffold configuration. See
         failure_message for additional details.
       DEPLOYMENT_STRATEGY_NOT_SUPPORTED: Release failed during rendering
         because the release configuration is not supported with the specified
         deployment strategy.
+      RENDER_FEATURE_NOT_SUPPORTED: The render operation had a feature
+        configured that is not supported.
     """
     FAILURE_CAUSE_UNSPECIFIED = 0
     CLOUD_BUILD_UNAVAILABLE = 1
@@ -6027,6 +6099,7 @@ class TargetRender(_messages.Message):
     VERIFICATION_CONFIG_NOT_FOUND = 4
     CUSTOM_ACTION_NOT_FOUND = 5
     DEPLOYMENT_STRATEGY_NOT_SUPPORTED = 6
+    RENDER_FEATURE_NOT_SUPPORTED = 7
 
   class RenderingStateValueValuesEnum(_messages.Enum):
     r"""Output only. Current state of the render operation for this Target.
@@ -6051,8 +6124,8 @@ class TargetRender(_messages.Message):
 
 
 class TargetsPresentCondition(_messages.Message):
-  r"""TargetsPresentCondition contains information on any Targets defined in
-  the Delivery Pipeline that do not actually exist.
+  r"""`TargetsPresentCondition` contains information on any Targets referenced
+  in the Delivery Pipeline that do not actually exist.
 
   Fields:
     missingTargets: The list of Target names that do not exist. For example,
@@ -6146,7 +6219,7 @@ class TimeWindow(_messages.Message):
 
   Fields:
     ranges: Range within which actions are restricted.
-    timeZone: The time zone in IANA format [IANA Time Zone
+    timeZone: Required. The time zone in IANA format [IANA Time Zone
       Database](https://www.iana.org/time-zones) (e.g. America/New_York).
   """
 

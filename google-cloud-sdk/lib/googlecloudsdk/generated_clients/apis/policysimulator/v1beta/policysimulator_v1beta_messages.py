@@ -146,6 +146,10 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
     dryRunSpec: Dry-run policy. Audit-only policy, can be used to monitor how
       the policy would have impacted the existing and future resources if it's
       enforced.
+    etag: Optional. An opaque tag indicating the current state of the policy,
+      used for concurrency control. This 'etag' is computed by the server
+      based on the value of other fields, and may be sent on update and delete
+      requests to ensure the client has an up-to-date value before proceeding.
     name: Immutable. The resource name of the policy. Must be one of the
       following forms, where `constraint_name` is the name of the constraint
       which this policy configures: *
@@ -161,8 +165,9 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
 
   alternate = _messages.MessageField('GoogleCloudOrgpolicyV2AlternatePolicySpec', 1)
   dryRunSpec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 2)
-  name = _messages.StringField(3)
-  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 4)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 5)
 
 
 class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
@@ -170,13 +175,13 @@ class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
   constraints for configurations of Google Cloud resources.
 
   Fields:
-    etag: An opaque tag indicating the current version of the policy, used for
-      concurrency control. This field is ignored if used in a `CreatePolicy`
-      request. When the policy` is returned from either a `GetPolicy` or a
-      `ListPolicies` request, this `etag` indicates the version of the current
-      policy to use when executing a read-modify-write loop. When the policy
-      is returned from a `GetEffectivePolicy` request, the `etag` will be
-      unset.
+    etag: An opaque tag indicating the current version of the policySpec, used
+      for concurrency control. This field is ignored if used in a
+      `CreatePolicy` request. When the policy is returned from either a
+      `GetPolicy` or a `ListPolicies` request, this `etag` indicates the
+      version of the current policySpec to use when executing a read-modify-
+      write loop. When the policy is returned from a `GetEffectivePolicy`
+      request, the `etag` will be unset.
     inheritFromParent: Determines the inheritance behavior for this policy. If
       `inherit_from_parent` is true, policy rules set higher up in the
       hierarchy (up to the closest root) are inherited and present in the

@@ -2065,6 +2065,12 @@ class MethodSettings(_messages.Message):
   r"""Describes the generator configuration for a method.
 
   Fields:
+    autoPopulatedFields: List of top-level fields of the request message, that
+      should be automatically populated by the client libraries based on their
+      (google.api.field_info).format. Currently supported format: UUID4.
+      Example of a YAML configuration: publishing: method_settings: -
+      selector: google.example.v1.ExampleService.CreateExample
+      auto_populated_fields: - request_id
     longRunning: Describes settings to use for long-running operations when
       generating API methods for RPCs. Complements RPCs that use the
       annotations in google/longrunning/operations.proto. Example of a YAML
@@ -2077,8 +2083,9 @@ class MethodSettings(_messages.Message):
       below apply. This is used to find the method to apply the options.
   """
 
-  longRunning = _messages.MessageField('LongRunning', 1)
-  selector = _messages.StringField(2)
+  autoPopulatedFields = _messages.StringField(1, repeated=True)
+  longRunning = _messages.MessageField('LongRunning', 2)
+  selector = _messages.StringField(3)
 
 
 class MetricDescriptor(_messages.Message):

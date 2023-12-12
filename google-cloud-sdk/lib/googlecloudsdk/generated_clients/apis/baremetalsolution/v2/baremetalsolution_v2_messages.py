@@ -1285,6 +1285,8 @@ class InstanceConfig(_messages.Message):
     instanceType: Instance type. [Available
       types](https://cloud.google.com/bare-metal/docs/bms-
       planning#server_configurations)
+    kmsKeyVersion: Name of the KMS crypto key version used to encrypt the
+      initial passwords. The key has to have ASYMMETRIC_DECRYPT purpose.
     logicalInterfaces: List of logical interfaces for the instance. The number
       of logical interfaces will be the same as number of hardware bond/nic on
       the chosen network template. Filled if InstanceConfig.multivlan_config
@@ -1323,14 +1325,15 @@ class InstanceConfig(_messages.Message):
   hyperthreading = _messages.BooleanField(3)
   id = _messages.StringField(4)
   instanceType = _messages.StringField(5)
-  logicalInterfaces = _messages.MessageField('GoogleCloudBaremetalsolutionV2LogicalInterface', 6, repeated=True)
-  name = _messages.StringField(7)
-  networkConfig = _messages.EnumField('NetworkConfigValueValuesEnum', 8)
-  networkTemplate = _messages.StringField(9)
-  osImage = _messages.StringField(10)
-  privateNetwork = _messages.MessageField('NetworkAddress', 11)
-  sshKeyNames = _messages.StringField(12, repeated=True)
-  userNote = _messages.StringField(13)
+  kmsKeyVersion = _messages.StringField(6)
+  logicalInterfaces = _messages.MessageField('GoogleCloudBaremetalsolutionV2LogicalInterface', 7, repeated=True)
+  name = _messages.StringField(8)
+  networkConfig = _messages.EnumField('NetworkConfigValueValuesEnum', 9)
+  networkTemplate = _messages.StringField(10)
+  osImage = _messages.StringField(11)
+  privateNetwork = _messages.MessageField('NetworkAddress', 12)
+  sshKeyNames = _messages.StringField(13, repeated=True)
+  userNote = _messages.StringField(14)
 
 
 class InstanceQuota(_messages.Message):

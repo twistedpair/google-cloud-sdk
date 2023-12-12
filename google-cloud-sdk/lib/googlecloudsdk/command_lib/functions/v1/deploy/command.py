@@ -474,14 +474,7 @@ def Run(args, track=None):
         'runtime', 'Flag `--runtime` is required for new functions.'
     )
 
-  if (
-      track
-      in (
-          base.ReleaseTrack.ALPHA,
-          base.ReleaseTrack.BETA,
-      )
-      and args.IsSpecified('runtime_update_policy')
-  ):
+  if args.IsSpecified('runtime_update_policy'):
     if args.runtime_update_policy == 'automatic':
       function.automaticUpdatePolicy = messages.AutomaticUpdatePolicy()
       function.onDeployUpdatePolicy = None

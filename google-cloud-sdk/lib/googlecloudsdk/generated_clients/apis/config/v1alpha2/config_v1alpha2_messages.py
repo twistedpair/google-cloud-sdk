@@ -666,6 +666,117 @@ class ConfigProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class ConfigProjectsLocationsPreviewsCreateRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsCreateRequest object.
+
+  Fields:
+    parent: Required. The parent in whose context the Preview is created. The
+      parent value is in the format:
+      'projects/{project_id}/locations/{location}'.
+    preview: A Preview resource to be passed as the request body.
+    previewId: Optional. The preview ID.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes since the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  parent = _messages.StringField(1, required=True)
+  preview = _messages.MessageField('Preview', 2)
+  previewId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class ConfigProjectsLocationsPreviewsDeleteRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the Preview in the format:
+      'projects/{project_id}/locations/{location}/previews/{preview}'.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      will know to ignore the request if it has already been completed. The
+      server will guarantee that for at least 60 minutes after the first
+      request. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if original operation with the
+      same request ID was received, and if so, will ignore the second request.
+      This prevents clients from accidentally creating duplicate commitments.
+      The request ID must be a valid UUID with the exception that zero UUID is
+      not supported (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class ConfigProjectsLocationsPreviewsExportRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsExportRequest object.
+
+  Fields:
+    exportPreviewResultRequest: A ExportPreviewResultRequest resource to be
+      passed as the request body.
+    parent: Required. The preview whose results should be exported. The
+      preview value is in the format:
+      'projects/{project_id}/locations/{location}/previews/{preview}'.
+  """
+
+  exportPreviewResultRequest = _messages.MessageField('ExportPreviewResultRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class ConfigProjectsLocationsPreviewsGetRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsGetRequest object.
+
+  Fields:
+    name: Required. The name of the preview. Format:
+      'projects/{project_id}/locations/{location}/previews/{preview}'.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ConfigProjectsLocationsPreviewsListRequest(_messages.Message):
+  r"""A ConfigProjectsLocationsPreviewsListRequest object.
+
+  Fields:
+    filter: Optional. Lists the Deployments that match the filter expression.
+      A filter expression filters the resources listed in the response. The
+      expression must be of the form '{field} {operator} {value}' where
+      operators: '<', '>', '<=', '>=', '!=', '=', ':' are supported (colon ':'
+      represents a HAS operator which is roughly synonymous with equality).
+      {field} can refer to a proto or JSON field, or a synthetic field. Field
+      names can be camelCase or snake_case. Examples: - Filter by name: name =
+      "projects/foo/locations/us-central1/deployments/bar - Filter by labels:
+      - Resources that have a key called 'foo' labels.foo:* - Resources that
+      have a key called 'foo' whose value is 'bar' labels.foo = bar - Filter
+      by state: - Deployments in CREATING state. state=CREATING
+    orderBy: Optional. Field to use to sort the list.
+    pageSize: Optional. When requesting a page of resources, 'page_size'
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to 'ListDeployments'
+      which specifies the position in the list from where to continue listing
+      the resources.
+    parent: Required. The parent in whose context the Previews are listed. The
+      parent value is in the format:
+      'projects/{project_id}/locations/{location}'.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class DeleteStatefileRequest(_messages.Message):
   r"""A request to delete a state file passed to a 'DeleteStatefile' call.
 
@@ -937,6 +1048,20 @@ class ExportDeploymentStatefileRequest(_messages.Message):
   draft = _messages.BooleanField(1)
 
 
+class ExportPreviewResultRequest(_messages.Message):
+  r"""A request to export preview results."""
+
+
+class ExportPreviewResultResponse(_messages.Message):
+  r"""A response to `ExportPreviewResult` call. Contains preview results.
+
+  Fields:
+    result: Output only. Signed URLs for accessing the plan files.
+  """
+
+  result = _messages.MessageField('PreviewResult', 1)
+
+
 class ExportRevisionStatefileRequest(_messages.Message):
   r"""A request to export a state file passed to a 'ExportRevisionStatefile'
   call.
@@ -1046,6 +1171,21 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPreviewsResponse(_messages.Message):
+  r"""A response to a `ListPreviews` call. Contains a list of Previews.
+
+  Fields:
+    nextPageToken: Token to be supplied to the next ListPreviews request via
+      `page_token` to obtain the next set of results.
+    previews: List of Previewss.
+    unreachable: Locations that could not be reached.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  previews = _messages.MessageField('Preview', 2, repeated=True)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListResourcesResponse(_messages.Message):
@@ -1302,6 +1442,7 @@ class OperationMetadata(_messages.Message):
     deploymentMetadata: Output only. Metadata about the deployment operation
       state.
     endTime: Output only. Time when the operation finished running.
+    previewMetadata: Output only. Metadata about the preview operation state.
     requestedCancellation: Output only. Identifies whether the user has
       requested cancellation of the operation. Operations that have
       successfully been cancelled have Operation.error value with a
@@ -1317,10 +1458,11 @@ class OperationMetadata(_messages.Message):
   createTime = _messages.StringField(2)
   deploymentMetadata = _messages.MessageField('DeploymentOperationMetadata', 3)
   endTime = _messages.StringField(4)
-  requestedCancellation = _messages.BooleanField(5)
-  statusMessage = _messages.StringField(6)
-  target = _messages.StringField(7)
-  verb = _messages.StringField(8)
+  previewMetadata = _messages.MessageField('PreviewOperationMetadata', 5)
+  requestedCancellation = _messages.BooleanField(6)
+  statusMessage = _messages.StringField(7)
+  target = _messages.StringField(8)
+  verb = _messages.StringField(9)
 
 
 class Policy(_messages.Message):
@@ -1399,6 +1541,248 @@ class Policy(_messages.Message):
   bindings = _messages.MessageField('Binding', 2, repeated=True)
   etag = _messages.BytesField(3)
   version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class Preview(_messages.Message):
+  r"""A preview represents a set of actions Infra Manager would perform to
+  move the resources towards the desired state as specified in the
+  configuration.
+
+  Enums:
+    ErrorCodeValueValuesEnum: Output only. Code describing any errors that may
+      have occurred.
+    PreviewModeValueValuesEnum: Optional. Current mode of preview.
+    StateValueValuesEnum: Output only. Current state of the preview.
+
+  Messages:
+    LabelsValue: Optional. User-defined labels for the preview.
+
+  Fields:
+    artifactsGcsBucket: Optional. User-defined location of Cloud Build logs,
+      artifacts, and in Google Cloud Storage. Format: `gs://{bucket}/{folder}`
+      A default bucket will be bootstrapped if the field is not set or empty
+      Default Bucket Format: `gs://--blueprint-config` Constraints: - The
+      bucket needs to be in the same project as the deployment - The path
+      cannot be within the path of `gcs_source` If omitted and deployment
+      resource ref provided has artifacts_gcs_bucket defined, that artifact
+      bucket is used.
+    build: Output only. Cloud Build instance UUID associated with this
+      preview.
+    createTime: Output only. Time the preview was created.
+    deployment: Optional. Optional deployment reference. If specified, the
+      preview will be performed using the provided deployment's current state
+      and use any relevant fields from the deployment unless explicitly
+      specified in the preview create request.
+    errorCode: Output only. Code describing any errors that may have occurred.
+    errorLogs: Output only. Link to tf-error.ndjson file, which contains the
+      full list of the errors encountered during a Terraform preview. Format:
+      `gs://{bucket}/{object}`.
+    errorStatus: Output only. Additional information regarding the current
+      state.
+    labels: Optional. User-defined labels for the preview.
+    logs: Output only. Location of preview logs in `gs://{bucket}/{object}`
+      format.
+    name: Identifier. Resource name of the preview. Resource name can be user
+      provided or server generated ID if unspecified. Format:
+      `projects/{project}/locations/{location}/previews/{preview}`
+    previewArtifacts: Output only. Artifacts from preview.
+    previewMode: Optional. Current mode of preview.
+    serviceAccount: Optional. Optional service account. If omitted, the
+      deployment resource reference must be provided, and the service account
+      attached to the deployment will be used.
+    state: Output only. Current state of the preview.
+    terraformBlueprint: The terraform blueprint to preview.
+    tfErrors: Output only. Summary of errors encountered during Terraform
+      preview. It has a size limit of 10, i.e. only top 10 errors will be
+      summarized here.
+    workerPool: Optional. The user-specified Worker Pool resource in which the
+      Cloud Build job will execute. Format
+      projects/{project}/locations/{location}/workerPools/{workerPoolId} If
+      this field is unspecified, the default Cloud Build worker pool will be
+      used. If omitted and deployment resource ref provided has worker_pool
+      defined, that worker pool is used.
+  """
+
+  class ErrorCodeValueValuesEnum(_messages.Enum):
+    r"""Output only. Code describing any errors that may have occurred.
+
+    Values:
+      ERROR_CODE_UNSPECIFIED: No error code was specified.
+      CLOUD_BUILD_PERMISSION_DENIED: Cloud Build failed due to a permissions
+        issue.
+      BUCKET_CREATION_PERMISSION_DENIED: Cloud Storage bucket failed to create
+        due to a permissions issue.
+      BUCKET_CREATION_FAILED: Cloud Storage bucket failed for a non-
+        permissions-related issue.
+      DEPLOYMENT_LOCK_ACQUIRE_FAILED: Acquiring lock on provided deployment
+        reference failed.
+      PREVIEW_BUILD_API_FAILED: The preview Cloud Build failed before logs
+        could be generated.
+      PREVIEW_BUILD_RUN_FAILED: The preview Cloud Build failed after logs
+        could be generated.
+    """
+    ERROR_CODE_UNSPECIFIED = 0
+    CLOUD_BUILD_PERMISSION_DENIED = 1
+    BUCKET_CREATION_PERMISSION_DENIED = 2
+    BUCKET_CREATION_FAILED = 3
+    DEPLOYMENT_LOCK_ACQUIRE_FAILED = 4
+    PREVIEW_BUILD_API_FAILED = 5
+    PREVIEW_BUILD_RUN_FAILED = 6
+
+  class PreviewModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Current mode of preview.
+
+    Values:
+      PREVIEW_MODE_UNSPECIFIED: Unspecified policy, default mode will be used.
+      DEFAULT: DEFAULT mode generates an execution plan for reconciling
+        current resource state into expected resource state.
+      DELETE: DELETE mode generates as execution plan for destroying current
+        resources.
+    """
+    PREVIEW_MODE_UNSPECIFIED = 0
+    DEFAULT = 1
+    DELETE = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Current state of the preview.
+
+    Values:
+      STATE_UNSPECIFIED: The default value. This value is used if the state is
+        unknown.
+      CREATING: The preview is being created.
+      SUCCEEDED: The preview has succeeded.
+      APPLYING: The preview is being applied.
+      STALE: The preview is stale. A preview can become stale if a revision
+        has been applied after this preview was created.
+      DELETING: The preview is being deleted.
+      FAILED: The preview has encountered an unexpected error.
+      DELETED: The preview has been deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    SUCCEEDED = 2
+    APPLYING = 3
+    STALE = 4
+    DELETING = 5
+    FAILED = 6
+    DELETED = 7
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. User-defined labels for the preview.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  artifactsGcsBucket = _messages.StringField(1)
+  build = _messages.StringField(2)
+  createTime = _messages.StringField(3)
+  deployment = _messages.StringField(4)
+  errorCode = _messages.EnumField('ErrorCodeValueValuesEnum', 5)
+  errorLogs = _messages.StringField(6)
+  errorStatus = _messages.MessageField('Status', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  logs = _messages.StringField(9)
+  name = _messages.StringField(10)
+  previewArtifacts = _messages.MessageField('PreviewArtifacts', 11)
+  previewMode = _messages.EnumField('PreviewModeValueValuesEnum', 12)
+  serviceAccount = _messages.StringField(13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  terraformBlueprint = _messages.MessageField('TerraformBlueprint', 15)
+  tfErrors = _messages.MessageField('TerraformError', 16, repeated=True)
+  workerPool = _messages.StringField(17)
+
+
+class PreviewArtifacts(_messages.Message):
+  r"""Artifacts created by preview.
+
+  Fields:
+    artifacts: Output only. Location of artifacts in Google Cloud Storage.
+      Format: `gs://{bucket}/{object}`
+    content: Output only. Location of a blueprint copy and other content in
+      Google Cloud Storage. Format: `gs://{bucket}/{object}`
+  """
+
+  artifacts = _messages.StringField(1)
+  content = _messages.StringField(2)
+
+
+class PreviewOperationMetadata(_messages.Message):
+  r"""Ephemeral metadata content describing the state of a preview operation.
+
+  Enums:
+    StepValueValuesEnum: The current step the preview operation is running.
+
+  Fields:
+    build: Output only. Cloud Build instance UUID associated with this
+      preview.
+    logs: Output only. Location of preview logs in `gs://{bucket}/{object}`
+      format.
+    previewArtifacts: Artifacts from preview.
+    step: The current step the preview operation is running.
+  """
+
+  class StepValueValuesEnum(_messages.Enum):
+    r"""The current step the preview operation is running.
+
+    Values:
+      PREVIEW_STEP_UNSPECIFIED: Unspecified preview step.
+      PREPARING_STORAGE_BUCKET: Infra Manager is creating a Google Cloud
+        Storage bucket to store artifacts and metadata about the preview.
+      DOWNLOADING_BLUEPRINT: Downloading the blueprint onto the Google Cloud
+        Storage bucket.
+      RUNNING_TF_INIT: Initializing Terraform using `terraform init`.
+      RUNNING_TF_PLAN: Running `terraform plan`.
+      FETCHING_DEPLOYMENT: Fetching a deployment.
+      LOCKING_DEPLOYMENT: Locking a deployment.
+      UNLOCKING_DEPLOYMENT: Unlocking a deployment.
+      SUCCEEDED: Operation was successful.
+      FAILED: Operation failed.
+    """
+    PREVIEW_STEP_UNSPECIFIED = 0
+    PREPARING_STORAGE_BUCKET = 1
+    DOWNLOADING_BLUEPRINT = 2
+    RUNNING_TF_INIT = 3
+    RUNNING_TF_PLAN = 4
+    FETCHING_DEPLOYMENT = 5
+    LOCKING_DEPLOYMENT = 6
+    UNLOCKING_DEPLOYMENT = 7
+    SUCCEEDED = 8
+    FAILED = 9
+
+  build = _messages.StringField(1)
+  logs = _messages.StringField(2)
+  previewArtifacts = _messages.MessageField('PreviewArtifacts', 3)
+  step = _messages.EnumField('StepValueValuesEnum', 4)
+
+
+class PreviewResult(_messages.Message):
+  r"""Contains a signed Cloud Storage URLs.
+
+  Fields:
+    binarySignedUri: Output only. Plan binary signed URL
+    jsonSignedUri: Output only. Plan JSON signed URL
+  """
+
+  binarySignedUri = _messages.StringField(1)
+  jsonSignedUri = _messages.StringField(2)
 
 
 class Resource(_messages.Message):

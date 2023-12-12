@@ -333,12 +333,13 @@ class ArgAdder(object):
     )
     return self
 
-  def AddIsolation(self):
+  def AddIsolation(self, allow_data_boost=False):
     """Add argument for isolating this app profile's traffic to parser."""
     isolation_group = self.parser.add_mutually_exclusive_group()
     standard_isolation_group = isolation_group.add_group(
         'Standard Isolation',
     )
+
     choices = {
         'PRIORITY_LOW': 'Requests are treated with low priority.',
         'PRIORITY_MEDIUM': 'Requests are treated with medium priority.',
@@ -349,11 +350,78 @@ class ArgAdder(object):
         type=lambda x: x.replace('-', '_').upper(),
         choices=choices,
         default=None,
+        # TODO(b/293306176): Replace with:
+        #
+        # help=(
+        #     'Specify the request priority under Standard Isolation. Passing'
+        #     ' this option implies Standard Isolation, e.g. the --standard'
+        #     ' option. If not specified, the app profile uses Standard'
+        #     ' Isolation with PRIORITY_HIGH by default. Specifying request'
+        #     ' priority on an app profile that has Data Boost Read-Only'
+        #     ' Isolation enabled will change the isolation to Standard and'
+        #     ' use the specified priority, which may cause unexpected behavior'
+        #     ' for running applications.'
+        # ),
         help=(
             'Specify the request priority. If not specified, the app profile'
             ' uses PRIORITY_HIGH by default.'
         ),
+        required=True,
     )
+
+    if allow_data_boost:
+      standard_isolation_group.add_argument(
+          '--standard',
+          action='store_true',
+          default=False,
+          help=(
+              'Use Standard Isolation, rather than Data Boost Read-only'
+              ' Isolation. If specified, --priority is required.'
+          ),
+          hidden=True,  # TODO(b/293306176): Unhide
+      )
+
+      data_boost_isolation_group = isolation_group.add_group(
+          'Data Boost Read-only Isolation',
+          hidden=True,  # TODO(b/293306176): Unhide
+      )
+
+      data_boost_isolation_group.add_argument(
+          '--data-boost',
+          action='store_true',
+          default=False,
+          help=(
+              'Use Data Boost Read-only Isolation, rather than Standard'
+              ' Isolation. If specified, --data-boost-billing-owner is'
+              ' required. Specifying Data Boost Read-only Isolation on an app'
+              ' profile which has Standard Isolation enabled may cause'
+              ' unexpected behavior for running applications.'
+          ),
+          required=True,
+      )
+
+      billing_choices = {
+          'PRODUCER': (
+              'Billing should be accounted towards the producer Cloud Project.'
+          ),
+          # TODO(b/307933524): Add this option in the future.
+          # 'CONSUMER': (
+          #     'Billing should be accounted towards the consumer Cloud'
+          #     ' Project.'
+          # ),
+      }
+      data_boost_isolation_group.add_argument(
+          '--data-boost-billing-owner',
+          type=lambda x: x.upper(),
+          choices=billing_choices,
+          default=None,
+          help=(
+              'Specify the Data Boost billing mode, required if --data-boost is'
+              ' passed.'
+          ),
+          required=True,
+      )
+
     return self
 
   def AddInstanceDisplayName(self, required=False):

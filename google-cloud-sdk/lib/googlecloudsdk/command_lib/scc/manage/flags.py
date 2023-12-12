@@ -98,7 +98,7 @@ def CreateCustomConfigFlag(required=True) -> base.Argument:
       '--custom-config-from-file',
       required=required,
       metavar='CUSTOM_CONFIG',
-      help="""Path to a YAML file that contains the resource data to validate the Security Health Analytics custom module against.""",
+      help="""Path to a YAML custom configuration file.""",
       type=arg_parsers.FileContents(),
   )
 
@@ -113,13 +113,22 @@ def CreateTestResourceFlag(required=True) -> base.Argument:
   )
 
 
+def CreateModuleTypeFlag(required=True) -> base.Argument:
+  return base.Argument(
+      '--module-type',
+      required=required,
+      metavar='MODULE_TYPE',
+      help="""Type of the custom module. For a list of valid module types please visit https://cloud.google.com/security-command-center/docs/custom-modules-etd-overview#custom_modules_and_templates.""",
+  )
+
+
 def CreateValidateOnlyFlag(required=False) -> base.Argument:
   return base.Argument(
       '--validate-only',
       required=required,
       default=None,
       action='store_true',
-      help="""If present, the request is validated (including IAM checks) but no action is taken (the module will not be deleted).""",
+      help="""If present, the request is validated (including IAM checks) but no action is taken.""",
   )
 
 
@@ -142,24 +151,45 @@ def CreateUpdateFlags(
           type=arg_parsers.FileContents(),
       )
   )
-  AddEnablementStateFlag(root, module_type)
+  root.AddArgument(
+      CreateEnablementStateFlag(required=False, module_type=module_type)
+  )
   return root
 
 
-def AddEnablementStateFlag(
-    root: base.Argument, module_type: constants.CustomModuleType
+def CreateEnablementStateFlag(
+    module_type: constants.CustomModuleType,
+    required: bool,
 ):
+  """Creates an enablement state flag."""
   if module_type == constants.CustomModuleType.SHA:
     module_name = 'Security Health Analytics'
   elif module_type == constants.CustomModuleType.ETD:
     module_name = 'Event Threat Detection'
-  root.AddArgument(
-      base.Argument(
-          '--enablement-state',
-          required=False,
-          default=None,
-          help="""Sets the enablement state of the {} custom module. Valid options are ENABLED, DISABLED, OR INHERITED.""".format(
-              module_name
-          ),
-      )
+  return base.Argument(
+      '--enablement-state',
+      required=required,
+      default=None,
+      help="""Sets the enablement state of the {} custom module. Valid options are ENABLED, DISABLED, OR INHERITED.""".format(
+          module_name
+      ),
+  )
+
+
+def CreateEtdCustomConfigFilePathFlag(required=True) -> base.Argument:
+  return base.Argument(
+      '--custom-config-file',
+      required=required,
+      metavar='CUSTOM_CONFIG',
+      help="""Path to a JSON custom configuration file of the ETD custom module.""",
+      type=arg_parsers.FileContents(),
+  )
+
+
+def CreateDisplayNameFlag(required=True) -> base.Argument:
+  return base.Argument(
+      '--display-name',
+      required=required,
+      metavar='DISPLAY-NAME',
+      help="""The display name of the custom module.""",
   )

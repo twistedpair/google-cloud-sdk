@@ -119,9 +119,11 @@ class BigQueryConfig(_messages.Message):
     table: Optional. The name of the table to which to write data, of the form
       {projectId}.{datasetId}.{tableId}
     useTableSchema: Optional. When true, use the BigQuery table's schema as
-      the columns to write to in BigQuery.
+      the columns to write to in BigQuery. `use_table_schema` and
+      `use_topic_schema` cannot be enabled at the same time.
     useTopicSchema: Optional. When true, use the topic's schema as the columns
-      to write to in BigQuery, if it exists.
+      to write to in BigQuery, if it exists. `use_topic_schema` and
+      `use_table_schema` cannot be enabled at the same time.
     writeMetadata: Optional. When true, write the subscription name,
       message_id, publish_time, attributes, and ordering_key to additional
       columns in the table. The subscription name, message_id, and

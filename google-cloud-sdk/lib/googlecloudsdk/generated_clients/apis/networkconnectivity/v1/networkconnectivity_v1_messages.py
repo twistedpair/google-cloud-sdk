@@ -3695,6 +3695,9 @@ class RouteTable(_messages.Message):
   Fields:
     createTime: Output only. The time the route table was created.
     description: An optional description of the route table.
+    group: Output only. The name of the group the route table is associated
+      with. Groups use the following form: `projects/{project_number}/location
+      s/global/hubs/{hub}/groups/{group_name}`
     labels: Optional labels in key-value pair format. For more information
       about labels, see [Requirements for
       labels](https://cloud.google.com/resource-manager/docs/creating-
@@ -3767,11 +3770,12 @@ class RouteTable(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  uid = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  group = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  uid = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class RouterApplianceInstance(_messages.Message):

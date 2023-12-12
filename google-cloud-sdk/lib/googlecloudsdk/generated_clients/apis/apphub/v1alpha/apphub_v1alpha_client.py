@@ -60,7 +60,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateService registers a service in App Hub Application.
+      r"""Creates a Service in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsServicesCreateRequest) input message
@@ -87,7 +87,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteService deletes a service in App Hub Application.
+      r"""Deletes a Service in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsServicesDeleteRequest) input message
@@ -114,7 +114,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetService gets a service from App Hub Application.
+      r"""Gets a Service in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsServicesGetRequest) input message
@@ -141,7 +141,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListServices lists registered services for a given host project, location and application.
+      r"""List Services in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsServicesListRequest) input message
@@ -168,7 +168,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""UpdateService updates a service in App Hub Application.
+      r"""Updates a Service in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsServicesPatchRequest) input message
@@ -205,7 +205,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateWorkload registers a workload in App Hub Application.
+      r"""Creates a Workload in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsWorkloadsCreateRequest) input message
@@ -232,7 +232,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteWorkload unregisters a workload in App Hub Application.
+      r"""Deletes a Workload in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsWorkloadsDeleteRequest) input message
@@ -259,7 +259,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetWorkload gets a workload from App Hub Application.
+      r"""Gets a Workload in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsWorkloadsGetRequest) input message
@@ -286,7 +286,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListWorkloads lists workloads for a given host project, location and application.
+      r"""Lists Workloads in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsWorkloadsListRequest) input message
@@ -313,7 +313,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""UpdateWorkload updates a workload in App Hub Application.
+      r"""Updates a Workload in an Application.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsWorkloadsPatchRequest) input message
@@ -350,7 +350,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateApplication registers a application in App Hub Application.
+      r"""Creates an Application in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsCreateRequest) input message
@@ -377,7 +377,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteApplication deletes a Application in App Hub Application.
+      r"""Deletes an Application in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsDeleteRequest) input message
@@ -404,7 +404,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetApplication gets a Application from App Hub Application.
+      r"""Gets an Application in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsGetRequest) input message
@@ -458,7 +458,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListApplications lists applications for a given host project and location.
+      r"""Lists Applications in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsListRequest) input message
@@ -485,7 +485,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Patch(self, request, global_params=None):
-      r"""UpdateApplication updates a Application in App Hub Application.
+      r"""Updates an Application in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsApplicationsPatchRequest) input message
@@ -576,7 +576,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
           }
 
     def FindUnregistered(self, request, global_params=None):
-      r"""FindUnregisteredServices finds unregistered services for a given host project and location.
+      r"""Finds unregistered services in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest) input message
@@ -603,7 +603,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetDiscoveredService gets a discovered service from App Hub.
+      r"""Gets a discovered service in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredServicesGetRequest) input message
@@ -630,7 +630,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListDiscoveredServices lists discovered services for a given host project and location.
+      r"""Lists discovered services in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredServicesListRequest) input message
@@ -667,7 +667,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
           }
 
     def FindUnregistered(self, request, global_params=None):
-      r"""FindUnregisteredWorkloads finds unregistered workloads for a given host project and location.
+      r"""Finds unregistered workloads in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredWorkloadsFindUnregisteredRequest) input message
@@ -694,7 +694,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetDiscoveredWorkload gets a discovered workload from App Hub.
+      r"""Gets a discovered workload in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredWorkloadsGetRequest) input message
@@ -721,7 +721,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListDiscoveredWorkloads lists discovered workloads for a given host project and location.
+      r"""Lists discovered workloads in a host project and location.
 
       Args:
         request: (ApphubProjectsLocationsDiscoveredWorkloadsListRequest) input message
@@ -876,7 +876,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
           }
 
     def Create(self, request, global_params=None):
-      r"""CreateServiceProjectAttachment attaches a service project to a host project.
+      r"""Attaches a service project to the host project.
 
       Args:
         request: (ApphubProjectsLocationsServiceProjectAttachmentsCreateRequest) input message
@@ -903,7 +903,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Delete(self, request, global_params=None):
-      r"""DeleteServiceProjectAttachment detaches a service project attachment from a host project.
+      r"""Deletes a service project attached to the host project.
 
       Args:
         request: (ApphubProjectsLocationsServiceProjectAttachmentsDeleteRequest) input message
@@ -930,7 +930,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""GetServiceProjectAttachment gets a service project attachment for a host project.
+      r"""Gets a service project attached to the host project.
 
       Args:
         request: (ApphubProjectsLocationsServiceProjectAttachmentsGetRequest) input message
@@ -957,7 +957,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""ListServiceProjectAttachments lists service projects attached to a host project.
+      r"""List service projects attached to the host project.
 
       Args:
         request: (ApphubProjectsLocationsServiceProjectAttachmentsListRequest) input message
@@ -994,7 +994,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
           }
 
     def DetachServiceProjectAttachment(self, request, global_params=None):
-      r"""DetachServiceProjectAttachment detaches a service project attachment from host project, if exists.
+      r"""Detaches a service project from a host project. You can call this API from either a host or service project.
 
       Args:
         request: (ApphubProjectsLocationsDetachServiceProjectAttachmentRequest) input message
@@ -1075,7 +1075,7 @@ class ApphubV1alpha(base_api.BaseApiClient):
     )
 
     def LookupServiceProjectAttachment(self, request, global_params=None):
-      r"""LookupServiceProjectAttachment looks up a service project attachment for a service project.
+      r"""Looks up a service project attachment. You can call this API from either a host or service project.
 
       Args:
         request: (ApphubProjectsLocationsLookupServiceProjectAttachmentRequest) input message

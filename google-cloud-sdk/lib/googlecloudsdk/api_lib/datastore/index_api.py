@@ -219,7 +219,12 @@ def NormalizeIndexes(indexes):
   for index in indexes:
     if (
         index.properties
-        and index.properties[-1].name == '__key__'
+        and (
+            # The key property path is represented as __key__ in Datastore API
+            # and __name__ in Firestore API.
+            index.properties[-1].name == '__key__'
+            or index.properties[-1].name == '__name__'
+        )
         and index.properties[-1].direction == 'asc'
     ):
       index.properties.pop()
@@ -324,9 +329,17 @@ def CreateMissingIndexesViaFirestoreApi(
     project_id, database_id, index_definitions
 ):
   """Creates the indexes via Firestore API if the index configuration is not present."""
-  indexes = ListDatastoreIndexesViaFirestoreApi(project_id, database_id)
+  existing_indexes = ListDatastoreIndexesViaFirestoreApi(
+      project_id, database_id
+  )
+  # Firestore API returns index with '__name__' field path. Normalizing the
+  # index is required.
+  existing_indexes_normalized = NormalizeIndexes(
+      [index for _, index in existing_indexes]
+  )
   normalized_indexes = NormalizeIndexes(index_definitions.indexes)
-  new_indexes = normalized_indexes - {index for _, index in indexes}
+  new_indexes = normalized_indexes - existing_indexes_normalized
+
   CreateIndexesViaFirestoreApi(
       project_id=project_id,
       database_id=database_id,

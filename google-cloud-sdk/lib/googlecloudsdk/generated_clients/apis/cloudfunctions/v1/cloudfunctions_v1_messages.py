@@ -930,6 +930,9 @@ class GoogleCloudFunctionsV2LocationMetadata(_messages.Message):
 class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
   Messages:
     RequestResourceValue: The original request that started the operation.
 
@@ -941,6 +944,7 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
       of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
+    operationType: The operation type.
     requestResource: The original request that started the operation.
     sourceToken: An identifier for Firebase function sources. Disclaimer: This
       field is only supported for Firebase function deployments.
@@ -949,6 +953,30 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
     target: Server-defined resource path for the target of the operation.
     verb: Name of the verb executed by the operation.
   """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The operation type.
+
+    Values:
+      OPERATIONTYPE_UNSPECIFIED: Unspecified
+      CREATE_FUNCTION: CreateFunction
+      UPDATE_FUNCTION: UpdateFunction
+      DELETE_FUNCTION: DeleteFunction
+      REDIRECT_FUNCTION_UPGRADE_TRAFFIC: RedirectFunctionUpgradeTraffic
+      ROLLBACK_FUNCTION_UPGRADE_TRAFFIC: RollbackFunctionUpgradeTraffic
+      SETUP_FUNCTION_UPGRADE_CONFIG: SetupFunctionUpgradeConfig
+      ABORT_FUNCTION_UPGRADE: AbortFunctionUpgrade
+      COMMIT_FUNCTION_UPGRADE: CommitFunctionUpgrade
+    """
+    OPERATIONTYPE_UNSPECIFIED = 0
+    CREATE_FUNCTION = 1
+    UPDATE_FUNCTION = 2
+    DELETE_FUNCTION = 3
+    REDIRECT_FUNCTION_UPGRADE_TRAFFIC = 4
+    ROLLBACK_FUNCTION_UPGRADE_TRAFFIC = 5
+    SETUP_FUNCTION_UPGRADE_CONFIG = 6
+    ABORT_FUNCTION_UPGRADE = 7
+    COMMIT_FUNCTION_UPGRADE = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestResourceValue(_messages.Message):
@@ -980,12 +1008,13 @@ class GoogleCloudFunctionsV2OperationMetadata(_messages.Message):
   cancelRequested = _messages.BooleanField(2)
   createTime = _messages.StringField(3)
   endTime = _messages.StringField(4)
-  requestResource = _messages.MessageField('RequestResourceValue', 5)
-  sourceToken = _messages.StringField(6)
-  stages = _messages.MessageField('GoogleCloudFunctionsV2Stage', 7, repeated=True)
-  statusDetail = _messages.StringField(8)
-  target = _messages.StringField(9)
-  verb = _messages.StringField(10)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  requestResource = _messages.MessageField('RequestResourceValue', 6)
+  sourceToken = _messages.StringField(7)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2Stage', 8, repeated=True)
+  statusDetail = _messages.StringField(9)
+  target = _messages.StringField(10)
+  verb = _messages.StringField(11)
 
 
 class GoogleCloudFunctionsV2Stage(_messages.Message):
@@ -1107,6 +1136,9 @@ class GoogleCloudFunctionsV2alphaLocationMetadata(_messages.Message):
 class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
   Messages:
     RequestResourceValue: The original request that started the operation.
 
@@ -1118,6 +1150,7 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
       of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
+    operationType: The operation type.
     requestResource: The original request that started the operation.
     sourceToken: An identifier for Firebase function sources. Disclaimer: This
       field is only supported for Firebase function deployments.
@@ -1126,6 +1159,30 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
     target: Server-defined resource path for the target of the operation.
     verb: Name of the verb executed by the operation.
   """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The operation type.
+
+    Values:
+      OPERATIONTYPE_UNSPECIFIED: Unspecified
+      CREATE_FUNCTION: CreateFunction
+      UPDATE_FUNCTION: UpdateFunction
+      DELETE_FUNCTION: DeleteFunction
+      REDIRECT_FUNCTION_UPGRADE_TRAFFIC: RedirectFunctionUpgradeTraffic
+      ROLLBACK_FUNCTION_UPGRADE_TRAFFIC: RollbackFunctionUpgradeTraffic
+      SETUP_FUNCTION_UPGRADE_CONFIG: SetupFunctionUpgradeConfig
+      ABORT_FUNCTION_UPGRADE: AbortFunctionUpgrade
+      COMMIT_FUNCTION_UPGRADE: CommitFunctionUpgrade
+    """
+    OPERATIONTYPE_UNSPECIFIED = 0
+    CREATE_FUNCTION = 1
+    UPDATE_FUNCTION = 2
+    DELETE_FUNCTION = 3
+    REDIRECT_FUNCTION_UPGRADE_TRAFFIC = 4
+    ROLLBACK_FUNCTION_UPGRADE_TRAFFIC = 5
+    SETUP_FUNCTION_UPGRADE_CONFIG = 6
+    ABORT_FUNCTION_UPGRADE = 7
+    COMMIT_FUNCTION_UPGRADE = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestResourceValue(_messages.Message):
@@ -1157,12 +1214,13 @@ class GoogleCloudFunctionsV2alphaOperationMetadata(_messages.Message):
   cancelRequested = _messages.BooleanField(2)
   createTime = _messages.StringField(3)
   endTime = _messages.StringField(4)
-  requestResource = _messages.MessageField('RequestResourceValue', 5)
-  sourceToken = _messages.StringField(6)
-  stages = _messages.MessageField('GoogleCloudFunctionsV2alphaStage', 7, repeated=True)
-  statusDetail = _messages.StringField(8)
-  target = _messages.StringField(9)
-  verb = _messages.StringField(10)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  requestResource = _messages.MessageField('RequestResourceValue', 6)
+  sourceToken = _messages.StringField(7)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2alphaStage', 8, repeated=True)
+  statusDetail = _messages.StringField(9)
+  target = _messages.StringField(10)
+  verb = _messages.StringField(11)
 
 
 class GoogleCloudFunctionsV2alphaStage(_messages.Message):
@@ -1284,6 +1342,9 @@ class GoogleCloudFunctionsV2betaLocationMetadata(_messages.Message):
 class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
   r"""Represents the metadata of the long-running operation.
 
+  Enums:
+    OperationTypeValueValuesEnum: The operation type.
+
   Messages:
     RequestResourceValue: The original request that started the operation.
 
@@ -1295,6 +1356,7 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
       of 1, corresponding to `Code.CANCELLED`.
     createTime: The time the operation was created.
     endTime: The time the operation finished running.
+    operationType: The operation type.
     requestResource: The original request that started the operation.
     sourceToken: An identifier for Firebase function sources. Disclaimer: This
       field is only supported for Firebase function deployments.
@@ -1303,6 +1365,30 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
     target: Server-defined resource path for the target of the operation.
     verb: Name of the verb executed by the operation.
   """
+
+  class OperationTypeValueValuesEnum(_messages.Enum):
+    r"""The operation type.
+
+    Values:
+      OPERATIONTYPE_UNSPECIFIED: Unspecified
+      CREATE_FUNCTION: CreateFunction
+      UPDATE_FUNCTION: UpdateFunction
+      DELETE_FUNCTION: DeleteFunction
+      REDIRECT_FUNCTION_UPGRADE_TRAFFIC: RedirectFunctionUpgradeTraffic
+      ROLLBACK_FUNCTION_UPGRADE_TRAFFIC: RollbackFunctionUpgradeTraffic
+      SETUP_FUNCTION_UPGRADE_CONFIG: SetupFunctionUpgradeConfig
+      ABORT_FUNCTION_UPGRADE: AbortFunctionUpgrade
+      COMMIT_FUNCTION_UPGRADE: CommitFunctionUpgrade
+    """
+    OPERATIONTYPE_UNSPECIFIED = 0
+    CREATE_FUNCTION = 1
+    UPDATE_FUNCTION = 2
+    DELETE_FUNCTION = 3
+    REDIRECT_FUNCTION_UPGRADE_TRAFFIC = 4
+    ROLLBACK_FUNCTION_UPGRADE_TRAFFIC = 5
+    SETUP_FUNCTION_UPGRADE_CONFIG = 6
+    ABORT_FUNCTION_UPGRADE = 7
+    COMMIT_FUNCTION_UPGRADE = 8
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RequestResourceValue(_messages.Message):
@@ -1334,12 +1420,13 @@ class GoogleCloudFunctionsV2betaOperationMetadata(_messages.Message):
   cancelRequested = _messages.BooleanField(2)
   createTime = _messages.StringField(3)
   endTime = _messages.StringField(4)
-  requestResource = _messages.MessageField('RequestResourceValue', 5)
-  sourceToken = _messages.StringField(6)
-  stages = _messages.MessageField('GoogleCloudFunctionsV2betaStage', 7, repeated=True)
-  statusDetail = _messages.StringField(8)
-  target = _messages.StringField(9)
-  verb = _messages.StringField(10)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 5)
+  requestResource = _messages.MessageField('RequestResourceValue', 6)
+  sourceToken = _messages.StringField(7)
+  stages = _messages.MessageField('GoogleCloudFunctionsV2betaStage', 8, repeated=True)
+  statusDetail = _messages.StringField(9)
+  target = _messages.StringField(10)
+  verb = _messages.StringField(11)
 
 
 class GoogleCloudFunctionsV2betaStage(_messages.Message):

@@ -480,7 +480,7 @@ class FirewallAttachment(_messages.Message):
   Fields:
     createTime: Output only. Create time stamp
     labels: Labels as key value pairs
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     producerForwardingRuleName: Required. Name of the regional load balancer
       which the intercepted traffic should be forwarded to: 'projects/{project
       _id}/regions/{region}/forwardingRules/{forwardingRule}'
@@ -559,6 +559,9 @@ class FirewallEndpoint(_messages.Message):
       FirewallEndpointAssociations pointing at this endpoint. A network will
       only appear in this list after traffic routing is fully configured.
       Format: projects/{project}/global/networks/{name}.
+    associations: Output only. List of FirewallEndpointAssociations that are
+      associated to this endpoint. An association will only appear in this
+      list after traffic routing is fully configured.
     billingProjectId: Optional. Project to bill on endpoint uptime usage.
     createTime: Output only. Create time stamp
     description: Optional. Description of the firewall endpoint. Max length
@@ -566,7 +569,7 @@ class FirewallEndpoint(_messages.Message):
     firstPartyEndpointSettings: Optional. Firewall endpoint settings for first
       party firewall endpoints.
     labels: Optional. Labels as key value pairs
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     state: Output only. Current state of the endpoint.
@@ -629,17 +632,18 @@ class FirewallEndpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   associatedNetworks = _messages.StringField(1, repeated=True)
-  billingProjectId = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  associations = _messages.MessageField('FirewallEndpointAssociationReference', 2, repeated=True)
+  billingProjectId = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 11)
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -653,10 +657,12 @@ class FirewallEndpointAssociation(_messages.Message):
 
   Fields:
     createTime: Output only. Create time stamp
+    disabled: Optional. Whether the association is disabled. True indicates
+      that traffic won't be intercepted
     firewallEndpoint: Required. The URL of the FirewallEndpoint that is being
       associated.
     labels: Optional. Labels as key value pairs
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     network: Required. The URL of the network that is being associated.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
@@ -707,14 +713,31 @@ class FirewallEndpointAssociation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  firewallEndpoint = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  tlsInspectionPolicy = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  disabled = _messages.BooleanField(2)
+  firewallEndpoint = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  tlsInspectionPolicy = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class FirewallEndpointAssociationReference(_messages.Message):
+  r"""This is a subset of the FirewallEndpointAssociation message, containing
+  fields to be used by the consumer.
+
+  Fields:
+    name: Output only. The resource name of the FirewallEndpointAssociation.
+      Format: projects/{project}/locations/{location}/firewallEndpointAssociat
+      ions/{id}
+    network: Output only. The VPC network associated. Format:
+      projects/{project}/global/networks/{name}.
+  """
+
+  name = _messages.StringField(1)
+  network = _messages.StringField(2)
 
 
 class FirstPartyEndpointSettings(_messages.Message):
@@ -1837,7 +1860,7 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messag
   Fields:
     firewallEndpoint: A FirewallEndpoint resource to be passed as the request
       body.
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2718,7 +2741,7 @@ class NetworksecurityProjectsLocationsFirewallAttachmentsPatchRequest(_messages.
   Fields:
     firewallAttachment: A FirewallAttachment resource to be passed as the
       request body.
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -2839,7 +2862,7 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest(_
   Fields:
     firewallEndpointAssociation: A FirewallEndpointAssociation resource to be
       passed as the request body.
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The

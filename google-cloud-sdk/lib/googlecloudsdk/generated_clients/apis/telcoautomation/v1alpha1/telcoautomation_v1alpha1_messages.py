@@ -121,11 +121,15 @@ class Blueprint(_messages.Message):
       MULTI_DEPLOYMENT: Blueprints at MULTI_DEPLOYMENT level can be a)
         Modified in private catalog. b) Used to create a deployment on
         orchestration cluster which will create further hydrated deployments.
+      WORKLOAD_CLUSTER_DEPLOYMENT: Blueprints at WORKLOAD_CLUSTER_DEPLOYMENT
+        level can be a) Modified in private catalog. b) Used to create a
+        deployment on workload cluster by the user, once approved.
     """
     DEPLOYMENT_LEVEL_UNSPECIFIED = 0
     HYDRATION = 1
     SINGLE_DEPLOYMENT = 2
     MULTI_DEPLOYMENT = 3
+    WORKLOAD_CLUSTER_DEPLOYMENT = 4
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -213,6 +217,8 @@ class ComputeDeploymentStatusResponse(_messages.Message):
       STATUS_DELETING: Delete in progress.
       STATUS_DELETED: Deleted deployment.
       STATUS_PEERING: NFDeploy specific status. Peering in progress.
+      STATUS_NOT_APPLICABLE: K8s objects such as NetworkAttachmentDefinition
+        don't have a defined status.
     """
     STATUS_UNSPECIFIED = 0
     STATUS_IN_PROGRESS = 1
@@ -221,6 +227,7 @@ class ComputeDeploymentStatusResponse(_messages.Message):
     STATUS_DELETING = 4
     STATUS_DELETED = 5
     STATUS_PEERING = 6
+    STATUS_NOT_APPLICABLE = 7
 
   aggregatedStatus = _messages.EnumField('AggregatedStatusValueValuesEnum', 1)
   name = _messages.StringField(2)
@@ -271,7 +278,9 @@ class Deployment(_messages.Message):
     state: Output only. State of the deployment (DRAFT, APPLIED, DELETING).
     updateTime: Output only. The timestamp when the deployment was updated.
     workloadCluster: Optional. Immutable. The WorkloadCluster on which to
-      create the Deployment.
+      create the Deployment. This field should only be passed when the
+      deployment_level of the source blueprint specifies deployments on
+      workload clusters e.g. WORKLOAD_CLUSTER_DEPLOYMENT.
   """
 
   class DeploymentLevelValueValuesEnum(_messages.Enum):
@@ -291,11 +300,15 @@ class Deployment(_messages.Message):
       MULTI_DEPLOYMENT: Blueprints at MULTI_DEPLOYMENT level can be a)
         Modified in private catalog. b) Used to create a deployment on
         orchestration cluster which will create further hydrated deployments.
+      WORKLOAD_CLUSTER_DEPLOYMENT: Blueprints at WORKLOAD_CLUSTER_DEPLOYMENT
+        level can be a) Modified in private catalog. b) Used to create a
+        deployment on workload cluster by the user, once approved.
     """
     DEPLOYMENT_LEVEL_UNSPECIFIED = 0
     HYDRATION = 1
     SINGLE_DEPLOYMENT = 2
     MULTI_DEPLOYMENT = 3
+    WORKLOAD_CLUSTER_DEPLOYMENT = 4
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. State of the deployment (DRAFT, APPLIED, DELETING).
@@ -1126,11 +1139,15 @@ class PublicBlueprint(_messages.Message):
       MULTI_DEPLOYMENT: Blueprints at MULTI_DEPLOYMENT level can be a)
         Modified in private catalog. b) Used to create a deployment on
         orchestration cluster which will create further hydrated deployments.
+      WORKLOAD_CLUSTER_DEPLOYMENT: Blueprints at WORKLOAD_CLUSTER_DEPLOYMENT
+        level can be a) Modified in private catalog. b) Used to create a
+        deployment on workload cluster by the user, once approved.
     """
     DEPLOYMENT_LEVEL_UNSPECIFIED = 0
     HYDRATION = 1
     SINGLE_DEPLOYMENT = 2
     MULTI_DEPLOYMENT = 3
+    WORKLOAD_CLUSTER_DEPLOYMENT = 4
 
   deploymentLevel = _messages.EnumField('DeploymentLevelValueValuesEnum', 1)
   description = _messages.StringField(2)
@@ -1189,6 +1206,8 @@ class ResourceStatus(_messages.Message):
       STATUS_DELETING: Delete in progress.
       STATUS_DELETED: Deleted deployment.
       STATUS_PEERING: NFDeploy specific status. Peering in progress.
+      STATUS_NOT_APPLICABLE: K8s objects such as NetworkAttachmentDefinition
+        don't have a defined status.
     """
     STATUS_UNSPECIFIED = 0
     STATUS_IN_PROGRESS = 1
@@ -1197,6 +1216,7 @@ class ResourceStatus(_messages.Message):
     STATUS_DELETING = 4
     STATUS_DELETED = 5
     STATUS_PEERING = 6
+    STATUS_NOT_APPLICABLE = 7
 
   group = _messages.StringField(1)
   kind = _messages.StringField(2)
@@ -1777,8 +1797,9 @@ class TelcoautomationProjectsLocationsOrchestrationClustersBlueprintsSearchRevis
       estrationClusters/{orchestration_cluster}".
     query: Required. Supported queries: 1. "" : Lists all revisions across all
       blueprints. 2. "latest=true" : Lists latest revisions across all
-      blueprints. 3. "name=" : Lists all revisions of blueprint with name . 4.
-      "name= latest=true": Lists latest revision of blueprint with name
+      blueprints. 3. "name={name}" : Lists all revisions of blueprint with
+      name {name}. 4. "name={name} latest=true": Lists latest revision of
+      blueprint with name {name}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -2099,8 +2120,9 @@ class TelcoautomationProjectsLocationsOrchestrationClustersDeploymentsSearchRevi
       estrationClusters/{orchestration_cluster}".
     query: Required. Supported queries: 1. "" : Lists all revisions across all
       deployments. 2. "latest=true" : Lists latest revisions across all
-      deployments. 3. "name=" : Lists all revisions of deployment with name .
-      4. "name= latest=true": Lists latest revision of deployment with name
+      deployments. 3. "name={name}" : Lists all revisions of deployment with
+      name {name}. 4. "name={name} latest=true": Lists latest revision of
+      deployment with name {name}
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)

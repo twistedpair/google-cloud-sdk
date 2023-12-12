@@ -76,6 +76,22 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest(_messages.Message):
+  r"""A BackupdrProjectsLocationsBackupVaultsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
 class BackupdrProjectsLocationsGetRequest(_messages.Message):
   r"""A BackupdrProjectsLocationsGetRequest object.
 
@@ -543,7 +559,7 @@ class ManagementServer(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The ManagementServer state.
-    TypeValueValuesEnum: Required. The type of the ManagementServer resource.
+    TypeValueValuesEnum: Optional. The type of the ManagementServer resource.
 
   Messages:
     LabelsValue: Optional. Resource labels to represent user provided
@@ -571,7 +587,7 @@ class ManagementServer(_messages.Message):
       Token (see openid specification https://openid.net/specs/openid-connect-
       core-1_0.html#IDToken).
     state: Output only. The ManagementServer state.
-    type: Required. The type of the ManagementServer resource.
+    type: Optional. The type of the ManagementServer resource.
     updateTime: Output only. The time when the instance was updated.
     workforceIdentityBasedManagementUri: Output only. The hostnames of the
       exposed AGM endpoints for both types of user i.e. 1p and 3p, used to
@@ -607,7 +623,7 @@ class ManagementServer(_messages.Message):
     ERROR = 7
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Required. The type of the ManagementServer resource.
+    r"""Optional. The type of the ManagementServer resource.
 
     Values:
       INSTANCE_TYPE_UNSPECIFIED: Instance type is not mentioned.

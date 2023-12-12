@@ -7977,8 +7977,7 @@ class WebDetectionParams(_messages.Message):
   r"""Parameters for web detection request.
 
   Fields:
-    includeGeoResults: Whether to include results derived from the geo
-      information in the image.
+    includeGeoResults: This field has no effect on results.
   """
 
   includeGeoResults = _messages.BooleanField(1)

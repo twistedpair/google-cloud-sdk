@@ -764,8 +764,7 @@ class ConfigManagementConfigSync(_messages.Message):
       and Cloud Monarch when Workload Identity is enabled. The GSA should have
       the Monitoring Metric Writer (roles/monitoring.metricWriter) IAM role.
       The Kubernetes ServiceAccount `default` in the namespace `config-
-      management-monitoring` should be bound to the GSA. This field is
-      required when automatic Feature management is enabled.
+      management-monitoring` should be bound to the GSA.
     oci: OCI repo configuration for the cluster
     preventDrift: Set to true to enable the Config Sync admission webhook to
       prevent drifts. If set to `false`, disables the Config Sync admission
@@ -1639,8 +1638,8 @@ class DefaultClusterConfig(_messages.Message):
   applied to all clusters born-in-fleet.
 
   Fields:
-    binaryAuthorizationConfig: Enable/Disable binary authorization features
-      for the cluster.
+    binaryAuthorizationConfig: Optional. Enable/Disable binary authorization
+      features for the cluster.
     securityPostureConfig: Enable/Disable Security Posture features for the
       cluster.
   """
@@ -5421,7 +5420,8 @@ class PolicyControllerPolicyControllerDeploymentConfig(_messages.Message):
   Fields:
     containerResources: Container resource requirements.
     podAffinity: Pod affinity configuration.
-    podAntiAffinity: Pod anti-affinity enablement.
+    podAntiAffinity: Pod anti-affinity enablement. Deprecated: use
+      `pod_affinity` instead.
     podTolerations: Pod tolerations of node taints.
     replicaCount: Pod replica count.
   """

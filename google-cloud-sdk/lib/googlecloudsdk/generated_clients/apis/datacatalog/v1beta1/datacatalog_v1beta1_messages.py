@@ -836,7 +836,7 @@ class DatacatalogProjectsLocationsTaxonomiesPatchRequest(_messages.Message):
     googleCloudDatacatalogV1beta1Taxonomy: A
       GoogleCloudDatacatalogV1beta1Taxonomy resource to be passed as the
       request body.
-    name: Output only. Resource name of this taxonomy, whose format is:
+    name: Identifier. Resource name of this taxonomy, whose format is:
       "projects/{project_number}/locations/{location_id}/taxonomies/{id}".
     updateMask: The update mask applies to the resource. For the `FieldMask`
       definition, see https://developers.google.com/protocol-
@@ -926,9 +926,9 @@ class DatacatalogProjectsLocationsTaxonomiesPolicyTagsPatchRequest(_messages.Mes
     googleCloudDatacatalogV1beta1PolicyTag: A
       GoogleCloudDatacatalogV1beta1PolicyTag resource to be passed as the
       request body.
-    name: Output only. Resource name of this policy tag, whose format is: "pro
-      jects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/
-      policyTags/{id}".
+    name: Identifier. Resource name of this policy tag, whose format is: "proj
+      ects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/p
+      olicyTags/{id}".
     updateMask: The update mask applies to the resource. Only display_name,
       description and parent_policy_tag can be updated and thus can be listed
       in the mask. If update_mask is not provided, all allowed fields (i.e.
@@ -3121,9 +3121,9 @@ class GoogleCloudDatacatalogV1beta1PolicyTag(_messages.Message):
       unique within the parent taxonomy; contain only unicode letters,
       numbers, underscores, dashes and spaces; not start or end with spaces;
       and be at most 200 bytes long when encoded in UTF-8.
-    name: Output only. Resource name of this policy tag, whose format is: "pro
-      jects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/
-      policyTags/{id}".
+    name: Identifier. Resource name of this policy tag, whose format is: "proj
+      ects/{project_number}/locations/{location_id}/taxonomies/{taxonomy_id}/p
+      olicyTags/{id}".
     parentPolicyTag: Resource name of this policy tag's parent policy tag
       (e.g. for the "LatLong" policy tag in the example above, this field
       contains the resource name of the "Geolocation" policy tag). If empty,
@@ -3621,7 +3621,7 @@ class GoogleCloudDatacatalogV1beta1Taxonomy(_messages.Message):
       not start or end with spaces; and be at most 200 bytes long when encoded
       in UTF-8. The taxonomy display name must be unique within an
       organization.
-    name: Output only. Resource name of this taxonomy, whose format is:
+    name: Identifier. Resource name of this taxonomy, whose format is:
       "projects/{project_number}/locations/{location_id}/taxonomies/{id}".
     policyTagCount: Output only. Number of policy tags contained in this
       taxonomy.

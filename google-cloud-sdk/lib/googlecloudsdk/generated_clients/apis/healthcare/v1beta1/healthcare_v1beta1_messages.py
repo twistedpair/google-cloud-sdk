@@ -38,8 +38,8 @@ class AccessDeterminationLogConfig(_messages.Message):
       LOG_LEVEL_UNSPECIFIED: No log level specified. This value is unused.
       DISABLED: No additional consent-related logging is added to audit logs.
       MINIMUM: The following information is included: - One of the following
-        [`consentMode`](https://cloud.google.com/healthcare-
-        api/private/docs/how-tos/fhir-consent#audit_logs) fields:
+        [`consentMode`](https://cloud.google.com/healthcare-api/docs/fhir-
+        consent#audit_logs) fields:
         (`off`|`emptyScope`|`enforced`|`btg`|`bypass`). - The accessor's
         request headers - The `log_level` of the [AccessDeterminationLogConfig
         ](google.cloud.healthcare.v1beta1.fhir.FhirStore.ConsentConfig.AccessD
@@ -1160,10 +1160,8 @@ class ConsentConfig(_messages.Message):
       consent-aware requests. If not specified, the
       `AccessDeterminationLogConfig.LogLevel.MINIMUM` option is used.
     accessEnforced: Optional. If set to true, when accessing FHIR resources,
-      the consent headers provided using [SMART-on-
-      FHIR](https://cloud.google.com/healthcare/private/docs/how-tos/smart-on-
-      fhir) will be verified against consents given by patients. See the
-      ConsentEnforcementVersion for the supported consent headers.
+      the consent headers will be verified against consents given by patients.
+      See the ConsentEnforcementVersion for the supported consent headers.
     consentHeaderHandling: Optional. Different options to configure the
       behaviour of the server when handling the `X-Consent-Scope` header.
     enforcedAdminConsents: The versioned names of the enforced admin Consent
@@ -1190,8 +1188,8 @@ class ConsentConfig(_messages.Message):
       CONSENT_ENFORCEMENT_VERSION_UNSPECIFIED: Users must specify an
         enforcement version or an error is returned.
       V1: Enforcement version 1. See the [FHIR Consent resources in the Cloud
-        Healthcare API](https://cloud.google.com/healthcare-
-        api/private/docs/how-tos/fhir-consent) guide for more details.
+        Healthcare API](https://cloud.google.com/healthcare-api/docs/fhir-
+        consent) guide for more details.
     """
     CONSENT_ENFORCEMENT_VERSION_UNSPECIFIED = 0
     V1 = 1
@@ -2601,6 +2599,12 @@ class FhirStore(_messages.Message):
       history APIs, but cannot be updated. If set to true, no historical
       versions are kept. The server sends errors for attempts to read the
       historical versions.
+    enableHistoryModifications: Optional. Whether to allow the
+      [ImportResourcesHistory] and [ExecuteBundle] APIs to accept history
+      bundles, and directly insert and overwrite historical resource versions
+      into the FHIR store. Importing resource histories creates resource
+      interactions that have occurred in the past that clients might not
+      allow. If set to false, using history bundles fail with an error.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -2728,15 +2732,16 @@ class FhirStore(_messages.Message):
   defaultSearchHandlingStrict = _messages.BooleanField(3)
   disableReferentialIntegrity = _messages.BooleanField(4)
   disableResourceVersioning = _messages.BooleanField(5)
-  enableUpdateCreate = _messages.BooleanField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  notificationConfig = _messages.MessageField('NotificationConfig', 9)
-  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 10, repeated=True)
-  searchConfig = _messages.MessageField('SearchConfig', 11)
-  streamConfigs = _messages.MessageField('StreamConfig', 12, repeated=True)
-  validationConfig = _messages.MessageField('ValidationConfig', 13)
-  version = _messages.EnumField('VersionValueValuesEnum', 14)
+  enableHistoryModifications = _messages.BooleanField(6)
+  enableUpdateCreate = _messages.BooleanField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  notificationConfig = _messages.MessageField('NotificationConfig', 10)
+  notificationConfigs = _messages.MessageField('FhirNotificationConfig', 11, repeated=True)
+  searchConfig = _messages.MessageField('SearchConfig', 12)
+  streamConfigs = _messages.MessageField('StreamConfig', 13, repeated=True)
+  validationConfig = _messages.MessageField('ValidationConfig', 14)
+  version = _messages.EnumField('VersionValueValuesEnum', 15)
 
 
 class FhirStoreMetric(_messages.Message):
@@ -4952,6 +4957,23 @@ class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesDeleteRequest(_
     parent: The name of the DICOM store that is being accessed. For example, `
       projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/dico
       mStores/{dicom_store_id}`.
+  """
+
+  dicomWebPath = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2, required=True)
+
+
+class HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesBulkdataRetrieveBulkdataRequest(_messages.Message):
+  r"""A HealthcareProjectsLocationsDatasetsDicomStoresStudiesSeriesInstancesBu
+  lkdataRetrieveBulkdataRequest object.
+
+  Fields:
+    dicomWebPath: Required. The path for the `RetrieveBulkdata` DICOMweb
+      request. For example, `studies/{study_uid}/series/{series_uid}/instances
+      /{instance_uid}/bukdata/{bulkdata_uri}`.
+    parent: Required. The name of the DICOM store that is being accessed. For
+      example, `projects/{project_id}/locations/{location_id}/datasets/{datase
+      t_id}/dicomStores/{dicom_store_id}`.
   """
 
   dicomWebPath = _messages.StringField(1, required=True)

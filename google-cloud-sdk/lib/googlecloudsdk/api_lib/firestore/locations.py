@@ -44,3 +44,20 @@ def ListLocations(project):
       field='locations',
       batch_size_attribute='pageSize',
   )
+
+
+def GetLocation(project, location):
+  """Gets a location information for Google Cloud Firestore.
+
+  Args:
+    project: the project id to get the location information, a string.
+    location: the location id to get the location information, a string.
+
+  Returns:
+    a Firestore Location.
+  """
+  return _GetLocationService().Get(
+      api_utils.GetMessages().FirestoreProjectsLocationsGetRequest(
+          name='projects/{}/locations/{}'.format(project, location)
+      )
+  )

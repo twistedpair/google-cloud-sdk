@@ -53,6 +53,7 @@ _V1_VERSION = 'v1'
 _V2_VERSION = 'v2'
 _V1BETA1_VERSION = 'v1beta1'
 _V1ALPHA_VERSION = 'v1alpha'
+_V2ALPHA_VERSION = 'v2alpha'
 _TOO_MANY_REQUESTS = 429
 
 # Map of services which should be protected from being disabled by
@@ -75,7 +76,40 @@ def GetProtectedServiceWarning(service_name):
   return _PROTECTED_SERVICES.get(service_name)
 
 
-def GetConsumerPolicy(policy_name):
+def GetConsumerPolicyV2Alpha(policy_name):
+  """Make API call to get a consumer policy.
+
+  Args:
+    policy_name: The name of a consumer policy. Currently supported format
+      '{resource_type}/{resource_name}/consumerPolicies/default'. For example,
+      'projects/100/consumerPolicies/default'.
+
+  Raises:
+    exceptions.GetConsumerPolicyPermissionDeniedException: when getting a
+      consumer policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The consumer policy
+  """
+  client = _GetClientInstance('v2alpha')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageConsumerPoliciesGetRequest(name=policy_name)
+
+  try:
+    return client.consumerPolicies.Get(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GetConsumerPolicyPermissionDeniedException
+    )
+
+
+# TODO(b/309115642) Remove after the migration is completed.
+def GetConsumerPolicyV2(policy_name):
   """Make API call to get a consumer policy.
 
   Args:
@@ -396,6 +430,40 @@ def ListGroupMembers(resource, service_group, page_size=50, limit=sys.maxsize):
     )
 
 
+def ListDescendantServices(resource, service_group):
+  """Make API call to list descendant services of a specific service group.
+
+  Args:
+    resource: The target resource.
+    service_group: Service group, for example,
+      'services/compute.googleapis.com/groups/dependencies'.
+
+  Raises:
+    exceptions.ListDescendantServicesPermissionDeniedException: when listing
+      descendant services fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Descendant services in the given service group.
+  """
+  client = _GetClientInstance('v2alpha')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesGroupsDescendantServicesListRequest(
+      parent='{}/{}'.format(resource, service_group)
+  )
+
+  try:
+    return client.services_groups_descendantServices.List(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.ListDescendantServicesPermissionDeniedException
+    )
+
+
 def AddEnableRule(
     services,
     project,
@@ -435,7 +503,7 @@ def AddEnableRule(
   policy_name = resource_name + _CONSUMER_POLICY_DEFAULT % consumer_policy_name
 
   try:
-    policy = GetConsumerPolicy(policy_name)
+    policy = GetConsumerPolicyV2(policy_name)
 
     services_to_enabled = set()
 
@@ -505,7 +573,7 @@ def RemoveEnableRule(
   policy_name = resource_name + _CONSUMER_POLICY_DEFAULT % consumer_policy_name
 
   try:
-    current_policy = GetConsumerPolicy(policy_name)
+    current_policy = GetConsumerPolicyV2(policy_name)
 
     reverse_closure = GetReverseClosure(resource_name, service)
 

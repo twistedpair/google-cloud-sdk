@@ -1642,14 +1642,17 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
 
             Returns:
                 ~.logging_config.LogSink:
-                    Describes a sink used to export log
-                entries to one of the following
-                destinations in any project: a Cloud
-                Storage bucket, a BigQuery dataset, a
-                Pub/Sub topic or a Cloud Logging log
-                bucket. A logs filter controls which log
-                entries are exported. The sink must be
-                created within a project, organization,
+                    Describes a sink used to export log entries to one of
+                the following destinations:
+
+                -  a Cloud Logging log bucket,
+                -  a Cloud Storage bucket,
+                -  a BigQuery dataset,
+                -  a Pub/Sub topic,
+                -  a Cloud project.
+
+                A logs filter controls which log entries are exported.
+                The sink must be created within a project, organization,
                 billing account, or folder.
 
             """
@@ -2751,8 +2754,8 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
                     The request object. The parameters to
                 [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings].
 
-                See `Enabling CMEK for Log
-                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+                See [View default resource settings for Logging]
+                (https://cloud.google.com/logging/docs/default-settings#view-org-settings)
                 for more information.
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
@@ -2763,8 +2766,8 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             Returns:
                 ~.logging_config.Settings:
                     Describes the settings associated
-                with a project, folder, organization,
-                billing account, or flexible resource.
+                with a project, folder, organization, or
+                billing account.
 
             """
 
@@ -2857,14 +2860,17 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
 
             Returns:
                 ~.logging_config.LogSink:
-                    Describes a sink used to export log
-                entries to one of the following
-                destinations in any project: a Cloud
-                Storage bucket, a BigQuery dataset, a
-                Pub/Sub topic or a Cloud Logging log
-                bucket. A logs filter controls which log
-                entries are exported. The sink must be
-                created within a project, organization,
+                    Describes a sink used to export log entries to one of
+                the following destinations:
+
+                -  a Cloud Logging log bucket,
+                -  a Cloud Storage bucket,
+                -  a BigQuery dataset,
+                -  a Pub/Sub topic,
+                -  a Cloud project.
+
+                A logs filter controls which log entries are exported.
+                The sink must be created within a project, organization,
                 billing account, or folder.
 
             """
@@ -4212,8 +4218,9 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
                     The request object. The parameters to
                 [UpdateSettings][google.logging.v2.ConfigServiceV2.UpdateSettings].
 
-                See `Enabling CMEK for Log
-                Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+                See [Configure default settings for organizations and
+                folders]
+                (https://cloud.google.com/logging/docs/default-settings)
                 for more information.
                 retry (google.api_core.retry.Retry): Designation of what errors, if any,
                     should be retried.
@@ -4224,8 +4231,8 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
             Returns:
                 ~.logging_config.Settings:
                     Describes the settings associated
-                with a project, folder, organization,
-                billing account, or flexible resource.
+                with a project, folder, organization, or
+                billing account.
 
             """
 
@@ -4321,14 +4328,17 @@ class ConfigServiceV2RestTransport(ConfigServiceV2Transport):
 
             Returns:
                 ~.logging_config.LogSink:
-                    Describes a sink used to export log
-                entries to one of the following
-                destinations in any project: a Cloud
-                Storage bucket, a BigQuery dataset, a
-                Pub/Sub topic or a Cloud Logging log
-                bucket. A logs filter controls which log
-                entries are exported. The sink must be
-                created within a project, organization,
+                    Describes a sink used to export log entries to one of
+                the following destinations:
+
+                -  a Cloud Logging log bucket,
+                -  a Cloud Storage bucket,
+                -  a BigQuery dataset,
+                -  a Pub/Sub topic,
+                -  a Cloud project.
+
+                A logs filter controls which log entries are exported.
+                The sink must be created within a project, organization,
                 billing account, or folder.
 
             """

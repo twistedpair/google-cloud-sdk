@@ -4397,13 +4397,9 @@ class GoogleCloudDialogflowCxV3BargeInConfig(_messages.Message):
   may inform the client that an utterance has been detected. Note that no-
   speech event is not expected in this phase. The client provides this
   configuration in terms of the durations of those two phases. The durations
-  are measured in terms of the audio length fromt the the start of the input
-  audio. The flow goes like below: --> Time without speech detection |
-  utterance only | utterance or no-speech event | | +-------------+ |
-  +------------+ | +---------------+ ----------+ no barge-in +-|-+ barge-in
-  +-|-+ normal period +----------- +-------------+ | +------------+ |
-  +---------------+ No-speech event is a response with END_OF_UTTERANCE
-  without any transcript following up.
+  are measured in terms of the audio length from the the start of the input
+  audio. No-speech event is a response with END_OF_UTTERANCE without any
+  transcript following up.
 
   Fields:
     noBargeInDuration: Duration that is not eligible for barge-in at the
@@ -5266,19 +5262,10 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
       StreamingRecognitionResult with information about the recognized speech
       words, e.g. start and end time offsets. If false or unspecified, Speech
       doesn't return any word-level information.
-    model: Optional. Which Speech model to select for the given request.
-      Select the model best suited to your domain to get best results. If a
-      model is not explicitly specified, then we auto-select a model based on
-      the parameters in the InputAudioConfig. If enhanced speech model is
-      enabled for the agent and an enhanced version of the specified model for
-      the language does not exist, then the speech is recognized using the
-      standard version of the specified model. Refer to [Cloud Speech API
-      documentation](https://cloud.google.com/speech-to-
-      text/docs/basics#select-model) for more details. If you specify a model,
-      the following models typically have the best performance: - phone_call
-      (best for Agent Assist and telephony) - latest_short (best for
-      Dialogflow non-telephony) - command_and_search (best for very short
-      utterances and commands)
+    model: Optional. Which Speech model to select for the given request. For
+      more information, see [Speech
+      models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+      models).
     modelVariant: Optional. Which variant of the Speech model to use.
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood. See [the
@@ -5349,9 +5336,7 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
       SPEECH_MODEL_VARIANT_UNSPECIFIED: No model variant specified. In this
         case Dialogflow defaults to USE_BEST_AVAILABLE.
       USE_BEST_AVAILABLE: Use the best available variant of the Speech model
-        that the caller is eligible for. Please see the [Dialogflow
-        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
-        to make your project eligible for enhanced models.
+        that the caller is eligible for.
       USE_STANDARD: Use standard model variant even if an enhanced model is
         available. See the [Cloud Speech
         documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
@@ -5360,11 +5345,7 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
         does not exist for the given model and request language, Dialogflow
         falls back to the standard variant. The [Cloud Speech
         documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
-        models) describes which models have enhanced variants. * If the API
-        caller isn't eligible for enhanced models, Dialogflow returns an
-        error. Please see the [Dialogflow
-        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
-        to make your project eligible.
+        models) describes which models have enhanced variants.
     """
     SPEECH_MODEL_VARIANT_UNSPECIFIED = 0
     USE_BEST_AVAILABLE = 1
@@ -6976,13 +6957,9 @@ class GoogleCloudDialogflowCxV3beta1BargeInConfig(_messages.Message):
   may inform the client that an utterance has been detected. Note that no-
   speech event is not expected in this phase. The client provides this
   configuration in terms of the durations of those two phases. The durations
-  are measured in terms of the audio length fromt the the start of the input
-  audio. The flow goes like below: --> Time without speech detection |
-  utterance only | utterance or no-speech event | | +-------------+ |
-  +------------+ | +---------------+ ----------+ no barge-in +-|-+ barge-in
-  +-|-+ normal period +----------- +-------------+ | +------------+ |
-  +---------------+ No-speech event is a response with END_OF_UTTERANCE
-  without any transcript following up.
+  are measured in terms of the audio length from the the start of the input
+  audio. No-speech event is a response with END_OF_UTTERANCE without any
+  transcript following up.
 
   Fields:
     noBargeInDuration: Duration that is not eligible for barge-in at the
@@ -7845,19 +7822,10 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
       StreamingRecognitionResult with information about the recognized speech
       words, e.g. start and end time offsets. If false or unspecified, Speech
       doesn't return any word-level information.
-    model: Optional. Which Speech model to select for the given request.
-      Select the model best suited to your domain to get best results. If a
-      model is not explicitly specified, then we auto-select a model based on
-      the parameters in the InputAudioConfig. If enhanced speech model is
-      enabled for the agent and an enhanced version of the specified model for
-      the language does not exist, then the speech is recognized using the
-      standard version of the specified model. Refer to [Cloud Speech API
-      documentation](https://cloud.google.com/speech-to-
-      text/docs/basics#select-model) for more details. If you specify a model,
-      the following models typically have the best performance: - phone_call
-      (best for Agent Assist and telephony) - latest_short (best for
-      Dialogflow non-telephony) - command_and_search (best for very short
-      utterances and commands)
+    model: Optional. Which Speech model to select for the given request. For
+      more information, see [Speech
+      models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+      models).
     modelVariant: Optional. Which variant of the Speech model to use.
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood. See [the
@@ -7928,9 +7896,7 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
       SPEECH_MODEL_VARIANT_UNSPECIFIED: No model variant specified. In this
         case Dialogflow defaults to USE_BEST_AVAILABLE.
       USE_BEST_AVAILABLE: Use the best available variant of the Speech model
-        that the caller is eligible for. Please see the [Dialogflow
-        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
-        to make your project eligible for enhanced models.
+        that the caller is eligible for.
       USE_STANDARD: Use standard model variant even if an enhanced model is
         available. See the [Cloud Speech
         documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
@@ -7939,11 +7905,7 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
         does not exist for the given model and request language, Dialogflow
         falls back to the standard variant. The [Cloud Speech
         documentation](https://cloud.google.com/speech-to-text/docs/enhanced-
-        models) describes which models have enhanced variants. * If the API
-        caller isn't eligible for enhanced models, Dialogflow returns an
-        error. Please see the [Dialogflow
-        docs](https://cloud.google.com/dialogflow/docs/data-logging) for how
-        to make your project eligible.
+        models) describes which models have enhanced variants.
     """
     SPEECH_MODEL_VARIANT_UNSPECIFIED = 0
     USE_BEST_AVAILABLE = 1
@@ -11202,25 +11164,6 @@ class GoogleCloudDialogflowV2DtmfParameters(_messages.Message):
   acceptsDtmfInput = _messages.BooleanField(1)
 
 
-class GoogleCloudDialogflowV2EncryptionSpec(_messages.Message):
-  r"""A customer-managed encryption key specification that can be applied to
-  all created resources (e.g. Conversation).
-
-  Fields:
-    kmsKey: Required. The name of customer-managed encryption key that is used
-      to secure a resource and its sub-resources. If empty, the resource is
-      secured by the default Google encryption key. Only the key in the same
-      location as this resource is allowed to be used for encryption. Format:
-      `projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{
-      key}`
-    name: Immutable. The resource name of the encryption key specification
-      resource. Format: projects/{project}/locations/{location}/encryptionSpec
-  """
-
-  kmsKey = _messages.StringField(1)
-  name = _messages.StringField(2)
-
-
 class GoogleCloudDialogflowV2EntityType(_messages.Message):
   r"""Each intent parameter has a type, called the entity type, which dictates
   exactly how data from an end-user expression is extracted. Dialogflow
@@ -12050,6 +11993,8 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig(_mes
       ARTICLE_SUGGESTION, FAQ.
     maxResults: Maximum number of results to return. Currently, if unset,
       defaults to 10. And the max number is 20.
+    sections: Optional. The customized sections chosen to return when
+      requesting a summary of a conversation.
   """
 
   confidenceThreshold = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
@@ -12058,6 +12003,7 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig(_mes
   documentQuerySource = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfigDocumentQuerySource', 4)
   knowledgeBaseQuerySource = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfigKnowledgeBaseQuerySource', 5)
   maxResults = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  sections = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfigSections', 7)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfigContextFilterSettings(_messages.Message):
@@ -12131,6 +12077,54 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfigKnowl
   """
 
   knowledgeBases = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfigSections(_messages.Message):
+  r"""Custom sections to return when requesting a summary of a conversation.
+  This is only supported when `baseline_model_version` == '2.0'. Supported
+  features: CONVERSATION_SUMMARIZATION, CONVERSATION_SUMMARIZATION_VOICE.
+
+  Enums:
+    SectionTypesValueListEntryValuesEnum:
+
+  Fields:
+    sectionTypes: The selected sections chosen to return when requesting a
+      summary of a conversation. A duplicate selected section will be treated
+      as a single selected section. If section types are not provided, the
+      default will be {SITUATION, ACTION, RESULT}.
+  """
+
+  class SectionTypesValueListEntryValuesEnum(_messages.Enum):
+    r"""SectionTypesValueListEntryValuesEnum enum type.
+
+    Values:
+      SECTION_TYPE_UNSPECIFIED: Undefined section type, does not return
+        anything.
+      SITUATION: What the customer needs help with or has question about.
+        Section name: "situation".
+      ACTION: What the agent does to help the customer. Section name:
+        "action".
+      RESOLUTION: Result of the customer service. A single word describing the
+        result of the conversation. Section name: "resolution".
+      REASON_FOR_CANCELLATION: Reason for cancellation if the customer
+        requests for a cancellation. "N/A" otherwise. Section name:
+        "reason_for_cancellation".
+      CUSTOMER_SATISFACTION: "Unsatisfied" or "Satisfied" depending on the
+        customer's feelings at the end of the conversation. Section name:
+        "customer_satisfaction".
+      ENTITIES: Key entities extracted from the conversation, such as ticket
+        number, order number, dollar amount, etc. Section names are prefixed
+        by "entities/".
+    """
+    SECTION_TYPE_UNSPECIFIED = 0
+    SITUATION = 1
+    ACTION = 2
+    RESOLUTION = 3
+    REASON_FOR_CANCELLATION = 4
+    CUSTOMER_SATISFACTION = 5
+    ENTITIES = 6
+
+  sectionTypes = _messages.EnumField('SectionTypesValueListEntryValuesEnum', 1, repeated=True)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionTriggerSettings(_messages.Message):
@@ -12374,30 +12368,6 @@ class GoogleCloudDialogflowV2ImportDocumentsResponse(_messages.Message):
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
 
 
-class GoogleCloudDialogflowV2InitializeEncryptionSpecMetadata(_messages.Message):
-  r"""Metadata for initializing a location-level encryption specification.
-
-  Fields:
-    request: Output only. The original request for initialization.
-  """
-
-  request = _messages.MessageField('GoogleCloudDialogflowV2InitializeEncryptionSpecRequest', 1)
-
-
-class GoogleCloudDialogflowV2InitializeEncryptionSpecRequest(_messages.Message):
-  r"""The request to initialize a location-level encryption specification.
-
-  Fields:
-    encryptionSpec: Required. The encryption spec used for CMEK encryption. It
-      is required that the kms key is in the same region as the endpoint. The
-      same key will be used for all provisioned resources, if encryption is
-      available. If the kms_key_name is left empty, no encryption will be
-      enforced.
-  """
-
-  encryptionSpec = _messages.MessageField('GoogleCloudDialogflowV2EncryptionSpec', 1)
-
-
 class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
   r"""Instructs the speech recognizer how to process the audio content.
 
@@ -12424,19 +12394,9 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       for a list of the currently supported language codes. Note that queries
       in the same session do not necessarily need to specify the same
       language.
-    model: Which Speech model to select for the given request. Select the
-      model best suited to your domain to get best results. If a model is not
-      explicitly specified, then we auto-select a model based on the
-      parameters in the InputAudioConfig. If enhanced speech model is enabled
-      for the agent and an enhanced version of the specified model for the
-      language does not exist, then the speech is recognized using the
-      standard version of the specified model. Refer to [Cloud Speech API
-      documentation](https://cloud.google.com/speech-to-
-      text/docs/basics#select-model) for more details. If you specify a model,
-      the following models typically have the best performance: - phone_call
-      (best for Agent Assist and telephony) - latest_short (best for
-      Dialogflow non-telephony) - command_and_search (best for very short
-      utterances and commands)
+    model: Optional. Which Speech model to select for the given request. For
+      more information, see [Speech
+      models](https://cloud.google.com/dialogflow/es/docs/speech-models).
     modelVariant: Which variant of the Speech model to use.
     phraseHints: A list of strings containing words and phrases that the
       speech recognizer should recognize with higher likelihood. See [the
@@ -14467,12 +14427,14 @@ class GoogleCloudDialogflowV2SearchKnowledgeAnswer(_messages.Message):
 
     Values:
       ANSWER_TYPE_UNSPECIFIED: The answer has a unspecified type.
-      FAQ: The answer is from FAQ doucments.
+      FAQ: The answer is from FAQ documents.
       GENERATIVE: The answer is from generative model.
+      INTENT: The answer is from intent matching.
     """
     ANSWER_TYPE_UNSPECIFIED = 0
     FAQ = 1
     GENERATIVE = 2
+    INTENT = 3
 
   answer = _messages.StringField(1)
   answerRecord = _messages.StringField(2)
@@ -14857,9 +14819,18 @@ class GoogleCloudDialogflowV2SpeechToTextConfig(_messages.Message):
   Fields:
     model: Which Speech model to select. Select the model best suited to your
       domain to get best results. If a model is not explicitly specified, then
-      a default model is used. Refer to [Cloud Speech API
+      Dialogflow auto-selects a model based on other parameters in the
+      SpeechToTextConfig and Agent settings. If enhanced speech model is
+      enabled for the agent and an enhanced version of the specified model for
+      the language does not exist, then the speech is recognized using the
+      standard version of the specified model. Refer to [Cloud Speech API
       documentation](https://cloud.google.com/speech-to-
-      text/docs/basics#select-model) for more details.
+      text/docs/basics#select-model) for more details. If you specify a model,
+      the following models typically have the best performance: - phone_call
+      (best for Agent Assist and telephony) - latest_short (best for
+      Dialogflow non-telephony) - command_and_search Leave this field
+      unspecified to use [Agent Speech settings](https://cloud.google.com/dial
+      ogflow/cx/docs/concept/agent#settings-speech) for model selection.
     speechModelVariant: The speech model used in speech to text.
       `SPEECH_MODEL_VARIANT_UNSPECIFIED`, `USE_BEST_AVAILABLE` will be treated
       as `USE_ENHANCED`. It can be overridden in AnalyzeContentRequest and
@@ -15935,25 +15906,6 @@ class GoogleCloudDialogflowV2beta1DialogflowAssistAnswer(_messages.Message):
   queryResult = _messages.MessageField('GoogleCloudDialogflowV2beta1QueryResult', 3)
 
 
-class GoogleCloudDialogflowV2beta1EncryptionSpec(_messages.Message):
-  r"""A customer-managed encryption key specification that can be applied to
-  all created resources (e.g. Conversation).
-
-  Fields:
-    kmsKey: Required. The name of customer-managed encryption key that is used
-      to secure a resource and its sub-resources. If empty, the resource is
-      secured by the default Google encryption key. Only the key in the same
-      location as this resource is allowed to be used for encryption. Format:
-      `projects/{project}/locations/{location}/keyRings/{keyRing}/cryptoKeys/{
-      key}`
-    name: Immutable. The resource name of the encryption key specification
-      resource. Format: projects/{project}/locations/{location}/encryptionSpec
-  """
-
-  kmsKey = _messages.StringField(1)
-  name = _messages.StringField(2)
-
-
 class GoogleCloudDialogflowV2beta1EntityType(_messages.Message):
   r"""Each intent parameter has a type, called the entity type, which dictates
   exactly how data from an end-user expression is extracted. Dialogflow
@@ -16239,30 +16191,6 @@ class GoogleCloudDialogflowV2beta1ImportDocumentsResponse(_messages.Message):
   """
 
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
-
-
-class GoogleCloudDialogflowV2beta1InitializeEncryptionSpecMetadata(_messages.Message):
-  r"""Metadata for initializing a location-level encryption specification.
-
-  Fields:
-    request: Output only. The original request for initialization.
-  """
-
-  request = _messages.MessageField('GoogleCloudDialogflowV2beta1InitializeEncryptionSpecRequest', 1)
-
-
-class GoogleCloudDialogflowV2beta1InitializeEncryptionSpecRequest(_messages.Message):
-  r"""The request to initialize a location-level encryption specification.
-
-  Fields:
-    encryptionSpec: Required. The encryption spec used for CMEK encryption. It
-      is required that the kms key is in the same region as the endpoint. The
-      same key will be used for all provisioned resources, if encryption is
-      available. If the kms_key_name is left empty, no encryption will be
-      enforced.
-  """
-
-  encryptionSpec = _messages.MessageField('GoogleCloudDialogflowV2beta1EncryptionSpec', 1)
 
 
 class GoogleCloudDialogflowV2beta1Intent(_messages.Message):

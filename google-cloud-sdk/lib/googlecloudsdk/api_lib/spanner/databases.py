@@ -176,7 +176,7 @@ def Restore(database_ref, backup_ref, encryption_type=None, kms_key=None):
 
   restore_db_request = msgs.RestoreDatabaseRequest(
       backup=backup_ref.RelativeName(), databaseId=database_ref.Name())
-  if encryption_type:
+  if encryption_type or kms_key:
     restore_db_request.encryptionConfig = msgs.RestoreDatabaseEncryptionConfig(
         encryptionType=encryption_type, kmsKeyName=kms_key)
 

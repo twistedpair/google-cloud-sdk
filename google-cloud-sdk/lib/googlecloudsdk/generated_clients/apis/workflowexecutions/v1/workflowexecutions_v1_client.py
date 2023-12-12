@@ -185,7 +185,7 @@ class WorkflowexecutionsV1(base_api.BaseApiClient):
     )
 
     def Create(self, request, global_params=None):
-      r"""Creates a new execution using the latest revision of the given workflow.
+      r"""Creates a new execution using the latest revision of the given workflow. For more information, see Execute a workflow.
 
       Args:
         request: (WorkflowexecutionsProjectsLocationsWorkflowsExecutionsCreateRequest) input message

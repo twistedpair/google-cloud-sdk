@@ -64,7 +64,7 @@ def AddCreatePdpArgsToParser(parser, support_ipv6_pdp):
       '--range',
       required=True,
       help=(
-          'IPv4 range from this public delegated prefix that should be '
+          'IP range from this public delegated prefix that should be '
           'delegated, in CIDR format. It must be smaller than parent public '
           'advertised prefix range.'
       ),

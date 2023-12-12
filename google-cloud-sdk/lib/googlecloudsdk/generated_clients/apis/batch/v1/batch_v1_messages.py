@@ -398,6 +398,13 @@ class Container(_messages.Message):
     commands: Overrides the `CMD` specified in the container. If there is an
       ENTRYPOINT (either in the container image or with the entrypoint field
       below) then commands are appended as arguments to the ENTRYPOINT.
+    enableImageStreaming: Optional. If set to true, container will run with
+      Image streaming. The container runtime will be changed to containerd
+      instead of docker. Currently, only imageUri, commands, entrypoint and
+      volumes are supported and any other fields will be ignored. Please refer
+      [here](https://github.com/GoogleCloudPlatform/batch-
+      samples/tree/main/api-samples/image-streaming) for the feature
+      requirements and limitations.
     entrypoint: Overrides the `ENTRYPOINT` specified in the container.
     imageUri: The URI to pull the container image from.
     options: Arbitrary additional options to include in the "docker run"
@@ -422,12 +429,13 @@ class Container(_messages.Message):
 
   blockExternalNetwork = _messages.BooleanField(1)
   commands = _messages.StringField(2, repeated=True)
-  entrypoint = _messages.StringField(3)
-  imageUri = _messages.StringField(4)
-  options = _messages.StringField(5)
-  password = _messages.StringField(6)
-  username = _messages.StringField(7)
-  volumes = _messages.StringField(8, repeated=True)
+  enableImageStreaming = _messages.BooleanField(3)
+  entrypoint = _messages.StringField(4)
+  imageUri = _messages.StringField(5)
+  options = _messages.StringField(6)
+  password = _messages.StringField(7)
+  username = _messages.StringField(8)
+  volumes = _messages.StringField(9, repeated=True)
 
 
 class Disk(_messages.Message):

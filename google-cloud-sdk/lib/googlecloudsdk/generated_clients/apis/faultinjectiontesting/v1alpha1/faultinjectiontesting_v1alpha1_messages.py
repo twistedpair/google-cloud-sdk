@@ -55,7 +55,6 @@ class Experiment(_messages.Message):
     name: Required. Identifier. The format for the name is:
       projects/{project}/locations/{location}/experiments/{experiment_name}
     runFaults: faults to run in experiment
-    stopConditions: stop condtions for the faults
   """
 
   class ConcurrencyValueValuesEnum(_messages.Enum):
@@ -77,7 +76,6 @@ class Experiment(_messages.Message):
   description = _messages.StringField(5)
   name = _messages.StringField(6)
   runFaults = _messages.MessageField('RunFault', 7, repeated=True)
-  stopConditions = _messages.MessageField('StopCondition', 8, repeated=True)
 
 
 class Fault(_messages.Message):
@@ -984,7 +982,7 @@ class PepResourceStatus(_messages.Message):
 
 
 class PepStatus(_messages.Message):
-  r"""Message describing Policy enforcment point status.
+  r"""Message describing Policy enforcement point status.
 
   Fields:
     statuses: List of all PEP endpoints and their status.
@@ -993,32 +991,14 @@ class PepStatus(_messages.Message):
   statuses = _messages.MessageField('PepResourceStatus', 1, repeated=True)
 
 
-class PubsubStopCondition(_messages.Message):
-  r"""Pub/Sub condition to start/stop an experiment.
-
-  Fields:
-    project: project of the experiment
-    subscription: subscription for the topic
-    value: Start an experiment if the pubsub value matches the expected value.
-  """
-
-  project = _messages.StringField(1)
-  subscription = _messages.StringField(2)
-  value = _messages.StringField(3)
-
-
 class RunFault(_messages.Message):
   r"""message to store faults and its durations in experiment
 
   Fields:
-    duration: Fault run will be stopped after the duration. When not set,
-      fault will run indefinitely unless stopped via APIs. Mandatory if
-      experiment concurrency is serial.
     fault: Fault name to run.
   """
 
-  duration = _messages.StringField(1)
-  fault = _messages.StringField(2)
+  fault = _messages.StringField(1)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1133,16 +1113,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class StopCondition(_messages.Message):
-  r"""message for stop condition of the experiment
-
-  Fields:
-    pubSub: Pub/Sub condtion for experiment stop
-  """
-
-  pubSub = _messages.MessageField('PubsubStopCondition', 1)
 
 
 class TargetFilter(_messages.Message):

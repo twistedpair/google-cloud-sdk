@@ -16,6 +16,7 @@ package = 'bigtableadmin'
 
 class AppProfile(_messages.Message):
   r"""A configuration object describing how Cloud Bigtable should treat
+
   traffic from a particular end user application.
 
   Enums:
@@ -25,6 +26,8 @@ class AppProfile(_messages.Message):
       requests sent using this app profile.
 
   Fields:
+    databoostIsolationReadOnly: Specifies that this app profile is intended
+      for read-only usage via the Databoost feature.
     description: Long form description of the use case for this AppProfile.
     etag: Strongly validated etag for optimistic concurrency control. Preserve
       the value returned from `GetAppProfile` when calling `UpdateAppProfile`
@@ -63,13 +66,18 @@ class AppProfile(_messages.Message):
     PRIORITY_MEDIUM = 2
     PRIORITY_HIGH = 3
 
-  description = _messages.StringField(1)
-  etag = _messages.StringField(2)
-  multiClusterRoutingUseAny = _messages.MessageField('MultiClusterRoutingUseAny', 3)
-  name = _messages.StringField(4)
-  priority = _messages.EnumField('PriorityValueValuesEnum', 5)
-  singleClusterRouting = _messages.MessageField('SingleClusterRouting', 6)
-  standardIsolation = _messages.MessageField('StandardIsolation', 7)
+  databoostIsolationReadOnly = _messages.MessageField(
+      'DataboostIsolationReadOnly', 1
+  )
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  multiClusterRoutingUseAny = _messages.MessageField(
+      'MultiClusterRoutingUseAny', 4
+  )
+  name = _messages.StringField(5)
+  priority = _messages.EnumField('PriorityValueValuesEnum', 6)
+  singleClusterRouting = _messages.MessageField('SingleClusterRouting', 7)
+  standardIsolation = _messages.MessageField('StandardIsolation', 8)
 
 
 class AuditConfig(_messages.Message):
@@ -249,26 +257,6 @@ class BackupInfo(_messages.Message):
   sourceBackup = _messages.StringField(3)
   sourceTable = _messages.StringField(4)
   startTime = _messages.StringField(5)
-
-
-class BigtableadminOperationsCancelRequest(_messages.Message):
-  r"""A BigtableadminOperationsCancelRequest object.
-
-  Fields:
-    name: The name of the operation resource to be cancelled.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
-class BigtableadminOperationsDeleteRequest(_messages.Message):
-  r"""A BigtableadminOperationsDeleteRequest object.
-
-  Fields:
-    name: The name of the operation resource to be deleted.
-  """
-
-  name = _messages.StringField(1, required=True)
 
 
 class BigtableadminOperationsGetRequest(_messages.Message):
@@ -1209,16 +1197,6 @@ class BigtableadminProjectsInstancesTestIamPermissionsRequest(_messages.Message)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
 
 
-class BigtableadminProjectsLocationsGetRequest(_messages.Message):
-  r"""A BigtableadminProjectsLocationsGetRequest object.
-
-  Fields:
-    name: Resource name for the location.
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class BigtableadminProjectsLocationsListRequest(_messages.Message):
   r"""A BigtableadminProjectsLocationsListRequest object.
 
@@ -1809,6 +1787,41 @@ class CreateViewRequest(_messages.Message):
   viewId = _messages.StringField(3)
 
 
+class DataboostIsolationReadOnly(_messages.Message):
+  r"""Databoost allows a customer to bypass Bigtable nodes when it comes to
+
+  fetching their data. The data is instead read directly from the filesystem,
+  which enables the customer to isolate specific read-only workflows.
+  Databoost reads are only guaranteed to see the results of writes that were
+  written more than 30 minutes ago. This means newly written values may not
+  become visible for up to 30m, and also means that old values may remain
+  visible for up to 30m after being deleted or overwritten. To mitigate the
+  staleness of the data, users may either wait 30m, or use CheckConsistency.
+  At the moment, Databoost only supports single-cluster requests.
+
+  Enums:
+    BillingOwnerValueValuesEnum: Billing owner for this app profile
+
+  Fields:
+    billingOwner: Billing owner for this app profile
+  """
+
+  class BillingOwnerValueValuesEnum(_messages.Enum):
+    r"""Billing owner for this app profile
+
+    Values:
+      BILLING_OWNER_UNSPECIFIED: No billing owner specified
+      PRODUCER: Billing should be accounted towards the producer Cloud Project
+      CONSUMER: Billing should be accounted towards the consumer Cloud Project
+    """
+
+    BILLING_OWNER_UNSPECIFIED = 0
+    PRODUCER = 1
+    CONSUMER = 2
+
+  billingOwner = _messages.EnumField('BillingOwnerValueValuesEnum', 1)
+
+
 class DropRowRangeRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.DropRowRange
@@ -1830,7 +1843,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EncryptionConfig(_messages.Message):
@@ -1968,7 +1980,6 @@ class GenerateConsistencyTokenRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
   """
-
 
 
 class GenerateConsistencyTokenResponse(_messages.Message):
@@ -2856,7 +2867,6 @@ class RowAffinity(_messages.Message):
   """
 
 
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -2998,7 +3008,6 @@ class StandardReadRemoteWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated is
   replicated in every cluster and readable.
   """
-
 
 
 class Status(_messages.Message):
@@ -3343,7 +3352,6 @@ class UndeleteTableRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable
   """
-
 
 
 class Union(_messages.Message):

@@ -1178,3 +1178,22 @@ node pool is rolling updated, run:
 
 def GetMaxUnavailableUpdate(args):
   return getattr(args, 'max_unavailable_update', None)
+
+
+def AddRespectPodDisruptionBudget(parser):
+  """Adds --respect-pdb flag to parser."""
+
+  help_text = """\
+Indicates whether the node pool rollback should respect pod disruption budget.
+"""
+
+  parser.add_argument(
+      '--respect-pdb',
+      default=False,
+      action='store_true',
+      help=help_text,
+  )
+
+
+def GetRespectPodDisruptionBudget(args):
+  return getattr(args, 'respect_pdb', None)

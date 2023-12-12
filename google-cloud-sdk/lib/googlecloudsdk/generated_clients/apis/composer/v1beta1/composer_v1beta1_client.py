@@ -39,12 +39,304 @@ class ComposerV1beta1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_environments_userWorkloadsConfigMaps = self.ProjectsLocationsEnvironmentsUserWorkloadsConfigMapsService(self)
+    self.projects_locations_environments_userWorkloadsSecrets = self.ProjectsLocationsEnvironmentsUserWorkloadsSecretsService(self)
     self.projects_locations_environments_workloads = self.ProjectsLocationsEnvironmentsWorkloadsService(self)
     self.projects_locations_environments = self.ProjectsLocationsEnvironmentsService(self)
     self.projects_locations_imageVersions = self.ProjectsLocationsImageVersionsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsEnvironmentsUserWorkloadsConfigMapsService(base_api.BaseApiService):
+    """Service class for the projects_locations_environments_userWorkloadsConfigMaps resource."""
+
+    _NAME = 'projects_locations_environments_userWorkloadsConfigMaps'
+
+    def __init__(self, client):
+      super(ComposerV1beta1.ProjectsLocationsEnvironmentsUserWorkloadsConfigMapsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserWorkloadsConfigMap) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsConfigMaps',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.userWorkloadsConfigMaps.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/userWorkloadsConfigMaps',
+        request_field='userWorkloadsConfigMap',
+        request_type_name='ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsCreateRequest',
+        response_type_name='UserWorkloadsConfigMap',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsConfigMaps/{userWorkloadsConfigMapsId}',
+        http_method='DELETE',
+        method_id='composer.projects.locations.environments.userWorkloadsConfigMaps.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an existing user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserWorkloadsConfigMap) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsConfigMaps/{userWorkloadsConfigMapsId}',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.userWorkloadsConfigMaps.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsGetRequest',
+        response_type_name='UserWorkloadsConfigMap',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists user workloads ConfigMaps. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUserWorkloadsConfigMapsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsConfigMaps',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.userWorkloadsConfigMaps.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/userWorkloadsConfigMaps',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsUserWorkloadsConfigMapsListRequest',
+        response_type_name='ListUserWorkloadsConfigMapsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates a user workloads ConfigMap. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (UserWorkloadsConfigMap) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserWorkloadsConfigMap) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsConfigMaps/{userWorkloadsConfigMapsId}',
+        http_method='PUT',
+        method_id='composer.projects.locations.environments.userWorkloadsConfigMaps.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name='UserWorkloadsConfigMap',
+        response_type_name='UserWorkloadsConfigMap',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsEnvironmentsUserWorkloadsSecretsService(base_api.BaseApiService):
+    """Service class for the projects_locations_environments_userWorkloadsSecrets resource."""
+
+    _NAME = 'projects_locations_environments_userWorkloadsSecrets'
+
+    def __init__(self, client):
+      super(ComposerV1beta1.ProjectsLocationsEnvironmentsUserWorkloadsSecretsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserWorkloadsSecret) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsSecrets',
+        http_method='POST',
+        method_id='composer.projects.locations.environments.userWorkloadsSecrets.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/userWorkloadsSecrets',
+        request_field='userWorkloadsSecret',
+        request_type_name='ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsCreateRequest',
+        response_type_name='UserWorkloadsSecret',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsSecrets/{userWorkloadsSecretsId}',
+        http_method='DELETE',
+        method_id='composer.projects.locations.environments.userWorkloadsSecrets.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets an existing user workloads Secret. Values of the "data" field in the response are cleared. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserWorkloadsSecret) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsSecrets/{userWorkloadsSecretsId}',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.userWorkloadsSecrets.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsGetRequest',
+        response_type_name='UserWorkloadsSecret',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists user workloads Secrets. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListUserWorkloadsSecretsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsSecrets',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.userWorkloadsSecrets.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1beta1/{+parent}/userWorkloadsSecrets',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsUserWorkloadsSecretsListRequest',
+        response_type_name='ListUserWorkloadsSecretsResponse',
+        supports_download=False,
+    )
+
+    def Update(self, request, global_params=None):
+      r"""Updates a user workloads Secret. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (UserWorkloadsSecret) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (UserWorkloadsSecret) The response message.
+      """
+      config = self.GetMethodConfig('Update')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Update.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/userWorkloadsSecrets/{userWorkloadsSecretsId}',
+        http_method='PUT',
+        method_id='composer.projects.locations.environments.userWorkloadsSecrets.update',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='<request>',
+        request_type_name='UserWorkloadsSecret',
+        response_type_name='UserWorkloadsSecret',
+        supports_download=False,
+    )
 
   class ProjectsLocationsEnvironmentsWorkloadsService(base_api.BaseApiService):
     """Service class for the projects_locations_environments_workloads resource."""

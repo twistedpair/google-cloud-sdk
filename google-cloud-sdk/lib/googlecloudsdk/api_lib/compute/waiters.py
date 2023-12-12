@@ -157,33 +157,39 @@ class OperationData(object):
 
   Attributes:
     operation: An Operation object to poll.
-    operation_service: The service that can be used to get operation
-      object.
-    resource_service: The service of the collection being mutated by
-      the operation. If the operation type is not delete, this service
-      is used to fetch the mutated object after the operation is done.
+    operation_service: The service that can be used to get operation object.
+    resource_service: The service of the collection being mutated by the
+      operation. If the operation type is not delete, this service is used to
+      fetch the mutated object after the operation is done.
     project: str, The project to which the resource belong.
+    resize_request_name: str, Name of the resize request being created.
     no_followup: str, If True, do not send followup GET request.
-    followup_override: str, Overrides the target resource name when
-      it is different from the resource name which is used to poll.
-    always_return_operation: If true, always return operation object even if
-      the operation fails.
+    followup_override: str, Overrides the target resource name when it is
+      different from the resource name which is used to poll.
+    always_return_operation: If true, always return operation object even if the
+      operation fails.
     errors: An output parameter for capturing errors.
     warnings: An output parameter for capturing warnings.
   """
 
-  def __init__(self,
-               operation,
-               operation_service,
-               resource_service,
-               project=None,
-               no_followup=False,
-               followup_override=None,
-               always_return_operation=False):
+  # TODO: b/313849714 - Remove resize_request_name from this class once the bug
+  # is fixed.
+  def __init__(
+      self,
+      operation,
+      operation_service,
+      resource_service,
+      project=None,
+      resize_request_name=None,
+      no_followup=False,
+      followup_override=None,
+      always_return_operation=False,
+  ):
     self.operation = operation
     self.operation_service = operation_service
     self.resource_service = resource_service
     self.project = project
+    self.resize_request_name = resize_request_name
     self.no_followup = no_followup
     self.followup_override = followup_override
     self.always_return_operation = always_return_operation
@@ -264,13 +270,16 @@ class OperationData(object):
       # used to locate it: project, scope (zone/region/global),
       # parent_resource_name, and resource_name. Top level resources only have
       # three such params: project, scope (zone/region/global), resource_name.
+
+      # TODO: b/313849714 - Remove the if block once the bug is fixed.
+      if self.resize_request_name:
+        target_link = (
+            target_link + '/resizeRequests/' + self.resize_request_name
+        )
       parent_resource_field = resource_params[2]
-      parent_resource_name = self.operation.targetLink.split('/')[-3]
+      parent_resource_name = target_link.split('/')[-3]
       setattr(request, parent_resource_field, parent_resource_name)
-
-    resource_name = self.followup_override or path_simplifier.Name(
-        self.operation.targetLink)
-
+    resource_name = self.followup_override or path_simplifier.Name(target_link)
     setattr(request, name_field, resource_name)
     return request
 

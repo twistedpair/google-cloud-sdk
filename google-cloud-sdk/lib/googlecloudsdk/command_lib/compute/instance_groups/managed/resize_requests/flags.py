@@ -19,14 +19,24 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-DEFAULT_CREATE_OR_LIST_FORMAT = """\
+DEFAULT_CREATE_OR_LIST_FORMAT_ALPHA = """\
     table(
       name,
       location():label=LOCATION,
       location_scope():label=SCOPE,
-      count,
+      resize_by,
       state,
       status.queuingPolicy.validUntilTime
+    )
+"""
+
+DEFAULT_CREATE_OR_LIST_FORMAT_BETA = """\
+    table(
+      name,
+      location():label=LOCATION,
+      location_scope():label=SCOPE,
+      resize_by,
+      state
     )
 """
 

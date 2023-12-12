@@ -91,14 +91,20 @@ class MavenPomNotSupported(exceptions.Error):
 
   def __init__(self):
     super(MavenPomNotSupported, self).__init__(
-        'Maven source deployment is not supported for Java8 GAE project.')
+        'Maven source deployment is not supported for legacy Java 8/11/17/21'
+        ' GAE projects configured with appengine-web.xml. Please read '
+        'https://cloud.google.com/appengine/docs/standard/java-gen2/using-maven'
+    )
 
 
 class GradleBuildNotSupported(exceptions.Error):
 
   def __init__(self):
     super(GradleBuildNotSupported, self).__init__(
-        'Gradle source deployment is not supported for Java8 GAE project.')
+        'Gradle source deployment is not supported for legacy Java'
+        ' 8/11/17/21 GAE projects configured with appengine-web.xml. Read '
+        'https://cloud.google.com/appengine/docs/standard/java-gen2/using-gradle'
+    )
 
 
 class StagingCommandFailedError(exceptions.Error):

@@ -24,31 +24,6 @@ DOCS_URL = 'https://cloud.google.com/security-command-center'
 class Collections(enum.Enum):
   """Collections for all supported apis."""
 
-  FOLDERS = (
-      'folders',
-      'folders/{foldersId}',
-      {},
-      ['foldersId'],
-      True
-  )
-  FOLDERS_LOCATIONS = (
-      'folders.locations',
-      'folders/{foldersId}/locations/{locationsId}',
-      {},
-      ['foldersId', 'locationsId'],
-      True
-  )
-  FOLDERS_LOCATIONS_POSTUREDEPLOYMENTS = (
-      'folders.locations.postureDeployments',
-      '{+name}',
-      {
-          '':
-              'folders/{foldersId}/locations/{locationsId}/'
-              'postureDeployments/{postureDeploymentsId}',
-      },
-      ['name'],
-      True
-  )
   ORGANIZATIONS = (
       'organizations',
       'organizations/{organizationsId}',
@@ -106,31 +81,6 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/locations/{locationsId}/'
               'postures/{posturesId}',
-      },
-      ['name'],
-      True
-  )
-  PROJECTS = (
-      'projects',
-      'projects/{projectsId}',
-      {},
-      ['projectsId'],
-      True
-  )
-  PROJECTS_LOCATIONS = (
-      'projects.locations',
-      'projects/{projectsId}/locations/{locationsId}',
-      {},
-      ['projectsId', 'locationsId'],
-      True
-  )
-  PROJECTS_LOCATIONS_POSTUREDEPLOYMENTS = (
-      'projects.locations.postureDeployments',
-      '{+name}',
-      {
-          '':
-              'projects/{projectsId}/locations/{locationsId}/'
-              'postureDeployments/{postureDeploymentsId}',
       },
       ['name'],
       True

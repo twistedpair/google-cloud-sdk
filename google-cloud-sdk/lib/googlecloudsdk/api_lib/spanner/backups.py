@@ -117,7 +117,7 @@ def CopyBackup(source_backup_ref,
       backupId=destination_backup_ref.Name(),
       sourceBackup=source_backup_ref.RelativeName())
   copy_backup_request.expireTime = CheckAndGetExpireTime(args)
-  if encryption_type:
+  if encryption_type or kms_key:
     copy_backup_request.encryptionConfig = msgs.CopyBackupEncryptionConfig(
         encryptionType=encryption_type, kmsKeyName=kms_key)
 

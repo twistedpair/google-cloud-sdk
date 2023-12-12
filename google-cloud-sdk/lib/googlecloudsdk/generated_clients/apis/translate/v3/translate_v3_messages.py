@@ -1056,7 +1056,7 @@ class ListAdaptiveMtFilesResponse(_messages.Message):
   Fields:
     adaptiveMtFiles: Output only. The Adaptive MT files.
     nextPageToken: Optional. A token to retrieve a page of results. Pass this
-      value in the [ListAdaptiveMtFilesRequest.page_token] field in the
+      value in the ListAdaptiveMtFilesRequest.page_token field in the
       subsequent call to `ListAdaptiveMtFiles` method to retrieve the next
       page of results.
   """
@@ -1831,9 +1831,9 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesAdaptiveMtSente
     pageSize: A integer attribute.
     pageToken: A token identifying a page of results the server should return.
       Typically, this is the value of
-      [ListTranslationMemoriesResponse.next_page_token] returned from the
+      ListAdaptiveMtSentencesRequest.next_page_token returned from the
       previous call to `ListTranslationMemories` method. The first page is
-      returned if `page_token`is empty or missing.
+      returned if `page_token` is empty or missing.
     parent: Required. The resource name of the project from which to list the
       Adaptive MT files. The following format lists all sentences under a
       file. `projects/{project}/locations/{location}/adaptiveMtDatasets/{datas
@@ -1882,7 +1882,7 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesListRequest(_me
     pageSize: Optional.
     pageToken: Optional. A token identifying a page of results the server
       should return. Typically, this is the value of
-      [ListAdaptiveMtFilesResponse.next_page_token] returned from the previous
+      ListAdaptiveMtFilesResponse.next_page_token returned from the previous
       call to `ListAdaptiveMtFiles` method. The first page is returned if
       `page_token`is empty or missing.
     parent: Required. The resource name of the project from which to list the
@@ -1904,9 +1904,9 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtSentencesListRequest
     pageSize: A integer attribute.
     pageToken: A token identifying a page of results the server should return.
       Typically, this is the value of
-      [ListTranslationMemoriesResponse.next_page_token] returned from the
+      ListAdaptiveMtSentencesRequest.next_page_token returned from the
       previous call to `ListTranslationMemories` method. The first page is
-      returned if `page_token`is empty or missing.
+      returned if `page_token` is empty or missing.
     parent: Required. The resource name of the project from which to list the
       Adaptive MT files. The following format lists all sentences under a
       file. `projects/{project}/locations/{location}/adaptiveMtDatasets/{datas
@@ -1986,7 +1986,7 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsListRequest(_messages.Message)
       default.
     pageToken: Optional. A token identifying a page of results the server
       should return. Typically, this is the value of
-      [ListAdaptiveMtDatasetsResponse.next_page_token] returned from the
+      ListAdaptiveMtDatasetsResponse.next_page_token returned from the
       previous call to `ListAdaptiveMtDatasets` method. The first page is
       returned if `page_token`is empty or missing.
     parent: Required. The resource name of the project from which to list the

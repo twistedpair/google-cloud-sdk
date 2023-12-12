@@ -99,7 +99,7 @@ class CloudbillingV1(base_api.BaseApiClient):
       r"""This method creates [billing subaccounts](https://cloud.google.com/billing/docs/concepts#subaccounts). Google Cloud resellers should use the Channel Services APIs, [accounts.customers.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers/create) and [accounts.customers.entitlements.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers.entitlements/create). When creating a subaccount, the current authenticated user must have the `billing.accounts.update` IAM permission on the parent account, which is typically given to billing account [administrators](https://cloud.google.com/billing/docs/how-to/billing-access). This method will return an error if the parent account has not been provisioned for subaccounts.
 
       Args:
-        request: (CloudbillingBillingAccountsSubAccountsCreateRequest) input message
+        request: (BillingAccount) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (BillingAccount) The response message.
@@ -116,8 +116,8 @@ class CloudbillingV1(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=[],
         relative_path='v1/{+parent}/subAccounts',
-        request_field='billingAccount',
-        request_type_name='CloudbillingBillingAccountsSubAccountsCreateRequest',
+        request_field='<request>',
+        request_type_name='BillingAccount',
         response_type_name='BillingAccount',
         supports_download=False,
     )
@@ -387,7 +387,7 @@ class CloudbillingV1(base_api.BaseApiClient):
       r"""This method creates [billing subaccounts](https://cloud.google.com/billing/docs/concepts#subaccounts). Google Cloud resellers should use the Channel Services APIs, [accounts.customers.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers/create) and [accounts.customers.entitlements.create](https://cloud.google.com/channel/docs/reference/rest/v1/accounts.customers.entitlements/create). When creating a subaccount, the current authenticated user must have the `billing.accounts.update` IAM permission on the parent account, which is typically given to billing account [administrators](https://cloud.google.com/billing/docs/how-to/billing-access). This method will return an error if the parent account has not been provisioned for subaccounts.
 
       Args:
-        request: (CloudbillingOrganizationsBillingAccountsCreateRequest) input message
+        request: (BillingAccount) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (BillingAccount) The response message.
@@ -404,8 +404,8 @@ class CloudbillingV1(base_api.BaseApiClient):
         path_params=['parent'],
         query_params=[],
         relative_path='v1/{+parent}/billingAccounts',
-        request_field='billingAccount',
-        request_type_name='CloudbillingOrganizationsBillingAccountsCreateRequest',
+        request_field='<request>',
+        request_type_name='BillingAccount',
         response_type_name='BillingAccount',
         supports_download=False,
     )

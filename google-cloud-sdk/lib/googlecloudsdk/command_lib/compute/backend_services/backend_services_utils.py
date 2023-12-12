@@ -645,8 +645,6 @@ def ApplyLogConfigArgs(
     messages,
     args,
     backend_service,
-    support_logging,
-    support_tcp_ssl_logging,
     cleared_fields=None,
 ):
   """Applies the LogConfig arguments to the specified backend service.
@@ -658,12 +656,10 @@ def ApplyLogConfigArgs(
     messages: The available API proto messages.
     args: The arguments passed to the gcloud command.
     backend_service: The backend service proto message object.
-    support_logging: Support logging functionality.
-    support_tcp_ssl_logging: Support logging for TCL and SSL protocols.
     cleared_fields: Reference to list with fields that should be cleared. Valid
       only for update command.
   """
-  logging_specified = support_logging and (
+  logging_specified = (
       args.IsSpecified('enable_logging')
       or args.IsSpecified('logging_sample_rate')
       or args.IsSpecified('logging_optional')
@@ -672,39 +668,21 @@ def ApplyLogConfigArgs(
   valid_protocols = [
       messages.BackendService.ProtocolValueValuesEnum.HTTP,
       messages.BackendService.ProtocolValueValuesEnum.HTTPS,
-      messages.BackendService.ProtocolValueValuesEnum.HTTP2
-  ]
-  tcp_ssl_protocols = [
+      messages.BackendService.ProtocolValueValuesEnum.HTTP2,
       messages.BackendService.ProtocolValueValuesEnum.TCP,
-      messages.BackendService.ProtocolValueValuesEnum.SSL
-  ]
-  net_lb_ilb_protocols = [
-      messages.BackendService.ProtocolValueValuesEnum.TCP,
+      messages.BackendService.ProtocolValueValuesEnum.SSL,
       messages.BackendService.ProtocolValueValuesEnum.UDP,
-      messages.BackendService.ProtocolValueValuesEnum.UNSPECIFIED
+      messages.BackendService.ProtocolValueValuesEnum.UNSPECIFIED,
   ]
-  if support_tcp_ssl_logging:
-    if (logging_specified and backend_service.protocol
-        not in valid_protocols + tcp_ssl_protocols + net_lb_ilb_protocols):
-      raise exceptions.InvalidArgumentException(
-          '--protocol',
-          (
-              'can only specify --enable-logging, --logging-sample-rate,'
-              ' --logging-optional or --logging-optional-fields if the'
-              ' protocol is HTTP/HTTPS/HTTP2/TCP/SSL/UDP/UNSPECIFIED.'
-          ),
-      )
-  else:
-    if (logging_specified and
-        backend_service.protocol not in valid_protocols + net_lb_ilb_protocols):
-      raise exceptions.InvalidArgumentException(
-          '--protocol',
-          (
-              'can only specify --enable-logging, --logging-sample-rate,'
-              ' --logging-optional or --logging-optional-fields if the'
-              ' protocol is HTTP/HTTPS/HTTP2/TCP/UDP/UNSPECIFIED.'
-          ),
-      )
+  if logging_specified and backend_service.protocol not in valid_protocols:
+    raise exceptions.InvalidArgumentException(
+        '--protocol',
+        (
+            'can only specify --enable-logging, --logging-sample-rate,'
+            ' --logging-optional or --logging-optional-fields if the'
+            ' protocol is HTTP/HTTPS/HTTP2/TCP/SSL/UDP/UNSPECIFIED.'
+        ),
+    )
 
   if logging_specified:
     if backend_service.logConfig:

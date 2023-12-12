@@ -1027,10 +1027,11 @@ class TargetAssociation(_messages.Message):
       generation of authorization debug logs for the target.
 
   Fields:
-    asmWorkload: Immutable. AnthosServiceMesh based workload. PEP
-      configuration would not be handled by AuthZaas.
+    asmWorkload: Immutable. AnthosServiceMesh based workload. Authorization
+      Toolkit does not auto configure the authorization settings on the
+      workload.
     createTime: Output only. [Output only] Create time stamp
-    displayName: Required. An arbitrary user-provided name for
+    displayName: Optional. An arbitrary user-provided name for
       TargetAssociation. The display name should adhere to the following
       format. * Must be 6 to 63 characters in length. * Can only contain
       lowercase letters, numbers, and hyphens. * Must start with a letter.
@@ -1041,7 +1042,8 @@ class TargetAssociation(_messages.Message):
     name: Identifier. name of resource
     policies: Optional. List of policies with full policy name and its
       configuration
-    tdWorkload: Immutable. Traffic Director based workloads.
+    tdWorkload: Immutable. Traffic Director based workloads. Authorization
+      Toolkit auto configures the authorization settings on the workload.
     updateTime: Output only. [Output only] Update time stamp
   """
 

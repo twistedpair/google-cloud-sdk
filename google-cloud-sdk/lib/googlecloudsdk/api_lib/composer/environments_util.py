@@ -160,6 +160,8 @@ class CreateEnvironmentFlags:
       interpret snapshot_creation_schedule
     enable_cloud_data_lineage_integration: bool or None, whether Cloud Data
       Lineage integration should be enabled
+    disable_cloud_data_lineage_integration: bool or None, whether Cloud Data
+      Lineage integration should be disabled
     enable_high_resilience: bool or None, whether high resilience should be
       enabled
     support_web_server_plugins: bool or None, whether to enable/disable the
@@ -255,6 +257,7 @@ class CreateEnvironmentFlags:
       snapshot_location=None,
       snapshot_schedule_timezone=None,
       enable_cloud_data_lineage_integration=None,
+      disable_cloud_data_lineage_integration=None,
       enable_high_resilience=None,
       cloud_sql_preferred_zone=None,
       support_web_server_plugins=None,
@@ -333,6 +336,9 @@ class CreateEnvironmentFlags:
     self.snapshot_schedule_timezone = snapshot_schedule_timezone
     self.enable_cloud_data_lineage_integration = (
         enable_cloud_data_lineage_integration
+    )
+    self.disable_cloud_data_lineage_integration = (
+        disable_cloud_data_lineage_integration
     )
     self.enable_high_resilience = enable_high_resilience
     self.cloud_sql_preferred_zone = cloud_sql_preferred_zone
@@ -413,7 +419,9 @@ def _CreateConfig(messages, flags, is_composer_v1):
           flags.triggerer_cpu or flags.triggerer_memory or
           flags.enable_triggerer or flags.enable_scheduled_snapshot_creation or
           flags.snapshot_creation_schedule or flags.snapshot_location or
-          flags.snapshot_schedule_timezone):
+          flags.snapshot_schedule_timezone or
+          flags.enable_cloud_data_lineage_integration or
+          flags.disable_cloud_data_lineage_integration):
     return None
 
   config = messages.EnvironmentConfig()
@@ -434,10 +442,16 @@ def _CreateConfig(messages, flags, is_composer_v1):
     elif flags.release_track == base.ReleaseTrack.ALPHA:
       config.environmentSize = ENVIRONMENT_SIZE_ALPHA.GetEnumForChoice(
           flags.environment_size)
-  if (flags.image_version or flags.env_variables or
-      flags.airflow_config_overrides or flags.python_version or
-      flags.airflow_executor_type or flags.scheduler_count and is_composer_v1 or
-      flags.enable_cloud_data_lineage_integration):
+  if (
+      flags.image_version
+      or flags.env_variables
+      or flags.airflow_config_overrides
+      or flags.python_version
+      or flags.airflow_executor_type
+      or (flags.scheduler_count and is_composer_v1)
+      or flags.enable_cloud_data_lineage_integration
+      or flags.disable_cloud_data_lineage_integration
+  ):
     config.softwareConfig = messages.SoftwareConfig()
     if flags.image_version:
       config.softwareConfig.imageVersion = flags.image_version
@@ -467,9 +481,17 @@ def _CreateConfig(messages, flags, is_composer_v1):
 
     if flags.scheduler_count and is_composer_v1:
       config.softwareConfig.schedulerCount = flags.scheduler_count
-    if flags.enable_cloud_data_lineage_integration:
-      config.softwareConfig.cloudDataLineageIntegration = messages.CloudDataLineageIntegration(
-          enabled=True)
+    if (
+        flags.enable_cloud_data_lineage_integration
+        or flags.disable_cloud_data_lineage_integration
+    ):
+      config.softwareConfig.cloudDataLineageIntegration = (
+          messages.CloudDataLineageIntegration(
+              enabled=(
+                  True if flags.enable_cloud_data_lineage_integration else False
+              ),
+          )
+      )
 
   if flags.maintenance_window_start:
     assert flags.maintenance_window_end, 'maintenance_window_end is missing'

@@ -270,6 +270,15 @@ class _BaseInstances(object):
         cancel_on_no=True)
 
   @staticmethod
+  def PrintAndConfirmSimulatedMaintenanceEvent():
+    console_io.PromptContinue(
+        message='This request will trigger a simulated maintenance event '
+        'and will not change the maintenance version on the instance. Downtime '
+        'will occur on the instance.',
+        default=False,
+        cancel_on_no=True)
+
+  @staticmethod
   def IsMysqlDatabaseVersion(database_version):
     """Returns a boolean indicating if the database version is MySQL."""
     return database_version.name.startswith(_MYSQL_DATABASE_VERSION_PREFIX)

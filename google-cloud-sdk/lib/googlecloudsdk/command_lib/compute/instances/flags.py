@@ -237,47 +237,29 @@ def InstanceArgumentForTargetPool(action, required=True):
       zone_explanation=compute_flags.ZONE_PROPERTY_EXPLANATION)
 
 
-def MakeSourceInstanceTemplateArg(support_regional_instance_template=False):
+def MakeSourceInstanceTemplateArg():
   """MakeSourceInstanceTemplateArg.
-
-  Args:
-    support_regional_instance_template:
 
   Returns:
      compute_flags.ResourceArgument
   """
 
-  if support_regional_instance_template:
-    return compute_flags.ResourceArgument(
-        name='--source-instance-template',
-        resource_name='instance template',
-        completer=compute_completers.InstanceTemplatesCompleter,
-        required=False,
-        scope_flags_usage=compute_flags.ScopeFlagsUsage.DONT_USE_SCOPE_FLAGS,
-        global_collection='compute.instanceTemplates',
-        regional_collection='compute.regionInstanceTemplates',
-        short_help=(
-            'The name of the instance template that the instance will '
-            'be created from. An instance template can be a '
-            'global/regional resource.\n\nUsers can also override machine '
-            'type and labels. Values of other flags will be ignored and'
-            ' `--source-instance-template` will be used instead.'
-        ),
-    )
-  else:
-    return compute_flags.ResourceArgument(
-        name='--source-instance-template',
-        resource_name='instance template',
-        completer=compute_completers.InstanceTemplatesCompleter,
-        required=False,
-        global_collection='compute.instanceTemplates',
-        short_help=(
-            'The name of the instance template that the instance will '
-            'be created from.\n\nUsers can also override machine '
-            'type and labels. Values of other flags will be ignored and'
-            ' `--source-instance-template` will be used instead.'
-        ),
-    )
+  return compute_flags.ResourceArgument(
+      name='--source-instance-template',
+      resource_name='instance template',
+      completer=compute_completers.InstanceTemplatesCompleter,
+      required=False,
+      scope_flags_usage=compute_flags.ScopeFlagsUsage.DONT_USE_SCOPE_FLAGS,
+      global_collection='compute.instanceTemplates',
+      regional_collection='compute.regionInstanceTemplates',
+      short_help=(
+          'The name of the instance template that the instance will '
+          'be created from. An instance template can be a '
+          'global/regional resource.\n\nUsers can also override machine '
+          'type and labels. Values of other flags will be ignored and'
+          ' `--source-instance-template` will be used instead.'
+      ),
+  )
 
 
 def AddMachineImageArg():

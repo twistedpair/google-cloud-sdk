@@ -5,6 +5,117 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 457.0.0 (2023-12-12)
+
+### Breaking Changes
+
+*   **(Network Actions)** Removed `network-actions` surface.
+
+
+### Google Cloud CLI
+
+* Added deprecation warning to `gcloud components restore`. To revert gcloud to a previous version, please run `gcloud components update --version=<previous_version>`.
+
+### AI
+
+* Added `--container-deployment-timeout-seconds` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+* Added `--container-shared-memory-size-mb` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+* Added `--container-startup-probe-exec` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+* Added `--container-startup-probe-period-seconds` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+* Added `--container-startup-probe-timeout-seconds` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+* Added `--container-health-probe-exec` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+* Added `--container-health-probe-period-seconds` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+* Added `--container-health-probe-timeout-seconds` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+* Added `--container-grpc-ports` flag to `gcloud ai models upload` and
+  `gcloud beta ai models upload`.
+
+### Anthos Multi-Cloud
+
+*   Added `gcloud container aws node-pools rollback` to rollback failed AWS node
+    pool update operations. This allows customers to revert the node pool back
+    to its original state.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.23 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.23>.
+* Updated Jetty Web Server to version 12.0.4.
+
+### BigQuery
+
+* Added the ability to update table tags by using `add_tags`, `remove_tags` and
+`clear_all_tags`.
+
+### Certificate Manager
+
+* Added command `certificate-manager trust-configs update`.
+
+### Cloud Composer
+
+* Add `--disable-cloud-data-lineage-integration` to `gcloud composer environments create` (alpha and beta) to explicitly disable the integration.
+
+### Cloud Deploy
+
+* Added `gcloud deploy custom-target-types` command group.
+
+### Cloud Functions
+
+* Added `--runtime-update-policy` flag to `gcloud beta functions deploy` for 1st Gen functions to alpha and beta.
+* Added `--runtime-update-policy` flag to `gcloud functions deploy` for 1st Gen functions to GA.
+
+### Cloud Logging
+
+* Allow for using the logging feature with protocol `SSL` in `gcloud compute backend-services create` and `gcloud compute backend-services update`.
+
+### Cloud Pub/Sub
+
+*   Promoted `--use-table-schema`  flag of
+     `gcloud pubsub subscriptions [create|update]` to GA. This option allows
+     Pub/Sub to use the schema of the BigQuery table to write the fields of a
+     JSON message to the corresponding columns.
+
+### Cloud Services
+
+*  Promoted `gcloud services api-keys undelete` to GA.
+
+### Compute Engine
+
+* Added support for `version`=`23.10` and `short-name`=`ubuntu` in `--os-types` for `gcloud beta compute instances ops-agents policies [create|update]`.
+* Promoted `gcloud compute instances set-name` command to GA.
+* Promoted `--recaptcha-action-site-keys` and `--recaptcha-session-site-keys` in `gcloud compute security-policies rules create|update` to GA.
+* Added `tls-ja3-fingerprint` and `user-ip` as valid rate limit key types in `gcloud compute security-policies rules`.
+
+### Distributed Cloud Edge
+
+* Made flag `--ipv4-range` optional for `gcloud edge-cloud networking subnets
+  create`.
+
+### GKE Hub
+
+* Promoted `gcloud container fleet clusterupgrade` and `gcloud container hub clusterupgrade` to beta and GA.
+
+### Kubernetes Engine
+
+*   `gcloud container clusters create` and `gcloud container clusters update` now allow multiple binauthz policies to be bound to a cluster using `--binauthz-policy-bindings`.
+* Added `--autoprovisioning-resource-manager-tags` flag to `gcloud container clusters create`,
+`gcloud container clusters create-auto` and `gcloud container clusters update`
+in GA track.
+* Added `--resource-manager-tags` flag to `gcloud container clusters create`,
+`gcloud container node-pools create` and `gcloud container node-pools update`
+in GA track.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 456.0.0 (2023-12-05)
 
 ### Breaking Changes

@@ -2351,11 +2351,13 @@ class Validation(_messages.Message):
       NOT_EXECUTED: Validation did not execute.
       FAILED: Validation failed.
       PASSED: Validation passed.
+      WARNING: Validation executed with warnings.
     """
     STATE_UNSPECIFIED = 0
     NOT_EXECUTED = 1
     FAILED = 2
     PASSED = 3
+    WARNING = 4
 
   code = _messages.StringField(1)
   description = _messages.StringField(2)
