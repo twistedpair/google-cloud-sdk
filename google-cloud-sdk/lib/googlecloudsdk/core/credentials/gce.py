@@ -306,9 +306,7 @@ class _GCEMetadata(object):
           metadata server.
 
     Returns:
-      str, The short name (e.g., us-central1-f) of the zone containing the
-          current instance.
-      None if not on a GCE VM.
+      str, The universe domain value from metadata server. None if not on GCE.
     """
 
     if not self.connected:

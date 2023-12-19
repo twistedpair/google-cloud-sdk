@@ -20,6 +20,7 @@ from __future__ import unicode_literals
 
 import os
 import random
+import re
 import string
 import time
 from typing import Dict, Optional
@@ -41,6 +42,20 @@ from googlecloudsdk.core.util import files as file_utils
 import six
 from six.moves import http_client
 from six.moves import range
+
+# List of required files for each runtime per
+# https://cloud.google.com/functions/docs/writing#directory-structure
+# To keep things simple we don't check for file extensions, just required files.
+# Every language except dotnet has a required file with an invariant name.
+_REQUIRED_SOURCE_FILES = {
+    'dotnet': [],
+    'go': ['go.mod'],
+    'java': ['pom.xml'],
+    'nodejs': ['package.json'],
+    'php': ['index.php', 'composer.json'],
+    'python': ['main.py', 'requirements.txt'],
+    'ruby': ['app.rb', 'Gemfile'],
+}
 
 
 def _GcloudIgnoreCreationPredicate(directory: str) -> bool:
@@ -100,6 +115,20 @@ def _ValidateUnpackedSourceSize(
     raise exceptions.OversizedDeploymentError(
         six.text_type(size_b) + 'B', six.text_type(size_limit_b) + 'B'
     )
+
+
+def ValidateDirectoryHasRequiredRuntimeFiles(source: str, runtime: str) -> None:
+  """Validates the given source directory has the required runtime files."""
+  _ValidateDirectoryExistsOrRaise(source)
+
+  versionless_runtime = re.sub(r'[0-9]', '', runtime)
+  files = os.listdir(source)
+  for f in _REQUIRED_SOURCE_FILES[versionless_runtime]:
+    if f not in files:
+      raise exceptions.SourceArgumentError(
+          f'Provided source directory does not have file [{f}] which is '
+          f'required for [{runtime}]. Did you specify the right source?'
+      )
 
 
 def CreateSourcesZipFile(

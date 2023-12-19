@@ -3767,8 +3767,9 @@ class GoogleCloudDataplexV1DataQualityRule(_messages.Message):
       "INTEGRITY"
     ignoreNull: Optional. Rows with null values will automatically fail a
       rule, unless ignore_null is true. In that case, such null rows are
-      trivially considered passing.This field is only valid for row-level type
-      rules.
+      trivially considered passing.This field is only valid for the following
+      type of rules: RangeExpectation RegexExpectation SetExpectation
+      UniquenessExpectation
     name: Optional. A mutable name for the rule. The name must contain only
       letters (a-z, A-Z), numbers (0-9), or hyphens (-). The maximum length is
       63 characters. Must start with a letter. Must end with a number or a

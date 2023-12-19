@@ -144,9 +144,10 @@ class BillingAccount(_messages.Message):
       unable to use paid services.
     parent: Output only. The billing account's parent resource identifier. Use
       the `MoveBillingAccount` method to update the account's parent resource
-      if it is a organization. Format: - organizations/{organization_id}, for
-      example: organizations/12345678 - billingAccounts/{billing_account_id},
-      for example: `billingAccounts/012345-567890-ABCDEF`
+      if it is a organization. Format: - `organizations/{organization_id}`,
+      for example, `organizations/12345678` -
+      `billingAccounts/{billing_account_id}`, for example,
+      `billingAccounts/012345-567890-ABCDEF`
   """
 
   displayName = _messages.StringField(1)
@@ -242,8 +243,8 @@ class CloudbillingBillingAccountsCreateRequest(_messages.Message):
     billingAccount: A BillingAccount resource to be passed as the request
       body.
     parent: Optional. The parent to create a billing account from. Format: -
-      organizations/{organization_id} eg organizations/12345678 -
-      billingAccounts/{billing_account_id} eg
+      `organizations/{organization_id}`, for example, `organizations/12345678`
+      - `billingAccounts/{billing_account_id}`, for example,
       `billingAccounts/012345-567890-ABCDEF`
   """
 
@@ -295,8 +296,8 @@ class CloudbillingBillingAccountsListRequest(_messages.Message):
     filter: Options for how to filter the returned billing accounts. This only
       supports filtering for
       [subaccounts](https://cloud.google.com/billing/docs/concepts) under a
-      single provided parent billing account. (e.g.
-      "master_billing_account=billingAccounts/012345-678901-ABCDEF"). Boolean
+      single provided parent billing account. (for example,
+      `master_billing_account=billingAccounts/012345-678901-ABCDEF`). Boolean
       algebra and other fields are not currently supported.
     pageSize: Requested page size. The maximum page size is 100; this is also
       the default.
@@ -304,9 +305,9 @@ class CloudbillingBillingAccountsListRequest(_messages.Message):
       a `next_page_token` value returned from a previous `ListBillingAccounts`
       call. If unspecified, the first page of results is returned.
     parent: Optional. The parent resource to list billing accounts from.
-      Format: - organizations/{organization_id} eg organizations/12345678 -
-      billingAccounts/{billing_account_id} eg
-      `billingAccounts/012345-567890-ABCDEF`
+      Format: - `organizations/{organization_id}`, for example,
+      `organizations/12345678` - `billingAccounts/{billing_account_id}`, for
+      example, `billingAccounts/012345-567890-ABCDEF`
   """
 
   filter = _messages.StringField(1)
@@ -390,8 +391,8 @@ class CloudbillingBillingAccountsSubAccountsListRequest(_messages.Message):
     filter: Options for how to filter the returned billing accounts. This only
       supports filtering for
       [subaccounts](https://cloud.google.com/billing/docs/concepts) under a
-      single provided parent billing account. (e.g.
-      "master_billing_account=billingAccounts/012345-678901-ABCDEF"). Boolean
+      single provided parent billing account. (for example,
+      `master_billing_account=billingAccounts/012345-678901-ABCDEF`). Boolean
       algebra and other fields are not currently supported.
     pageSize: Requested page size. The maximum page size is 100; this is also
       the default.
@@ -399,9 +400,9 @@ class CloudbillingBillingAccountsSubAccountsListRequest(_messages.Message):
       a `next_page_token` value returned from a previous `ListBillingAccounts`
       call. If unspecified, the first page of results is returned.
     parent: Optional. The parent resource to list billing accounts from.
-      Format: - organizations/{organization_id} eg organizations/12345678 -
-      billingAccounts/{billing_account_id} eg
-      `billingAccounts/012345-567890-ABCDEF`
+      Format: - `organizations/{organization_id}`, for example,
+      `organizations/12345678` - `billingAccounts/{billing_account_id}`, for
+      example, `billingAccounts/012345-567890-ABCDEF`
   """
 
   filter = _messages.StringField(1)
@@ -433,8 +434,8 @@ class CloudbillingOrganizationsBillingAccountsListRequest(_messages.Message):
     filter: Options for how to filter the returned billing accounts. This only
       supports filtering for
       [subaccounts](https://cloud.google.com/billing/docs/concepts) under a
-      single provided parent billing account. (e.g.
-      "master_billing_account=billingAccounts/012345-678901-ABCDEF"). Boolean
+      single provided parent billing account. (for example,
+      `master_billing_account=billingAccounts/012345-678901-ABCDEF`). Boolean
       algebra and other fields are not currently supported.
     pageSize: Requested page size. The maximum page size is 100; this is also
       the default.
@@ -442,9 +443,9 @@ class CloudbillingOrganizationsBillingAccountsListRequest(_messages.Message):
       a `next_page_token` value returned from a previous `ListBillingAccounts`
       call. If unspecified, the first page of results is returned.
     parent: Optional. The parent resource to list billing accounts from.
-      Format: - organizations/{organization_id} eg organizations/12345678 -
-      billingAccounts/{billing_account_id} eg
-      `billingAccounts/012345-567890-ABCDEF`
+      Format: - `organizations/{organization_id}`, for example,
+      `organizations/12345678` - `billingAccounts/{billing_account_id}`, for
+      example, `billingAccounts/012345-567890-ABCDEF`
   """
 
   filter = _messages.StringField(1)

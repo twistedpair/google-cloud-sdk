@@ -945,7 +945,7 @@ class ListIdentitySourcesResponse(_messages.Message):
     identitySources: A list of private cloud identity sources.
     nextPageToken: A token, which can be sent as `page_token` to retrieve the
       next page. If this field is omitted, there are no subsequent pages.
-    unreachable: Locations that could not be reached when making an aggregated
+    unreachable: Resources that could not be reached when making an aggregated
       query using wildcards.
   """
 
@@ -4355,18 +4355,19 @@ class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesCreateRequest(_me
       conventions in https://cloud.google.com/apis/design/resource_names. For
       example: `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud`
-    requestId: Optional. A request ID to identify requests. Specify a unique
+    requestId: Optional. An identifier to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
-      guarantees that a request doesn't result in creation of duplicate
-      commitments for at least 60 minutes. For example, consider a situation
-      where you make an initial request and the request times out. If you make
-      the request again with the same request ID, the server can check if the
-      original operation with the same request ID was received, and if so,
-      will ignore the second request. This prevents clients from accidentally
-      creating duplicate commitments. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+      to not execute the request again if it has already been executed. The
+      server guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. Additionally, if there's a
+      duplicate request ID, the response from the previous request will be
+      returned. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if the original operation with
+      the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
     validateOnly: Optional. True if you want the request to be validated and
       not executed; false otherwise.
   """
@@ -4393,18 +4394,19 @@ class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesDeleteRequest(_me
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/identitySources/my-identity-source`
-    requestId: Optional. A request ID to identify requests. Specify a unique
+    requestId: Optional. An identifier to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
-      guarantees that a request doesn't result in creation of duplicate
-      commitments for at least 60 minutes. For example, consider a situation
-      where you make an initial request and the request times out. If you make
-      the request again with the same request ID, the server can check if the
-      original operation with the same request ID was received, and if so,
-      will ignore the second request. This prevents clients from accidentally
-      creating duplicate commitments. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+      to not execute the request again if it has already been executed. The
+      server guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. Additionally, if there's a
+      duplicate request ID, the response from the previous request will be
+      returned. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if the original operation with
+      the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
   """
 
   etag = _messages.StringField(1)
@@ -4436,10 +4438,13 @@ class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesListRequest(_mess
       the response. The expression must specify the field name, a comparison
       operator, and the value that you want to use for filtering. The value
       must be a string, a number, or a boolean. The comparison operator must
-      be `=`, `!=`, `>`, or `<`. For example, if you are filtering a list of
-      identity sources, you can exclude the ones named `example-identity-
-      source` by specifying `name != "example-identity-source"`. To filter on
-      multiple expressions, provide each separate expression within
+      be `=`, `!=`, `>`, `<` or `:`. For example, if you are filtering a list
+      of identity sources, you can exclude the ones named `example-identity-
+      source` by specifying `name != "example-identity-source"`. Wildcard
+      filters are partially supported. Only operator _has_ (`:`) is available.
+      For example, you can select all resources with `name` field starting
+      with "foo" by specifying the following filter: `name : "foo*"`. To
+      filter on multiple expressions, provide each separate expression within
       parentheses. For example: ``` (name = "example-identity-source")
       (domain_name = "example-domain-name") ``` By default, each expression is
       an `AND` expression. However, you can include `AND` and `OR` expressions
@@ -4450,6 +4455,7 @@ class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesListRequest(_mess
       returned results are ordered by `name` in ascending order. You can also
       sort results in descending order based on the `name` value using
       `orderBy="name desc"`. Currently, only ordering by `name` is supported.
+      In case of cross-parent requests, correct ordering is not guaranteed.
     pageSize: Optional. The maximum number of identity sources to return in
       one page. The service may return fewer than this value. The maximum
       value is coerced to 1000. The default value of this field is 500.
@@ -4459,9 +4465,10 @@ class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesListRequest(_mess
       `ListIdentitySources` must match the call that provided the page token.
     parent: Required. The resource name of the private cloud to query for
       identity sources. Resource names are schemeless URIs that follow the
-      conventions in https://cloud.google.com/apis/design/resource_names. For
+      conventions in https://cloud.google.com/apis/design/resource_names, for
       example: `projects/my-project/locations/us-central1-a/privateClouds/my-
-      cloud`
+      cloud`. Parent resource name can contain wildcards, for example:
+      `projects/my-project/locations/-/privateClouds/my-cloud`.
   """
 
   filter = _messages.StringField(1)
@@ -4483,18 +4490,19 @@ class VmwareengineProjectsLocationsPrivateCloudsIdentitySourcesPatchRequest(_mes
       https://cloud.google.com/apis/design/resource_names. For example:
       `projects/my-project/locations/us-central1-a/privateClouds/my-
       cloud/identitySources/my-identity-source`
-    requestId: Optional. A request ID to identify requests. Specify a unique
+    requestId: Optional. An identifier to identify requests. Specify a unique
       request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server
-      guarantees that a request doesn't result in creation of duplicate
-      commitments for at least 60 minutes. For example, consider a situation
-      where you make an initial request and the request times out. If you make
-      the request again with the same request ID, the server can check if
-      original operation with the same request ID was received, and if so,
-      will ignore the second request. This prevents clients from accidentally
-      creating duplicate commitments. The request ID must be a valid UUID with
-      the exception that zero UUID is not supported
-      (00000000-0000-0000-0000-000000000000).
+      to not execute the request again if it has already been executed. The
+      server guarantees that a request doesn't result in creation of duplicate
+      commitments for at least 60 minutes. Additionally, if there's a
+      duplicate request ID, the response from the previous request will be
+      returned. For example, consider a situation where you make an initial
+      request and the request times out. If you make the request again with
+      the same request ID, the server can check if the original operation with
+      the same request ID was received, and if so, will ignore the second
+      request. This prevents clients from accidentally creating duplicate
+      commitments. The request ID must be a valid UUID with the exception that
+      zero UUID is not supported (00000000-0000-0000-0000-000000000000).
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the `UpdateIdentitySource` resource by the update. The
       fields specified in the `updateMask` are relative to the resource, not

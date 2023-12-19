@@ -332,8 +332,8 @@ class ClassifyTextRequest(_messages.Message):
   r"""The document classification request message.
 
   Fields:
-    classificationModelOptions: Model options to use for classification.
-      Defaults to v1 options if not specified.
+    classificationModelOptions: Optional. Model options to use for
+      classification. Defaults to v1 options if not specified.
     document: Required. Input document.
   """
 
@@ -743,9 +743,9 @@ class Features(_messages.Message):
   Setting each one to true will enable that specific analysis for the input.
 
   Fields:
-    classificationModelOptions: The model options to use for classification.
-      Defaults to v1 options if not specified. Only used if `classify_text` is
-      set to true.
+    classificationModelOptions: Optional. The model options to use for
+      classification. Defaults to v1 options if not specified. Only used if
+      `classify_text` is set to true.
     classifyText: Classify the full document into categories.
     extractDocumentSentiment: Extract document-level sentiment.
     extractEntities: Extract entities.

@@ -3917,17 +3917,20 @@ class GooglePrivacyDlpV2DataProfileConfigSnapshot(_messages.Message):
 
   Fields:
     dataProfileJob: A copy of the configuration used to generate this profile.
-      This is deprecated and will be replaced by DiscoveryConfig.
-      DataProfileJobConfig will still be written here for Discovery in
-      BigQuery for backwards compatibility, but will not be updated with new
-      fields, while DiscoveryConfig will.
+      This is deprecated, and the DiscoveryConfig field is preferred moving
+      forward. DataProfileJobConfig will still be written here for Discovery
+      in BigQuery for backwards compatibility, but will not be updated with
+      new fields, while DiscoveryConfig will.
+    discoveryConfig: A copy of the configuration used to generate this
+      profile.
     inspectConfig: A copy of the inspection config used to generate this
       profile. This is a copy of the inspect_template specified in
       `DataProfileJobConfig`.
   """
 
   dataProfileJob = _messages.MessageField('GooglePrivacyDlpV2DataProfileJobConfig', 1)
-  inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 2)
+  discoveryConfig = _messages.MessageField('GooglePrivacyDlpV2DiscoveryConfig', 2)
+  inspectConfig = _messages.MessageField('GooglePrivacyDlpV2InspectConfig', 3)
 
 
 class GooglePrivacyDlpV2DataProfileJobConfig(_messages.Message):

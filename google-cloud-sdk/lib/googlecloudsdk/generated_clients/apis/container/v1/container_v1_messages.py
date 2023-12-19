@@ -121,6 +121,7 @@ class AddonsConfig(_messages.Message):
       whether network policy is enabled for the nodes.
     parallelstoreCsiDriverConfig: Configuration for the Cloud Storage
       Parallelstore CSI driver.
+    rayConfig: Optional. Configuration for Ray addon.
     statefulHaConfig: Optional. Configuration for the StatefulHA add-on.
   """
 
@@ -136,7 +137,8 @@ class AddonsConfig(_messages.Message):
   kubernetesDashboard = _messages.MessageField('KubernetesDashboard', 10)
   networkPolicyConfig = _messages.MessageField('NetworkPolicyConfig', 11)
   parallelstoreCsiDriverConfig = _messages.MessageField('ParallelstoreCsiDriverConfig', 12)
-  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 13)
+  rayConfig = _messages.MessageField('RayConfig', 13)
+  statefulHaConfig = _messages.MessageField('StatefulHAConfig', 14)
 
 
 class AdvancedDatapathObservabilityConfig(_messages.Message):
@@ -1291,7 +1293,7 @@ class ClusterUpdate(_messages.Message):
         as default - IN_TRANSIT_ENCRYPTION_UNSPECIFIED.
       IN_TRANSIT_ENCRYPTION_DISABLED: In-transit encryption is disabled.
       IN_TRANSIT_ENCRYPTION_INTER_NODE_TRANSPARENT: Data in-transit is
-        encrypted with inter-node transparent encryption.
+        encrypted using inter-node transparent encryption.
     """
     IN_TRANSIT_ENCRYPTION_CONFIG_UNSPECIFIED = 0
     IN_TRANSIT_ENCRYPTION_DISABLED = 1
@@ -3339,6 +3341,21 @@ class MaxPodsConstraint(_messages.Message):
   maxPodsPerNode = _messages.IntegerField(1)
 
 
+class MemoryManager(_messages.Message):
+  r"""The option enables the Kubernetes NUMA-aware Memory Manager feature.
+  Detailed description about the feature can be found
+  [here](https://kubernetes.io/docs/tasks/administer-cluster/memory-manager/).
+
+  Fields:
+    policy: Controls the memory management policy on the Node. See
+      https://kubernetes.io/docs/tasks/administer-cluster/memory-
+      manager/#policies The following values are allowed. * "none" * "static"
+      The default value is 'none' if unspecified.
+  """
+
+  policy = _messages.StringField(1)
+
+
 class MeshCertificates(_messages.Message):
   r"""Configuration for issuance of mTLS keys and certificates to Kubernetes
   pods.
@@ -3516,7 +3533,7 @@ class NetworkConfig(_messages.Message):
         as default - IN_TRANSIT_ENCRYPTION_UNSPECIFIED.
       IN_TRANSIT_ENCRYPTION_DISABLED: In-transit encryption is disabled.
       IN_TRANSIT_ENCRYPTION_INTER_NODE_TRANSPARENT: Data in-transit is
-        encrypted with inter-node transparent encryption.
+        encrypted using inter-node transparent encryption.
     """
     IN_TRANSIT_ENCRYPTION_CONFIG_UNSPECIFIED = 0
     IN_TRANSIT_ENCRYPTION_DISABLED = 1
@@ -3808,6 +3825,7 @@ class NodeConfig(_messages.Message):
       tenant node groups.
     spot: Spot flag for enabling Spot VM, which is a rebrand of the existing
       preemptible flag.
+    storagePools: List of Storage Pools where boot disks are provisioned.
     tags: The list of instance tags applied to all nodes. Tags are used to
       identify valid sources or targets for network firewalls and are
       specified by the client during cluster or node pool creation. Each tag
@@ -3947,10 +3965,11 @@ class NodeConfig(_messages.Message):
   shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
   soleTenantConfig = _messages.MessageField('SoleTenantConfig', 33)
   spot = _messages.BooleanField(34)
-  tags = _messages.StringField(35, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 36, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 37)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 38)
+  storagePools = _messages.StringField(35, repeated=True)
+  tags = _messages.StringField(36, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 37, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 38)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 39)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -3993,17 +4012,25 @@ class NodeKubeletConfig(_messages.Message):
       unspecified.
     insecureKubeletReadonlyPortEnabled: Enable or disable Kubelet read only
       port.
+    memoryManager: Optional. Controls NUMA-aware Memory Manager configuration
+      on the node. For more information, see:
+      https://kubernetes.io/docs/tasks/administer-cluster/memory-manager/
     podPidsLimit: Set the Pod PID limits. See
       https://kubernetes.io/docs/concepts/policy/pid-limiting/#pod-pid-limits
       Controls the maximum number of processes allowed to run in a pod. The
       value must be greater than or equal to 1024 and less than 4194304.
+    topologyManager: Optional. Controls Topology Manager configuration on the
+      node. For more information, see:
+      https://kubernetes.io/docs/tasks/administer-cluster/topology-manager/
   """
 
   cpuCfsQuota = _messages.BooleanField(1)
   cpuCfsQuotaPeriod = _messages.StringField(2)
   cpuManagerPolicy = _messages.StringField(3)
   insecureKubeletReadonlyPortEnabled = _messages.BooleanField(4)
-  podPidsLimit = _messages.IntegerField(5)
+  memoryManager = _messages.MessageField('MemoryManager', 5)
+  podPidsLimit = _messages.IntegerField(6)
+  topologyManager = _messages.MessageField('TopologyManager', 7)
 
 
 class NodeLabels(_messages.Message):
@@ -4814,6 +4841,16 @@ class RangeInfo(_messages.Message):
 
   rangeName = _messages.StringField(1)
   utilization = _messages.FloatField(2)
+
+
+class RayConfig(_messages.Message):
+  r"""Configuration options for the Ray add-on.
+
+  Fields:
+    enabled: Whether the Ray addon is enabled for this cluster.
+  """
+
+  enabled = _messages.BooleanField(1)
 
 
 class RecurringTimeWindow(_messages.Message):
@@ -6126,6 +6163,38 @@ class TimeWindow(_messages.Message):
   endTime = _messages.StringField(1)
   maintenanceExclusionOptions = _messages.MessageField('MaintenanceExclusionOptions', 2)
   startTime = _messages.StringField(3)
+
+
+class TopologyManager(_messages.Message):
+  r"""TopologyManager defines the configuration options for Topology Manager
+  feature. See https://kubernetes.io/docs/tasks/administer-cluster/topology-
+  manager/
+
+  Fields:
+    policy: Configures the strategy for resource alignment. Allowed values
+      are: * none: the default policy, and does not perform any topology
+      alignment. * restricted: the topology manager stores the preferred NUMA
+      node affinity for the container, and will reject the pod if the affinity
+      if not preferred. * best-effort: the topology manager stores the
+      preferred NUMA node affinity for the container. If the affinity is not
+      preferred, the topology manager will admit the pod to the node anyway. *
+      single-numa-node: the topology manager determines if the single NUMA
+      node affinity is possible. If it is, Topology Manager will store this
+      and the Hint Providers can then use this information when making the
+      resource allocation decision. If, however, this is not possible then the
+      Topology Manager will reject the pod from the node. This will result in
+      a pod in a Terminated state with a pod admission failure. The default
+      policy value is 'none' if unspecified. Details about each strategy can
+      be found [here](https://kubernetes.io/docs/tasks/administer-
+      cluster/topology-manager/#topology-manager-policies).
+    scope: The Topology Manager aligns resources in following scopes: *
+      container * pod The default scope is 'container' if unspecified. See
+      https://kubernetes.io/docs/tasks/administer-cluster/topology-
+      manager/#topology-manager-scopes
+  """
+
+  policy = _messages.StringField(1)
+  scope = _messages.StringField(2)
 
 
 class UpdateClusterRequest(_messages.Message):

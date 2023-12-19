@@ -31,12 +31,13 @@ def _GetNoteResourceSpec():
       resource_name='note',
       projectsId=concepts.ResourceParameterAttributeConfig(
           name='project',
-          help_text=('The Container Analysis project for the {resource}.'),
+          help_text='The Container Analysis project for the {resource}.',
       ),
       notesId=concepts.ResourceParameterAttributeConfig(
           name='note',
           help_text='The Container Analysis Note ID for the {resource}.',
-      ))
+      ),
+  )
 
 
 def _FormatArgName(base_name, positional):
@@ -46,11 +47,13 @@ def _FormatArgName(base_name, positional):
     return '--' + base_name.replace('_', '-').lower()
 
 
-def GetAuthorityNotePresentationSpec(group_help,
-                                     base_name='authority-note',
-                                     required=True,
-                                     positional=True,
-                                     use_global_project_flag=False):
+def GetAuthorityNotePresentationSpec(
+    group_help,
+    base_name='authority-note',
+    required=True,
+    positional=True,
+    use_global_project_flag=False,
+):
   """Construct a resource spec for an attestation authority note flag."""
   flag_overrides = None
   if not use_global_project_flag:
@@ -74,14 +77,17 @@ def _GetAttestorResourceSpec():
       attestorsId=concepts.ResourceParameterAttributeConfig(
           name='name',
           help_text='The ID of the {resource}.',
-      ))
+      ),
+  )
 
 
-def GetAttestorPresentationSpec(group_help,
-                                base_name='attestor',
-                                required=True,
-                                positional=True,
-                                use_global_project_flag=True):
+def GetAttestorPresentationSpec(
+    group_help,
+    base_name='attestor',
+    required=True,
+    positional=True,
+    use_global_project_flag=True,
+):
   """Construct a resource spec for an attestor flag."""
   flag_overrides = None
   if not use_global_project_flag:
@@ -121,11 +127,13 @@ def _GetCryptoKeyVersionResourceSpec():
   )
 
 
-def GetCryptoKeyVersionPresentationSpec(group_help,
-                                        base_name='keyversion',
-                                        required=True,
-                                        positional=True,
-                                        use_global_project_flag=True):
+def GetCryptoKeyVersionPresentationSpec(
+    group_help,
+    base_name='keyversion',
+    required=True,
+    positional=True,
+    use_global_project_flag=True,
+):
   """Construct a resource spec for a CryptoKeyVersion flag."""
   flag_overrides = None
   if not use_global_project_flag:
@@ -151,8 +159,11 @@ def AddArtifactUrlFlag(parser, required=True):
       '--artifact-url',
       required=required,
       type=str,
-      help=('Container URL. May be in the `gcr.io/repository/image` format,'
-            ' or may optionally contain the `http` or `https` scheme'))
+      help=(
+          'Container URL. May be in the `gcr.io/repository/image` format,'
+          ' or may optionally contain the `http` or `https` scheme'
+      ),
+  )
 
 
 def _GetPlatformResourceSpec():
@@ -162,7 +173,9 @@ def _GetPlatformResourceSpec():
       api_version='v1',
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       platformsId=concepts.ResourceParameterAttributeConfig(
-          name='platform', help_text='The platform.'))
+          name='platform', help_text='The platform.'
+      ),
+  )
 
 
 def AddPlatformResourceArg(parser, verb):
@@ -181,7 +194,8 @@ def AddPlatformResourceArg(parser, verb):
       'platform_resource_name',
       _GetPlatformResourceSpec(),
       'The platform whose policies {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def _GetPlatformPolicyResourceSpec():
@@ -192,10 +206,15 @@ def _GetPlatformPolicyResourceSpec():
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       platformsId=concepts.ResourceParameterAttributeConfig(
           name='platform',
-          help_text='The platform that the {resource} belongs to. '
-          'PLATFORM must be one of the following: cloudRun, gke.'),
+          help_text=(
+              'The platform that the {resource} belongs to. '
+              'PLATFORM must be one of the following: cloudRun, gke.'
+          ),
+      ),
       policyId=concepts.ResourceParameterAttributeConfig(
-          name='policy', help_text='The ID of the {resource}.'))
+          name='policy', help_text='The ID of the {resource}.'
+      ),
+  )
 
 
 def AddPlatformPolicyResourceArg(parser, verb):

@@ -42,7 +42,7 @@ def CreateParentFlag(required=False) -> base.Argument:
       base.Argument(
           '--parent',
           required=False,
-          help=("""The parent associated with the custom module. Can be one of
+          help=("""Parent associated with the custom module. Can be one of
               organizations/<id>, projects/<id or name>, folders/<id>"""),
       )
   )
@@ -53,7 +53,7 @@ def CreateParentFlag(required=False) -> base.Argument:
           required=False,
           metavar='ORGANIZATION_ID',
           completer=completers.OrganizationCompleter,
-          help='The organization associated with the custom module.',
+          help='Organization associated with the custom module.',
       )
   )
 
@@ -63,7 +63,7 @@ def CreateParentFlag(required=False) -> base.Argument:
           required=False,
           metavar='PROJECT_ID_OR_NUMBER',
           completer=completers.ProjectCompleter,
-          help='The project associated with the custom module.',
+          help='Project associated with the custom module.',
       )
   )
 
@@ -72,7 +72,7 @@ def CreateParentFlag(required=False) -> base.Argument:
           '--folder',
           required=False,
           metavar='FOLDER_ID',
-          help='The folder associated with the custom module.',
+          help='Folder associated with the custom module.',
       )
   )
 

@@ -6192,6 +6192,32 @@ class ComputeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PerformMaintenance(self, request, global_params=None):
+      r"""Perform a manual maintenance on the instance.
+
+      Args:
+        request: (ComputeInstancesPerformMaintenanceRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PerformMaintenance')
+      return self._RunMethod(config, request, global_params=global_params)
+
+    PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='compute.instances.performMaintenance',
+        ordered_params=['project', 'zone', 'instance'],
+        path_params=['instance', 'project', 'zone'],
+        query_params=['requestId'],
+        relative_path='projects/{project}/zones/{zone}/instances/{instance}/performMaintenance',
+        request_field='',
+        request_type_name='ComputeInstancesPerformMaintenanceRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def RemoveResourcePolicies(self, request, global_params=None):
       r"""Removes resource policies from an instance.
 

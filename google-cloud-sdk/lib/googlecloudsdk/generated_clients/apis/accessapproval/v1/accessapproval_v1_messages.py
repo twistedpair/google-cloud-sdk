@@ -154,6 +154,11 @@ class AccessReason(_messages.Message):
       GOOGLE_RESPONSE_TO_PRODUCTION_ALERT: The principal accessed customer
         data in order to diagnose or resolve a suspected issue in services or
         a known outage.
+      CLOUD_INITIATED_ACCESS: Similar to 'GOOGLE_INITIATED_SERVICE' or
+        'GOOGLE_INITIATED_REVIEW', but with universe agnostic naming. The
+        principal accessed customer data in order to diagnose or resolve a
+        suspected issue in services or a known outage, or for security, fraud,
+        abuse, or compliance review purposes.
     """
     TYPE_UNSPECIFIED = 0
     CUSTOMER_INITIATED_SUPPORT = 1
@@ -161,6 +166,7 @@ class AccessReason(_messages.Message):
     GOOGLE_INITIATED_REVIEW = 3
     THIRD_PARTY_DATA_REQUEST = 4
     GOOGLE_RESPONSE_TO_PRODUCTION_ALERT = 5
+    CLOUD_INITIATED_ACCESS = 6
 
   detail = _messages.StringField(1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

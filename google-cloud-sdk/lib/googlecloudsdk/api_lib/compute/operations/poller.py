@@ -222,3 +222,11 @@ class BatchPoller(waiter.OperationPoller):
     if errors_to_collect:
       raise core_exceptions.MultiError(errors_to_collect)
     return responses
+
+
+class DeleteBatchPoller(BatchPoller):
+
+  def GetResult(self, operation_batch):
+    # For delete operations, once the operation status is DONE, there is
+    # nothing further to fetch.
+    return

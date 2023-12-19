@@ -428,7 +428,7 @@ class FileProjectsLocationsInstancesRevertRequest(_messages.Message):
 
   Fields:
     name: Required.
-      projects/{project_id}/locations/{location_id}/instances/{instance_id}.
+      `projects/{project_id}/locations/{location_id}/instances/{instance_id}`.
       The resource name of the instance, in the format
     revertInstanceRequest: A RevertInstanceRequest resource to be passed as
       the request body.
@@ -682,7 +682,7 @@ class FileShareConfig(_messages.Message):
       as 1024^3 bytes.
     name: Required. The name of the file share. Must use 1-16 characters for
       the basic service tier and 1-63 characters for all other service tiers.
-      Must use lowercase letters, numbers, or underscores [a-z0-9_]. Must
+      Must use lowercase letters, numbers, or underscores `[a-z0-9_]`. Must
       start with a letter. Immutable.
     nfsExportOptions: Nfs Export Options. There is a limit of 10 export
       options per file share.
@@ -728,7 +728,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       been attached to the instance. The key must be of the type name of the
       oneof policy name defined in MaintenancePolicy, and the referenced
       policy must define the same policy type. For details, please refer to
-      go/cloud-saas-mw-ug. Should not be set if
+      go/mr-user-guide. Should not be set if
       maintenance_settings.maintenance_policies is set.
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
@@ -763,8 +763,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     maintenancePolicyNames: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the referenced policy must
-      define the same policy type. For details, please refer to go/cloud-saas-
-      mw-ug. Should not be set if maintenance_settings.maintenance_policies is
+      define the same policy type. For details, please refer to go/mr-user-
+      guide. Should not be set if maintenance_settings.maintenance_policies is
       set.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
@@ -855,7 +855,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     r"""Optional. The MaintenancePolicies that have been attached to the
     instance. The key must be of the type name of the oneof policy name
     defined in MaintenancePolicy, and the referenced policy must define the
-    same policy type. For details, please refer to go/cloud-saas-mw-ug. Should
+    same policy type. For details, please refer to go/mr-user-guide. Should
     not be set if maintenance_settings.maintenance_policies is set.
 
     Messages:
@@ -1049,8 +1049,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     MaintenancePoliciesValue: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
-      define the same policy type. For details, please refer to go/cloud-saas-
-      mw-ug. Should not be set if maintenance_policy_names is set. If only the
+      define the same policy type. For details, please refer to go/mr-user-
+      guide. Should not be set if maintenance_policy_names is set. If only the
       name is needed, then only populate MaintenancePolicy.name.
 
   Fields:
@@ -1062,8 +1062,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     maintenancePolicies: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
-      define the same policy type. For details, please refer to go/cloud-saas-
-      mw-ug. Should not be set if maintenance_policy_names is set. If only the
+      define the same policy type. For details, please refer to go/mr-user-
+      guide. Should not be set if maintenance_policy_names is set. If only the
       name is needed, then only populate MaintenancePolicy.name.
   """
 
@@ -1072,9 +1072,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     r"""Optional. The MaintenancePolicies that have been attached to the
     instance. The key must be of the type name of the oneof policy name
     defined in MaintenancePolicy, and the embedded policy must define the same
-    policy type. For details, please refer to go/cloud-saas-mw-ug. Should not
-    be set if maintenance_policy_names is set. If only the name is needed,
-    then only populate MaintenancePolicy.name.
+    policy type. For details, please refer to go/mr-user-guide. Should not be
+    set if maintenance_policy_names is set. If only the name is needed, then
+    only populate MaintenancePolicy.name.
 
     Messages:
       AdditionalProperty: An additional property for a
@@ -2053,8 +2053,8 @@ class RevertInstanceRequest(_messages.Message):
   Fields:
     targetSnapshotId: Required. The snapshot resource ID, in the format 'my-
       snapshot', where the specified ID is the {snapshot_id} of the fully
-      qualified name like projects/{project_id}/locations/{location_id}/instan
-      ces/{instance_id}/snapshots/{snapshot_id}
+      qualified name like `projects/{project_id}/locations/{location_id}/insta
+      nces/{instance_id}/snapshots/{snapshot_id}`
   """
 
   targetSnapshotId = _messages.StringField(1)

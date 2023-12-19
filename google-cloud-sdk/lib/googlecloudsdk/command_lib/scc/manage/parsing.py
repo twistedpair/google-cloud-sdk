@@ -194,6 +194,22 @@ def GetConfigValueFromArgs(file):
     return None
 
 
+def ParseJSONFile(
+    file: messages.EventThreatDetectionCustomModule.ConfigValue | None,
+) -> str | None:
+  """Converts the contents of a JSON file into a string."""
+  if file is not None:
+    try:
+      config = json.loads(file)
+      return json.dumps(config)
+    except json.JSONDecodeError as e:
+      raise errors.InvalidConfigValueFileError(
+          'Error parsing config value file [{}]'.format(e)
+      )
+  else:
+    return None
+
+
 def GetEnablementStateFromArgs(
     enablement_state: str,
     module_type: constants.CustomModuleType

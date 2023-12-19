@@ -2612,6 +2612,7 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
   Fields:
     deliveryPipeline: The name of the `Delivery Pipeline`.
     message: Debug message for when a notification fails to send.
+    pipelineUid: Unique identifier of the `DeliveryPipeline`.
     type: Type of this notification, e.g. for a Pub/Sub failure.
   """
 
@@ -2641,7 +2642,8 @@ class DeliveryPipelineNotificationEvent(_messages.Message):
 
   deliveryPipeline = _messages.StringField(1)
   message = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  pipelineUid = _messages.StringField(3)
+  type = _messages.EnumField('TypeValueValuesEnum', 4)
 
 
 class DeployArtifact(_messages.Message):
@@ -3287,7 +3289,9 @@ class JobRunNotificationEvent(_messages.Message):
     jobRun: The name of the `JobRun`.
     message: Debug message for when a notification fails to send.
     pipelineUid: Unique identifier of the `DeliveryPipeline`.
+    release: The name of the `Release`.
     releaseUid: Unique identifier of the `Release`.
+    rollout: The name of the `Rollout`.
     rolloutUid: Unique identifier of the `Rollout`.
     targetId: ID of the `Target`.
     type: Type of this notification, e.g. for a Pub/Sub failure.
@@ -3320,10 +3324,12 @@ class JobRunNotificationEvent(_messages.Message):
   jobRun = _messages.StringField(1)
   message = _messages.StringField(2)
   pipelineUid = _messages.StringField(3)
-  releaseUid = _messages.StringField(4)
-  rolloutUid = _messages.StringField(5)
-  targetId = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  release = _messages.StringField(4)
+  releaseUid = _messages.StringField(5)
+  rollout = _messages.StringField(6)
+  rolloutUid = _messages.StringField(7)
+  targetId = _messages.StringField(8)
+  type = _messages.EnumField('TypeValueValuesEnum', 9)
 
 
 class KubernetesConfig(_messages.Message):
@@ -4533,7 +4539,9 @@ class ReleaseNotificationEvent(_messages.Message):
 
   Fields:
     message: Debug message for when a notification fails to send.
+    pipelineUid: Unique identifier of the `DeliveryPipeline`.
     release: The name of the `Release`.
+    releaseUid: Unique identifier of the `Release`.
     type: Type of this notification, e.g. for a Pub/Sub failure.
   """
 
@@ -4562,8 +4570,10 @@ class ReleaseNotificationEvent(_messages.Message):
     TYPE_RENDER_STATUES_CHANGE = 7
 
   message = _messages.StringField(1)
-  release = _messages.StringField(2)
-  type = _messages.EnumField('TypeValueValuesEnum', 3)
+  pipelineUid = _messages.StringField(2)
+  release = _messages.StringField(3)
+  releaseUid = _messages.StringField(4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class ReleaseReadyCondition(_messages.Message):
@@ -4587,12 +4597,19 @@ class ReleaseRenderEvent(_messages.Message):
 
   Enums:
     ReleaseRenderStateValueValuesEnum: The state of the release render.
+    TypeValueValuesEnum: Type of this notification, e.g. for a release render
+      state change event.
 
   Fields:
     message: Debug message for when a render transition occurs. Provides
       further details as rendering progresses through render states.
-    release: The name of the release.
+    pipelineUid: Unique identifier of the `DeliveryPipeline`.
+    release: The name of the release. release_uid is not in this log message
+      because we write some of these log messages at release creation time,
+      before we've generated the uid.
     releaseRenderState: The state of the release render.
+    type: Type of this notification, e.g. for a release render state change
+      event.
   """
 
   class ReleaseRenderStateValueValuesEnum(_messages.Enum):
@@ -4610,9 +4627,36 @@ class ReleaseRenderEvent(_messages.Message):
     FAILED = 2
     IN_PROGRESS = 3
 
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of this notification, e.g. for a release render state change
+    event.
+
+    Values:
+      TYPE_UNSPECIFIED: Type is unspecified.
+      TYPE_PUBSUB_NOTIFICATION_FAILURE: A Pub/Sub notification failed to be
+        sent.
+      TYPE_RESOURCE_STATE_CHANGE: Resource state changed.
+      TYPE_PROCESS_ABORTED: A process aborted.
+      TYPE_RESTRICTION_VIOLATED: Restriction check failed.
+      TYPE_RESOURCE_DELETED: Resource deleted.
+      TYPE_ROLLOUT_UPDATE: Rollout updated.
+      TYPE_RENDER_STATUES_CHANGE: Deprecated: This field is never used. Use
+        release_render log type instead.
+    """
+    TYPE_UNSPECIFIED = 0
+    TYPE_PUBSUB_NOTIFICATION_FAILURE = 1
+    TYPE_RESOURCE_STATE_CHANGE = 2
+    TYPE_PROCESS_ABORTED = 3
+    TYPE_RESTRICTION_VIOLATED = 4
+    TYPE_RESOURCE_DELETED = 5
+    TYPE_ROLLOUT_UPDATE = 6
+    TYPE_RENDER_STATUES_CHANGE = 7
+
   message = _messages.StringField(1)
-  release = _messages.StringField(2)
-  releaseRenderState = _messages.EnumField('ReleaseRenderStateValueValuesEnum', 3)
+  pipelineUid = _messages.StringField(2)
+  release = _messages.StringField(3)
+  releaseRenderState = _messages.EnumField('ReleaseRenderStateValueValuesEnum', 4)
+  type = _messages.EnumField('TypeValueValuesEnum', 5)
 
 
 class RenderMetadata(_messages.Message):
@@ -5280,8 +5324,10 @@ class RolloutNotificationEvent(_messages.Message):
   Fields:
     message: Debug message for when a notification fails to send.
     pipelineUid: Unique identifier of the `DeliveryPipeline`.
+    release: The name of the `Release`.
     releaseUid: Unique identifier of the `Release`.
     rollout: The name of the `Rollout`.
+    rolloutUid: Unique identifier of the `Rollout`.
     targetId: ID of the `Target` that the rollout is deployed to.
     type: Type of this notification, e.g. for a Pub/Sub failure.
   """
@@ -5312,10 +5358,12 @@ class RolloutNotificationEvent(_messages.Message):
 
   message = _messages.StringField(1)
   pipelineUid = _messages.StringField(2)
-  releaseUid = _messages.StringField(3)
-  rollout = _messages.StringField(4)
-  targetId = _messages.StringField(5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  release = _messages.StringField(3)
+  releaseUid = _messages.StringField(4)
+  rollout = _messages.StringField(5)
+  rolloutUid = _messages.StringField(6)
+  targetId = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
 
 
 class RolloutUpdateEvent(_messages.Message):
@@ -5330,8 +5378,11 @@ class RolloutUpdateEvent(_messages.Message):
   Fields:
     message: Debug message for when a rollout update event occurs.
     pipelineUid: Unique identifier of the pipeline.
+    release: The name of the `Release`.
     releaseUid: Unique identifier of the release.
-    rollout: The name of the rollout.
+    rollout: The name of the rollout. rollout_uid is not in this log message
+      because we write some of these log messages at rollout creation time,
+      before we've generated the uid.
     rolloutUpdateType: The type of the rollout update.
     targetId: ID of the target.
     type: Type of this notification, e.g. for a rollout update event.
@@ -5397,11 +5448,12 @@ class RolloutUpdateEvent(_messages.Message):
 
   message = _messages.StringField(1)
   pipelineUid = _messages.StringField(2)
-  releaseUid = _messages.StringField(3)
-  rollout = _messages.StringField(4)
-  rolloutUpdateType = _messages.EnumField('RolloutUpdateTypeValueValuesEnum', 5)
-  targetId = _messages.StringField(6)
-  type = _messages.EnumField('TypeValueValuesEnum', 7)
+  release = _messages.StringField(3)
+  releaseUid = _messages.StringField(4)
+  rollout = _messages.StringField(5)
+  rolloutUpdateType = _messages.EnumField('RolloutUpdateTypeValueValuesEnum', 6)
+  targetId = _messages.StringField(7)
+  type = _messages.EnumField('TypeValueValuesEnum', 8)
 
 
 class RuntimeConfig(_messages.Message):

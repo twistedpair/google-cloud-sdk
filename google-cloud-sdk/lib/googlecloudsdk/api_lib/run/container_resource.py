@@ -80,6 +80,11 @@ class ContainerResource(k8s_object.KubernetesObject):
     self.container.image = value
 
   @property
+  def command(self):
+    """command to be invoked by container."""
+    return self.container.command
+
+  @property
   def container(self):
     """The container in the revisionTemplate."""
     containers = self.containers.values()

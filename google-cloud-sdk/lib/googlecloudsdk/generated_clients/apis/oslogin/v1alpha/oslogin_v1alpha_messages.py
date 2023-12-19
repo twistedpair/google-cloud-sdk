@@ -142,6 +142,9 @@ class OsloginUsersImportSshPublicKeyRequest(_messages.Message):
   Fields:
     parent: The unique ID for the user in format `users/{user}`.
     projectId: The project ID of the Google Cloud Platform project.
+    regions: Optional. The regions to which to assert that the key was
+      written. If unspecified, defaults to all regions. Regions are listed at
+      https://cloud.google.com/about/locations#region.
     sshPublicKey: A SshPublicKey resource to be passed as the request body.
     view: The view configures whether to retrieve security keys information.
   """
@@ -161,8 +164,9 @@ class OsloginUsersImportSshPublicKeyRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   projectId = _messages.StringField(2)
-  sshPublicKey = _messages.MessageField('SshPublicKey', 3)
-  view = _messages.EnumField('ViewValueValuesEnum', 4)
+  regions = _messages.StringField(3, repeated=True)
+  sshPublicKey = _messages.MessageField('SshPublicKey', 4)
+  view = _messages.EnumField('ViewValueValuesEnum', 5)
 
 
 class OsloginUsersProjectsDeleteRequest(_messages.Message):

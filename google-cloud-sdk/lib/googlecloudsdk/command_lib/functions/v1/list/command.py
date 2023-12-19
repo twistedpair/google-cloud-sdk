@@ -34,6 +34,9 @@ def _GetFunctionsAndLogUnreachable(message, attribute):
     log.warning(
         'The following regions were fully or partially unreachable '
         'for query: %s'
+        'This could be due to permission setup. Additional information'
+        'can be found in: '
+        'https://cloud.google.com/functions/docs/troubleshooting'
         % ', '.join(message.unreachable)
     )
   return getattr(message, attribute)

@@ -173,7 +173,7 @@ def AddEnableConfidentialComputeFlag(parser):
       '--confidential-compute',
       action='store_true',
       help="""
-      Create the disk in confidential compute mode, CMEK layer is required and only applicable to HyperDisk series.
+      Creates the disk with confidential compute mode enabled. Encryption with a Cloud KMS key is required to enable this option.
       """,
   )
 
@@ -263,12 +263,13 @@ def AddArchitectureFlag(parser, messages):
 
 
 def AddAccessModeFlag(parser, messages):
-  access_mode_enum_type = messages.Disk.AccessModeValueValuesEnum
-  return parser.add_argument(
-      '--access-mode',
-      choices=access_mode_enum_type.names(),
-      help='Specifies the access mode that the disk can support.',
-  )
+  if hasattr(messages.Disk, 'AccessModeValueValuesEnum'):
+    access_mode_enum_type = messages.Disk.AccessModeValueValuesEnum
+    return parser.add_argument(
+        '--access-mode',
+        choices=access_mode_enum_type.names(),
+        help='Specifies the access mode that the disk can support.',
+    )
 
 
 def AddLocationHintArg(parser):

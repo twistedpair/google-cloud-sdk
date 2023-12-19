@@ -81,7 +81,7 @@ def GetStoragePoolServiceLevelArg(messages, required=True):
       messages.StoragePool.ServiceLevelValueValuesEnum,
       help_str="""The service level for the Cloud NetApp Storage Pool.
        For more details, see:
-       https://cloud.google.com/architecture/partners/netapp-cloud-volumes/service-levels
+       https://cloud.google.com/netapp/volumes/docs/configure-and-use/storage-pools/overview#service_levels
         """,
       custom_mappings=custom_mappings,
       required=required,

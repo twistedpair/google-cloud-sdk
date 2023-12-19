@@ -71,7 +71,7 @@ def GetRepoURIFlag(positional=True,
        Defaults to the root directory.
 
       * GIT_REF (optional)- A git tag, branch, ref or commit for the remote version of the
-        package to fetch. Defaults to the repository master branch e.g. @master
+        package to fetch. Defaults to the repository default branch e.g. @main
   """
   if not metavar:
     metavar = 'REPO_URI[.git]/[PKG_PATH][@GIT_REF]'

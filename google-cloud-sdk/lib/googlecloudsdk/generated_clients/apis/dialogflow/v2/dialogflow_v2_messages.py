@@ -11948,6 +11948,9 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig(_m
     disableAgentQueryLogging: Optional. Disable the logging of search queries
       sent by human agents. It can prevent those queries from being stored at
       answer records. Supported features: KNOWLEDGE_SEARCH.
+    enableConversationAugmentedQuery: Optional. Enable including conversation
+      context during query answer generation. Supported features:
+      KNOWLEDGE_SEARCH.
     enableEventBasedSuggestion: Automatically iterates all participants and
       tries to compile suggestions. Supported features: ARTICLE_SUGGESTION,
       FAQ, DIALOGFLOW_ASSIST, KNOWLEDGE_ASSIST.
@@ -11960,10 +11963,11 @@ class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionFeatureConfig(_m
   conversationModelConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationModelConfig', 1)
   conversationProcessConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigConversationProcessConfig', 2)
   disableAgentQueryLogging = _messages.BooleanField(3)
-  enableEventBasedSuggestion = _messages.BooleanField(4)
-  queryConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig', 5)
-  suggestionFeature = _messages.MessageField('GoogleCloudDialogflowV2SuggestionFeature', 6)
-  suggestionTriggerSettings = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionTriggerSettings', 7)
+  enableConversationAugmentedQuery = _messages.BooleanField(4)
+  enableEventBasedSuggestion = _messages.BooleanField(5)
+  queryConfig = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig', 6)
+  suggestionFeature = _messages.MessageField('GoogleCloudDialogflowV2SuggestionFeature', 7)
+  suggestionTriggerSettings = _messages.MessageField('GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionTriggerSettings', 8)
 
 
 class GoogleCloudDialogflowV2HumanAgentAssistantConfigSuggestionQueryConfig(_messages.Message):
@@ -14494,9 +14498,11 @@ class GoogleCloudDialogflowV2SearchKnowledgeResponse(_messages.Message):
   Fields:
     answers: Most relevant snippets extracted from articles in the given
       knowledge base, ordered by confidence.
+    rewrittenQuery: The rewritten query used to search knowledge.
   """
 
   answers = _messages.MessageField('GoogleCloudDialogflowV2SearchKnowledgeAnswer', 1, repeated=True)
+  rewrittenQuery = _messages.StringField(2)
 
 
 class GoogleCloudDialogflowV2Sentiment(_messages.Message):

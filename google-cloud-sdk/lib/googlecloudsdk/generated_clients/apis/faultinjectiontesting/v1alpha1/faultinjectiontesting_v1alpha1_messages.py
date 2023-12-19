@@ -42,13 +42,9 @@ class Empty(_messages.Message):
 class Experiment(_messages.Message):
   r"""Message describing Experiment object
 
-  Enums:
-    ConcurrencyValueValuesEnum: concurrency config for faults
-
   Fields:
     apiVersion: The API version to be used. Default value is the latest API
       version.
-    concurrency: concurrency config for faults
     createTime: Output only. Create time stamp.
     deleted: Output only. is deleted flag for experiments
     description: End user description of the experiment.
@@ -57,25 +53,12 @@ class Experiment(_messages.Message):
     runFaults: faults to run in experiment
   """
 
-  class ConcurrencyValueValuesEnum(_messages.Enum):
-    r"""concurrency config for faults
-
-    Values:
-      CONCURRENCY_UNSPECIFIED: Default value.
-      PARALLEL: run faults in parallel
-      SERIAL: run faults in serial
-    """
-    CONCURRENCY_UNSPECIFIED = 0
-    PARALLEL = 1
-    SERIAL = 2
-
   apiVersion = _messages.StringField(1)
-  concurrency = _messages.EnumField('ConcurrencyValueValuesEnum', 2)
-  createTime = _messages.StringField(3)
-  deleted = _messages.BooleanField(4)
-  description = _messages.StringField(5)
-  name = _messages.StringField(6)
-  runFaults = _messages.MessageField('RunFault', 7, repeated=True)
+  createTime = _messages.StringField(2)
+  deleted = _messages.BooleanField(3)
+  description = _messages.StringField(4)
+  name = _messages.StringField(5)
+  runFaults = _messages.MessageField('RunFault', 6, repeated=True)
 
 
 class Fault(_messages.Message):
@@ -106,12 +89,9 @@ class FaultInjectionAction(_messages.Message):
 
   Fields:
     faultType: The type of fault.
-    targetFilters: Elements of a target to test, such as a path match. System
-      supports impacting multiple requests for a service in a single fault.
   """
 
   faultType = _messages.MessageField('FaultInjectionFaultType', 1)
-  targetFilters = _messages.MessageField('TargetFilter', 2, repeated=True)
 
 
 class FaultInjectionFaultType(_messages.Message):
@@ -569,30 +549,6 @@ class FixedDelay(_messages.Message):
   percentage = _messages.IntegerField(2)
 
 
-class HeaderMatcher(_messages.Message):
-  r"""List of header matcher criteria. All of the header matchers must match
-  headers in the request.
-
-  Fields:
-    exactMatch: The name of the header to match.
-    header: The name of the header to match.
-    invertMatch: Default value is False. When true, the header match is
-      considered a match if the preceding match criteria is NOT met. If both
-      present_match and invert_match is true, it will be a match when match
-      criteria is NOT met.
-    prefixMatch: prefix match
-    presentMatch: Default value is True.
-    suffixMatch: suffix match
-  """
-
-  exactMatch = _messages.StringField(1)
-  header = _messages.StringField(2)
-  invertMatch = _messages.BooleanField(3)
-  prefixMatch = _messages.StringField(4)
-  presentMatch = _messages.BooleanField(5)
-  suffixMatch = _messages.StringField(6)
-
-
 class Job(_messages.Message):
   r"""Message describing Job object
 
@@ -951,19 +907,6 @@ class OriginResource(_messages.Message):
   uri = _messages.StringField(4)
 
 
-class PathMatcher(_messages.Message):
-  r"""Filter on request path. Size limit of 1 to 1024 is enforced on the
-  filters and the case of the match is ignored.
-
-  Fields:
-    fullPathMatch: Paths that match the full value are matched.
-    prefixMatch: Paths that start with the value are matched.
-  """
-
-  fullPathMatch = _messages.StringField(1)
-  prefixMatch = _messages.StringField(2)
-
-
 class PepResourceStatus(_messages.Message):
   r"""Message describing PepResourceStatus.
 
@@ -1113,20 +1056,6 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
-
-
-class TargetFilter(_messages.Message):
-  r"""The Filter specifies targets to inject a fault into.
-
-  Fields:
-    headerMatcher: header matcher
-    hosts: List of target hosts for the path_matcher.
-    pathMatcher: path matcher
-  """
-
-  headerMatcher = _messages.MessageField('HeaderMatcher', 1)
-  hosts = _messages.StringField(2, repeated=True)
-  pathMatcher = _messages.MessageField('PathMatcher', 3)
 
 
 class TimeWindow(_messages.Message):

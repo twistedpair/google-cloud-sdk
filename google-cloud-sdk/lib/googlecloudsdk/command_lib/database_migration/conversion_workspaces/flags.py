@@ -142,7 +142,7 @@ def AddConfigFilesFlag(parser):
 def AddFilterFlag(parser):
   """Adds a --filter flag to the given parser."""
   help_text = (
-      'Filter the entities based on (AIP-160)[https://google.aip.dev/160]'
+      'Filter the entities based on [AIP-160](https://google.aip.dev/160)'
       ' standard. Example: to filter all tables whose name start with'
       ' "Employee" and are present under schema "Company", use filter as'
       ' "Company.Employee```*``` AND type=TABLE"'

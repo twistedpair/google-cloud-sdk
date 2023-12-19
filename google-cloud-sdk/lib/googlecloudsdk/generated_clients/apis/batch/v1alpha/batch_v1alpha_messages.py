@@ -1889,15 +1889,6 @@ class TaskGroup(_messages.Message):
   Fields:
     allocationPolicy: Compute resource allocation for the TaskGroup. If
       specified, it overrides resources in Job.
-    enableOslogin: Optional. Deprecated: When true, Batch will use the OS
-      Login generated POSIX account to exeucute the runnables instead of the
-      default root user. To control root or non-root privilege for runnable
-      execution, the project \ Admin user needs to configure IAM roles
-      according to https://cloud.google.com/compute/docs/oslogin/set-up-
-      oslogin#configure_users. Specifically, if a root execution is needed,
-      the roles/compute.osAdminLogin should be granted to the Batch job
-      submitter. Otherwise, roles/compute.osLogin should be granted to the
-      Batch job submitter.
     labels: Labels for the TaskGroup. Labels could be user provided or system
       generated. You can assign up to 64 labels. [Google Compute Engine label
       restrictions](https://cloud.google.com/compute/docs/labeling-
@@ -1981,18 +1972,17 @@ class TaskGroup(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   allocationPolicy = _messages.MessageField('AllocationPolicy', 1)
-  enableOslogin = _messages.BooleanField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  parallelism = _messages.IntegerField(5)
-  permissiveSsh = _messages.BooleanField(6)
-  requireHostsFile = _messages.BooleanField(7)
-  runAsNonRoot = _messages.BooleanField(8)
-  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 9)
-  taskCount = _messages.IntegerField(10)
-  taskCountPerNode = _messages.IntegerField(11)
-  taskEnvironments = _messages.MessageField('Environment', 12, repeated=True)
-  taskSpec = _messages.MessageField('TaskSpec', 13)
+  labels = _messages.MessageField('LabelsValue', 2)
+  name = _messages.StringField(3)
+  parallelism = _messages.IntegerField(4)
+  permissiveSsh = _messages.BooleanField(5)
+  requireHostsFile = _messages.BooleanField(6)
+  runAsNonRoot = _messages.BooleanField(7)
+  schedulingPolicy = _messages.EnumField('SchedulingPolicyValueValuesEnum', 8)
+  taskCount = _messages.IntegerField(9)
+  taskCountPerNode = _messages.IntegerField(10)
+  taskEnvironments = _messages.MessageField('Environment', 11, repeated=True)
+  taskSpec = _messages.MessageField('TaskSpec', 12)
 
 
 class TaskGroupStatus(_messages.Message):

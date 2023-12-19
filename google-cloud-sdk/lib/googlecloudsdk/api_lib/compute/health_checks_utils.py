@@ -592,6 +592,27 @@ def AddHealthCheckLoggingRelatedArgs(parser):
       Use --no-enable-logging to disable logging.""")
 
 
+def AddHealthCheckSourceRegionsRelatedArgs(parser):
+  """Adds parser arguments for health check source regions."""
+
+  parser.add_argument(
+      '--source-regions',
+      metavar='REGION',
+      help="""\
+        Defines the list of cloud regions from which health checks are
+        performed. This option can be specified only for health checks used
+        with DNS Routing Policies. If specified, --check-interval should be at
+        least 30 seconds. --proxy-header field and --request field (for TCP)
+        are not supported with this option. source-regions is only allowed for
+        global health checks. If this option is specified, then the health
+        check cannot be used with BackendService nor with managed instance
+        group autohealing.
+        """,
+      type=arg_parsers.ArgList(min_length=3),
+      default=[],
+  )
+
+
 def CreateLogConfig(client, args):
   """Returns a HealthCheckLogconfig message if args are valid."""
 

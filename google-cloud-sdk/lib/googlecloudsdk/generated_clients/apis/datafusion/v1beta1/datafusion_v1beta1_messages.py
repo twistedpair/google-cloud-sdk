@@ -800,8 +800,7 @@ class Instance(_messages.Message):
     createTime: Output only. The time the instance was created.
     cryptoKeyConfig: The crypto key configuration. This field is used by the
       Customer-Managed Encryption Keys (CMEK) feature.
-    dataplexDataLineageIntegrationEnabled: Optional. Option to enable the
-      Dataplex Lineage Integration feature.
+    dataplexDataLineageIntegrationEnabled: Optional. Reserved for future use.
     dataprocServiceAccount: User-managed service account to set on Dataproc
       when Cloud Data Fusion creates Dataproc to run data processing
       pipelines. This allows users to have fine-grained access control on

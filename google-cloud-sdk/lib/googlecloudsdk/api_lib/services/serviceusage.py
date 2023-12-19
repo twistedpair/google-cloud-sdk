@@ -175,7 +175,51 @@ def CheckValue(name, service):
     exceptions.ReraiseError(e, exceptions.CheckValuePermissionDeniedException)
 
 
-def GetEffectivePolicy(name):
+def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):
+  """Make API call to get a effective policy.
+
+  Args:
+    name: The name of the effective policy.Currently supported format
+      '{resource_type}/{resource_name}/effectivePolicy'. For example,
+      'projects/100/effectivePolicy'.
+    view: The view of the effective policy to use. Default: 'BASIC'.
+
+  Raises:
+    exceptions.GetEffectiverPolicyPermissionDeniedException: when getting a
+      effective policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    The Effective Policy
+  """
+  client = _GetClientInstance('v2alpha')
+  messages = client.MESSAGES_MODULE
+  if view == 'BASIC':
+    view_type = (
+        messages.ServiceusageGetEffectivePolicyRequest.ViewValueValuesEnum.EFFECTIVE_POLICY_VIEW_BASIC
+    )
+  elif view == 'FULL':
+    view_type = (
+        messages.ServiceusageGetEffectivePolicyRequest.ViewValueValuesEnum.EFFECTIVE_POLICY_VIEW_FULL
+    )
+
+  request = messages.ServiceusageGetEffectivePolicyRequest(
+      name=name, view=view_type
+  )
+
+  try:
+    return client.v2alpha.GetEffectivePolicy(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GetEffectiverPolicyPermissionDeniedException
+    )
+
+
+# TODO(b/309115642) Remove after the migration is completed.
+def GetEffectivePolicyV2(name):
   """Make API call to get a effective policy.
 
   Args:
@@ -277,7 +321,8 @@ def FetchPublicValueInfo(values):
     )
 
 
-def UpdateConsumerPolicy(consumerpolicy, name, force=False):
+# TODO(b/309115642) Remove after the migration is completed.
+def UpdateConsumerPolicyV2(consumerpolicy, name, force=False):
   """Make API call to update a consumer policy.
 
   Args:
@@ -305,6 +350,50 @@ def UpdateConsumerPolicy(consumerpolicy, name, force=False):
 
   try:
     return client.v2.UpdateConsumerPolicy(request)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.UpdateConsumerPolicyPermissionDeniedException
+    )
+  except apitools_exceptions.HttpBadRequestError as e:
+    log.status.Print(
+        'Provide the --force flag if you wish to force disable services.'
+    )
+    exceptions.ReraiseError(e, exceptions.Error)
+
+
+def UpdateConsumerPolicyV2Alpha(consumerpolicy, name, force=False):
+  """Make API call to update a consumer policy.
+
+  Args:
+    consumerpolicy: The consumer policy to update.
+    name: The resource name of the policy. Currently supported format
+      '{resource_type}/{resource_name}/consumerPolicies/default. For example,
+      'projects/100/consumerPolicies/default'.
+    force: Disable service with usage within last 30 days or disable recently
+      enabled service.
+
+  Raises:
+    exceptions.UpdateConsumerPolicyPermissionDeniedException: when updating a
+      consumer policy fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Updated consumer policy
+  """
+  client = _GetClientInstance('v2alpha')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageConsumerPoliciesPatchRequest(
+      googleApiServiceusageV2alphaConsumerPolicy=consumerpolicy,
+      name=name,
+      force=force,
+  )
+
+  try:
+    return client.consumerPolicies.Patch(request)
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
@@ -489,7 +578,7 @@ def AddEnableRule(
   Returns:
     The result of the operation
   """
-  client = _GetClientInstance('v2')
+  client = _GetClientInstance('v2alpha')
   messages = client.MESSAGES_MODULE
 
   resource_name = _PROJECT_RESOURCE % project
@@ -503,26 +592,28 @@ def AddEnableRule(
   policy_name = resource_name + _CONSUMER_POLICY_DEFAULT % consumer_policy_name
 
   try:
-    policy = GetConsumerPolicyV2(policy_name)
+    policy = GetConsumerPolicyV2Alpha(policy_name)
 
     services_to_enabled = set()
 
     for service in services:
       services_to_enabled.add(_SERVICE_RESOURCE % service)
-      list_flatterned_members = ListFlattenedMembers(
+      list_descendant_services = ListDescendantServices(
           resource_name, _SERVICE_RESOURCE % service + _DEPENDENCY_GROUP
       )
-      for member in list_flatterned_members.flattenedMembers:
-        services_to_enabled.add(member.name)
+      for member in list_descendant_services.services:
+        services_to_enabled.add(member.serviceName)
 
     if policy.enableRules:
-      policy.enableRules[0].values.extend(list(services_to_enabled))
+      policy.enableRules[0].services.extend(list(services_to_enabled))
     else:
       policy.enableRules.append(
-          messages.EnableRule(values=list(services_to_enabled))
+          messages.GoogleApiServiceusageV2alphaEnableRule(
+              services=list(services_to_enabled)
+          )
       )
 
-    return UpdateConsumerPolicy(policy, policy_name)
+    return UpdateConsumerPolicyV2Alpha(policy, policy_name)
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
@@ -614,7 +705,7 @@ def RemoveEnableRule(
       if rule.values:
         updated_consumer_poicy.enableRules.append(rule)
 
-    return UpdateConsumerPolicy(
+    return UpdateConsumerPolicyV2(
         updated_consumer_poicy, policy_name, force=force
     )
   except (
@@ -812,7 +903,7 @@ def ListServicesV2(
   try:
     if enabled:
       policy_name = resource_name + _EFFECTIVE_POLICY
-      consumerpolicy = GetEffectivePolicy(policy_name).consumerPolicy
+      consumerpolicy = GetEffectivePolicyV2(policy_name).consumerPolicy
 
       for rules in consumerpolicy.enableRules:
         for value in rules.values:

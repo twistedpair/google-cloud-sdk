@@ -6219,12 +6219,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -6236,7 +6255,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -8151,7 +8174,7 @@ class ComputeBackendBucketsSetEdgeSecurityPolicyRequest(_messages.Message):
   r"""A ComputeBackendBucketsSetEdgeSecurityPolicyRequest object.
 
   Fields:
-    backendBucket: Name of the BackendService resource to which the security
+    backendBucket: Name of the BackendBucket resource to which the security
       policy should be set. The name should conform to RFC1035.
     project: Project ID for this request.
     requestId: An optional request ID to identify requests. Specify a unique
@@ -15149,6 +15172,31 @@ class ComputeInstancesListRequest(_messages.Message):
   project = _messages.StringField(5, required=True)
   returnPartialSuccess = _messages.BooleanField(6)
   zone = _messages.StringField(7, required=True)
+
+
+class ComputeInstancesPerformMaintenanceRequest(_messages.Message):
+  r"""A ComputeInstancesPerformMaintenanceRequest object.
+
+  Fields:
+    instance: Name of the instance scoping this request.
+    project: Project ID for this request.
+    requestId: An optional request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. For example,
+      consider a situation where you make an initial request and the request
+      times out. If you make the request again with the same request ID, the
+      server can check if original operation with the same request ID was
+      received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      ( 00000000-0000-0000-0000-000000000000).
+    zone: The name of the zone for this request.
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  zone = _messages.StringField(4, required=True)
 
 
 class ComputeInstancesRemoveResourcePoliciesRequest(_messages.Message):
@@ -39480,16 +39528,16 @@ class GuestOsFeature(_messages.Message):
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
       UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-      SEV_LIVE_MIGRATABLE - SEV_SNP_CAPABLE For more information, see Enabling
-      guest operating system features.
+      SEV_LIVE_MIGRATABLE - SEV_SNP_CAPABLE - IDPF For more information, see
+      Enabling guest operating system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
       GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_LIVE_MIGRATABLE -
-      SEV_SNP_CAPABLE For more information, see Enabling guest operating
-      system features.
+      SEV_SNP_CAPABLE - IDPF For more information, see Enabling guest
+      operating system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -39497,12 +39545,13 @@ class GuestOsFeature(_messages.Message):
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
     GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_LIVE_MIGRATABLE -
-    SEV_SNP_CAPABLE For more information, see Enabling guest operating system
-    features.
+    SEV_SNP_CAPABLE - IDPF For more information, see Enabling guest operating
+    system features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
       GVNIC: <no description>
+      IDPF: <no description>
       MULTI_IP_SUBNET: <no description>
       SECURE_BOOT: <no description>
       SEV_CAPABLE: <no description>
@@ -39515,15 +39564,16 @@ class GuestOsFeature(_messages.Message):
     """
     FEATURE_TYPE_UNSPECIFIED = 0
     GVNIC = 1
-    MULTI_IP_SUBNET = 2
-    SECURE_BOOT = 3
-    SEV_CAPABLE = 4
-    SEV_LIVE_MIGRATABLE = 5
-    SEV_LIVE_MIGRATABLE_V2 = 6
-    SEV_SNP_CAPABLE = 7
-    UEFI_COMPATIBLE = 8
-    VIRTIO_SCSI_MULTIQUEUE = 9
-    WINDOWS = 10
+    IDPF = 2
+    MULTI_IP_SUBNET = 3
+    SECURE_BOOT = 4
+    SEV_CAPABLE = 5
+    SEV_LIVE_MIGRATABLE = 6
+    SEV_LIVE_MIGRATABLE_V2 = 7
+    SEV_SNP_CAPABLE = 8
+    UEFI_COMPATIBLE = 9
+    VIRTIO_SCSI_MULTIQUEUE = 10
+    WINDOWS = 11
 
   type = _messages.EnumField('TypeValueValuesEnum', 1)
 
@@ -40868,6 +40918,8 @@ class HealthStatus(_messages.Message):
   Enums:
     HealthStateValueValuesEnum: Health state of the IPv4 address of the
       instance.
+    Ipv6HealthStateValueValuesEnum: Health state of the IPv6 address of the
+      instance.
     WeightErrorValueValuesEnum:
 
   Messages:
@@ -40883,6 +40935,8 @@ class HealthStatus(_messages.Message):
     ipAddress: For target pool based Network Load Balancing, it indicates the
       forwarding rule's IP address assigned to this instance. For other types
       of load balancing, the field indicates VM internal ip.
+    ipv6Address: A string attribute.
+    ipv6HealthState: Health state of the IPv6 address of the instance.
     port: The named port of the instance group, not necessarily the port that
       is health-checked.
     weight: A string attribute.
@@ -40891,6 +40945,16 @@ class HealthStatus(_messages.Message):
 
   class HealthStateValueValuesEnum(_messages.Enum):
     r"""Health state of the IPv4 address of the instance.
+
+    Values:
+      HEALTHY: <no description>
+      UNHEALTHY: <no description>
+    """
+    HEALTHY = 0
+    UNHEALTHY = 1
+
+  class Ipv6HealthStateValueValuesEnum(_messages.Enum):
+    r"""Health state of the IPv6 address of the instance.
 
     Values:
       HEALTHY: <no description>
@@ -40957,9 +41021,11 @@ class HealthStatus(_messages.Message):
   healthState = _messages.EnumField('HealthStateValueValuesEnum', 4)
   instance = _messages.StringField(5)
   ipAddress = _messages.StringField(6)
-  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  weight = _messages.StringField(8)
-  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 9)
+  ipv6Address = _messages.StringField(7)
+  ipv6HealthState = _messages.EnumField('Ipv6HealthStateValueValuesEnum', 8)
+  port = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  weight = _messages.StringField(10)
+  weightError = _messages.EnumField('WeightErrorValueValuesEnum', 11)
 
 
 class HealthStatusForNetworkEndpoint(_messages.Message):
@@ -44386,17 +44452,26 @@ class InstanceGroupManagerResizeRequestStatus(_messages.Message):
   r"""A InstanceGroupManagerResizeRequestStatus object.
 
   Messages:
-    ErrorValue: Errors encountered during the queueing or provisioning phases
-      of the ResizeRequest.
+    ErrorValue: [Output only] Fatal errors encountered during the queueing or
+      provisioning phases of the ResizeRequest that caused the transition to
+      the FAILED state. As a contrary to the last_attempt errors, this field
+      is final and errors are never removed from here, as the RR is not going
+      to retry.
 
   Fields:
-    error: Errors encountered during the queueing or provisioning phases of
-      the ResizeRequest.
+    error: [Output only] Fatal errors encountered during the queueing or
+      provisioning phases of the ResizeRequest that caused the transition to
+      the FAILED state. As a contrary to the last_attempt errors, this field
+      is final and errors are never removed from here, as the RR is not going
+      to retry.
   """
 
   class ErrorValue(_messages.Message):
-    r"""Errors encountered during the queueing or provisioning phases of the
-    ResizeRequest.
+    r"""[Output only] Fatal errors encountered during the queueing or
+    provisioning phases of the ResizeRequest that caused the transition to the
+    FAILED state. As a contrary to the last_attempt errors, this field is
+    final and errors are never removed from here, as the RR is not going to
+    retry.
 
     Messages:
       ErrorsValueListEntry: A ErrorsValueListEntry object.
@@ -44621,7 +44696,11 @@ class InstanceGroupManagerStandbyPolicy(_messages.Message):
       standby pool when the group scales out. The default mode is `MANUAL`.
 
   Fields:
-    initialDelaySec: A integer attribute.
+    initialDelaySec: Specifies the number of seconds that the MIG should wait
+      to suspend or stop a VM after that VM was created. The initial delay
+      gives the initialization script the time to prepare your VM for a quick
+      scale out. The value of initial delay must be between 0 and 3600
+      seconds. The default value is 0.
     mode: Defines how a MIG resumes or starts VMs from a standby pool when the
       group scales out. The default mode is `MANUAL`.
   """
@@ -52769,6 +52848,9 @@ class ManagedInstance(_messages.Message):
       in the process of being verified.
     InstanceStatusValueValuesEnum: [Output Only] The status of the instance.
       This field is empty when the instance does not exist.
+    TargetStatusValueValuesEnum: [Output Only] The eventual status of the
+      instance. The instance group manager will not be identified as stable
+      till each managed instance reaches its targetStatus.
 
   Fields:
     allInstancesConfig: [Output Only] Current all-instances configuration
@@ -52813,6 +52895,9 @@ class ManagedInstance(_messages.Message):
       stateful policy for this instance.
     propertiesFromFlexibilityPolicy: [Output Only] Instance properties
       selected for this instance resulting from InstanceFlexibilityPolicy.
+    targetStatus: [Output Only] The eventual status of the instance. The
+      instance group manager will not be identified as stable till each
+      managed instance reaches its targetStatus.
     version: [Output Only] Intended version of this instance.
   """
 
@@ -52915,6 +53000,25 @@ class ManagedInstance(_messages.Message):
     SUSPENDING = 8
     TERMINATED = 9
 
+  class TargetStatusValueValuesEnum(_messages.Enum):
+    r"""[Output Only] The eventual status of the instance. The instance group
+    manager will not be identified as stable till each managed instance
+    reaches its targetStatus.
+
+    Values:
+      ABANDONED: The managed instance will eventually be ABANDONED, i.e.
+        dissociated from the managed instance group.
+      DELETED: The managed instance will eventually be DELETED.
+      RUNNING: The managed instance will eventually reach status RUNNING.
+      STOPPED: The managed instance will eventually reach status TERMINATED.
+      SUSPENDED: The managed instance will eventually reach status SUSPENDED.
+    """
+    ABANDONED = 0
+    DELETED = 1
+    RUNNING = 2
+    STOPPED = 3
+    SUSPENDED = 4
+
   allInstancesConfig = _messages.MessageField('ManagedInstanceAllInstancesConfig', 1)
   currentAction = _messages.EnumField('CurrentActionValueValuesEnum', 2)
   id = _messages.IntegerField(3, variant=_messages.Variant.UINT64)
@@ -52927,7 +53031,8 @@ class ManagedInstance(_messages.Message):
   preservedStateFromConfig = _messages.MessageField('PreservedState', 10)
   preservedStateFromPolicy = _messages.MessageField('PreservedState', 11)
   propertiesFromFlexibilityPolicy = _messages.MessageField('ManagedInstancePropertiesFromFlexibilityPolicy', 12)
-  version = _messages.MessageField('ManagedInstanceVersion', 13)
+  targetStatus = _messages.EnumField('TargetStatusValueValuesEnum', 13)
+  version = _messages.MessageField('ManagedInstanceVersion', 14)
 
 
 class ManagedInstanceAllInstancesConfig(_messages.Message):
@@ -62017,6 +62122,7 @@ class Quota(_messages.Message):
       COMMITTED_N2_CPUS: <no description>
       COMMITTED_NVIDIA_A100_80GB_GPUS: <no description>
       COMMITTED_NVIDIA_A100_GPUS: <no description>
+      COMMITTED_NVIDIA_H100_GPUS: <no description>
       COMMITTED_NVIDIA_K80_GPUS: <no description>
       COMMITTED_NVIDIA_L4_GPUS: <no description>
       COMMITTED_NVIDIA_P100_GPUS: <no description>
@@ -62092,6 +62198,7 @@ class Quota(_messages.Message):
       PREEMPTIBLE_LOCAL_SSD_GB: <no description>
       PREEMPTIBLE_NVIDIA_A100_80GB_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_A100_GPUS: <no description>
+      PREEMPTIBLE_NVIDIA_H100_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_K80_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_L4_GPUS: <no description>
       PREEMPTIBLE_NVIDIA_P100_GPUS: <no description>
@@ -62174,138 +62281,140 @@ class Quota(_messages.Message):
     COMMITTED_N2_CPUS = 21
     COMMITTED_NVIDIA_A100_80GB_GPUS = 22
     COMMITTED_NVIDIA_A100_GPUS = 23
-    COMMITTED_NVIDIA_K80_GPUS = 24
-    COMMITTED_NVIDIA_L4_GPUS = 25
-    COMMITTED_NVIDIA_P100_GPUS = 26
-    COMMITTED_NVIDIA_P4_GPUS = 27
-    COMMITTED_NVIDIA_T4_GPUS = 28
-    COMMITTED_NVIDIA_V100_GPUS = 29
-    COMMITTED_T2A_CPUS = 30
-    COMMITTED_T2D_CPUS = 31
-    CPUS = 32
-    CPUS_ALL_REGIONS = 33
-    DISKS_TOTAL_GB = 34
-    E2_CPUS = 35
-    EXTERNAL_MANAGED_FORWARDING_RULES = 36
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 37
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 38
-    EXTERNAL_VPN_GATEWAYS = 39
-    FIREWALLS = 40
-    FORWARDING_RULES = 41
-    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 42
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 43
-    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 44
-    GLOBAL_INTERNAL_ADDRESSES = 45
-    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 46
-    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 47
-    GPUS_ALL_REGIONS = 48
-    HEALTH_CHECKS = 49
-    IMAGES = 50
-    INSTANCES = 51
-    INSTANCE_GROUPS = 52
-    INSTANCE_GROUP_MANAGERS = 53
-    INSTANCE_TEMPLATES = 54
-    INTERCONNECTS = 55
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 56
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 57
-    INTERCONNECT_TOTAL_GBPS = 58
-    INTERNAL_ADDRESSES = 59
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 60
-    IN_PLACE_SNAPSHOTS = 61
-    IN_USE_ADDRESSES = 62
-    IN_USE_BACKUP_SCHEDULES = 63
-    IN_USE_SNAPSHOT_SCHEDULES = 64
-    LOCAL_SSD_TOTAL_GB = 65
-    M1_CPUS = 66
-    M2_CPUS = 67
-    M3_CPUS = 68
-    MACHINE_IMAGES = 69
-    N2A_CPUS = 70
-    N2D_CPUS = 71
-    N2_CPUS = 72
-    NETWORKS = 73
-    NETWORK_ATTACHMENTS = 74
-    NETWORK_ENDPOINT_GROUPS = 75
-    NETWORK_FIREWALL_POLICIES = 76
-    NET_LB_SECURITY_POLICIES_PER_REGION = 77
-    NET_LB_SECURITY_POLICY_RULES_PER_REGION = 78
-    NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION = 79
-    NODE_GROUPS = 80
-    NODE_TEMPLATES = 81
-    NVIDIA_A100_80GB_GPUS = 82
-    NVIDIA_A100_GPUS = 83
-    NVIDIA_K80_GPUS = 84
-    NVIDIA_L4_GPUS = 85
-    NVIDIA_P100_GPUS = 86
-    NVIDIA_P100_VWS_GPUS = 87
-    NVIDIA_P4_GPUS = 88
-    NVIDIA_P4_VWS_GPUS = 89
-    NVIDIA_T4_GPUS = 90
-    NVIDIA_T4_VWS_GPUS = 91
-    NVIDIA_V100_GPUS = 92
-    PACKET_MIRRORINGS = 93
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 94
-    PREEMPTIBLE_CPUS = 95
-    PREEMPTIBLE_LOCAL_SSD_GB = 96
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 97
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 98
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 99
-    PREEMPTIBLE_NVIDIA_L4_GPUS = 100
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 101
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 102
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 103
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 104
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 105
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 106
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 107
-    PREEMPTIBLE_TPU_LITE_DEVICE_V5 = 108
-    PREEMPTIBLE_TPU_LITE_PODSLICE_V5 = 109
-    PREEMPTIBLE_TPU_PODSLICE_V4 = 110
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 111
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 112
-    PSC_INTERNAL_LB_FORWARDING_RULES = 113
-    PUBLIC_ADVERTISED_PREFIXES = 114
-    PUBLIC_DELEGATED_PREFIXES = 115
-    REGIONAL_AUTOSCALERS = 116
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 117
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 118
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 119
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 120
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 121
-    RESERVATIONS = 122
-    RESOURCE_POLICIES = 123
-    ROUTERS = 124
-    ROUTES = 125
-    SECURITY_POLICIES = 126
-    SECURITY_POLICIES_PER_REGION = 127
-    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 128
-    SECURITY_POLICY_CEVAL_RULES = 129
-    SECURITY_POLICY_RULES = 130
-    SECURITY_POLICY_RULES_PER_REGION = 131
-    SERVICE_ATTACHMENTS = 132
-    SNAPSHOTS = 133
-    SSD_TOTAL_GB = 134
-    SSL_CERTIFICATES = 135
-    STATIC_ADDRESSES = 136
-    STATIC_BYOIP_ADDRESSES = 137
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 138
-    SUBNETWORKS = 139
-    T2A_CPUS = 140
-    T2D_CPUS = 141
-    TARGET_HTTPS_PROXIES = 142
-    TARGET_HTTP_PROXIES = 143
-    TARGET_INSTANCES = 144
-    TARGET_POOLS = 145
-    TARGET_SSL_PROXIES = 146
-    TARGET_TCP_PROXIES = 147
-    TARGET_VPN_GATEWAYS = 148
-    TPU_LITE_DEVICE_V5 = 149
-    TPU_LITE_PODSLICE_V5 = 150
-    TPU_PODSLICE_V4 = 151
-    URL_MAPS = 152
-    VPN_GATEWAYS = 153
-    VPN_TUNNELS = 154
-    XPN_SERVICE_PROJECTS = 155
+    COMMITTED_NVIDIA_H100_GPUS = 24
+    COMMITTED_NVIDIA_K80_GPUS = 25
+    COMMITTED_NVIDIA_L4_GPUS = 26
+    COMMITTED_NVIDIA_P100_GPUS = 27
+    COMMITTED_NVIDIA_P4_GPUS = 28
+    COMMITTED_NVIDIA_T4_GPUS = 29
+    COMMITTED_NVIDIA_V100_GPUS = 30
+    COMMITTED_T2A_CPUS = 31
+    COMMITTED_T2D_CPUS = 32
+    CPUS = 33
+    CPUS_ALL_REGIONS = 34
+    DISKS_TOTAL_GB = 35
+    E2_CPUS = 36
+    EXTERNAL_MANAGED_FORWARDING_RULES = 37
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 38
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 39
+    EXTERNAL_VPN_GATEWAYS = 40
+    FIREWALLS = 41
+    FORWARDING_RULES = 42
+    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 43
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 44
+    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 45
+    GLOBAL_INTERNAL_ADDRESSES = 46
+    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 47
+    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 48
+    GPUS_ALL_REGIONS = 49
+    HEALTH_CHECKS = 50
+    IMAGES = 51
+    INSTANCES = 52
+    INSTANCE_GROUPS = 53
+    INSTANCE_GROUP_MANAGERS = 54
+    INSTANCE_TEMPLATES = 55
+    INTERCONNECTS = 56
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 57
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 58
+    INTERCONNECT_TOTAL_GBPS = 59
+    INTERNAL_ADDRESSES = 60
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 61
+    IN_PLACE_SNAPSHOTS = 62
+    IN_USE_ADDRESSES = 63
+    IN_USE_BACKUP_SCHEDULES = 64
+    IN_USE_SNAPSHOT_SCHEDULES = 65
+    LOCAL_SSD_TOTAL_GB = 66
+    M1_CPUS = 67
+    M2_CPUS = 68
+    M3_CPUS = 69
+    MACHINE_IMAGES = 70
+    N2A_CPUS = 71
+    N2D_CPUS = 72
+    N2_CPUS = 73
+    NETWORKS = 74
+    NETWORK_ATTACHMENTS = 75
+    NETWORK_ENDPOINT_GROUPS = 76
+    NETWORK_FIREWALL_POLICIES = 77
+    NET_LB_SECURITY_POLICIES_PER_REGION = 78
+    NET_LB_SECURITY_POLICY_RULES_PER_REGION = 79
+    NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION = 80
+    NODE_GROUPS = 81
+    NODE_TEMPLATES = 82
+    NVIDIA_A100_80GB_GPUS = 83
+    NVIDIA_A100_GPUS = 84
+    NVIDIA_K80_GPUS = 85
+    NVIDIA_L4_GPUS = 86
+    NVIDIA_P100_GPUS = 87
+    NVIDIA_P100_VWS_GPUS = 88
+    NVIDIA_P4_GPUS = 89
+    NVIDIA_P4_VWS_GPUS = 90
+    NVIDIA_T4_GPUS = 91
+    NVIDIA_T4_VWS_GPUS = 92
+    NVIDIA_V100_GPUS = 93
+    PACKET_MIRRORINGS = 94
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 95
+    PREEMPTIBLE_CPUS = 96
+    PREEMPTIBLE_LOCAL_SSD_GB = 97
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 98
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 99
+    PREEMPTIBLE_NVIDIA_H100_GPUS = 100
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 101
+    PREEMPTIBLE_NVIDIA_L4_GPUS = 102
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 103
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 104
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 105
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 106
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 107
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 108
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 109
+    PREEMPTIBLE_TPU_LITE_DEVICE_V5 = 110
+    PREEMPTIBLE_TPU_LITE_PODSLICE_V5 = 111
+    PREEMPTIBLE_TPU_PODSLICE_V4 = 112
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 113
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 114
+    PSC_INTERNAL_LB_FORWARDING_RULES = 115
+    PUBLIC_ADVERTISED_PREFIXES = 116
+    PUBLIC_DELEGATED_PREFIXES = 117
+    REGIONAL_AUTOSCALERS = 118
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 119
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 120
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 121
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 122
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 123
+    RESERVATIONS = 124
+    RESOURCE_POLICIES = 125
+    ROUTERS = 126
+    ROUTES = 127
+    SECURITY_POLICIES = 128
+    SECURITY_POLICIES_PER_REGION = 129
+    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 130
+    SECURITY_POLICY_CEVAL_RULES = 131
+    SECURITY_POLICY_RULES = 132
+    SECURITY_POLICY_RULES_PER_REGION = 133
+    SERVICE_ATTACHMENTS = 134
+    SNAPSHOTS = 135
+    SSD_TOTAL_GB = 136
+    SSL_CERTIFICATES = 137
+    STATIC_ADDRESSES = 138
+    STATIC_BYOIP_ADDRESSES = 139
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 140
+    SUBNETWORKS = 141
+    T2A_CPUS = 142
+    T2D_CPUS = 143
+    TARGET_HTTPS_PROXIES = 144
+    TARGET_HTTP_PROXIES = 145
+    TARGET_INSTANCES = 146
+    TARGET_POOLS = 147
+    TARGET_SSL_PROXIES = 148
+    TARGET_TCP_PROXIES = 149
+    TARGET_VPN_GATEWAYS = 150
+    TPU_LITE_DEVICE_V5 = 151
+    TPU_LITE_PODSLICE_V5 = 152
+    TPU_PODSLICE_V4 = 153
+    URL_MAPS = 154
+    VPN_GATEWAYS = 155
+    VPN_TUNNELS = 156
+    XPN_SERVICE_PROJECTS = 157
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

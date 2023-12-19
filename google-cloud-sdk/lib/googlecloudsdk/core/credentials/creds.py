@@ -167,6 +167,29 @@ def IsImpersonatedAccountCredentials(creds):
   return False
 
 
+def HasDefaultUniverseDomain(credentials):
+  """Check if the given credential has default universe domain.
+
+  For google-auth credential, we check its universe_domain property. The
+  deprecated oauth2client credentials only work in default universe domain so
+  we return True (Note that they are no longer used in gcloud, but not yet
+  removed from the code base).
+
+  Args:
+    credentials: google.auth.credentials.Credentials or
+      client.OAuth2Credentials, the credentials to be checked.
+
+  Returns:
+    bool, Whether or not the given credential has default universe domain.
+  """
+  if IsGoogleAuthCredentials(credentials):
+    return (
+        credentials.universe_domain
+        == properties.VALUES.core.universe_domain.default
+    )
+  return True
+
+
 def GetEffectiveTokenUri(cred_json, key='token_uri'):
   if properties.VALUES.auth.token_host.IsExplicitlySet():
     return properties.VALUES.auth.token_host.Get()
@@ -1448,11 +1471,7 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
   """Converts a google-auth credentials to application default credentials."""
   creds_type = CredentialTypeGoogleAuth.FromCredentials(credentials)
   if creds_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
-    # TODO: b/296263194 - For now just skip the universe_domain field in the
-    # output ADC file. Will revisit here when doing the ADC file work.
-    adc = credentials.to_json(
-        strip=('token', 'token_uri', 'scopes', 'expiry', 'universe_domain')
-    )
+    adc = credentials.to_json(strip=('token', 'token_uri', 'scopes', 'expiry'))
     adc = json.loads(adc)
     adc['type'] = creds_type.key
     return adc
@@ -1463,7 +1482,8 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
         'private_key_id': credentials.private_key_id,
         'private_key': credentials.private_key,
         'client_id': credentials.client_id,
-        'token_uri': credentials._token_uri  # pylint: disable=protected-access
+        'token_uri': credentials._token_uri,  # pylint: disable=protected-access
+        'universe_domain': credentials.universe_domain,
     }
   if (creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT or
       creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_USER):

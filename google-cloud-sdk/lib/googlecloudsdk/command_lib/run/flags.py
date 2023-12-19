@@ -51,6 +51,11 @@ from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.util import encoding
 from googlecloudsdk.core.util import files
 
+SERVICE_MESH_FLAG = base.Argument(
+    '--mesh',
+    hidden=True,
+    help='Enables Service Mesh configuration using the specified mesh name.',
+)
 
 _VISIBILITY_MODES = {
     'internal': 'Visible only within the cluster.',
@@ -116,7 +121,7 @@ class KubeconfigError(exceptions.Error):
 class Product(enum.Enum):
   RUN = 'Run'
   EVENTS = 'Events'
-  RUN_APPS = 'Runapps'
+  STACKS = 'Stacks'
 
 
 def AddImageArg(parser, required=True, image='gcr.io/cloudrun/hello:latest'):
@@ -389,8 +394,9 @@ def AddStartupCpuBoostFlag(parser):
       '--cpu-boost',
       action=arg_parsers.StoreTrueFalseAction,
       help=(
-          'Whether to allocate extra CPU to containers on startup. '
-          'This can reduce the perceived latency of a cold start request.'
+          'Whether to allocate extra CPU to containers on startup to reduce the'
+          ' perceived latency of a cold start request. Enabled by default when'
+          ' unspecified on new services.'
       ),
   )
 
@@ -2308,6 +2314,20 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
           )
       )
 
+  if FlagIsExplicitlySet(args, 'mesh'):
+    if args.mesh:
+      changes.append(
+          config_changes.SetTemplateAnnotationChange(
+              revision.MESH_ANNOTATION, args.mesh
+          )
+      )
+    else:
+      changes.append(
+          config_changes.DeleteTemplateAnnotationChange(
+              revision.MESH_ANNOTATION
+          )
+      )
+
   return changes
 
 
@@ -3610,6 +3630,20 @@ def PromptForDefaultSource(container_name=None):
     return source
 
 
+def PromptForClearCommand():
+  """Prompt for clearing --command when user tries to deploy function to CR."""
+  if console_io.CanPrompt():
+    message = (
+        'Deploying a function to Cloud Run has the effect of removing any value'
+        ' previously set for --command in the same container.'
+    )
+    return console_io.PromptContinue(
+        message=message,
+        default=False,
+    )
+  return False
+
+
 def AddDryRunFlag(parser):
   """Add --dry-run flag."""
   parser.add_argument(
@@ -3636,14 +3670,12 @@ def FunctionArg():
 
 
 # TODO(b/312784518) link to/list supported values
-def RuntimeLanguageArg():
+def BaseImageArg():
   return base.Argument(
-      '--runtime-language',
+      '--base-image',
       hidden=True,
-      required=True,
       help=(
-          'Specify the language runtime version to be used to build a function'
-          ' deployment. Can only be used when [--function] is also specified.'
+          'Opts in to use base image updates using the specified image.'
       ),
   )
 

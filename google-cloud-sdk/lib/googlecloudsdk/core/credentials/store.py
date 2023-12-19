@@ -897,7 +897,9 @@ def _ShouldRefreshGoogleAuthIdToken(credentials):
     bool, Whether ID token refresh is needed.
   """
   # We don't refresh ID token for non-default universe domain.
-  if not properties.IsDefaultUniverse():
+  if not properties.IsDefaultUniverse() or not c_creds.HasDefaultUniverseDomain(
+      credentials
+  ):
     return False
 
   if hasattr(credentials, '_id_token') and c_creds.UseSelfSignedJwt(
@@ -1248,7 +1250,13 @@ def Store(credentials, account=None, scopes=None):
 
 def ActivateCredentials(account, credentials):
   """Validates, stores and activates credentials with given account."""
-  if properties.IsDefaultUniverse():
+  if hasattr(credentials, 'universe_domain'):
+    # Handle universe domain conflict.
+    auth_util.HandleUniverseDomainConflict(credentials.universe_domain, account)
+
+  if properties.IsDefaultUniverse() and c_creds.HasDefaultUniverseDomain(
+      credentials
+  ):
     # Don't refresh in credential creation for non-default universes.
     Refresh(credentials)
   Store(credentials, account)
@@ -1424,11 +1432,20 @@ def AcquireFromGCE(account=None, use_google_auth=True, refresh=True):
   if use_google_auth:
     email = account or 'default'
     credentials = google_auth_gce.Credentials(service_account_email=email)
-    # TODO: b/296263194 - Here we need to fetch universe domain from metadata
-    # server and set credentials._universe_domain. Will revisit here in the
-    # future. Currently just set _universe_domain_cached to True to avoid
-    # calling metadata server universe domain endpoint.
+
+    # _universe_domain is a private property without public setter, it's
+    # intended for auth lib or gcloud to fetch the universe domain from metadata
+    # server then set the _universe_domain.
+    universe_domain = c_gce.Metadata().UniverseDomain()
+    credentials._universe_domain = (  # pylint: disable=protected-access
+        universe_domain
+    )
+    # Set _universe_domain_cached to True to avoid calling metadata server
+    # universe domain endpoint again.
     credentials._universe_domain_cached = True  # pylint: disable=protected-access
+    auth_util.HandleUniverseDomainConflict(
+        universe_domain, credentials.service_account_email
+    )
   else:
     credentials = oauth2client_gce.AppAssertionCredentials(email=account)
   if refresh:

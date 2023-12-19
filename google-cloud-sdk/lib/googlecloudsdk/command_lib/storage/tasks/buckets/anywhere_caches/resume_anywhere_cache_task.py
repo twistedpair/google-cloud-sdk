@@ -33,6 +33,7 @@ class ResumeAnywhereCacheTask(task.Task):
     super(ResumeAnywhereCacheTask, self).__init__()
     self._bucket_name = bucket_name
     self._zone = zone
+    self.parallel_processing_key = '{}/{}'.format(bucket_name, zone)
 
   def execute(self, task_status_queue=None):
     log.status.Print(

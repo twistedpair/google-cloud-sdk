@@ -3048,11 +3048,37 @@ class EncryptionConfig(_messages.Message):
   r"""Encryption settings for the cluster.
 
   Fields:
-    gcePdKmsKeyName: Optional. The Cloud KMS key name to use for PD disk
-      encryption for all instances in the cluster.
-    kmsKey: Optional. The Cloud KMS key name to use for encrypting customer
-      core content in spanner and cluster PD disk for all instances in the
-      cluster.
+    gcePdKmsKeyName: Optional. The Cloud KMS key resource name to use for
+      persistent disk encryption for all instances in the cluster. See Use
+      CMEK with cluster data
+      (https://cloud.google.com//dataproc/docs/concepts/configuring-
+      clusters/customer-managed-encryption#use_cmek_with_cluster_data) for
+      more information.
+    kmsKey: Optional. The Cloud KMS key resource name to use for cluster
+      persistent disk and job argument encryption. See Use CMEK with cluster
+      data (https://cloud.google.com//dataproc/docs/concepts/configuring-
+      clusters/customer-managed-encryption#use_cmek_with_cluster_data) for
+      more information.When this key resource name is provided, the following
+      job arguments of the following job types submitted to the cluster are
+      encrypted using CMEK: FlinkJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/FlinkJob)
+      HadoopJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/HadoopJob)
+      SparkJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/SparkJob)
+      SparkRJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/SparkRJob)
+      PySparkJob args
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/PySparkJob)
+      SparkSqlJob
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/SparkSqlJob)
+      scriptVariables and queryList.queries HiveJob
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/HiveJob)
+      scriptVariables and queryList.queries PigJob
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/PigJob)
+      scriptVariables and queryList.queries PrestoJob
+      (https://cloud.google.com/dataproc/docs/reference/rest/v1/PrestoJob)
+      scriptVariables and queryList.queries
   """
 
   gcePdKmsKeyName = _messages.StringField(1)
@@ -5017,8 +5043,8 @@ class KerberosConfig(_messages.Message):
     keystoreUri: Optional. The Cloud Storage URI of the keystore file used for
       SSL encryption. If not provided, Dataproc will provide a self-signed
       certificate.
-    kmsKeyUri: Optional. The uri of the KMS key used to encrypt various
-      sensitive files.
+    kmsKeyUri: Optional. The URI of the KMS key used to encrypt sensitive
+      files.
     realm: Optional. The name of the on-cluster Kerberos realm. If not
       specified, the uppercased domain of hostnames will be the realm.
     rootPrincipalPasswordUri: Optional. The Cloud Storage URI of a KMS
@@ -5272,9 +5298,9 @@ class ListJobsResponse(_messages.Message):
     nextPageToken: Optional. This token is included in the response if there
       are more results to fetch. To fetch additional results, provide this
       value as the page_token in a subsequent ListJobsRequest.
-    unreachable: Output only. List of jobs that could not be included in the
-      response. Attempting to get one of these resources may indicate why it
-      was not included in the list response.
+    unreachable: Output only. List of jobs with kms_key-encrypted parameters
+      that could not be decrypted. A response to a jobs.get request may
+      indicate the reason for the decryption failure for a specific job.
   """
 
   jobs = _messages.MessageField('Job', 1, repeated=True)

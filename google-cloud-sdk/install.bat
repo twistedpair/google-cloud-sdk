@@ -135,6 +135,12 @@ IF NOT "%CLOUDSDK_ENCODING%" == "" (
   SET PYTHONIOENCODING=!CLOUDSDK_ENCODING!
 )
 
+IF "%OPENSSL_CONF%" == "" (
+    IF EXIST "%APPDATA%\gcloud\ecp_openssl.cnf" (
+       SET OPENSSL_CONF="%APPDATA%\gcloud\ecp_openssl.cnf"
+    )
+)
+
 SETLOCAL DisableDelayedExpansion
 
 rem </cloud-sdk-cmd-preamble>

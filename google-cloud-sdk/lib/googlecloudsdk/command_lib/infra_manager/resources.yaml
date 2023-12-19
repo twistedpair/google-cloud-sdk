@@ -80,3 +80,16 @@ resource:
     attribute_name: resource
     help: resources TBD
   disable_auto_completers: false
+preview:
+  name: preview
+  plural_name: previews
+  collection: config.projects.locations.previews
+  request_id_field: previewId
+  attributes:
+  - *project
+  - *location
+  - &preview
+    parameter_name: previewsId
+    attribute_name: preview
+    help: preview TBD
+  disable_auto_completers: false

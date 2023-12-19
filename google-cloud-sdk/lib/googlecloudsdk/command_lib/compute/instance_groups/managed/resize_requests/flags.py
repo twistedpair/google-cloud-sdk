@@ -19,16 +19,10 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-DEFAULT_CREATE_OR_LIST_FORMAT_ALPHA = """\
-    table(
-      name,
-      location():label=LOCATION,
-      location_scope():label=SCOPE,
-      resize_by,
-      state,
-      status.queuingPolicy.validUntilTime
-    )
-"""
+from googlecloudsdk.calliope import base
+from googlecloudsdk.core.util import iso_duration
+from googlecloudsdk.core.util import times
+
 
 DEFAULT_CREATE_OR_LIST_FORMAT_BETA = """\
     table(
@@ -36,7 +30,50 @@ DEFAULT_CREATE_OR_LIST_FORMAT_BETA = """\
       location():label=LOCATION,
       location_scope():label=SCOPE,
       resize_by,
-      state
+      state,
+      requestedRunDuration()
     )
 """
 
+DEFAULT_CREATE_OR_LIST_FORMAT_ALPHA = """\
+    table(
+      name,
+      location():label=LOCATION,
+      location_scope():label=SCOPE,
+      resize_by,
+      state,
+      status.queuingPolicy.validUntilTime,
+      requestedRunDuration()
+    )
+"""
+
+_RELEASE_TRACK_TO_LIST_FORMAT = {
+    base.ReleaseTrack.BETA: DEFAULT_CREATE_OR_LIST_FORMAT_BETA,
+    base.ReleaseTrack.ALPHA: DEFAULT_CREATE_OR_LIST_FORMAT_ALPHA,
+}
+
+
+def _TransformRequestedRunDuration(resource):
+  """Properly format requested_run_duration field."""
+
+  # Use get with dictionary optional return value to skip existence checking.
+  run_duration = resource.get('requestedRunDuration', {})
+  if not run_duration:
+    return ''
+  seconds = int(run_duration.get('seconds'))
+  days = seconds // 86400  # 60 * 60 * 24
+  seconds -= days * 86400
+  hours = seconds // 3600  # 60 * 60
+  seconds -= hours * 3600
+  minutes = seconds // 60
+  seconds -= minutes * 60
+  duration = iso_duration.Duration(
+      days=days, hours=hours, minutes=minutes, seconds=seconds)
+  return times.FormatDuration(duration, parts=-1)
+
+
+def AddOutputFormat(parser, release_track):
+  parser.display_info.AddFormat(_RELEASE_TRACK_TO_LIST_FORMAT[release_track])
+  parser.display_info.AddTransforms({
+      'requestedRunDuration': _TransformRequestedRunDuration,
+  })

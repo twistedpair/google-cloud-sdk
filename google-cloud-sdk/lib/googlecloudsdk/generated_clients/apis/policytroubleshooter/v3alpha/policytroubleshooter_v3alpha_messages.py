@@ -3269,6 +3269,9 @@ class GoogleIamV2DenyRule(_messages.Message):
       values as the `denied_principals` field, excluding
       `principalSet://goog/public:all`, which represents all users on the
       internet.
+    exemptedCredentialLevels: A list of credential levels that are excluded
+      from this rule. If a request contains _any_ of the
+      exempted_credential_levels, it will _not_ be denied.
   """
 
   denialCondition = _messages.MessageField('GoogleTypeExpr', 1)
@@ -3276,6 +3279,7 @@ class GoogleIamV2DenyRule(_messages.Message):
   deniedPrincipals = _messages.StringField(3, repeated=True)
   exceptionPermissions = _messages.StringField(4, repeated=True)
   exceptionPrincipals = _messages.StringField(5, repeated=True)
+  exemptedCredentialLevels = _messages.StringField(6, repeated=True)
 
 
 class GoogleIamV2Policy(_messages.Message):

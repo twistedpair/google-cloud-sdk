@@ -930,7 +930,7 @@ def AddCreateDiskArgs(
     spec['confidential-compute'] = arg_parsers.ArgBoolean()
     disk_help += """
       *confidential-compute*::: If ``yes'', the disk is created in confidential
-      mode. The default value is ``no''.
+      mode. The default value is ``no''. Encryption with a Cloud KMS key is required to enable this option.
     """
 
   if support_replica_zones:
@@ -1495,10 +1495,10 @@ def AddAddressArgs(parser,
     multiple_network_interface_cards_spec['queue-count'] = int
     network_interface_help_texts.append("""
       *queue-count*::: Specifies the networking queue count for this interface.
-      Both Rx and Tx queues will be set to this number. If it's not
-      specified, a default queue count will be assigned. For Virtio-net,
-      each interface will get min(floor(#vCPU / #vNIC), 32) queues. For gVNIC,
-      each interface will get min(floor(#vCPU / #vNIC / 2), 16) qeueus.
+      Both Rx and Tx queues will be set to this number. If it's not specified,
+      a default queue count will be assigned. See
+      https://cloud.google.com/compute/docs/network-bandwidth#rx-tx for
+      more details.
       """)
 
   if not containers:

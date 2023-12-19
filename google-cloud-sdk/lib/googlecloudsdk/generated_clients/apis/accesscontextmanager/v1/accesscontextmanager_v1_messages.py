@@ -682,6 +682,31 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
   updateMask = _messages.StringField(3)
 
 
+class AccesscontextmanagerServicesGetRequest(_messages.Message):
+  r"""A AccesscontextmanagerServicesGetRequest object.
+
+  Fields:
+    name: The name of the service to get information about. The names must be
+      in the same format as used in defining a service perimeter, for example,
+      `storage.googleapis.com`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class AccesscontextmanagerServicesListRequest(_messages.Message):
+  r"""A AccesscontextmanagerServicesListRequest object.
+
+  Fields:
+    pageSize: This flag specifies the maximum number of services to return per
+      page. Default is 100.
+    pageToken: Token to start on a later page. Default is the first page.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+
+
 class ApiOperation(_messages.Message):
   r"""Identification for an API Operation.
 
@@ -1293,7 +1318,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -1366,11 +1390,7 @@ class GcpUserAccessBinding(_messages.Message):
 
 
 class GcpUserAccessBindingOperationMetadata(_messages.Message):
-  r"""Currently, a completed operation means nothing. In the future, this
-  metadata and a completed operation may indicate that the binding has taken
-  effect and is affecting access decisions for all users.
-  """
-
+  r"""Metadata of GCP Access Binding Long Running Operations."""
 
 
 class GetIamPolicyRequest(_messages.Message):
@@ -1595,6 +1615,22 @@ class ListServicePerimetersResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   servicePerimeters = _messages.MessageField('ServicePerimeter', 2, repeated=True)
+
+
+class ListSupportedServicesResponse(_messages.Message):
+  r"""A response to `ListSupportedServicesRequest`.
+
+  Fields:
+    nextPageToken: The pagination token to retrieve the next page of results.
+      If the value is empty, no further results remain.
+    supportedServices: List of services supported by {{vpcsvcctl_name_short}}
+      instances.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  supportedServices = _messages.MessageField(
+      'SupportedService', 2, repeated=True
+  )
 
 
 class MethodSelector(_messages.Message):
@@ -2152,6 +2188,82 @@ class Status(_messages.Message):
   code = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
   message = _messages.StringField(3)
+
+
+class SupportedService(_messages.Message):
+  r"""`SupportedService` specifies {{vpcsvcctl_name_short}} supported service
+
+  and its properties.
+
+  Enums:
+    SupportStageValueValuesEnum: The support stage of the service.
+
+  Fields:
+    availableOnRestrictedVip: True if the service is available on the
+      restricted VIP. Services on the restricted VIP typically either support
+      {{vpcsvcctl_name_short}} or are core infrastructure services required
+      for the functioning of Google Cloud.
+    knownLimitations: True if the service is supported with some limitations.
+      Check documentation for details.
+    name: The service name or address of the supported service, such as
+      `service.googleapis.com`.
+    supportStage: The support stage of the service.
+    supportedMethods: The list of the supported methods. Field exist only in
+      response on [GetSupportedService]
+    title: The name of the supported product, such as 'Cloud Product API'
+  """
+
+  class SupportStageValueValuesEnum(_messages.Enum):
+    r"""The support stage of the service.
+
+    Values:
+      LAUNCH_STAGE_UNSPECIFIED: Do not use this default value.
+      UNIMPLEMENTED: The feature is not yet implemented. Users can not use it.
+      PRELAUNCH: Prelaunch features are hidden from users and are only visible
+        internally.
+      EARLY_ACCESS: Early Access features are limited to a closed group of
+        testers. To use these features, you must sign up in advance and sign a
+        Trusted Tester agreement (which includes confidentiality provisions).
+        These features may be unstable, changed in backward-incompatible ways,
+        and are not guaranteed to be released.
+      ALPHA: Alpha is a limited availability test for releases before they are
+        cleared for widespread use. By Alpha, all significant design issues
+        are resolved and we are in the process of verifying functionality.
+        Alpha customers need to apply for access, agree to applicable terms,
+        and have their projects allowlisted. Alpha releases don't have to be
+        feature complete, no SLAs are provided, and there are no technical
+        support obligations, but they will be far enough along that customers
+        can actually use them in test environments or for limited-use tests --
+        just like they would in normal production cases.
+      BETA: Beta is the point at which we are ready to open a release for any
+        customer to use. There are no SLA or technical support obligations in
+        a Beta release. Products will be complete from a feature perspective,
+        but may have some open outstanding issues. Beta releases are suitable
+        for limited production use cases.
+      GA: GA features are open to all developers and are considered stable and
+        fully qualified for production use.
+      DEPRECATED: Deprecated features are scheduled to be shut down and
+        removed. For more information, see the "Deprecation Policy" section of
+        our [Terms of Service](https://cloud.google.com/terms/) and the
+        [Google Cloud Platform Subject to the Deprecation
+        Policy](https://cloud.google.com/terms/deprecation) documentation.
+    """
+
+    LAUNCH_STAGE_UNSPECIFIED = 0
+    UNIMPLEMENTED = 1
+    PRELAUNCH = 2
+    EARLY_ACCESS = 3
+    ALPHA = 4
+    BETA = 5
+    GA = 6
+    DEPRECATED = 7
+
+  availableOnRestrictedVip = _messages.BooleanField(1)
+  knownLimitations = _messages.BooleanField(2)
+  name = _messages.StringField(3)
+  supportStage = _messages.EnumField('SupportStageValueValuesEnum', 4)
+  supportedMethods = _messages.MessageField('MethodSelector', 5, repeated=True)
+  title = _messages.StringField(6)
 
 
 class TestIamPermissionsRequest(_messages.Message):

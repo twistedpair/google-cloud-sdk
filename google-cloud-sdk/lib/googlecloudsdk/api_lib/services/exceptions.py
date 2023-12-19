@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2021 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -78,6 +78,12 @@ class ListConnectionsPermissionDeniedException(Error):
 
 class EnableVpcServiceControlsPermissionDeniedException(Error):
   """Permission denied exception for enable vpc service controls command."""
+  pass
+
+
+class GetVpcServiceControlsPermissionDeniedException(Error):
+  """Permission denied exception for get vpc service controls command."""
+
   pass
 
 

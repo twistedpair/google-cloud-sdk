@@ -47,7 +47,10 @@ def _YieldFromLocations(
       log.warning(
           (
               'The following regions were fully or partially unreachable '
-              'for query: %s'
+              'for query: %s\n'
+              'This could be due to permission setup. Additional information'
+              'can be found in: '
+              'https://cloud.google.com/functions/docs/troubleshooting'
           ),
           ', '.join(message.unreachable),
       )

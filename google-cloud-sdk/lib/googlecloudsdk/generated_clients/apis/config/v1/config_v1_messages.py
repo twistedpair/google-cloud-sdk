@@ -1616,10 +1616,10 @@ class Preview(_messages.Message):
         permissions-related issue.
       DEPLOYMENT_LOCK_ACQUIRE_FAILED: Acquiring lock on provided deployment
         reference failed.
-      PREVIEW_BUILD_API_FAILED: The preview Cloud Build failed before logs
-        could be generated.
-      PREVIEW_BUILD_RUN_FAILED: The preview Cloud Build failed after logs
-        could be generated.
+      PREVIEW_BUILD_API_FAILED: Preview encountered an error when trying to
+        access Cloud Build API.
+      PREVIEW_BUILD_RUN_FAILED: Preview created a build but build failed and
+        logs were generated.
     """
     ERROR_CODE_UNSPECIFIED = 0
     CLOUD_BUILD_PERMISSION_DENIED = 1

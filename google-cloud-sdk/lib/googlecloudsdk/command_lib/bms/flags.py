@@ -331,6 +331,23 @@ def AddNfsShareArgToParser(parser, positional=False):
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
 
 
+def AddOsImageArgToParser(parser, positional=False):
+  """Sets up an argument for an os-image resource."""
+  if positional:
+    name = 'os_image'
+  else:
+    name = '--os-image'
+  os_image_data = yaml_data.ResourceYAMLData.FromPath(
+      'bms.os_image')
+  resource_spec = concepts.ResourceSpec.FromYaml(os_image_data.GetData())
+  presentation_spec = presentation_specs.ResourcePresentationSpec(
+      name=name,
+      concept_spec=resource_spec,
+      required=True,
+      group_help='os_image.')
+  return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
 def AddSerialConsoleSshKeyArgToParser(parser, positional=False, name=None):
   """Sets up an argument for the serial-console-ssh-key resource."""
   name = 'serial_console_ssh_key' if positional else '--serial-console-ssh-key'

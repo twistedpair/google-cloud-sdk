@@ -747,6 +747,7 @@ class Dataset(_messages.Message):
   Fields:
     encryptionSpec: Customer-managed encryption key spec for a Dataset. If
       set, this Dataset and all of its sub-resources will be secured by this
+      key. If empty, the Dataset is secured by the default Google encryption
       key.
     name: Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
@@ -1054,11 +1055,10 @@ class EncryptionSpec(_messages.Message):
 
   Fields:
     kmsKeyName: Required. The resource name of customer-managed encryption key
-      that is used to secure a resource and its sub-resources. If empty, the
-      resource is secured by the default Google encryption key. Only the key
-      in the same location as this Dataset is allowed to be used for
-      encryption. Format is: `projects/{project}/locations/{location}/keyRings
-      /{keyRing}/cryptoKeys/{key}`
+      that is used to secure a resource and its sub-resources. Only the key in
+      the same location as this Dataset is allowed to be used for encryption.
+      Format is: `projects/{project}/locations/{location}/keyRings/{keyRing}/c
+      ryptoKeys/{key}`
   """
 
   kmsKeyName = _messages.StringField(1)

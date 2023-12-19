@@ -3304,6 +3304,9 @@ class Publishing(_messages.Message):
     protoReferenceDocumentationUri: Optional link to proto reference
       documentation. Example:
       https://cloud.google.com/pubsub/lite/docs/reference/rpc
+    restReferenceDocumentationUri: Optional link to REST reference
+      documentation. Example:
+      https://cloud.google.com/pubsub/lite/docs/reference/rest
   """
 
   class OrganizationValueValuesEnum(_messages.Enum):
@@ -3338,6 +3341,7 @@ class Publishing(_messages.Message):
   newIssueUri = _messages.StringField(8)
   organization = _messages.EnumField('OrganizationValueValuesEnum', 9)
   protoReferenceDocumentationUri = _messages.StringField(10)
+  restReferenceDocumentationUri = _messages.StringField(11)
 
 
 class PythonSettings(_messages.Message):

@@ -1376,11 +1376,15 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisks(_messages.Message):
   r"""Disks defines the disks that would be attached to the workers.
 
   Fields:
+    dockerRootDisk: Optional. Specifies the configuration for the docker root
+      disk to be attached. If not specified, RBE will default to the RBE
+      managed docker root disk.
     localSsd: Optional. Specifies the number of local SSDs to be attached. If
       specified, local SSDs will be used as the working directory.
   """
 
-  localSsd = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisksLocalSSD', 1)
+  dockerRootDisk = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisksPersistentDisk', 1)
+  localSsd = _messages.MessageField('GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisksLocalSSD', 2)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisksLocalSSD(_messages.Message):
@@ -1394,6 +1398,21 @@ class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisksLocalSSD(_messages.Mess
 
   count = _messages.IntegerField(1)
   sizeGb = _messages.IntegerField(2)
+
+
+class GoogleDevtoolsRemotebuildexecutionAdminV1alphaDisksPersistentDisk(_messages.Message):
+  r"""PersistentDisk specifies how to attach a persistent disk to the workers.
+
+  Fields:
+    diskSizeGb: Required. Size of the disk in GB.
+    diskType: Required. Type of disk attached (supported types are pd-standard
+      and pd-ssd).
+    sourceImage: Required. VM image to use for the disk.
+  """
+
+  diskSizeGb = _messages.IntegerField(1)
+  diskType = _messages.StringField(2)
+  sourceImage = _messages.StringField(3)
 
 
 class GoogleDevtoolsRemotebuildexecutionAdminV1alphaFeaturePolicy(_messages.Message):

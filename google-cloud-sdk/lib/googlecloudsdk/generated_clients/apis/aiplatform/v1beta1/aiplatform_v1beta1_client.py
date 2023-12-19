@@ -61,6 +61,8 @@ class AiplatformV1beta1(base_api.BaseApiClient):
     self.projects_locations_edgeDevices = self.ProjectsLocationsEdgeDevicesService(self)
     self.projects_locations_endpoints_operations = self.ProjectsLocationsEndpointsOperationsService(self)
     self.projects_locations_endpoints = self.ProjectsLocationsEndpointsService(self)
+    self.projects_locations_exampleStores_operations = self.ProjectsLocationsExampleStoresOperationsService(self)
+    self.projects_locations_exampleStores = self.ProjectsLocationsExampleStoresService(self)
     self.projects_locations_extensionControllers_operations = self.ProjectsLocationsExtensionControllersOperationsService(self)
     self.projects_locations_extensionControllers = self.ProjectsLocationsExtensionControllersService(self)
     self.projects_locations_extensions_deployments_operations = self.ProjectsLocationsExtensionsDeploymentsOperationsService(self)
@@ -3196,6 +3198,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def StreamGenerateContent(self, request, global_params=None):
+      r"""Generate content with multimodal inputs with streaming support.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsStreamGenerateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('StreamGenerateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamGenerateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:streamGenerateContent',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.streamGenerateContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1beta1/{+model}:streamGenerateContent',
+        request_field='googleCloudAiplatformV1beta1GenerateContentRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsStreamGenerateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateContentResponse',
+        supports_download=False,
+    )
+
     def TestIamPermissions(self, request, global_params=None):
       r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
 
@@ -3249,6 +3278,161 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         response_type_name='GoogleLongrunningOperation',
         supports_download=False,
     )
+
+  class ProjectsLocationsExampleStoresOperationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_exampleStores_operations resource."""
+
+    _NAME = 'projects_locations_exampleStores_operations'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsExampleStoresOperationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Cancel(self, request, global_params=None):
+      r"""Starts asynchronous cancellation on a long-running operation. The server makes a best effort to cancel the operation, but success is not guaranteed. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Clients can use Operations.GetOperation or other methods to check whether the cancellation succeeded or whether the operation completed despite cancellation. On successful cancellation, the operation is not deleted; instead, it becomes an operation with an Operation.error value with a google.rpc.Status.code of 1, corresponding to `Code.CANCELLED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsExampleStoresOperationsCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Cancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Cancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/exampleStores/{exampleStoresId}/operations/{operationsId}:cancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.exampleStores.operations.cancel',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:cancel',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsExampleStoresOperationsCancelRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a long-running operation. This method indicates that the client is no longer interested in the operation result. It does not cancel the operation. If the server doesn't support this method, it returns `google.rpc.Code.UNIMPLEMENTED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsExampleStoresOperationsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/exampleStores/{exampleStoresId}/operations/{operationsId}',
+        http_method='DELETE',
+        method_id='aiplatform.projects.locations.exampleStores.operations.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsExampleStoresOperationsDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
+
+      Args:
+        request: (AiplatformProjectsLocationsExampleStoresOperationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/exampleStores/{exampleStoresId}/operations/{operationsId}',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.exampleStores.operations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsExampleStoresOperationsGetRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists operations that match the specified filter in the request. If the server doesn't support this method, it returns `UNIMPLEMENTED`.
+
+      Args:
+        request: (AiplatformProjectsLocationsExampleStoresOperationsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningListOperationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/exampleStores/{exampleStoresId}/operations',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.exampleStores.operations.list',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1beta1/{+name}/operations',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsExampleStoresOperationsListRequest',
+        response_type_name='GoogleLongrunningListOperationsResponse',
+        supports_download=False,
+    )
+
+    def Wait(self, request, global_params=None):
+      r"""Waits until the specified long-running operation is done or reaches at most a specified timeout, returning the latest state. If the operation is already done, the latest state is immediately returned. If the timeout specified is greater than the default HTTP/RPC timeout, the HTTP/RPC timeout is used. If the server does not support this method, it returns `google.rpc.Code.UNIMPLEMENTED`. Note that this method is on a best-effort basis. It may return the latest state before the specified timeout (including immediately), meaning even an immediate response is no guarantee that the operation is done.
+
+      Args:
+        request: (AiplatformProjectsLocationsExampleStoresOperationsWaitRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Wait')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Wait.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/exampleStores/{exampleStoresId}/operations/{operationsId}:wait',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.exampleStores.operations.wait',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['timeout'],
+        relative_path='v1beta1/{+name}:wait',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsExampleStoresOperationsWaitRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsExampleStoresService(base_api.BaseApiService):
+    """Service class for the projects_locations_exampleStores resource."""
+
+    _NAME = 'projects_locations_exampleStores'
+
+    def __init__(self, client):
+      super(AiplatformV1beta1.ProjectsLocationsExampleStoresService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class ProjectsLocationsExtensionControllersOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_extensionControllers_operations resource."""
@@ -10426,6 +10610,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Upgrade(self, request, global_params=None):
+      r"""Upgrades a NotebookRuntime.
+
+      Args:
+        request: (AiplatformProjectsLocationsNotebookRuntimesUpgradeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('Upgrade')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Upgrade.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/notebookRuntimes/{notebookRuntimesId}:upgrade',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.notebookRuntimes.upgrade',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:upgrade',
+        request_field='googleCloudAiplatformV1beta1UpgradeNotebookRuntimeRequest',
+        request_type_name='AiplatformProjectsLocationsNotebookRuntimesUpgradeRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 
@@ -11016,6 +11227,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchCancel(self, request, global_params=None):
+      r"""Batch cancel PipelineJobs. Firstly the server will check if all the jobs are in non-terminal states, and skip the jobs that are already terminated. If the operation failed, none of the pipeline jobs are cancelled. The server will poll the states of all the pipeline jobs periodically to check the cancellation status. This operation will return an LRO.
+
+      Args:
+        request: (AiplatformProjectsLocationsPipelineJobsBatchCancelRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleLongrunningOperation) The response message.
+      """
+      config = self.GetMethodConfig('BatchCancel')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCancel.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/pipelineJobs:batchCancel',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.pipelineJobs.batchCancel',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}/pipelineJobs:batchCancel',
+        request_field='googleCloudAiplatformV1beta1BatchCancelPipelineJobsRequest',
+        request_type_name='AiplatformProjectsLocationsPipelineJobsBatchCancelRequest',
+        response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
     def BatchDelete(self, request, global_params=None):
       r"""Batch deletes PipelineJobs The Operation is atomic. If it fails, none of the PipelineJobs are deleted. If it succeeds, all of the PipelineJobs are deleted.
 
@@ -11242,6 +11480,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:getIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1beta1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def Predict(self, request, global_params=None):
       r"""Perform an online prediction.
 
@@ -11320,6 +11585,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1beta1StreamingPredictRequest',
         request_type_name='AiplatformProjectsLocationsPublishersModelsServerStreamingPredictRequest',
         response_type_name='GoogleCloudAiplatformV1beta1StreamingPredictResponse',
+        supports_download=False,
+    )
+
+    def StreamGenerateContent(self, request, global_params=None):
+      r"""Generate content with multimodal inputs with streaming support.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsStreamGenerateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1GenerateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('StreamGenerateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamGenerateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:streamGenerateContent',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.streamGenerateContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1beta1/{+model}:streamGenerateContent',
+        request_field='googleCloudAiplatformV1beta1GenerateContentRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsStreamGenerateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1GenerateContentResponse',
         supports_download=False,
     )
 
@@ -13228,60 +13520,6 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def BatchCreate(self, request, global_params=None):
-      r"""Batch create TensorboardTimeSeries that belong to a TensorboardExperiment.
-
-      Args:
-        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse) The response message.
-      """
-      config = self.GetMethodConfig('BatchCreate')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchCreate',
-        http_method='POST',
-        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.batchCreate',
-        ordered_params=['parent', 'runsId'],
-        path_params=['parent', 'runsId'],
-        query_params=[],
-        relative_path='v1beta1/{+parent}/runs/{runsId}/timeSeries:batchCreate',
-        request_field='googleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest',
-        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchCreateRequest',
-        response_type_name='GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse',
-        supports_download=False,
-    )
-
-    def BatchRead(self, request, global_params=None):
-      r"""Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data is returned. Otherwise, the number limit of data points is randomly selected from this time series and returned.
-
-      Args:
-        request: (AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudAiplatformV1beta1BatchReadTensorboardTimeSeriesDataResponse) The response message.
-      """
-      config = self.GetMethodConfig('BatchRead')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    BatchRead.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchRead',
-        http_method='GET',
-        method_id='aiplatform.projects.locations.tensorboards.experiments.runs.timeSeries.batchRead',
-        ordered_params=['tensorboard', 'experimentsId', 'runsId'],
-        path_params=['experimentsId', 'runsId', 'tensorboard'],
-        query_params=['timeSeries'],
-        relative_path='v1beta1/{+tensorboard}/experiments/{experimentsId}/runs/{runsId}/timeSeries:batchRead',
-        request_field='',
-        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsRunsTimeSeriesBatchReadRequest',
-        response_type_name='GoogleCloudAiplatformV1beta1BatchReadTensorboardTimeSeriesDataResponse',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a TensorboardTimeSeries.
 
@@ -13707,6 +13945,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def BatchCreate(self, request, global_params=None):
+      r"""Batch create TensorboardTimeSeries that belong to a TensorboardExperiment.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsExperimentsBatchCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCreate')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCreate.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}/experiments/{experimentsId}:batchCreate',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.tensorboards.experiments.batchCreate',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1beta1/{+parent}:batchCreate',
+        request_field='googleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesRequest',
+        request_type_name='AiplatformProjectsLocationsTensorboardsExperimentsBatchCreateRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1BatchCreateTensorboardTimeSeriesResponse',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a TensorboardExperiment.
 
@@ -14023,6 +14288,33 @@ class AiplatformV1beta1(base_api.BaseApiClient):
       super(AiplatformV1beta1.ProjectsLocationsTensorboardsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def BatchRead(self, request, global_params=None):
+      r"""Reads multiple TensorboardTimeSeries' data. The data point number limit is 1000 for scalars, 100 for tensors and blob references. If the number of data points stored is less than the limit, all data is returned. Otherwise, the number limit of data points is randomly selected from this time series and returned.
+
+      Args:
+        request: (AiplatformProjectsLocationsTensorboardsBatchReadRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1beta1BatchReadTensorboardTimeSeriesDataResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchRead')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchRead.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/tensorboards/{tensorboardsId}:batchRead',
+        http_method='GET',
+        method_id='aiplatform.projects.locations.tensorboards.batchRead',
+        ordered_params=['tensorboard'],
+        path_params=['tensorboard'],
+        query_params=['timeSeries'],
+        relative_path='v1beta1/{+tensorboard}:batchRead',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsTensorboardsBatchReadRequest',
+        response_type_name='GoogleCloudAiplatformV1beta1BatchReadTensorboardTimeSeriesDataResponse',
+        supports_download=False,
+    )
 
     def Create(self, request, global_params=None):
       r"""Creates a Tensorboard.

@@ -44,6 +44,7 @@ class CreateAnywhereCacheTask(task.Task):
     self._zone = zone
     self._admission_policy = admission_policy
     self._ttl = ttl
+    self.parallel_processing_key = '{}/{}'.format(bucket_url.bucket_name, zone)
 
   def execute(self, task_status_queue=None):
     log.status.Print(
@@ -53,7 +54,8 @@ class CreateAnywhereCacheTask(task.Task):
     )
 
     provider = self._bucket_url.scheme
-    response = api_factory.get_api(provider).create_anywhere_cache(
+    api_client = api_factory.get_api(provider)
+    response = api_client.create_anywhere_cache(
         self._bucket_url.bucket_name,
         self._zone,
         admission_policy=self._admission_policy,
@@ -61,8 +63,9 @@ class CreateAnywhereCacheTask(task.Task):
     )
 
     log.status.Print(
-        'Initiated the operation:{} for creating a cache instance'.format(
-            response.name
+        'Initiated the operation id: {} for creating a cache instance for'
+        ' bucket {} in zone {}...'.format(
+            response.name, self._bucket_url, self._zone
         )
     )
 

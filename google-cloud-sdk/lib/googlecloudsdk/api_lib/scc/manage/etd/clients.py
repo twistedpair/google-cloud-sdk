@@ -40,6 +40,29 @@ class ETDCustomModuleClient(object):
     )
     return self._client.Get(req)
 
+  def Validate(
+      self, parent: str, custom_config_json: str, module_type: str
+  ) -> messages.ValidateEventThreatDetectionCustomModuleResponse | None:
+    """Validate a ETD module."""
+
+    validate_request = messages.ValidateEventThreatDetectionCustomModuleRequest(
+        rawText=custom_config_json,
+        type=module_type,
+    )
+
+    req = messages.SecuritycentermanagementProjectsLocationsEventThreatDetectionCustomModulesValidateRequest(
+        parent=parent,
+        validateEventThreatDetectionCustomModuleRequest=validate_request,
+    )
+
+    response = self._client.Validate(req)
+    if not response.errors:
+      log.status.Print('Module is valid.')
+      return None
+    else:
+      log.status.Print(response)
+      return response
+
   def Delete(self, name: str, validate_only: bool):
     """Delete a ETD custom module."""
 

@@ -342,9 +342,16 @@ class BmsClient(object):
         batch_size=page_size,
         field='osImages')
 
+  def GetOSImage(self, resource):
+    request = (
+        self.messages.BaremetalsolutionProjectsLocationsOsImagesGetRequest(
+            name=resource.RelativeName()))
+    return self.os_images_service.Get(request)
+
   def GetNetwork(self, resource):
-    request = self.messages.BaremetalsolutionProjectsLocationsNetworksGetRequest(
-        name=resource.RelativeName())
+    request = (
+        self.messages.BaremetalsolutionProjectsLocationsNetworksGetRequest(
+            name=resource.RelativeName()))
     return self.networks_service.Get(request)
 
   def UpdateNetwork(self, network_resource, labels, ip_reservations):

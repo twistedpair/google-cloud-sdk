@@ -283,3 +283,10 @@ class KubernetesExceptionParser(object):
       return [messages[k] for k in sorted(messages)]
     except KeyError:
       return []
+
+
+class InvalidRuntimeLanguage(exceptions.Error):
+  def __init__(self, invalid_runtime):
+    super(InvalidRuntimeLanguage, self).__init__(
+        f'Runtime language [{invalid_runtime}] is not supported'
+    )

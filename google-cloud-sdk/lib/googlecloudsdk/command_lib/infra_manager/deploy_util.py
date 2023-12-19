@@ -775,23 +775,20 @@ def _CleanupGCSStagingObjectsNotInUse(
   )
   bucket_ref = storage_util.BucketReference(gcs_staging_dir_ref.bucket)
 
-  items = []
+  staged_objects = set()
   try:
     items = gcs_client.ListBucket(bucket_ref, gcs_staging_dir_ref.object)
+    for item in items:
+      item_dir = '/'.join(item.name.split('/')[:4])
+      staged_objects.add(
+          'gs://{0}/{1}'.format(gcs_staging_dir_ref.bucket, item_dir)
+      )
+    if not staged_objects:
+      return
   except storage_api.BucketNotFoundError:
-    # if staging bucket does not exist, do nothing
-    pass
-
-  staged_objects = set()
-  items_found = False
-  for item in items:
-    items_found = True
-    item_dir = '/'.join(item.name.split('/')[:4])
-    staged_objects.add(
-        'gs://{0}/{1}'.format(gcs_staging_dir_ref.bucket, item_dir)
-    )
-  if not items_found:
+    # if staging bucket does not exist, there is nothing to clean.
     return
+
   op = configmanager_util.ListRevisions(deployment_full_name)
   revisions = sorted(
       op.revisions, key=lambda x: GetRevisionNumber(x.name), reverse=True

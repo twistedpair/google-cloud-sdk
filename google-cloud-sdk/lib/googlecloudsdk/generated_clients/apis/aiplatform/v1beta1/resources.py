@@ -276,6 +276,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EXAMPLESTORES = (
+      'projects.locations.exampleStores',
+      'projects/{projectsId}/locations/{locationsId}/exampleStores/'
+      '{exampleStoresId}',
+      {},
+      ['projectsId', 'locationsId', 'exampleStoresId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EXAMPLESTORES_OPERATIONS = (
+      'projects.locations.exampleStores.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/exampleStores/'
+              '{exampleStoresId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_EXTENSIONCONTROLLERS = (
       'projects.locations.extensionControllers',
       'projects/{projectsId}/locations/{locationsId}/extensionControllers/'

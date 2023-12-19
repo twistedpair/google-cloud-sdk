@@ -313,6 +313,8 @@ def _GetSource(
   elif source.startswith('https://'):
     return _GetSourceCSR(messages, source), frozenset(['build_config.source'])
   else:
+    runtime = args.runtime or existing_function.buildConfig.runtime
+    source_util.ValidateDirectoryHasRequiredRuntimeFiles(source, runtime)
     return _GetSourceLocal(
         args,
         client,

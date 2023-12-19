@@ -633,7 +633,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
       been attached to the instance. The key must be of the type name of the
       oneof policy name defined in MaintenancePolicy, and the referenced
       policy must define the same policy type. For details, please refer to
-      go/cloud-saas-mw-ug. Should not be set if
+      go/mr-user-guide. Should not be set if
       maintenance_settings.maintenance_policies is set.
     MaintenanceSchedulesValue: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
@@ -668,8 +668,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     maintenancePolicyNames: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the referenced policy must
-      define the same policy type. For details, please refer to go/cloud-saas-
-      mw-ug. Should not be set if maintenance_settings.maintenance_policies is
+      define the same policy type. For details, please refer to go/mr-user-
+      guide. Should not be set if maintenance_settings.maintenance_policies is
       set.
     maintenanceSchedules: The MaintenanceSchedule contains the scheduling
       information of published maintenance schedule with same key as
@@ -760,7 +760,7 @@ class GoogleCloudSaasacceleratorManagementProvidersV1Instance(_messages.Message)
     r"""Optional. The MaintenancePolicies that have been attached to the
     instance. The key must be of the type name of the oneof policy name
     defined in MaintenancePolicy, and the referenced policy must define the
-    same policy type. For details, please refer to go/cloud-saas-mw-ug. Should
+    same policy type. For details, please refer to go/mr-user-guide. Should
     not be set if maintenance_settings.maintenance_policies is set.
 
     Messages:
@@ -954,8 +954,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     MaintenancePoliciesValue: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
-      define the same policy type. For details, please refer to go/cloud-saas-
-      mw-ug. Should not be set if maintenance_policy_names is set. If only the
+      define the same policy type. For details, please refer to go/mr-user-
+      guide. Should not be set if maintenance_policy_names is set. If only the
       name is needed, then only populate MaintenancePolicy.name.
 
   Fields:
@@ -967,8 +967,8 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     maintenancePolicies: Optional. The MaintenancePolicies that have been
       attached to the instance. The key must be of the type name of the oneof
       policy name defined in MaintenancePolicy, and the embedded policy must
-      define the same policy type. For details, please refer to go/cloud-saas-
-      mw-ug. Should not be set if maintenance_policy_names is set. If only the
+      define the same policy type. For details, please refer to go/mr-user-
+      guide. Should not be set if maintenance_policy_names is set. If only the
       name is needed, then only populate MaintenancePolicy.name.
   """
 
@@ -977,9 +977,9 @@ class GoogleCloudSaasacceleratorManagementProvidersV1MaintenanceSettings(_messag
     r"""Optional. The MaintenancePolicies that have been attached to the
     instance. The key must be of the type name of the oneof policy name
     defined in MaintenancePolicy, and the embedded policy must define the same
-    policy type. For details, please refer to go/cloud-saas-mw-ug. Should not
-    be set if maintenance_policy_names is set. If only the name is needed,
-    then only populate MaintenancePolicy.name.
+    policy type. For details, please refer to go/mr-user-guide. Should not be
+    set if maintenance_policy_names is set. If only the name is needed, then
+    only populate MaintenancePolicy.name.
 
     Messages:
       AdditionalProperty: An additional property for a

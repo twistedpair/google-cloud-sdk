@@ -45,6 +45,7 @@ class PatchAnywhereCacheTask(task.Task):
     self._zone = zone
     self._admission_policy = admission_policy
     self._ttl = ttl
+    self.parallel_processing_key = '{}/{}'.format(bucket_name, zone)
 
   def execute(self, task_status_queue=None):
     log.status.Print(
@@ -62,8 +63,9 @@ class PatchAnywhereCacheTask(task.Task):
     )
 
     log.status.Print(
-        'Initiated the operation: {} for updating a cache instance'.format(
-            response.name
+        'Initiated the operation id: {} for updating a cache instance for'
+        ' bucket gs://{} in zone {}...'.format(
+            response.name, self._bucket_name, self._zone
         )
     )
 

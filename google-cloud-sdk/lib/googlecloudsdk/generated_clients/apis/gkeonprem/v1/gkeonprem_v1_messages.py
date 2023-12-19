@@ -6264,6 +6264,8 @@ class VmwareAdminVCenterConfig(_messages.Message):
     datastore: The name of the vCenter datastore for the admin cluster.
     folder: The name of the vCenter folder for the admin cluster.
     resourcePool: The name of the vCenter resource pool for the admin cluster.
+    storagePolicyName: The name of the vCenter storage policy for the user
+      cluster.
   """
 
   address = _messages.StringField(1)
@@ -6274,6 +6276,7 @@ class VmwareAdminVCenterConfig(_messages.Message):
   datastore = _messages.StringField(6)
   folder = _messages.StringField(7)
   resourcePool = _messages.StringField(8)
+  storagePolicyName = _messages.StringField(9)
 
 
 class VmwareAdminVipConfig(_messages.Message):
@@ -6713,8 +6716,8 @@ class VmwareNetworkConfig(_messages.Message):
       assigned an RFC1918 IPv4 address from these ranges. Only a single range
       is supported. This field cannot be changed after creation.
     staticIpConfig: Configuration settings for a static IP configuration.
-    vcenterNetwork: vcenter_network specifies vCenter network name. Inherited
-      from the admin cluster.
+    vcenterNetwork: Output only. vcenter_network specifies vCenter network
+      name. Inherited from the admin cluster.
   """
 
   controlPlaneV2Config = _messages.MessageField('VmwareControlPlaneV2Config', 1)

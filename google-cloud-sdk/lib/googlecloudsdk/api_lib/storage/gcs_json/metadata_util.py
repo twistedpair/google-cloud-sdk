@@ -221,6 +221,7 @@ def get_anywhere_cache_resource_from_metadata(metadata):
       admission_policy=metadata.admissionPolicy,
       bucket=metadata.bucket,
       create_time=metadata.createTime,
+      id_string=metadata.id,
       kind=metadata.kind,
       metadata=metadata,
       pending_update=metadata.pendingUpdate,

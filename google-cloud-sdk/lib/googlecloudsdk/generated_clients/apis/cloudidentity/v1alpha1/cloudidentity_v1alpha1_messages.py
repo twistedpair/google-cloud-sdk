@@ -83,6 +83,131 @@ class BlockDeviceUserResponse(_messages.Message):
   deviceUser = _messages.MessageField('DeviceUser', 1)
 
 
+class BrowserAttributes(_messages.Message):
+  r"""Contains information about Browser Profiles reported by Endpoint
+  Verification Extension
+
+  Fields:
+    chromeBrowserInfo: Represents the current state of the chrome webprotect
+      attributes sent by the Endpoint verification extension.
+    chromeProfileId: Chrome profile id exposed by chrome api and it will be
+      unique within a device.
+    lastProfileSyncTime: Timestamp in milliseconds since Epoch when the
+      profile/gcm id was last synced.
+  """
+
+  chromeBrowserInfo = _messages.MessageField('BrowserInfo', 1)
+  chromeProfileId = _messages.StringField(2)
+  lastProfileSyncTime = _messages.StringField(3)
+
+
+class BrowserInfo(_messages.Message):
+  r"""Browser specific fields reported by Endpoint verification Extension. See
+  go/additionalattributesdesign and go/caa-webprotect-attributes-extension
+  LINT.IfChange
+
+  Enums:
+    BrowserManagementStateValueValuesEnum: Output only. Browser's management
+      state.
+    PasswordProtectionWarningTriggerValueValuesEnum: Current state of password
+      protection trigger.
+    SafeBrowsingProtectionLevelValueValuesEnum: Current state of safe browsing
+      protection level.
+
+  Fields:
+    browserManagementState: Output only. Browser's management state.
+    browserVersion: Version of the request initiating browser. Eg.
+      "91.0.4442.4".
+    isBuiltInDnsClientEnabled: Current state of built in dns client.
+    isBulkDataEntryAnalysisEnabled: Current state of bulk data analysis. Set
+      to true if provider list from chrome is non-empty.
+    isChromeCleanupEnabled: Current state of chrome cleanup.
+    isChromeRemoteDesktopAppBlocked: Current state of chrome remote desktop
+      app.
+    isFileDownloadAnalysisEnabled: Current state of file download analysis.
+      Set to true if provider list from chrome is non-empty.
+    isFileUploadAnalysisEnabled: Current state of file upload analysis. Set to
+      true if provider list from chrome is non-empty.
+    isRealtimeUrlCheckEnabled: Current state of realtime url check. Set to
+      true if provider list from chrome is non-empty.
+    isSecurityEventAnalysisEnabled: Current state of security event analysis.
+      Set to true if provider list from chrome is non-empty.
+    isSiteIsolationEnabled: Current state of site isolation.
+    isThirdPartyBlockingEnabled: Current state of third party blocking.
+    passwordProtectionWarningTrigger: Current state of password protection
+      trigger.
+    safeBrowsingProtectionLevel: Current state of safe browsing protection
+      level.
+  """
+
+  class BrowserManagementStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Browser's management state.
+
+    Values:
+      UNSPECIFIED: Management state is not specified.
+      UNMANAGED: Browser/Profile not managed by any customer.
+      MANAGED_BY_OTHER_DOMAIN: Browser/Profile managed, but by some other
+        customer.
+      PROFILE_MANAGED: Profile managed by customer.
+      BROWSER_MANAGED: Browser managed by customer.
+    """
+    UNSPECIFIED = 0
+    UNMANAGED = 1
+    MANAGED_BY_OTHER_DOMAIN = 2
+    PROFILE_MANAGED = 3
+    BROWSER_MANAGED = 4
+
+  class PasswordProtectionWarningTriggerValueValuesEnum(_messages.Enum):
+    r"""Current state of password protection trigger.
+
+    Values:
+      PASSWORD_PROTECTION_TRIGGER_UNSPECIFIED: Password protection is not
+        specified.
+      PROTECTION_OFF: Password reuse is never detected.
+      PASSWORD_REUSE: Warning will be shown when the user reuses their
+        protected password on a non-allowed site.
+      PHISHING_REUSE: Warning will be shown when the user reuses their
+        protected password on a phishing site.
+    """
+    PASSWORD_PROTECTION_TRIGGER_UNSPECIFIED = 0
+    PROTECTION_OFF = 1
+    PASSWORD_REUSE = 2
+    PHISHING_REUSE = 3
+
+  class SafeBrowsingProtectionLevelValueValuesEnum(_messages.Enum):
+    r"""Current state of safe browsing protection level.
+
+    Values:
+      SAFE_BROWSING_LEVEL_UNSPECIFIED: Browser protection level is not
+        specified.
+      DISABLED: No protection against dangerous websites, downloads, and
+        extensions.
+      STANDARD: Standard protection against websites, downloads, and
+        extensions that are known to be dangerous.
+      ENHANCED: Faster, proactive protection against dangerous websites,
+        downloads, and extensions.
+    """
+    SAFE_BROWSING_LEVEL_UNSPECIFIED = 0
+    DISABLED = 1
+    STANDARD = 2
+    ENHANCED = 3
+
+  browserManagementState = _messages.EnumField('BrowserManagementStateValueValuesEnum', 1)
+  browserVersion = _messages.StringField(2)
+  isBuiltInDnsClientEnabled = _messages.BooleanField(3)
+  isBulkDataEntryAnalysisEnabled = _messages.BooleanField(4)
+  isChromeCleanupEnabled = _messages.BooleanField(5)
+  isChromeRemoteDesktopAppBlocked = _messages.BooleanField(6)
+  isFileDownloadAnalysisEnabled = _messages.BooleanField(7)
+  isFileUploadAnalysisEnabled = _messages.BooleanField(8)
+  isRealtimeUrlCheckEnabled = _messages.BooleanField(9)
+  isSecurityEventAnalysisEnabled = _messages.BooleanField(10)
+  isSiteIsolationEnabled = _messages.BooleanField(11)
+  isThirdPartyBlockingEnabled = _messages.BooleanField(12)
+  passwordProtectionWarningTrigger = _messages.EnumField('PasswordProtectionWarningTriggerValueValuesEnum', 13)
+  safeBrowsingProtectionLevel = _messages.EnumField('SafeBrowsingProtectionLevelValueValuesEnum', 14)
+
+
 class CancelWipeDeviceResponse(_messages.Message):
   r"""Response message for cancelling an unfinished device wipe.
 
@@ -1163,14 +1288,49 @@ class DynamicGroupStatus(_messages.Message):
 
 
 class EndpointVerificationSpecificAttributes(_messages.Message):
-  r"""Resource representing the Endpoint Verification specific attributes of a
-  Device.
+  r"""Resource representing the Endpoint Verification-specific attributes of a
+  Device. https://cloud.google.com/endpoint-verification/docs/overview
+
+  Messages:
+    AdditionalSignalsValue: Additional Signals reported by Endpoint
+      verification.
 
   Fields:
-    certificateAttributes: Details of certificates reported by SecureConnect.
+    additionalSignals: Additional Signals reported by Endpoint verification.
+    browserAttributes: Details of Browser profiles reported by Endpoint
+      verification.
+    certificateAttributes: Details of certificates reported by Endpoint
+      verification.
   """
 
-  certificateAttributes = _messages.MessageField('CertificateAttributes', 1, repeated=True)
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AdditionalSignalsValue(_messages.Message):
+    r"""Additional Signals reported by Endpoint verification.
+
+    Messages:
+      AdditionalProperty: An additional property for a AdditionalSignalsValue
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AdditionalSignalsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  additionalSignals = _messages.MessageField('AdditionalSignalsValue', 1)
+  browserAttributes = _messages.MessageField('BrowserAttributes', 2, repeated=True)
+  certificateAttributes = _messages.MessageField('CertificateAttributes', 3, repeated=True)
 
 
 class EntityKey(_messages.Message):

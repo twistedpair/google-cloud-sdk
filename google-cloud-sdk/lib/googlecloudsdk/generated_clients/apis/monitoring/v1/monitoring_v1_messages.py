@@ -552,7 +552,7 @@ class Dashboard(_messages.Message):
     labels: Labels applied to the dashboard
     mosaicLayout: The content is arranged as a grid of tiles, with each
       content widget occupying one or more grid blocks.
-    name: Immutable. The resource name of the dashboard.
+    name: Identifier. The resource name of the dashboard.
     rowLayout: The content is divided into equally spaced rows and the widgets
       are arranged horizontally.
   """
@@ -1332,7 +1332,7 @@ class MonitoringProjectsDashboardsListRequest(_messages.Message):
   Fields:
     pageSize: A positive number that is the maximum number of results to
       return. If unspecified, a default of 1000 is used.
-    pageToken: If this field is not empty then it must contain the
+    pageToken: Optional. If this field is not empty then it must contain the
       nextPageToken value returned by a previous call to this method. Using
       this field causes the method to return additional results from the
       previous method call.
@@ -1350,7 +1350,7 @@ class MonitoringProjectsDashboardsPatchRequest(_messages.Message):
 
   Fields:
     dashboard: A Dashboard resource to be passed as the request body.
-    name: Immutable. The resource name of the dashboard.
+    name: Identifier. The resource name of the dashboard.
     validateOnly: If set, validate the request and preview the review, but do
       not actually save it.
   """
@@ -2042,6 +2042,20 @@ class Scorecard(_messages.Message):
   timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 5)
 
 
+class SectionHeader(_messages.Message):
+  r"""A widget that defines a new section header. Sections populate a table of
+  contents and allow easier navigation of long-form content.
+
+  Fields:
+    dividerBelow: Whether to insert a divider below the section in the table
+      of contents
+    subtitle: The subtitle of the section
+  """
+
+  dividerBelow = _messages.BooleanField(1)
+  subtitle = _messages.StringField(2)
+
+
 class SourceContext(_messages.Message):
   r"""SourceContext represents information about the source of a protobuf
   element, like the file in which it is defined.
@@ -2725,6 +2739,8 @@ class Widget(_messages.Message):
     logsPanel: A widget that shows a stream of logs.
     pieChart: A widget that displays timeseries data as a pie chart.
     scorecard: A scorecard summarizing time series data.
+    sectionHeader: A widget that defines a section header for easier
+      navigation of the dashboard.
     text: A raw string or markdown displaying textual content.
     timeSeriesTable: A widget that displays time series data in a tabular
       format.
@@ -2741,10 +2757,11 @@ class Widget(_messages.Message):
   logsPanel = _messages.MessageField('LogsPanel', 7)
   pieChart = _messages.MessageField('PieChart', 8)
   scorecard = _messages.MessageField('Scorecard', 9)
-  text = _messages.MessageField('Text', 10)
-  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 11)
-  title = _messages.StringField(12)
-  xyChart = _messages.MessageField('XyChart', 13)
+  sectionHeader = _messages.MessageField('SectionHeader', 10)
+  text = _messages.MessageField('Text', 11)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 12)
+  title = _messages.StringField(13)
+  xyChart = _messages.MessageField('XyChart', 14)
 
 
 class XyChart(_messages.Message):

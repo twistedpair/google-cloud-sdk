@@ -41,6 +41,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_CUSTOMHARDWARELINKATTACHMENTS = (
+      'projects.locations.customHardwareLinkAttachments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'customHardwareLinkAttachments/'
+              '{customHardwareLinkAttachmentsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_OPERATIONS = (
       'projects.locations.operations',
       '{+name}',

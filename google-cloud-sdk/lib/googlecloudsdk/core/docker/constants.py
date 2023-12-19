@@ -65,6 +65,7 @@ REGIONAL_AR_REGISTRIES = [
     'us-west2-docker.pkg.dev',
     'us-west3-docker.pkg.dev',
     'us-west4-docker.pkg.dev',
+    'us-west8-docker.pkg.dev',
     'us-east7-docker.pkg.dev',
 ]
 AUTHENTICATED_LAUNCHER_REGISTRIES = ['marketplace.gcr.io']

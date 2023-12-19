@@ -330,7 +330,7 @@ class OsloginV1alpha(base_api.BaseApiClient):
         method_id='oslogin.users.importSshPublicKey',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['projectId', 'view'],
+        query_params=['projectId', 'regions', 'view'],
         relative_path='v1alpha/{+parent}:importSshPublicKey',
         request_field='sshPublicKey',
         request_type_name='OsloginUsersImportSshPublicKeyRequest',

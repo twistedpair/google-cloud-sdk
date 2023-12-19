@@ -3009,9 +3009,12 @@ class StepTemplate(_messages.Message):
   Fields:
     env: Optional. List of environment variables to set in the Step. Cannot be
       updated.
+    volumeMounts: Optional. Pod volumes to mount into the container's
+      filesystem.
   """
 
   env = _messages.MessageField('EnvVar', 1, repeated=True)
+  volumeMounts = _messages.MessageField('VolumeMount', 2, repeated=True)
 
 
 class TaskRef(_messages.Message):
@@ -3138,6 +3141,8 @@ class TaskRun(_messages.Message):
     name: Output only. The 'TaskRun' name with format:
       `projects/{project}/locations/{location}/taskRuns/{task_run}`
     params: Params is a list of parameter names and values.
+    pipelineRun: Output only. Name of the parent PipelineRun. If it is a
+      standalone TaskRun (no parent), this field will not be set.
     resolvedTaskSpec: Output only. The exact TaskSpec used to instantiate the
       run.
     results: Output only. List of results written out by the task's containers
@@ -3206,22 +3211,23 @@ class TaskRun(_messages.Message):
   etag = _messages.StringField(5)
   name = _messages.StringField(6)
   params = _messages.MessageField('Param', 7, repeated=True)
-  resolvedTaskSpec = _messages.MessageField('TaskSpec', 8)
-  results = _messages.MessageField('TaskRunResult', 9, repeated=True)
-  serviceAccount = _messages.StringField(10)
-  sidecars = _messages.MessageField('SidecarState', 11, repeated=True)
-  startTime = _messages.StringField(12)
-  statusMessage = _messages.StringField(13)
-  steps = _messages.MessageField('StepState', 14, repeated=True)
-  taskRef = _messages.MessageField('TaskRef', 15)
-  taskRunResults = _messages.MessageField('TaskRunResult', 16, repeated=True)
-  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 17)
-  taskSpec = _messages.MessageField('TaskSpec', 18)
-  timeout = _messages.StringField(19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
-  workerPool = _messages.StringField(22)
-  workspaces = _messages.MessageField('WorkspaceBinding', 23, repeated=True)
+  pipelineRun = _messages.StringField(8)
+  resolvedTaskSpec = _messages.MessageField('TaskSpec', 9)
+  results = _messages.MessageField('TaskRunResult', 10, repeated=True)
+  serviceAccount = _messages.StringField(11)
+  sidecars = _messages.MessageField('SidecarState', 12, repeated=True)
+  startTime = _messages.StringField(13)
+  statusMessage = _messages.StringField(14)
+  steps = _messages.MessageField('StepState', 15, repeated=True)
+  taskRef = _messages.MessageField('TaskRef', 16)
+  taskRunResults = _messages.MessageField('TaskRunResult', 17, repeated=True)
+  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 18)
+  taskSpec = _messages.MessageField('TaskSpec', 19)
+  timeout = _messages.StringField(20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
+  workerPool = _messages.StringField(23)
+  workspaces = _messages.MessageField('WorkspaceBinding', 24, repeated=True)
 
 
 class TaskRunResult(_messages.Message):

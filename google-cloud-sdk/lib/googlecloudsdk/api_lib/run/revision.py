@@ -29,6 +29,7 @@ NONCE_LABEL = 'client.knative.dev/nonce'
 MIN_SCALE_ANNOTATION = 'autoscaling.knative.dev/minScale'
 MAX_SCALE_ANNOTATION = 'autoscaling.knative.dev/maxScale'
 SESSION_AFFINITY_ANNOTATION = 'run.googleapis.com/sessionAffinity'
+MESH_ANNOTATION = 'run.googleapis.com/mesh'
 
 
 class Revision(container_resource.ContainerResource):

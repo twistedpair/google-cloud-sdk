@@ -34,6 +34,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  FOLDERS_EVENTTHREATDETECTIONSETTINGS_CUSTOMMODULES = (
+      'folders.eventThreatDetectionSettings.customModules',
+      '{+name}',
+      {
+          '':
+              'folders/{foldersId}/eventThreatDetectionSettings/'
+              'customModules/{customModulesId}',
+      },
+      ['name'],
+      True
+  )
   FOLDERS_EVENTTHREATDETECTIONSETTINGS_EFFECTIVECUSTOMMODULES = (
       'folders.eventThreatDetectionSettings.effectiveCustomModules',
       '{+name}',
@@ -296,6 +307,17 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/bigQueryExports/{bigQueryExportsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_EVENTTHREATDETECTIONSETTINGS_CUSTOMMODULES = (
+      'projects.eventThreatDetectionSettings.customModules',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/eventThreatDetectionSettings/'
+              'customModules/{customModulesId}',
       },
       ['name'],
       True

@@ -175,7 +175,8 @@ class Configs:
       encryption_key.kmsKeyServiceAccount = args.kms_key_service_account
     config.encryptionKey = encryption_key
 
-    config.enableAuditAgent = args.enable_audit_agent
+    if args.enable_audit_agent:
+      config.enableAuditAgent = args.enable_audit_agent
 
     if args.replica_zones:
       config.replicaZones = args.replica_zones

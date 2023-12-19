@@ -574,6 +574,7 @@ class CommonFeatureSpec(_messages.Message):
   Fields:
     appdevexperience: Appdevexperience specific spec.
     clusterupgrade: ClusterUpgrade (fleet-based) feature spec.
+    dataplanev2: DataplaneV2 feature spec.
     fleetobservability: FleetObservability feature spec.
     helloworld: Hello World-specific spec.
     multiclusteringress: Multicluster Ingress-specific spec.
@@ -582,10 +583,11 @@ class CommonFeatureSpec(_messages.Message):
 
   appdevexperience = _messages.MessageField('AppDevExperienceFeatureSpec', 1)
   clusterupgrade = _messages.MessageField('ClusterUpgradeFleetSpec', 2)
-  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 3)
-  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 4)
-  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 5)
-  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 6)
+  dataplanev2 = _messages.MessageField('DataplaneV2FeatureSpec', 3)
+  fleetobservability = _messages.MessageField('FleetObservabilityFeatureSpec', 4)
+  helloworld = _messages.MessageField('HelloWorldFeatureSpec', 5)
+  multiclusteringress = _messages.MessageField('MultiClusterIngressFeatureSpec', 6)
+  workloadmigration = _messages.MessageField('WorkloadMigrationFeatureSpec', 7)
 
 
 class CommonFeatureState(_messages.Message):
@@ -1631,6 +1633,17 @@ class DataAccessOptions(_messages.Message):
     LOG_FAIL_CLOSED = 1
 
   logMode = _messages.EnumField('LogModeValueValuesEnum', 1)
+
+
+class DataplaneV2FeatureSpec(_messages.Message):
+  r"""**Dataplane V2**: Spec
+
+  Fields:
+    enableEncryption: Enable dataplane-v2 based encryption for multiple
+      clusters.
+  """
+
+  enableEncryption = _messages.BooleanField(1)
 
 
 class DefaultClusterConfig(_messages.Message):

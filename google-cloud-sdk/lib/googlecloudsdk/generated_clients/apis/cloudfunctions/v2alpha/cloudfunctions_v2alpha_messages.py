@@ -81,6 +81,13 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AutomaticUpdatePolicy(_messages.Message):
+  r"""Security patches are applied automatically to the runtime without
+  requiring the function to be redeployed.
+  """
+
+
+
 class Binding(_messages.Message):
   r"""Associates `members`, or principals, with a `role`.
 
@@ -159,6 +166,8 @@ class BuildConfig(_messages.Message):
       for the function
 
   Fields:
+    automaticUpdatePolicy: See the comment next to this message for more
+      details.
     build: Output only. The Cloud Build name of the latest successful
       deployment of the function.
     dockerRegistry: Docker Registry to use for this deployment. This
@@ -184,6 +193,8 @@ class BuildConfig(_messages.Message):
       `source_location`.
     environmentVariables: User-provided build-time environment variables for
       the function
+    onDeployUpdatePolicy: See the comment next to this message for more
+      details.
     runtime: The runtime in which to run the function. Required when deploying
       a new function, optional when updating an existing function. For a
       complete list of possible choices, see the [`gcloud` command reference](
@@ -255,17 +266,19 @@ class BuildConfig(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  build = _messages.StringField(1)
-  dockerRegistry = _messages.EnumField('DockerRegistryValueValuesEnum', 2)
-  dockerRepository = _messages.StringField(3)
-  entryPoint = _messages.StringField(4)
-  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 5)
-  runtime = _messages.StringField(6)
-  serviceAccount = _messages.StringField(7)
-  source = _messages.MessageField('Source', 8)
-  sourceProvenance = _messages.MessageField('SourceProvenance', 9)
-  sourceToken = _messages.StringField(10)
-  workerPool = _messages.StringField(11)
+  automaticUpdatePolicy = _messages.MessageField('AutomaticUpdatePolicy', 1)
+  build = _messages.StringField(2)
+  dockerRegistry = _messages.EnumField('DockerRegistryValueValuesEnum', 3)
+  dockerRepository = _messages.StringField(4)
+  entryPoint = _messages.StringField(5)
+  environmentVariables = _messages.MessageField('EnvironmentVariablesValue', 6)
+  onDeployUpdatePolicy = _messages.MessageField('OnDeployUpdatePolicy', 7)
+  runtime = _messages.StringField(8)
+  serviceAccount = _messages.StringField(9)
+  source = _messages.MessageField('Source', 10)
+  sourceProvenance = _messages.MessageField('SourceProvenance', 11)
+  sourceToken = _messages.StringField(12)
+  workerPool = _messages.StringField(13)
 
 
 class CloudfunctionsProjectsLocationsFunctionsAbortFunctionUpgradeRequest(_messages.Message):
@@ -1653,6 +1666,17 @@ class Location(_messages.Message):
   locationId = _messages.StringField(3)
   metadata = _messages.MessageField('MetadataValue', 4)
   name = _messages.StringField(5)
+
+
+class OnDeployUpdatePolicy(_messages.Message):
+  r"""Security patches are only applied when a function is redeployed.
+
+  Fields:
+    runtimeVersion: Output only. contains the runtime version which was used
+      during latest function deployment.
+  """
+
+  runtimeVersion = _messages.StringField(1)
 
 
 class Operation(_messages.Message):

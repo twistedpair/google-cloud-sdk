@@ -4465,9 +4465,9 @@ class User(_messages.Message):
       BUILT_IN: The database's built-in user type.
       CLOUD_IAM_USER: Cloud IAM user.
       CLOUD_IAM_SERVICE_ACCOUNT: Cloud IAM service account.
-      CLOUD_IAM_GROUP: Cloud IAM Group non-login user.
-      CLOUD_IAM_GROUP_USER: Cloud IAM Group login user.
-      CLOUD_IAM_GROUP_SERVICE_ACCOUNT: Cloud IAM Group service account.
+      CLOUD_IAM_GROUP: Cloud IAM group non-login user.
+      CLOUD_IAM_GROUP_USER: Cloud IAM group login user.
+      CLOUD_IAM_GROUP_SERVICE_ACCOUNT: Cloud IAM group service account.
     """
     BUILT_IN = 0
     CLOUD_IAM_USER = 1

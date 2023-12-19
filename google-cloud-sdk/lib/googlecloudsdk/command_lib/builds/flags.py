@@ -56,7 +56,9 @@ def AddRegionFlag(parser, hidden=False, required=False):
       'Must be set to a supported region name (e.g. `us-central1`).\n'
       'If unset, `builds/region`, which is the default region to use when '
       'working with Cloud Build resources, is used. If builds/region is unset, '
-      'region is set to `global`.')
+      'region is set to `global`.\n'
+      'Note: Region must be specified in 2nd gen repo; '
+      '`global` is not supported.')
 
 
 def AddBuildArg(parser, intro=None):

@@ -361,14 +361,6 @@ class EthereumDetails(_messages.Message):
       `admin` namespace. Defaults to `false`.
     apiEnableDebug: Immutable. Enables JSON-RPC access to functions in the
       `debug` namespace. Defaults to `false`.
-    beaconFeeRecipient: Deprecated: Use the same field in the ValidatorConfig
-      message as replacement. An Ethereum address which the beacon client will
-      send fee rewards to if no recipient is configured in the validator
-      client. See https://lighthouse-book.sigmaprime.io/suggested-fee-
-      recipient.html or https://docs.prylabs.network/docs/execution-node/fee-
-      recipient for examples of how this is used. Note that while this is
-      often described as "suggested", as we run the execution node we can
-      trust the execution node, and therefore this is considered enforced.
     consensusClient: Immutable. The consensus client.
     executionClient: Immutable. The execution client
     gethDetails: Details for the Geth execution client.
@@ -450,13 +442,12 @@ class EthereumDetails(_messages.Message):
   additionalEndpoints = _messages.MessageField('EthereumEndpoints', 1)
   apiEnableAdmin = _messages.BooleanField(2)
   apiEnableDebug = _messages.BooleanField(3)
-  beaconFeeRecipient = _messages.StringField(4)
-  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 5)
-  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 6)
-  gethDetails = _messages.MessageField('GethDetails', 7)
-  network = _messages.EnumField('NetworkValueValuesEnum', 8)
-  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 9)
-  validatorConfig = _messages.MessageField('ValidatorConfig', 10)
+  consensusClient = _messages.EnumField('ConsensusClientValueValuesEnum', 4)
+  executionClient = _messages.EnumField('ExecutionClientValueValuesEnum', 5)
+  gethDetails = _messages.MessageField('GethDetails', 6)
+  network = _messages.EnumField('NetworkValueValuesEnum', 7)
+  nodeType = _messages.EnumField('NodeTypeValueValuesEnum', 8)
+  validatorConfig = _messages.MessageField('ValidatorConfig', 9)
 
 
 class EthereumEndpoints(_messages.Message):

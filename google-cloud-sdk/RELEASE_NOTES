@@ -5,6 +5,79 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 458.0.0 (2023-12-19)
+
+### Breaking Changes
+
+*   **(Compute Engine)** Updated behaviour of `gcloud instances stop`: it will not throw error if
+*   **(Compute Engine)** instance gets deleted during polling on the stopping operation.
+*   **(GKE Hub)** Changed output of `gcloud container fleet memberships list` to display the UUID of the
+ memberships instead of `external_id`. The `external_id` is still available in the
+ json-formatted output.
+
+
+### Google Cloud CLI
+
+* Updated `cryptography` package to version 41.0.7.
+
+### App Engine
+
+* Updated the Go SDK to version 1.9.76.
+  Please visit the following release notes for details:
+  <https://cloud.google.com/appengine/docs/go/release-notes>.
+* Promoted command `gcloud app runtimes list --environment=standard` to GA. The command displays the runtimes for the App Engine standard environment.
+
+### BigQuery
+
+* Fixed a bug in 2.0.99 and 2.0.100 that causes any command to fail if
+initialization is required.
+
+### Cloud Bigtable
+
+* Adds `reversed` flag to `cbt read` command to enable reverse scans.
+* Rebuild with golang 1.21.5.
+
+### Cloud Bigtable Emulator
+
+* Rebuild with golang 1.21.5.
+
+### Cloud Run
+
+* Promoted `--condition` flag for `gcloud run services {add,remove}-iam-policy-binding` from alpha to beta.
+* Enabled `--cpu-boost` by default for run deploy on new services if not otherwise specified.
+
+### Cloud Services
+
+* Promoted `gcloud services vpc-peerings get-vpc-service-controls` to beta.
+
+### Compute Engine
+
+*   Promoted `--with-extended-notifications` flag of `gcloud compute instances simulate-maintenance-event` to beta and GA.
+*   Promoted `--confidential-compute` flag of `gcloud compute disks create` to GA.
+*   Promoted `--create-disk=confidential-compute` for `gcloud compute instances create` to GA.
+* Promoted Instance API Perform Maintenance to beta and GA.
+
+### Kpt
+
+* Updated kpt in Google Cloud CLI from 1.0.0-beta.48 to 1.0.0-beta.49.
+
+### Kubernetes Engine
+
+*   `gcloud container clusters create` and `gcloud container clusters update` now allow multiple binauthz policies to be bound to a cluster using `--binauthz-policy-bindings`.
+* Updated default kubectl from 1.27.7 to 1.27.8.
+* Additional kubectl versions:
+  * kubectl.1.24 (1.24.17)
+  * kubectl.1.25 (1.25.16)
+  * kubectl.1.26 (1.26.11)
+  * kubectl.1.27 (1.27.8)
+  * kubectl.1.28 (1.28.4)
+* Added `enterprise` option to `--workload-vulnerability-scanning` flag of `gcloud container clusters create|update|create-auto` commands to enable Advanced vulnerability insights mode in the GA track.
+* Promote `--in-transit-encryption` flag to `gcloud container clusters create` and `gcloud container clusters update` to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 457.0.0 (2023-12-12)
 
 ### Breaking Changes

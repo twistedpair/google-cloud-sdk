@@ -2367,8 +2367,22 @@ def AddClusterDNSFlags(
             """,
       hidden=hidden,
   )
+  AddAdditiveVPCScopeFlags(group, release_track=release_track)
+
+
+def AddAdditiveVPCScopeFlags(parser, release_track=base.ReleaseTrack.GA):
+  """Adds flags related to DNS Additive VPC scope to parser.
+
+  This includes:
+  --additive-vpc-scope-dns-domain=string,
+  --disable-additive-vpc-scope
+
+  Args:
+    parser: A given parser.
+    release_track: Release track the flags are being added to.
+  """
   if release_track != base.ReleaseTrack.GA:
-    mutex = group.add_argument_group(
+    mutex = parser.add_argument_group(
         'ClusterDNS_AdditiveVPCScope_EnabledDisable', hidden=True, mutex=True
     )
     mutex.add_argument(
@@ -3872,11 +3886,9 @@ def AddSecurityPostureFlag(parser):
   )
 
 
-def AddWorkloadVulnScanningEnumFlag(parser, release_track=base.ReleaseTrack.GA):
+def AddWorkloadVulnScanningEnumFlag(parser):
   """Adds Kubernetes Security Posture's Workload Vulnerability Scanning flag to the parser."""
-  choices = ['disabled', 'standard']
-  if release_track in (base.ReleaseTrack.ALPHA, base.ReleaseTrack.BETA):
-    choices.append('enterprise')
+  choices = ['disabled', 'standard', 'enterprise']
 
   parser.add_argument(
       '--workload-vulnerability-scanning',
@@ -3886,6 +3898,9 @@ def AddWorkloadVulnScanningEnumFlag(parser, release_track=base.ReleaseTrack.GA):
       help=textwrap.dedent("""\
       Sets the mode of the Kubernetes security posture API's workload
       vulnerability scanning.
+
+      To enable Advanced vulnerability insights mode explicitly set the flag to
+      `--workload-vulnerability-scanning=enterprise`.
 
       To enable in standard mode explicitly set the flag to
       `--workload-vulnerability-scanning=standard`.

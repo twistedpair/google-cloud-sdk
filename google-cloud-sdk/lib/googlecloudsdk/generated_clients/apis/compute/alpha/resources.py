@@ -551,6 +551,13 @@ class Collections(enum.Enum):
       ['project', 'region', 'securityPolicy', 'securityPolicyRule'],
       True
   )
+  REGIONSNAPSHOTSETTINGS = (
+      'regionSnapshotSettings',
+      'projects/{project}/regions/{region}/snapshotSettings',
+      {},
+      ['project', 'region'],
+      True
+  )
   REGIONSNAPSHOTS = (
       'regionSnapshots',
       'projects/{project}/regions/{region}/snapshots/{snapshot}',

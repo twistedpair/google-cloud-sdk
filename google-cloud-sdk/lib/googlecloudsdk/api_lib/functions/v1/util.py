@@ -602,7 +602,7 @@ def ValidateSecureImageRepositoryOrWarn(region_name, project_id):
           "The Container Registry repository that stores this function's "
           'image is public. This could pose the risk of disclosing '
           'sensitive data. To mitigate this, either use Artifact Registry '
-          "('--docker_registry=artifact-registry' flag) or change this "
+          "('--docker-registry=artifact-registry' flag) or change this "
           'setting in Google Container Registry.\n'
       )
   except apitools_exceptions.HttpError:
@@ -659,5 +659,5 @@ def _AddGcrDeprecationWarning():
       ' https://cloud.google.com/artifact-registry/docs/transition/tr'
       'ansition-from-gcr. Artifact Registry is the recommended '
       'successor that you can use by adding the '
-      "'--docker_registry=artifact-registry' flag.\n"
+      "'--docker-registry=artifact-registry' flag.\n"
   )

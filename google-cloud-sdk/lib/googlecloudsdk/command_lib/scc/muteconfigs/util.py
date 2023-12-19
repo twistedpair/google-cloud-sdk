@@ -34,7 +34,7 @@ def ValidateAndGetParent(args):
     if name_pattern.match(args.organization):
       return args.organization
     if id_pattern.match(args.organization):
-      return "organizations/" + args.organization
+      return f"organizations/{args.organization}"
 
     if "/" in args.organization:
       raise errors.InvalidSCCInputError(
@@ -57,7 +57,7 @@ def ValidateAndGetParent(args):
       else:
         return args.folder
     else:
-      return "folders/" + args.folder
+      return f"folders/{args.folder}"
 
   if args.project is not None:
     if "/" in args.project:
@@ -70,7 +70,7 @@ def ValidateAndGetParent(args):
       else:
         return args.project
     else:
-      return "projects/" + args.project
+      return f"projects/{args.project}"
 
 
 def ValidateAndGetMuteConfigId(args):
@@ -86,7 +86,7 @@ def ValidateAndGetMuteConfigId(args):
     return mute_config_id
 
 
-def ValidateAndGetMuteConfigFullResourceName(args, version="v1"):
+def ValidateAndGetMuteConfigFullResourceName(args, version):
   """Validates muteConfig full resource name."""
   mute_config = args.mute_config
   resource_pattern = re.compile(
@@ -104,17 +104,7 @@ def ValidateAndGetMuteConfigFullResourceName(args, version="v1"):
   if resource_pattern.match(mute_config):
     if version == "v2":
       mute_config_components = mute_config.split("/")
-      return (
-          mute_config_components[0]
-          + "/"
-          + mute_config_components[1]
-          + "/locations/"
-          + args.location
-          + "/"
-          + mute_config_components[2]
-          + "/"
-          + mute_config_components[3]
-      )
+      return f"{mute_config_components[0]}/{mute_config_components[1]}/locations/{args.location}/{mute_config_components[2]}/{mute_config_components[3]}"
     else:
       return mute_config
 
@@ -131,42 +121,31 @@ def GetMuteConfigIdFromFullResourceName(mute_config):
   return mute_config_components[len(mute_config_components) - 1]
 
 
-def GetParentFromFullResourceName(mute_config, version="v1"):
+def GetParentFromFullResourceName(mute_config, version):
   """Gets parent from the full resource name."""
   mute_config_components = mute_config.split("/")
   if version == "v1":
     # Return parent as "organizations/{organizationsID}"
     # or "folders/{foldersID}"
     # or "projects/{projectsID}"
-    return mute_config_components[0] + "/" + mute_config_components[1]
+    return f"{mute_config_components[0]}/{mute_config_components[1]}"
   if version == "v2":
     # Return parent as "organizations/{organizationsID}/locations/{locationsID}"
     # or "folders/{foldersID}/locations/{locationsID}"
     # or "projects/{projectsID}/locations/{locationsID}"
-    return (
-        mute_config_components[0]
-        + "/"
-        + mute_config_components[1]
-        + "/"
-        + mute_config_components[2]
-        + "/"
-        + mute_config_components[3]
-    )
+    return f"{mute_config_components[0]}/{mute_config_components[1]}/{mute_config_components[2]}/{mute_config_components[3]}"
 
 
-def GenerateMuteConfigName(args, req, version="v1"):
+def GenerateMuteConfigName(args, req, version):
   """Generates the name of the mute config."""
   parent = ValidateAndGetParent(args)
   if parent is not None:
     if version == "v2":
       parent = ValidateAndGetRegionalizedParent(args, parent)
     mute_config_id = ValidateAndGetMuteConfigId(args)
-    req.name = parent + "/muteConfigs/" + mute_config_id
+    req.name = f"{parent}/muteConfigs/{mute_config_id}"
   else:
-    # TODO: b/308449641 - Delete this if version == "v2" check after adding
-    # location flag to mute config commands that use this method.
-    if version == "v2":
-      args.location = scc_util.ValidateAndGetLocation(args, version)
+    args.location = scc_util.ValidateAndGetLocation(args, version)
     mute_config = ValidateAndGetMuteConfigFullResourceName(args, version)
     req.name = mute_config
   return req
@@ -183,6 +162,6 @@ def ValidateAndGetRegionalizedParent(args, parent):
             "'^locations/.*$'."
         )
       else:
-        return parent + "/" + args.location
+        return f"{parent}/{args.location}"
     else:
-      return parent + "/locations/" + args.location
+      return f"{parent}/locations/{args.location}"

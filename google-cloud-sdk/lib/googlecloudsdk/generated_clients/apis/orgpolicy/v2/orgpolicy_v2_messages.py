@@ -242,6 +242,10 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
     dryRunSpec: Dry-run policy. Audit-only policy, can be used to monitor how
       the policy would have impacted the existing and future resources if it's
       enforced.
+    etag: Optional. An opaque tag indicating the current state of the policy,
+      used for concurrency control. This 'etag' is computed by the server
+      based on the value of other fields, and may be sent on update and delete
+      requests to ensure the client has an up-to-date value before proceeding.
     name: Immutable. The resource name of the policy. Must be one of the
       following forms, where `constraint_name` is the name of the constraint
       which this policy configures: *
@@ -257,8 +261,9 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
 
   alternate = _messages.MessageField('GoogleCloudOrgpolicyV2AlternatePolicySpec', 1)
   dryRunSpec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 2)
-  name = _messages.StringField(3)
-  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 4)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 5)
 
 
 class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
@@ -443,11 +448,15 @@ class OrgpolicyFoldersPoliciesDeleteRequest(_messages.Message):
   r"""A OrgpolicyFoldersPoliciesDeleteRequest object.
 
   Fields:
+    etag: Optional. The current etag of policy. If an etag is provided and
+      does not match the current etag of the policy, deletion will be blocked
+      and an ABORTED error will be returned.
     name: Required. Name of the policy to delete. See the policy entry for
       naming rules.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class OrgpolicyFoldersPoliciesGetEffectivePolicyRequest(_messages.Message):
@@ -638,11 +647,15 @@ class OrgpolicyOrganizationsPoliciesDeleteRequest(_messages.Message):
   r"""A OrgpolicyOrganizationsPoliciesDeleteRequest object.
 
   Fields:
+    etag: Optional. The current etag of policy. If an etag is provided and
+      does not match the current etag of the policy, deletion will be blocked
+      and an ABORTED error will be returned.
     name: Required. Name of the policy to delete. See the policy entry for
       naming rules.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class OrgpolicyOrganizationsPoliciesGetEffectivePolicyRequest(_messages.Message):
@@ -756,11 +769,15 @@ class OrgpolicyProjectsPoliciesDeleteRequest(_messages.Message):
   r"""A OrgpolicyProjectsPoliciesDeleteRequest object.
 
   Fields:
+    etag: Optional. The current etag of policy. If an etag is provided and
+      does not match the current etag of the policy, deletion will be blocked
+      and an ABORTED error will be returned.
     name: Required. Name of the policy to delete. See the policy entry for
       naming rules.
   """
 
-  name = _messages.StringField(1, required=True)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
 
 
 class OrgpolicyProjectsPoliciesGetEffectivePolicyRequest(_messages.Message):

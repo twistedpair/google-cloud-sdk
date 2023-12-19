@@ -1854,6 +1854,9 @@ class InjectFaultRequest(_messages.Message):
 
   Fields:
     faultType: Required. The type of fault to be injected in an instance.
+    nodeIds: Optional. Full name of the nodes as obtained from
+      INSTANCE_VIEW_FULL to subject the fault injection upon. Only applicable
+      for read instances, where at least 1 node should be passed.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -1881,8 +1884,9 @@ class InjectFaultRequest(_messages.Message):
     STOP_VM = 1
 
   faultType = _messages.EnumField('FaultTypeValueValuesEnum', 1)
-  requestId = _messages.StringField(2)
-  validateOnly = _messages.BooleanField(3)
+  nodeIds = _messages.StringField(2, repeated=True)
+  requestId = _messages.StringField(3)
+  validateOnly = _messages.BooleanField(4)
 
 
 class Instance(_messages.Message):

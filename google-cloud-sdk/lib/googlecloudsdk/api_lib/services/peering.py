@@ -51,13 +51,18 @@ def CreateConnection(project_number, service, network, ranges):
       parent='services/' + service,
       connection=messages.Connection(
           network=NETWORK_URL_FORMAT % (project_number, network),
-          reservedPeeringRanges=ranges))
+          reservedPeeringRanges=ranges,
+      ),
+  )
   try:
     return client.services_connections.Create(request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(
-        e, exceptions.CreateConnectionsPermissionDeniedException)
+        e, exceptions.CreateConnectionsPermissionDeniedException
+    )
 
 
 def DeleteConnection(project_number, service, network):
@@ -81,16 +86,23 @@ def DeleteConnection(project_number, service, network):
   messages = client.MESSAGES_MODULE
 
   # the API only takes project number, so we cannot use resource parser.
-  request = messages.ServicenetworkingServicesConnectionsDeleteConnectionRequest(
-      name='services/%s/connections/-' % service,
-      deleteConnectionRequest=messages.DeleteConnectionRequest(
-          consumerNetwork=NETWORK_URL_FORMAT % (project_number, network)))
+  request = (
+      messages.ServicenetworkingServicesConnectionsDeleteConnectionRequest(
+          name='services/%s/connections/-' % service,
+          deleteConnectionRequest=messages.DeleteConnectionRequest(
+              consumerNetwork=NETWORK_URL_FORMAT % (project_number, network)
+          ),
+      )
+  )
   try:
     return client.services_connections.DeleteConnection(request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(
-        e, exceptions.DeleteConnectionsPermissionDeniedException)
+        e, exceptions.DeleteConnectionsPermissionDeniedException
+    )
 
 
 def UpdateConnection(project_number, service, network, ranges, force):
@@ -120,14 +132,19 @@ def UpdateConnection(project_number, service, network, ranges, force):
       name='services/%s/connections/-' % service,
       connection=messages.Connection(
           network=NETWORK_URL_FORMAT % (project_number, network),
-          reservedPeeringRanges=ranges),
-      force=force)
+          reservedPeeringRanges=ranges,
+      ),
+      force=force,
+  )
   try:
     return client.services_connections.Patch(request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(
-        e, exceptions.UpdateConnectionsPermissionDeniedException)
+        e, exceptions.UpdateConnectionsPermissionDeniedException
+    )
 
 
 def ListConnections(project_number, service, network):
@@ -153,14 +170,19 @@ def ListConnections(project_number, service, network):
   # The API only takes project number, so we cannot use resource parser.
   request = messages.ServicenetworkingServicesConnectionsListRequest(
       parent='services/' + service,
-      network='projects/{0}/global/networks/{1}'.format(project_number,
-                                                        network))
+      network='projects/{0}/global/networks/{1}'.format(
+          project_number, network
+      ),
+  )
   try:
     return client.services_connections.List(request).connections
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
-    exceptions.ReraiseError(e,
-                            exceptions.ListConnectionsPermissionDeniedException)
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.ListConnectionsPermissionDeniedException
+    )
 
 
 def EnableVpcServiceControls(project_number, service, network):
@@ -186,14 +208,55 @@ def EnableVpcServiceControls(project_number, service, network):
   # the API only takes project number, so we cannot use resource parser.
   request = messages.ServicenetworkingServicesEnableVpcServiceControlsRequest(
       enableVpcServiceControlsRequest=messages.EnableVpcServiceControlsRequest(
-          consumerNetwork=NETWORK_URL_FORMAT % (project_number, network)),
-      parent='services/' + service)
+          consumerNetwork=NETWORK_URL_FORMAT % (project_number, network)
+      ),
+      parent='services/' + service,
+  )
   try:
     return client.services.EnableVpcServiceControls(request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(
-        e, exceptions.EnableVpcServiceControlsPermissionDeniedException)
+        e, exceptions.EnableVpcServiceControlsPermissionDeniedException
+    )
+
+
+def GetVpcServiceControls(project_number, service, network):
+  """Make API call to get VPC service controls for a specific service.
+
+  Args:
+    project_number: The number of the project which is peered with the service.
+    service: The name of the service to get VPC service controls for.
+    network: The network in the consumer project peered with the service.
+
+  Raises:
+    exceptions.GetVpcServiceControlsPermissionDeniedException: when the
+    get VPC service controls API fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the peering
+    service.
+
+  Returns:
+    The state of the VPC service controls for the peering connection.
+  """
+  client = _GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  request = messages.ServicenetworkingServicesProjectsGlobalNetworksGetVpcServiceControlsRequest(
+      name='services/%s/projects/%s/global/networks/%s'
+      % (service, project_number, network)
+  )
+  try:
+    return client.services_projects_global_networks.GetVpcServiceControls(
+        request
+    )
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.GetVpcServiceControlsPermissionDeniedException
+    )
 
 
 def DisableVpcServiceControls(project_number, service, network):
@@ -218,16 +281,20 @@ def DisableVpcServiceControls(project_number, service, network):
 
   # the API only takes project number, so we cannot use resource parser.
   request = messages.ServicenetworkingServicesDisableVpcServiceControlsRequest(
-      disableVpcServiceControlsRequest=messages
-      .DisableVpcServiceControlsRequest(consumerNetwork=NETWORK_URL_FORMAT %
-                                        (project_number, network)),
-      parent='services/' + service)
+      disableVpcServiceControlsRequest=messages.DisableVpcServiceControlsRequest(
+          consumerNetwork=NETWORK_URL_FORMAT % (project_number, network)
+      ),
+      parent='services/' + service,
+  )
   try:
     return client.services.DisableVpcServiceControls(request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(
-        e, exceptions.DisableVpcServiceControlsPermissionDeniedException)
+        e, exceptions.DisableVpcServiceControlsPermissionDeniedException
+    )
 
 
 def CreatePeeredDnsDomain(project_number, service, network, name, dns_suffix):
@@ -254,15 +321,18 @@ def CreatePeeredDnsDomain(project_number, service, network, name, dns_suffix):
 
   # the API only takes project number, so we cannot use resource parser.
   request = messages.ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsCreateRequest(
-      parent='services/%s/projects/%s/global/networks/%s' %
-      (service, project_number, network),
+      parent='services/%s/projects/%s/global/networks/%s'
+      % (service, project_number, network),
       peeredDnsDomain=messages.PeeredDnsDomain(dnsSuffix=dns_suffix, name=name),
   )
   try:
     return client.services_projects_global_networks_peeredDnsDomains.Create(
-        request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+        request
+    )
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(
         e,
         exceptions.CreatePeeredDnsDomainPermissionDeniedException,
@@ -292,13 +362,17 @@ def DeletePeeredDnsDomain(project_number, service, network, name):
 
   # the API only takes project number, so we cannot use resource parser.
   request = messages.ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsDeleteRequest(
-      name='services/%s/projects/%s/global/networks/%s/peeredDnsDomains/%s' %
-      (service, project_number, network, name))
+      name='services/%s/projects/%s/global/networks/%s/peeredDnsDomains/%s'
+      % (service, project_number, network, name)
+  )
   try:
     return client.services_projects_global_networks_peeredDnsDomains.Delete(
-        request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+        request
+    )
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(
         e,
         exceptions.DeletePeeredDnsDomainPermissionDeniedException,
@@ -327,13 +401,17 @@ def ListPeeredDnsDomains(project_number, service, network):
 
   # the API only takes project number, so we cannot use resource parser.
   request = messages.ServicenetworkingServicesProjectsGlobalNetworksPeeredDnsDomainsListRequest(
-      parent='services/%s/projects/%s/global/networks/%s' %
-      (service, project_number, network))
+      parent='services/%s/projects/%s/global/networks/%s'
+      % (service, project_number, network)
+  )
   try:
     return client.services_projects_global_networks_peeredDnsDomains.List(
-        request).peeredDnsDomains
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+        request
+    ).peeredDnsDomains
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(
         e,
         exceptions.ListPeeredDnsDomainsPermissionDeniedException,
@@ -359,8 +437,10 @@ def GetOperation(name):
   request = messages.ServicenetworkingOperationsGetRequest(name=name)
   try:
     return client.operations.Get(request)
-  except (apitools_exceptions.HttpForbiddenError,
-          apitools_exceptions.HttpNotFoundError) as e:
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
     exceptions.ReraiseError(e, exceptions.OperationErrorException)
 
 

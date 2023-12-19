@@ -8965,7 +8965,7 @@ class ApigeeV1(base_api.BaseApiClient):
         method_id='apigee.organizations.delete',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['retention'],
+        query_params=['hardDelete', 'retention'],
         relative_path='v1/{+name}',
         request_field='',
         request_type_name='ApigeeOrganizationsDeleteRequest',

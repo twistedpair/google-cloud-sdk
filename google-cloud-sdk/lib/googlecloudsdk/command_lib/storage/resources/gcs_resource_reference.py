@@ -89,6 +89,7 @@ class GcsAnywhereCacheResource(resource_reference.CloudResource):
       admission_policy=None,
       bucket=None,
       create_time=None,
+      id_string=None,
       kind=None,
       metadata=None,
       pending_update=None,
@@ -101,6 +102,7 @@ class GcsAnywhereCacheResource(resource_reference.CloudResource):
     self.admission_policy = admission_policy
     self.bucket = bucket
     self.create_time = create_time
+    self.id = id_string
     self.kind = kind
     self.metadata = metadata
     self.pending_update = pending_update
@@ -117,6 +119,7 @@ class GcsAnywhereCacheResource(resource_reference.CloudResource):
         self.admission_policy == other.admission_policy
         and self.bucket == other.bucket
         and self.create_time == other.create_time
+        and self.id == other.id
         and self.kind == other.kind
         and self.metadata == other.metadata
         and self.pending_update == other.pending_update

@@ -597,17 +597,16 @@ The tag of the repository to clone when trigger is invoked.
 """)
 
 
-def AddCommentControlArg(argument_group, messages):
+def AddCommentControlArg(argument_group):
   """Adds additional argparse flags to a group for comment control options.
 
   Args:
     argument_group: Argparse argument group to which comment control flag will
       be added.
-    messages: A Cloud Build messages module
   """
   argument_group.add_argument(
       '--comment-control',
-      default=messages.PullRequestFilter.CommentControlValueValuesEnum.COMMENTS_ENABLED,
+      default='COMMENTS_ENABLED',
       help=(
           "Require a repository collaborator or owner to comment '/gcbrun' on"
           ' a pull request before running the build.'

@@ -418,6 +418,17 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class DataRetentionConfig(_messages.Message):
+  r"""The configuration setting for Airflow database data retention mechanism.
+
+  Fields:
+    taskLogsRetentionConfig: Optional. The configuration settings for task
+      logs retention
+  """
+
+  taskLogsRetentionConfig = _messages.MessageField('TaskLogsRetentionConfig', 1)
+
+
 class DatabaseConfig(_messages.Message):
   r"""The configuration of Cloud SQL instance that is used by the Apache
   Airflow software.
@@ -622,6 +633,8 @@ class EnvironmentConfig(_messages.Message):
       a hierarchical file tree can be simulated using "/"-delimited object
       name prefixes. DAG objects for this environment reside in a simulated
       directory with the given prefix.
+    dataRetentionConfig: Optional. The configuration setting for Airflow
+      database data retention mechanism.
     databaseConfig: Optional. The configuration settings for Cloud SQL
       instance used internally by Apache Airflow software.
     encryptionConfig: Optional. The encryption options for the Cloud Composer
@@ -705,21 +718,22 @@ class EnvironmentConfig(_messages.Message):
   airflowByoidUri = _messages.StringField(1)
   airflowUri = _messages.StringField(2)
   dagGcsPrefix = _messages.StringField(3)
-  databaseConfig = _messages.MessageField('DatabaseConfig', 4)
-  encryptionConfig = _messages.MessageField('EncryptionConfig', 5)
-  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 6)
-  gkeCluster = _messages.StringField(7)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 8)
-  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 9)
-  nodeConfig = _messages.MessageField('NodeConfig', 10)
-  nodeCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 12)
-  recoveryConfig = _messages.MessageField('RecoveryConfig', 13)
-  resilienceMode = _messages.EnumField('ResilienceModeValueValuesEnum', 14)
-  softwareConfig = _messages.MessageField('SoftwareConfig', 15)
-  webServerConfig = _messages.MessageField('WebServerConfig', 16)
-  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 17)
-  workloadsConfig = _messages.MessageField('WorkloadsConfig', 18)
+  dataRetentionConfig = _messages.MessageField('DataRetentionConfig', 4)
+  databaseConfig = _messages.MessageField('DatabaseConfig', 5)
+  encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
+  environmentSize = _messages.EnumField('EnvironmentSizeValueValuesEnum', 7)
+  gkeCluster = _messages.StringField(8)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 9)
+  masterAuthorizedNetworksConfig = _messages.MessageField('MasterAuthorizedNetworksConfig', 10)
+  nodeConfig = _messages.MessageField('NodeConfig', 11)
+  nodeCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  privateEnvironmentConfig = _messages.MessageField('PrivateEnvironmentConfig', 13)
+  recoveryConfig = _messages.MessageField('RecoveryConfig', 14)
+  resilienceMode = _messages.EnumField('ResilienceModeValueValuesEnum', 15)
+  softwareConfig = _messages.MessageField('SoftwareConfig', 16)
+  webServerConfig = _messages.MessageField('WebServerConfig', 17)
+  webServerNetworkAccessControl = _messages.MessageField('WebServerNetworkAccessControl', 18)
+  workloadsConfig = _messages.MessageField('WorkloadsConfig', 19)
 
 
 class ExecuteAirflowCommandRequest(_messages.Message):
@@ -1819,6 +1833,38 @@ class StorageConfig(_messages.Message):
   """
 
   bucket = _messages.StringField(1)
+
+
+class TaskLogsRetentionConfig(_messages.Message):
+  r"""The configuration setting for Task Logs.
+
+  Enums:
+    StorageModeValueValuesEnum: Optional. The mode of storage for Airflow
+      workers task logs. For details, see go/composer-store-task-logs-in-
+      cloud-logging-only-design-doc
+
+  Fields:
+    storageMode: Optional. The mode of storage for Airflow workers task logs.
+      For details, see go/composer-store-task-logs-in-cloud-logging-only-
+      design-doc
+  """
+
+  class StorageModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode of storage for Airflow workers task logs. For
+    details, see go/composer-store-task-logs-in-cloud-logging-only-design-doc
+
+    Values:
+      TASK_LOGS_STORAGE_MODE_UNSPECIFIED: This configuration is not specified
+        by the user.
+      CLOUD_LOGGING_AND_CLOUD_STORAGE: Store task logs in Cloud Logging and in
+        the environment's Cloud Storage bucket.
+      CLOUD_LOGGING_ONLY: Store task logs in Cloud Logging only.
+    """
+    TASK_LOGS_STORAGE_MODE_UNSPECIFIED = 0
+    CLOUD_LOGGING_AND_CLOUD_STORAGE = 1
+    CLOUD_LOGGING_ONLY = 2
+
+  storageMode = _messages.EnumField('StorageModeValueValuesEnum', 1)
 
 
 class TriggererResource(_messages.Message):

@@ -94,6 +94,18 @@ nfs_share:
     help: Bare Metal Solution NFS share.
   disable_auto_completers: false
 
+os_image:
+  name: os_image
+  collection: baremetalsolution.projects.locations.osImages
+  attributes:
+  - *project
+  - *global_only_region
+  - &os_image
+    parameter_name: osImagesId
+    attribute_name: os_image
+    help: Bare Metal Solution OS image.
+  disable_auto_completers: false
+
 serial_console_ssh_key:
   name: serial_console_ssh_key
   collection: baremetalsolution.projects.locations.sshKeys

@@ -355,6 +355,41 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class ChangeQuorumMetadata(_messages.Message):
+  r"""Metadata type for the long-running operation returned by ChangeQuorum.
+
+  Fields:
+    endTime: If set, the time at which this operation failed or was completed
+      successfully.
+    request: The request for ChangeQuorum.
+    startTime: Time the request was received.
+  """
+
+  endTime = _messages.StringField(1)
+  request = _messages.MessageField('ChangeQuorumRequest', 2)
+  startTime = _messages.StringField(3)
+
+
+class ChangeQuorumRequest(_messages.Message):
+  r"""The request for ChangeQuorum.
+
+  Fields:
+    etag: Required. The etag is the hash of the QuorumInfo. The ChangeQuorum
+      operation will only be performed if the etag matches that of the
+      QuorumInfo in the current database resource. Otherwise the API will
+      return an `ABORTED` error. The etag is used for optimistic concurrency
+      control as a way to help prevent simultaneous change quorum requests
+      that could create a race condition.
+    name: Required. Name of the database in which to apply the ChangeQuorum.
+      Values are of the form `projects//instances//databases/`.
+    quorumType: Required. The type of this Quorum.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2)
+  quorumType = _messages.MessageField('QuorumType', 3)
+
+
 class ChildLink(_messages.Message):
   r"""Metadata associated with a parent-child relationship appearing in a
   PlanNode.
@@ -882,8 +917,13 @@ class Database(_messages.Message):
       `projects//instances//databases/`, where `` is as specified in the
       `CREATE DATABASE` statement. This name can be passed to other API
       methods to identify the database.
+    quorumInfo: Output only. Applicable only for databases that use dual
+      region instance configurations. Contains information about the quorum.
     reconciling: Output only. If true, the database is being updated. If
       false, there are no ongoing update operations for the database.
+    reconfigurationInfo: Output only. Applicable only for databases that use
+      dual region instance configurations. Contains information about the
+      reconfiguration state.
     restoreInfo: Output only. Applicable only for restored databases. Contains
       information about the restore source.
     state: Output only. The current database state.
@@ -934,10 +974,12 @@ class Database(_messages.Message):
   encryptionConfig = _messages.MessageField('EncryptionConfig', 6)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 7, repeated=True)
   name = _messages.StringField(8)
-  reconciling = _messages.BooleanField(9)
-  restoreInfo = _messages.MessageField('RestoreInfo', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  versionRetentionPeriod = _messages.StringField(12)
+  quorumInfo = _messages.MessageField('QuorumInfo', 9)
+  reconciling = _messages.BooleanField(10)
+  reconfigurationInfo = _messages.MessageField('ReconfigurationInfo', 11)
+  restoreInfo = _messages.MessageField('RestoreInfo', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  versionRetentionPeriod = _messages.StringField(14)
 
 
 class DatabaseRole(_messages.Message):
@@ -1064,6 +1106,20 @@ class DirectedReadOptions(_messages.Message):
 
   excludeReplicas = _messages.MessageField('ExcludeReplicas', 1)
   includeReplicas = _messages.MessageField('IncludeReplicas', 2)
+
+
+class DualRegion(_messages.Message):
+  r"""Message type for a dual-region database reconfiguration. Currently this
+  reconfiguration type has no options.
+  """
+
+
+
+class DualRegionQuorum(_messages.Message):
+  r"""Message type for a dual-region quorum. Currently this type has no
+  options.
+  """
+
 
 
 class Empty(_messages.Message):
@@ -1847,6 +1903,8 @@ class InstanceConfig(_messages.Message):
       Google or User Managed Configuration.
     FreeInstanceAvailabilityValueValuesEnum: Output only. Describes whether
       free instances are available to be created in this instance config.
+    QuorumTypeValueValuesEnum: Output only. The `QuorumType` of the instance
+      configuration.
     StateValueValuesEnum: Output only. The current instance config state.
       Applicable only for USER_MANAGED configs.
 
@@ -1919,6 +1977,7 @@ class InstanceConfig(_messages.Message):
     optionalReplicas: Output only. The available optional replicas to choose
       from for user managed configurations. Populated for Google managed
       configurations.
+    quorumType: Output only. The `QuorumType` of the instance configuration.
     reconciling: Output only. If true, the instance config is being created or
       updated. If false, there are no ongoing operations for the instance
       config.
@@ -1974,6 +2033,26 @@ class InstanceConfig(_messages.Message):
     UNSUPPORTED = 2
     DISABLED = 3
     QUOTA_EXCEEDED = 4
+
+  class QuorumTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The `QuorumType` of the instance configuration.
+
+    Values:
+      QUORUM_TYPE_UNSPECIFIED: Not specified.
+      REGION: An instance configuration tagged with REGION quorum type forms a
+        write quorum in a single region.
+      DUAL_REGION: An instance configuration tagged with DUAL_REGION quorum
+        type forms a write quorums with exactly two read-write regions in a
+        multi-region configuration. This instance configurations requires
+        reconfiguration in the event of regional failures.
+      MULTI_REGION: An instance configuration tagged with MULTI_REGION quorum
+        type forms a write quorums from replicas are spread across more than
+        one region in a multi-region configuration.
+    """
+    QUORUM_TYPE_UNSPECIFIED = 0
+    REGION = 1
+    DUAL_REGION = 2
+    MULTI_REGION = 3
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The current instance config state. Applicable only for
@@ -2039,9 +2118,10 @@ class InstanceConfig(_messages.Message):
   leaderOptions = _messages.StringField(8, repeated=True)
   name = _messages.StringField(9)
   optionalReplicas = _messages.MessageField('ReplicaInfo', 10, repeated=True)
-  reconciling = _messages.BooleanField(11)
-  replicas = _messages.MessageField('ReplicaInfo', 12, repeated=True)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
+  quorumType = _messages.EnumField('QuorumTypeValueValuesEnum', 11)
+  reconciling = _messages.BooleanField(12)
+  replicas = _messages.MessageField('ReplicaInfo', 13, repeated=True)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
 
 
 class InstanceOperationProgress(_messages.Message):
@@ -2687,6 +2767,17 @@ class MetricMatrixRow(_messages.Message):
   """
 
   cols = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+
+
+class MoveInstanceRequest(_messages.Message):
+  r"""The request for MoveInstance.
+
+  Fields:
+    targetConfig: Required. The target instance config for the instance to
+      move. Values are of the form `projects//instanceConfigs/`.
+  """
+
+  targetConfig = _messages.StringField(1)
 
 
 class Mutation(_messages.Message):
@@ -3425,6 +3516,55 @@ class QueryPlan(_messages.Message):
   queryAdvice = _messages.MessageField('QueryAdvisorResult', 2)
 
 
+class QuorumInfo(_messages.Message):
+  r"""Information about the dual region quorum.
+
+  Enums:
+    InitiatorValueValuesEnum: Output only. Whether this ChangeQuorum is a
+      Google or User initiated.
+
+  Fields:
+    etag: Output only. The etag is used for optimistic concurrency control as
+      a way to help prevent simultaneous ChangeQuorum requests that could
+      create a race condition.
+    initiator: Output only. Whether this ChangeQuorum is a Google or User
+      initiated.
+    quorumType: Output only. The type of this quorum. See QuorumType for more
+      information about quorum type specifications.
+    startTime: Output only. The timestamp when the request was triggered.
+  """
+
+  class InitiatorValueValuesEnum(_messages.Enum):
+    r"""Output only. Whether this ChangeQuorum is a Google or User initiated.
+
+    Values:
+      INITIATOR_UNSPECIFIED: Unspecified.
+      GOOGLE: ChangeQuorum initiated by Google.
+      USER: ChangeQuorum initiated by User.
+    """
+    INITIATOR_UNSPECIFIED = 0
+    GOOGLE = 1
+    USER = 2
+
+  etag = _messages.StringField(1)
+  initiator = _messages.EnumField('InitiatorValueValuesEnum', 2)
+  quorumType = _messages.MessageField('QuorumType', 3)
+  startTime = _messages.StringField(4)
+
+
+class QuorumType(_messages.Message):
+  r"""Information about the database quorum type. this applies only for dual
+  region instance configs.
+
+  Fields:
+    dualRegion: Dual region quorum type.
+    singleRegion: Single region quorum type.
+  """
+
+  dualRegion = _messages.MessageField('DualRegionQuorum', 1)
+  singleRegion = _messages.MessageField('SingleRegionQuorum', 2)
+
+
 class ReadOnly(_messages.Message):
   r"""Message type to initiate a read-only transaction.
 
@@ -3557,6 +3697,73 @@ class ReadWrite(_messages.Message):
     OPTIMISTIC = 2
 
   readLockMode = _messages.EnumField('ReadLockModeValueValuesEnum', 1)
+
+
+class ReconfigurationInfo(_messages.Message):
+  r"""Information about the database reconfiguration.
+
+  Enums:
+    InitiatorValueValuesEnum: Whether this reconfiguration is a Google or User
+      initiated reconfiguration.
+
+  Fields:
+    etag: The etag is used for optimistic concurrency control as a way to help
+      prevent simultaneous reconfiguration requests that could create a race
+      condition.
+    initiator: Whether this reconfiguration is a Google or User initiated
+      reconfiguration.
+    reconfigurationType: The type of this reconfiguration. See
+      ReconfigurationType for more information about reconfiguration type
+      specifications.
+    startTime: The timestamp when the request was triggered.
+  """
+
+  class InitiatorValueValuesEnum(_messages.Enum):
+    r"""Whether this reconfiguration is a Google or User initiated
+    reconfiguration.
+
+    Values:
+      INITIATOR_UNSPECIFIED: Unspecified.
+      GOOGLE: Reconfiguration initiated by Google.
+      USER: Reconfiguration initiated by User.
+    """
+    INITIATOR_UNSPECIFIED = 0
+    GOOGLE = 1
+    USER = 2
+
+  etag = _messages.StringField(1)
+  initiator = _messages.EnumField('InitiatorValueValuesEnum', 2)
+  reconfigurationType = _messages.MessageField('ReconfigurationType', 3)
+  startTime = _messages.StringField(4)
+
+
+class ReconfigurationType(_messages.Message):
+  r"""Information about the database reconfiguration type.
+
+  Fields:
+    dualRegion: Dual region reconfiguration type.
+    singleRegion: Single region reconfiguration type.
+  """
+
+  dualRegion = _messages.MessageField('DualRegion', 1)
+  singleRegion = _messages.MessageField('SingleRegion', 2)
+
+
+class ReconfigureDatabaseRequest(_messages.Message):
+  r"""The request for ReconfigureDatabase.
+
+  Fields:
+    etag: Required. The etag is the hash of the database resource. The
+      operation will only performed if the etag matches that of the current
+      database resource. Otherwise the API will return an `INVALID_ARGUMENT`
+      error. The etag is used for optimistic concurrency control as a way to
+      help prevent simultaneous reconfiguration requests that could create a
+      race condition.
+    reconfigurationType: Required. The type of this reconfiguration.
+  """
+
+  etag = _messages.StringField(1)
+  reconfigurationType = _messages.MessageField('ReconfigurationType', 2)
 
 
 class ReplicaInfo(_messages.Message):
@@ -4141,6 +4348,37 @@ class ShortRepresentation(_messages.Message):
 
   description = _messages.StringField(1)
   subqueries = _messages.MessageField('SubqueriesValue', 2)
+
+
+class SingleRegion(_messages.Message):
+  r"""Message type for a single-region database reconfiguration.
+
+  Fields:
+    servingLocation: Required. The location of the serving region, e.g. "us-
+      central1". The location must be one of the regions within the dual
+      region instance configuration of your database. The list of valid
+      locations is available via
+      [GetInstanceConfig[InstanceAdmin.GetInstanceConfig] API. This should
+      only be used if you plan to reconfigure the database in single-region
+      reconfiguration type.
+  """
+
+  servingLocation = _messages.StringField(1)
+
+
+class SingleRegionQuorum(_messages.Message):
+  r"""Message type for a single-region quorum.
+
+  Fields:
+    servingLocation: Required. The location of the serving region, e.g. "us-
+      central1". The location must be one of the regions within the dual
+      region instance configuration of your database. The list of valid
+      locations is available via
+      [GetInstanceConfig[InstanceAdmin.GetInstanceConfig] API. This should
+      only be used if you plan to change quorum in single-region quorum type.
+  """
+
+  servingLocation = _messages.StringField(1)
 
 
 class SpannerProjectsInstanceConfigOperationsListRequest(_messages.Message):
@@ -5074,6 +5312,21 @@ class SpannerProjectsInstancesDatabasesPatchRequest(_messages.Message):
   updateMask = _messages.StringField(3)
 
 
+class SpannerProjectsInstancesDatabasesReconfigureRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesDatabasesReconfigureRequest object.
+
+  Fields:
+    name: Required. Name of the database in which to apply the
+      reconfiguration. Values are of the form
+      `projects//instances//databases/`.
+    reconfigureDatabaseRequest: A ReconfigureDatabaseRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  reconfigureDatabaseRequest = _messages.MessageField('ReconfigureDatabaseRequest', 2)
+
+
 class SpannerProjectsInstancesDatabasesRestoreRequest(_messages.Message):
   r"""A SpannerProjectsInstancesDatabasesRestoreRequest object.
 
@@ -5597,6 +5850,20 @@ class SpannerProjectsInstancesListRequest(_messages.Message):
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class SpannerProjectsInstancesMoveRequest(_messages.Message):
+  r"""A SpannerProjectsInstancesMoveRequest object.
+
+  Fields:
+    moveInstanceRequest: A MoveInstanceRequest resource to be passed as the
+      request body.
+    name: Required. The instance to move. Values are of the form
+      `projects//instances/`.
+  """
+
+  moveInstanceRequest = _messages.MessageField('MoveInstanceRequest', 1)
+  name = _messages.StringField(2, required=True)
 
 
 class SpannerProjectsInstancesOperationsCancelRequest(_messages.Message):

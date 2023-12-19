@@ -2372,6 +2372,8 @@ class StoragePool(_messages.Message):
     description: Description of the storage pool
     encryptionType: Output only. Specifies the current pool encryption key
       source.
+    globalAccessAllowed: Deprecated. Used to allow SO pool to access AD or DNS
+      server from other regions.
     kmsConfig: Specifies the KMS config to be used for volume encryption.
     labels: Labels as key value pairs
     ldapEnabled: Flag indicating if the pool is NFS LDAP enabled or not.
@@ -2466,17 +2468,18 @@ class StoragePool(_messages.Message):
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 5)
-  kmsConfig = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  ldapEnabled = _messages.BooleanField(8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  psaRange = _messages.StringField(11)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  stateDetails = _messages.StringField(14)
-  volumeCapacityGib = _messages.IntegerField(15)
-  volumeCount = _messages.IntegerField(16, variant=_messages.Variant.INT32)
+  globalAccessAllowed = _messages.BooleanField(6)
+  kmsConfig = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  ldapEnabled = _messages.BooleanField(9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  psaRange = _messages.StringField(12)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  stateDetails = _messages.StringField(15)
+  volumeCapacityGib = _messages.IntegerField(16)
+  volumeCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
 
 
 class TransferStats(_messages.Message):

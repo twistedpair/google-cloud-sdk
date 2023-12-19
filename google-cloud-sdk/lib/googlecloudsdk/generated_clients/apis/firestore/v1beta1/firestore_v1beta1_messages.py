@@ -1827,7 +1827,7 @@ class Order(_messages.Message):
 
   Fields:
     direction: The direction to order by. Defaults to `ASCENDING`.
-    field: The field to order by.
+    field: Order based on the value referenced by this field.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):

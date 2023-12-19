@@ -1794,6 +1794,33 @@ class SpannerV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Changequorum(self, request, global_params=None):
+      r"""ChangeQuorum is strictly restricted to databases that use dual region instance configurations. Initiates a background operation to reconfigure a database from dual-region mode to single-region mode and vice versa. The returned long-running operation will have a name of the format `projects//instances//databases//operations/` and can be used to track execution of the ChangeQuorum. The metadata field type is ChangeQuorumMetadata. Authorization requires `spanner.databases.changequorum` permission on the resource database.
+
+      Args:
+        request: (ChangeQuorumRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Changequorum')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Changequorum.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:changequorum',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.changequorum',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:changequorum',
+        request_field='<request>',
+        request_type_name='ChangeQuorumRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Create(self, request, global_params=None):
       r"""Creates a new Cloud Spanner database and starts to prepare it for serving. The returned long-running operation will have a name of the format `/operations/` and can be used to track preparation of the database. The metadata field type is CreateDatabaseMetadata. The response field type is Database, if successful.
 
@@ -2006,6 +2033,33 @@ class SpannerV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='database',
         request_type_name='SpannerProjectsInstancesDatabasesPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Reconfigure(self, request, global_params=None):
+      r"""Initiates reconfiguration of a database from dual-region mode to single-region mode and vice versa. Reconfigurations are restricted to databases that use dual region instance configurations. The returned long-running operation will have a name of the format `projects//instances//databases//operations/` and can be used to track execution of the reconfiguration. The metadata field type is ReconfigureDatabaseMetadata. Authorization requires `spanner.databases.reconfigure` permission on the resource database.
+
+      Args:
+        request: (SpannerProjectsInstancesDatabasesReconfigureRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Reconfigure')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reconfigure.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:reconfigure',
+        http_method='POST',
+        method_id='spanner.projects.instances.databases.reconfigure',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:reconfigure',
+        request_field='reconfigureDatabaseRequest',
+        request_type_name='SpannerProjectsInstancesDatabasesReconfigureRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -2678,6 +2732,33 @@ class SpannerV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='SpannerProjectsInstancesListRequest',
         response_type_name='ListInstancesResponse',
+        supports_download=False,
+    )
+
+    def Move(self, request, global_params=None):
+      r"""Moves the instance to the target instance config. The returned long-running operation can be used to track the progress of moving the instance. `MoveInstance` returns `FAILED_PRECONDITION` if the instance meets any of the following criteria: * Has an ongoing move to a different instance config * Has backups * Has an ongoing update * Is under free trial * Contains any CMEK-enabled databases While the operation is pending: * All other attempts to modify the instance, including changes to its compute capacity, are rejected. * The following database and backup admin operations are rejected: * DatabaseAdmin.CreateDatabase, * DatabaseAdmin.UpdateDatabaseDdl (Disabled if default_leader is specified in the request.) * DatabaseAdmin.RestoreDatabase * DatabaseAdmin.CreateBackup * DatabaseAdmin.CopyBackup * Both the source and target instance configs are subject to hourly compute and storage charges. * The instance may experience higher read-write latencies and a higher transaction abort rate. However, moving an instance does not cause any downtime. The returned long-running operation will have a name of the format `/operations/` and can be used to track the move instance operation. The metadata field type is MoveInstanceMetadata. The response field type is Instance, if successful. Cancelling the operation sets its metadata's cancel_time. Cancellation is not immediate since it involves moving any data previously moved to target instance config back to the original instance config. The same operation can be used to track the progress of the cancellation. Upon successful completion of the cancellation, the operation terminates with CANCELLED status. Upon completion(if not cancelled) of the returned operation: * Instance would be successfully moved to the target instance config. * You are billed for compute and storage in target instance config. Authorization requires `spanner.instances.update` permission on the resource instance. For more details, please see [documentation](https://cloud.google.com/spanner/docs/move-instance).
+
+      Args:
+        request: (SpannerProjectsInstancesMoveRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Move')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Move.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/instances/{instancesId}:move',
+        http_method='POST',
+        method_id='spanner.projects.instances.move',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:move',
+        request_field='moveInstanceRequest',
+        request_type_name='SpannerProjectsInstancesMoveRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
