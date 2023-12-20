@@ -5,6 +5,17 @@ Copyright 2014-2023 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 458.0.1 (2023-12-20)
+
+### Google Cloud CLI
+
+* Fixed error `'ython'' is not recognized as an internal or external command,
+  operable program or batch file.` when updating `gcloud` on Windows.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 458.0.0 (2023-12-19)
 
 ### Breaking Changes
