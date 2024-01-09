@@ -65,18 +65,42 @@ class RepositoriesClient(object):
     self._resource_parser = resources.Registry()
     self._resource_parser.RegisterApiByName('securesourcemanager', 'v1')
 
-  def Create(self, repository_ref):
+  def Create(
+      self,
+      repository_ref,
+      description,
+      default_branch,
+      gitignores,
+      license_name,
+      readme,
+  ):
     """Create a new Secure Source Manager repository.
 
     Args:
       repository_ref: a resource reference to
         securesourcemanager.projects.locations.repositories.
+      description: description of the repository
+      default_branch: default branch name of the repository
+      gitignores: list of gitignore template names
+      license_name: license template name
+      readme: README template name
 
     Returns:
       Created repository.
     """
+    initial_config = self.messages.InitialConfig(
+        defaultBranch=default_branch,
+        gitignores=gitignores,
+        license=license_name,
+        readme=readme,
+    )
+    repository = self.messages.Repository(
+        description=description,
+        initialConfig=initial_config,
+    )
     create_req = self.messages.SecuresourcemanagerProjectsLocationsRepositoriesCreateRequest(
         parent=repository_ref.Parent().RelativeName(),
+        repository=repository,
         repositoryId=repository_ref.repositoriesId,
     )
     return self._service.Create(create_req)

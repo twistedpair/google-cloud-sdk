@@ -824,7 +824,7 @@ class GkemulticloudProjectsLocationsAzureClustersGetJwksRequest(_messages.Messag
 
   Fields:
     azureCluster: Required. The AzureCluster, which owns the JsonWebKeys.
-      Format: projects//locations//azureClusters/
+      Format: `projects//locations//azureClusters/`
   """
 
   azureCluster = _messages.StringField(1, required=True)
@@ -1695,9 +1695,9 @@ class GoogleCloudGkemulticloudV1AwsK8sVersionInfo(_messages.Message):
       version that has reached its end of life and is no longer in scope to
       receive security and bug fixes.
     endOfLifeDate: Optional. The estimated date (in Pacific Time) when this
-      cluster version will reach its end of life. The actual date when a
-      version gets turned down will generally be after this date, but not
-      before.
+      cluster version will reach its end of life. Or if this version is no
+      longer supported (the `end_of_life` field is true), this is the actual
+      date (in Pacific time) when the version reached its end of life.
     releaseDate: Optional. The date (in Pacific Time) when the cluster version
       was released.
     version: Kubernetes version name.
@@ -2619,9 +2619,9 @@ class GoogleCloudGkemulticloudV1AzureK8sVersionInfo(_messages.Message):
       version that has reached its end of life and is no longer in scope to
       receive security and bug fixes.
     endOfLifeDate: Optional. The estimated date (in Pacific Time) when this
-      cluster version will reach its end of life. The actual date when a
-      version gets turned down will generally be after this date, but not
-      before.
+      cluster version will reach its end of life. Or if this version is no
+      longer supported (the `end_of_life` field is true), this is the actual
+      date (in Pacific time) when the version reached its end of life.
     releaseDate: Optional. The date (in Pacific Time) when the cluster version
       was released.
     version: Kubernetes version name (for example, `1.19.10-gke.1000`)

@@ -1122,7 +1122,8 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
 
     def __init__(self, client):
       super(AccesscontextmanagerV1.ServicesService, self).__init__(client)
-      self._upload_configs = {}
+      self._upload_configs = {
+          }
 
     def Get(self, request, global_params=None):
       r"""Returns a VPC-SC supported service based on the service name.
@@ -1130,12 +1131,12 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
       Args:
         request: (AccesscontextmanagerServicesGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (SupportedService) The response message.
       """
       config = self.GetMethodConfig('Get')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',
@@ -1156,12 +1157,12 @@ class AccesscontextmanagerV1(base_api.BaseApiClient):
       Args:
         request: (AccesscontextmanagerServicesListRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (ListSupportedServicesResponse) The response message.
       """
       config = self.GetMethodConfig('List')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     List.method_config = lambda: base_api.ApiMethodInfo(
         http_method='GET',

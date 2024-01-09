@@ -116,6 +116,10 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
     dryRunSpec: Dry-run policy. Audit-only policy, can be used to monitor how
       the policy would have impacted the existing and future resources if it's
       enforced.
+    etag: Optional. An opaque tag indicating the current state of the policy,
+      used for concurrency control. This 'etag' is computed by the server
+      based on the value of other fields, and may be sent on update and delete
+      requests to ensure the client has an up-to-date value before proceeding.
     name: Immutable. The resource name of the policy. Must be one of the
       following forms, where `constraint_name` is the name of the constraint
       which this policy configures: *
@@ -131,8 +135,9 @@ class GoogleCloudOrgpolicyV2Policy(_messages.Message):
 
   alternate = _messages.MessageField('GoogleCloudOrgpolicyV2AlternatePolicySpec', 1)
   dryRunSpec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 2)
-  name = _messages.StringField(3)
-  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 4)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  spec = _messages.MessageField('GoogleCloudOrgpolicyV2PolicySpec', 5)
 
 
 class GoogleCloudOrgpolicyV2PolicySpec(_messages.Message):
@@ -1383,12 +1388,31 @@ class GoogleIamV1Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -1400,7 +1424,11 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """

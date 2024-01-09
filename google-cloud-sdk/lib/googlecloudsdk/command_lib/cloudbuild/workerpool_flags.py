@@ -23,9 +23,6 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 _PWP_CONFIG_LINK = 'https://cloud.google.com/build/docs/private-pools/worker-pool-config-file-schema'
-_HWP_CONFIG_LINK = (
-    'https://cloud.google.com/build/docs/hybrid/hybrid-pool-config-file-schema'
-)
 
 _CREATE_FILE_DESC = (
     'File that contains the configuration for the'
@@ -38,14 +35,14 @@ _UPDATE_FILE_DESC = (
 
 _CREATE_FILE_DESC_ALPHA = (
     'File that contains the configuration for the worker pool to be '
-    'created.\n\nPrivate pool options:\n\n %s\n\nHybrid pool options:\n\n %s'
-    % (_PWP_CONFIG_LINK, _HWP_CONFIG_LINK)
+    'created.\n\nPrivate pool options:\n\n %s\n\n'
+    % (_PWP_CONFIG_LINK)
 )
 _UPDATE_FILE_DESC_ALPHA = (
     'File that contains updates to the configuration for worker pool to be '
     'created.\n\n'
-    'Private pool options:\n\n %s\n\nHybrid pool options:\n\n %s'
-    % (_PWP_CONFIG_LINK, _HWP_CONFIG_LINK)
+    'Private pool options:\n\n %s\n\n'
+    % (_PWP_CONFIG_LINK)
 )
 
 DEFAULT_FLAG_VALUES = {
@@ -98,12 +95,10 @@ def AddWorkerpoolArgs(parser, release_track, update=False):
         '--config-from-file',
         help=(_UPDATE_FILE_DESC_ALPHA if update else _CREATE_FILE_DESC_ALPHA),
     )
-  private_or_hybrid = file_or_flags.add_mutually_exclusive_group()
-  private_flags = private_or_hybrid.add_argument_group(
-      'Command-line flags to configure the private pool:'
-  )
+  flags = file_or_flags.add_argument_group(
+      'Command-line flags to configure the private pool:')
   if not update:
-    private_flags.add_argument(
+    flags.add_argument(
         '--peered-network',
         help="""\
 Existing network to which workers are peered. The network is specified in
@@ -115,7 +110,7 @@ If not specified, the workers are not peered to any network.
     )
 
   if not update:
-    private_flags.add_argument(
+    flags.add_argument(
         '--peered-network-ip-range',
         help="""\
 An IP range for your peered network. Specify the IP range using Classless
@@ -131,46 +126,7 @@ default network IP range.
 """,
     )
 
-  if release_track == base.ReleaseTrack.ALPHA:
-    hybrid_flags = private_or_hybrid.add_argument_group(
-        'Command-line flags for creating or updating a hybrid pool:',
-        hidden=True,
-    )
-    if not update:
-      hybrid_flags.add_argument(
-          '--membership',
-          required=True,
-          help="""\
-            Hub member to install Cloud Build hybrid pools on.
-      """,
-      )
-      hybrid_flags.add_argument(
-          '--builder-image-caching',
-          hidden=True,
-          choices={
-              'CACHING_DISABLED': 'Disable image caching.',
-              'VOLUME_CACHING': (
-                  'Enable image caching of Cloud Builders and Skaffold.'
-              ),
-          },
-          default=DEFAULT_FLAG_VALUES['BUILDER_IMAGE_CACHING'],
-          help="""\
-            Controls whether the hybrid pool should cache Cloud Builders (https://cloud.google.com/build/docs/cloud-builders) and Skaffold.
-            Enabling VOLUME_CACHING may signficantly shorten build execution times.
-      """,
-      )
-      hybrid_flags.add_argument(
-          '--caching-storage-class',
-          hidden=True,
-          type=str,
-          help="""\
-            Name of the Kubernetes StorageClass used by any PersistentVolumeClaims installed on the hybrid pool.
-            If this flag is omitted, PersistentVolumeClaims are created without a spec.storageClassName field during installation.
-            The name should be formatted according to http://kubernetes.io/docs/user-guide/identifiers#names.
-            """,
-      )
-
-  worker_flags = private_flags.add_argument_group(
+  worker_flags = flags.add_argument_group(
       'Configuration to be used for creating workers in the worker pool:'
   )
   worker_flags.add_argument(
@@ -211,43 +167,8 @@ If not given, Cloud Build will use a standard disk size.
   """,
     )
 
-  if release_track == base.ReleaseTrack.ALPHA:
-    default_build_disk_size = (
-        DEFAULT_FLAG_VALUES['DISK_SIZE'] if not update else None
-    )
-    hybrid_flags.add_argument(
-        '--default-build-disk-size',
-        type=arg_parsers.BinarySize(lower_bound='10GB', default_unit='GB'),
-        default=default_build_disk_size,
-        help="""\
-          Default disk size that each build requires.
-    """,
-    )
-    default_build_memory_gb = (
-        DEFAULT_FLAG_VALUES['MEMORY'] if not update else None
-    )
-    hybrid_flags.add_argument(
-        '--default-build-memory',
-        type=arg_parsers.BinarySize(default_unit='GB'),
-        default=default_build_memory_gb,
-        help="""\
-          Default memory size that each build requires.
-    """,
-    )
-    default_build_vcpu_count = (
-        DEFAULT_FLAG_VALUES['VCPU_COUNT'] if not update else None
-    )
-    hybrid_flags.add_argument(
-        '--default-build-vcpu-count',
-        type=float,
-        default=default_build_vcpu_count,
-        help="""\
-          Default vcpu count that each build requires.
-    """,
-    )
-
   if update:
-    egress_flags = private_flags.add_mutually_exclusive_group()
+    egress_flags = flags.add_mutually_exclusive_group()
     egress_flags.add_argument(
         '--no-public-egress',
         action='store_true',
@@ -266,7 +187,7 @@ If set, workers in the worker pool are created with an external IP address.
 """,
     )
   else:
-    private_flags.add_argument(
+    flags.add_argument(
         '--no-public-egress',
         action='store_true',
         help="""\

@@ -534,7 +534,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class Expr(_messages.Message):
   r"""Represents a textual expression in the Common Expression Language (CEL)
   syntax. CEL is a C-like expression language. The syntax and semantics of CEL
@@ -587,6 +586,9 @@ class FirewallEndpoint(_messages.Message):
       FirewallEndpointAssociations pointing at this endpoint. A network will
       only appear in this list after traffic routing is fully configured.
       Format: projects/{project}/global/networks/{name}.
+    associations: Output only. List of FirewallEndpointAssociations that are
+      associated to this endpoint. An association will only appear in this
+      list after traffic routing is fully configured.
     billingProjectId: Optional. Project to bill on endpoint uptime usage.
     createTime: Output only. Create time stamp
     description: Optional. Description of the firewall endpoint. Max length
@@ -594,7 +596,7 @@ class FirewallEndpoint(_messages.Message):
     firstPartyEndpointSettings: Optional. Firewall endpoint settings for first
       party firewall endpoints.
     labels: Optional. Labels as key value pairs
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
     state: Output only. Current state of the endpoint.
@@ -657,17 +659,24 @@ class FirewallEndpoint(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   associatedNetworks = _messages.StringField(1, repeated=True)
-  billingProjectId = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  firstPartyEndpointSettings = _messages.MessageField('FirstPartyEndpointSettings', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  reconciling = _messages.BooleanField(8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  thirdPartyEndpointSettings = _messages.MessageField('ThirdPartyEndpointSettings', 10)
-  type = _messages.EnumField('TypeValueValuesEnum', 11)
-  updateTime = _messages.StringField(12)
+  associations = _messages.MessageField(
+      'FirewallEndpointAssociationReference', 2, repeated=True
+  )
+  billingProjectId = _messages.StringField(3)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  firstPartyEndpointSettings = _messages.MessageField(
+      'FirstPartyEndpointSettings', 6
+  )
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  reconciling = _messages.BooleanField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  thirdPartyEndpointSettings = _messages.MessageField(
+      'ThirdPartyEndpointSettings', 11
+  )
+  type = _messages.EnumField('TypeValueValuesEnum', 12)
+  updateTime = _messages.StringField(13)
 
 
 class FirewallEndpointAssociation(_messages.Message):
@@ -681,10 +690,12 @@ class FirewallEndpointAssociation(_messages.Message):
 
   Fields:
     createTime: Output only. Create time stamp
+    disabled: Optional. Whether the association is disabled. True indicates
+      that traffic won't be intercepted
     firewallEndpoint: Required. The URL of the FirewallEndpoint that is being
       associated.
     labels: Optional. Labels as key value pairs
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     network: Required. The URL of the network that is being associated.
     reconciling: Output only. Whether reconciling is in progress, recommended
       per https://google.aip.dev/128.
@@ -735,14 +746,32 @@ class FirewallEndpointAssociation(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   createTime = _messages.StringField(1)
-  firewallEndpoint = _messages.StringField(2)
-  labels = _messages.MessageField('LabelsValue', 3)
-  name = _messages.StringField(4)
-  network = _messages.StringField(5)
-  reconciling = _messages.BooleanField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  tlsInspectionPolicy = _messages.StringField(8)
-  updateTime = _messages.StringField(9)
+  disabled = _messages.BooleanField(2)
+  firewallEndpoint = _messages.StringField(3)
+  labels = _messages.MessageField('LabelsValue', 4)
+  name = _messages.StringField(5)
+  network = _messages.StringField(6)
+  reconciling = _messages.BooleanField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  tlsInspectionPolicy = _messages.StringField(9)
+  updateTime = _messages.StringField(10)
+
+
+class FirewallEndpointAssociationReference(_messages.Message):
+  r"""This is a subset of the FirewallEndpointAssociation message, containing
+
+  fields to be used by the consumer.
+
+  Fields:
+    name: Output only. The resource name of the FirewallEndpointAssociation.
+      Format: projects/{project}/locations/{location}/firewallEndpointAssociat
+      ions/{id}
+    network: Output only. The VPC network associated. Format:
+      projects/{project}/global/networks/{name}.
+  """
+
+  name = _messages.StringField(1)
+  network = _messages.StringField(2)
 
 
 class FirstPartyEndpointSettings(_messages.Message):
@@ -1864,12 +1893,31 @@ class GoogleIamV1Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -1881,7 +1929,11 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1898,11 +1950,14 @@ class GoogleIamV1CloudAuditOptions(_messages.Message):
   Enums:
     LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
       Record.
+    PermissionTypeValueValuesEnum: The type associated with the permission.
 
   Fields:
     authorizationLoggingOptions: Information used by the Cloud Audit Logging
-      pipeline.
+      pipeline. Will be deprecated once the migration to PermissionType is
+      complete (b/201806118).
     logName: The log_name to populate in the Cloud Audit Record.
+    permissionType: The type associated with the permission.
   """
 
   class LogNameValueValuesEnum(_messages.Enum):
@@ -1917,8 +1972,28 @@ class GoogleIamV1CloudAuditOptions(_messages.Message):
     ADMIN_ACTIVITY = 1
     DATA_ACCESS = 2
 
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type associated with the permission.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: Permissions that gate reading resource configuration or
+        metadata.
+      ADMIN_WRITE: Permissions that gate modification of resource
+        configuration or metadata.
+      DATA_READ: Permissions that gate reading user-provided data.
+      DATA_WRITE: Permissions that gate writing user-provided data.
+    """
+
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
   authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 3)
 
 
 class GoogleIamV1Condition(_messages.Message):
@@ -2355,10 +2430,12 @@ class ListAddressGroupReferencesResponseAddressGroupReference(_messages.Message)
     firewallPolicy: FirewallPolicy that is using the Address Group.
     rulePriority: Rule priority of the FirewallPolicy that is using the
       Address Group.
+    ruleType: Type of the rule (applies only to FIREWALL_POLICY references)
   """
 
   firewallPolicy = _messages.StringField(1)
   rulePriority = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  ruleType = _messages.StringField(3)
 
 
 class ListAddressGroupsResponse(_messages.Message):
@@ -3056,12 +3133,13 @@ class NetworksecurityOrganizationsLocationsFirewallEndpointsListRequest(_message
 
 class NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest(_messages.Message):
   r"""A NetworksecurityOrganizationsLocationsFirewallEndpointsPatchRequest
+
   object.
 
   Fields:
     firewallEndpoint: A FirewallEndpoint resource to be passed as the request
       body.
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -3943,13 +4021,14 @@ class NetworksecurityProjectsLocationsFirewallEndpointAssociationsListRequest(_m
 
 class NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest(_messages.Message):
   r"""A
+
   NetworksecurityProjectsLocationsFirewallEndpointAssociationsPatchRequest
   object.
 
   Fields:
     firewallEndpointAssociation: A FirewallEndpointAssociation resource to be
       passed as the request body.
-    name: Output only. name of resource
+    name: Immutable. Identifier. name of resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       will know to ignore the request if it has already been completed. The
@@ -5095,6 +5174,7 @@ class SecurityProfileGroup(_messages.Message):
 
 class ServerTlsPolicy(_messages.Message):
   r"""ServerTlsPolicy is a resource that specifies how a server should
+
   authenticate incoming requests. This resource itself does not affect
   configuration unless it is attached to a target HTTPS proxy or endpoint
   config selector resource. ServerTlsPolicy in the form accepted by external
@@ -5128,7 +5208,7 @@ class ServerTlsPolicy(_messages.Message):
       confirm compatibility. Consider using it if you wish to upgrade in place
       your deployment to TLS while having mixed TLS and non-TLS traffic
       reaching port :80.
-    cipherSuites: Optional. TLS custom cipher suites used only in GSM.
+    cipherSuites: Optional. TLS custom cipher suites used only in CSM.
       Following ciphers are supported: ECDHE-ECDSA-AES128-GCM-SHA256 ECDHE-
       RSA-AES128-GCM-SHA256 ECDHE-ECDSA-AES256-GCM-SHA384 ECDHE-RSA-
       AES256-GCM-SHA384 ECDHE-ECDSA-CHACHA20-POLY1305 ECDHE-RSA-
@@ -5165,7 +5245,7 @@ class ServerTlsPolicy(_messages.Message):
       with `allow_open` as a permissive mode that allows both plain text and
       TLS is not supported.
     subjectAltNames: Optional. Server side validation for client SAN, only
-      used in GSM. If not specified, the client SAN will not be checked by the
+      used in CSM. If not specified, the client SAN will not be checked by the
       server.
     updateTime: Output only. The timestamp when the resource was updated.
   """

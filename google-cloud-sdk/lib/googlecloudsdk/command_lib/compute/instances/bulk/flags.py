@@ -309,10 +309,10 @@ def AddBulkCreateNetworkingArgs(
     multiple_network_interface_cards_spec['queue-count'] = int
     network_interface_help += """
       *queue-count*::: Specifies the networking queue count for this interface.
-      Both Rx and Tx queues will be set to this number. If it's not
-      specified, a default queue count will be assigned. For Virtio-net,
-      each interface will get min(floor(#vCPU / #vNIC), 32) queues. For gVNIC,
-      each interface will get min(floor(#vCPU / #vNIC / 2), 16) qeueus.
+      Both Rx and Tx queues will be set to this number. If it's not specified, a
+      default queue count will be assigned. See
+      https://cloud.google.com/compute/docs/network-bandwidth#rx-tx for
+      more details.
     """
 
   parser.add_argument(

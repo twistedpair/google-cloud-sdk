@@ -596,7 +596,8 @@ class Posture(_messages.Message):
       request as part of a read-modify-write loop for concurrency control. Not
       setting the `etag` in a `UpdatePosture` request will result in an
       unconditional write of the `Posture`.
-    name: Required. The name of this Posture resource, in the format of
+    name: Required. Identifier. The name of this Posture resource, in the
+      format of
       organizations/{org_id}/locations/{location_id}/postures/{posture}.
     policySets: Required. List of Policy sets.
     reconciling: Output only. Whether or not this Posture is in the process of
@@ -1104,7 +1105,8 @@ class SecuritypostureOrganizationsLocationsPosturesPatchRequest(_messages.Messag
   r"""A SecuritypostureOrganizationsLocationsPosturesPatchRequest object.
 
   Fields:
-    name: Required. The name of this Posture resource, in the format of
+    name: Required. Identifier. The name of this Posture resource, in the
+      format of
       organizations/{org_id}/locations/{location_id}/postures/{posture}.
     posture: A Posture resource to be passed as the request body.
     revisionId: Required. Posture revision which needs to be updated.

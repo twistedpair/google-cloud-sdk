@@ -123,6 +123,10 @@ class CommandCommon(object):
       # Propagate down the hidden attribute.
       if parent_group.IsHidden():
         self._common_type._is_hidden = True
+      # Propagate down the universe compatible attribute.
+      if (parent_group.IsUniverseCompatible() and
+          self._common_type._universe_compatible is None):
+        self._common_type._universe_compatible = True
       # Propagate down the unicode supported attribute.
       if parent_group.IsUnicodeSupported():
         self._common_type._is_unicode_supported = True
@@ -149,6 +153,10 @@ class CommandCommon(object):
   def IsHidden(self):
     """Gets the hidden status of this command or group."""
     return self._common_type.IsHidden()
+
+  def IsUniverseCompatible(self):
+    """Gets the universe compatible status of this command or group."""
+    return self._common_type.IsUniverseCompatible()
 
   def IsUnicodeSupported(self):
     """Gets the unicode supported status of this command or group."""

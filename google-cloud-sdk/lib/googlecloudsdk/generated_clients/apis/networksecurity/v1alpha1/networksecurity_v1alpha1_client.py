@@ -3230,33 +3230,6 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def AttachAppVpc(self, request, global_params=None):
-      r"""Attaches an app VPC to a SSEGateway This RPC is deprecated. Use AttachAppNetwork instead.
-
-      Args:
-        request: (NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('AttachAppVpc')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    AttachAppVpc.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGateways/{sseGatewaysId}:attachAppVpc',
-        http_method='POST',
-        method_id='networksecurity.projects.locations.sseGateways.attachAppVpc',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:attachAppVpc',
-        request_field='attachAppVPCRequest',
-        request_type_name='NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
     def Create(self, request, global_params=None):
       r"""Creates a new SSEGateway in a given project and location.
 
@@ -3334,33 +3307,6 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         relative_path='v1alpha1/{+name}:detachAppNetwork',
         request_field='detachAppNetworkRequest',
         request_type_name='NetworksecurityProjectsLocationsSseGatewaysDetachAppNetworkRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def DetachAppVpc(self, request, global_params=None):
-      r"""Detaches an app VPC from a SSEGateway This RPC is deprecated. Use DetachAppNetwork instead.
-
-      Args:
-        request: (NetworksecurityProjectsLocationsSseGatewaysDetachAppVpcRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('DetachAppVpc')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    DetachAppVpc.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/sseGateways/{sseGatewaysId}:detachAppVpc',
-        http_method='POST',
-        method_id='networksecurity.projects.locations.sseGateways.detachAppVpc',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1alpha1/{+name}:detachAppVpc',
-        request_field='detachAppVPCRequest',
-        request_type_name='NetworksecurityProjectsLocationsSseGatewaysDetachAppVpcRequest',
         response_type_name='Operation',
         supports_download=False,
     )

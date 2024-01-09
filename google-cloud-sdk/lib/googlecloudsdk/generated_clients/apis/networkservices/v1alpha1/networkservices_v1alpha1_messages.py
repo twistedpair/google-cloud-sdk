@@ -128,12 +128,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -145,7 +164,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1271,6 +1294,9 @@ class Gateway(_messages.Message):
   29
 
   Enums:
+    EnvoyHeadersValueValuesEnum: Optional. Determines if envoy will insert
+      internal debug headers into upstream requests. Other Envoy headers may
+      still be injected. By default, envoy will not insert any debug headers.
     IpVersionValueValuesEnum: Optional. The IP Version that will be used by
       this gateway. Valid options are IPV4 or IPV6. Default is IPV4.
     TypeValueValuesEnum: Immutable. The type of the customer managed gateway.
@@ -1296,6 +1322,9 @@ class Gateway(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    envoyHeaders: Optional. Determines if envoy will insert internal debug
+      headers into upstream requests. Other Envoy headers may still be
+      injected. By default, envoy will not insert any debug headers.
     gatewaySecurityPolicy: Optional. A fully-qualified GatewaySecurityPolicy
       URL reference. Defines how a server should apply security policy to
       inbound (VM to Proxy) initiated connections. For example:
@@ -1337,6 +1366,23 @@ class Gateway(_messages.Message):
       required. If unspecified, an error is returned.
     updateTime: Output only. The timestamp when the resource was updated.
   """
+
+  class EnvoyHeadersValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines if envoy will insert internal debug headers into
+    upstream requests. Other Envoy headers may still be injected. By default,
+    envoy will not insert any debug headers.
+
+    Values:
+      ENVOY_HEADERS_UNSPECIFIED: Defaults to NONE.
+      NONE: Suppress envoy debug headers.
+      DEBUG_HEADERS: Envoy will insert default internal debug headers into
+        upstream requests: x-envoy-attempt-count x-envoy-is-timeout-retry
+        x-envoy-expected-rq-timeout-ms x-envoy-original-path x-envoy-upstream-
+        stream-duration-ms
+    """
+    ENVOY_HEADERS_UNSPECIFIED = 0
+    NONE = 1
+    DEBUG_HEADERS = 2
 
   class IpVersionValueValuesEnum(_messages.Enum):
     r"""Optional. The IP Version that will be used by this gateway. Valid
@@ -1397,19 +1443,20 @@ class Gateway(_messages.Message):
   certificateUrls = _messages.StringField(3, repeated=True)
   createTime = _messages.StringField(4)
   description = _messages.StringField(5)
-  gatewaySecurityPolicy = _messages.StringField(6)
-  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  name = _messages.StringField(9)
-  network = _messages.StringField(10)
-  ports = _messages.IntegerField(11, repeated=True, variant=_messages.Variant.INT32)
-  scope = _messages.StringField(12)
-  securityPolicy = _messages.StringField(13)
-  selfLink = _messages.StringField(14)
-  serverTlsPolicy = _messages.StringField(15)
-  subnetwork = _messages.StringField(16)
-  type = _messages.EnumField('TypeValueValuesEnum', 17)
-  updateTime = _messages.StringField(18)
+  envoyHeaders = _messages.EnumField('EnvoyHeadersValueValuesEnum', 6)
+  gatewaySecurityPolicy = _messages.StringField(7)
+  ipVersion = _messages.EnumField('IpVersionValueValuesEnum', 8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  name = _messages.StringField(10)
+  network = _messages.StringField(11)
+  ports = _messages.IntegerField(12, repeated=True, variant=_messages.Variant.INT32)
+  scope = _messages.StringField(13)
+  securityPolicy = _messages.StringField(14)
+  selfLink = _messages.StringField(15)
+  serverTlsPolicy = _messages.StringField(16)
+  subnetwork = _messages.StringField(17)
+  type = _messages.EnumField('TypeValueValuesEnum', 18)
+  updateTime = _messages.StringField(19)
 
 
 class GrpcRoute(_messages.Message):
@@ -1681,6 +1728,11 @@ class GrpcRouteRouteAction(_messages.Message):
       requests from clients can be aborted by for a percentage of requests.
       timeout and retry_policy will be ignored by clients that are configured
       with a fault_injection_policy
+    idleTimeout: Optional. Specifies the idle timeout for the selected route.
+      The idle timeout is defined as the period in which there are no bytes
+      sent or received on either the upstream or downstream connection. If not
+      set, the default idle timeout is 1 hour. If set to 0s, the timeout will
+      be disabled.
     retryPolicy: Optional. Specifies the retry policy associated with this
       route.
     statefulSessionAffinity: Optional. Specifies cookie-based stateful session
@@ -1693,9 +1745,10 @@ class GrpcRouteRouteAction(_messages.Message):
 
   destinations = _messages.MessageField('GrpcRouteDestination', 1, repeated=True)
   faultInjectionPolicy = _messages.MessageField('GrpcRouteFaultInjectionPolicy', 2)
-  retryPolicy = _messages.MessageField('GrpcRouteRetryPolicy', 3)
-  statefulSessionAffinity = _messages.MessageField('GrpcRouteStatefulSessionAffinityPolicy', 4)
-  timeout = _messages.StringField(5)
+  idleTimeout = _messages.StringField(3)
+  retryPolicy = _messages.MessageField('GrpcRouteRetryPolicy', 4)
+  statefulSessionAffinity = _messages.MessageField('GrpcRouteStatefulSessionAffinityPolicy', 5)
+  timeout = _messages.StringField(6)
 
 
 class GrpcRouteRouteMatch(_messages.Message):
@@ -2073,6 +2126,16 @@ class HttpRouteDestination(_messages.Message):
   to.
 
   Fields:
+    requestHeaderModifier: Optional. The specification for modifying the
+      headers of a matching request prior to delivery of the request to the
+      destination. If HeaderModifiers are set on both the Destination and the
+      RouteAction, they will be merged. Conflicts between the two will not be
+      resolved on the configuration.
+    responseHeaderModifier: Optional. The specification for modifying the
+      headers of a response prior to sending the response back to the client.
+      If HeaderModifiers are set on both the Destination and the RouteAction,
+      they will be merged. Conflicts between the two will not be resolved on
+      the configuration.
     serviceName: The URL of a BackendService to route traffic to.
     weight: Specifies the proportion of requests forwarded to the backend
       referenced by the serviceName field. This is computed as: -
@@ -2086,8 +2149,10 @@ class HttpRouteDestination(_messages.Message):
       proportions to all of them.
   """
 
-  serviceName = _messages.StringField(1)
-  weight = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  requestHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 1)
+  responseHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 2)
+  serviceName = _messages.StringField(3)
+  weight = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class HttpRouteFaultInjectionPolicy(_messages.Message):
@@ -2253,6 +2318,22 @@ class HttpRouteHeaderModifier(_messages.Message):
   set = _messages.MessageField('SetValue', 3)
 
 
+class HttpRouteHttpDirectResponse(_messages.Message):
+  r"""Static HTTP response object to be returned.
+
+  Fields:
+    bytesBody: Optional. Response body as bytes. Maximum body size is 4096B.
+    status: Required. Status to return as part of HTTP Response. Must be a
+      positive integer.
+    stringBody: Optional. Response body as a string. Maximum body length is
+      1024 characters.
+  """
+
+  bytesBody = _messages.BytesField(1)
+  status = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  stringBody = _messages.StringField(3)
+
+
 class HttpRouteQueryParameterMatch(_messages.Message):
   r"""Specifications to match a query parameter in the request.
 
@@ -2345,9 +2426,12 @@ class HttpRouteRequestMirrorPolicy(_messages.Message):
   Fields:
     destination: The destination the requests will be mirrored to. The weight
       of the destination will be ignored.
+    mirrorPercent: Optional. The percentage of requests to get mirrored to the
+      desired destination.
   """
 
   destination = _messages.MessageField('HttpRouteDestination', 1)
+  mirrorPercent = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
 
 
 class HttpRouteRetryPolicy(_messages.Message):
@@ -2385,6 +2469,8 @@ class HttpRouteRouteAction(_messages.Message):
     corsPolicy: The specification for allowing client side cross-origin
       requests.
     destinations: The destination to which traffic should be forwarded.
+    directResponse: Optional. Static HTTP Response object to be returned
+      regardless of the request.
     faultInjectionPolicy: The specification for fault injection introduced
       into traffic to test the resiliency of clients to backend service
       failure. As part of fault injection, when clients send requests to a
@@ -2393,6 +2479,11 @@ class HttpRouteRouteAction(_messages.Message):
       from clients can be aborted for a percentage of requests. timeout and
       retry_policy will be ignored by clients that are configured with a
       fault_injection_policy
+    idleTimeout: Optional. Specifies the idle timeout for the selected route.
+      The idle timeout is defined as the period in which there are no bytes
+      sent or received on either the upstream or downstream connection. If not
+      set, the default idle timeout is 1 hour. If set to 0s, the timeout will
+      be disabled.
     redirect: If set, the request is directed as configured by this field.
     requestHeaderModifier: The specification for modifying the headers of a
       matching request prior to delivery of the request to the destination. If
@@ -2422,15 +2513,17 @@ class HttpRouteRouteAction(_messages.Message):
 
   corsPolicy = _messages.MessageField('HttpRouteCorsPolicy', 1)
   destinations = _messages.MessageField('HttpRouteDestination', 2, repeated=True)
-  faultInjectionPolicy = _messages.MessageField('HttpRouteFaultInjectionPolicy', 3)
-  redirect = _messages.MessageField('HttpRouteRedirect', 4)
-  requestHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 5)
-  requestMirrorPolicy = _messages.MessageField('HttpRouteRequestMirrorPolicy', 6)
-  responseHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 7)
-  retryPolicy = _messages.MessageField('HttpRouteRetryPolicy', 8)
-  statefulSessionAffinity = _messages.MessageField('HttpRouteStatefulSessionAffinityPolicy', 9)
-  timeout = _messages.StringField(10)
-  urlRewrite = _messages.MessageField('HttpRouteURLRewrite', 11)
+  directResponse = _messages.MessageField('HttpRouteHttpDirectResponse', 3)
+  faultInjectionPolicy = _messages.MessageField('HttpRouteFaultInjectionPolicy', 4)
+  idleTimeout = _messages.StringField(5)
+  redirect = _messages.MessageField('HttpRouteRedirect', 6)
+  requestHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 7)
+  requestMirrorPolicy = _messages.MessageField('HttpRouteRequestMirrorPolicy', 8)
+  responseHeaderModifier = _messages.MessageField('HttpRouteHeaderModifier', 9)
+  retryPolicy = _messages.MessageField('HttpRouteRetryPolicy', 10)
+  statefulSessionAffinity = _messages.MessageField('HttpRouteStatefulSessionAffinityPolicy', 11)
+  timeout = _messages.StringField(12)
+  urlRewrite = _messages.MessageField('HttpRouteURLRewrite', 13)
 
 
 class HttpRouteRouteMatch(_messages.Message):
@@ -3294,6 +3387,11 @@ class Mesh(_messages.Message):
   workload communication within a service mesh. Routes that point to mesh
   dictate how requests are routed within this logical mesh boundary.
 
+  Enums:
+    EnvoyHeadersValueValuesEnum: Optional. Determines if envoy will insert
+      internal debug headers into upstream requests. Other Envoy headers may
+      still be injected. By default, envoy will not insert any debug headers.
+
   Messages:
     LabelsValue: Optional. Set of label tags associated with the Mesh
       resource.
@@ -3302,6 +3400,9 @@ class Mesh(_messages.Message):
     createTime: Output only. The timestamp when the resource was created.
     description: Optional. A free-text description of the resource. Max length
       1024 characters.
+    envoyHeaders: Optional. Determines if envoy will insert internal debug
+      headers into upstream requests. Other Envoy headers may still be
+      injected. By default, envoy will not insert any debug headers.
     interceptionPort: Optional. If set to a valid TCP port (1-65535),
       instructs the SIDECAR proxy to listen on the specified port of localhost
       (127.0.0.1) address. The SIDECAR proxy will expect all traffic to be
@@ -3314,6 +3415,23 @@ class Mesh(_messages.Message):
     selfLink: Output only. Server-defined URL of this resource
     updateTime: Output only. The timestamp when the resource was updated.
   """
+
+  class EnvoyHeadersValueValuesEnum(_messages.Enum):
+    r"""Optional. Determines if envoy will insert internal debug headers into
+    upstream requests. Other Envoy headers may still be injected. By default,
+    envoy will not insert any debug headers.
+
+    Values:
+      ENVOY_HEADERS_UNSPECIFIED: Defaults to NONE.
+      NONE: Suppress envoy debug headers.
+      DEBUG_HEADERS: Envoy will insert default internal debug headers into
+        upstream requests: x-envoy-attempt-count x-envoy-is-timeout-retry
+        x-envoy-expected-rq-timeout-ms x-envoy-original-path x-envoy-upstream-
+        stream-duration-ms
+    """
+    ENVOY_HEADERS_UNSPECIFIED = 0
+    NONE = 1
+    DEBUG_HEADERS = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -3341,11 +3459,12 @@ class Mesh(_messages.Message):
 
   createTime = _messages.StringField(1)
   description = _messages.StringField(2)
-  interceptionPort = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  labels = _messages.MessageField('LabelsValue', 4)
-  name = _messages.StringField(5)
-  selfLink = _messages.StringField(6)
-  updateTime = _messages.StringField(7)
+  envoyHeaders = _messages.EnumField('EnvoyHeadersValueValuesEnum', 3)
+  interceptionPort = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  labels = _messages.MessageField('LabelsValue', 5)
+  name = _messages.StringField(6)
+  selfLink = _messages.StringField(7)
+  updateTime = _messages.StringField(8)
 
 
 class MetadataLabelMatcher(_messages.Message):
@@ -7951,6 +8070,11 @@ class TcpRouteRouteAction(_messages.Message):
     destinations: Optional. The destination services to which traffic should
       be forwarded. At least one destination service is required. Only one of
       route destination or original destination can be set.
+    idleTimeout: Optional. Specifies the idle timeout for the selected route.
+      The idle timeout is defined as the period in which there are no bytes
+      sent or received on either the upstream or downstream connection. If not
+      set, the default idle timeout is 30 seconds. If set to 0s, the timeout
+      will be disabled.
     originalDestination: Optional. If true, Router will use the destination IP
       and port of the original connection as the destination of the request.
       Default is false. Only one of route destinations or original destination
@@ -7958,7 +8082,8 @@ class TcpRouteRouteAction(_messages.Message):
   """
 
   destinations = _messages.MessageField('TcpRouteRouteDestination', 1, repeated=True)
-  originalDestination = _messages.BooleanField(2)
+  idleTimeout = _messages.StringField(2)
+  originalDestination = _messages.BooleanField(3)
 
 
 class TcpRouteRouteDestination(_messages.Message):
@@ -8156,9 +8281,15 @@ class TlsRouteRouteAction(_messages.Message):
   Fields:
     destinations: Required. The destination services to which traffic should
       be forwarded. At least one destination service is required.
+    idleTimeout: Optional. Specifies the idle timeout for the selected route.
+      The idle timeout is defined as the period in which there are no bytes
+      sent or received on either the upstream or downstream connection. If not
+      set, the default idle timeout is 1 hour. If set to 0s, the timeout will
+      be disabled.
   """
 
   destinations = _messages.MessageField('TlsRouteRouteDestination', 1, repeated=True)
+  idleTimeout = _messages.StringField(2)
 
 
 class TlsRouteRouteDestination(_messages.Message):

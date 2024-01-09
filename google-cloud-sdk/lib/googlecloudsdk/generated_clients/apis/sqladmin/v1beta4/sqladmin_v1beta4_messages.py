@@ -31,6 +31,24 @@ class AclEntry(_messages.Message):
   value = _messages.StringField(4)
 
 
+class AcquireSsrsLeaseContext(_messages.Message):
+  r"""Acquire SSRS lease context.
+
+  Fields:
+    duration: Lease duration needed for the SSRS setup.
+    reportDatabase: The report database to be used for the SSRS setup.
+    serviceLogin: The username to be used as the service login to connect to
+      the report database for SSRS setup.
+    setupLogin: The username to be used as the setup login to connect to the
+      database server for SSRS setup.
+  """
+
+  duration = _messages.StringField(1)
+  reportDatabase = _messages.StringField(2)
+  serviceLogin = _messages.StringField(3)
+  setupLogin = _messages.StringField(4)
+
+
 class AdvancedMachineFeatures(_messages.Message):
   r"""Specifies options for controlling advanced machine features.
 
@@ -79,6 +97,111 @@ class ApiWarning(_messages.Message):
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
   region = _messages.StringField(3)
+
+
+class Backup(_messages.Message):
+  r"""A Backup resource.
+
+  Enums:
+    BackupKindValueValuesEnum: Output only. Specifies the kind of backup,
+      PHYSICAL or DEFAULT_SNAPSHOT.
+    StateValueValuesEnum: Output only. The state of this backup.
+    TypeValueValuesEnum: Output only. The type of this run; can be either
+      "AUTOMATED" or "ON_DEMAND" or "FINAL".
+
+  Fields:
+    backupInterval: Output only. start_time: All writes up to this time is
+      available end_time: Writes after this point are not available.
+    backupKind: Output only. Specifies the kind of backup, PHYSICAL or
+      DEFAULT_SNAPSHOT.
+    description: The description of this backup.
+    error: Output only. Information about why the backup operation failed i.e.
+      when SqlBackupState is FAILED.
+    expiryTime: Backup expiration time. Timestamp in UTC of when this resource
+      is considered expired.
+    instance: Name of the database instance.
+    kind: Output only. This is always `sql#backup`.
+    kmsKey: Output only. Encryption configuration specific to a backup.
+      Resource name of KMS key for disk encryption
+    kmsKeyVersion: Output only. Encryption status specific to a backup. KMS
+      key version used to encrypt the Cloud SQL instance resource
+    location: Storage Location of the backups. Can be a multi region.
+    name: Output only. The resource name of the backup. Format:
+      projects/{project}/backups/{backup}
+    selfLink: Output only. The URI of this resource.
+    state: Output only. The state of this backup.
+    timeZone: Output only. Backup time zone to prevent restores to an instance
+      with a different time zone. Now relevant only for SQL Server.
+    ttlDays: Input only. The TTL of this resource. The input is of granularity
+      of days. ttl_days:7 means 7 days.
+    type: Output only. The type of this run; can be either "AUTOMATED" or
+      "ON_DEMAND" or "FINAL".
+  """
+
+  class BackupKindValueValuesEnum(_messages.Enum):
+    r"""Output only. Specifies the kind of backup, PHYSICAL or
+    DEFAULT_SNAPSHOT.
+
+    Values:
+      SQL_BACKUP_KIND_UNSPECIFIED: This is an unknown BackupKind.
+      SNAPSHOT: The snapshot based backups
+      PHYSICAL: Physical backups
+    """
+    SQL_BACKUP_KIND_UNSPECIFIED = 0
+    SNAPSHOT = 1
+    PHYSICAL = 2
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The state of this backup.
+
+    Values:
+      SQL_BACKUP_STATE_UNSPECIFIED: The state of the backup is unknown.
+      ENQUEUED: The backup operation was enqueued.
+      RUNNING: The backup is in progress.
+      FAILED: The backup failed.
+      SUCCESSFUL: The backup was successful.
+      DELETING: The backup is being deleted.
+      DELETION_FAILED: The backup deletion failed.
+    """
+    SQL_BACKUP_STATE_UNSPECIFIED = 0
+    ENQUEUED = 1
+    RUNNING = 2
+    FAILED = 3
+    SUCCESSFUL = 4
+    DELETING = 5
+    DELETION_FAILED = 6
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of this run; can be either "AUTOMATED" or
+    "ON_DEMAND" or "FINAL".
+
+    Values:
+      SQL_BACKUP_TYPE_UNSPECIFIED: This is an unknown Backup type.
+      AUTOMATED: The backup schedule automatically triggers a backup.
+      ON_DEMAND: The user manually triggers a backup.
+      FINAL: The backup created when instance is deleted.
+    """
+    SQL_BACKUP_TYPE_UNSPECIFIED = 0
+    AUTOMATED = 1
+    ON_DEMAND = 2
+    FINAL = 3
+
+  backupInterval = _messages.MessageField('Interval', 1)
+  backupKind = _messages.EnumField('BackupKindValueValuesEnum', 2)
+  description = _messages.StringField(3)
+  error = _messages.MessageField('OperationError', 4)
+  expiryTime = _messages.StringField(5)
+  instance = _messages.StringField(6)
+  kind = _messages.StringField(7)
+  kmsKey = _messages.StringField(8)
+  kmsKeyVersion = _messages.StringField(9)
+  location = _messages.StringField(10)
+  name = _messages.StringField(11)
+  selfLink = _messages.StringField(12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  timeZone = _messages.StringField(14)
+  ttlDays = _messages.IntegerField(15)
+  type = _messages.EnumField('TypeValueValuesEnum', 16)
 
 
 class BackupConfiguration(_messages.Message):
@@ -1816,6 +1939,17 @@ class InstanceReference(_messages.Message):
   region = _messages.StringField(3)
 
 
+class InstancesAcquireSsrsLeaseRequest(_messages.Message):
+  r"""Request to acquire an SSRS lease for an instance.
+
+  Fields:
+    acquireSsrsLeaseContext: Contains details about the acquire SSRS lease
+      operation.
+  """
+
+  acquireSsrsLeaseContext = _messages.MessageField('AcquireSsrsLeaseContext', 1)
+
+
 class InstancesCloneRequest(_messages.Message):
   r"""Database instance clone request.
 
@@ -1962,12 +2096,43 @@ class InstancesTruncateLogRequest(_messages.Message):
   truncateLogContext = _messages.MessageField('TruncateLogContext', 1)
 
 
+class Interval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive). The start must be less than or equal to the
+  end. When the start equals the end, the interval is empty (matches no time).
+  When both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval. If specified, a
+      Timestamp matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval. If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class IpConfiguration(_messages.Message):
   r"""IP Management configuration.
 
   Enums:
-    SslModeValueValuesEnum: SQL Server uses the `require_ssl` flag. You can
-      set the value for this flag to 'true' or 'false'.
+    SslModeValueValuesEnum: Specify how SSL/TLS is enforced in database
+      connections. MySQL and PostgreSQL use the `ssl_mode` flag. If you must
+      use the `require_ssl` flag for backward compatibility, then only the
+      following value pairs are valid: *
+      `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false` *
+      `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
+      `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
+      The value of `ssl_mode` gets priority over the value of `require_ssl`.
+      For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
+      `require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL
+      connections, while the `require_ssl=false` means accept both non-SSL and
+      SSL connections. MySQL and PostgreSQL databases respect `ssl_mode` in
+      this case and accept only SSL connections. SQL Server uses the
+      `require_ssl` flag. You can set the value for this flag to `true` or
+      `false`.
 
   Fields:
     allocatedIpRange: The name of the allocated ip range for the private ip
@@ -1997,13 +2162,36 @@ class IpConfiguration(_messages.Message):
       flag instead of the legacy `require_ssl` flag.
     reservedIpRange: This field is deprecated and will be removed from a
       future version of the API.
-    sslMode: SQL Server uses the `require_ssl` flag. You can set the value for
-      this flag to 'true' or 'false'.
+    sslMode: Specify how SSL/TLS is enforced in database connections. MySQL
+      and PostgreSQL use the `ssl_mode` flag. If you must use the
+      `require_ssl` flag for backward compatibility, then only the following
+      value pairs are valid: * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and
+      `require_ssl=false` * `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`
+      * `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true`
+      The value of `ssl_mode` gets priority over the value of `require_ssl`.
+      For example, for the pair `ssl_mode=ENCRYPTED_ONLY` and
+      `require_ssl=false`, the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL
+      connections, while the `require_ssl=false` means accept both non-SSL and
+      SSL connections. MySQL and PostgreSQL databases respect `ssl_mode` in
+      this case and accept only SSL connections. SQL Server uses the
+      `require_ssl` flag. You can set the value for this flag to `true` or
+      `false`.
   """
 
   class SslModeValueValuesEnum(_messages.Enum):
-    r"""SQL Server uses the `require_ssl` flag. You can set the value for this
-    flag to 'true' or 'false'.
+    r"""Specify how SSL/TLS is enforced in database connections. MySQL and
+    PostgreSQL use the `ssl_mode` flag. If you must use the `require_ssl` flag
+    for backward compatibility, then only the following value pairs are valid:
+    * `ssl_mode=ALLOW_UNENCRYPTED_AND_ENCRYPTED` and `require_ssl=false` *
+    `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false` *
+    `ssl_mode=TRUSTED_CLIENT_CERTIFICATE_REQUIRED` and `require_ssl=true` The
+    value of `ssl_mode` gets priority over the value of `require_ssl`. For
+    example, for the pair `ssl_mode=ENCRYPTED_ONLY` and `require_ssl=false`,
+    the `ssl_mode=ENCRYPTED_ONLY` means only accept SSL connections, while the
+    `require_ssl=false` means accept both non-SSL and SSL connections. MySQL
+    and PostgreSQL databases respect `ssl_mode` in this case and accept only
+    SSL connections. SQL Server uses the `require_ssl` flag. You can set the
+    value for this flag to `true` or `false`.
 
     Values:
       SSL_MODE_UNSPECIFIED: The SSL mode is unknown.
@@ -2086,6 +2274,22 @@ class IpMapping(_messages.Message):
   ipAddress = _messages.StringField(1)
   timeToRetire = _messages.StringField(2)
   type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class ListBackupsResponse(_messages.Message):
+  r"""The response payload containing a list of the backups.
+
+  Fields:
+    backups: A list of backups.
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    warnings: A warning returned to the user if a region is down or if an
+      unknown error happens.
+  """
+
+  backups = _messages.MessageField('Backup', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  warnings = _messages.MessageField('ApiWarning', 3, repeated=True)
 
 
 class LocationPreference(_messages.Message):
@@ -2253,6 +2457,8 @@ class Operation(_messages.Message):
     StatusValueValuesEnum: The status of an operation.
 
   Fields:
+    acquireSsrsLeaseContext: The context for acquire SSRS lease operation, if
+      applicable.
     apiWarning: An Admin API warning message.
     backupContext: The context for backup operation, if applicable.
     endTime: The time this operation finished in UTC timezone in [RFC
@@ -2339,6 +2545,10 @@ class Operation(_messages.Message):
       REENCRYPT: Re-encrypts CMEK instances with latest key version.
       SWITCHOVER: Switches over to replica instance from primary.
       UPDATE_BACKUP: Update a backup.
+      ACQUIRE_SSRS_LEASE: Acquire a lease for the setup of SQL Server
+        Reporting Services (SSRS).
+      RELEASE_SSRS_LEASE: Release a lease for the setup of SQL Server
+        Reporting Services (SSRS).
     """
     SQL_OPERATION_TYPE_UNSPECIFIED = 0
     IMPORT = 1
@@ -2380,6 +2590,8 @@ class Operation(_messages.Message):
     REENCRYPT = 37
     SWITCHOVER = 38
     UPDATE_BACKUP = 39
+    ACQUIRE_SSRS_LEASE = 40
+    RELEASE_SSRS_LEASE = 41
 
   class StatusValueValuesEnum(_messages.Enum):
     r"""The status of an operation.
@@ -2395,23 +2607,24 @@ class Operation(_messages.Message):
     RUNNING = 2
     DONE = 3
 
-  apiWarning = _messages.MessageField('ApiWarning', 1)
-  backupContext = _messages.MessageField('BackupContext', 2)
-  endTime = _messages.StringField(3)
-  error = _messages.MessageField('OperationErrors', 4)
-  exportContext = _messages.MessageField('ExportContext', 5)
-  importContext = _messages.MessageField('ImportContext', 6)
-  insertTime = _messages.StringField(7)
-  kind = _messages.StringField(8)
-  name = _messages.StringField(9)
-  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 10)
-  selfLink = _messages.StringField(11)
-  startTime = _messages.StringField(12)
-  status = _messages.EnumField('StatusValueValuesEnum', 13)
-  targetId = _messages.StringField(14)
-  targetLink = _messages.StringField(15)
-  targetProject = _messages.StringField(16)
-  user = _messages.StringField(17)
+  acquireSsrsLeaseContext = _messages.MessageField('AcquireSsrsLeaseContext', 1)
+  apiWarning = _messages.MessageField('ApiWarning', 2)
+  backupContext = _messages.MessageField('BackupContext', 3)
+  endTime = _messages.StringField(4)
+  error = _messages.MessageField('OperationErrors', 5)
+  exportContext = _messages.MessageField('ExportContext', 6)
+  importContext = _messages.MessageField('ImportContext', 7)
+  insertTime = _messages.StringField(8)
+  kind = _messages.StringField(9)
+  name = _messages.StringField(10)
+  operationType = _messages.EnumField('OperationTypeValueValuesEnum', 11)
+  selfLink = _messages.StringField(12)
+  startTime = _messages.StringField(13)
+  status = _messages.EnumField('StatusValueValuesEnum', 14)
+  targetId = _messages.StringField(15)
+  targetLink = _messages.StringField(16)
+  targetProject = _messages.StringField(17)
+  user = _messages.StringField(18)
 
 
 class OperationError(_messages.Message):
@@ -3037,6 +3250,82 @@ class SqlBackupRunsListRequest(_messages.Message):
   project = _messages.StringField(4, required=True)
 
 
+class SqlBackupsCreateBackupRequest(_messages.Message):
+  r"""A SqlBackupsCreateBackupRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    parent: Required. The parent resource where this backup will be created.
+      Format: projects/{project}
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SqlBackupsDeleteBackupRequest(_messages.Message):
+  r"""A SqlBackupsDeleteBackupRequest object.
+
+  Fields:
+    name: Required. The name of the backup to delete. Format:
+      projects/{project}/backups/{backup}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SqlBackupsGetBackupRequest(_messages.Message):
+  r"""A SqlBackupsGetBackupRequest object.
+
+  Fields:
+    name: Required. The name of the backup to retrieve. Format:
+      projects/{project}/backups/{backup}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SqlBackupsListBackupsRequest(_messages.Message):
+  r"""A SqlBackupsListBackupsRequest object.
+
+  Fields:
+    filter: Multiple filter queries are space-separated. For example,
+      'instance:abc type:FINAL. We allow filters on type, instance name,
+      creation time and location.
+    pageSize: The maximum number of backups to return per response. The
+      service may return fewer than this value. If unspecified, at most 500
+      backups are returned. The maximum value is 2000; values above 2000 are
+      coerced to 2000.
+    pageToken: A page token, received from a previous `ListBackups` call.
+      Provide this to retrieve the subsequent page. When paginating, all other
+      parameters provided to `ListBackups` must match the call that provided
+      the page token.
+    parent: Required. The parent, which owns this collection of backups.
+      Format: projects/{project}
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SqlBackupsUpdateBackupRequest(_messages.Message):
+  r"""A SqlBackupsUpdateBackupRequest object.
+
+  Fields:
+    backup: A Backup resource to be passed as the request body.
+    name: Output only. The resource name of the backup. Format:
+      projects/{project}/backups/{backup}
+    updateMask: The list of fields to update. Only final backup retention
+      period and description can be updated.
+  """
+
+  backup = _messages.MessageField('Backup', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
 class SqlConnectGenerateEphemeralRequest(_messages.Message):
   r"""A SqlConnectGenerateEphemeralRequest object.
 
@@ -3289,6 +3578,35 @@ class SqlFlagsListRequest(_messages.Message):
   """
 
   databaseVersion = _messages.StringField(1)
+
+
+class SqlInstancesAcquireSsrsLeaseRequest(_messages.Message):
+  r"""A SqlInstancesAcquireSsrsLeaseRequest object.
+
+  Fields:
+    instance: Required. Cloud SQL instance ID. This doesn't include the
+      project ID. It's composed of lowercase letters, numbers, and hyphens,
+      and it must start with a letter. The total length must be 98 characters
+      or less (Example: instance-id).
+    instancesAcquireSsrsLeaseRequest: A InstancesAcquireSsrsLeaseRequest
+      resource to be passed as the request body.
+    project: Required. ID of the project that contains the instance (Example:
+      project-id).
+  """
+
+  instance = _messages.StringField(1, required=True)
+  instancesAcquireSsrsLeaseRequest = _messages.MessageField('InstancesAcquireSsrsLeaseRequest', 2)
+  project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesAcquireSsrsLeaseResponse(_messages.Message):
+  r"""Acquire SSRS lease response.
+
+  Fields:
+    operationId: The unique identifier for this operation.
+  """
+
+  operationId = _messages.StringField(1)
 
 
 class SqlInstancesAddServerCaRequest(_messages.Message):
@@ -3556,6 +3874,32 @@ class SqlInstancesReencryptRequest(_messages.Message):
   instance = _messages.StringField(1, required=True)
   instancesReencryptRequest = _messages.MessageField('InstancesReencryptRequest', 2)
   project = _messages.StringField(3, required=True)
+
+
+class SqlInstancesReleaseSsrsLeaseRequest(_messages.Message):
+  r"""A SqlInstancesReleaseSsrsLeaseRequest object.
+
+  Fields:
+    instance: Required. The Cloud SQL instance ID. This doesn't include the
+      project ID. It's composed of lowercase letters, numbers, and hyphens,
+      and it must start with a letter. The total length must be 98 characters
+      or less (Example: instance-id).
+    project: Required. The ID of the project that contains the instance
+      (Example: project-id).
+  """
+
+  instance = _messages.StringField(1, required=True)
+  project = _messages.StringField(2, required=True)
+
+
+class SqlInstancesReleaseSsrsLeaseResponse(_messages.Message):
+  r"""The response for the release of the SSRS lease.
+
+  Fields:
+    operationId: The operation ID.
+  """
+
+  operationId = _messages.StringField(1)
 
 
 class SqlInstancesRescheduleMaintenanceRequestBody(_messages.Message):

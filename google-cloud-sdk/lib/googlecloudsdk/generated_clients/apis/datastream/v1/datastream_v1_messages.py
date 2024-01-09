@@ -1670,6 +1670,16 @@ class OracleSchema(_messages.Message):
   schema = _messages.StringField(2)
 
 
+class OracleScnPosition(_messages.Message):
+  r"""Oracle SCN position
+
+  Fields:
+    scn: Required. SCN number from where Logs will be read
+  """
+
+  scn = _messages.IntegerField(1)
+
+
 class OracleSourceConfig(_messages.Message):
   r"""Oracle data source configuration
 
@@ -2044,9 +2054,11 @@ class SpecificStartPosition(_messages.Message):
 
   Fields:
     mysqlLogPosition: MySQL specific log position to start replicating from.
+    oracleScnPosition: Oracle specific log position to start replicating from.
   """
 
   mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 1)
+  oracleScnPosition = _messages.MessageField('OracleScnPosition', 2)
 
 
 class StandardQueryParameters(_messages.Message):

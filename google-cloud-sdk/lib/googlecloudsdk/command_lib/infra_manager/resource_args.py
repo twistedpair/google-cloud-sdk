@@ -47,6 +47,12 @@ def LocationAttributeConfig():
   )
 
 
+def PreviewAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='preview', help_text='The preview for the {resource}.'
+  )
+
+
 def GetDeploymentResourceSpec():
   return concepts.ResourceSpec(
       'config.projects.locations.deployments',
@@ -64,6 +70,27 @@ def GetRevisionResourceSpec():
       resource_name='revision',
       revisionsId=RevisionAttributeConfig(),
       deploymentsId=DeploymentAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
+def GetPreviewResourceSpec():
+  return concepts.ResourceSpec(
+      'config.projects.locations.previews',
+      resource_name='preview',
+      previewsId=PreviewAttributeConfig(),
+      locationsId=LocationAttributeConfig(),
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      disable_auto_completers=False,
+  )
+
+
+def GetLocationResourceSpec():
+  return concepts.ResourceSpec(
+      'config.projects.locations',
+      resource_name='location',
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False,
@@ -97,4 +124,45 @@ def GetRevisionResourceArgSpec(group_help):
   name = 'REVISION'
   return presentation_specs.ResourcePresentationSpec(
       name, GetRevisionResourceSpec(), group_help, required=True
+  )
+
+
+def GetPreviewResourceArgSpec(
+    group_help, required=True, flag_name_overrides=None
+):
+  """Gets a resource presentation spec for a config manager preview.
+
+  Args:
+    group_help: string, the help text for the entire arg group.
+    required:
+    flag_name_overrides:
+
+  Returns:
+    ResourcePresentationSpec for a config manager preview resource argument.
+  """
+  name = 'PREVIEW'
+  return presentation_specs.ResourcePresentationSpec(
+      name,
+      GetPreviewResourceSpec(),
+      group_help,
+      required=required,
+      flag_name_overrides=flag_name_overrides,
+  )
+
+
+def GetLocationResourceArgSpec(group_help):
+  """Gets a resource presentation spec for a config manager preview.
+
+  Args:
+    group_help: string, the help text for the entire arg group.
+
+  Returns:
+    ResourcePresentationSpec for a config manager preview resource argument.
+  """
+  name = '--location'
+  return presentation_specs.ResourcePresentationSpec(
+      name,
+      GetLocationResourceSpec(),
+      group_help,
+      required=True,
   )

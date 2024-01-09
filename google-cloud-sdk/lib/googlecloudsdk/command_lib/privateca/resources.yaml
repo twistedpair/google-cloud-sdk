@@ -1,5 +1,3 @@
-# -- Shared resources -- #
-
 project:
   name: project
   collection: privateca.projects
@@ -23,44 +21,6 @@ location:
     property: privateca/location
   disable_auto_completers: true
 
-# -- Beta resources -- #
-
-certificate_authority:
-  name: Certificate Authority
-  collection: privateca.projects.locations.certificateAuthorities
-  request_id_field: certificateAuthority.name
-  attributes:
-  - *project
-  - *location
-  - &certificate_authority
-    parameter_name: certificateAuthoritiesId
-    attribute_name: certificate_authority
-    help: The ID of the certificate authority.
-  disable_auto_completers: true
-
-certificate:
-  name: CERTIFICATE
-  collection: privateca.projects.locations.certificateAuthorities.certificates
-  request_id_field: certificate.name
-  attributes:
-  - *project
-  - &issuer_location
-    parameter_name: locationsId
-    attribute_name: issuer-location
-    help: The location of the {resource}.
-    property: privateca/location
-  - &issuer
-    parameter_name: certificateAuthoritiesId
-    attribute_name: issuer
-    help: The ID of the issuing certificate authority.
-  - &certificate
-    parameter_name: certificatesId
-    attribute_name: certificate
-    help: The ID of the certificate.
-  disable_auto_completers: true
-
-# -- GA resources -- #
-
 certificate_template:
   name: Certificate Template
   collection: privateca.projects.locations.certificateTemplates
@@ -73,6 +33,7 @@ certificate_template:
     attribute_name: certificate_template
     help: The ID of the certificate template.
   disable_auto_completers: true
+
 ca_pool:
   name: CA Pool
   collection: privateca.projects.locations.caPools

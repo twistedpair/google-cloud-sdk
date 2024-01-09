@@ -116,6 +116,16 @@ class GoogleCloudLocationLocation(_messages.Message):
   name = _messages.StringField(5)
 
 
+class GoogleCloudNetworkconnectivityV1betaAcceptHubSpokeResponse(_messages.Message):
+  r"""The response for HubService.AcceptHubSpoke.
+
+  Fields:
+    spoke: The spoke that was operated on.
+  """
+
+  spoke = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpoke', 1)
+
+
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages.Message):
   r"""Message describing CustomHardwareLinkAttachment object
 
@@ -163,6 +173,82 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
   updateTime = _messages.StringField(4)
 
 
+class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_messages.Message):
+  r"""A collection of VLAN attachment resources. These resources should be
+  redundant attachments that all advertise the same prefixes to Google Cloud.
+  Alternatively, in active/passive configurations, all attachments should be
+  capable of advertising the same prefixes.
+
+  Fields:
+    siteToSiteDataTransfer: A value that controls whether site-to-site data
+      transfer is enabled for these resources. Data transfer is available only
+      in [supported locations](https://cloud.google.com/network-
+      connectivity/docs/network-connectivity-center/concepts/locations).
+    uris: The URIs of linked interconnect attachment resources
+    vpcNetwork: Output only. The VPC network where these VLAN attachments are
+      located.
+  """
+
+  siteToSiteDataTransfer = _messages.BooleanField(1)
+  uris = _messages.StringField(2, repeated=True)
+  vpcNetwork = _messages.StringField(3)
+
+
+class GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances(_messages.Message):
+  r"""A collection of router appliance instances. If you configure multiple
+  router appliance instances to receive data from the same set of sites
+  outside of Google Cloud, we recommend that you associate those instances
+  with the same spoke.
+
+  Fields:
+    instances: The list of router appliance instances.
+    siteToSiteDataTransfer: A value that controls whether site-to-site data
+      transfer is enabled for these resources. Data transfer is available only
+      in [supported locations](https://cloud.google.com/network-
+      connectivity/docs/network-connectivity-center/concepts/locations).
+    vpcNetwork: Output only. The VPC network where these router appliance
+      instances are located.
+  """
+
+  instances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRouterApplianceInstance', 1, repeated=True)
+  siteToSiteDataTransfer = _messages.BooleanField(2)
+  vpcNetwork = _messages.StringField(3)
+
+
+class GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork(_messages.Message):
+  r"""An existing VPC network.
+
+  Fields:
+    excludeExportRanges: Optional. IP ranges encompassing the subnets to be
+      excluded from peering.
+    uri: Required. The URI of the VPC network resource.
+  """
+
+  excludeExportRanges = _messages.StringField(1, repeated=True)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels(_messages.Message):
+  r"""A collection of Cloud VPN tunnel resources. These resources should be
+  redundant HA VPN tunnels that all advertise the same prefixes to Google
+  Cloud. Alternatively, in a passive/active configuration, all tunnels should
+  be capable of advertising the same prefixes.
+
+  Fields:
+    siteToSiteDataTransfer: A value that controls whether site-to-site data
+      transfer is enabled for these resources. Data transfer is available only
+      in [supported locations](https://cloud.google.com/network-
+      connectivity/docs/network-connectivity-center/concepts/locations).
+    uris: The URIs of linked VPN tunnel resources.
+    vpcNetwork: Output only. The VPC network where these VPN tunnels are
+      located.
+  """
+
+  siteToSiteDataTransfer = _messages.BooleanField(1)
+  uris = _messages.StringField(2, repeated=True)
+  vpcNetwork = _messages.StringField(3)
+
+
 class GoogleCloudNetworkconnectivityV1betaListCustomHardwareLinkAttachmentsResponse(_messages.Message):
   r"""Response for ListCustomHardwareLinkAttachments.
 
@@ -193,6 +279,33 @@ class GoogleCloudNetworkconnectivityV1betaListRegionalEndpointsResponse(_message
   nextPageToken = _messages.StringField(1)
   regionalEndpoints = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaRegionalEndpoint', 2, repeated=True)
   unreachable = _messages.StringField(3, repeated=True)
+
+
+class GoogleCloudNetworkconnectivityV1betaLocationMetadata(_messages.Message):
+  r"""Metadata about locations
+
+  Enums:
+    LocationFeaturesValueListEntryValuesEnum:
+
+  Fields:
+    locationFeatures: List of supported features
+  """
+
+  class LocationFeaturesValueListEntryValuesEnum(_messages.Enum):
+    r"""LocationFeaturesValueListEntryValuesEnum enum type.
+
+    Values:
+      LOCATION_FEATURE_UNSPECIFIED: No publicly supported feature in this
+        location
+      SITE_TO_CLOUD_SPOKES: Site-to-cloud spokes are supported in this
+        location
+      SITE_TO_SITE_SPOKES: Site-to-site spokes are supported in this location
+    """
+    LOCATION_FEATURE_UNSPECIFIED = 0
+    SITE_TO_CLOUD_SPOKES = 1
+    SITE_TO_SITE_SPOKES = 2
+
+  locationFeatures = _messages.EnumField('LocationFeaturesValueListEntryValuesEnum', 1, repeated=True)
 
 
 class GoogleCloudNetworkconnectivityV1betaOperationMetadata(_messages.Message):
@@ -309,6 +422,463 @@ class GoogleCloudNetworkconnectivityV1betaRegionalEndpoint(_messages.Message):
   subnetwork = _messages.StringField(9)
   targetGoogleApi = _messages.StringField(10)
   updateTime = _messages.StringField(11)
+
+
+class GoogleCloudNetworkconnectivityV1betaRejectHubSpokeResponse(_messages.Message):
+  r"""The response for HubService.RejectHubSpoke.
+
+  Fields:
+    spoke: The spoke that was operated on.
+  """
+
+  spoke = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaSpoke', 1)
+
+
+class GoogleCloudNetworkconnectivityV1betaRouterApplianceInstance(_messages.Message):
+  r"""A router appliance instance is a Compute Engine virtual machine (VM)
+  instance that acts as a BGP speaker. A router appliance instance is
+  specified by the URI of the VM and the internal IP address of one of the
+  VM's network interfaces.
+
+  Fields:
+    ipAddress: The IP address on the VM to use for peering.
+    virtualMachine: The URI of the VM.
+  """
+
+  ipAddress = _messages.StringField(1)
+  virtualMachine = _messages.StringField(2)
+
+
+class GoogleCloudNetworkconnectivityV1betaSpoke(_messages.Message):
+  r"""A Network Connectivity Center spoke represents one or more network
+  connectivity resources. When you create a spoke, you associate it with a
+  hub. You must also identify a value for exactly one of the following fields:
+  * linked_vpn_tunnels * linked_interconnect_attachments *
+  linked_router_appliance_instances * linked_vpc_network
+
+  Enums:
+    SpokeTypeValueValuesEnum: Output only. The type of resource associated
+      with the spoke.
+    StateValueValuesEnum: Output only. The current lifecycle state of this
+      spoke.
+
+  Messages:
+    LabelsValue: Optional labels in key-value pair format. For more
+      information about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
+
+  Fields:
+    createTime: Output only. The time the spoke was created.
+    description: An optional description of the spoke.
+    group: Optional. The name of the group that this spoke is associated with.
+    hub: Immutable. The name of the hub that this spoke is attached to.
+    labels: Optional labels in key-value pair format. For more information
+      about labels, see [Requirements for
+      labels](https://cloud.google.com/resource-manager/docs/creating-
+      managing-labels#requirements).
+    linkedInterconnectAttachments: VLAN attachments that are associated with
+      the spoke.
+    linkedRouterApplianceInstances: Router appliance instances that are
+      associated with the spoke.
+    linkedVpcNetwork: Optional. VPC network that is associated with the spoke.
+    linkedVpnTunnels: VPN tunnels that are associated with the spoke.
+    name: Immutable. The name of the spoke. Spoke names must be unique. They
+      use the following form:
+      `projects/{project_number}/locations/{region}/spokes/{spoke_id}`
+    reasons: Output only. The reasons for current state of the spoke. Only
+      present when the spoke is in the `INACTIVE` state.
+    spokeType: Output only. The type of resource associated with the spoke.
+    state: Output only. The current lifecycle state of this spoke.
+    uniqueId: Output only. The Google-generated UUID for the spoke. This value
+      is unique across all spoke resources. If a spoke is deleted and another
+      with the same name is created, the new spoke is assigned a different
+      `unique_id`.
+    updateTime: Output only. The time the spoke was last updated.
+  """
+
+  class SpokeTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The type of resource associated with the spoke.
+
+    Values:
+      SPOKE_TYPE_UNSPECIFIED: Unspecified spoke type.
+      VPN_TUNNEL: Spokes associated with VPN tunnels.
+      INTERCONNECT_ATTACHMENT: Spokes associated with VLAN attachments.
+      ROUTER_APPLIANCE: Spokes associated with router appliance instances.
+      VPC_NETWORK: Spokes associated with VPC networks.
+    """
+    SPOKE_TYPE_UNSPECIFIED = 0
+    VPN_TUNNEL = 1
+    INTERCONNECT_ATTACHMENT = 2
+    ROUTER_APPLIANCE = 3
+    VPC_NETWORK = 4
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current lifecycle state of this spoke.
+
+    Values:
+      STATE_UNSPECIFIED: No state information available
+      CREATING: The resource's create operation is in progress.
+      ACTIVE: The resource is active
+      DELETING: The resource's delete operation is in progress.
+      ACCEPTING: The resource's accept operation is in progress.
+      REJECTING: The resource's reject operation is in progress.
+      UPDATING: The resource's update operation is in progress.
+      INACTIVE: The resource is inactive.
+      OBSOLETE: The hub associated with this spoke resource has been deleted.
+        This state applies to spoke resources only.
+    """
+    STATE_UNSPECIFIED = 0
+    CREATING = 1
+    ACTIVE = 2
+    DELETING = 3
+    ACCEPTING = 4
+    REJECTING = 5
+    UPDATING = 6
+    INACTIVE = 7
+    OBSOLETE = 8
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional labels in key-value pair format. For more information about
+    labels, see [Requirements for labels](https://cloud.google.com/resource-
+    manager/docs/creating-managing-labels#requirements).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  group = _messages.StringField(3)
+  hub = _messages.StringField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  linkedInterconnectAttachments = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments', 6)
+  linkedRouterApplianceInstances = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedRouterApplianceInstances', 7)
+  linkedVpcNetwork = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpcNetwork', 8)
+  linkedVpnTunnels = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaLinkedVpnTunnels', 9)
+  name = _messages.StringField(10)
+  reasons = _messages.MessageField('GoogleCloudNetworkconnectivityV1betaStateReason', 11, repeated=True)
+  spokeType = _messages.EnumField('SpokeTypeValueValuesEnum', 12)
+  state = _messages.EnumField('StateValueValuesEnum', 13)
+  uniqueId = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
+
+
+class GoogleCloudNetworkconnectivityV1betaStateReason(_messages.Message):
+  r"""The reason a spoke is inactive.
+
+  Enums:
+    CodeValueValuesEnum: The code associated with this reason.
+
+  Fields:
+    code: The code associated with this reason.
+    message: Human-readable details about this reason.
+    userDetails: Additional information provided by the user in the
+      RejectSpoke call.
+  """
+
+  class CodeValueValuesEnum(_messages.Enum):
+    r"""The code associated with this reason.
+
+    Values:
+      CODE_UNSPECIFIED: No information available.
+      PENDING_REVIEW: The proposed spoke is pending review.
+      REJECTED: The proposed spoke has been rejected by the hub administrator.
+      PAUSED: The spoke has been deactivated internally.
+      FAILED: Network Connectivity Center encountered errors while accepting
+        the spoke.
+    """
+    CODE_UNSPECIFIED = 0
+    PENDING_REVIEW = 1
+    REJECTED = 2
+    PAUSED = 3
+    FAILED = 4
+
+  code = _messages.EnumField('CodeValueValuesEnum', 1)
+  message = _messages.StringField(2)
+  userDetails = _messages.StringField(3)
+
+
+class GoogleIamV1AuditConfig(_messages.Message):
+  r"""Specifies the audit configuration for a service. The configuration
+  determines which permission types are logged, and what identities, if any,
+  are exempted from logging. An AuditConfig must have one or more
+  AuditLogConfigs. If there are AuditConfigs for both `allServices` and a
+  specific service, the union of the two AuditConfigs is used for that
+  service: the log_types specified in each AuditConfig are enabled, and the
+  exempted_members in each AuditLogConfig are exempted. Example Policy with
+  multiple AuditConfigs: { "audit_configs": [ { "service": "allServices",
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" }, { "log_type":
+  "ADMIN_READ" } ] }, { "service": "sampleservice.googleapis.com",
+  "audit_log_configs": [ { "log_type": "DATA_READ" }, { "log_type":
+  "DATA_WRITE", "exempted_members": [ "user:aliya@example.com" ] } ] } ] } For
+  sampleservice, this policy enables DATA_READ, DATA_WRITE and ADMIN_READ
+  logging. It also exempts `jose@example.com` from DATA_READ logging, and
+  `aliya@example.com` from DATA_WRITE logging.
+
+  Fields:
+    auditLogConfigs: The configuration for logging of each type of permission.
+    service: Specifies a service that will be enabled for audit logging. For
+      example, `storage.googleapis.com`, `cloudsql.googleapis.com`.
+      `allServices` is a special value that covers all services.
+  """
+
+  auditLogConfigs = _messages.MessageField('GoogleIamV1AuditLogConfig', 1, repeated=True)
+  service = _messages.StringField(2)
+
+
+class GoogleIamV1AuditLogConfig(_messages.Message):
+  r"""Provides the configuration for logging a type of permissions. Example: {
+  "audit_log_configs": [ { "log_type": "DATA_READ", "exempted_members": [
+  "user:jose@example.com" ] }, { "log_type": "DATA_WRITE" } ] } This enables
+  'DATA_READ' and 'DATA_WRITE' logging, while exempting jose@example.com from
+  DATA_READ logging.
+
+  Enums:
+    LogTypeValueValuesEnum: The log type that this config enables.
+
+  Fields:
+    exemptedMembers: Specifies the identities that do not cause logging for
+      this type of permission. Follows the same format of Binding.members.
+    logType: The log type that this config enables.
+  """
+
+  class LogTypeValueValuesEnum(_messages.Enum):
+    r"""The log type that this config enables.
+
+    Values:
+      LOG_TYPE_UNSPECIFIED: Default case. Should never be this.
+      ADMIN_READ: Admin reads. Example: CloudIAM getIamPolicy
+      DATA_WRITE: Data writes. Example: CloudSQL Users create
+      DATA_READ: Data reads. Example: CloudSQL Users list
+    """
+    LOG_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    DATA_WRITE = 2
+    DATA_READ = 3
+
+  exemptedMembers = _messages.StringField(1, repeated=True)
+  logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class GoogleIamV1Binding(_messages.Message):
+  r"""Associates `members`, or principals, with a `role`.
+
+  Fields:
+    condition: The condition that is associated with this binding. If the
+      condition evaluates to `true`, then this binding applies to the current
+      request. If the condition evaluates to `false`, then this binding does
+      not apply to the current request. However, a different role binding
+      might grant the same role to one or more of the principals in this
+      binding. To learn which resources support conditions in their IAM
+      policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    members: Specifies the principals requesting access for a Google Cloud
+      resource. `members` can have the following values: * `allUsers`: A
+      special identifier that represents anyone who is on the internet; with
+      or without a Google account. * `allAuthenticatedUsers`: A special
+      identifier that represents anyone who is authenticated with a Google
+      account or a service account. Does not include identities that come from
+      external identity providers (IdPs) through identity federation. *
+      `user:{emailid}`: An email address that represents a specific Google
+      account. For example, `alice@example.com` . *
+      `serviceAccount:{emailid}`: An email address that represents a Google
+      service account. For example, `my-other-
+      app@appspot.gserviceaccount.com`. *
+      `serviceAccount:{projectid}.svc.id.goog[{namespace}/{kubernetes-sa}]`:
+      An identifier for a [Kubernetes service
+      account](https://cloud.google.com/kubernetes-engine/docs/how-
+      to/kubernetes-service-accounts). For example, `my-
+      project.svc.id.goog[my-namespace/my-kubernetes-sa]`. *
+      `group:{emailid}`: An email address that represents a Google group. For
+      example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
+      (primary) that represents all the users of that domain. For example,
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
+      `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
+      (plus unique identifier) representing a service account that has been
+      recently deleted. For example, `my-other-
+      app@appspot.gserviceaccount.com?uid=123456789012345678901`. If the
+      service account is undeleted, this value reverts to
+      `serviceAccount:{emailid}` and the undeleted service account retains the
+      role in the binding. * `deleted:group:{emailid}?uid={uniqueid}`: An
+      email address (plus unique identifier) representing a Google group that
+      has been recently deleted. For example,
+      `admins@example.com?uid=123456789012345678901`. If the group is
+      recovered, this value reverts to `group:{emailid}` and the recovered
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
+    role: Role that is assigned to the list of `members`, or principals. For
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+  """
+
+  condition = _messages.MessageField('GoogleTypeExpr', 1)
+  members = _messages.StringField(2, repeated=True)
+  role = _messages.StringField(3)
+
+
+class GoogleIamV1Policy(_messages.Message):
+  r"""An Identity and Access Management (IAM) policy, which specifies access
+  controls for Google Cloud resources. A `Policy` is a collection of
+  `bindings`. A `binding` binds one or more `members`, or principals, to a
+  single `role`. Principals can be user accounts, service accounts, Google
+  groups, and domains (such as G Suite). A `role` is a named list of
+  permissions; each `role` can be an IAM predefined role or a user-created
+  custom role. For some types of Google Cloud resources, a `binding` can also
+  specify a `condition`, which is a logical expression that allows access to a
+  resource only if the expression evaluates to `true`. A condition can add
+  constraints based on attributes of the request, the resource, or both. To
+  learn which resources support conditions in their IAM policies, see the [IAM
+  documentation](https://cloud.google.com/iam/help/conditions/resource-
+  policies). **JSON example:** ``` { "bindings": [ { "role":
+  "roles/resourcemanager.organizationAdmin", "members": [
+  "user:mike@example.com", "group:admins@example.com", "domain:google.com",
+  "serviceAccount:my-project-id@appspot.gserviceaccount.com" ] }, { "role":
+  "roles/resourcemanager.organizationViewer", "members": [
+  "user:eve@example.com" ], "condition": { "title": "expirable access",
+  "description": "Does not grant access after Sep 2020", "expression":
+  "request.time < timestamp('2020-10-01T00:00:00.000Z')", } } ], "etag":
+  "BwWWja0YfJA=", "version": 3 } ``` **YAML example:** ``` bindings: -
+  members: - user:mike@example.com - group:admins@example.com -
+  domain:google.com - serviceAccount:my-project-id@appspot.gserviceaccount.com
+  role: roles/resourcemanager.organizationAdmin - members: -
+  user:eve@example.com role: roles/resourcemanager.organizationViewer
+  condition: title: expirable access description: Does not grant access after
+  Sep 2020 expression: request.time < timestamp('2020-10-01T00:00:00.000Z')
+  etag: BwWWja0YfJA= version: 3 ``` For a description of IAM and its features,
+  see the [IAM documentation](https://cloud.google.com/iam/docs/).
+
+  Fields:
+    auditConfigs: Specifies cloud audit logging configuration for this policy.
+    bindings: Associates a list of `members`, or principals, with a `role`.
+      Optionally, may specify a `condition` that determines how and when the
+      `bindings` are applied. Each of the `bindings` must contain at least one
+      principal. The `bindings` in a `Policy` can refer to up to 1,500
+      principals; up to 250 of these principals can be Google groups. Each
+      occurrence of a principal counts towards these limits. For example, if
+      the `bindings` grant 50 different roles to `user:alice@example.com`, and
+      not to any other principal, then you can add another 1,450 principals to
+      the `bindings` in the `Policy`.
+    etag: `etag` is used for optimistic concurrency control as a way to help
+      prevent simultaneous updates of a policy from overwriting each other. It
+      is strongly suggested that systems make use of the `etag` in the read-
+      modify-write cycle to perform policy updates in order to avoid race
+      conditions: An `etag` is returned in the response to `getIamPolicy`, and
+      systems are expected to put that etag in the request to `setIamPolicy`
+      to ensure that their change will be applied to the same version of the
+      policy. **Important:** If you use IAM Conditions, you must include the
+      `etag` field whenever you call `setIamPolicy`. If you omit this field,
+      then IAM allows you to overwrite a version `3` policy with a version `1`
+      policy, and all of the conditions in the version `3` policy are lost.
+    version: Specifies the format of the policy. Valid values are `0`, `1`,
+      and `3`. Requests that specify an invalid value are rejected. Any
+      operation that affects conditional role bindings must specify version
+      `3`. This requirement applies to the following operations: * Getting a
+      policy that includes a conditional role binding * Adding a conditional
+      role binding to a policy * Changing a conditional role binding in a
+      policy * Removing any role binding, with or without a condition, from a
+      policy that includes conditions **Important:** If you use IAM
+      Conditions, you must include the `etag` field whenever you call
+      `setIamPolicy`. If you omit this field, then IAM allows you to overwrite
+      a version `3` policy with a version `1` policy, and all of the
+      conditions in the version `3` policy are lost. If a policy does not
+      include any conditions, operations on that policy may specify any valid
+      version or leave the field unset. To learn which resources support
+      conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+  """
+
+  auditConfigs = _messages.MessageField('GoogleIamV1AuditConfig', 1, repeated=True)
+  bindings = _messages.MessageField('GoogleIamV1Binding', 2, repeated=True)
+  etag = _messages.BytesField(3)
+  version = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+
+
+class GoogleIamV1SetIamPolicyRequest(_messages.Message):
+  r"""Request message for `SetIamPolicy` method.
+
+  Fields:
+    policy: REQUIRED: The complete policy to be applied to the `resource`. The
+      size of the policy is limited to a few 10s of KB. An empty policy is a
+      valid policy but certain Google Cloud services (such as Projects) might
+      reject them.
+    updateMask: OPTIONAL: A FieldMask specifying which fields of the policy to
+      modify. Only the fields in the mask will be modified. If no mask is
+      provided, the following default mask is used: `paths: "bindings, etag"`
+  """
+
+  policy = _messages.MessageField('GoogleIamV1Policy', 1)
+  updateMask = _messages.StringField(2)
+
+
+class GoogleIamV1TestIamPermissionsRequest(_messages.Message):
+  r"""Request message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+
+
+class GoogleIamV1TestIamPermissionsResponse(_messages.Message):
+  r"""Response message for `TestIamPermissions` method.
+
+  Fields:
+    permissions: A subset of `TestPermissionsRequest.permissions` that the
+      caller is allowed.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
 
 
 class GoogleLongrunningCancelOperationRequest(_messages.Message):
@@ -487,6 +1057,42 @@ class GoogleRpcStatus(_messages.Message):
   message = _messages.StringField(3)
 
 
+class GoogleTypeExpr(_messages.Message):
+  r"""Represents a textual expression in the Common Expression Language (CEL)
+  syntax. CEL is a C-like expression language. The syntax and semantics of CEL
+  are documented at https://github.com/google/cel-spec. Example (Comparison):
+  title: "Summary size limit" description: "Determines if a summary is less
+  than 100 chars" expression: "document.summary.size() < 100" Example
+  (Equality): title: "Requestor is owner" description: "Determines if
+  requestor is the document owner" expression: "document.owner ==
+  request.auth.claims.email" Example (Logic): title: "Public documents"
+  description: "Determine whether the document should be publicly visible"
+  expression: "document.type != 'private' && document.type != 'internal'"
+  Example (Data Manipulation): title: "Notification string" description:
+  "Create a notification string with a timestamp." expression: "'New message
+  received at ' + string(document.create_time)" The exact variables and
+  functions that may be referenced within an expression are determined by the
+  service that evaluates it. See the service documentation for additional
+  information.
+
+  Fields:
+    description: Optional. Description of the expression. This is a longer
+      text which describes the expression, e.g. when hovered over it in a UI.
+    expression: Textual representation of an expression in Common Expression
+      Language syntax.
+    location: Optional. String indicating the location of the expression for
+      error reporting, e.g. a file name and a position in the file.
+    title: Optional. Title for the expression, i.e. a short string describing
+      its purpose. This can be used e.g. in UIs which allow to enter the
+      expression.
+  """
+
+  description = _messages.StringField(1)
+  expression = _messages.StringField(2)
+  location = _messages.StringField(3)
+  title = _messages.StringField(4)
+
+
 class NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsCreateRequest(_messages.Message):
   r"""A NetworkconnectivityProjectsLocationsCustomHardwareLinkAttachmentsCreat
   eRequest object.
@@ -621,6 +1227,133 @@ class NetworkconnectivityProjectsLocationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalHubsGroupsGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsSetIamPolicyRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalHubsGroupsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsGroupsTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsGroupsTestIamPermissions
+  Request object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsGlobalHubsSetIamPolicyRequest
+  object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest(_messages.Message):
+  r"""A
+  NetworkconnectivityProjectsLocationsGlobalHubsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class NetworkconnectivityProjectsLocationsListRequest(_messages.Message):
@@ -778,6 +1511,66 @@ class NetworkconnectivityProjectsLocationsRegionalEndpointsListRequest(_messages
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
   parent = _messages.StringField(5, required=True)
+
+
+class NetworkconnectivityProjectsLocationsSpokesGetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsSpokesSetIamPolicyRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class NetworkconnectivityProjectsLocationsSpokesTestIamPermissionsRequest(_messages.Message):
+  r"""A NetworkconnectivityProjectsLocationsSpokesTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class StandardQueryParameters(_messages.Message):

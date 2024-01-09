@@ -315,9 +315,9 @@ class Config(_messages.Message):
       only new resources will be encrypted using this key. The expected format
       is `projects/{project}/locations/{location}/keyRings/{key_ring}/cryptoKe
       ys/{crypto_key}`.
-    name: Output only. The name of the config resource. There is exactly one
-      config resource per project per location. The expected format is
-      `projects/{project}/locations/{location}/config`.
+    name: Output only. Identifier. The name of the config resource. There is
+      exactly one config resource per project per location. The expected
+      format is `projects/{project}/locations/{location}/config`.
     updateTime: Output only. The most recent time this resource was modified.
   """
 
@@ -426,7 +426,8 @@ class CustomClass(_messages.Message):
       with which the CustomClass is encrypted. The expected format is `project
       s/{project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_
       key}/cryptoKeyVersions/{crypto_key_version}`.
-    name: Output only. The resource name of the CustomClass. Format:
+    name: Output only. Identifier. The resource name of the CustomClass.
+      Format:
       `projects/{project}/locations/{location}/customClasses/{custom_class}`.
     reconciling: Output only. Whether or not this CustomClass is in the
       process of being updated.
@@ -1152,7 +1153,7 @@ class PhraseSet(_messages.Message):
       with which the PhraseSet is encrypted. The expected format is `projects/
       {project}/locations/{location}/keyRings/{key_ring}/cryptoKeys/{crypto_ke
       y}/cryptoKeyVersions/{crypto_key_version}`.
-    name: Output only. The resource name of the PhraseSet. Format:
+    name: Output only. Identifier. The resource name of the PhraseSet. Format:
       `projects/{project}/locations/{location}/phraseSets/{phrase_set}`.
     phrases: A list of word and phrases.
     reconciling: Output only. Whether or not this PhraseSet is in the process
@@ -1350,7 +1351,7 @@ class RecognitionOutputConfig(_messages.Message):
 
 
 class RecognitionResponseMetadata(_messages.Message):
-  r"""Metadata about the recognition request and response.
+  r"""Metadata about the recognition request and response. Next ID: 10
 
   Fields:
     totalBilledDuration: When available, billed audio seconds for the
@@ -1466,7 +1467,8 @@ class Recognizer(_messages.Message):
       region can be found in the [Table Of Supported
       Models](https://cloud.google.com/speech-to-text/v2/docs/speech-to-text-
       supported-languages).
-    name: Output only. The resource name of the Recognizer. Format:
+    name: Output only. Identifier. The resource name of the Recognizer.
+      Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`.
     reconciling: Output only. Whether or not this Recognizer is in the process
       of being updated.
@@ -1584,9 +1586,9 @@ class SpeechProjectsLocationsConfigUpdateRequest(_messages.Message):
 
   Fields:
     config: A Config resource to be passed as the request body.
-    name: Output only. The name of the config resource. There is exactly one
-      config resource per project per location. The expected format is
-      `projects/{project}/locations/{location}/config`.
+    name: Output only. Identifier. The name of the config resource. There is
+      exactly one config resource per project per location. The expected
+      format is `projects/{project}/locations/{location}/config`.
     updateMask: The list of fields to be updated.
   """
 
@@ -1679,7 +1681,8 @@ class SpeechProjectsLocationsCustomClassesPatchRequest(_messages.Message):
 
   Fields:
     customClass: A CustomClass resource to be passed as the request body.
-    name: Output only. The resource name of the CustomClass. Format:
+    name: Output only. Identifier. The resource name of the CustomClass.
+      Format:
       `projects/{project}/locations/{location}/customClasses/{custom_class}`.
     updateMask: The list of fields to be updated. If empty, all fields are
       considered for update.
@@ -1829,7 +1832,7 @@ class SpeechProjectsLocationsPhraseSetsPatchRequest(_messages.Message):
   r"""A SpeechProjectsLocationsPhraseSetsPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the PhraseSet. Format:
+    name: Output only. Identifier. The resource name of the PhraseSet. Format:
       `projects/{project}/locations/{location}/phraseSets/{phrase_set}`.
     phraseSet: A PhraseSet resource to be passed as the request body.
     updateMask: The list of fields to update. If empty, all non-default valued
@@ -1926,7 +1929,8 @@ class SpeechProjectsLocationsRecognizersPatchRequest(_messages.Message):
   r"""A SpeechProjectsLocationsRecognizersPatchRequest object.
 
   Fields:
-    name: Output only. The resource name of the Recognizer. Format:
+    name: Output only. Identifier. The resource name of the Recognizer.
+      Format:
       `projects/{project}/locations/{location}/recognizers/{recognizer}`.
     recognizer: A Recognizer resource to be passed as the request body.
     updateMask: The list of fields to update. If empty, all non-default valued

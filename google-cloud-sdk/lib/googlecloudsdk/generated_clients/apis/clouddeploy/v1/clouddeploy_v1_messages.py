@@ -432,6 +432,8 @@ class AutomationRolloutMetadata(_messages.Message):
   Fields:
     advanceAutomationRuns: Output only. The IDs of the AutomationRuns
       initiated by an advance rollout rule.
+    currentRepairAutomationRun: Output only. The current AutomationRun
+      repairing the rollout.
     promoteAutomationRun: Output only. The ID of the AutomationRun initiated
       by a promote release rule.
     repairAutomationRuns: Output only. The IDs of the AutomationRuns initiated
@@ -439,8 +441,9 @@ class AutomationRolloutMetadata(_messages.Message):
   """
 
   advanceAutomationRuns = _messages.StringField(1, repeated=True)
-  promoteAutomationRun = _messages.StringField(2)
-  repairAutomationRuns = _messages.StringField(3, repeated=True)
+  currentRepairAutomationRun = _messages.StringField(2)
+  promoteAutomationRun = _messages.StringField(3)
+  repairAutomationRuns = _messages.StringField(4, repeated=True)
 
 
 class AutomationRule(_messages.Message):
@@ -526,6 +529,7 @@ class AutomationRun(_messages.Message):
       FAILED: The `AutomationRun` has failed.
       IN_PROGRESS: The `AutomationRun` is in progress.
       PENDING: The `AutomationRun` is pending.
+      ABORTED: The `AutomationRun` was aborted.
     """
     STATE_UNSPECIFIED = 0
     SUCCEEDED = 1
@@ -533,6 +537,7 @@ class AutomationRun(_messages.Message):
     FAILED = 3
     IN_PROGRESS = 4
     PENDING = 5
+    ABORTED = 6
 
   advanceRolloutOperation = _messages.MessageField('AdvanceRolloutOperation', 1)
   automationId = _messages.StringField(2)
@@ -639,12 +644,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -656,7 +680,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -777,11 +805,11 @@ class CloudRunConfig(_messages.Message):
       splitting. This is required to be true for CanaryDeployments, but
       optional for CustomCanaryDeployments.
     canaryRevisionTags: Optional. A list of tags that are added to the canary
-      revision while the canary deployment is in progress.
+      revision while the canary phase is in progress.
     priorRevisionTags: Optional. A list of tags that are added to the prior
-      revision while the canary deployment is in progress.
+      revision while the canary phase is in progress.
     stableRevisionTags: Optional. A list of tags that are added to the final
-      stable revision after the canary deployment is completed.
+      stable revision when the stable phase is applied.
   """
 
   automaticTrafficControl = _messages.BooleanField(1)
@@ -844,12 +872,12 @@ class ClouddeployProjectsLocationsCustomTargetTypesCreateRequest(_messages.Messa
       body.
     customTargetTypeId: Required. ID of the `CustomTargetType`.
     parent: Required. The parent collection in which the `CustomTargetType`
-      should be created in. Format should be
+      should be created. Format should be
       `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -881,9 +909,9 @@ class ClouddeployProjectsLocationsCustomTargetTypesDeleteRequest(_messages.Messa
       be `projects/{project_id}/locations/{location_name}/customTargetTypes/{c
       ustom_target_type}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -952,9 +980,9 @@ class ClouddeployProjectsLocationsCustomTargetTypesPatchRequest(_messages.Messag
     name: Optional. Name of the `CustomTargetType`. Format is
       `projects/{project}/locations/{location}/customTargetTypes/a-z{0,62}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -965,8 +993,8 @@ class ClouddeployProjectsLocationsCustomTargetTypesPatchRequest(_messages.Messag
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the `CustomTargetType` resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      request. A field will be overwritten if it's in the mask. If the user
+      doesn't provide a mask then all fields are overwritten.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -1047,9 +1075,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsCreateRequest(_mes
       be created. Format should be `projects/{project_id}/locations/{location_
       name}/deliveryPipelines/{pipeline_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1083,9 +1111,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsDeleteRequest(_mes
       projects/{project_id}/locations/{location_name}/deliveryPipelines/{pipel
       ine_name}/automations/{automation_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1156,9 +1184,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsPatchRequest(_mess
       /locations/{location}/deliveryPipelines/{delivery_pipeline}/automations/
       {automation}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1169,8 +1197,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesAutomationsPatchRequest(_mess
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the `Automation` resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      request. A field will be overwritten if it's in the mask. If the user
+      doesn't provide a mask then all fields are overwritten.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -1194,9 +1222,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesCreateRequest(_messages.Messa
       should be created. Format should be
       `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1231,9 +1259,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesDeleteRequest(_messages.Messa
       should be `projects/{project_id}/locations/{location_name}/deliveryPipel
       ines/{pipeline_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1329,9 +1357,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
     name: Optional. Name of the `DeliveryPipeline`. Format is
       `projects/{project}/locations/{location}/deliveryPipelines/a-z{0,62}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1342,8 +1370,8 @@ class ClouddeployProjectsLocationsDeliveryPipelinesPatchRequest(_messages.Messag
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the `DeliveryPipeline` resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      request. A field will be overwritten if it's in the mask. If the user
+      doesn't provide a mask then all fields are overwritten.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -1384,9 +1412,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesCreateRequest(_messag
     release: A Release resource to be passed as the request body.
     releaseId: Required. ID of the `Release`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1509,9 +1537,9 @@ class ClouddeployProjectsLocationsDeliveryPipelinesReleasesRolloutsCreateRequest
       created. Format should be `projects/{project_id}/locations/{location_nam
       e}/deliveryPipelines/{pipeline_name}/releases/{release_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1727,9 +1755,9 @@ class ClouddeployProjectsLocationsDeployPoliciesCreateRequest(_messages.Message)
       be created. Format should be
       `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1761,9 +1789,9 @@ class ClouddeployProjectsLocationsDeployPoliciesDeleteRequest(_messages.Message)
       `projects/{project_id}/locations/{location_name}/deployPolicies/{deploy_
       policy_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1831,9 +1859,9 @@ class ClouddeployProjectsLocationsDeployPoliciesPatchRequest(_messages.Message):
     name: Output only. Name of the `DeployPolicy`. Format is
       `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1844,8 +1872,8 @@ class ClouddeployProjectsLocationsDeployPoliciesPatchRequest(_messages.Message):
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the `DeployPolicy` resource by the update. The fields
       specified in the update_mask are relative to the resource, not the full
-      request. A field will be overwritten if it is in the mask. If the user
-      does not provide a mask then all fields will be overwritten.
+      request. A field will be overwritten if it's in the mask. If the user
+      doesn't provide a mask then all fields are overwritten.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -1955,9 +1983,9 @@ class ClouddeployProjectsLocationsTargetsCreateRequest(_messages.Message):
       created. Format should be
       `projects/{project_id}/locations/{location_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -1990,9 +2018,9 @@ class ClouddeployProjectsLocationsTargetsDeleteRequest(_messages.Message):
     name: Required. The name of the `Target` to delete. Format should be
       `projects/{project_id}/locations/{location_name}/targets/{target_name}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes after the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -2083,9 +2111,9 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
     name: Optional. Name of the `Target`. Format is
       `projects/{project}/locations/{location}/targets/a-z{0,62}`.
     requestId: Optional. A request ID to identify requests. Specify a unique
-      request ID so that if you must retry your request, the server will know
-      to ignore the request if it has already been completed. The server will
-      guarantee that for at least 60 minutes since the first request. For
+      request ID so that if you must retry your request, the server knows to
+      ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
       example, consider a situation where you make an initial request and the
       request times out. If you make the request again with the same request
       ID, the server can check if original operation with the same request ID
@@ -2097,8 +2125,8 @@ class ClouddeployProjectsLocationsTargetsPatchRequest(_messages.Message):
     updateMask: Required. Field mask is used to specify the fields to be
       overwritten in the Target resource by the update. The fields specified
       in the update_mask are relative to the resource, not the full request. A
-      field will be overwritten if it is in the mask. If the user does not
-      provide a mask then all fields will be overwritten.
+      field will be overwritten if it's in the mask. If the user doesn't
+      provide a mask then all fields are overwritten.
     validateOnly: Optional. If set to true, the request is validated and the
       user is provided with an expected result, but no actual change is made.
   """
@@ -2191,20 +2219,20 @@ class CustomCanaryDeployment(_messages.Message):
 
 
 class CustomMetadata(_messages.Message):
-  r"""CustomMetadata contains information from a user defined operation.
+  r"""CustomMetadata contains information from a user-defined operation.
 
   Messages:
-    ValuesValue: Output only. Key-value pairs provided by the user defined
+    ValuesValue: Output only. Key-value pairs provided by the user-defined
       operation.
 
   Fields:
-    values: Output only. Key-value pairs provided by the user defined
+    values: Output only. Key-value pairs provided by the user-defined
       operation.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ValuesValue(_messages.Message):
-    r"""Output only. Key-value pairs provided by the user defined operation.
+    r"""Output only. Key-value pairs provided by the user-defined operation.
 
     Messages:
       AdditionalProperty: An additional property for a ValuesValue object.
@@ -2276,8 +2304,8 @@ class CustomTargetSkaffoldActions(_messages.Message):
 class CustomTargetType(_messages.Message):
   r"""A `CustomTargetType` resource in the Cloud Deploy API. A
   `CustomTargetType` defines a type of custom target that can be referenced in
-  a `Target` in order to facilitate deploying to a runtime that does not have
-  a 1P integration with Cloud Deploy.
+  a `Target` in order to facilitate deploying to other systems besides the
+  supported runtimes.
 
   Messages:
     AnnotationsValue: Optional. User annotations. These attributes can only be
@@ -2554,11 +2582,7 @@ class DeliveryPipeline(_messages.Message):
 
 
 class DeliveryPipelineAttribute(_messages.Message):
-  r"""Contains criteria for selecting DeliveryPipelines. Attributes provided
-  must match the delivery pipeline resource in order for policy restrictions
-  to apply. E.g. if id "prod" and labels "foo: bar" are given the delivery
-  pipeline resource must match both that id and have that label in order to be
-  selected.
+  r"""Contains criteria for selecting DeliveryPipelines.
 
   Messages:
     LabelsValue: DeliveryPipeline labels.
@@ -2729,7 +2753,7 @@ class DeployJobRunMetadata(_messages.Message):
   Fields:
     cloudRun: Output only. The name of the Cloud Run Service that is
       associated with a `DeployJobRun`.
-    custom: Output only. Custom metadata provided by user defined deploy
+    custom: Output only. Custom metadata provided by user-defined deploy
       operation.
     customTarget: Output only. Custom Target metadata associated with a
       `DeployJobRun`.
@@ -2872,8 +2896,11 @@ class DeployPolicy(_messages.Message):
     name: Output only. Name of the `DeployPolicy`. Format is
       `projects/{project}/locations/{location}/deployPolicies/a-z{0,62}`.
     rules: Required. Rules to apply. At least one rule must be present.
-    selector: Required. Selected resources to which the policy will be
-      applied. At least one resource is required to be selected.
+    selectors: Required. Selected resources to which the policy will be
+      applied. At least one selector is required. If one selector matches the
+      resource the policy applies. For example, if there are two selectors and
+      the action being attempted matches one of them, the policy will apply to
+      that action.
     suspended: When suspended, the policy will not prevent actions from
       occurring, even if the action violates the policy.
     uid: Output only. Unique identifier of the `DeployPolicy`.
@@ -2955,7 +2982,7 @@ class DeployPolicy(_messages.Message):
   labels = _messages.MessageField('LabelsValue', 5)
   name = _messages.StringField(6)
   rules = _messages.MessageField('PolicyRule', 7, repeated=True)
-  selector = _messages.MessageField('DeployPolicyResourceSelector', 8)
+  selectors = _messages.MessageField('DeployPolicyResourceSelector', 8, repeated=True)
   suspended = _messages.BooleanField(9)
   uid = _messages.StringField(10)
   updateTime = _messages.StringField(11)
@@ -2963,14 +2990,18 @@ class DeployPolicy(_messages.Message):
 
 class DeployPolicyResourceSelector(_messages.Message):
   r"""Contains information on the resources to select for a deploy policy.
+  Attributes provided must all match the resource in order for policy
+  restrictions to apply. E.g. if delivery pipelines attributes given are an id
+  "prod" and labels "foo: bar", a delivery pipeline resource must match both
+  that id and have that label in order to be subject to the policy.
 
   Fields:
-    deliveryPipelines: Contains attributes about a delivery pipeline.
-    targets: Contains attributes about a target.
+    deliveryPipeline: Optional. Contains attributes about a delivery pipeline.
+    target: Optional. Contains attributes about a target.
   """
 
-  deliveryPipelines = _messages.MessageField('DeliveryPipelineAttribute', 1, repeated=True)
-  targets = _messages.MessageField('TargetAttribute', 2, repeated=True)
+  deliveryPipeline = _messages.MessageField('DeliveryPipelineAttribute', 1)
+  target = _messages.MessageField('TargetAttribute', 2)
 
 
 class DeploymentJobs(_messages.Message):
@@ -3104,12 +3135,17 @@ class GatewayServiceMesh(_messages.Message):
       propagate. The maximum configurable time is 3 hours, in seconds format.
       If unspecified, there is no wait time.
     service: Required. Name of the Kubernetes Service.
+    stableCutbackDuration: Optional. The amount of time to migrate traffic
+      back from the canary Service to the original Service during the stable
+      phase deployment. If specified, must be between 15s and 3600s. If
+      unspecified, there is no cutback time.
   """
 
   deployment = _messages.StringField(1)
   httpRoute = _messages.StringField(2)
   routeUpdateWaitTime = _messages.StringField(3)
   service = _messages.StringField(4)
+  stableCutbackDuration = _messages.StringField(5)
 
 
 class GkeCluster(_messages.Message):
@@ -3594,7 +3630,7 @@ class Metadata(_messages.Message):
       rollout.
     cloudRun: Output only. The name of the Cloud Run Service that is
       associated with a `Rollout`.
-    custom: Output only. Custom metadata provided by user defined `Rollout`
+    custom: Output only. Custom metadata provided by user-defined `Rollout`
       operations.
   """
 
@@ -3975,19 +4011,17 @@ class PolicyViolationDetails(_messages.Message):
   r"""Policy violation details.
 
   Fields:
-    failureMessage: User readable message about why it failed.
+    failureMessage: User readable message about why the request violated a
+      policy. This is not intended for machine parsing.
     policy: Name of the policy that was violated. Policy resource will be in
       the format of
       `projects/{project}/locations/{location}/policies/{policy}`.
     ruleId: Name of the rule that triggered the policy violation.
-    ruleType: Rule type (e.g. rollout restrictions, release requirements) that
-      failed.
   """
 
   failureMessage = _messages.StringField(1)
   policy = _messages.StringField(2)
   ruleId = _messages.StringField(3)
-  ruleType = _messages.StringField(4)
 
 
 class Postdeploy(_messages.Message):
@@ -4664,7 +4698,7 @@ class RenderMetadata(_messages.Message):
 
   Fields:
     cloudRun: Output only. Metadata associated with rendering for Cloud Run.
-    custom: Output only. Custom metadata provided by user defined render
+    custom: Output only. Custom metadata provided by user-defined render
       operation.
   """
 
@@ -4800,7 +4834,6 @@ class RestrictRollout(_messages.Message):
       APPROVE: Approve the rollout.
       CANCEL: Cancel the rollout.
       CREATE: Create a rollout.
-      DELETE: Delete a rollout.
       IGNORE_JOB: Ignore a job result on the rollout.
       REJECT: Reject a rollout.
       RETRY_JOB: Retry a job for a rollout.
@@ -4812,12 +4845,11 @@ class RestrictRollout(_messages.Message):
     APPROVE = 2
     CANCEL = 3
     CREATE = 4
-    DELETE = 5
-    IGNORE_JOB = 6
-    REJECT = 7
-    RETRY_JOB = 8
-    ROLLBACK = 9
-    TERMINATE_JOBRUN = 10
+    IGNORE_JOB = 5
+    REJECT = 6
+    RETRY_JOB = 7
+    ROLLBACK = 8
+    TERMINATE_JOBRUN = 9
 
   class InvokerValueListEntryValuesEnum(_messages.Enum):
     r"""InvokerValueListEntryValuesEnum enum type.
@@ -4898,6 +4930,7 @@ class RetryAttempt(_messages.Message):
       REPAIR_STATE_IN_PROGRESS: The `repair` action is in progress.
       REPAIR_STATE_PENDING: The `repair` action is pending.
       REPAIR_STATE_SKIPPED: The `repair` action was skipped.
+      REPAIR_STATE_ABORTED: The `repair` action was aborted.
     """
     REPAIR_STATE_UNSPECIFIED = 0
     REPAIR_STATE_SUCCEEDED = 1
@@ -4906,6 +4939,7 @@ class RetryAttempt(_messages.Message):
     REPAIR_STATE_IN_PROGRESS = 4
     REPAIR_STATE_PENDING = 5
     REPAIR_STATE_SKIPPED = 6
+    REPAIR_STATE_ABORTED = 7
 
   attempt = _messages.IntegerField(1)
   state = _messages.EnumField('StateValueValuesEnum', 2)
@@ -5007,6 +5041,7 @@ class RollbackAttempt(_messages.Message):
       REPAIR_STATE_IN_PROGRESS: The `repair` action is in progress.
       REPAIR_STATE_PENDING: The `repair` action is pending.
       REPAIR_STATE_SKIPPED: The `repair` action was skipped.
+      REPAIR_STATE_ABORTED: The `repair` action was aborted.
     """
     REPAIR_STATE_UNSPECIFIED = 0
     REPAIR_STATE_SUCCEEDED = 1
@@ -5015,6 +5050,7 @@ class RollbackAttempt(_messages.Message):
     REPAIR_STATE_IN_PROGRESS = 4
     REPAIR_STATE_PENDING = 5
     REPAIR_STATE_SKIPPED = 6
+    REPAIR_STATE_ABORTED = 7
 
   destinationPhase = _messages.StringField(1)
   rolloutId = _messages.StringField(2)
@@ -6006,10 +6042,7 @@ class TargetArtifact(_messages.Message):
 
 
 class TargetAttribute(_messages.Message):
-  r"""Contains criteria for selecting Targets. Attributes provided must match
-  the target resource in order for policy restrictions to apply. E.g. if id
-  "prod" and labels "foo: bar" are given the target resource must match both
-  that id and have that label in order to be selected.
+  r"""Contains criteria for selecting Targets.
 
   Messages:
     LabelsValue: Target labels.

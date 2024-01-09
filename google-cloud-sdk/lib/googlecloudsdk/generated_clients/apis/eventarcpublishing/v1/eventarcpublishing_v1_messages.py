@@ -49,6 +49,22 @@ class EventarcpublishingProjectsLocationsChannelsPublishEventsRequest(_messages.
   googleCloudEventarcPublishingV1PublishEventsRequest = _messages.MessageField('GoogleCloudEventarcPublishingV1PublishEventsRequest', 2)
 
 
+class EventarcpublishingProjectsLocationsMessageBusesPublishRequest(_messages.Message):
+  r"""A EventarcpublishingProjectsLocationsMessageBusesPublishRequest object.
+
+  Fields:
+    googleCloudEventarcPublishingV1PublishRequest: A
+      GoogleCloudEventarcPublishingV1PublishRequest resource to be passed as
+      the request body.
+    messageBus: Required. The full name of the message bus to publish events
+      to. Format:
+      `projects/{project}/locations/{location}/messageBuses/{messageBus}`.
+  """
+
+  googleCloudEventarcPublishingV1PublishRequest = _messages.MessageField('GoogleCloudEventarcPublishingV1PublishRequest', 1)
+  messageBus = _messages.StringField(2, required=True)
+
+
 class GoogleCloudEventarcPublishingV1PublishChannelConnectionEventsRequest(_messages.Message):
   r"""The request message for the PublishChannelConnectionEvents method.
 
@@ -149,6 +165,30 @@ class GoogleCloudEventarcPublishingV1PublishEventsRequest(_messages.Message):
 
 class GoogleCloudEventarcPublishingV1PublishEventsResponse(_messages.Message):
   r"""The response message for the PublishEvents method."""
+
+
+class GoogleCloudEventarcPublishingV1PublishRequest(_messages.Message):
+  r"""The request message for the Publish method.
+
+  Fields:
+    avroMessage: The Avro format of the CloudEvent being published.
+      Specification can be found here: https://github.com/cloudevents/spec/blo
+      b/v1.0.2/cloudevents/formats/avro-format.md
+    jsonMessage: The JSON format of the CloudEvent being published.
+      Specification can be found here: https://github.com/cloudevents/spec/blo
+      b/v1.0.2/cloudevents/formats/json-format.md
+    protoMessage: The Protobuf format of the CloudEvent being published.
+      Specification can be found here: https://github.com/cloudevents/spec/blo
+      b/v1.0.2/cloudevents/formats/protobuf-format.md
+  """
+
+  avroMessage = _messages.BytesField(1)
+  jsonMessage = _messages.StringField(2)
+  protoMessage = _messages.MessageField('IoCloudeventsV1CloudEvent', 3)
+
+
+class GoogleCloudEventarcPublishingV1PublishResponse(_messages.Message):
+  r"""The response message for the Publish method."""
 
 
 class IoCloudeventsV1CloudEvent(_messages.Message):

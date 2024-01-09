@@ -165,6 +165,22 @@ class BaremetalsolutionProjectsLocationsInstancesDetachVolumeRequest(_messages.M
   instance = _messages.StringField(2, required=True)
 
 
+class BaremetalsolutionProjectsLocationsInstancesDisableHyperthreadingRequest(_messages.Message):
+  r"""A
+  BaremetalsolutionProjectsLocationsInstancesDisableHyperthreadingRequest
+  object.
+
+  Fields:
+    disableHyperthreadingRequest: A DisableHyperthreadingRequest resource to
+      be passed as the request body.
+    name: Required. The `name` field is used to identify the instance. Format:
+      projects/{project}/locations/{location}/instances/{instance}
+  """
+
+  disableHyperthreadingRequest = _messages.MessageField('DisableHyperthreadingRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
 class BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsoleRequest(_messages.Message):
   r"""A BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialCon
   soleRequest object.
@@ -177,6 +193,21 @@ class BaremetalsolutionProjectsLocationsInstancesDisableInteractiveSerialConsole
   """
 
   disableInteractiveSerialConsoleRequest = _messages.MessageField('DisableInteractiveSerialConsoleRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class BaremetalsolutionProjectsLocationsInstancesEnableHypertheadingRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesEnableHypertheadingRequest
+  object.
+
+  Fields:
+    enableHyperthreadingRequest: A EnableHyperthreadingRequest resource to be
+      passed as the request body.
+    name: Required. The `name` field is used to identify the instance. Format:
+      projects/{project}/locations/{location}/instances/{instance}
+  """
+
+  enableHyperthreadingRequest = _messages.MessageField('EnableHyperthreadingRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -249,6 +280,20 @@ class BaremetalsolutionProjectsLocationsInstancesPatchRequest(_messages.Message)
   instance = _messages.MessageField('Instance', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class BaremetalsolutionProjectsLocationsInstancesReimageRequest(_messages.Message):
+  r"""A BaremetalsolutionProjectsLocationsInstancesReimageRequest object.
+
+  Fields:
+    name: Required. The `name` field is used to identify the instance. Format:
+      projects/{project}/locations/{location}/instances/{instance}
+    reimageInstanceRequest: A ReimageInstanceRequest resource to be passed as
+      the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  reimageInstanceRequest = _messages.MessageField('ReimageInstanceRequest', 2)
 
 
 class BaremetalsolutionProjectsLocationsInstancesRenameRequest(_messages.Message):
@@ -1041,6 +1086,13 @@ class DetachVolumeRequest(_messages.Message):
   volumes = _messages.StringField(3, repeated=True)
 
 
+class DisableHyperthreadingRequest(_messages.Message):
+  r"""Message requesting to perform disable hyperthreading operation on a
+  server.
+  """
+
+
+
 class DisableInteractiveSerialConsoleRequest(_messages.Message):
   r"""Message for disabling the interactive serial console on an instance."""
 
@@ -1054,6 +1106,13 @@ class Empty(_messages.Message):
   empty messages in your APIs. A typical example is to use it as the request
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
+  """
+
+
+
+class EnableHyperthreadingRequest(_messages.Message):
+  r"""Message requesting to perform enable hyperthreading operation on a
+  server.
   """
 
 
@@ -2478,6 +2537,24 @@ class QosPolicy(_messages.Message):
   """
 
   bandwidthGbps = _messages.FloatField(1)
+
+
+class ReimageInstanceRequest(_messages.Message):
+  r"""Message requesting to perform reimage operation on a server.
+
+  Fields:
+    kmsKeyVersion: Optional. Name of the KMS crypto key version used to
+      encrypt the initial passwords. The key has to have ASYMMETRIC_DECRYPT
+      purpose. Format is `projects/{project}/locations/{location}/keyRings/{ke
+      yring}/cryptoKeys/{key}/cryptoKeyVersions/{version}`.
+    osImage: Required. The OS image code of the image which will be used in
+      the reimage operation.
+    sshKeys: Optional. List of SSH Keys used during reimaging an instance.
+  """
+
+  kmsKeyVersion = _messages.StringField(1)
+  osImage = _messages.StringField(2)
+  sshKeys = _messages.StringField(3, repeated=True)
 
 
 class RenameInstanceRequest(_messages.Message):

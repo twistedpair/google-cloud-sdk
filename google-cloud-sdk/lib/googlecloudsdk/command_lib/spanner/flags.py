@@ -375,6 +375,14 @@ def AddCapacityArgsForInstance(
   ).AddToParser(autoscaling_pu_limits_group_parser)
 
 
+def TargetConfig(required=True):
+  return base.Argument(
+      '--target-config',
+      completer=InstanceConfigCompleter,
+      required=required,
+      help='Target Instance configuration to move the instances.')
+
+
 def EnableDropProtection(required=False):
   return base.Argument(
       '--enable-drop-protection',

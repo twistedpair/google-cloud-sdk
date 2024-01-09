@@ -4062,6 +4062,17 @@ class GooglePrivacyDlpV2DataRiskLevel(_messages.Message):
   score = _messages.EnumField('ScoreValueValuesEnum', 1)
 
 
+class GooglePrivacyDlpV2DataSourceType(_messages.Message):
+  r"""Message used to identify the type of resource being profiled.
+
+  Fields:
+    dataSource: Output only. An identifying string to the type of resource
+      being profiled. Current values: google/bigquery/table, google/project
+  """
+
+  dataSource = _messages.StringField(1)
+
+
 class GooglePrivacyDlpV2DatastoreKey(_messages.Message):
   r"""Record key for a finding in Cloud Datastore.
 
@@ -7829,6 +7840,7 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
       profile.
     createTime: The time at which the table was created.
     dataRiskLevel: The data risk level of this table.
+    dataSourceType: The resource type that was profiled.
     datasetId: The BigQuery dataset ID.
     datasetLocation: The BigQuery location where the dataset's data is stored.
       See https://cloud.google.com/bigquery/docs/locations for supported
@@ -7931,28 +7943,29 @@ class GooglePrivacyDlpV2TableDataProfile(_messages.Message):
   configSnapshot = _messages.MessageField('GooglePrivacyDlpV2DataProfileConfigSnapshot', 1)
   createTime = _messages.StringField(2)
   dataRiskLevel = _messages.MessageField('GooglePrivacyDlpV2DataRiskLevel', 3)
-  datasetId = _messages.StringField(4)
-  datasetLocation = _messages.StringField(5)
-  datasetProjectId = _messages.StringField(6)
-  encryptionStatus = _messages.EnumField('EncryptionStatusValueValuesEnum', 7)
-  expirationTime = _messages.StringField(8)
-  failedColumnCount = _messages.IntegerField(9)
-  fullResource = _messages.StringField(10)
-  lastModifiedTime = _messages.StringField(11)
-  name = _messages.StringField(12)
-  otherInfoTypes = _messages.MessageField('GooglePrivacyDlpV2OtherInfoTypeSummary', 13, repeated=True)
-  predictedInfoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoTypeSummary', 14, repeated=True)
-  profileLastGenerated = _messages.StringField(15)
-  profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 16)
-  projectDataProfile = _messages.StringField(17)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 18)
-  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 19)
-  rowCount = _messages.IntegerField(20)
-  scannedColumnCount = _messages.IntegerField(21)
-  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 22)
-  state = _messages.EnumField('StateValueValuesEnum', 23)
-  tableId = _messages.StringField(24)
-  tableSizeBytes = _messages.IntegerField(25)
+  dataSourceType = _messages.MessageField('GooglePrivacyDlpV2DataSourceType', 4)
+  datasetId = _messages.StringField(5)
+  datasetLocation = _messages.StringField(6)
+  datasetProjectId = _messages.StringField(7)
+  encryptionStatus = _messages.EnumField('EncryptionStatusValueValuesEnum', 8)
+  expirationTime = _messages.StringField(9)
+  failedColumnCount = _messages.IntegerField(10)
+  fullResource = _messages.StringField(11)
+  lastModifiedTime = _messages.StringField(12)
+  name = _messages.StringField(13)
+  otherInfoTypes = _messages.MessageField('GooglePrivacyDlpV2OtherInfoTypeSummary', 14, repeated=True)
+  predictedInfoTypes = _messages.MessageField('GooglePrivacyDlpV2InfoTypeSummary', 15, repeated=True)
+  profileLastGenerated = _messages.StringField(16)
+  profileStatus = _messages.MessageField('GooglePrivacyDlpV2ProfileStatus', 17)
+  projectDataProfile = _messages.StringField(18)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 19)
+  resourceVisibility = _messages.EnumField('ResourceVisibilityValueValuesEnum', 20)
+  rowCount = _messages.IntegerField(21)
+  scannedColumnCount = _messages.IntegerField(22)
+  sensitivityScore = _messages.MessageField('GooglePrivacyDlpV2SensitivityScore', 23)
+  state = _messages.EnumField('StateValueValuesEnum', 24)
+  tableId = _messages.StringField(25)
+  tableSizeBytes = _messages.IntegerField(26)
 
 
 class GooglePrivacyDlpV2TableLocation(_messages.Message):

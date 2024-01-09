@@ -136,32 +136,6 @@ class AttachAppNetworkRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
-class AttachAppVPCRequest(_messages.Message):
-  r"""Request used by the AttachAppVPC method. This request and its RPC are
-  deprecated. Use AttachAppNetwork instead.
-
-  Fields:
-    peerNetwork: Required. URL of the peer network to attach. It can be either
-      full URL or partial URL. The peer network may belong to a different
-      project. If the partial URL does not contain project, it is assumed that
-      the peer network is in the same project as the current network.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  peerNetwork = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-
-
 class AuthorizationPolicy(_messages.Message):
   r"""AuthorizationPolicy is a resource that specifies how a server should
   authorize incoming connections. This resource in itself does not change the
@@ -374,32 +348,6 @@ class Destination(_messages.Message):
 
 class DetachAppNetworkRequest(_messages.Message):
   r"""Request used by the DetachAppNetwork method.
-
-  Fields:
-    peerNetwork: Required. URL of the peer network to detach. It can be either
-      full URL or partial URL. The peer network may belong to a different
-      project. If the partial URL does not contain project, it is assumed that
-      the peer network is in the same project as the current network.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and the request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-  """
-
-  peerNetwork = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-
-
-class DetachAppVPCRequest(_messages.Message):
-  r"""Request used by the DetachAppVPC method. This request and its RPC are
-  deprecated. Use DetachAppNetwork instead.
 
   Fields:
     peerNetwork: Required. URL of the peer network to detach. It can be either
@@ -949,12 +897,31 @@ class GoogleIamV1Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -966,7 +933,11 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -3673,20 +3644,6 @@ class NetworksecurityProjectsLocationsSseGatewaysAttachAppNetworkRequest(_messag
   name = _messages.StringField(2, required=True)
 
 
-class NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseGatewaysAttachAppVpcRequest object.
-
-  Fields:
-    attachAppVPCRequest: A AttachAppVPCRequest resource to be passed as the
-      request body.
-    name: Required. A name of the SSEGateway to add VPC to. Must be in the
-      format `projects/*/locations/{location}/sseGateways/*`.
-  """
-
-  attachAppVPCRequest = _messages.MessageField('AttachAppVPCRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class NetworksecurityProjectsLocationsSseGatewaysCreateRequest(_messages.Message):
   r"""A NetworksecurityProjectsLocationsSseGatewaysCreateRequest object.
 
@@ -3749,20 +3706,6 @@ class NetworksecurityProjectsLocationsSseGatewaysDetachAppNetworkRequest(_messag
   """
 
   detachAppNetworkRequest = _messages.MessageField('DetachAppNetworkRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
-class NetworksecurityProjectsLocationsSseGatewaysDetachAppVpcRequest(_messages.Message):
-  r"""A NetworksecurityProjectsLocationsSseGatewaysDetachAppVpcRequest object.
-
-  Fields:
-    detachAppVPCRequest: A DetachAppVPCRequest resource to be passed as the
-      request body.
-    name: Required. A name of the SSEGateway to detach VPC from. Must be in
-      the format `projects/*/locations/{location}/sseGateways/*`.
-  """
-
-  detachAppVPCRequest = _messages.MessageField('DetachAppVPCRequest', 1)
   name = _messages.StringField(2, required=True)
 
 
@@ -4393,24 +4336,12 @@ class SSEGateway(_messages.Message):
       Defaults to "100.64.1.253" if unspecified.
     appNetworks: Optional. List of app networks which are attached to this
       gateway.
-    appTrafficTargetIp: Optional. This is the IP where the app traffic should
-      be routed to. Default value is set to "100.64.1.253". This field is
-      deprecated. Use app_facing_target_ip instead.
-    appTrafficVpc: Output only. [Output only] This is the name of the VPC the
-      app_vpc should peer with. This field is deprecated. Use
-      app_facing_network instead.
-    appTrafficVpcSubnetRange: Optional. Subnet range of the subnet where app
-      traffic is routed. Default value is set to "100.64.1.0/24". User defined
-      subnet range CIDR suffix should be less than or equal to 24. This field
-      is deprecated. Use app_facing_subnet_range instead.
     appVpc: Optional. name of VPC where the app runs
-    appVpcs: Optional. name of VPCs where the app runs This field is
-      deprecated. Use app_networks instead.
     createTime: Output only. [Output only] Create time stamp
     labels: Optional. Labels as key value pairs
     name: Immutable. name of resource
-    sseProject: Output only. [Output Only] The project owning app_traffic_vpc
-      and user_traffic_vpc
+    sseProject: Output only. [Output Only] The project owning
+      app_facing_network and untrusted_facing_network
     sseRealm: Required. name of SSERealm owning the SSEGateway
     untrustedFacingNetwork: Output only. [Output only] SSE-owned network which
       the untrusted network should peer with.
@@ -4422,18 +4353,6 @@ class SSEGateway(_messages.Message):
     untrustedNetwork: Optional. Customer-owned network where untrusted users
       land.
     updateTime: Output only. [Output only] Update time stamp
-    userTrafficTargetIp: Optional. This is the IP where the customer traffic
-      should be routed to. Default value is set to "100.64.2.253". This field
-      is deprecated. Use untrusted_facing_target_ip instead.
-    userTrafficVpc: Output only. [Output only] This is the name of the VPC the
-      user_vpc should peer with. This field is deprecated. Use
-      untrusted_facing_network instead.
-    userTrafficVpcSubnetRange: Optional. Subnet range of the subnet where user
-      traffic is routed. Default value is set to "100.64.2.0/24". User defined
-      subnet range CIDR suffix should less than or equal to 24. This field is
-      deprecated. Use untrusted_facing_subnet_range instead.
-    userVpc: Optional. name of VPC owned by the customer This field is
-      deprecated. Use untrusted_network instead.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -4464,25 +4383,17 @@ class SSEGateway(_messages.Message):
   appFacingSubnetRange = _messages.StringField(2)
   appFacingTargetIp = _messages.StringField(3)
   appNetworks = _messages.StringField(4, repeated=True)
-  appTrafficTargetIp = _messages.StringField(5)
-  appTrafficVpc = _messages.StringField(6)
-  appTrafficVpcSubnetRange = _messages.StringField(7)
-  appVpc = _messages.StringField(8)
-  appVpcs = _messages.StringField(9, repeated=True)
-  createTime = _messages.StringField(10)
-  labels = _messages.MessageField('LabelsValue', 11)
-  name = _messages.StringField(12)
-  sseProject = _messages.StringField(13)
-  sseRealm = _messages.StringField(14)
-  untrustedFacingNetwork = _messages.StringField(15)
-  untrustedFacingSubnetRange = _messages.StringField(16)
-  untrustedFacingTargetIp = _messages.StringField(17)
-  untrustedNetwork = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  userTrafficTargetIp = _messages.StringField(20)
-  userTrafficVpc = _messages.StringField(21)
-  userTrafficVpcSubnetRange = _messages.StringField(22)
-  userVpc = _messages.StringField(23)
+  appVpc = _messages.StringField(5)
+  createTime = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  name = _messages.StringField(8)
+  sseProject = _messages.StringField(9)
+  sseRealm = _messages.StringField(10)
+  untrustedFacingNetwork = _messages.StringField(11)
+  untrustedFacingSubnetRange = _messages.StringField(12)
+  untrustedFacingTargetIp = _messages.StringField(13)
+  untrustedNetwork = _messages.StringField(14)
+  updateTime = _messages.StringField(15)
 
 
 class SSEGatewayReference(_messages.Message):

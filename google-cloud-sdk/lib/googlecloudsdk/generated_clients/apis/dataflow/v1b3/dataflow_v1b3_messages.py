@@ -186,6 +186,22 @@ class AutoscalingSettings(_messages.Message):
   maxNumWorkers = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
+class Base2Exponent(_messages.Message):
+  r"""Exponential buckets where the growth factor between buckets is
+  `2**(2**-scale)`. e.g. for `scale=1` growth factor is
+  `2**(2**(-1))=sqrt(2)`. `n` buckets will have the following boundaries. -
+  0th: [0, gf) - i in [1, n-1]: [gf^(i), gf^(i+1))
+
+  Fields:
+    numberOfBuckets: Must be greater than 0.
+    scale: Must be between -3 and 3. This forces the growth factor of the
+      bucket boundaries to be between `2^(1/8)` and `256`.
+  """
+
+  numberOfBuckets = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  scale = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+
 class BigQueryIODetails(_messages.Message):
   r"""Metadata for a BigQuery connector used by the job.
 
@@ -214,6 +230,18 @@ class BigTableIODetails(_messages.Message):
   instanceId = _messages.StringField(1)
   projectId = _messages.StringField(2)
   tableId = _messages.StringField(3)
+
+
+class BucketOptions(_messages.Message):
+  r"""`BucketOptions` describes the bucket boundaries used in the histogram.
+
+  Fields:
+    exponential: Bucket boundaries grow exponentially.
+    linear: Bucket boundaries grow linearly.
+  """
+
+  exponential = _messages.MessageField('Base2Exponent', 1)
+  linear = _messages.MessageField('Linear', 2)
 
 
 class CPUTime(_messages.Message):
@@ -864,6 +892,30 @@ class DataflowFlexTemplateConfig(_messages.Message):
   launchOptions = _messages.MessageField('LaunchOptionsValue', 3)
   parameters = _messages.MessageField('ParametersValue', 4)
   transformNameMappings = _messages.MessageField('TransformNameMappingsValue', 5)
+
+
+class DataflowHistogramValue(_messages.Message):
+  r"""Summary statistics for a population of values. HistogramValue contains a
+  sequence of buckets and gives a count of values that fall into each bucket.
+  Bucket boundares are defined by a formula and bucket widths are either fixed
+  or exponentially increasing.
+
+  Fields:
+    bucketCounts: Optional. The number of values in each bucket of the
+      histogram, as described in `bucket_options`. `bucket_counts` should
+      contain N values, where N is the number of buckets specified in
+      `bucket_options`. If `bucket_counts` has fewer than N values, the
+      remaining values are assumed to be 0.
+    bucketOptions: Describes the bucket boundaries used in the histogram.
+    count: Number of values recorded in this histogram.
+    outlierStats: Statistics on the values recorded in the histogram that fall
+      out of the bucket boundaries.
+  """
+
+  bucketCounts = _messages.IntegerField(1, repeated=True)
+  bucketOptions = _messages.MessageField('BucketOptions', 2)
+  count = _messages.IntegerField(3)
+  outlierStats = _messages.MessageField('OutlierStats', 4)
 
 
 class DataflowProjectsCatalogTemplatesCommitRequest(_messages.Message):
@@ -2659,6 +2711,11 @@ class Environment(_messages.Message):
       Scheduling mode to run in.
     ShuffleModeValueValuesEnum: Output only. The shuffle mode used for the
       job.
+    StreamingModeValueValuesEnum: Optional. Specifies the Streaming Engine
+      message processing guarantees. Reduces cost and latency but might result
+      in duplicate messages committed to storage. Designed to run simple
+      mapping streaming ETL jobs at the lowest cost. For example, Change Data
+      Capture (CDC) to BigQuery is a canonical use case.
 
   Messages:
     InternalExperimentsValue: Experimental settings.
@@ -2700,6 +2757,11 @@ class Environment(_messages.Message):
       graduating to GA, should be replaced by dedicated fields or become
       default (i.e. always on).
     shuffleMode: Output only. The shuffle mode used for the job.
+    streamingMode: Optional. Specifies the Streaming Engine message processing
+      guarantees. Reduces cost and latency but might result in duplicate
+      messages committed to storage. Designed to run simple mapping streaming
+      ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
+      BigQuery is a canonical use case.
     tempStoragePrefix: The prefix of the resources the system should use for
       temporary storage. The system will append the suffix "/temp-{JOBNAME} to
       this resource prefix, where {JOBNAME} is the value of the job_name
@@ -2710,7 +2772,7 @@ class Environment(_messages.Message):
       storage.googleapis.com/{bucket}/{object}
       bucket.storage.googleapis.com/{object}
     useStreamingEngineResourceBasedBilling: Output only. Whether the job uses
-      the new streaming engine billing model based on resource usage.
+      the Streaming Engine resource-based billing model.
     userAgent: A description of the process that generated the request.
     version: A structure describing which components and their versions of the
       service are required in order to run the job.
@@ -2752,6 +2814,27 @@ class Environment(_messages.Message):
     SHUFFLE_MODE_UNSPECIFIED = 0
     VM_BASED = 1
     SERVICE_BASED = 2
+
+  class StreamingModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Specifies the Streaming Engine message processing
+    guarantees. Reduces cost and latency but might result in duplicate
+    messages committed to storage. Designed to run simple mapping streaming
+    ETL jobs at the lowest cost. For example, Change Data Capture (CDC) to
+    BigQuery is a canonical use case.
+
+    Values:
+      STREAMING_MODE_UNSPECIFIED: Run in the default mode.
+      STREAMING_MODE_EXACTLY_ONCE: In this mode, message deduplication is
+        performed against persistent state to make sure each message is
+        processed and committed to storage exactly once.
+      STREAMING_MODE_AT_LEAST_ONCE: Message deduplication is not performed.
+        Messages might be processed multiple times, and the results are
+        applied multiple times. Note: Setting this value also enables
+        Streaming Engine and Streaming Engine resource-based billing.
+    """
+    STREAMING_MODE_UNSPECIFIED = 0
+    STREAMING_MODE_EXACTLY_ONCE = 1
+    STREAMING_MODE_AT_LEAST_ONCE = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class InternalExperimentsValue(_messages.Message):
@@ -2867,13 +2950,14 @@ class Environment(_messages.Message):
   serviceKmsKeyName = _messages.StringField(9)
   serviceOptions = _messages.StringField(10, repeated=True)
   shuffleMode = _messages.EnumField('ShuffleModeValueValuesEnum', 11)
-  tempStoragePrefix = _messages.StringField(12)
-  useStreamingEngineResourceBasedBilling = _messages.BooleanField(13)
-  userAgent = _messages.MessageField('UserAgentValue', 14)
-  version = _messages.MessageField('VersionValue', 15)
-  workerPools = _messages.MessageField('WorkerPool', 16, repeated=True)
-  workerRegion = _messages.StringField(17)
-  workerZone = _messages.StringField(18)
+  streamingMode = _messages.EnumField('StreamingModeValueValuesEnum', 12)
+  tempStoragePrefix = _messages.StringField(13)
+  useStreamingEngineResourceBasedBilling = _messages.BooleanField(14)
+  userAgent = _messages.MessageField('UserAgentValue', 15)
+  version = _messages.MessageField('VersionValue', 16)
+  workerPools = _messages.MessageField('WorkerPool', 17, repeated=True)
+  workerRegion = _messages.StringField(18)
+  workerZone = _messages.StringField(19)
 
 
 class ExecutionStageState(_messages.Message):
@@ -4464,6 +4548,21 @@ class LeaseWorkItemResponse(_messages.Message):
   workItems = _messages.MessageField('WorkItem', 2, repeated=True)
 
 
+class Linear(_messages.Message):
+  r"""Linear buckets with the following boundaries for indices in 0 to n-1. -
+  i in [0, n-1]: [start + (i)*width, start + (i+1)*width)
+
+  Fields:
+    numberOfBuckets: Must be greater than 0.
+    start: Lower bound of the first bucket.
+    width: Distance between bucket boundaries. Must be greater than 0.
+  """
+
+  numberOfBuckets = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  start = _messages.FloatField(2)
+  width = _messages.FloatField(3)
+
+
 class ListDeploymentRevisionsResponse(_messages.Message):
   r"""Response of a request to list `Cloud Dataflow job deployment revisions`.
 
@@ -4714,6 +4813,50 @@ class MetricUpdate(_messages.Message):
   scalar = _messages.MessageField('extra_types.JsonValue', 9)
   set = _messages.MessageField('extra_types.JsonValue', 10)
   updateTime = _messages.StringField(11)
+
+
+class MetricValue(_messages.Message):
+  r"""The value of a metric along with its name and labels.
+
+  Messages:
+    MetricLabelsValue: Optional. Set of metric labels for this metric.
+
+  Fields:
+    metric: Base name for this metric.
+    metricLabels: Optional. Set of metric labels for this metric.
+    valueHistogram: Histogram value of this metric.
+    valueInt64: Integer value of this metric.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class MetricLabelsValue(_messages.Message):
+    r"""Optional. Set of metric labels for this metric.
+
+    Messages:
+      AdditionalProperty: An additional property for a MetricLabelsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type MetricLabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a MetricLabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  metric = _messages.StringField(1)
+  metricLabels = _messages.MessageField('MetricLabelsValue', 2)
+  valueHistogram = _messages.MessageField('DataflowHistogramValue', 3)
+  valueInt64 = _messages.IntegerField(4)
 
 
 class ModifyTemplateVersionLabelRequest(_messages.Message):
@@ -4984,6 +5127,24 @@ class Operation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class OutlierStats(_messages.Message):
+  r"""Statistics for the underflow and overflow bucket.
+
+  Fields:
+    overflowCount: Number of values that are larger than the upper bound of
+      the largest bucket.
+    overflowMean: Mean of values in the overflow bucket.
+    underflowCount: Number of values that are smaller than the lower bound of
+      the smallest bucket.
+    underflowMean: Mean of values in the undeflow bucket.
+  """
+
+  overflowCount = _messages.IntegerField(1)
+  overflowMean = _messages.FloatField(2)
+  underflowCount = _messages.IntegerField(3)
+  underflowMean = _messages.FloatField(4)
 
 
 class Package(_messages.Message):
@@ -5321,6 +5482,35 @@ class PartialGroupByKeyInstruction(_messages.Message):
   originalCombineValuesStepName = _messages.StringField(4)
   sideInputs = _messages.MessageField('SideInputInfo', 5, repeated=True)
   valueCombiningFn = _messages.MessageField('ValueCombiningFnValue', 6)
+
+
+class PerStepNamespaceMetrics(_messages.Message):
+  r"""Metrics for a particular unfused step and namespace. A metric is
+  uniquely identified by the `metrics_namespace`, `original_step`, `metric
+  name` and `metric_labels`.
+
+  Fields:
+    metricValues: Optional. Metrics that are recorded for this namespace and
+      unfused step.
+    metricsNamespace: The namespace of these metrics on the worker.
+    originalStep: The original system name of the unfused step that these
+      metrics are reported from.
+  """
+
+  metricValues = _messages.MessageField('MetricValue', 1, repeated=True)
+  metricsNamespace = _messages.StringField(2)
+  originalStep = _messages.StringField(3)
+
+
+class PerWorkerMetrics(_messages.Message):
+  r"""Per worker metrics.
+
+  Fields:
+    perStepNamespaceMetrics: Optional. Metrics for a particular unfused step
+      and namespace.
+  """
+
+  perStepNamespaceMetrics = _messages.MessageField('PerStepNamespaceMetrics', 1, repeated=True)
 
 
 class PipelineDescription(_messages.Message):
@@ -8019,6 +8209,7 @@ class WorkerMessage(_messages.Message):
       typically correspond to Label enum values. However, for ease of
       development other strings can be used as tags. LABEL_UNSPECIFIED should
       not be used here.
+    perWorkerMetrics: System defined metrics for this worker.
     streamingScalingReport: Contains per-user worker telemetry used in
       streaming autoscaling.
     time: The timestamp of the worker_message.
@@ -8061,14 +8252,15 @@ class WorkerMessage(_messages.Message):
 
   dataSamplingReport = _messages.MessageField('DataSamplingReport', 1)
   labels = _messages.MessageField('LabelsValue', 2)
-  streamingScalingReport = _messages.MessageField('StreamingScalingReport', 3)
-  time = _messages.StringField(4)
-  workerHealthReport = _messages.MessageField('WorkerHealthReport', 5)
-  workerLifecycleEvent = _messages.MessageField('WorkerLifecycleEvent', 6)
-  workerMessageCode = _messages.MessageField('WorkerMessageCode', 7)
-  workerMetrics = _messages.MessageField('ResourceUtilizationReport', 8)
-  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 9)
-  workerThreadScalingReport = _messages.MessageField('WorkerThreadScalingReport', 10)
+  perWorkerMetrics = _messages.MessageField('PerWorkerMetrics', 3)
+  streamingScalingReport = _messages.MessageField('StreamingScalingReport', 4)
+  time = _messages.StringField(5)
+  workerHealthReport = _messages.MessageField('WorkerHealthReport', 6)
+  workerLifecycleEvent = _messages.MessageField('WorkerLifecycleEvent', 7)
+  workerMessageCode = _messages.MessageField('WorkerMessageCode', 8)
+  workerMetrics = _messages.MessageField('ResourceUtilizationReport', 9)
+  workerShutdownNotice = _messages.MessageField('WorkerShutdownNotice', 10)
+  workerThreadScalingReport = _messages.MessageField('WorkerThreadScalingReport', 11)
 
 
 class WorkerMessageCode(_messages.Message):

@@ -266,12 +266,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -283,7 +302,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -319,11 +342,14 @@ class CloudAuditOptions(_messages.Message):
   Enums:
     LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
       Record.
+    PermissionTypeValueValuesEnum: The type associated with the permission.
 
   Fields:
     authorizationLoggingOptions: Information used by the Cloud Audit Logging
-      pipeline.
+      pipeline. Will be deprecated once the migration to PermissionType is
+      complete (b/201806118).
     logName: The log_name to populate in the Cloud Audit Record.
+    permissionType: The type associated with the permission.
   """
 
   class LogNameValueValuesEnum(_messages.Enum):
@@ -338,8 +364,27 @@ class CloudAuditOptions(_messages.Message):
     ADMIN_ACTIVITY = 1
     DATA_ACCESS = 2
 
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type associated with the permission.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: Permissions that gate reading resource configuration or
+        metadata.
+      ADMIN_WRITE: Permissions that gate modification of resource
+        configuration or metadata.
+      DATA_READ: Permissions that gate reading user-provided data.
+      DATA_WRITE: Permissions that gate writing user-provided data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
   authorizationLoggingOptions = _messages.MessageField('AuthorizationLoggingOptions', 1)
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 3)
 
 
 class CloudBuildMembershipSpec(_messages.Message):
@@ -3800,6 +3845,29 @@ class GkehubProjectsLocationsRolloutsCreateRequest(_messages.Message):
   rolloutId = _messages.StringField(3)
 
 
+class GkehubProjectsLocationsRolloutsDeleteRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsRolloutsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the rollout to delete.
+      projects/{project}/locations/{location}/rollouts/{rollout}
+    requestId: Optional. A request ID to identify requests. Specify a unique
+      request ID so that if you must retry your request, the server will know
+      to ignore the request if it has already been completed. The server will
+      guarantee that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, will ignore the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
 class GkehubProjectsLocationsRolloutsGetRequest(_messages.Message):
   r"""A GkehubProjectsLocationsRolloutsGetRequest object.
 
@@ -3925,6 +3993,25 @@ class GkehubProjectsLocationsScopesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class GkehubProjectsLocationsScopesListPermittedRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesListPermittedRequest object.
+
+  Fields:
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned.
+    pageToken: Optional. Token returned by previous call to
+      `ListPermittedScopes` which specifies the position in the list from
+      where to continue listing the resources.
+    parent: Required. The parent (project and location) where the Scope will
+      be listed. Specified in the format `projects/*/locations/*`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
 
 
 class GkehubProjectsLocationsScopesListRequest(_messages.Message):
@@ -4997,6 +5084,20 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListPermittedScopesResponse(_messages.Message):
+  r"""List of permitted Scopes.
+
+  Fields:
+    nextPageToken: A token to request the next page of resources from the
+      `ListPermittedScopes` method. The value of an empty string means that
+      there are no more resources to return.
+    scopes: The list of permitted Scopes
+  """
+
+  nextPageToken = _messages.StringField(1)
+  scopes = _messages.MessageField('Scope', 2, repeated=True)
 
 
 class ListRBACRoleBindingsResponse(_messages.Message):

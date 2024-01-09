@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 import datetime
+import re
 
 from apitools.base.py import list_pager
 from cloudsdk.google.protobuf import timestamp_pb2
@@ -27,6 +28,7 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
+from googlecloudsdk.core.console import console_io
 
 
 # The list of pre-defined IAM roles in Spanner.
@@ -38,6 +40,9 @@ KNOWN_ROLES = [
 
 # Timeout to use in ListInstances for unreachable instances.
 UNREACHABLE_INSTANCE_TIMEOUT = datetime.timedelta(seconds=20)
+
+_SPANNER_API_NAME = 'spanner'
+_SPANNER_API_VERSION = 'v1'
 
 
 def Create(
@@ -58,9 +63,9 @@ def Create(
     ssd_cache=None,
 ):
   """Create a new instance."""
-  client = apis.GetClientInstance('spanner', 'v1')
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   # Module containing the definitions of messages for the specified API.
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   config_ref = resources.REGISTRY.Parse(
       config,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
@@ -113,8 +118,8 @@ def Create(
 
 def SetPolicy(instance_ref, policy, field_mask=None):
   """Saves the given policy on the instance, overwriting whatever exists."""
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   policy.version = iam_util.MAX_LIBRARY_IAM_SUPPORTED_VERSION
   req = msgs.SpannerProjectsInstancesSetIamPolicyRequest(
       resource=instance_ref.RelativeName(),
@@ -125,8 +130,8 @@ def SetPolicy(instance_ref, policy, field_mask=None):
 
 def GetIamPolicy(instance_ref):
   """Gets the IAM policy on an instance."""
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   req = msgs.SpannerProjectsInstancesGetIamPolicyRequest(
       resource=instance_ref.RelativeName(),
       getIamPolicyRequest=msgs.GetIamPolicyRequest(
@@ -138,8 +143,8 @@ def GetIamPolicy(instance_ref):
 
 def Delete(instance):
   """Delete an instance."""
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   ref = resources.REGISTRY.Parse(
       instance,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
@@ -150,8 +155,8 @@ def Delete(instance):
 
 def Get(instance):
   """Get an instance by name."""
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   ref = resources.REGISTRY.Parse(
       instance,
       params={'projectsId': properties.VALUES.core.project.GetOrFail},
@@ -162,8 +167,8 @@ def Get(instance):
 
 def List():
   """List instances in the project."""
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   project_ref = resources.REGISTRY.Create(
       'spanner.projects', projectsId=properties.VALUES.core.project.GetOrFail)
   tp_proto = timestamp_pb2.Timestamp()
@@ -226,8 +231,8 @@ def Patch(
       fields.append(
           'autoscalingConfig.autoscalingTargets.storageUtilizationPercent'
       )
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
 
   instance_obj = msgs.Instance(displayName=description)
   if processing_units:
@@ -284,8 +289,8 @@ def Patch(
 
 def GetLocations(instance, verbose_flag):
   """Get all the replica regions for an instance."""
-  client = apis.GetClientInstance('spanner', 'v1')
-  msgs = apis.GetMessagesModule('spanner', 'v1')
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
   instance_res = Get(instance)
   config_req = msgs.SpannerProjectsInstanceConfigsGetRequest(
       name=instance_res.config)
@@ -300,3 +305,84 @@ def GetLocations(instance, verbose_flag):
       region_set.add(item.location)
     command_output = [{'location': item} for item in region_set]
   return command_output
+
+
+def Move(instance, target_instance_config):
+  """Moves an instance from one instance-config to another.
+
+  Args:
+      instance: Instance to move.
+      target_instance_config: Target instance config to move the instance to.
+
+  The configs can be google-managed or user-managed.
+  Ex: gcloud spanner instances move instance-to-move
+  --target-config=instance-config-to-move-to
+
+  Above example will move the instance(instance-to-move) to the following
+  instance config(instance-config-to-move-to).
+  """
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  config_ref = resources.REGISTRY.Parse(
+      target_instance_config,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instanceConfigs',
+  )
+  instance_ref = resources.REGISTRY.Parse(
+      instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instances',
+  )
+  console_io.PromptContinue(
+      message=(
+          'You are about to move instance {0} from {1} to {2}. This is a'
+          ' long-running operation with potential service'
+          ' implications:\n\n\n\t* Increased latencies: Read and write'
+          ' operations may experience delays.\n\n\t* Elevated abort rate:'
+          ' Transactions may have a higher chance of failing.\n\n\t* Spiked CPU'
+          ' utilization: System resources will be strained, impacting'
+          ' performance.\n\n\t* Additional costs: Instance moves incur extra'
+          ' charges, as described in the documentation.\n\nBefore proceeding,'
+          ' and for detailed information and best practices, please consult the'
+          ' documentation at'
+          ' http://cloud.google.com/spanner/docs/move-instance.'.format(
+              instance, GetInstanceConfig(instance), target_instance_config
+          )
+      ),
+      cancel_on_no=True,
+      prompt_string='Do you want to proceed',
+  )
+  move_req = msgs.SpannerProjectsInstancesMoveRequest(
+      moveInstanceRequest=msgs.MoveInstanceRequest(
+          targetConfig=config_ref.RelativeName()
+      ),
+      name=instance_ref.RelativeName(),
+  )
+  move_operation_id = client.projects_instances.Move(move_req).name
+  operation_id = re.search('.*/operations/(.*)', move_operation_id).group(1)
+  print(
+      '\nInstance move started for {0}\n\n'
+      'Track progress with: gcloud spanner operations'
+      ' describe {1} --instance={2}'.format(
+          instance_ref.RelativeName(), operation_id, instance
+      )
+  )
+
+
+def GetInstanceConfig(instance):
+  """Get the instance config of the passed instance."""
+  client = apis.GetClientInstance(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  msgs = apis.GetMessagesModule(_SPANNER_API_NAME, _SPANNER_API_VERSION)
+  instance_ref = resources.REGISTRY.Parse(
+      instance,
+      params={'projectsId': properties.VALUES.core.project.GetOrFail},
+      collection='spanner.projects.instances',
+  )
+  instance_req = msgs.SpannerProjectsInstancesGetRequest(
+      name=instance_ref.RelativeName(), fieldMask='config'
+  )
+  instance_info = client.projects_instances.Get(instance_req)
+  instance_config = re.search(
+      '.*/instanceConfigs/(.*)', instance_info.config
+  ).group(1)
+  return instance_config

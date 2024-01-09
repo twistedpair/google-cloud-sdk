@@ -91,7 +91,7 @@ def AddEndpointResource(release_track, parser):
           fallthroughs=[
               deps.ArgFallthrough("--zone"),
               deps.FullySpecifiedAnchorFallthrough(
-                  deps.ArgFallthrough(ASSOCIATION_RESOURCE_NAME),
+                  [deps.ArgFallthrough(ASSOCIATION_RESOURCE_NAME)],
                   collection_info,
                   "locationsId",
               ),
@@ -171,7 +171,7 @@ def AddTLSInspectionPolicy(
           fallthroughs=[
               deps.ArgFallthrough("--project"),
               deps.FullySpecifiedAnchorFallthrough(
-                  deps.ArgFallthrough(ASSOCIATION_RESOURCE_NAME),
+                  [deps.ArgFallthrough(ASSOCIATION_RESOURCE_NAME)],
                   collection_info,
                   "projectsId",
               ),

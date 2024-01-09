@@ -63,3 +63,12 @@ cloud-access-binding:
     attribute_name: binding
     help: |
       The ID of the gcpUserAccessBinding.
+supported-service:
+  name: supported-service
+  request_id_field: services.name
+  collection: accesscontextmanager.services
+  attributes:
+  - parameter_name: name
+    attribute_name: service_name
+    help: |
+      Service name.

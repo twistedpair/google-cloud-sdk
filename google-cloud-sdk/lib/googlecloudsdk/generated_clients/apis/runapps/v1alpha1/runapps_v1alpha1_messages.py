@@ -1554,12 +1554,15 @@ class RunappsProjectsLocationsApplicationsCreateRequest(_messages.Message):
       clients from accidentally creating duplicate commitments. The request ID
       must be a valid UUID with the exception that zero UUID is not supported
       (00000000-0000-0000-0000-000000000000).
+    validateOnly: Optional. If set, validate the request, but do not actually
+      persist it.
   """
 
   application = _messages.MessageField('Application', 1)
   applicationId = _messages.StringField(2)
   parent = _messages.StringField(3, required=True)
   requestId = _messages.StringField(4)
+  validateOnly = _messages.BooleanField(5)
 
 
 class RunappsProjectsLocationsApplicationsDeleteRequest(_messages.Message):
@@ -1696,6 +1699,8 @@ class RunappsProjectsLocationsApplicationsPatchRequest(_messages.Message):
   r"""A RunappsProjectsLocationsApplicationsPatchRequest object.
 
   Fields:
+    allowMissing: Optional. If set, a new Application will be created if it
+      does not already exist. In this situation, `update_mask` is ignored.
     application: A Application resource to be passed as the request body.
     name: name of resource
     requestId: An optional request ID to identify requests. Specify a unique
@@ -1714,12 +1719,16 @@ class RunappsProjectsLocationsApplicationsPatchRequest(_messages.Message):
       specified in the update_mask are relative to the resource, not the full
       request. A field will be overwritten if it is in the mask. If the user
       does not provide a mask then all fields will be overwritten.
+    validateOnly: Optional. If set, validate the request, but do not actually
+      persist it.
   """
 
-  application = _messages.MessageField('Application', 1)
-  name = _messages.StringField(2, required=True)
-  requestId = _messages.StringField(3)
-  updateMask = _messages.StringField(4)
+  allowMissing = _messages.BooleanField(1)
+  application = _messages.MessageField('Application', 2)
+  name = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+  updateMask = _messages.StringField(5)
+  validateOnly = _messages.BooleanField(6)
 
 
 class RunappsProjectsLocationsGetRequest(_messages.Message):

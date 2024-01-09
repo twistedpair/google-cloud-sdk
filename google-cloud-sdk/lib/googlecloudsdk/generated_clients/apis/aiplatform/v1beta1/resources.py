@@ -616,6 +616,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_METADATASTORES_ARTIFACTS_OPERATIONS = (
+      'projects.locations.metadataStores.artifacts.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataStores/'
+              '{metadataStoresId}/artifacts/{artifactsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_METADATASTORES_CONTEXTS = (
       'projects.locations.metadataStores.contexts',
       '{+name}',
@@ -623,6 +635,18 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/metadataStores/'
               '{metadataStoresId}/contexts/{contextsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_METADATASTORES_CONTEXTS_OPERATIONS = (
+      'projects.locations.metadataStores.contexts.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataStores/'
+              '{metadataStoresId}/contexts/{contextsId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True
@@ -638,6 +662,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_METADATASTORES_EXECUTIONS_OPERATIONS = (
+      'projects.locations.metadataStores.executions.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataStores/'
+              '{metadataStoresId}/executions/{executionsId}/operations/'
+              '{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_METADATASTORES_METADATASCHEMAS = (
       'projects.locations.metadataStores.metadataSchemas',
       '{+name}',
@@ -645,6 +681,17 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/metadataStores/'
               '{metadataStoresId}/metadataSchemas/{metadataSchemasId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_METADATASTORES_OPERATIONS = (
+      'projects.locations.metadataStores.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/metadataStores/'
+              '{metadataStoresId}/operations/{operationsId}',
       },
       ['name'],
       True
@@ -864,6 +911,26 @@ class Collections(enum.Enum):
           '':
               'projects/{projectsId}/locations/{locationsId}/pipelineJobs/'
               '{pipelineJobsId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_REASONINGENGINES = (
+      'projects.locations.reasoningEngines',
+      'projects/{projectsId}/locations/{locationsId}/reasoningEngines/'
+      '{reasoningEnginesId}',
+      {},
+      ['projectsId', 'locationsId', 'reasoningEnginesId'],
+      True
+  )
+  PROJECTS_LOCATIONS_REASONINGENGINES_OPERATIONS = (
+      'projects.locations.reasoningEngines.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'reasoningEngines/{reasoningEnginesId}/operations/'
+              '{operationsId}',
       },
       ['name'],
       True

@@ -40,6 +40,7 @@ class SqladminV1beta4(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.backupRuns = self.BackupRunsService(self)
+    self.backups = self.BackupsService(self)
     self.connect = self.ConnectService(self)
     self.databases = self.DatabasesService(self)
     self.flags = self.FlagsService(self)
@@ -162,6 +163,151 @@ class SqladminV1beta4(base_api.BaseApiClient):
         request_field='',
         request_type_name='SqlBackupRunsListRequest',
         response_type_name='BackupRunsListResponse',
+        supports_download=False,
+    )
+
+  class BackupsService(base_api.BaseApiService):
+    """Service class for the backups resource."""
+
+    _NAME = 'backups'
+
+    def __init__(self, client):
+      super(SqladminV1beta4.BackupsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CreateBackup(self, request, global_params=None):
+      r"""Creates a backup for a cloud sql instance. This API can only be used to create OnDemand backups.
+
+      Args:
+        request: (SqlBackupsCreateBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateBackup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateBackup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='sql/v1beta4/projects/{projectsId}/backups',
+        http_method='POST',
+        method_id='sql.backups.createBackup',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='sql/v1beta4/{+parent}/backups',
+        request_field='backup',
+        request_type_name='SqlBackupsCreateBackupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def DeleteBackup(self, request, global_params=None):
+      r"""Deletes the backup.
+
+      Args:
+        request: (SqlBackupsDeleteBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('DeleteBackup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    DeleteBackup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='sql/v1beta4/projects/{projectsId}/backups/{backupsId}',
+        http_method='DELETE',
+        method_id='sql.backups.deleteBackup',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='sql/v1beta4/{+name}',
+        request_field='',
+        request_type_name='SqlBackupsDeleteBackupRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def GetBackup(self, request, global_params=None):
+      r"""Retrieves a resource containing information about a backup.
+
+      Args:
+        request: (SqlBackupsGetBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Backup) The response message.
+      """
+      config = self.GetMethodConfig('GetBackup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetBackup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='sql/v1beta4/projects/{projectsId}/backups/{backupsId}',
+        http_method='GET',
+        method_id='sql.backups.getBackup',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='sql/v1beta4/{+name}',
+        request_field='',
+        request_type_name='SqlBackupsGetBackupRequest',
+        response_type_name='Backup',
+        supports_download=False,
+    )
+
+    def ListBackups(self, request, global_params=None):
+      r"""Lists all backups associated with the project.
+
+      Args:
+        request: (SqlBackupsListBackupsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBackupsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListBackups')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListBackups.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='sql/v1beta4/projects/{projectsId}/backups',
+        http_method='GET',
+        method_id='sql.backups.listBackups',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='sql/v1beta4/{+parent}/backups',
+        request_field='',
+        request_type_name='SqlBackupsListBackupsRequest',
+        response_type_name='ListBackupsResponse',
+        supports_download=False,
+    )
+
+    def UpdateBackup(self, request, global_params=None):
+      r"""Updates the retention period and the description of the backup, currently restricted to final backups.
+
+      Args:
+        request: (SqlBackupsUpdateBackupRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('UpdateBackup')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UpdateBackup.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='sql/v1beta4/projects/{projectsId}/backups/{backupsId}',
+        http_method='PATCH',
+        method_id='sql.backups.updateBackup',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='sql/v1beta4/{+name}',
+        request_field='backup',
+        request_type_name='SqlBackupsUpdateBackupRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -438,6 +584,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
       super(SqladminV1beta4.InstancesService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def AcquireSsrsLease(self, request, global_params=None):
+      r"""Acquire a lease for the setup of SQL Server Reporting Services (SSRS).
+
+      Args:
+        request: (SqlInstancesAcquireSsrsLeaseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SqlInstancesAcquireSsrsLeaseResponse) The response message.
+      """
+      config = self.GetMethodConfig('AcquireSsrsLease')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AcquireSsrsLease.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.acquireSsrsLease',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/acquireSsrsLease',
+        request_field='instancesAcquireSsrsLeaseRequest',
+        request_type_name='SqlInstancesAcquireSsrsLeaseRequest',
+        response_type_name='SqlInstancesAcquireSsrsLeaseResponse',
+        supports_download=False,
+    )
 
     def AddServerCa(self, request, global_params=None):
       r"""Add a new trusted Certificate Authority (CA) version for the specified instance. Required to prepare for a certificate rotation. If a CA version was previously added but never used in a certificate rotation, this operation replaces that version. There cannot be more than one CA version waiting to be rotated in.
@@ -826,6 +998,32 @@ class SqladminV1beta4(base_api.BaseApiClient):
         request_field='instancesReencryptRequest',
         request_type_name='SqlInstancesReencryptRequest',
         response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def ReleaseSsrsLease(self, request, global_params=None):
+      r"""Release a lease for the setup of SQL Server Reporting Services (SSRS).
+
+      Args:
+        request: (SqlInstancesReleaseSsrsLeaseRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SqlInstancesReleaseSsrsLeaseResponse) The response message.
+      """
+      config = self.GetMethodConfig('ReleaseSsrsLease')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ReleaseSsrsLease.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='sql.instances.releaseSsrsLease',
+        ordered_params=['project', 'instance'],
+        path_params=['instance', 'project'],
+        query_params=[],
+        relative_path='sql/v1beta4/projects/{project}/instances/{instance}/releaseSsrsLease',
+        request_field='',
+        request_type_name='SqlInstancesReleaseSsrsLeaseRequest',
+        response_type_name='SqlInstancesReleaseSsrsLeaseResponse',
         supports_download=False,
     )
 

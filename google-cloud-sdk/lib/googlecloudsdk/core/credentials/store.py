@@ -70,6 +70,19 @@ _GRANT_TYPE = 'urn:ietf:params:oauth:grant-type:jwt-bearer'
 
 _CREDENTIALS_EXPIRY_WINDOW = '300s'
 
+ACCOUNT_TABLE_FORMAT = """\
+    table[title='Credentialed Accounts'](
+        status.yesno(yes='*', no=''):label=ACTIVE,
+        account
+    )"""
+
+ACCOUNT_TABLE_WITH_UNIVERSE_DOMAIN_FORMAT = """\
+    table[title='Credentialed Accounts'](
+        status.yesno(yes='*', no=''):label=ACTIVE,
+        account,
+        universe_domain
+    )"""
+
 
 class Error(creds_exceptions.Error):
   """Exceptions for the credentials module."""
@@ -203,6 +216,91 @@ class GceCredentialProvider(object):
     properties.VALUES.core.account.RemoveCallback(self.GetAccount)
     properties.VALUES.core.project.RemoveCallback(self.GetProject)
     STATIC_CREDENTIAL_PROVIDERS.RemoveProvider(self)
+
+
+class AcctInfo(object):
+  """An auth command resource list item.
+
+  Attributes:
+    account: str, The account name.
+    status: str, The account status, one of ['ACTIVE', ''].
+  """
+
+  def __init__(self, account, active):
+    self.account = account
+    self.status = 'ACTIVE' if active else ''
+
+
+class AcctInfoWithUniverseDomain(object):
+  """An auth command resource list item.
+
+  Attributes:
+    account: str, The account name.
+    status: str, The account status, one of ['ACTIVE', ''].
+    universe_domain: str, The universe domain. The default value is
+      googleapis.com.
+  """
+
+  def __init__(self, account, active, universe_domain):
+    self.account = account
+    self.status = 'ACTIVE' if active else ''
+    self.universe_domain = (
+        universe_domain or properties.VALUES.core.universe_domain.default
+    )
+
+
+def AllAccounts():
+  """Get all accounts for the auth command Run() method.
+
+  Returns:
+    List[AccInfo]: The list of account information for all accounts.
+  """
+  active_account = properties.VALUES.core.account.Get()
+  return [
+      AcctInfo(account, account == active_account)
+      for account in AvailableAccounts()
+  ]
+
+
+def AllAccountsWithUniverseDomains():
+  """Get all accounts and universe domains for the auth command Run() method.
+
+  Returns:
+    List[AccInfoWithUniverseDomain]: The list of account and universe domain
+      information for all accounts.
+  """
+  # First get the accounts and their universe domains from the credential store.
+  # Note that we don't need to load the access token cache because universe
+  # domain is saved only in the credential store.
+  store = c_creds.GetCredentialStore(with_access_token_cache=False)
+  accounts_dict = store.GetAccountsWithUniverseDomain()
+
+  # Next get the accounts from the static provider (e.g. GCE provider). To get
+  # their universe domain, first obtain the credential from the provider, if the
+  # cred has the universe domain property then use it, otherwise use GDU.
+  static_accounts = STATIC_CREDENTIAL_PROVIDERS.GetAccounts()
+  for account in static_accounts:
+    # If the account is already saved in cred store, there is no need to load it
+    # from the static provider again.
+    if account not in accounts_dict:
+      creds = STATIC_CREDENTIAL_PROVIDERS.GetCredentials(account)
+      accounts_dict[account] = (
+          creds.universe_domain
+          if hasattr(creds, 'universe_domain')
+          else properties.VALUES.core.universe_domain.default
+      )
+
+  # Now we have all the accounts, sort them and mark the current active account.
+  accounts_dict = dict(sorted(accounts_dict.items()))
+  active_account = properties.VALUES.core.account.Get()
+  result = [
+      AcctInfoWithUniverseDomain(
+          account, account == active_account, accounts_dict[account]
+      )
+      for account in accounts_dict
+  ]
+
+  return result
 
 
 def AvailableAccounts():

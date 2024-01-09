@@ -84,7 +84,7 @@ integrations:
   visible: false
   eta_in_min: 5
   cta: >-
-    To connect to the Firstore Database utilize the environment variables FIRESTORE_DB_NAME.
+    To connect to the Firestore Database utilize the environment variables FIRESTORE_DB_NAME.
     These have been added to the Cloud Run service for you.
   parameters: []
   required_apis:

@@ -96,7 +96,7 @@ class ExecutionsPoller(waiter.OperationPoller):
 
   def IsDone(self, execution):
     """Overrides."""
-    return execution.state.name != 'ACTIVE'
+    return execution.state.name != 'ACTIVE' and execution.state.name != 'QUEUED'
 
   def Poll(self, execution_ref):
     """Overrides."""

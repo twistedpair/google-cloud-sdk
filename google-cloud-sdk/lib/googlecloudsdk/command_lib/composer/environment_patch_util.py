@@ -112,68 +112,71 @@ def Patch(env_resource,
         env_resource.RelativeName(), six.text_type(e)))
 
 
-def ConstructPatch(is_composer_v1,
-                   env_ref=None,
-                   node_count=None,
-                   update_pypi_packages_from_file=None,
-                   clear_pypi_packages=None,
-                   remove_pypi_packages=None,
-                   update_pypi_packages=None,
-                   clear_labels=None,
-                   remove_labels=None,
-                   update_labels=None,
-                   clear_airflow_configs=None,
-                   remove_airflow_configs=None,
-                   update_airflow_configs=None,
-                   clear_env_variables=None,
-                   remove_env_variables=None,
-                   update_env_variables=None,
-                   update_image_version=None,
-                   update_web_server_access_control=None,
-                   cloud_sql_machine_type=None,
-                   web_server_machine_type=None,
-                   scheduler_cpu=None,
-                   worker_cpu=None,
-                   web_server_cpu=None,
-                   scheduler_memory_gb=None,
-                   worker_memory_gb=None,
-                   web_server_memory_gb=None,
-                   scheduler_storage_gb=None,
-                   worker_storage_gb=None,
-                   web_server_storage_gb=None,
-                   min_workers=None,
-                   max_workers=None,
-                   scheduler_count=None,
-                   maintenance_window_start=None,
-                   maintenance_window_end=None,
-                   maintenance_window_recurrence=None,
-                   environment_size=None,
-                   master_authorized_networks_enabled=None,
-                   master_authorized_networks=None,
-                   airflow_database_retention_days=None,
-                   release_track=base.ReleaseTrack.GA,
-                   triggerer_cpu=None,
-                   triggerer_memory_gb=None,
-                   triggerer_count=None,
-                   enable_scheduled_snapshot_creation=None,
-                   snapshot_location=None,
-                   snapshot_schedule_timezone=None,
-                   snapshot_creation_schedule=None,
-                   cloud_data_lineage_integration_enabled=None,
-                   support_web_server_plugins=None,
-                   support_private_builds_only=None,
-                   dag_processor_cpu=None,
-                   dag_processor_count=None,
-                   dag_processor_memory_gb=None,
-                   dag_processor_storage_gb=None,
-                   disable_vpc_connectivity=None,
-                   network=None,
-                   subnetwork=None,
-                   network_attachment=None,
-                   workload_updated=None,
-                   enable_private_environment=None,
-                   disable_private_environment=None,
-                   enable_high_resilience=None):
+def ConstructPatch(
+    is_composer_v1,
+    env_ref=None,
+    node_count=None,
+    update_pypi_packages_from_file=None,
+    clear_pypi_packages=None,
+    remove_pypi_packages=None,
+    update_pypi_packages=None,
+    clear_labels=None,
+    remove_labels=None,
+    update_labels=None,
+    clear_airflow_configs=None,
+    remove_airflow_configs=None,
+    update_airflow_configs=None,
+    clear_env_variables=None,
+    remove_env_variables=None,
+    update_env_variables=None,
+    update_image_version=None,
+    update_web_server_access_control=None,
+    cloud_sql_machine_type=None,
+    web_server_machine_type=None,
+    scheduler_cpu=None,
+    worker_cpu=None,
+    web_server_cpu=None,
+    scheduler_memory_gb=None,
+    worker_memory_gb=None,
+    web_server_memory_gb=None,
+    scheduler_storage_gb=None,
+    worker_storage_gb=None,
+    web_server_storage_gb=None,
+    min_workers=None,
+    max_workers=None,
+    scheduler_count=None,
+    maintenance_window_start=None,
+    maintenance_window_end=None,
+    maintenance_window_recurrence=None,
+    environment_size=None,
+    master_authorized_networks_enabled=None,
+    master_authorized_networks=None,
+    airflow_database_retention_days=None,
+    release_track=base.ReleaseTrack.GA,
+    triggerer_cpu=None,
+    triggerer_memory_gb=None,
+    triggerer_count=None,
+    enable_scheduled_snapshot_creation=None,
+    snapshot_location=None,
+    snapshot_schedule_timezone=None,
+    snapshot_creation_schedule=None,
+    cloud_data_lineage_integration_enabled=None,
+    support_web_server_plugins=None,
+    support_private_builds_only=None,
+    dag_processor_cpu=None,
+    dag_processor_count=None,
+    dag_processor_memory_gb=None,
+    dag_processor_storage_gb=None,
+    disable_vpc_connectivity=None,
+    network=None,
+    subnetwork=None,
+    network_attachment=None,
+    workload_updated=None,
+    enable_private_environment=None,
+    disable_private_environment=None,
+    enable_high_resilience=None,
+    enable_logs_in_cloud_logging_only=None,
+):
   """Constructs an environment patch.
 
   Args:
@@ -280,26 +283,28 @@ def ConstructPatch(is_composer_v1,
     dag_processor_storage_gb: float or None, storage allocated to Airflow dag
       processor. Can be specified only in Composer 3.
     disable_vpc_connectivity: bool or None, defines whether to disable
-      connectivity with a user's VPC network.
-      Can be specified only in Composer 3.
+      connectivity with a user's VPC network. Can be specified only in Composer
+      3.
     network: str or None, the Compute Engine network to which to connect the
-      environment specified as relative resource name.
-      Can be specified only in Composer 3.
+      environment specified as relative resource name. Can be specified only in
+      Composer 3.
     subnetwork: str or None, the Compute Engine subnetwork to which to connect
-      the environment specified as relative resource name.
-      Can be specified only in Composer 3.
+      the environment specified as relative resource name. Can be specified only
+      in Composer 3.
     network_attachment: str or None, the Compute Engine network attachment that
       is used as PSC Network entry point.
     workload_updated: bool or None, verify if workload config has been updated
     enable_private_environment: bool or None, defines whether the internet
-      access is disabled from Composer components.
-      Can be specified only in Composer 3.
+      access is disabled from Composer components. Can be specified only in
+      Composer 3.
     disable_private_environment: bool or None, defines whether the internet
-      access is enabled from Composer components.
-      Can be specified only in Composer 3.
-    enable_high_resilience: bool or None, defines whether high resilience
-      should be enabled for given environment.
-      Can be specified only in Composer 2.
+      access is enabled from Composer components. Can be specified only in
+      Composer 3.
+    enable_high_resilience: bool or None, defines whether high resilience should
+      be enabled for given environment. Can be specified only in Composer 2.
+    enable_logs_in_cloud_logging_only: bool or None, defines whether logs in
+      cloud logging only feature should be enabled for given environment. Can be
+      specified only in composer 2.
 
   Returns:
     (str, Environment), the field mask and environment to use for update.
@@ -441,6 +446,10 @@ def ConstructPatch(is_composer_v1,
   if enable_high_resilience is not None:
     return _ConstructHighResiliencePatch(
         enable_high_resilience, release_track
+    )
+  if enable_logs_in_cloud_logging_only is not None:
+    return _ConstructLogsInCloudLoggingOnlyPatch(
+        enable_logs_in_cloud_logging_only, release_track
     )
   raise command_util.Error(
       'Cannot update Environment with no update type specified.'
@@ -1104,4 +1113,34 @@ def _ConstructHighResiliencePatch(
               messages.EnvironmentConfig.ResilienceModeValueValuesEnum.HIGH_RESILIENCE
           )
       )
+  )
+
+
+def _ConstructLogsInCloudLoggingOnlyPatch(enabled, release_track):
+  """Constructs a patch for updating logs in cloud logging only feature.
+
+  Args:
+    enabled: bool, whether logs in cloud logging onlyshould be enabled.
+    release_track: base.ReleaseTrack, the release track of command. It dictates
+      which Composer client library is used.
+
+  Returns:
+    (str, Environment), the field mask and environment to use for update.
+  """
+  messages = api_util.GetMessagesModule(release_track=release_track)
+  if enabled:
+    task_logs_retention_config = messages.TaskLogsRetentionConfig(
+        storageMode=messages.TaskLogsRetentionConfig.StorageModeValueValuesEnum.CLOUD_LOGGING_ONLY
+    )
+  else:
+    task_logs_retention_config = messages.TaskLogsRetentionConfig(
+        storageMode=messages.TaskLogsRetentionConfig.StorageModeValueValuesEnum.CLOUD_LOGGING_AND_CLOUD_STORAGE
+    )
+  data_retention_config = messages.DataRetentionConfig(
+      taskLogsRetentionConfig=task_logs_retention_config
+  )
+  config = messages.EnvironmentConfig(dataRetentionConfig=data_retention_config)
+  return (
+      'config.data_retention_config.task_logs_retention_config.storage_mode',
+      messages.Environment(config=config),
   )

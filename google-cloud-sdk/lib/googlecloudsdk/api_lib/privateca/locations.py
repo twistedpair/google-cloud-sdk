@@ -24,15 +24,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 
 
-# The subset of privateca locations where the v1beta1 API is available.
-_BetaLocations = [
-    'asia-southeast1',
-    'europe-west1',
-    'europe-west4',
-    'us-central1',
-    'us-east1',
-    'us-west1',
-]
 # The list of locations where the v1 API is available. Used as a fallback in
 # case the ListLocations API is down.
 _V1Locations = [
@@ -63,12 +54,8 @@ _V1Locations = [
 ]
 
 
-def GetSupportedLocations(version='v1beta1'):
+def GetSupportedLocations(version='v1'):
   """Gets a list of supported Private CA locations for the current project."""
-  if version == 'v1beta1':
-    # The beta API is only supported in a fixed list of locations, regardless of
-    # what the ListLocations API returns.
-    return _BetaLocations
   if version != 'v1':
     raise exceptions.NotYetImplementedError(
         'Unknown API version: {}'.format(version))

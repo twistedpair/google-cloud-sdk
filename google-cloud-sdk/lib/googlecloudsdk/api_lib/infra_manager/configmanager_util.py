@@ -380,3 +380,132 @@ def ListRevisions(deployment_full_name):
           parent=deployment_full_name
       )
   )
+
+
+def ExportPreviewResult(
+    export_preview_result_request,
+    preview_id,
+):
+  """Calls ExportPreviewResult API.
+
+  Args:
+    export_preview_result_request: A ExportPreviewResultRequest
+      resource to be passed as the request body.
+    preview_id: the ID of the preview, e.g. "my-preview" in
+      "projects/p/locations/l/previews/my-preview".
+
+  Returns:
+    (Statefile) The response message.
+  """
+  client = GetClientInstance()
+  messages = client.MESSAGES_MODULE
+
+  return client.projects_locations_previews.Export(
+      messages.ConfigProjectsLocationsPreviewsExportRequest(
+          exportPreviewResultRequest=export_preview_result_request,
+          parent=preview_id,
+      )
+  )
+
+
+def CreatePreview(preview, preview_id, location):
+  """Calls into the CreatePreview API.
+
+  Args:
+    preview: a messages.Preview resource (containing properties like the
+      blueprint).
+    preview_id: the ID of the preview, e.g. "my-preview" in
+      "projects/p/locations/l/previews/my-preview".
+    location: the location in which to create the preview.
+
+  Returns:
+    A messages.OperationMetadata representing a long-running operation.
+  """
+  client = GetClientInstance()
+  messages = client.MESSAGES_MODULE
+  return client.projects_locations_previews.Create(
+      messages.ConfigProjectsLocationsPreviewsCreateRequest(
+          parent=location, preview=preview, previewId=preview_id
+      )
+  )
+
+
+def WaitForCreatePreviewOperation(
+    operation, progress_message='Creating the preview'
+):
+  """Waits for the given "create preview" LRO to complete.
+
+  Args:
+    operation: the operation to poll.
+    progress_message: string to display for default progress_tracker.
+
+  Raises:
+    apitools.base.py.HttpError: if the request returns an HTTP error.
+
+  Returns:
+    A messages.Preview resource.
+  """
+  client = GetClientInstance()
+  operation_ref = resources.REGISTRY.ParseRelativeName(
+      operation.name, collection='config.projects.locations.operations'
+  )
+  poller = waiter.CloudOperationPoller(
+      client.projects_locations_previews,
+      client.projects_locations_operations,
+  )
+
+  poller.detailed_message = ''
+
+  def TrackerUpdateFunc(tracker, result, unused_status):
+    """Updates the progress tracker with the result of the operation.
+
+    Args:
+      tracker: The ProgressTracker for the operation.
+      result: the operation poll result.
+      unused_status: map of stages with key as stage key (string) and value is
+        the progress_tracker.Stage.
+    """
+    messages = GetMessagesModule()
+
+    # Need to encode to JSON and then decode to Message to be able to reasonably
+    # access attributes.
+    json_val = encoding.MessageToJson(result.metadata)
+    preview_metadata = encoding.JsonToMessage(
+        messages.OperationMetadata, json_val
+    ).previewMetadata
+
+    logs = ''
+    step = ''
+    if preview_metadata is not None:
+      logs = preview_metadata.logs
+      step = preview_metadata.step
+
+    if logs is not None and step is None:
+      poller.detailed_message = 'logs={0} '.format(logs)
+    elif logs is not None and step is not None:
+      poller.detailed_message = 'logs={0}, step={1} '.format(logs, step)
+
+    tracker.Tick()
+
+  def DetailMessageCallback():
+    """Returns the detailed progress message to be updated on the progress tracker."""
+
+    return poller.detailed_message
+
+  aborted_message = 'Aborting wait for operation {0}.\n'.format(operation_ref)
+  custom_tracker = progress_tracker.ProgressTracker(
+      message=progress_message,
+      detail_message_callback=DetailMessageCallback,
+      aborted_message=aborted_message,
+  )
+
+  result = waiter.WaitFor(
+      poller,
+      operation_ref,
+      progress_message,
+      custom_tracker=custom_tracker,
+      tracker_update_func=TrackerUpdateFunc,
+      max_wait_ms=_MAX_WAIT_TIME_MS,
+      wait_ceiling_ms=_WAIT_CEILING_MS,
+  )
+  return result

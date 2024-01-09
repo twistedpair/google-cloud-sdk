@@ -26,6 +26,7 @@ import textwrap
 
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import usage_text
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 import six
 
@@ -543,6 +544,41 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     if sep:
       self._out('\n')
 
+  def PrintUniverseInformationSection(self, disable_header=False):
+    """Prints the command line information section.
+
+    The information section provides disclaimer information on whether a command
+    is available in a particular universe domain.
+
+    Args:
+      disable_header: Disable printing the section header if True.
+    """
+
+    if properties.IsDefaultUniverse():
+      return
+
+    if not disable_header:
+      self.PrintSectionHeader('INFORMATION')
+
+    code = base.MARKDOWN_CODE
+    em = base.MARKDOWN_ITALIC
+
+    if self._command.IsUniverseCompatible():
+      info_body = (
+          f'{code}{self._command_name}{code} is supported in universe_domain '
+          f'{em}{properties.GetUniverseDomain()}{em}; however, some of the '
+          'values used in the help text may not be available. Command examples '
+          'may not work as-is and may requires changes before execution.'
+      )
+    else:
+      info_body = (
+          f'{code}{self._command_name}{code} is not available in '
+          f'universe_domain {em}{properties.GetUniverseDomain()}{em}.'
+      )
+
+    # print the informartion
+    self._out(info_body)
+
   def PrintNameSection(self, disable_header=False):
     """Prints the command line name section.
 
@@ -1022,6 +1058,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
   def Generate(self):
     """Generates markdown for the command, group or topic, into a string."""
     self._out('# {0}(1)\n'.format(self._file_name.upper()))
+    self.PrintUniverseInformationSection()
     self.PrintNameSection()
     self.PrintSynopsisSection()
     self.PrintSectionIfExists('DESCRIPTION')

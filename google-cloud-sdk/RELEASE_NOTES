@@ -1,6 +1,158 @@
 # Google Cloud CLI - Release Notes
 
-Copyright 2014-2023 Google Inc. All rights reserved.
+Copyright 2014-2024 Google Inc. All rights reserved.
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
+## 459.0.0 (2024-01-09)
+
+### Google Cloud CLI
+
+*   Removed the warning about `--update-adc` deprecation.
+
+### AI
+
+* Added `--notification-channels` flag to `gcloud ai model-monitoring-jobs create|update` to allow sending alerts to notification channels.
+
+### App Engine
+
+* Updated the Java SDK to version 2.0.24 build from the open source project
+<https://github.com/GoogleCloudPlatform/appengine-java-standard/releases/tag/v2.0.24>.
+$ Updated Jetty Web Server to version 12.0.5.
+
+### Assured Workloads
+
+*   Promote assured workloads enable-resource-monitoring to GA.
+
+### Binauthz
+
+*  Updated `gcloud container binauthz attestations create` to make `--attestor`
+   optional, allowing creation of attestations on a specified `--note`. Note
+   that `--validate` can only be used with `--attestor`.
+
+### Cloud Composer
+
+* Fixed `gcloud beta composer environments list-upgrades` for Composer 2 environments.
+* Added `--enable-logs-in-cloud-logging-only` flag to
+`gcloud composer environments create` to enable writing and reading task logs
+only from cloud logging and disable using gcs buckets for logs.
+* Added `--disable-logs-in-cloud-logging-only` flag to
+`gcloud composer environments create` to disable writing and reading task logs
+only from cloud logging and disable using gcs buckets for logs.
+* Added `--enable-logs-in-cloud-logging-only` flag to `gcloud composer environments update` to enable logs in cloud logging only feature for environments.
+* Added `--disable-logs-in-cloud-logging-only` flag to `gcloud composer environments update` to disable logs in cloud
+logging only feature for environments.
+
+### Cloud Datastore
+
+* Promoted `--database` flag of `gcloud datastore indexes create` command to beta.
+* Promoted `--database` flag of `gcloud datastore indexes create` command to GA.
+
+### Cloud Firestore
+
+* Promoted `firestore databases delete` to beta.
+* Promoted `firestore databases delete` to GA.
+* Promoted `--delete-protection` and `--no-delete-protection` flag of `gcloud firestore databases create` and `gcloud firestore databases update` command to beta.
+* Promoted `--delete-protection` and `--no-delete-protection` flag of `gcloud firestore databases create` and `gcloud firestore databases update` command to GA.
+
+### Cloud Functions
+
+* Fixed file check issue with `gcloud functions deploy` for gradle-based Java deployments.
+* Added `--build-service-account` flag to `gcloud beta functions deploy` for
+2nd Gen functions to alpha and beta.
+
+### Cloud Memorystore
+
+* Allowed using project numbers in command arguments.
+
+### Cloud Org Policy
+
+* Updated `etag` field in the output of `gcloud org-policies list` command to show a top-level etag which better reflects the current state of the policy.
+* Added `--etag` to `gcloud org-policies delete` to support etag on policy deletion that will ensure the client has an up-to-date value before proceeding.
+
+### Cloud Run
+
+* add `--add-volume`, `--remove-volume` and `--clear-volumes` flags to
+`gcloud beta run deploy`, `gcloud beta run services update`, `gcloud beta run jobs deploy`,
+and `gcloud beta run jobs update` to support managing volumes in your Cloud Run
+Services and Jobs.
+* add `-add-volume-mount`, `--remove-volume-mount`, and `--clear-volume-mount` flags
+to `gcloud beta run deploy`, `gcloud beta run services update`, `gcloud beta run jobs deploy`,
+and `gcloud beta run jobs update` to support mounting volumes within containers.
+
+### Cloud SQL
+
+* Rename the positional argument of `gcloud sql backups restore` command from BACKUP_ID to ID.
+* Allowed using project numbers in command arguments.
+
+### Cloud Services
+
+* Promoted `gcloud services vpc-peerings get-vpc-service-controls` to GA.
+
+### Cloud Workstations
+
+*   Added `--domain` flag to `gcloud workstations clusters`
+    to enable using custom domains.
+
+### Compute Engine
+
+*   Promoted `--server-tls-policy` and `--clear-server-tls-policy` for  `gcloud compute target-https-proxies create` and `gcloud compute target-https-proxies update` to beta.
+
+### Compute Firewall Policy Rules
+
+* Fixed issue where `gcloud firewall-policies rules update`
+  didn't allow clearing list fields.
+* Fixed issue where `gcloud firewall-policies rules update`
+  set disabled and enabledLogging to false if it was not specified by the user.
+* Fixed issue where `gcloud beta firewall-policies rules update` and
+  `gcloud beta network-firewall-policies rules update` required providing
+  `--security-profile-group` even if it was not changed.
+* Fixed issue where `gcloud beta firewall-policies rules update` and
+  `gcloud beta network-firewall-policies rules update` didn't allow
+  clearing securityProfileGroup (`--security-profile-group=''`).
+
+### Database Migration
+
+* Added MySQL_8_0_35 minor version option when creating Cloud SQL connection profile using `gcloud database-migration connection-profiles create cloudsql` command.
+
+### Kubernetes Engine
+
+* Updated default kubectl from 1.27.8 to 1.27.9.
+* Additional kubectl versions:
+  * kubectl.1.24 (1.24.17)
+  * kubectl.1.25 (1.25.16)
+  * kubectl.1.26 (1.26.12)
+  * kubectl.1.27 (1.27.9)
+  * kubectl.1.28 (1.28.5)
+  * kubectl.1.28 (1.29.0)
+* Added `--enable-secret-manager` flags to `gcloud container clusters create`, `gcloud container clusters create-auto` and `gcloud container clusters update` in alpha and beta.
+* Deprecated `--dataplane-v2-observability-mode` flag of `gcloud container clusters create|update|create-auto` command. Users are expected to use `--enable-dataplane-v2-flow-observability` and `--disable-dataplane-v2-flow-observability` flags now.
+* Increased maximum argument to `--num-nodes` flag of `gcloud container clusters create` from 1000 to 2000.
+
+### Network Services
+
+* Updated `gcloud network-services gateways` to show a new `ipVersion` field for v1 version.
+* Added `envoyHeaders` field to `gcloud network-services <meshes|gateways> <import|export|describe>` commands to inject envoy internal debug headers into upstream requests.
+* Added `idleTimeout` field to `gcloud network-services <http-routes|grpc-routes|tcp-routes|tls-routes> <import|export|describe>` to configure idle timeouts for the upstream and downstream connections.
+* Added `mirrorPercent` to `gcloud network-services http-routes <import|export|describe>` to configure fractional mirror percentage.
+* Added `directResponse` to `gcloud network-services http-routes <import|export|describe>` which returns a static HTTP response for all requests.
+* Added `requestHeaderModifier` to `gcloud network-services http-routes <import|export|describe>` to modify request headers to a particular destination.
+* Added `responseHeaderModifier` to `gcloud network-services http-routes <import|export|describe>` to modify response headers from a particular destination.
+
+### Service Directory
+
+* Allowed using project numbers in command arguments.
+
+### Transcoder
+
+* Allowed using project numbers in command arguments.
+
+### telco automation
+
+* Promoted `gcloud telco-automation orchestration-cluster` to GA.
+* Promoted `gcloud telco-automation operations` to GA.
+
 
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 

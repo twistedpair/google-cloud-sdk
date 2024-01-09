@@ -1555,6 +1555,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Delete(self, request, global_params=None):
+      r"""Removes a Rollout.
+
+      Args:
+        request: (GkehubProjectsLocationsRolloutsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/rollouts/{rolloutsId}',
+        http_method='DELETE',
+        method_id='gkehub.projects.locations.rollouts.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId'],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsRolloutsDeleteRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Retrieve a single rollout.
 
@@ -2240,6 +2267,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         request_field='',
         request_type_name='GkehubProjectsLocationsScopesListRequest',
         response_type_name='ListScopesResponse',
+        supports_download=False,
+    )
+
+    def ListPermitted(self, request, global_params=None):
+      r"""Lists permitted Scopes.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesListPermittedRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListPermittedScopesResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListPermitted')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListPermitted.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/scopes:listPermitted',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.listPermitted',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1alpha/{+parent}/scopes:listPermitted',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesListPermittedRequest',
+        response_type_name='ListPermittedScopesResponse',
         supports_download=False,
     )
 

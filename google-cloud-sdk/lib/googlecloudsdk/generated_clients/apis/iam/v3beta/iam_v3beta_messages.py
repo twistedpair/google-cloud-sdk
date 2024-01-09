@@ -396,12 +396,7 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
       or + must set to the input policy kind
     policyUid: Output only. The globally unique ID of the policy to be bound.
     target: Immutable. Target is the full resource name of the resource to
-      which the policy will be bound. Immutable once set. Exampples: Workforce
-      Identity: 'principalSet://iam.googleapis.com/locations/global/workforceP
-      ools/POOL_ID/*' Workload Identity Pool: 'principalSet://iam.googleapis.c
-      om/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_I
-      D/*' Workspace Identity: 'principalSet://iam.googleapis.com/locations/gl
-      obal/workspace/WORKSPACE_ID/*'
+      which the policy will be bound. Immutable once set.
     uid: Output only. The globally unique ID of the policy binding. Assigned
       when the policy binding is created.
     updateTime: Output only. The time when the policy binding was most
@@ -457,9 +452,30 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
   policy = _messages.StringField(7)
   policyKind = _messages.EnumField('PolicyKindValueValuesEnum', 8)
   policyUid = _messages.StringField(9)
-  target = _messages.StringField(10)
+  target = _messages.MessageField('GoogleIamV3betaPolicyBindingTarget', 10)
   uid = _messages.StringField(11)
   updateTime = _messages.StringField(12)
+
+
+class GoogleIamV3betaPolicyBindingTarget(_messages.Message):
+  r"""Target is the full resource name of the resource to which the policy
+  will be bound. Immutable once set.
+
+  Fields:
+    principalSet: Immutable. Full Resource Name used for principal access
+      boundary policy bindings Examples: Organization:
+      "//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID"
+      Folder: "//cloudresourcemanager.googleapis.com/folders/FOLDER_ID"
+      Project: "//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER"
+      "//cloudresourcemanager.googleapis.com/projects/PROJECT_ID" Workload
+      Identity Pool: "//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID" Workforce Identity:
+      "//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID"
+      Workspace Identity:
+      "//iam.googleapis.com/locations/global/workspacePools/WORKSPACE_ID"
+  """
+
+  principalSet = _messages.StringField(1)
 
 
 class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
@@ -617,6 +633,20 @@ class GoogleIamV3betaSearchApplicablePoliciesResponseBindingAndPolicy(_messages.
   binding = _messages.MessageField('GoogleIamV3betaPolicyBinding', 1)
   policy = _messages.MessageField('GoogleIamV3betaPolicy', 2)
   policyAccessible = _messages.BooleanField(3)
+
+
+class GoogleIamV3betaSearchTargetPolicyBindingsResponse(_messages.Message):
+  r"""Response message for SearchTargetPolicyBindings method.
+
+  Fields:
+    nextPageToken: Optional. A token, which can be sent as `page_token` to
+      retrieve the next page. If this field is omitted, there are no
+      subsequent pages.
+    policyBindings: The policy bindings bound to the specified target.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  policyBindings = _messages.MessageField('GoogleIamV3betaPolicyBinding', 2, repeated=True)
 
 
 class GoogleLongrunningOperation(_messages.Message):
@@ -1767,6 +1797,44 @@ class IamSearchApplicablePoliciesSearchRequest(_messages.Message):
   pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(3)
   targetQuery = _messages.StringField(4)
+
+
+class IamSearchTargetPolicyBindingsSearchRequest(_messages.Message):
+  r"""A IamSearchTargetPolicyBindingsSearchRequest object.
+
+  Fields:
+    filter: Optional. An expression for filtering the results of the request.
+      Filtering currently only supports the policy ID, the binding ID or the
+      kind of policies to return or the binding. Valid formats are
+      policy:[policyResourceName], name:[bindingResourceName],
+      kind:[policyKind]. Example values: "policy:organizations/{organization_i
+      d}/locations/{location}/principalAccessBoundaryPolicies/{policy_id}" "na
+      me:projects/{project_id}/locations/{location}/policyBindings/{policy_bin
+      ding_id}" "kind:principalAccessBoundaryPolicies"
+    pageSize: Optional. The maximum number of policy bindings to return. The
+      service may return fewer than this value. If unspecified, at most 50
+      policy bindings will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `SearchTargetPolicyBindingsRequest` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `SearchTargetPolicyBindingsRequest` must match the call that provided
+      the page token.
+    target: Required. The target resource, which is bound to the policy in the
+      binding. Format:
+      `//iam.googleapis.com/locations/global/workforcePools/POOL_ID` `//iam.go
+      ogleapis.com/projects/PROJECT_NUMBER/locations/global/workloadIdentityPo
+      ols/POOL_ID`
+      `//iam.googleapis.com/locations/global/workspace/WORKSPACE_ID`
+      `//cloudresourcemanager.googleapis.com/projects/{project_number}`
+      `//cloudresourcemanager.googleapis.com/folders/{folder_id}`
+      `//cloudresourcemanager.googleapis.com/organizations/{organization_id}`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  target = _messages.StringField(4)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -18,15 +18,16 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.generated_clients.apis.telcoautomation.v1alpha1.telcoautomation_v1alpha1_messages import FullManagementConfig
-from googlecloudsdk.generated_clients.apis.telcoautomation.v1alpha1.telcoautomation_v1alpha1_messages import MasterAuthorizedNetworksConfig
+from googlecloudsdk.calliope import base as calliope_base
+import googlecloudsdk.generated_clients.apis.telcoautomation.v1.telcoautomation_v1_messages as GAConfig
+import googlecloudsdk.generated_clients.apis.telcoautomation.v1alpha1.telcoautomation_v1alpha1_messages as AlphaConfig
 
 
 def UpdateRequestWithInput(unused_ref, args, request):
   """Update request to add management config parameters."""
   fullmanagementconfig = args.full_management_config
   if fullmanagementconfig:
-    fullmanagementconfigobject = FullManagementConfig()
+    fullmanagementconfigobject = GetVersionedFullMaanagementConfig(args)
     fullmanagementconfigobject.network = args.network
     fullmanagementconfigobject.subnet = args.subnet
     fullmanagementconfigobject.masterIpv4CidrBlock = args.master_ipv4_cidr_block
@@ -35,7 +36,7 @@ def UpdateRequestWithInput(unused_ref, args, request):
     fullmanagementconfigobject.clusterNamedRange = args.cluster_named_range
     fullmanagementconfigobject.servicesNamedRange = args.services_named_range
     fullmanagementconfigobject.masterAuthorizedNetworksConfig = (
-        MasterAuthorizedNetworksConfig()
+        GetVersionedMasterAuthorizedNetworksConfig(args)
     )
     fullmanagementconfigobject.masterAuthorizedNetworksConfig.cidrBlocks = (
         args.cidr_blocks
@@ -47,3 +48,29 @@ def UpdateRequestWithInput(unused_ref, args, request):
         None
     )
   return request
+
+
+def GetVersionedFullMaanagementConfig(args):
+  version = GetApiVersion(args)
+  if version == 'v1alpha1':
+    return AlphaConfig.FullManagementConfig()
+  else:
+    return GAConfig.FullManagementConfig()
+
+
+def GetVersionedMasterAuthorizedNetworksConfig(args):
+  version = GetApiVersion(args)
+  if version == 'v1alpha1':
+    return AlphaConfig.MasterAuthorizedNetworksConfig()
+  else:
+    return GAConfig.MasterAuthorizedNetworksConfig()
+
+
+def GetApiVersion(args):
+  if (
+      hasattr(args, 'calliope_command')
+      and args.calliope_command.ReleaseTrack() == calliope_base.ReleaseTrack.GA
+  ):
+    return 'v1'
+  else:
+    return 'v1alpha1'

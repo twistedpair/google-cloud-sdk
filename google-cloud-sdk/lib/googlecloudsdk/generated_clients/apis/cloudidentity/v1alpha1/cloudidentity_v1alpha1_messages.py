@@ -1220,7 +1220,7 @@ class DynamicGroupMetadata(_messages.Message):
 
   Fields:
     queries: Only one entry is supported for now. Memberships will be the
-      union of all queries. Customers can create up to 100 dynamic groups.
+      union of all queries. Customers can create up to 500 dynamic groups.
     status: Status of the dynamic group. Output only.
   """
 

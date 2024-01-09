@@ -164,6 +164,10 @@ class CreateEnvironmentFlags:
       Lineage integration should be disabled
     enable_high_resilience: bool or None, whether high resilience should be
       enabled
+    enable_logs_in_cloud_logging_only: bool or None, whether logs in cloud
+      logging only should be enabled
+    disable_logs_in_cloud_logging_only: bool or None, whether logs in cloud
+      logging only should be disabled
     support_web_server_plugins: bool or None, whether to enable/disable the
       support for web server plugins
     dag_processor_cpu: float or None, CPU allocated to Airflow dag processor.
@@ -259,6 +263,8 @@ class CreateEnvironmentFlags:
       enable_cloud_data_lineage_integration=None,
       disable_cloud_data_lineage_integration=None,
       enable_high_resilience=None,
+      enable_logs_in_cloud_logging_only=None,
+      disable_logs_in_cloud_logging_only=None,
       cloud_sql_preferred_zone=None,
       support_web_server_plugins=None,
       dag_processor_cpu=None,
@@ -341,6 +347,8 @@ class CreateEnvironmentFlags:
         disable_cloud_data_lineage_integration
     )
     self.enable_high_resilience = enable_high_resilience
+    self.enable_logs_in_cloud_logging_only = enable_logs_in_cloud_logging_only
+    self.disable_logs_in_cloud_logging_only = disable_logs_in_cloud_logging_only
     self.cloud_sql_preferred_zone = cloud_sql_preferred_zone
     self.support_web_server_plugins = support_web_server_plugins
     self.dag_processor_cpu = dag_processor_cpu
@@ -585,6 +593,20 @@ def _CreateConfig(messages, flags, is_composer_v1):
   if flags.enable_high_resilience:
     config.resilienceMode = (
         messages.EnvironmentConfig.ResilienceModeValueValuesEnum.HIGH_RESILIENCE
+    )
+  if flags.enable_logs_in_cloud_logging_only:
+    task_logs_retention_config = messages.TaskLogsRetentionConfig(
+        storageMode=messages.TaskLogsRetentionConfig.StorageModeValueValuesEnum.CLOUD_LOGGING_ONLY
+    )
+    config.dataRetentionConfig = messages.DataRetentionConfig(
+        taskLogsRetentionConfig=task_logs_retention_config
+    )
+  if flags.disable_logs_in_cloud_logging_only:
+    task_logs_retention_config = messages.TaskLogsRetentionConfig(
+        storageMode=messages.TaskLogsRetentionConfig.StorageModeValueValuesEnum.CLOUD_LOGGING_AND_CLOUD_STORAGE
+    )
+    config.dataRetentionConfig = messages.DataRetentionConfig(
+        taskLogsRetentionConfig=task_logs_retention_config
     )
   if flags.cloud_sql_machine_type:
     config.databaseConfig = messages.DatabaseConfig(

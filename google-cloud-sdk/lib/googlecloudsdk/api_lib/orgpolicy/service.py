@@ -80,7 +80,7 @@ class OrgPolicyApi(object):
 
   @abc.abstractmethod
   def DeletePolicy(
-      self, name: str, etag: str | None = None
+      self, name, etag=None
   ) -> orgpolicy_v2_messages.GoogleProtobufEmpty:
     pass
 
@@ -174,7 +174,7 @@ class OrgPolicyApiGA(OrgPolicyApi):
       return self.client.projects_policies.GetEffectivePolicy(request)
 
   def DeletePolicy(
-      self, name: str, etag: str | None = None
+      self, name: str, etag=None
   ) -> orgpolicy_v2_messages.GoogleProtobufEmpty:
     if name.startswith('organizations/'):
       request = self.messages.OrgpolicyOrganizationsPoliciesDeleteRequest(

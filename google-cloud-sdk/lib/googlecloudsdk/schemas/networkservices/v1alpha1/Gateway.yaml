@@ -57,6 +57,16 @@ properties:
       A free-text description of the resource. Max length 1024
       characters.
     type: string
+  envoyHeaders:
+    description: |-
+      Determines if envoy will insert internal debug headers into
+      upstream requests. Other Envoy headers may still be injected. By
+      default, envoy will not insert any debug headers.
+    type: string
+    enum:
+    - DEBUG_HEADERS
+    - ENVOY_HEADERS_UNSPECIFIED
+    - NONE
   gatewaySecurityPolicy:
     description: |-
       A fully-qualified GatewaySecurityPolicy URL reference. Defines how

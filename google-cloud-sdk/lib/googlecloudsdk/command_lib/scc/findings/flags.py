@@ -31,6 +31,7 @@ from googlecloudsdk.command_lib.util.args import resource_args
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.core import properties
 
+# TODO: b/312478509 - Add Deprecation warning for compare-duration.
 COMPARE_DURATION_FLAG = base.Argument(
     '--compare-duration',
     help="""

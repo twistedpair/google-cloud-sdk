@@ -31,6 +31,7 @@ class CommandData(object):
 
   def __init__(self, name, data):
     self.hidden = data.get('hidden', False)
+    self.universe_compatible = data.get('universe_compatible', None)
     self.release_tracks = [
         base.ReleaseTrack.FromId(i) for i in data.get('release_tracks', [])
     ]

@@ -1795,7 +1795,7 @@ class SpannerV1(base_api.BaseApiClient):
           }
 
     def Changequorum(self, request, global_params=None):
-      r"""ChangeQuorum is strictly restricted to databases that use dual region instance configurations. Initiates a background operation to reconfigure a database from dual-region mode to single-region mode and vice versa. The returned long-running operation will have a name of the format `projects//instances//databases//operations/` and can be used to track execution of the ChangeQuorum. The metadata field type is ChangeQuorumMetadata. Authorization requires `spanner.databases.changequorum` permission on the resource database.
+      r"""ChangeQuorum is strictly restricted to databases that use dual region instance configurations. Initiates a background operation to change quorum a database from dual-region mode to single-region mode and vice versa. The returned long-running operation will have a name of the format `projects//instances//databases//operations/` and can be used to track execution of the ChangeQuorum. The metadata field type is ChangeQuorumMetadata. Authorization requires `spanner.databases.changequorum` permission on the resource database.
 
       Args:
         request: (ChangeQuorumRequest) input message
@@ -2033,33 +2033,6 @@ class SpannerV1(base_api.BaseApiClient):
         relative_path='v1/{+name}',
         request_field='database',
         request_type_name='SpannerProjectsInstancesDatabasesPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
-    def Reconfigure(self, request, global_params=None):
-      r"""Initiates reconfiguration of a database from dual-region mode to single-region mode and vice versa. Reconfigurations are restricted to databases that use dual region instance configurations. The returned long-running operation will have a name of the format `projects//instances//databases//operations/` and can be used to track execution of the reconfiguration. The metadata field type is ReconfigureDatabaseMetadata. Authorization requires `spanner.databases.reconfigure` permission on the resource database.
-
-      Args:
-        request: (SpannerProjectsInstancesDatabasesReconfigureRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Reconfigure')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Reconfigure.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/instances/{instancesId}/databases/{databasesId}:reconfigure',
-        http_method='POST',
-        method_id='spanner.projects.instances.databases.reconfigure',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}:reconfigure',
-        request_field='reconfigureDatabaseRequest',
-        request_type_name='SpannerProjectsInstancesDatabasesReconfigureRequest',
         response_type_name='Operation',
         supports_download=False,
     )

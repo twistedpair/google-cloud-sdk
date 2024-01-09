@@ -31,7 +31,14 @@ class CancelOperationRequest(_messages.Message):
 
 
 class ChannelConfig(_messages.Message):
-  r"""Configuration for a release channel."""
+  r"""Configuration for a release channel.
+
+  Fields:
+    defaultVersion: Output only. Default version for this release channel,
+      e.g.: "1.4.0".
+  """
+
+  defaultVersion = _messages.StringField(1)
 
 
 class CloudRouter(_messages.Message):
@@ -105,6 +112,7 @@ class Cluster(_messages.Message):
     systemAddonsConfig: Optional. The configuration of the system add-ons.
     targetVersion: Optional. The target cluster version. For example: "1.5.0".
     updateTime: Output only. The time when the cluster was last updated.
+    upgradeSettings: Optional. Upgrade settings for the cluster.
   """
 
   class ReleaseChannelValueValuesEnum(_messages.Enum):
@@ -188,6 +196,7 @@ class Cluster(_messages.Message):
   systemAddonsConfig = _messages.MessageField('SystemAddonsConfig', 22)
   targetVersion = _messages.StringField(23)
   updateTime = _messages.StringField(24)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 25)
 
 
 class ClusterNetworking(_messages.Message):
@@ -1764,6 +1773,18 @@ class UpgradeClusterRequest(_messages.Message):
   requestId = _messages.StringField(1)
   schedule = _messages.EnumField('ScheduleValueValuesEnum', 2)
   targetVersion = _messages.StringField(3)
+
+
+class UpgradeSettings(_messages.Message):
+  r"""If upgrade_settings or max_unavailable_worker_nodes is unset, the Google
+  defaults will be used.
+
+  Fields:
+    maxUnavailableWorkerNodes: Optional. Maximum number of unavailable worker
+      nodes during upgrade.
+  """
+
+  maxUnavailableWorkerNodes = _messages.IntegerField(1, variant=_messages.Variant.INT32)
 
 
 class Version(_messages.Message):

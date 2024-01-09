@@ -34,6 +34,8 @@ class AnywhereCache(_messages.Message):
     ttl: The TTL of all cache entries in whole seconds. e.g., "7200s".
     updateTime: The modification time of the cache instance metadata in RFC
       3339 format.
+    zone: The zone in which the cache instance is running. For example, us-
+      central1-a.
   """
 
   admissionPolicy = _messages.StringField(1)
@@ -47,6 +49,7 @@ class AnywhereCache(_messages.Message):
   state = _messages.StringField(9)
   ttl = _messages.StringField(10)
   updateTime = _message_types.DateTimeField(11)
+  zone = _messages.StringField(12)
 
 
 class AnywhereCaches(_messages.Message):
@@ -1645,7 +1648,7 @@ class StorageAnywhereCachesDisableRequest(_messages.Message):
 
   Fields:
     anywhereCacheId: The ID of requested Anywhere Cache instance.
-    bucket: Name of the partent bucket
+    bucket: Name of the parent bucket.
   """
 
   anywhereCacheId = _messages.StringField(1, required=True)
@@ -1657,7 +1660,7 @@ class StorageAnywhereCachesGetRequest(_messages.Message):
 
   Fields:
     anywhereCacheId: The ID of requested Anywhere Cache instance.
-    bucket: Name of the partent bucket
+    bucket: Name of the parent bucket.
   """
 
   anywhereCacheId = _messages.StringField(1, required=True)
@@ -1668,7 +1671,7 @@ class StorageAnywhereCachesListRequest(_messages.Message):
   r"""A StorageAnywhereCachesListRequest object.
 
   Fields:
-    bucket: Name of the partent bucket
+    bucket: Name of the parent bucket.
     pageSize: Maximum number of items return in a single page of responses.
       Maximum 1000.
     pageToken: A previously-returned page token representing part of the
@@ -1685,7 +1688,7 @@ class StorageAnywhereCachesPauseRequest(_messages.Message):
 
   Fields:
     anywhereCacheId: The ID of requested Anywhere Cache instance.
-    bucket: Name of the partent bucket
+    bucket: Name of the parent bucket.
   """
 
   anywhereCacheId = _messages.StringField(1, required=True)
@@ -1697,7 +1700,7 @@ class StorageAnywhereCachesResumeRequest(_messages.Message):
 
   Fields:
     anywhereCacheId: The ID of requested Anywhere Cache instance.
-    bucket: Name of the partent bucket
+    bucket: Name of the parent bucket.
   """
 
   anywhereCacheId = _messages.StringField(1, required=True)

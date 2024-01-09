@@ -64,7 +64,8 @@ class GoogleCloudRecaptchaenterpriseV1AccountVerificationInfo(_messages.Message)
     latestVerificationResult: Output only. Result of the latest account
       verification challenge.
     username: Username of the account that is being verified. Deprecated.
-      Customers should now provide the hashed account ID field in Event.
+      Customers should now provide the `account_id` field in
+      `event.user_info`.
   """
 
   class LatestVerificationResultValueValuesEnum(_messages.Enum):

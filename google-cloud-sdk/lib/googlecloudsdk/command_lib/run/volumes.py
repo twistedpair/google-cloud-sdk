@@ -161,17 +161,19 @@ class _VolumeType(abc.ABC):
         '* {}: (required) {}  '.format(name, hlp)
         for name, hlp in cls.required_fields().items()
     )
+    required = f'\n{required_fields}  ' if required_fields.strip() else ''
     optional_fields = '\n'.join(
         '* {}: (optional) {}  '.format(name, hlp)
         for name, hlp in cls.optional_fields().items()
     )
+    optional = f'\n{optional_fields}  ' if optional_fields.strip() else ''
     return (
         '*{name}*: {hlp}\n  Additional'
-        ' keys:  \n{required_fields}  \n{optional_fields}  '.format(
+        ' keys:  {required}{optional}  '.format(
             name=cls.name(),
             hlp=cls.help(),
-            required_fields=required_fields,
-            optional_fields=optional_fields,
+            required=required,
+            optional=optional,
         )
     )
 
@@ -224,6 +226,10 @@ class _NfsVolume(_VolumeType):
   """Volume Type representing an NFS volume."""
 
   @classmethod
+  def release_tracks(cls):
+    return [base.ReleaseTrack.ALPHA]
+
+  @classmethod
   def name(cls):
     return 'nfs'
 
@@ -272,7 +278,7 @@ class _GcsVolume(_VolumeType):
   @classmethod
   def help(cls):
     return (
-        'A volume represnting a Cloud Storage bucket. This volume '
+        'A volume representing a Cloud Storage bucket. This volume '
         'type is mounted using Cloud Storage FUSE. See '
         'https://cloud.google.com/storage/docs/gcs-fuse for the details '
         'and limitations of this filesystem.'
@@ -309,6 +315,10 @@ class _GcsVolume(_VolumeType):
 @_registered_volume_type
 class SecretVolume(_VolumeType):
   """Represents a secret as a volume."""
+
+  @classmethod
+  def release_tracks(cls):
+    return [base.ReleaseTrack.ALPHA]
 
   @classmethod
   def name(cls):

@@ -14,13 +14,10 @@
 # limitations under the License.
 """This file provides the implementation of the `functions deploy` command."""
 
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
 
 import re
 import types
-from typing import Optional, Tuple, FrozenSet
+from typing import FrozenSet, Optional, Tuple
 
 from apitools.base.py import base_api
 from apitools.base.py import exceptions as apitools_exceptions
@@ -104,7 +101,6 @@ _V1_ONLY_FLAGS = [
     ('security_level', '--security-level'),
     # Not yet supported flags
     ('buildpack_stack', '--buildpack-stack'),
-    ('runtime_update_policy', '--runtime-update-policy'),
 ]
 _V1_ONLY_FLAG_ERROR = (
     '`%s` is only supported in Cloud Functions (First generation).'
@@ -704,12 +700,10 @@ def _GetEventTriggerForOther(
     ]
     if args.trigger_event_filters_path_pattern:
       operator = 'match-path-pattern'
-      event_filters.extend(
-          [
-              messages.EventFilter(attribute=attr, value=val, operator=operator)
-              for attr, val in args.trigger_event_filters_path_pattern.items()
-          ]
-      )
+      event_filters.extend([
+          messages.EventFilter(attribute=attr, value=val, operator=operator)
+          for attr, val in args.trigger_event_filters_path_pattern.items()
+      ])
 
   trigger_channel = None
   if args.trigger_channel:
@@ -824,9 +818,21 @@ def _GetBuildConfig(
   if args.IsKnownAndSpecified('build_service_account'):
     updated_fields.add('build_config.service_account')
     service_account = args.build_service_account
+  messages = client.MESSAGES_MODULE
+
+  automatic_update_policy = None
+  on_deploy_update_policy = None
+  if args.IsSpecified('runtime_update_policy'):
+    updated_fields.update((
+        'build_config.automatic_update_policy',
+        'build_config.on_deploy_update_policy',
+    ))
+    if args.runtime_update_policy == 'automatic':
+      automatic_update_policy = messages.AutomaticUpdatePolicy()
+    if args.runtime_update_policy == 'on-deploy':
+      on_deploy_update_policy = messages.OnDeployUpdatePolicy()
 
   build_updated_fields = frozenset.union(source_updated_fields, updated_fields)
-  messages = client.MESSAGES_MODULE
   return (
       messages.BuildConfig(
           entryPoint=args.entry_point,
@@ -842,6 +848,8 @@ def _GetBuildConfig(
               ]
           ),
           serviceAccount=service_account,
+          automaticUpdatePolicy=automatic_update_policy,
+          onDeployUpdatePolicy=on_deploy_update_policy,
       ),
       build_updated_fields,
   )

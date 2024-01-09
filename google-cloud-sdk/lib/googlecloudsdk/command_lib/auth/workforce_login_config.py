@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+from google.auth import external_account_authorized_user
 from googlecloudsdk.api_lib.auth import util as auth_util
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.core import config
@@ -71,6 +72,14 @@ def DoWorkforceHeadfulLogin(login_config_file, is_adc=False, **kwargs):
           'provider_name': provider_name
       },
       **kwargs)
+  if isinstance(creds, external_account_authorized_user.Credentials):
+    universe_domain_from_config = login_config_data.get('universe_domain', None)
+    # TODO: b/314826985 - Use the public with_universe_domain method instead of
+    # _universe_domain once google-auth lib is updated in gcloud.
+    creds._universe_domain = (  # pylint: disable=protected-access
+        universe_domain_from_config
+        or properties.VALUES.core.universe_domain.Get()
+    )
 
   # TODO(b/260741921): Once google-oauthlib sets the audience, remove this.
   if not creds.audience:

@@ -39,6 +39,7 @@ class IamV3beta(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.SearchTargetPolicyBindings = self.SearchTargetPolicyBindingsService(self)
     self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
     self.folders_locations_policies = self.FoldersLocationsPoliciesService(self)
     self.folders_locations_policyBindings = self.FoldersLocationsPolicyBindingsService(self)
@@ -56,6 +57,42 @@ class IamV3beta(base_api.BaseApiClient):
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
     self.searchApplicablePolicies = self.SearchApplicablePoliciesService(self)
+
+  class SearchTargetPolicyBindingsService(base_api.BaseApiService):
+    """Service class for the SearchTargetPolicyBindings resource."""
+
+    _NAME = 'SearchTargetPolicyBindings'
+
+    def __init__(self, client):
+      super(IamV3beta.SearchTargetPolicyBindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Search(self, request, global_params=None):
+      r"""Search policy bindings by target. Returns all policy binding objects bound directly to target.
+
+      Args:
+        request: (IamSearchTargetPolicyBindingsSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV3betaSearchTargetPolicyBindingsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='iam.SearchTargetPolicyBindings.search',
+        ordered_params=[],
+        path_params=[],
+        query_params=['filter', 'pageSize', 'pageToken', 'target'],
+        relative_path='v3beta/SearchTargetPolicyBindings:search',
+        request_field='',
+        request_type_name='IamSearchTargetPolicyBindingsSearchRequest',
+        response_type_name='GoogleIamV3betaSearchTargetPolicyBindingsResponse',
+        supports_download=False,
+    )
 
   class FoldersLocationsOperationsService(base_api.BaseApiService):
     """Service class for the folders_locations_operations resource."""

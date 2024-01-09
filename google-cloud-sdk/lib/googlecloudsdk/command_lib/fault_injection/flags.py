@@ -21,7 +21,6 @@ from __future__ import unicode_literals
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
-from googlecloudsdk.command_lib.fault_injection import location_util
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
@@ -122,16 +121,12 @@ def GetJobResourceArg(
   )
 
 
-def LocationAttributeConfig(prompt_func=location_util.PromptForLocation):
+def LocationAttributeConfig():
   return concepts.ResourceParameterAttributeConfig(
       name='location',
       help_text='The Cloud location for the {resource}.',
       fallthroughs=[
           deps.ArgFallthrough('--location'),
-          deps.Fallthrough(
-              function=prompt_func,
-              hint='choose one from the prompted list of available locations',
-          ),
       ],
   )
 
@@ -194,7 +189,7 @@ def AddUpdateFaultFlags(parser):
 
 
 def AddListFaultFlags(parser):
-  GetLocationResourceArg().AddToParser(parser)
+  GetLocationResourceArg(required=True).AddToParser(parser)
   parser.add_argument(
       '--service-name',
       type=str,
@@ -240,7 +235,7 @@ def AddUpdateExperimentFlags(parser):
 
 
 def AddListExperimentFlags(parser):
-  GetLocationResourceArg().AddToParser(parser)
+  GetLocationResourceArg(required=True).AddToParser(parser)
   parser.add_argument(
       '--sd-service-name',
       type=str,
@@ -256,7 +251,7 @@ def AddDescribeJobFlags(parser):
 def AddListJobFlags(parser):
   """Add job list Flags."""
 
-  GetLocationResourceArg().AddToParser(parser)
+  GetLocationResourceArg(required=True).AddToParser(parser)
   concept_parsers.ConceptParser([
       presentation_specs.ResourcePresentationSpec(
           '--experiment',

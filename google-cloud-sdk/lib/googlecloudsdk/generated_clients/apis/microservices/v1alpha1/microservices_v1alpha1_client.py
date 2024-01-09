@@ -162,33 +162,6 @@ class MicroservicesV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
-    def Patch(self, request, global_params=None):
-      r"""Updates the parameters of a single Feature.
-
-      Args:
-        request: (MicroservicesProjectsLocationsFeaturesPatchRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (Operation) The response message.
-      """
-      config = self.GetMethodConfig('Patch')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Patch.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/features/{featuresId}',
-        http_method='PATCH',
-        method_id='microservices.projects.locations.features.patch',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=['requestId', 'updateMask'],
-        relative_path='v1alpha1/{+name}',
-        request_field='feature',
-        request_type_name='MicroservicesProjectsLocationsFeaturesPatchRequest',
-        response_type_name='Operation',
-        supports_download=False,
-    )
-
   class ProjectsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the projects_locations_operations resource."""
 

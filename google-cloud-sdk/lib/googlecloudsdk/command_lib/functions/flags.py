@@ -31,7 +31,6 @@ from googlecloudsdk.calliope.concepts import concepts
 from googlecloudsdk.calliope.concepts import deps
 from googlecloudsdk.command_lib.eventarc import flags as eventarc_flags
 from googlecloudsdk.command_lib.util import completers
-from googlecloudsdk.command_lib.util.apis import yaml_data
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core import log
@@ -193,9 +192,7 @@ def AddFunctionMemoryAndCpuFlags(parser):
     the function's "available CPUs" setting will keep its old value unless you use this flag
     to change the setting.
     """
-  group.add_argument(
-      '--memory', type=str, help=memory_help_text, required=True
-  )
+  group.add_argument('--memory', type=str, help=memory_help_text, required=True)
   group.add_argument('--cpu', help=cpu_help_text)
 
 
@@ -452,10 +449,14 @@ def AddRuntimeFlag(parser):
 
 
 def GetVpcConnectorResourceSpec():
-  instance_data = yaml_data.ResourceYAMLData.FromPath(
-      'compute.networks.vpc_access.connector'
+  return concepts.ResourceSpec(
+      'vpcaccess.projects.locations.connectors',
+      resource_name='connector',
+      disable_auto_completers=False,
+      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
+      locationsId=RegionAttributeConfig(),
+      connectorsId=VpcConnectorAttributeConfig(),
   )
-  return concepts.ResourceSpec.FromYaml(instance_data.GetData())
 
 
 def AddVPCConnectorMutexGroup(parser):
@@ -782,6 +783,13 @@ def FunctionAttributeConfig():
   )
 
 
+def VpcConnectorAttributeConfig():
+  return concepts.ResourceParameterAttributeConfig(
+      name='connector',
+      help_text='The name of the {resource}.',
+  )
+
+
 def GetFunctionResourceSpec():
   return concepts.ResourceSpec(
       'cloudfunctions.projects.locations.functions',
@@ -1090,5 +1098,4 @@ def AddBuildServiceAccountFlag(parser, track):
 
             Only applicable when the `--gen2` flag is provided.
         """,
-        hidden=True,
     )

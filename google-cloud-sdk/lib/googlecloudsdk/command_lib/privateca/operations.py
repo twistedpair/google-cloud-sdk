@@ -18,7 +18,6 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-
 from apitools.base.py import encoding
 from googlecloudsdk.api_lib.privateca import base
 from googlecloudsdk.api_lib.util import messages as messages_util
@@ -38,10 +37,11 @@ class OperationTimeoutError(OperationError):
 def GetOperationRef(operation):
   """Get a resource reference to a long running operation."""
   return resources.REGISTRY.ParseRelativeName(
-      operation.name, 'privateca.projects.locations.operations')
+      operation.name, 'privateca.projects.locations.operations'
+  )
 
 
-def Await(operation, progress_message, api_version='v1beta1'):
+def Await(operation, progress_message, api_version='v1'):
   """Waits for operation to complete while displaying in-progress indicator.
 
   Args:
@@ -62,12 +62,15 @@ def Await(operation, progress_message, api_version='v1beta1'):
 
   operation_ref = GetOperationRef(operation)
   poller = waiter.CloudOperationPollerNoResources(
-      base.GetClientInstance(api_version).projects_locations_operations)
+      base.GetClientInstance(api_version).projects_locations_operations
+  )
   try:
     return waiter.WaitFor(poller, operation_ref, progress_message)
   except waiter.TimeoutError:
     raise OperationTimeoutError(
-        'Requested action timed out. Please run the describe command on your resource to see if changes were successful, or try again in a few minutes.'
+        'Requested action timed out. Please run the describe command on your'
+        ' resource to see if changes were successful, or try again in a few'
+        ' minutes.'
     )
 
 
@@ -90,4 +93,5 @@ def GetMessageFromResponse(response, message_type):
   if '@type' in message_dict:
     del message_dict['@type']
   return messages_util.DictToMessageWithErrorCheck(
-      message_dict, message_type, throw_on_unexpected_fields=False)
+      message_dict, message_type, throw_on_unexpected_fields=False
+  )

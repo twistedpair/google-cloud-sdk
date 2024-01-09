@@ -179,7 +179,10 @@ class AttestationSource(_messages.Message):
 
   Fields:
     containerAnalysisAttestationProjects: The IDs of the GCP projects storing
-      the SLSA attestations as Container Analysis Occurrences.
+      the SLSA attestations as Container Analysis Occurrences, in the format
+      `projects/[PROJECT_ID]`. Maximum number of
+      `container_analysis_attestation_projects` allowed in each
+      `AttestationSource` is 10.
   """
 
   containerAnalysisAttestationProjects = _messages.StringField(1, repeated=True)
@@ -572,12 +575,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -589,7 +611,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -740,13 +766,28 @@ class Empty(_messages.Message):
 class EvaluateGkePolicyRequest(_messages.Message):
   r"""Request message for PlatformPolicyEvaluationService.EvaluateGkePolicy.
 
+  Enums:
+    AttestationModeValueValuesEnum: Optional. Configures the behavior for
+      attesting results.
+
   Messages:
     ResourceValue: Required. JSON or YAML blob representing a Kubernetes
       resource.
 
   Fields:
+    attestationMode: Optional. Configures the behavior for attesting results.
     resource: Required. JSON or YAML blob representing a Kubernetes resource.
   """
+
+  class AttestationModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Configures the behavior for attesting results.
+
+    Values:
+      ATTESTATION_MODE_UNSPECIFIED: Unspecified. Results are not attested.
+      GENERATE_DEPLOY: Generate and return deploy attestations in DSEE form.
+    """
+    ATTESTATION_MODE_UNSPECIFIED = 0
+    GENERATE_DEPLOY = 1
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class ResourceValue(_messages.Message):
@@ -772,7 +813,8 @@ class EvaluateGkePolicyRequest(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  resource = _messages.MessageField('ResourceValue', 1)
+  attestationMode = _messages.EnumField('AttestationModeValueValuesEnum', 1)
+  resource = _messages.MessageField('ResourceValue', 2)
 
 
 class EvaluateGkePolicyResponse(_messages.Message):
@@ -782,6 +824,11 @@ class EvaluateGkePolicyResponse(_messages.Message):
     VerdictValueValuesEnum: The result of evaluating all Pods in the request.
 
   Fields:
+    attestations: If AttestationMode is set to GENERATE_DEPLOY and the top-
+      level verdict is conformant, an attestation will be returned for each
+      image in the request. Attestations are in the form of websafe base64
+      encoded JSON DSSEs (https://github.com/secure-systems-
+      lab/dsse/blob/master/envelope.md).
     results: Evaluation result for each Pod contained in the request.
     verdict: The result of evaluating all Pods in the request.
   """
@@ -794,7 +841,7 @@ class EvaluateGkePolicyResponse(_messages.Message):
       CONFORMANT: All Pods in the request conform to the policy.
       NON_CONFORMANT: At least one Pod does not conform to the policy.
       ERROR: Encountered at least one error evaluating a Pod and all other
-        Pods conform to the policy. Non-conformance has precedance over
+        Pods conform to the policy. Non-conformance has precedence over
         errors.
     """
     VERDICT_UNSPECIFIED = 0
@@ -802,8 +849,9 @@ class EvaluateGkePolicyResponse(_messages.Message):
     NON_CONFORMANT = 2
     ERROR = 3
 
-  results = _messages.MessageField('PodResult', 1, repeated=True)
-  verdict = _messages.EnumField('VerdictValueValuesEnum', 2)
+  attestations = _messages.StringField(1, repeated=True)
+  results = _messages.MessageField('PodResult', 2, repeated=True)
+  verdict = _messages.EnumField('VerdictValueValuesEnum', 3)
 
 
 class EvaluationResult(_messages.Message):
@@ -1721,13 +1769,15 @@ class SimpleSigningAttestationCheck(_messages.Message):
       authenticators is an "OR" of the authenticator results. At least one
       authenticator is required.
     containerAnalysisAttestationProjects: Optional. The projects where
-      attestations are stored as Container Analysis Occurrences. Only one
-      attestation needs to successfully verify an image for this check to
-      pass, so a single verified attestation found in any of
-      `container_analysis_attestation_projects` is sufficient for the check to
-      pass. When fetching Occurrences from Container Analysis, only
-      'AttestationOccurrence' kinds are considered. In the future, additional
-      Occurrence kinds may be added to the query.
+      attestations are stored as Container Analysis Occurrences, in the format
+      `projects/[PROJECT_ID]`. Only one attestation needs to successfully
+      verify an image for this check to pass, so a single verified attestation
+      found in any of `container_analysis_attestation_projects` is sufficient
+      for the check to pass. When fetching Occurrences from Container
+      Analysis, only `AttestationOccurrence` kinds are considered. In the
+      future, additional Occurrence kinds may be added to the query. Maximum
+      number of `container_analysis_attestation_projects` allowed in each
+      `SimpleSigningAttestationCheck` is 10.
   """
 
   attestationAuthenticators = _messages.MessageField('AttestationAuthenticator', 1, repeated=True)
@@ -2059,7 +2109,8 @@ class VulnerabilityCheck(_messages.Message):
       project to fetch vulnerabilities, and all valid vulnerabilities will be
       used to check against the vulnerability policy. If no valid scan is
       found in all projects configured here, an error will be returned for the
-      check.
+      check. Maximum number of `container_analysis_vulnerability_projects`
+      allowed in each `VulnerabilityCheck` is 10.
     maximumFixableSeverity: Required. The threshold for severity for which a
       fix is currently available. This field is required and must be set.
     maximumUnfixableSeverity: Required. The threshold for severity for which a

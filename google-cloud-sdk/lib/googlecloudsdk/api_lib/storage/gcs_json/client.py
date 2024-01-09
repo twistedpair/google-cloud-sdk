@@ -355,7 +355,7 @@ class JsonClient(cloud_api.CloudApi):
     """See super class."""
     request = self.messages.AnywhereCache(
         bucket=bucket_name,
-        anywhereCacheId=zone,
+        zone=zone,
         admissionPolicy=admission_policy,
         ttl=ttl
     )
@@ -369,12 +369,12 @@ class JsonClient(cloud_api.CloudApi):
   def disable_anywhere_cache(
       self,
       bucket_name,
-      zone,
+      anywhere_cache_id,
   ):
     """See super class."""
     request = self.messages.StorageAnywhereCachesDisableRequest(
         bucket=bucket_name,
-        anywhereCacheId=zone,
+        anywhereCacheId=anywhere_cache_id,
     )
     self.client.anywhereCache.Disable(request)
 
@@ -382,12 +382,12 @@ class JsonClient(cloud_api.CloudApi):
   def get_anywhere_cache(
       self,
       bucket_name,
-      zone,
+      anywhere_cache_id,
   ):
     """See super class."""
     request = self.messages.StorageAnywhereCachesGetRequest(
         bucket=bucket_name,
-        anywhereCacheId=zone,
+        anywhereCacheId=anywhere_cache_id,
     )
     return metadata_util.get_anywhere_cache_resource_from_metadata(
         self.client.anywhereCache.Get(request)
@@ -425,14 +425,14 @@ class JsonClient(cloud_api.CloudApi):
   def patch_anywhere_cache(
       self,
       bucket_name,
-      zone,
+      anywhere_cache_id,
       admission_policy,
       ttl,
   ):
     """See super class."""
     request = self.messages.AnywhereCache(
         bucket=bucket_name,
-        anywhereCacheId=zone,
+        anywhereCacheId=anywhere_cache_id,
         admissionPolicy=admission_policy,
         ttl=ttl
     )
@@ -443,20 +443,20 @@ class JsonClient(cloud_api.CloudApi):
     return operation
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def pause_anywhere_cache(self, bucket_name, zone):
+  def pause_anywhere_cache(self, bucket_name, anywhere_cache_id):
     """See super class."""
     request = self.messages.StorageAnywhereCachesPauseRequest(
         bucket=bucket_name,
-        anywhereCacheId=zone,
+        anywhereCacheId=anywhere_cache_id,
     )
     self.client.anywhereCache.Pause(request)
 
   @error_util.catch_http_error_raise_gcs_api_error()
-  def resume_anywhere_cache(self, bucket_name, zone):
+  def resume_anywhere_cache(self, bucket_name, anywhere_cache_id):
     """See super class."""
     request = self.messages.StorageAnywhereCachesResumeRequest(
         bucket=bucket_name,
-        anywhereCacheId=zone,
+        anywhereCacheId=anywhere_cache_id,
     )
     self.client.anywhereCache.Resume(request)
 

@@ -194,9 +194,7 @@ def GetConfigValueFromArgs(file):
     return None
 
 
-def ParseJSONFile(
-    file: messages.EventThreatDetectionCustomModule.ConfigValue | None,
-) -> str | None:
+def ParseJSONFile(file):
   """Converts the contents of a JSON file into a string."""
   if file is not None:
     try:

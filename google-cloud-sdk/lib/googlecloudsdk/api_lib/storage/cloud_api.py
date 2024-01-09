@@ -151,14 +151,12 @@ class CloudApi(object):
     """
     raise NotImplementedError('create_anywhere_cache must be overridden.')
 
-  def get_anywhere_cache(
-      self, bucket_name, zone
-  ):
+  def get_anywhere_cache(self, bucket_name, anywhere_cache_id):
     """Gets Anywhere Cache Instance for a zone in bucket.
 
     Args:
       bucket_name (str): The name of the bucket.
-      zone (str): Name of the zonal location.
+      anywhere_cache_id (str): Unique identifier for a cache instance in bucket.
 
     Returns:
       AnywhereCache: the Anywhere Cache Instance
@@ -171,13 +169,13 @@ class CloudApi(object):
     raise NotImplementedError('get_anywhere_cache must be overridden.')
 
   def pause_anywhere_cache(
-      self, bucket_name, zone
+      self, bucket_name, anywhere_cache_id
   ):
     """Pauses Anywhere Cache Instance for a zone in bucket.
 
     Args:
       bucket_name (str): The name of the bucket.
-      zone (str): Name of the zonal location.
+      anywhere_cache_id (str): Unique identifier for a cache instance in bucket.
 
     Raises:
       CloudApiError: API returned an error.
@@ -186,14 +184,13 @@ class CloudApi(object):
     """
     raise NotImplementedError('pause_anywhere_cache must be overridden.')
 
-  def resume_anywhere_cache(self, bucket_name, zone):
+  def resume_anywhere_cache(self, bucket_name, anywhere_cache_id):
     """Resumes Anywhere Cache in particular zone of a bucket.
 
     Args:
       bucket_name (str): The name of the bucket where the Anywhere Cache should
         be resumed.
-      zone (str): Name of the zonal location where the Anywhere Cache should be
-        resumed.
+      anywhere_cache_id (str): Unique identifier for a cache instance in bucket.
 
     Raises:
       CloudApiError: API returned an error.
@@ -202,14 +199,13 @@ class CloudApi(object):
     """
     raise NotImplementedError('resume_anywhere_cache must be overridden.')
 
-  def disable_anywhere_cache(self, bucket_name, zone):
+  def disable_anywhere_cache(self, bucket_name, anywhere_cache_id):
     """Disables Anywhere Cache in particular zone of a bucket.
 
     Args:
       bucket_name (str): The name of the bucket where the Anywhere Cache should
         be disabled.
-      zone (str): Name of the zonal location where the Anywhere Cache should be
-        disabled.
+      anywhere_cache_id (str): Unique identifier for a cache instance in bucket.
 
     Raises:
       CloudApiError: API returned an error.
@@ -235,15 +231,14 @@ class CloudApi(object):
     raise NotImplementedError('list_anywhere_cache must be overridden.')
 
   def patch_anywhere_cache(
-      self, bucket_name, zone, admission_policy=None, ttl=None
+      self, bucket_name, anywhere_cache_id, admission_policy=None, ttl=None
   ):
     """Updates Anywhere Cache instance of a bucket.
 
     Args:
       bucket_name (str): The name of the bucket where the Anywhere Cache should
         be updated.
-      zone (str): Name of the zonal location where the Anywhere Cache should be
-        updated.
+      anywhere_cache_id (str): Unique identifier for a cache instance in bucket.
       admission_policy (str|None): The cache admission policy decides for each
         cache miss, that is whether to insert the missed block or not.
       ttl (str|None): Cache entry time-to-live in seconds

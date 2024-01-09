@@ -576,6 +576,17 @@ class SasPortalListDevicesResponse(_messages.Message):
   nextPageToken = _messages.StringField(2)
 
 
+class SasPortalListLegacyOrganizationsResponse(_messages.Message):
+  r"""Response for [ListLegacyOrganizations].
+  [spectrum.sas.portal.v1alpha1.Provisioning.ListLegacyOrganizations].
+
+  Fields:
+    organizationIds: Optional. IDs of legacy SAS organizations.
+  """
+
+  organizationIds = _messages.IntegerField(1, repeated=True)
+
+
 class SasPortalListNodesResponse(_messages.Message):
   r"""Response for ListNodes.
 
@@ -1313,6 +1324,10 @@ class SasportalCustomersGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SasportalCustomersListLegacyOrganizationsRequest(_messages.Message):
+  r"""A SasportalCustomersListLegacyOrganizationsRequest object."""
 
 
 class SasportalCustomersListRequest(_messages.Message):

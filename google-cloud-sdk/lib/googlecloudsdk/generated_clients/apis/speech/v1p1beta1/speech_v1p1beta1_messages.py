@@ -962,12 +962,15 @@ class RecognizeResponse(_messages.Message):
       response
     totalBilledTime: When available, billed audio seconds for the
       corresponding request.
+    usingLegacyModels: Whether request used legacy asr models (was not
+      automatically migrated to use conformer models).
   """
 
   requestId = _messages.IntegerField(1)
   results = _messages.MessageField('SpeechRecognitionResult', 2, repeated=True)
   speechAdaptationInfo = _messages.MessageField('SpeechAdaptationInfo', 3)
   totalBilledTime = _messages.StringField(4)
+  usingLegacyModels = _messages.BooleanField(5)
 
 
 class SpeakerDiarizationConfig(_messages.Message):

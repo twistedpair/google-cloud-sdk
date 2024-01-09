@@ -1,5 +1,5 @@
 # -*- coding: utf-8 -*- #
-# Copyright 2020 Google LLC. All Rights Reserved.
+# Copyright 2023 Google LLC. All Rights Reserved.
 #
 # Licensed under the Apache License, Version 2.0 (the "License");
 # you may not use this file except in compliance with the License.
@@ -33,8 +33,8 @@ _CA_CREATE_PERMISSIONS_ON_PROJECT = [
     'privateca.certificateAuthorities.create'
 ]
 
-# Permissions needed on a CA for issuing certificates.
-_CERTIFICATE_CREATE_PERMISSIONS_ON_CA = ['privateca.certificates.create']
+# Permissions needed on a CA Pool for issuing certificates.
+_CERTIFICATE_CREATE_PERMISSIONS_ON_CA_POOL = ['privateca.certificates.create']
 
 
 def _CheckAllPermissions(actual_permissions, expected_permissions, resource):
@@ -67,23 +67,22 @@ def CheckCreateCertificateAuthorityPermissions(project_ref, kms_key_ref=None):
         _CA_CREATE_PERMISSIONS_ON_KEY, 'KMS key')
 
 
-def CheckCreateCertificatePermissions(issuing_ca_ref):
-  """Ensures that the current user can issue a certificate from the given CA.
+def CheckCreateCertificatePermissions(issuing_ca_pool_ref):
+  """Ensures that the current user can issue a certificate from the given Pool.
 
   Args:
-    issuing_ca_ref: The CA that will create the certificate.
+    issuing_ca_pool_ref: The CA pool that will create the certificate.
 
   Raises:
     InsufficientPermissionException: If the user is missing permissions.
   """
-  client = privateca_base.GetClientInstance()
-  messages = privateca_base.GetMessagesModule()
+  client = privateca_base.GetClientInstance(api_version='v1')
+  messages = privateca_base.GetMessagesModule(api_version='v1')
 
-  test_response = client.projects_locations_certificateAuthorities.TestIamPermissions(
-      messages.
-      PrivatecaProjectsLocationsCertificateAuthoritiesTestIamPermissionsRequest(
-          resource=issuing_ca_ref.RelativeName(),
+  test_response = client.projects_locations_caPools.TestIamPermissions(
+      messages.PrivatecaProjectsLocationsCaPoolsTestIamPermissionsRequest(
+          resource=issuing_ca_pool_ref.RelativeName(),
           testIamPermissionsRequest=messages.TestIamPermissionsRequest(
-              permissions=_CERTIFICATE_CREATE_PERMISSIONS_ON_CA)))
+              permissions=_CERTIFICATE_CREATE_PERMISSIONS_ON_CA_POOL)))
   _CheckAllPermissions(test_response.permissions,
-                       _CERTIFICATE_CREATE_PERMISSIONS_ON_CA, 'issuing CA')
+                       _CERTIFICATE_CREATE_PERMISSIONS_ON_CA_POOL, 'issuing CA')

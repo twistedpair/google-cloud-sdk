@@ -4120,9 +4120,11 @@ class ContentRange(proto.Message):
 
     Attributes:
         start (int):
-            The starting offset of the object data.
+            The starting offset of the object data. This
+            value is inclusive.
         end (int):
-            The ending offset of the object data.
+            The ending offset of the object data. This
+            value is exclusive.
         complete_length (int):
             The complete length of the object data.
     """

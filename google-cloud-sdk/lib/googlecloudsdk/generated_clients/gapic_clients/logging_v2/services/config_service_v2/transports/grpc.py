@@ -617,6 +617,140 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
         return self._stubs['delete_view']
 
     @property
+    def list_exclusions(self) -> Callable[
+            [logging_config.ListExclusionsRequest],
+            logging_config.ListExclusionsResponse]:
+        r"""Return a callable for the list exclusions method over gRPC.
+
+        Lists all the exclusions on the \_Default sink in a parent
+        resource.
+
+        Returns:
+            Callable[[~.ListExclusionsRequest],
+                    ~.ListExclusionsResponse]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'list_exclusions' not in self._stubs:
+            self._stubs['list_exclusions'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/ListExclusions',
+                request_serializer=logging_config.ListExclusionsRequest.serialize,
+                response_deserializer=logging_config.ListExclusionsResponse.deserialize,
+            )
+        return self._stubs['list_exclusions']
+
+    @property
+    def get_exclusion(self) -> Callable[
+            [logging_config.GetExclusionRequest],
+            logging_config.LogExclusion]:
+        r"""Return a callable for the get exclusion method over gRPC.
+
+        Gets the description of an exclusion in the \_Default sink.
+
+        Returns:
+            Callable[[~.GetExclusionRequest],
+                    ~.LogExclusion]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'get_exclusion' not in self._stubs:
+            self._stubs['get_exclusion'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/GetExclusion',
+                request_serializer=logging_config.GetExclusionRequest.serialize,
+                response_deserializer=logging_config.LogExclusion.deserialize,
+            )
+        return self._stubs['get_exclusion']
+
+    @property
+    def create_exclusion(self) -> Callable[
+            [logging_config.CreateExclusionRequest],
+            logging_config.LogExclusion]:
+        r"""Return a callable for the create exclusion method over gRPC.
+
+        Creates a new exclusion in the \_Default sink in a specified
+        parent resource. Only log entries belonging to that resource can
+        be excluded. You can have up to 10 exclusions in a resource.
+
+        Returns:
+            Callable[[~.CreateExclusionRequest],
+                    ~.LogExclusion]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'create_exclusion' not in self._stubs:
+            self._stubs['create_exclusion'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/CreateExclusion',
+                request_serializer=logging_config.CreateExclusionRequest.serialize,
+                response_deserializer=logging_config.LogExclusion.deserialize,
+            )
+        return self._stubs['create_exclusion']
+
+    @property
+    def update_exclusion(self) -> Callable[
+            [logging_config.UpdateExclusionRequest],
+            logging_config.LogExclusion]:
+        r"""Return a callable for the update exclusion method over gRPC.
+
+        Changes one or more properties of an existing exclusion in the
+        \_Default sink.
+
+        Returns:
+            Callable[[~.UpdateExclusionRequest],
+                    ~.LogExclusion]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'update_exclusion' not in self._stubs:
+            self._stubs['update_exclusion'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/UpdateExclusion',
+                request_serializer=logging_config.UpdateExclusionRequest.serialize,
+                response_deserializer=logging_config.LogExclusion.deserialize,
+            )
+        return self._stubs['update_exclusion']
+
+    @property
+    def delete_exclusion(self) -> Callable[
+            [logging_config.DeleteExclusionRequest],
+            empty_pb2.Empty]:
+        r"""Return a callable for the delete exclusion method over gRPC.
+
+        Deletes an exclusion in the \_Default sink.
+
+        Returns:
+            Callable[[~.DeleteExclusionRequest],
+                    ~.Empty]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'delete_exclusion' not in self._stubs:
+            self._stubs['delete_exclusion'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/DeleteExclusion',
+                request_serializer=logging_config.DeleteExclusionRequest.serialize,
+                response_deserializer=empty_pb2.Empty.FromString,
+            )
+        return self._stubs['delete_exclusion']
+
+    @property
     def list_sinks(self) -> Callable[
             [logging_config.ListSinksRequest],
             logging_config.ListSinksResponse]:
@@ -757,6 +891,58 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
         return self._stubs['delete_sink']
 
     @property
+    def list_links(self) -> Callable[
+            [logging_config.ListLinksRequest],
+            logging_config.ListLinksResponse]:
+        r"""Return a callable for the list links method over gRPC.
+
+        Lists links.
+
+        Returns:
+            Callable[[~.ListLinksRequest],
+                    ~.ListLinksResponse]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'list_links' not in self._stubs:
+            self._stubs['list_links'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/ListLinks',
+                request_serializer=logging_config.ListLinksRequest.serialize,
+                response_deserializer=logging_config.ListLinksResponse.deserialize,
+            )
+        return self._stubs['list_links']
+
+    @property
+    def get_link(self) -> Callable[
+            [logging_config.GetLinkRequest],
+            logging_config.Link]:
+        r"""Return a callable for the get link method over gRPC.
+
+        Gets a link.
+
+        Returns:
+            Callable[[~.GetLinkRequest],
+                    ~.Link]:
+                A function that, when called, will call the underlying RPC
+                on the server.
+        """
+        # Generate a "stub function" on-the-fly which will actually make
+        # the request.
+        # gRPC handles serialization and deserialization, so we just need
+        # to pass in the functions for each.
+        if 'get_link' not in self._stubs:
+            self._stubs['get_link'] = self.grpc_channel.unary_unary(
+                '/google.logging.v2.ConfigServiceV2/GetLink',
+                request_serializer=logging_config.GetLinkRequest.serialize,
+                response_deserializer=logging_config.Link.deserialize,
+            )
+        return self._stubs['get_link']
+
+    @property
     def create_link(self) -> Callable[
             [logging_config.CreateLinkRequest],
             operations_pb2.Operation]:
@@ -811,192 +997,6 @@ class ConfigServiceV2GrpcTransport(ConfigServiceV2Transport):
                 response_deserializer=operations_pb2.Operation.FromString,
             )
         return self._stubs['delete_link']
-
-    @property
-    def list_links(self) -> Callable[
-            [logging_config.ListLinksRequest],
-            logging_config.ListLinksResponse]:
-        r"""Return a callable for the list links method over gRPC.
-
-        Lists links.
-
-        Returns:
-            Callable[[~.ListLinksRequest],
-                    ~.ListLinksResponse]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'list_links' not in self._stubs:
-            self._stubs['list_links'] = self.grpc_channel.unary_unary(
-                '/google.logging.v2.ConfigServiceV2/ListLinks',
-                request_serializer=logging_config.ListLinksRequest.serialize,
-                response_deserializer=logging_config.ListLinksResponse.deserialize,
-            )
-        return self._stubs['list_links']
-
-    @property
-    def get_link(self) -> Callable[
-            [logging_config.GetLinkRequest],
-            logging_config.Link]:
-        r"""Return a callable for the get link method over gRPC.
-
-        Gets a link.
-
-        Returns:
-            Callable[[~.GetLinkRequest],
-                    ~.Link]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'get_link' not in self._stubs:
-            self._stubs['get_link'] = self.grpc_channel.unary_unary(
-                '/google.logging.v2.ConfigServiceV2/GetLink',
-                request_serializer=logging_config.GetLinkRequest.serialize,
-                response_deserializer=logging_config.Link.deserialize,
-            )
-        return self._stubs['get_link']
-
-    @property
-    def list_exclusions(self) -> Callable[
-            [logging_config.ListExclusionsRequest],
-            logging_config.ListExclusionsResponse]:
-        r"""Return a callable for the list exclusions method over gRPC.
-
-        Lists all the exclusions on the \_Default sink in a parent
-        resource.
-
-        Returns:
-            Callable[[~.ListExclusionsRequest],
-                    ~.ListExclusionsResponse]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'list_exclusions' not in self._stubs:
-            self._stubs['list_exclusions'] = self.grpc_channel.unary_unary(
-                '/google.logging.v2.ConfigServiceV2/ListExclusions',
-                request_serializer=logging_config.ListExclusionsRequest.serialize,
-                response_deserializer=logging_config.ListExclusionsResponse.deserialize,
-            )
-        return self._stubs['list_exclusions']
-
-    @property
-    def get_exclusion(self) -> Callable[
-            [logging_config.GetExclusionRequest],
-            logging_config.LogExclusion]:
-        r"""Return a callable for the get exclusion method over gRPC.
-
-        Gets the description of an exclusion in the \_Default sink.
-
-        Returns:
-            Callable[[~.GetExclusionRequest],
-                    ~.LogExclusion]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'get_exclusion' not in self._stubs:
-            self._stubs['get_exclusion'] = self.grpc_channel.unary_unary(
-                '/google.logging.v2.ConfigServiceV2/GetExclusion',
-                request_serializer=logging_config.GetExclusionRequest.serialize,
-                response_deserializer=logging_config.LogExclusion.deserialize,
-            )
-        return self._stubs['get_exclusion']
-
-    @property
-    def create_exclusion(self) -> Callable[
-            [logging_config.CreateExclusionRequest],
-            logging_config.LogExclusion]:
-        r"""Return a callable for the create exclusion method over gRPC.
-
-        Creates a new exclusion in the \_Default sink in a specified
-        parent resource. Only log entries belonging to that resource can
-        be excluded. You can have up to 10 exclusions in a resource.
-
-        Returns:
-            Callable[[~.CreateExclusionRequest],
-                    ~.LogExclusion]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'create_exclusion' not in self._stubs:
-            self._stubs['create_exclusion'] = self.grpc_channel.unary_unary(
-                '/google.logging.v2.ConfigServiceV2/CreateExclusion',
-                request_serializer=logging_config.CreateExclusionRequest.serialize,
-                response_deserializer=logging_config.LogExclusion.deserialize,
-            )
-        return self._stubs['create_exclusion']
-
-    @property
-    def update_exclusion(self) -> Callable[
-            [logging_config.UpdateExclusionRequest],
-            logging_config.LogExclusion]:
-        r"""Return a callable for the update exclusion method over gRPC.
-
-        Changes one or more properties of an existing exclusion in the
-        \_Default sink.
-
-        Returns:
-            Callable[[~.UpdateExclusionRequest],
-                    ~.LogExclusion]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'update_exclusion' not in self._stubs:
-            self._stubs['update_exclusion'] = self.grpc_channel.unary_unary(
-                '/google.logging.v2.ConfigServiceV2/UpdateExclusion',
-                request_serializer=logging_config.UpdateExclusionRequest.serialize,
-                response_deserializer=logging_config.LogExclusion.deserialize,
-            )
-        return self._stubs['update_exclusion']
-
-    @property
-    def delete_exclusion(self) -> Callable[
-            [logging_config.DeleteExclusionRequest],
-            empty_pb2.Empty]:
-        r"""Return a callable for the delete exclusion method over gRPC.
-
-        Deletes an exclusion in the \_Default sink.
-
-        Returns:
-            Callable[[~.DeleteExclusionRequest],
-                    ~.Empty]:
-                A function that, when called, will call the underlying RPC
-                on the server.
-        """
-        # Generate a "stub function" on-the-fly which will actually make
-        # the request.
-        # gRPC handles serialization and deserialization, so we just need
-        # to pass in the functions for each.
-        if 'delete_exclusion' not in self._stubs:
-            self._stubs['delete_exclusion'] = self.grpc_channel.unary_unary(
-                '/google.logging.v2.ConfigServiceV2/DeleteExclusion',
-                request_serializer=logging_config.DeleteExclusionRequest.serialize,
-                response_deserializer=empty_pb2.Empty.FromString,
-            )
-        return self._stubs['delete_exclusion']
 
     @property
     def get_cmek_settings(self) -> Callable[

@@ -1056,6 +1056,32 @@ class SasportalV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListLegacyOrganizations(self, request, global_params=None):
+      r"""Checks whether account is legacy.
+
+      Args:
+        request: (SasportalCustomersListLegacyOrganizationsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SasPortalListLegacyOrganizationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListLegacyOrganizations')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListLegacyOrganizations.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='GET',
+        method_id='sasportal.customers.listLegacyOrganizations',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v1alpha1/customers:listLegacyOrganizations',
+        request_field='',
+        request_type_name='SasportalCustomersListLegacyOrganizationsRequest',
+        response_type_name='SasPortalListLegacyOrganizationsResponse',
+        supports_download=False,
+    )
+
     def MigrateOrganization(self, request, global_params=None):
       r"""Migrates a SAS organization to the cloud. This will create GCP projects for each deployment and associate them. The SAS Organization is linked to the gcp project that called the command. go/sas-legacy-customer-migration.
 

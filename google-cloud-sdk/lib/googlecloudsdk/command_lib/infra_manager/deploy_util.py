@@ -185,32 +185,32 @@ def UpdateDeploymentDeleteRequestWithForce(unused_ref, unused_args, request):
   return request
 
 
-def DeploymentDeleteCleanupStagedObjects(response, unused_args):
+def DeleteCleanupStagedObjects(response, unused_args):
   """DeploymentDeleteCleanupStagedObjects deletes staging gcs objects created as part of deployment apply command."""
 
   # do not delete staged objects if delete results in error
   if response.error is not None:
     return
-
   if response.metadata is not None:
     md = encoding.MessageToPyValue(response.metadata)
-    deployment_full_name = md['target']
-    deployment_id = deployment_full_name.split('/')[5]
-    location = deployment_full_name.split('/')[3]
+    # entity could be deployment, previews
+    entity_full_name = md['target']
+    entity_id = entity_full_name.split('/')[5]
+    location = entity_full_name.split('/')[3]
     staging_gcs_directory = staging_bucket_util.DefaultGCSStagingDir(
-        deployment_id, location
+        entity_id, location
     )
     gcs_client = storage_api.StorageClient()
     staging_bucket_util.DeleteStagingGCSFolder(
         gcs_client, staging_gcs_directory
     )
-
   return response
 
 
 def _CreateTFBlueprint(
     messages,
     deployment_short_name,
+    preview_short_name,
     location,
     local_source,
     stage_bucket,
@@ -227,6 +227,7 @@ def _CreateTFBlueprint(
     messages: ModuleType, the messages module that lets us form Config API
       messages based on our protos.
     deployment_short_name: short name of the deployment.
+    preview_short_name: short name of the preview.
     location: location of the deployment.
     local_source: Local storage path where config files are stored.
     stage_bucket: optional string. Destination for storing local config files
@@ -250,11 +251,15 @@ def _CreateTFBlueprint(
 
   if gcs_source is not None:
     terraform_blueprint.gcsSource = gcs_source
-  elif local_source is not None:
+  elif local_source is not None and deployment_short_name is not None:
     upload_bucket = _UploadSourceToGCS(
         local_source, stage_bucket, deployment_short_name, location, ignore_file
     )
     terraform_blueprint.gcsSource = upload_bucket
+  # Will fix the local source in a future cl.
+  # TODO(b/312781820)
+  elif local_source is not None and preview_short_name is not None:
+    errors.NotSupportedError()
   else:
     terraform_blueprint.gitSource = messages.GitSource(
         repo=git_source_repo,
@@ -406,6 +411,7 @@ def Apply(
   tf_blueprint = _CreateTFBlueprint(
       messages,
       deployment_id,
+      None,
       location,
       local_source,
       stage_bucket,
@@ -829,3 +835,300 @@ def GetRevisionNumber(revision_full_name):
   )
   revision_short_name = revision_ref.Name()
   return int(revision_short_name[2:])
+
+
+def ExportPreviewResult(messages, preview_full_name):
+  """Creates a signed uri to download the preview results.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form Infra Manager
+      API messages based on our protos.
+    preview_full_name: string, the fully qualified name of the preview,
+      e.g. "projects/p/locations/l/previews/p".]
+  Returns:
+    A messages.ExportPreviewResultResponse which contains signed uri to
+    download binary and json plan files.
+  """
+
+  export_preview_result_request = (
+      messages.ExportPreviewResultRequest()
+  )
+
+  log.status.Print('Initiating export preview results...')
+
+  preview_result_resp = configmanager_util.ExportPreviewResult(
+      export_preview_result_request, preview_full_name
+  )
+
+  return preview_result_resp
+
+
+def Create(
+    messages,
+    async_,
+    preview_full_name,
+    location_full_name,
+    deployment,
+    preview_mode,
+    service_account,
+    local_source=None,
+    stage_bucket=None,
+    ignore_file=None,
+    artifacts_gcs_bucket=None,
+    worker_pool=None,
+    gcs_source=None,
+    git_source_repo=None,
+    git_source_directory=None,
+    git_source_ref=None,
+    input_values=None,
+    inputs_file=None,
+    labels=None,
+):
+  """Creates a preview.
+
+  Args:
+    messages: ModuleType, the messages module that lets us form blueprints API
+      messages based on our protos.
+    async_: bool, if True, gcloud will return immediately, otherwise it will
+      wait on the long-running operation.
+    preview_full_name: string, full path name of the preview. e.g.
+      "projects/p/locations/l/previews/preview".
+    location_full_name: string, full path name of the location. e.g.
+      "projects/p/locations/l".
+    deployment: deployment reference for a preview.
+    preview_mode: preview mode to be set for a preview.
+    service_account: User-specified Service Account (SA) to be used as
+      credential to manage resources. e.g.
+      `projects/{projectID}/serviceAccounts/{serviceAccount}` The default Cloud
+      Build SA will be used initially if this field is not set.
+    local_source: Local storage path where config files are stored.
+    stage_bucket: optional string. Destination for storing local config files
+      specified by local source flag. e.g. "gs://bucket-name/".
+    ignore_file: optional string, a path to a gcloudignore file.
+    artifacts_gcs_bucket: User-defined location of Cloud Build logs, artifacts,
+      and Terraform state files in Google Cloud Storage. e.g.
+      `gs://{bucket}/{folder}` A default bucket will be bootstrapped if the
+      field is not set or empty
+    worker_pool: The User-specified Worker Pool resource in which the Cloud
+      Build job will execute. If this field is unspecified, the default Cloud
+      Build worker pool will be used. e.g.
+      projects/{project}/locations/{location}/workerPools/{workerPoolId}
+    gcs_source:  URI of an object in Google Cloud Storage. e.g.
+      `gs://{bucket}/{object}`
+    git_source_repo: Repository URL.
+    git_source_directory: Subdirectory inside the git repository.
+    git_source_ref: Git branch or tag.
+    input_values: Input variable values for the Terraform blueprint. It only
+      accepts (key, value) pairs where value is a scalar value.
+    inputs_file: Accepts .tfvars file.
+    labels: User-defined metadata for the preview.
+
+  Returns:
+    The resulting Deployment resource or, in the case that async_ is True, a
+      long-running operation.
+
+  Raises:
+    InvalidArgumentException: If an invalid set of flags is provided (e.g.
+      trying to run with --target-git-subdir but without --target-git).
+  """
+
+  additional_properties = _ParseInputValuesAndFile(
+      input_values, inputs_file, messages)
+  labels_message = _GenerateLabels(labels, messages, 'preview')
+
+  tf_input_values = messages.TerraformBlueprint.InputValuesValue(
+      additionalProperties=additional_properties
+  )
+
+  if preview_full_name is not None:
+    preview_ref = resources.REGISTRY.Parse(
+        preview_full_name, collection='config.projects.locations.previews'
+    )
+    location = preview_ref.Parent().Name()
+    preview_id = preview_ref.Name()
+  else:
+    location_ref = resources.REGISTRY.Parse(
+        location_full_name, collection='config.projects.locations'
+    )
+    location = location_ref.Name()
+    # Hardcoding preview_id when preview_full_name is none as it's needed for
+    # bucket creation for local source in the CreateTFBlueprint workflow.
+    preview_id = 'im-preview-{uuid}'.format(uuid=uuid.uuid4())
+
+  tf_blueprint = _CreateTFBlueprint(
+      messages,
+      None,
+      preview_id,
+      location,
+      local_source,
+      stage_bucket,
+      ignore_file,
+      gcs_source,
+      git_source_repo,
+      git_source_directory,
+      git_source_ref,
+      tf_input_values,
+  )
+
+  preview = messages.Preview(
+      serviceAccount=service_account,
+      workerPool=worker_pool,
+      terraformBlueprint=tf_blueprint,
+      labels=labels_message,
+  )
+
+  if preview_full_name is not None:
+    preview.name = preview_full_name
+
+  if preview_mode is not None:
+    try:
+      preview.previewMode = messages.Preview.PreviewModeValueValuesEnum(
+          preview_mode
+      )
+    except TypeError:
+      raise c_exceptions.UnknownArgumentException(
+          '--preview-mode',
+          'Invalid preview mode. Supported values are DEFAULT and DELETE.')
+
+  if deployment is not None:
+    preview.deployment = deployment
+
+  if artifacts_gcs_bucket is not None:
+    preview.artifactsGcsBucket = artifacts_gcs_bucket
+
+  op = _CreatePreviewOp(preview, preview_full_name, location_full_name)
+
+  log.debug('LRO: %s', op.name)
+
+  # If the user chose to run asynchronously, then we'll match the output that
+  # the automatically-generated Delete command issues and return immediately.
+  if async_:
+    log.status.Print(
+        '{0} request issued for: [{1}]'.format(
+            'Create', preview_id
+        )
+    )
+
+    log.status.Print('Check operation [{}] for status.'.format(op.name))
+
+    return op
+
+  progress_message = '{} the preview'.format(
+      'Creating'
+  )
+
+  applied_preview = configmanager_util.WaitForCreatePreviewOperation(
+      op, progress_message
+  )
+
+  if (
+      applied_preview.state
+      == messages.Preview.StateValueValuesEnum.FAILED
+  ):
+    raise errors.OperationFailedError(applied_preview.state)
+
+  return applied_preview
+
+
+def _CreatePreviewOp(preview, preview_full_name, location_full_name):
+  """Initiates and returns a CreatePreview operation.
+
+  Args:
+    preview: A partially filled messages.preview. The preview will be filled
+      with other details before the operation is initiated.
+    preview_full_name: string, the fully qualified name of the preview, e.g.
+      "projects/p/locations/l/previews/p".
+    location_full_name: string, the fully qualified name of the location, e.g.
+      "projects/p/locations/l".
+
+  Returns:
+    The CreatePreview operation.
+  """
+  if preview_full_name is None:
+    return configmanager_util.CreatePreview(preview, None, location_full_name)
+  preview_ref = resources.REGISTRY.Parse(
+      preview_full_name, collection='config.projects.locations.previews')
+  preview_id = preview_ref.Name()
+  log.info('Creating the deployment')
+  return configmanager_util.CreatePreview(
+      preview, preview_id, location_full_name
+  )
+
+
+def _ParseInputValuesAndFile(input_values, inputs_file, messages):
+  """Parses input file or values and returns a list of additional properties.
+
+  Args:
+    input_values: Input variable values for the Terraform blueprint. It only
+      accepts (key, value) pairs where value is a scalar value.
+    inputs_file: Accepts .tfvars file.
+    messages: ModuleType, the messages module that lets us form blueprints API
+      messages based on our protos.
+
+  Returns:
+    The additional_properties list.
+  """
+  additional_properties = []
+  if input_values is not None:
+    for key, value in six.iteritems(input_values):
+      additional_properties.append(
+          messages.TerraformBlueprint.InputValuesValue.AdditionalProperty(
+              key=key,
+              value=messages.TerraformVariable(
+                  inputValue=encoding.PyValueToMessage(
+                      extra_types.JsonValue, value
+                  )
+              ),
+          )
+      )
+  elif inputs_file is not None:
+    tfvar_values = tfvars_parser.ParseTFvarFile(inputs_file)
+    for key, value in six.iteritems(tfvar_values):
+      additional_properties.append(
+          messages.TerraformBlueprint.InputValuesValue.AdditionalProperty(
+              key=key,
+              value=messages.TerraformVariable(
+                  inputValue=encoding.PyValueToMessage(
+                      extra_types.JsonValue, value
+                  )
+              ),
+          )
+      )
+  return additional_properties
+
+
+def _GenerateLabels(labels, messages, resource):
+  """Parses input file or values and returns a list of additional properties.
+
+  Args:
+    labels: User-defined metadata for the deployment.
+    messages: ModuleType, the messages module that lets us form blueprints API
+      messages based on our protos.
+    resource: Resource type, can be deployment or preview.
+
+  Returns:
+    The additional_properties list.
+  """
+  labels_message = {}
+  # Whichever labels the user provides will become the full set of labels in the
+  # resulting deployment or preview.
+  if labels is not None:
+    if resource == 'deployment':
+      labels_message = messages.Deployment.LabelsValue(
+          additionalProperties=[
+              messages.Deployment.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in six.iteritems(labels)
+          ]
+      )
+    elif resource == 'preview':
+      labels_message = messages.Preview.LabelsValue(
+          additionalProperties=[
+              messages.Preview.LabelsValue.AdditionalProperty(
+                  key=key, value=value
+              )
+              for key, value in six.iteritems(labels)
+          ]
+      )
+    return labels_message

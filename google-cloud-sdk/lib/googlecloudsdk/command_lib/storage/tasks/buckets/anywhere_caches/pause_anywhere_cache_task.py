@@ -26,25 +26,26 @@ from googlecloudsdk.core import log
 
 
 class PauseAnywhereCacheTask(task.Task):
-  """Task for pausing an Anywhere Cache instance in particular zone of a bucket."""
+  """Task for pausing an Anywhere Cache instance."""
 
   def __init__(self, bucket_name, zone):
     """Initializes task."""
     super(PauseAnywhereCacheTask, self).__init__()
     self._bucket_name = bucket_name
-    self._zone = zone
+    self._anywhere_cache_id = zone
     self.parallel_processing_key = '{}/{}'.format(bucket_name, zone)
 
   def execute(self, task_status_queue=None):
     log.status.Print(
-        'Requesting to pause a cache instance for gs://{} in zone {}...'.format(
-            self._bucket_name, self._zone
+        'Requesting to pause a cache instance of bucket gs://{} having'
+        ' anywhere_cache_id {}'.format(
+            self._bucket_name, self._anywhere_cache_id
         )
     )
     provider = storage_url.ProviderPrefix.GCS
     api_factory.get_api(provider).pause_anywhere_cache(
         self._bucket_name,
-        self._zone,
+        self._anywhere_cache_id,
     )
 
     if task_status_queue:
@@ -55,5 +56,5 @@ class PauseAnywhereCacheTask(task.Task):
       return NotImplemented
     return (
         self._bucket_name == other._bucket_name
-        and self._zone == other._zone
+        and self._anywhere_cache_id == other._anywhere_cache_id
     )

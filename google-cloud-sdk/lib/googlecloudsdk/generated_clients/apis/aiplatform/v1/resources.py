@@ -134,6 +134,51 @@ class Collections(enum.Enum):
       ['projectsId', 'locationsId', 'endpointsId', 'operationsId'],
       True
   )
+  PROJECTS_LOCATIONS_FEATUREGROUPS = (
+      'projects.locations.featureGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREGROUPS_FEATURES = (
+      'projects.locations.featureGroups.features',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/featureGroups/'
+              '{featureGroupsId}/features/{featuresId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREONLINESTORES = (
+      'projects.locations.featureOnlineStores',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'featureOnlineStores/{featureOnlineStoresId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_FEATUREONLINESTORES_FEATUREVIEWS = (
+      'projects.locations.featureOnlineStores.featureViews',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'featureOnlineStores/{featureOnlineStoresId}/featureViews/'
+              '{featureViewsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_FEATURESTORES = (
       'projects.locations.featurestores',
       '{+name}',

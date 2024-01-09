@@ -65,9 +65,9 @@ def AddThreatPreventionProfileResource(
           fallthroughs=[
               deps.ArgFallthrough("--organization"),
               deps.FullySpecifiedAnchorFallthrough(
-                  deps.ArgFallthrough(
+                  [deps.ArgFallthrough(
                       _SECURITY_PROFILE_GROUP_RESOURCE_COLLECTION
-                  ),
+                  )],
                   collection_info,
                   "organizationsId",
               ),
@@ -83,9 +83,9 @@ def AddThreatPreventionProfileResource(
           fallthroughs=[
               deps.ArgFallthrough("--location"),
               deps.FullySpecifiedAnchorFallthrough(
-                  deps.ArgFallthrough(
+                  [deps.ArgFallthrough(
                       _SECURITY_PROFILE_GROUP_RESOURCE_COLLECTION
-                  ),
+                  )],
                   collection_info,
                   "locationsId",
               ),

@@ -3015,6 +3015,41 @@ class StorageDatabasecenterPartnerapiV1mainCompliance(_messages.Message):
   version = _messages.StringField(2)
 
 
+class StorageDatabasecenterPartnerapiV1mainCustomMetadataData(_messages.Message):
+  r"""Any custom metadata associated with the resource. i.e. A spanner
+  instance can have multiple databases with its own unique metadata.
+  Information for these individual databases can be captured in custom
+  metadata data
+
+  Fields:
+    databaseMetadata: A StorageDatabasecenterPartnerapiV1mainDatabaseMetadata
+      attribute.
+  """
+
+  databaseMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseMetadata', 1, repeated=True)
+
+
+class StorageDatabasecenterPartnerapiV1mainDatabaseMetadata(_messages.Message):
+  r"""Metadata for individual databases created in an instance. i.e. spanner
+  instance can have multiple databases with unique configuration settings.
+
+  Fields:
+    backupConfiguration: Backup configuration for this database
+    backupRun: Information about the last backup attempt for this database
+    product: A StorageDatabasecenterProtoCommonProduct attribute.
+    resourceId: A StorageDatabasecenterPartnerapiV1mainDatabaseResourceId
+      attribute.
+    resourceName: Required. Database name. Resource name to follow CAIS
+      resource_name format as noted here go/condor-common-datamodel
+  """
+
+  backupConfiguration = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupConfiguration', 1)
+  backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 2)
+  product = _messages.MessageField('StorageDatabasecenterProtoCommonProduct', 3)
+  resourceId = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 4)
+  resourceName = _messages.StringField(5)
+
+
 class StorageDatabasecenterPartnerapiV1mainDatabaseResourceFeed(_messages.Message):
   r"""DatabaseResourceFeed is the top level proto to be used to ingest
   different database resource level events into Condor platform.
@@ -3451,8 +3486,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
       creation time.
 
   Messages:
-    CustomMetadataValue: Any custom metadata associated with the resource (a
-      JSON field)
     UserLabelsValue: User-provided labels, represented as a dictionary where
       each label is a single key value pair.
 
@@ -3463,8 +3496,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     creationTime: The creation time of the resource, i.e. the time when
       resource is created and recorded in partner service.
     currentState: Current state of the instance.
-    customMetadata: Any custom metadata associated with the resource (a JSON
-      field)
+    customMetadata: Any custom metadata associated with the resource
     expectedState: The state that the instance is expected to be in. For
       example, an instance state can transition to UNHEALTHY due to wrong
       patch update, while the expected state will remain at the HEALTHY.
@@ -3557,31 +3589,6 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
     SUB_RESOURCE_TYPE_OTHER = 9
 
   @encoding.MapUnrecognizedFields('additionalProperties')
-  class CustomMetadataValue(_messages.Message):
-    r"""Any custom metadata associated with the resource (a JSON field)
-
-    Messages:
-      AdditionalProperty: An additional property for a CustomMetadataValue
-        object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a CustomMetadataValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
   class UserLabelsValue(_messages.Message):
     r"""User-provided labels, represented as a dictionary where each label is
     a single key value pair.
@@ -3611,7 +3618,7 @@ class StorageDatabasecenterPartnerapiV1mainDatabaseResourceMetadata(_messages.Me
   backupRun = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainBackupRun', 3)
   creationTime = _messages.StringField(4)
   currentState = _messages.EnumField('CurrentStateValueValuesEnum', 5)
-  customMetadata = _messages.MessageField('CustomMetadataValue', 6)
+  customMetadata = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainCustomMetadataData', 6)
   expectedState = _messages.EnumField('ExpectedStateValueValuesEnum', 7)
   id = _messages.MessageField('StorageDatabasecenterPartnerapiV1mainDatabaseResourceId', 8)
   instanceType = _messages.EnumField('InstanceTypeValueValuesEnum', 9)
@@ -3703,9 +3710,10 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       SQL_SERVER: SQLServer binary running as engine in database instance.
       ENGINE_NATIVE: Native database binary running as engine in instance.
       NATIVE: Native database binary running as engine in instance.
-      ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT: Cloud Spanner with Postgres
-        dialect.
-      SPANGRES: Cloud Spanner with Postgres dialect.
+      ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT: Cloud Spanner with
+        PostgreSQL dialect.
+      ENGINE_CLOUD_SPANNER_WITH_GOOGLESQL_DIALECT: Cloud Spanner with Google
+        SQL dialect.
       ENGINE_OTHER: Other refers to rest of other database engine. This is to
         be when engine is known, but it is not present in this enum.
     """
@@ -3719,7 +3727,7 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     ENGINE_NATIVE = 7
     NATIVE = 8
     ENGINE_CLOUD_SPANNER_WITH_POSTGRES_DIALECT = 9
-    SPANGRES = 10
+    ENGINE_CLOUD_SPANNER_WITH_GOOGLESQL_DIALECT = 10
     ENGINE_OTHER = 11
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -3733,7 +3741,6 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
       PRODUCT_TYPE_ALLOYDB: AlloyDB product area in GCP
       ALLOYDB: AlloyDB product area in GCP
       PRODUCT_TYPE_SPANNER: Spanner product area in GCP
-      SPANNER: Spanner product area in GCP
       PRODUCT_TYPE_ON_PREM: On premises database product.
       ON_PREM: On premises database product.
       PRODUCT_TYPE_OTHER: Other refers to rest of other product type. This is
@@ -3745,10 +3752,9 @@ class StorageDatabasecenterProtoCommonProduct(_messages.Message):
     PRODUCT_TYPE_ALLOYDB = 3
     ALLOYDB = 4
     PRODUCT_TYPE_SPANNER = 5
-    SPANNER = 6
-    PRODUCT_TYPE_ON_PREM = 7
-    ON_PREM = 8
-    PRODUCT_TYPE_OTHER = 9
+    PRODUCT_TYPE_ON_PREM = 6
+    ON_PREM = 7
+    PRODUCT_TYPE_OTHER = 8
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   type = _messages.EnumField('TypeValueValuesEnum', 2)

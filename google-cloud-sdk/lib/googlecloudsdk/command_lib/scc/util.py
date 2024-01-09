@@ -134,7 +134,10 @@ def IsLocationSpecified(args, resource_name):
 
 
 def GetVersionFromArguments(
-    args, resource_name="", deprecated_args: list[str] = None
+    args,
+    resource_name="",
+    deprecated_args=None,
+    version_specific_existing_resource: bool = False,
 ):
   """Returns the correct version to call based on the user supplied arguments.
 
@@ -142,11 +145,15 @@ def GetVersionFromArguments(
     args: arguments
     resource_name: (optional) resource name e.g. finding, mute_config
     deprecated_args: (optional) list of deprecated arguments for a command
+    version_specific_existing_resource: (optional) command is invoked on a
+      resource which is not interoperable between versions.
 
   Returns:
     Version of securitycenter api to handle command, either "v1" or "v2"
   """
   location_specified = IsLocationSpecified(args, resource_name)
+
+  # Args that have been deprecated in v2 may necessitate a v1 call.
   if deprecated_args:
     for argument in deprecated_args:
       if args.IsKnownAndSpecified(argument) and location_specified:
@@ -156,15 +163,23 @@ def GetVersionFromArguments(
       if args.IsKnownAndSpecified(argument) and not location_specified:
         return "v1"
 
-  if args.api_version == "v2enabled":
-    return "v2"
-
   if args.api_version == "v1":
     if location_specified:
       # TODO: b/282774006 - Update error message to include details about
       # location support.
       raise errors.InvalidAPIVersion("Location is not supported by v1.")
-    return args.api_version
+    return "v1"
+
+  # Non-interoperable resources such as BigQuery Export and NotificationConfigs
+  # may only be accessed through the version in which they were instantiated.
+  # This may be determined by the presence of a location.
+  if version_specific_existing_resource:
+    if location_specified:
+      return "v2"
+    else:
+      return "v1"
+
+  return "v2"
 
 
 def ValidateAndGetLocation(args, version):

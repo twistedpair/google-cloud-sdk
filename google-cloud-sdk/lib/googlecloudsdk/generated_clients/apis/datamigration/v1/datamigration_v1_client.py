@@ -926,7 +926,7 @@ class DatamigrationV1(base_api.BaseApiClient):
     )
 
     def DemoteDestination(self, request, global_params=None):
-      r"""Demotes the destination database to become a read replica of the source. This is applicable for the following migrations: 1. MySQL to Cloud SQL (for MySQL) 2. PostgreSQL to Cloud SQL (for PostgreSQL) 3. PostgreSQL to AlloyDB.
+      r"""Demotes the destination database to become a read replica of the source. This is applicable for the following migrations: 1. MySQL to Cloud SQL for MySQL 2. PostgreSQL to Cloud SQL for PostgreSQL 3. PostgreSQL to AlloyDB for PostgreSQL.
 
       Args:
         request: (DatamigrationProjectsLocationsMigrationJobsDemoteDestinationRequest) input message

@@ -390,7 +390,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
           }
 
     def GetOpenid_configuration(self, request, global_params=None):
-      r"""Gets the OIDC discovery document for the cluster. See the [OpenID Connect Discovery 1.0 specification](https://openid.net/specs/openid-connect-discovery-1_0.html) for details. This API is not yet intended for general use, and is not available for all clusters.
+      r"""Gets the OIDC discovery document for the cluster. See the [OpenID Connect Discovery 1.0 specification](https://openid.net/specs/openid-connect-discovery-1_0.html) for details.
 
       Args:
         request: (ContainerProjectsLocationsClustersWellKnownGetOpenidConfigurationRequest) input message
@@ -589,7 +589,7 @@ class ContainerV1alpha1(base_api.BaseApiClient):
     )
 
     def GetJwks(self, request, global_params=None):
-      r"""Gets the public component of the cluster signing keys in JSON Web Key format. This API is not yet intended for general use, and is not available for all clusters.
+      r"""Gets the public component of the cluster signing keys in JSON Web Key format.
 
       Args:
         request: (ContainerProjectsLocationsClustersGetJwksRequest) input message

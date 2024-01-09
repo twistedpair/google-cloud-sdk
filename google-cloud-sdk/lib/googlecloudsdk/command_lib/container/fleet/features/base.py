@@ -23,7 +23,6 @@ from googlecloudsdk.api_lib.container.fleet import util
 from googlecloudsdk.api_lib.services import enable_api
 from googlecloudsdk.api_lib.util import apis as core_apis
 from googlecloudsdk.api_lib.util import exceptions as core_api_exceptions
-from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base as calliope_base
 from googlecloudsdk.calliope import exceptions as calliope_exceptions
 from googlecloudsdk.command_lib.container.fleet import api_util
@@ -39,21 +38,6 @@ from googlecloudsdk.core.util import retry
 class FeatureCommand(hub_base.HubCommand):
   """FeatureCommand is a mixin adding common utils to the Feature commands."""
   feature_name = ''  # Derived commands should set this to their Feature.
-
-  # TODO(b/181242245): Remove this once all remaining features use v1alpha+.
-  @property
-  def v1alpha1_client(self):
-    """A raw v1alpha1 gkehub API client. PLEASE AVOID NEW USES!"""
-    # Build the client lazily, but only once.
-    if not hasattr(self, '_v1alpha1_client'):
-      self._v1alpha1_client = core_apis.GetClientInstance('gkehub', 'v1alpha1')
-    return self._v1alpha1_client
-
-  # TODO(b/181242245): Remove this once all remaining features use v1alpha+.
-  @property
-  def v1alpha1_messages(self):
-    """The v1alpha1 gkehub messages module. PLEASE AVOID NEW USES!"""
-    return core_apis.GetMessagesModule('gkehub', 'v1alpha1')
 
   @property
   def feature(self):
@@ -78,15 +62,9 @@ class FeatureCommand(hub_base.HubCommand):
         'Not authorized to access {} Feature for project [{}]'.format(
             self.feature.display_name, project))
 
-  # TODO(b/181242245): Remove v1alpha1 once all remaining features use v1alpha+.
-  def GetFeature(self, project=None, v1alpha1=False):
+  def GetFeature(self, project=None):
     """Fetch this command's Feature from the API, handling common errors."""
     try:
-      if v1alpha1:
-        return self.v1alpha1_client.projects_locations_global_features.Get(
-            self.v1alpha1_messages
-            .GkehubProjectsLocationsGlobalFeaturesGetRequest(
-                name=self.FeatureResourceName()))
       return self.hubclient.GetFeature(self.FeatureResourceName(project))
     except apitools_exceptions.HttpNotFoundError:
       raise self.FeatureNotEnabledError(project)
@@ -188,35 +166,19 @@ class DescribeCommand(FeatureCommand, calliope_base.DescribeCommand):
 class UpdateCommandMixin(FeatureCommand):
   """A mixin for functionality to update a Feature."""
 
-  # TODO(b/181242245): Remove v1alpha1 helpers once all features use v1alpha+.
-  def Update(self, mask, patch, v1alpha1=False):
+  def Update(self, mask, patch):
     """Update provides common API, display, and error handling logic."""
-    update = self._PatchV1alpha1 if v1alpha1 else self.hubclient.UpdateFeature
-    poller = (
-        self._V1alpha1Waiter() if v1alpha1 else self.hubclient.feature_waiter)
-
     try:
-      op = update(self.FeatureResourceName(), mask, patch)
+      op = self.hubclient.UpdateFeature(self.FeatureResourceName(), mask, patch)
     except apitools_exceptions.HttpNotFoundError:
       raise self.FeatureNotEnabledError()
 
     msg = 'Waiting for Feature {} to be updated'.format(
         self.feature.display_name)
     # TODO(b/177098463): Update all downstream tests to handle warnings.
-    return self.WaitForHubOp(poller, op, message=msg, warnings=False)
-
-  def _V1alpha1Waiter(self):
-    return waiter.CloudOperationPoller(
-        self.v1alpha1_client.projects_locations_global_features,
-        self.v1alpha1_client.projects_locations_operations)
-
-  def _PatchV1alpha1(self, name, mask, patch):
-    req = self.v1alpha1_messages.GkehubProjectsLocationsGlobalFeaturesPatchRequest(
-        name=name,
-        updateMask=','.join(mask),
-        feature=patch,
+    return self.WaitForHubOp(
+        self.hubclient.feature_waiter, op, message=msg, warnings=False
     )
-    return self.v1alpha1_client.projects_locations_global_features.Patch(req)
 
 
 class UpdateCommand(UpdateCommandMixin, calliope_base.UpdateCommand):

@@ -1334,6 +1334,10 @@ class CycleStep(_messages.Message):
   startTime = _messages.StringField(5)
 
 
+class DataDiskImageImport(_messages.Message):
+  r"""Mentions that the image import is not using OS adaptation process."""
+
+
 class DatacenterConnector(_messages.Message):
   r"""DatacenterConnector message describes a connector between the Source and
   Google Cloud, which is installed on a vmware datacenter (an OVA vm installed
@@ -1452,20 +1456,23 @@ class DiskImageTargetDetails(_messages.Message):
 
   Fields:
     additionalLicenses: Optional. Additional licenses to assign to the image.
+    dataDiskImageImport: Optional. Use to skip OS adaptation process.
     description: Optional. An optional description of the image.
     encryption: Optional. Immutable. The encryption to apply to the image.
     familyName: Optional. The name of the image family to which the new image
       belongs.
-    imageName: Optional. The name of the image to be created.
+    imageName: Required. The name of the image to be created.
     labels: Optional. A map of labels to associate with the image.
     licenseType: Optional. Choose which type of license to apply to the
       imported image.
+    osAdaptationParameters: Optional. Use to set the parameters relevant for
+      the OS adaptation process.
     singleRegionStorage: Optional. Set to true to set the image
       storageLocations to the single region of the import job. When false, the
       closest multi-region is selected.
     skipOsAdaptation: Optional. Set to true if OS adaptation should be
       skipped.
-    targetProject: Optional. Reference to the TargetProject resource that
+    targetProject: Required. Reference to the TargetProject resource that
       represents the target project in which the imported image will be
       created.
   """
@@ -1510,15 +1517,17 @@ class DiskImageTargetDetails(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   additionalLicenses = _messages.StringField(1, repeated=True)
-  description = _messages.StringField(2)
-  encryption = _messages.MessageField('Encryption', 3)
-  familyName = _messages.StringField(4)
-  imageName = _messages.StringField(5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 7)
-  singleRegionStorage = _messages.BooleanField(8)
-  skipOsAdaptation = _messages.BooleanField(9)
-  targetProject = _messages.StringField(10)
+  dataDiskImageImport = _messages.MessageField('DataDiskImageImport', 2)
+  description = _messages.StringField(3)
+  encryption = _messages.MessageField('Encryption', 4)
+  familyName = _messages.StringField(5)
+  imageName = _messages.StringField(6)
+  labels = _messages.MessageField('LabelsValue', 7)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 8)
+  osAdaptationParameters = _messages.MessageField('ImageImportOsAdaptationParameters', 9)
+  singleRegionStorage = _messages.BooleanField(10)
+  skipOsAdaptation = _messages.BooleanField(11)
+  targetProject = _messages.StringField(12)
 
 
 class DisksMigrationDisksTargetDefaults(_messages.Message):
@@ -1794,6 +1803,42 @@ class ImageImportJob(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 7)
   steps = _messages.MessageField('ImageImportStep', 8, repeated=True)
   warnings = _messages.MessageField('MigrationWarning', 9, repeated=True)
+
+
+class ImageImportOsAdaptationParameters(_messages.Message):
+  r"""Parameters affecting the OS adaptation process.
+
+  Enums:
+    LicenseTypeValueValuesEnum: Optional. Choose which type of license to
+      apply to the imported image.
+
+  Fields:
+    generalize: Optional. Set to true in order to generalize the imported
+      image. The generalization process enables co-existence of multiple VMs
+      created from the same image. For Windows, generalizing the image removes
+      computer-specific information such as installed drivers and the computer
+      security identifier (SID).
+    licenseType: Optional. Choose which type of license to apply to the
+      imported image.
+  """
+
+  class LicenseTypeValueValuesEnum(_messages.Enum):
+    r"""Optional. Choose which type of license to apply to the imported image.
+
+    Values:
+      COMPUTE_ENGINE_LICENSE_TYPE_DEFAULT: The license type is the default for
+        the OS.
+      COMPUTE_ENGINE_LICENSE_TYPE_PAYG: The license type is Pay As You Go
+        license type.
+      COMPUTE_ENGINE_LICENSE_TYPE_BYOL: The license type is Bring Your Own
+        License type.
+    """
+    COMPUTE_ENGINE_LICENSE_TYPE_DEFAULT = 0
+    COMPUTE_ENGINE_LICENSE_TYPE_PAYG = 1
+    COMPUTE_ENGINE_LICENSE_TYPE_BYOL = 2
+
+  generalize = _messages.BooleanField(1)
+  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 2)
 
 
 class ImageImportStep(_messages.Message):

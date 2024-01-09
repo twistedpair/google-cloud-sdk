@@ -51,3 +51,14 @@ properties:
     type: array
     items:
       $ref: TrustStore.yaml
+  allowlistedCertificates:
+    description: |-
+      A certificate matching an allowlisted certificate is always considered
+      valid as long as the certificate is parseable, proof of private key
+      possession is established, and constraints on the certificate's SAN field
+      are met.
+    type: array
+    # TODO: b/289174140 - Remove on public launch.
+    hidden: true
+    items:
+      $ref: AllowlistedCertificate.yaml

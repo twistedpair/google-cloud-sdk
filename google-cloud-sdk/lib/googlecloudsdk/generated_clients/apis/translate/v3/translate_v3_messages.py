@@ -48,8 +48,8 @@ class AdaptiveMtFile(_messages.Message):
     displayName: The file's display name.
     entryCount: The number of entries that the file contains.
     name: Required. The resource name of the file, in form of
-      `projects/{project-number-or-
-      id}/locations/{location_id}/adaptiveMtDatasets/{dataset}/files/{file}`
+      `projects/{project-number-or-id}/locations/{location_id}/adaptiveMtDatas
+      ets/{dataset}/adaptiveMtFiles/{file}`
     updateTime: Output only. Timestamp when this file was last updated.
   """
 
@@ -67,7 +67,7 @@ class AdaptiveMtSentence(_messages.Message):
     createTime: Output only. Timestamp when this sentence was created.
     name: Required. The resource name of the file, in form of
       `projects/{project-number-or-id}/locations/{location_id}/adaptiveMtDatas
-      ets/{dataset}/files/{file}/sentences/{sentence}`
+      ets/{dataset}/adaptiveMtFiles/{file}/adaptiveMtSentences/{sentence}`
     sourceSentence: Required. The source sentence.
     targetSentence: Required. The target sentence.
     updateTime: Output only. Timestamp when this sentence was last updated.
@@ -1854,8 +1854,8 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesDeleteRequest(_
 
   Fields:
     name: Required. The resource name of the file to delete, in form of
-      `projects/{project-number-or-
-      id}/locations/{location_id}/adaptiveMtDatasets/{dataset}/files/{file}`
+      `projects/{project-number-or-id}/locations/{location_id}/adaptiveMtDatas
+      ets/{dataset}/adaptiveMtFiles/{file}`
   """
 
   name = _messages.StringField(1, required=True)
@@ -1867,8 +1867,8 @@ class TranslateProjectsLocationsAdaptiveMtDatasetsAdaptiveMtFilesGetRequest(_mes
 
   Fields:
     name: Required. The resource name of the file, in form of
-      `projects/{project-number-or-
-      id}/locations/{location_id}/adaptiveMtDatasets/{dataset}/files/{file}`
+      `projects/{project-number-or-id}/locations/{location_id}/adaptiveMtDatas
+      ets/{dataset}/adaptiveMtFiles/{file}`
   """
 
   name = _messages.StringField(1, required=True)

@@ -1437,12 +1437,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -1454,7 +1473,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -4490,6 +4513,8 @@ class QueryParameterType(_messages.Message):
   Fields:
     arrayType: [Optional] The type of the array's elements, if this is an
       array.
+    rangeElementType: [Optional] The element type of the range, if this is a
+      range.
     structTypes: [Optional] The types of the fields of this struct, in order,
       if this is a struct.
     type: [Required] The top level type of this field.
@@ -4509,23 +4534,37 @@ class QueryParameterType(_messages.Message):
     type = _messages.MessageField('QueryParameterType', 3)
 
   arrayType = _messages.MessageField('QueryParameterType', 1)
-  structTypes = _messages.MessageField('StructTypesValueListEntry', 2, repeated=True)
-  type = _messages.StringField(3)
+  rangeElementType = _messages.MessageField('QueryParameterType', 2)
+  structTypes = _messages.MessageField('StructTypesValueListEntry', 3, repeated=True)
+  type = _messages.StringField(4)
 
 
 class QueryParameterValue(_messages.Message):
   r"""A QueryParameterValue object.
 
   Messages:
+    RangeValueValue: [Optional] The range value, if this is a range type.
     StructValuesValue: [Optional] The struct field values, in order of the
       struct type's declaration.
 
   Fields:
     arrayValues: [Optional] The array values, if this is an array type.
+    rangeValue: [Optional] The range value, if this is a range type.
     structValues: [Optional] The struct field values, in order of the struct
       type's declaration.
     value: [Optional] The value of this value, if a simple scalar type.
   """
+
+  class RangeValueValue(_messages.Message):
+    r"""[Optional] The range value, if this is a range type.
+
+    Fields:
+      end: A QueryParameterValue attribute.
+      start: A QueryParameterValue attribute.
+    """
+
+    end = _messages.MessageField('QueryParameterValue', 1)
+    start = _messages.MessageField('QueryParameterValue', 2)
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class StructValuesValue(_messages.Message):
@@ -4554,8 +4593,9 @@ class QueryParameterValue(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   arrayValues = _messages.MessageField('QueryParameterValue', 1, repeated=True)
-  structValues = _messages.MessageField('StructValuesValue', 2)
-  value = _messages.StringField(3)
+  rangeValue = _messages.MessageField('RangeValueValue', 2)
+  structValues = _messages.MessageField('StructValuesValue', 3)
+  value = _messages.StringField(4)
 
 
 class QueryRequest(_messages.Message):
@@ -4827,6 +4867,20 @@ class RangePartitioning(_messages.Message):
 
   field = _messages.StringField(1)
   range = _messages.MessageField('RangeValue', 2)
+
+
+class RangeValue(_messages.Message):
+  r"""Represents the value of a range.
+
+  Fields:
+    end: Optional. The end value of the range. A missing value represents an
+      unbounded end.
+    start: Optional. The start value of the range. A missing value represents
+      an unbounded start.
+  """
+
+  end = _messages.MessageField('QueryParameterValue', 1)
+  start = _messages.MessageField('QueryParameterValue', 2)
 
 
 class RankingMetrics(_messages.Message):

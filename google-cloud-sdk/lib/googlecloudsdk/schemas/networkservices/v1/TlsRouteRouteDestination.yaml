@@ -33,6 +33,6 @@ properties:
   weight:
     description: |-
       Specifies the proportion of requests forwareded to the backend referenced
-      by the service_name field. This is computed as: weight/Sum(weights in
+      by the service_name field. This is computed as: - weight/Sum(weights in
       destinations) Weights in all destinations does not need to sum up to 100.
     type: integer

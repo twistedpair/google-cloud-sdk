@@ -1528,27 +1528,6 @@ def AddPasswordPolicyDisallowUsernameSubstring(
   )
 
 
-def AddPasswordPolicyDisallowCompromisedCredentials(
-    parser, show_negated_in_help=True
-):
-  """Add the flag to specify password policy disallow username as substring.
-
-  Args:
-    parser: The current argparse parser to add this to.
-    show_negated_in_help: Show negative action in help.
-  """
-  kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
-  parser.add_argument(
-      '--password-policy-disallow-compromised-credentials',
-      required=False,
-      help=(
-          'Prohibits the use of credentials that have been compromised by a'
-          ' data breach.'
-      ),
-      **kwargs
-  )
-
-
 def AddPasswordPolicyPasswordChangeInterval(parser):
   """Add the flag to specify password policy password change interval.
 

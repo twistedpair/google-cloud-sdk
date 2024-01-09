@@ -239,12 +239,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -256,7 +275,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -525,6 +548,14 @@ class DropInfo(_messages.Message):
         cannot be resolved to a GCP resource.
       ROUTE_NEXT_HOP_RESOURCE_NOT_FOUND: Route's next hop resource is not
         found.
+      ROUTE_NEXT_HOP_INSTANCE_WRONG_NETWORK: Route's next hop instance doesn't
+        hace a NIC in the route's network.
+      ROUTE_NEXT_HOP_INSTANCE_NON_PRIMARY_IP: Route's next hop IP address is
+        not a primary IP address of the next hop instance.
+      ROUTE_NEXT_HOP_FORWARDING_RULE_IP_MISMATCH: Route's next hop forwarding
+        rule doesn't match next hop IP address.
+      ROUTE_NEXT_HOP_VPN_TUNNEL_NOT_ESTABLISHED: Route's next hop VPN tunnel
+        is down (does not have valid IKE SAs).
       NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV6_ADDRESS: Packet is sent from the
         Internet to the private IPv6 address.
       VPN_TUNNEL_LOCAL_SELECTOR_MISMATCH: The packet does not match a policy-
@@ -641,46 +672,50 @@ class DropInfo(_messages.Message):
     ROUTE_WRONG_NETWORK = 6
     ROUTE_NEXT_HOP_IP_ADDRESS_NOT_RESOLVED = 7
     ROUTE_NEXT_HOP_RESOURCE_NOT_FOUND = 8
-    NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV6_ADDRESS = 9
-    VPN_TUNNEL_LOCAL_SELECTOR_MISMATCH = 10
-    VPN_TUNNEL_REMOTE_SELECTOR_MISMATCH = 11
-    PRIVATE_TRAFFIC_TO_INTERNET = 12
-    PRIVATE_GOOGLE_ACCESS_DISALLOWED = 13
-    PRIVATE_GOOGLE_ACCESS_VIA_VPN_TUNNEL_UNSUPPORTED = 14
-    NO_EXTERNAL_ADDRESS = 15
-    UNKNOWN_INTERNAL_ADDRESS = 16
-    FORWARDING_RULE_MISMATCH = 17
-    FORWARDING_RULE_NO_INSTANCES = 18
-    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 19
-    INSTANCE_NOT_RUNNING = 20
-    GKE_CLUSTER_NOT_RUNNING = 21
-    CLOUD_SQL_INSTANCE_NOT_RUNNING = 22
-    TRAFFIC_TYPE_BLOCKED = 23
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 24
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 25
-    DROPPED_INSIDE_GKE_SERVICE = 26
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 27
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 28
-    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 29
-    GKE_PSC_ENDPOINT_MISSING = 30
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 31
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 32
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 33
-    GKE_CONTROL_PLANE_NO_ROUTE = 34
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 35
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 36
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 37
-    CLOUD_FUNCTION_NOT_ACTIVE = 38
-    VPC_CONNECTOR_NOT_SET = 39
-    VPC_CONNECTOR_NOT_RUNNING = 40
-    FORWARDING_RULE_REGION_MISMATCH = 41
-    PSC_CONNECTION_NOT_ACCEPTED = 42
-    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 43
-    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 44
-    CLOUD_RUN_REVISION_NOT_READY = 45
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 46
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 47
-    CLOUD_NAT_NO_ADDRESSES = 48
+    ROUTE_NEXT_HOP_INSTANCE_WRONG_NETWORK = 9
+    ROUTE_NEXT_HOP_INSTANCE_NON_PRIMARY_IP = 10
+    ROUTE_NEXT_HOP_FORWARDING_RULE_IP_MISMATCH = 11
+    ROUTE_NEXT_HOP_VPN_TUNNEL_NOT_ESTABLISHED = 12
+    NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV6_ADDRESS = 13
+    VPN_TUNNEL_LOCAL_SELECTOR_MISMATCH = 14
+    VPN_TUNNEL_REMOTE_SELECTOR_MISMATCH = 15
+    PRIVATE_TRAFFIC_TO_INTERNET = 16
+    PRIVATE_GOOGLE_ACCESS_DISALLOWED = 17
+    PRIVATE_GOOGLE_ACCESS_VIA_VPN_TUNNEL_UNSUPPORTED = 18
+    NO_EXTERNAL_ADDRESS = 19
+    UNKNOWN_INTERNAL_ADDRESS = 20
+    FORWARDING_RULE_MISMATCH = 21
+    FORWARDING_RULE_NO_INSTANCES = 22
+    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 23
+    INSTANCE_NOT_RUNNING = 24
+    GKE_CLUSTER_NOT_RUNNING = 25
+    CLOUD_SQL_INSTANCE_NOT_RUNNING = 26
+    TRAFFIC_TYPE_BLOCKED = 27
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 28
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 29
+    DROPPED_INSIDE_GKE_SERVICE = 30
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 31
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 32
+    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 33
+    GKE_PSC_ENDPOINT_MISSING = 34
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 35
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 36
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 37
+    GKE_CONTROL_PLANE_NO_ROUTE = 38
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 39
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 40
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 41
+    CLOUD_FUNCTION_NOT_ACTIVE = 42
+    VPC_CONNECTOR_NOT_SET = 43
+    VPC_CONNECTOR_NOT_RUNNING = 44
+    FORWARDING_RULE_REGION_MISMATCH = 45
+    PSC_CONNECTION_NOT_ACCEPTED = 46
+    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 47
+    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 48
+    CLOUD_RUN_REVISION_NOT_READY = 49
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 50
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 51
+    CLOUD_NAT_NO_ADDRESSES = 52
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)

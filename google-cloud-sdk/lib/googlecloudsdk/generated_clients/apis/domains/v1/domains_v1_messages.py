@@ -121,12 +121,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -138,7 +157,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -272,7 +295,7 @@ class ContactSettings(_messages.Message):
         of the request.
       PRIVATE_CONTACT_DATA: Deprecated: For more information, see [Cloud
         Domains feature deprecation](https://cloud.google.com/domains/docs/dep
-        recations/feature-deprecations) None of the data from
+        recations/feature-deprecations). None of the data from
         `ContactSettings` is publicly available. Instead, proxy contact data
         is published for your domain. Email sent to the proxy email address is
         forwarded to the registrant's email address. Cloud Domains provides
@@ -322,7 +345,7 @@ class DnsSettings(_messages.Message):
     googleDomainsDns: Deprecated: For more information, see [Cloud Domains
       feature
       deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-      deprecations) The free DNS zone provided by [Google
+      deprecations). The free DNS zone provided by [Google
       Domains](https://domains.google/).
   """
 
@@ -842,7 +865,7 @@ class DsRecord(_messages.Message):
 class ExportRegistrationRequest(_messages.Message):
   r"""Deprecated: For more information, see [Cloud Domains feature
   deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-  deprecations) Request for the `ExportRegistration` method.
+  deprecations). Request for the `ExportRegistration` method.
   """
 
 
@@ -909,7 +932,7 @@ class GlueRecord(_messages.Message):
 class GoogleDomainsDns(_messages.Message):
   r"""Deprecated: For more information, see [Cloud Domains feature
   deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-  deprecations) Configuration for using the free DNS zone provided by Google
+  deprecations). Configuration for using the free DNS zone provided by Google
   Domains as a `Registration`'s `dns_provider`. You cannot configure the DNS
   zone itself using the API. To configure the DNS zone, go to [Google
   Domains](https://domains.google/).
@@ -955,7 +978,7 @@ class GoogleDomainsDns(_messages.Message):
 class ImportDomainRequest(_messages.Message):
   r"""Deprecated: For more information, see [Cloud Domains feature
   deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-  deprecations) Request for the `ImportDomain` method.
+  deprecations). Request for the `ImportDomain` method.
 
   Messages:
     LabelsValue: Set of labels associated with the `Registration`.
@@ -1121,22 +1144,24 @@ class ManagementSettings(_messages.Message):
     PreferredRenewalMethodValueValuesEnum: Optional. The desired renewal
       method for this `Registration`. The actual `renewal_method` is
       automatically updated to reflect this choice. If unset or equal to
-      `RENEWAL_METHOD_UNSPECIFIED`, it will be treated as if it were set to
-      `AUTOMATIC_RENEWAL`. Can't be set to `RENEWAL_DISABLED` during resource
-      creation and can only be updated when the `Registration` resource has
-      state `ACTIVE` or `SUSPENDED`. When `preferred_renewal_method` is set to
-      `AUTOMATIC_RENEWAL` the actual `renewal_method` can be set to
-      `RENEWAL_DISABLED` in case of e.g. problems with the Billing Account or
-      reported domain abuse. In such cases check the `issues` field on the
-      `Registration`. After the problem is resolved the `renewal_method` will
-      be automatically updated to `preferred_renewal_method` in a few hours.
+      `RENEWAL_METHOD_UNSPECIFIED`, the actual `renewalMethod` is treated as
+      if it were set to `AUTOMATIC_RENEWAL`. You cannot use `RENEWAL_DISABLED`
+      during resource creation, and you can update the renewal status only
+      when the `Registration` resource has state `ACTIVE` or `SUSPENDED`. When
+      `preferred_renewal_method` is set to `AUTOMATIC_RENEWAL`, the actual
+      `renewal_method` can be set to `RENEWAL_DISABLED` in case of problems
+      with the billing account or reported domain abuse. In such cases, check
+      the `issues` field on the `Registration`. After the problem is resolved,
+      the `renewal_method` is automatically updated to
+      `preferred_renewal_method` in a few hours.
     RenewalMethodValueValuesEnum: Output only. The actual renewal method for
       this `Registration`. When `preferred_renewal_method` is set to
-      `AUTOMATIC_RENEWAL` the actual `renewal_method` can be equal to
-      `RENEWAL_DISABLED` in case of e.g. problems with the Billing Account or
-      reported domain abuse. In such cases check the `issues` field on the
-      `Registration`. After the problem is resolved the `renewal_method` will
-      be automatically updated to `preferred_renewal_method` in a few hours.
+      `AUTOMATIC_RENEWAL`, the actual `renewal_method` can be equal to
+      `RENEWAL_DISABLED`-for example, when there are problems with the billing
+      account or reported domain abuse. In such cases, check the `issues`
+      field on the `Registration`. After the problem is resolved, the
+      `renewal_method` is automatically updated to `preferred_renewal_method`
+      in a few hours.
     TransferLockStateValueValuesEnum: Controls whether the domain can be
       transferred to another registrar.
 
@@ -1144,22 +1169,24 @@ class ManagementSettings(_messages.Message):
     preferredRenewalMethod: Optional. The desired renewal method for this
       `Registration`. The actual `renewal_method` is automatically updated to
       reflect this choice. If unset or equal to `RENEWAL_METHOD_UNSPECIFIED`,
-      it will be treated as if it were set to `AUTOMATIC_RENEWAL`. Can't be
-      set to `RENEWAL_DISABLED` during resource creation and can only be
-      updated when the `Registration` resource has state `ACTIVE` or
-      `SUSPENDED`. When `preferred_renewal_method` is set to
-      `AUTOMATIC_RENEWAL` the actual `renewal_method` can be set to
-      `RENEWAL_DISABLED` in case of e.g. problems with the Billing Account or
-      reported domain abuse. In such cases check the `issues` field on the
-      `Registration`. After the problem is resolved the `renewal_method` will
-      be automatically updated to `preferred_renewal_method` in a few hours.
+      the actual `renewalMethod` is treated as if it were set to
+      `AUTOMATIC_RENEWAL`. You cannot use `RENEWAL_DISABLED` during resource
+      creation, and you can update the renewal status only when the
+      `Registration` resource has state `ACTIVE` or `SUSPENDED`. When
+      `preferred_renewal_method` is set to `AUTOMATIC_RENEWAL`, the actual
+      `renewal_method` can be set to `RENEWAL_DISABLED` in case of problems
+      with the billing account or reported domain abuse. In such cases, check
+      the `issues` field on the `Registration`. After the problem is resolved,
+      the `renewal_method` is automatically updated to
+      `preferred_renewal_method` in a few hours.
     renewalMethod: Output only. The actual renewal method for this
       `Registration`. When `preferred_renewal_method` is set to
-      `AUTOMATIC_RENEWAL` the actual `renewal_method` can be equal to
-      `RENEWAL_DISABLED` in case of e.g. problems with the Billing Account or
-      reported domain abuse. In such cases check the `issues` field on the
-      `Registration`. After the problem is resolved the `renewal_method` will
-      be automatically updated to `preferred_renewal_method` in a few hours.
+      `AUTOMATIC_RENEWAL`, the actual `renewal_method` can be equal to
+      `RENEWAL_DISABLED`-for example, when there are problems with the billing
+      account or reported domain abuse. In such cases, check the `issues`
+      field on the `Registration`. After the problem is resolved, the
+      `renewal_method` is automatically updated to `preferred_renewal_method`
+      in a few hours.
     transferLockState: Controls whether the domain can be transferred to
       another registrar.
   """
@@ -1167,24 +1194,24 @@ class ManagementSettings(_messages.Message):
   class PreferredRenewalMethodValueValuesEnum(_messages.Enum):
     r"""Optional. The desired renewal method for this `Registration`. The
     actual `renewal_method` is automatically updated to reflect this choice.
-    If unset or equal to `RENEWAL_METHOD_UNSPECIFIED`, it will be treated as
-    if it were set to `AUTOMATIC_RENEWAL`. Can't be set to `RENEWAL_DISABLED`
-    during resource creation and can only be updated when the `Registration`
-    resource has state `ACTIVE` or `SUSPENDED`. When
-    `preferred_renewal_method` is set to `AUTOMATIC_RENEWAL` the actual
-    `renewal_method` can be set to `RENEWAL_DISABLED` in case of e.g. problems
-    with the Billing Account or reported domain abuse. In such cases check the
-    `issues` field on the `Registration`. After the problem is resolved the
-    `renewal_method` will be automatically updated to
-    `preferred_renewal_method` in a few hours.
+    If unset or equal to `RENEWAL_METHOD_UNSPECIFIED`, the actual
+    `renewalMethod` is treated as if it were set to `AUTOMATIC_RENEWAL`. You
+    cannot use `RENEWAL_DISABLED` during resource creation, and you can update
+    the renewal status only when the `Registration` resource has state
+    `ACTIVE` or `SUSPENDED`. When `preferred_renewal_method` is set to
+    `AUTOMATIC_RENEWAL`, the actual `renewal_method` can be set to
+    `RENEWAL_DISABLED` in case of problems with the billing account or
+    reported domain abuse. In such cases, check the `issues` field on the
+    `Registration`. After the problem is resolved, the `renewal_method` is
+    automatically updated to `preferred_renewal_method` in a few hours.
 
     Values:
       RENEWAL_METHOD_UNSPECIFIED: The renewal method is undefined.
       AUTOMATIC_RENEWAL: The domain is automatically renewed each year.
       MANUAL_RENEWAL: Deprecated: For more information, see [Cloud Domains
         feature deprecation](https://cloud.google.com/domains/docs/deprecation
-        s/feature-deprecations) This option was never used. Use
-        RENEWAL_DISABLED instead.
+        s/feature-deprecations). This option was never used. Use
+        `RENEWAL_DISABLED` instead.
       RENEWAL_DISABLED: The domain won't be renewed and will expire at its
         expiration time.
     """
@@ -1195,11 +1222,11 @@ class ManagementSettings(_messages.Message):
 
   class RenewalMethodValueValuesEnum(_messages.Enum):
     r"""Output only. The actual renewal method for this `Registration`. When
-    `preferred_renewal_method` is set to `AUTOMATIC_RENEWAL` the actual
-    `renewal_method` can be equal to `RENEWAL_DISABLED` in case of e.g.
-    problems with the Billing Account or reported domain abuse. In such cases
-    check the `issues` field on the `Registration`. After the problem is
-    resolved the `renewal_method` will be automatically updated to
+    `preferred_renewal_method` is set to `AUTOMATIC_RENEWAL`, the actual
+    `renewal_method` can be equal to `RENEWAL_DISABLED`-for example, when
+    there are problems with the billing account or reported domain abuse. In
+    such cases, check the `issues` field on the `Registration`. After the
+    problem is resolved, the `renewal_method` is automatically updated to
     `preferred_renewal_method` in a few hours.
 
     Values:
@@ -1207,8 +1234,8 @@ class ManagementSettings(_messages.Message):
       AUTOMATIC_RENEWAL: The domain is automatically renewed each year.
       MANUAL_RENEWAL: Deprecated: For more information, see [Cloud Domains
         feature deprecation](https://cloud.google.com/domains/docs/deprecation
-        s/feature-deprecations) This option was never used. Use
-        RENEWAL_DISABLED instead.
+        s/feature-deprecations). This option was never used. Use
+        `RENEWAL_DISABLED` instead.
       RENEWAL_DISABLED: The domain won't be renewed and will expire at its
         expiration time.
     """
@@ -1676,7 +1703,7 @@ class RegisterParameters(_messages.Message):
         of the request.
       PRIVATE_CONTACT_DATA: Deprecated: For more information, see [Cloud
         Domains feature deprecation](https://cloud.google.com/domains/docs/dep
-        recations/feature-deprecations) None of the data from
+        recations/feature-deprecations). None of the data from
         `ContactSettings` is publicly available. Instead, proxy contact data
         is published for your domain. Email sent to the proxy email address is
         forwarded to the registrant's email address. Cloud Domains provides
@@ -1733,7 +1760,7 @@ class Registration(_messages.Message):
     TransferFailureReasonValueValuesEnum: Output only. Deprecated: For more
       information, see [Cloud Domains feature
       deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-      deprecations) The reason the domain transfer failed. Only set for
+      deprecations). The reason the domain transfer failed. Only set for
       domains in TRANSFER_FAILED state.
 
   Messages:
@@ -1776,7 +1803,7 @@ class Registration(_messages.Message):
     transferFailureReason: Output only. Deprecated: For more information, see
       [Cloud Domains feature
       deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-      deprecations) The reason the domain transfer failed. Only set for
+      deprecations). The reason the domain transfer failed. Only set for
       domains in TRANSFER_FAILED state.
   """
 
@@ -1795,8 +1822,8 @@ class Registration(_messages.Message):
         verification within 15 days of registration, the domain is suspended.
         To resend the verification email, call ConfigureContactSettings and
         provide the current `registrant_contact.email`.
-      PROBLEM_WITH_BILLING: Billing account is not in good standing. The
-        domain will not automatically renew at its expiration time unless you
+      PROBLEM_WITH_BILLING: The billing account is not in good standing. The
+        domain is not automatically renewed at its expiration time unless you
         resolve problems with your billing account.
     """
     ISSUE_UNSPECIFIED = 0
@@ -1837,7 +1864,7 @@ class Registration(_messages.Message):
         Cloud Domains.
       ACTIVE: The domain is registered and operational. The domain renews
         automatically as long as it remains in this state and the
-        RenewalMethod is set to AUTOMATIC_RENEWAL.
+        `RenewalMethod` is set to `AUTOMATIC_RENEWAL`.
       SUSPENDED: The domain is suspended and inoperative. For more details,
         see the `issues` field.
       EXPORTED: The domain is no longer managed with Cloud Domains. It may
@@ -1869,7 +1896,7 @@ class Registration(_messages.Message):
         of the request.
       PRIVATE_CONTACT_DATA: Deprecated: For more information, see [Cloud
         Domains feature deprecation](https://cloud.google.com/domains/docs/dep
-        recations/feature-deprecations) None of the data from
+        recations/feature-deprecations). None of the data from
         `ContactSettings` is publicly available. Instead, proxy contact data
         is published for your domain. Email sent to the proxy email address is
         forwarded to the registrant's email address. Cloud Domains provides
@@ -1890,7 +1917,7 @@ class Registration(_messages.Message):
     r"""Output only. Deprecated: For more information, see [Cloud Domains
     feature
     deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-    deprecations) The reason the domain transfer failed. Only set for domains
+    deprecations). The reason the domain transfer failed. Only set for domains
     in TRANSFER_FAILED state.
 
     Values:
@@ -1974,7 +2001,7 @@ class ResetAuthorizationCodeRequest(_messages.Message):
 class RetrieveImportableDomainsResponse(_messages.Message):
   r"""Deprecated: For more information, see [Cloud Domains feature
   deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-  deprecations) Response for the `RetrieveImportableDomains` method.
+  deprecations). Response for the `RetrieveImportableDomains` method.
 
   Fields:
     domains: A list of domains that the calling user manages in Google
@@ -2002,7 +2029,7 @@ class RetrieveRegisterParametersResponse(_messages.Message):
 class RetrieveTransferParametersResponse(_messages.Message):
   r"""Deprecated: For more information, see [Cloud Domains feature
   deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-  deprecations) Response for the `RetrieveTransferParameters` method.
+  deprecations). Response for the `RetrieveTransferParameters` method.
 
   Fields:
     transferParameters: Parameters to use when calling the `TransferDomain`
@@ -2180,7 +2207,7 @@ class TestIamPermissionsResponse(_messages.Message):
 class TransferDomainRequest(_messages.Message):
   r"""Deprecated: For more information, see [Cloud Domains feature
   deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-  deprecations) Request for the `TransferDomain` method.
+  deprecations). Request for the `TransferDomain` method.
 
   Enums:
     ContactNoticesValueListEntryValuesEnum:
@@ -2226,7 +2253,7 @@ class TransferDomainRequest(_messages.Message):
 class TransferParameters(_messages.Message):
   r"""Deprecated: For more information, see [Cloud Domains feature
   deprecation](https://cloud.google.com/domains/docs/deprecations/feature-
-  deprecations) Parameters required to transfer a domain from another
+  deprecations). Parameters required to transfer a domain from another
   registrar.
 
   Enums:
@@ -2261,7 +2288,7 @@ class TransferParameters(_messages.Message):
         of the request.
       PRIVATE_CONTACT_DATA: Deprecated: For more information, see [Cloud
         Domains feature deprecation](https://cloud.google.com/domains/docs/dep
-        recations/feature-deprecations) None of the data from
+        recations/feature-deprecations). None of the data from
         `ContactSettings` is publicly available. Instead, proxy contact data
         is published for your domain. Email sent to the proxy email address is
         forwarded to the registrant's email address. Cloud Domains provides

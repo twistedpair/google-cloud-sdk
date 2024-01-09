@@ -28,7 +28,7 @@ properties:
   numRetries:
     description: |-
       Specifies the allowed number of retries. This number must be > 0. If not
-      specpfied, default to 1.
+      specified, default to 1.
     type: integer
   retryConditions:
     description: |-

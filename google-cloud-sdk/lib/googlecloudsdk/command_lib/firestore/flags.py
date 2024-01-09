@@ -45,28 +45,36 @@ def AddCollectionIdsFlag(parser):
   )
 
 
-def AddDatabaseIdFlag(parser, required=False, hidden=False):
+def AddDatabaseIdFlag(parser, required=False):
   """Adds flag for database id to the given parser.
 
   Args:
     parser: The argparse parser.
     required: Whether the flag must be set for running the command, a bool.
-    hidden: Whether the flag is hidden in document, a bool.
   """
-  parser.add_argument(
-      '--database',
-      metavar='DATABASE',
-      type=str,
-      default='(default)' if not required else None,
-      hidden=hidden,
-      required=required,
-      help="""
+  if not required:
+    helper_text = """\
       The database to operate on. The default value is `(default)`.
 
       For example, to operate on database `foo`:
 
         $ {command} --database='foo'
-      """,
+      """
+  else:
+    helper_text = """\
+      The database to operate on.
+
+      For example, to operate on database `foo`:
+
+        $ {command} --database='foo'
+      """
+  parser.add_argument(
+      '--database',
+      metavar='DATABASE',
+      type=str,
+      default='(default)' if not required else None,
+      required=required,
+      help=helper_text,
   )
 
 

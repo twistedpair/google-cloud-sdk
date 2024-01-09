@@ -100,7 +100,8 @@ def AddMaintenanceWindowRecurrence(parser):
       help="""
       An RFC 5545 (https://tools.ietf.org/html/rfc5545#section-3.8.5.3)
         recurrence rule for how the cluster maintenance window recurs. They go
-        on for the span of time between the start and the end time.
+        on for the span of time between the start and the end time. E.g.
+        FREQ=WEEKLY;BYDAY=SU.
       """,
   )
 

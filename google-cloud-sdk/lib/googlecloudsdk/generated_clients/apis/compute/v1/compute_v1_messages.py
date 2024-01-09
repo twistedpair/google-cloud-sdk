@@ -31219,6 +31219,7 @@ class Disk(_messages.Message):
     resourcePolicies: Resource policies applied to this disk for automatic
       snapshot creations.
     resourceStatus: [Output Only] Status information for the disk resource.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined fully-qualified URL for this
       resource.
@@ -31418,24 +31419,25 @@ class Disk(_messages.Message):
   replicaZones = _messages.StringField(25, repeated=True)
   resourcePolicies = _messages.StringField(26, repeated=True)
   resourceStatus = _messages.MessageField('DiskResourceStatus', 27)
-  satisfiesPzs = _messages.BooleanField(28)
-  selfLink = _messages.StringField(29)
-  sizeGb = _messages.IntegerField(30)
-  sourceConsistencyGroupPolicy = _messages.StringField(31)
-  sourceConsistencyGroupPolicyId = _messages.StringField(32)
-  sourceDisk = _messages.StringField(33)
-  sourceDiskId = _messages.StringField(34)
-  sourceImage = _messages.StringField(35)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 36)
-  sourceImageId = _messages.StringField(37)
-  sourceSnapshot = _messages.StringField(38)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 39)
-  sourceSnapshotId = _messages.StringField(40)
-  sourceStorageObject = _messages.StringField(41)
-  status = _messages.EnumField('StatusValueValuesEnum', 42)
-  type = _messages.StringField(43)
-  users = _messages.StringField(44, repeated=True)
-  zone = _messages.StringField(45)
+  satisfiesPzi = _messages.BooleanField(28)
+  satisfiesPzs = _messages.BooleanField(29)
+  selfLink = _messages.StringField(30)
+  sizeGb = _messages.IntegerField(31)
+  sourceConsistencyGroupPolicy = _messages.StringField(32)
+  sourceConsistencyGroupPolicyId = _messages.StringField(33)
+  sourceDisk = _messages.StringField(34)
+  sourceDiskId = _messages.StringField(35)
+  sourceImage = _messages.StringField(36)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 37)
+  sourceImageId = _messages.StringField(38)
+  sourceSnapshot = _messages.StringField(39)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 40)
+  sourceSnapshotId = _messages.StringField(41)
+  sourceStorageObject = _messages.StringField(42)
+  status = _messages.EnumField('StatusValueValuesEnum', 43)
+  type = _messages.StringField(44)
+  users = _messages.StringField(45, repeated=True)
+  zone = _messages.StringField(46)
 
 
 class DiskAggregatedList(_messages.Message):
@@ -35659,16 +35661,16 @@ class GuestOsFeature(_messages.Message):
       values, use commas to separate values. Set to one or more of the
       following values: - VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET -
       UEFI_COMPATIBLE - GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE -
-      SEV_LIVE_MIGRATABLE - SEV_SNP_CAPABLE - IDPF For more information, see
-      Enabling guest operating system features.
+      SEV_LIVE_MIGRATABLE - SEV_SNP_CAPABLE - TDX_CAPABLE - IDPF For more
+      information, see Enabling guest operating system features.
 
   Fields:
     type: The ID of a supported feature. To add multiple values, use commas to
       separate values. Set to one or more of the following values: -
       VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
       GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_LIVE_MIGRATABLE -
-      SEV_SNP_CAPABLE - IDPF For more information, see Enabling guest
-      operating system features.
+      SEV_SNP_CAPABLE - TDX_CAPABLE - IDPF For more information, see Enabling
+      guest operating system features.
   """
 
   class TypeValueValuesEnum(_messages.Enum):
@@ -35676,8 +35678,8 @@ class GuestOsFeature(_messages.Message):
     separate values. Set to one or more of the following values: -
     VIRTIO_SCSI_MULTIQUEUE - WINDOWS - MULTI_IP_SUBNET - UEFI_COMPATIBLE -
     GVNIC - SEV_CAPABLE - SUSPEND_RESUME_COMPATIBLE - SEV_LIVE_MIGRATABLE -
-    SEV_SNP_CAPABLE - IDPF For more information, see Enabling guest operating
-    system features.
+    SEV_SNP_CAPABLE - TDX_CAPABLE - IDPF For more information, see Enabling
+    guest operating system features.
 
     Values:
       FEATURE_TYPE_UNSPECIFIED: <no description>
@@ -38215,6 +38217,7 @@ class Image(_messages.Message):
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
     rawDisk: The parameters of the raw disk image.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     shieldedInstanceInitialState: Set the secure boot keys of shielded
@@ -38392,21 +38395,22 @@ class Image(_messages.Message):
   licenses = _messages.StringField(16, repeated=True)
   name = _messages.StringField(17)
   rawDisk = _messages.MessageField('RawDiskValue', 18)
-  satisfiesPzs = _messages.BooleanField(19)
-  selfLink = _messages.StringField(20)
-  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 21)
-  sourceDisk = _messages.StringField(22)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 23)
-  sourceDiskId = _messages.StringField(24)
-  sourceImage = _messages.StringField(25)
-  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 26)
-  sourceImageId = _messages.StringField(27)
-  sourceSnapshot = _messages.StringField(28)
-  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 29)
-  sourceSnapshotId = _messages.StringField(30)
-  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 31, default='RAW')
-  status = _messages.EnumField('StatusValueValuesEnum', 32)
-  storageLocations = _messages.StringField(33, repeated=True)
+  satisfiesPzi = _messages.BooleanField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  shieldedInstanceInitialState = _messages.MessageField('InitialStateConfig', 22)
+  sourceDisk = _messages.StringField(23)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
+  sourceDiskId = _messages.StringField(25)
+  sourceImage = _messages.StringField(26)
+  sourceImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 27)
+  sourceImageId = _messages.StringField(28)
+  sourceSnapshot = _messages.StringField(29)
+  sourceSnapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 30)
+  sourceSnapshotId = _messages.StringField(31)
+  sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 32, default='RAW')
+  status = _messages.EnumField('StatusValueValuesEnum', 33)
+  storageLocations = _messages.StringField(34, repeated=True)
 
 
 class ImageFamilyView(_messages.Message):
@@ -46444,6 +46448,7 @@ class MachineImage(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: [Output Only] Reserved for future use.
     savedDisks: An array of Machine Image specific properties for disks
       attached to the source instance
@@ -46493,15 +46498,16 @@ class MachineImage(_messages.Message):
   kind = _messages.StringField(6, default='compute#machineImage')
   machineImageEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 7)
   name = _messages.StringField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  savedDisks = _messages.MessageField('SavedDisk', 10, repeated=True)
-  selfLink = _messages.StringField(11)
-  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 12, repeated=True)
-  sourceInstance = _messages.StringField(13)
-  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 14)
-  status = _messages.EnumField('StatusValueValuesEnum', 15)
-  storageLocations = _messages.StringField(16, repeated=True)
-  totalStorageBytes = _messages.IntegerField(17)
+  satisfiesPzi = _messages.BooleanField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  savedDisks = _messages.MessageField('SavedDisk', 11, repeated=True)
+  selfLink = _messages.StringField(12)
+  sourceDiskEncryptionKeys = _messages.MessageField('SourceDiskEncryptionKey', 13, repeated=True)
+  sourceInstance = _messages.StringField(14)
+  sourceInstanceProperties = _messages.MessageField('SourceInstanceProperties', 15)
+  status = _messages.EnumField('StatusValueValuesEnum', 16)
+  storageLocations = _messages.StringField(17, repeated=True)
+  totalStorageBytes = _messages.IntegerField(18)
 
 
 class MachineImageList(_messages.Message):
@@ -52867,7 +52873,8 @@ class Operation(_messages.Message):
   or zonal. - For global operations, use the `globalOperations` resource. -
   For regional operations, use the `regionOperations` resource. - For zonal
   operations, use the `zoneOperations` resource. For more information, read
-  Global, Regional, and Zonal Resources.
+  Global, Regional, and Zonal Resources. Note that completed Operation
+  resources have a limited retention period.
 
   Enums:
     StatusValueValuesEnum: [Output Only] The status of the operation, which
@@ -54084,12 +54091,14 @@ class PacketMirroringFilter(_messages.Message):
     IPProtocols: Protocols that apply as filter on mirrored traffic. If no
       protocols are specified, all traffic that matches the specified CIDR
       ranges is mirrored. If neither cidrRanges nor IPProtocols is specified,
-      all traffic is mirrored.
-    cidrRanges: IP CIDR ranges that apply as filter on the source (ingress) or
-      destination (egress) IP in the IP header. Only IPv4 is supported. If no
-      ranges are specified, all traffic that matches the specified IPProtocols
-      is mirrored. If neither cidrRanges nor IPProtocols is specified, all
-      traffic is mirrored.
+      all IPv4 traffic is mirrored.
+    cidrRanges: One or more IPv4 or IPv6 CIDR ranges that apply as filter on
+      the source (ingress) or destination (egress) IP in the IP header. If no
+      ranges are specified, all IPv4 traffic that matches the specified
+      IPProtocols is mirrored. If neither cidrRanges nor IPProtocols is
+      specified, all IPv4 traffic is mirrored. To mirror all IPv4 and IPv6
+      traffic, use "0.0.0.0/0,::/0". Note: Support for IPv6 traffic is in
+      preview.
     direction: Direction of traffic to mirror, either INGRESS, EGRESS, or
       BOTH. The default is BOTH.
   """
@@ -63494,8 +63503,8 @@ class SecurityPolicyRuleMatcherExprOptions(_messages.Message):
 
   Fields:
     recaptchaOptions: reCAPTCHA configuration options to be applied for the
-      rule. If the rule does not evaluate reCAPTCHA tokens, this field will
-      have no effect.
+      rule. If the rule does not evaluate reCAPTCHA tokens, this field has no
+      effect.
   """
 
   recaptchaOptions = _messages.MessageField('SecurityPolicyRuleMatcherExprOptionsRecaptchaOptions', 1)
@@ -65098,6 +65107,7 @@ class Snapshot(_messages.Message):
       character must be a lowercase letter, and all following characters must
       be a dash, lowercase letter, or digit, except the last character, which
       cannot be a dash.
+    satisfiesPzi: Output only. Reserved for future use.
     satisfiesPzs: [Output Only] Reserved for future use.
     selfLink: [Output Only] Server-defined URL for the resource.
     snapshotEncryptionKey: Encrypts the snapshot using a customer-supplied
@@ -65234,20 +65244,21 @@ class Snapshot(_messages.Message):
   licenses = _messages.StringField(16, repeated=True)
   locationHint = _messages.StringField(17)
   name = _messages.StringField(18)
-  satisfiesPzs = _messages.BooleanField(19)
-  selfLink = _messages.StringField(20)
-  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 21)
-  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 22)
-  sourceDisk = _messages.StringField(23)
-  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 24)
-  sourceDiskForRecoveryCheckpoint = _messages.StringField(25)
-  sourceDiskId = _messages.StringField(26)
-  sourceSnapshotSchedulePolicy = _messages.StringField(27)
-  sourceSnapshotSchedulePolicyId = _messages.StringField(28)
-  status = _messages.EnumField('StatusValueValuesEnum', 29)
-  storageBytes = _messages.IntegerField(30)
-  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 31)
-  storageLocations = _messages.StringField(32, repeated=True)
+  satisfiesPzi = _messages.BooleanField(19)
+  satisfiesPzs = _messages.BooleanField(20)
+  selfLink = _messages.StringField(21)
+  snapshotEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 22)
+  snapshotType = _messages.EnumField('SnapshotTypeValueValuesEnum', 23)
+  sourceDisk = _messages.StringField(24)
+  sourceDiskEncryptionKey = _messages.MessageField('CustomerEncryptionKey', 25)
+  sourceDiskForRecoveryCheckpoint = _messages.StringField(26)
+  sourceDiskId = _messages.StringField(27)
+  sourceSnapshotSchedulePolicy = _messages.StringField(28)
+  sourceSnapshotSchedulePolicyId = _messages.StringField(29)
+  status = _messages.EnumField('StatusValueValuesEnum', 30)
+  storageBytes = _messages.IntegerField(31)
+  storageBytesStatus = _messages.EnumField('StorageBytesStatusValueValuesEnum', 32)
+  storageLocations = _messages.StringField(33, repeated=True)
 
 
 class SnapshotList(_messages.Message):
@@ -67456,25 +67467,23 @@ class Subnetwork(_messages.Message):
       This field can be both set at resource creation time and updated using
       patch.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
-      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY,
+      PRIVATE_SERVICE_CONNECT, or PRIVATE is the default purpose for user-
       created subnets or subnets that are automatically created in auto mode
-      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
-      created subnetwork that is reserved for regional Envoy-based load
-      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
-      to publish services using Private Service Connect. A subnet with purpose
-      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
-      used only by regional internal HTTP(S) load balancers. Note that
-      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
-      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      networks. Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
+      for Envoy-based load balancers. A subnet with purpose set to
+      PRIVATE_SERVICE_CONNECT is used to publish services using Private
+      Service Connect. If unspecified, the subnet purpose defaults to PRIVATE.
       The enableFlowLogs field isn't supported if the subnet purpose field is
-      set to REGIONAL_MANAGED_PROXY.
+      set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
-      used when purpose = REGIONAL_MANAGED_PROXY. The value can be set to
-      ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
-      used for Envoy-based load balancers in a region. A BACKUP subnetwork is
-      one that is ready to be promoted to ACTIVE or is currently draining.
-      This field can be updated with a patch request.
+      used when purpose is set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or BACKUP. An
+      ACTIVE subnetwork is one that is currently being used for Envoy-based
+      load balancers in a region. A BACKUP subnetwork is one that is ready to
+      be promoted to ACTIVE or is currently draining. This field can be
+      updated with a patch request.
     StackTypeValueValuesEnum: The stack type for the subnet. If set to
       IPV4_ONLY, new VMs in the subnet are assigned IPv4 addresses only. If
       set to IPV4_IPV6, new VMs in the subnet can be assigned both IPv4 and
@@ -67545,27 +67554,25 @@ class Subnetwork(_messages.Message):
     privateIpv6GoogleAccess: This field is for internal use. This field can be
       both set at resource creation time and updated using patch.
     purpose: The purpose of the resource. This field can be either PRIVATE,
-      REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
-      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
-      created subnets or subnets that are automatically created in auto mode
-      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
-      created subnetwork that is reserved for regional Envoy-based load
-      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
-      to publish services using Private Service Connect. A subnet with purpose
-      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
-      used only by regional internal HTTP(S) load balancers. Note that
-      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
-      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
-      The enableFlowLogs field isn't supported if the subnet purpose field is
-      set to REGIONAL_MANAGED_PROXY.
+      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT,
+      or PRIVATE is the default purpose for user-created subnets or subnets
+      that are automatically created in auto mode networks. Subnets with
+      purpose set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-
+      created subnetworks that are reserved for Envoy-based load balancers. A
+      subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to publish
+      services using Private Service Connect. If unspecified, the subnet
+      purpose defaults to PRIVATE. The enableFlowLogs field isn't supported if
+      the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY.
     region: URL of the region where the Subnetwork resides. This field can be
       set only at resource creation time.
+    reservedInternalRange: The URL of the reserved internal range.
     role: The role of subnetwork. Currently, this field is only used when
-      purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
-      BACKUP. An ACTIVE subnetwork is one that is currently being used for
-      Envoy-based load balancers in a region. A BACKUP subnetwork is one that
-      is ready to be promoted to ACTIVE or is currently draining. This field
-      can be updated with a patch request.
+      purpose is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY. The
+      value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that
+      is currently being used for Envoy-based load balancers in a region. A
+      BACKUP subnetwork is one that is ready to be promoted to ACTIVE or is
+      currently draining. This field can be updated with a patch request.
     secondaryIpRanges: An array of configurations for secondary IP ranges for
       VM instances contained in this subnetwork. The primary IP of such VM
       must belong to the primary ipCidrRange of the subnetwork. The alias IPs
@@ -67617,25 +67624,22 @@ class Subnetwork(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE,
-    REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
-    INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
-    created subnets or subnets that are automatically created in auto mode
-    networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
-    created subnetwork that is reserved for regional Envoy-based load
-    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
-    publish services using Private Service Connect. A subnet with purpose set
-    to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be used
-    only by regional internal HTTP(S) load balancers. Note that
-    REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
-    load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
-    The enableFlowLogs field isn't supported if the subnet purpose field is
-    set to REGIONAL_MANAGED_PROXY.
+    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+    PRIVATE is the default purpose for user-created subnets or subnets that
+    are automatically created in auto mode networks. Subnets with purpose set
+    to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
+    subnetworks that are reserved for Envoy-based load balancers. A subnet
+    with purpose set to PRIVATE_SERVICE_CONNECT is used to publish services
+    using Private Service Connect. If unspecified, the subnet purpose defaults
+    to PRIVATE. The enableFlowLogs field isn't supported if the subnet purpose
+    field is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
 
     Values:
       GLOBAL_MANAGED_PROXY: Subnet reserved for Global Envoy-based Load
         Balancing.
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
-        Balancing.
+        Balancing. This is a legacy purpose, please use REGIONAL_MANAGED_PROXY
+        instead.
       PRIVATE: Regular user created or automatically created subnet.
       PRIVATE_NAT: Subnetwork used as source range for Private NAT Gateways.
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
@@ -67654,11 +67658,11 @@ class Subnetwork(_messages.Message):
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
-    purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
-    BACKUP. An ACTIVE subnetwork is one that is currently being used for
-    Envoy-based load balancers in a region. A BACKUP subnetwork is one that is
-    ready to be promoted to ACTIVE or is currently draining. This field can be
-    updated with a patch request.
+    purpose is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY. The
+    value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is
+    currently being used for Envoy-based load balancers in a region. A BACKUP
+    subnetwork is one that is ready to be promoted to ACTIVE or is currently
+    draining. This field can be updated with a patch request.
 
     Values:
       ACTIVE: The ACTIVE subnet that is currently used.
@@ -67715,11 +67719,12 @@ class Subnetwork(_messages.Message):
   privateIpv6GoogleAccess = _messages.EnumField('PrivateIpv6GoogleAccessValueValuesEnum', 17)
   purpose = _messages.EnumField('PurposeValueValuesEnum', 18)
   region = _messages.StringField(19)
-  role = _messages.EnumField('RoleValueValuesEnum', 20)
-  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 21, repeated=True)
-  selfLink = _messages.StringField(22)
-  stackType = _messages.EnumField('StackTypeValueValuesEnum', 23)
-  state = _messages.EnumField('StateValueValuesEnum', 24)
+  reservedInternalRange = _messages.StringField(20)
+  role = _messages.EnumField('RoleValueValuesEnum', 21)
+  secondaryIpRanges = _messages.MessageField('SubnetworkSecondaryRange', 22, repeated=True)
+  selfLink = _messages.StringField(23)
+  stackType = _messages.EnumField('StackTypeValueValuesEnum', 24)
+  state = _messages.EnumField('StateValueValuesEnum', 25)
 
 
 class SubnetworkAggregatedList(_messages.Message):
@@ -68175,10 +68180,12 @@ class SubnetworkSecondaryRange(_messages.Message):
       when adding an alias IP range to a VM instance. The name must be 1-63
       characters long, and comply with RFC1035. The name must be unique within
       the subnetwork.
+    reservedInternalRange: The URL of the reserved internal range.
   """
 
   ipCidrRange = _messages.StringField(1)
   rangeName = _messages.StringField(2)
+  reservedInternalRange = _messages.StringField(3)
 
 
 class SubnetworksExpandIpCidrRangeRequest(_messages.Message):
@@ -73620,25 +73627,23 @@ class UsableSubnetwork(_messages.Message):
       holds. It's immutable and can only be specified during creation or the
       first time the subnet is updated into IPV4_IPV6 dual stack.
     PurposeValueValuesEnum: The purpose of the resource. This field can be
-      either PRIVATE, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
-      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
+      either PRIVATE, GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY,
+      PRIVATE_SERVICE_CONNECT, or PRIVATE is the default purpose for user-
       created subnets or subnets that are automatically created in auto mode
-      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
-      created subnetwork that is reserved for regional Envoy-based load
-      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
-      to publish services using Private Service Connect. A subnet with purpose
-      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
-      used only by regional internal HTTP(S) load balancers. Note that
-      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
-      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
+      networks. Subnets with purpose set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY are user-created subnetworks that are reserved
+      for Envoy-based load balancers. A subnet with purpose set to
+      PRIVATE_SERVICE_CONNECT is used to publish services using Private
+      Service Connect. If unspecified, the subnet purpose defaults to PRIVATE.
       The enableFlowLogs field isn't supported if the subnet purpose field is
-      set to REGIONAL_MANAGED_PROXY.
+      set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
     RoleValueValuesEnum: The role of subnetwork. Currently, this field is only
-      used when purpose = REGIONAL_MANAGED_PROXY. The value can be set to
-      ACTIVE or BACKUP. An ACTIVE subnetwork is one that is currently being
-      used for Envoy-based load balancers in a region. A BACKUP subnetwork is
-      one that is ready to be promoted to ACTIVE or is currently draining.
-      This field can be updated with a patch request.
+      used when purpose is set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or BACKUP. An
+      ACTIVE subnetwork is one that is currently being used for Envoy-based
+      load balancers in a region. A BACKUP subnetwork is one that is ready to
+      be promoted to ACTIVE or is currently draining. This field can be
+      updated with a patch request.
     StackTypeValueValuesEnum: The stack type for the subnet. If set to
       IPV4_ONLY, new VMs in the subnet are assigned IPv4 addresses only. If
       set to IPV4_IPV6, new VMs in the subnet can be assigned both IPv4 and
@@ -73657,25 +73662,22 @@ class UsableSubnetwork(_messages.Message):
       the subnet is updated into IPV4_IPV6 dual stack.
     network: Network URL.
     purpose: The purpose of the resource. This field can be either PRIVATE,
-      REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
-      INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
-      created subnets or subnets that are automatically created in auto mode
-      networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
-      created subnetwork that is reserved for regional Envoy-based load
-      balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used
-      to publish services using Private Service Connect. A subnet with purpose
-      set to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be
-      used only by regional internal HTTP(S) load balancers. Note that
-      REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
-      load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
-      The enableFlowLogs field isn't supported if the subnet purpose field is
-      set to REGIONAL_MANAGED_PROXY.
+      GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT,
+      or PRIVATE is the default purpose for user-created subnets or subnets
+      that are automatically created in auto mode networks. Subnets with
+      purpose set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-
+      created subnetworks that are reserved for Envoy-based load balancers. A
+      subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to publish
+      services using Private Service Connect. If unspecified, the subnet
+      purpose defaults to PRIVATE. The enableFlowLogs field isn't supported if
+      the subnet purpose field is set to GLOBAL_MANAGED_PROXY or
+      REGIONAL_MANAGED_PROXY.
     role: The role of subnetwork. Currently, this field is only used when
-      purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
-      BACKUP. An ACTIVE subnetwork is one that is currently being used for
-      Envoy-based load balancers in a region. A BACKUP subnetwork is one that
-      is ready to be promoted to ACTIVE or is currently draining. This field
-      can be updated with a patch request.
+      purpose is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY. The
+      value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that
+      is currently being used for Envoy-based load balancers in a region. A
+      BACKUP subnetwork is one that is ready to be promoted to ACTIVE or is
+      currently draining. This field can be updated with a patch request.
     secondaryIpRanges: Secondary IP ranges.
     stackType: The stack type for the subnet. If set to IPV4_ONLY, new VMs in
       the subnet are assigned IPv4 addresses only. If set to IPV4_IPV6, new
@@ -73701,25 +73703,22 @@ class UsableSubnetwork(_messages.Message):
 
   class PurposeValueValuesEnum(_messages.Enum):
     r"""The purpose of the resource. This field can be either PRIVATE,
-    REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
-    INTERNAL_HTTPS_LOAD_BALANCER. PRIVATE is the default purpose for user-
-    created subnets or subnets that are automatically created in auto mode
-    networks. A subnet with purpose set to REGIONAL_MANAGED_PROXY is a user-
-    created subnetwork that is reserved for regional Envoy-based load
-    balancers. A subnet with purpose set to PRIVATE_SERVICE_CONNECT is used to
-    publish services using Private Service Connect. A subnet with purpose set
-    to INTERNAL_HTTPS_LOAD_BALANCER is a proxy-only subnet that can be used
-    only by regional internal HTTP(S) load balancers. Note that
-    REGIONAL_MANAGED_PROXY is the preferred setting for all regional Envoy
-    load balancers. If unspecified, the subnet purpose defaults to PRIVATE.
-    The enableFlowLogs field isn't supported if the subnet purpose field is
-    set to REGIONAL_MANAGED_PROXY.
+    GLOBAL_MANAGED_PROXY, REGIONAL_MANAGED_PROXY, PRIVATE_SERVICE_CONNECT, or
+    PRIVATE is the default purpose for user-created subnets or subnets that
+    are automatically created in auto mode networks. Subnets with purpose set
+    to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY are user-created
+    subnetworks that are reserved for Envoy-based load balancers. A subnet
+    with purpose set to PRIVATE_SERVICE_CONNECT is used to publish services
+    using Private Service Connect. If unspecified, the subnet purpose defaults
+    to PRIVATE. The enableFlowLogs field isn't supported if the subnet purpose
+    field is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY.
 
     Values:
       GLOBAL_MANAGED_PROXY: Subnet reserved for Global Envoy-based Load
         Balancing.
       INTERNAL_HTTPS_LOAD_BALANCER: Subnet reserved for Internal HTTP(S) Load
-        Balancing.
+        Balancing. This is a legacy purpose, please use REGIONAL_MANAGED_PROXY
+        instead.
       PRIVATE: Regular user created or automatically created subnet.
       PRIVATE_NAT: Subnetwork used as source range for Private NAT Gateways.
       PRIVATE_RFC_1918: Regular user created or automatically created subnet.
@@ -73738,11 +73737,11 @@ class UsableSubnetwork(_messages.Message):
 
   class RoleValueValuesEnum(_messages.Enum):
     r"""The role of subnetwork. Currently, this field is only used when
-    purpose = REGIONAL_MANAGED_PROXY. The value can be set to ACTIVE or
-    BACKUP. An ACTIVE subnetwork is one that is currently being used for
-    Envoy-based load balancers in a region. A BACKUP subnetwork is one that is
-    ready to be promoted to ACTIVE or is currently draining. This field can be
-    updated with a patch request.
+    purpose is set to GLOBAL_MANAGED_PROXY or REGIONAL_MANAGED_PROXY. The
+    value can be set to ACTIVE or BACKUP. An ACTIVE subnetwork is one that is
+    currently being used for Envoy-based load balancers in a region. A BACKUP
+    subnetwork is one that is ready to be promoted to ACTIVE or is currently
+    draining. This field can be updated with a patch request.
 
     Values:
       ACTIVE: The ACTIVE subnet that is currently used.

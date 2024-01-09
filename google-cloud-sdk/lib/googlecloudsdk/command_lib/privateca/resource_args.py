@@ -19,7 +19,6 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.privateca import base
-from googlecloudsdk.api_lib.privateca import constants as api_constants
 from googlecloudsdk.api_lib.privateca import locations
 from googlecloudsdk.calliope import exceptions
 from googlecloudsdk.calliope.concepts import concepts
@@ -35,24 +34,11 @@ import six
 
 # Flag fallthroughs that rely on properties.
 LOCATION_PROPERTY_FALLTHROUGH = deps.PropertyFallthrough(
-    properties.VALUES.privateca.location)
+    properties.VALUES.privateca.location
+)
 PROJECT_PROPERTY_FALLTHROUGH = deps.PropertyFallthrough(
-    properties.VALUES.core.project)
-
-
-# TODO(b/177604350): Remove Beta code paths
-def ReusableConfigAttributeConfig():
-  # ReusableConfig is always an anchor attribute so help_text is unused.
-  return concepts.ResourceParameterAttributeConfig(name='reusable_config')
-
-
-# TODO(b/177604350): Remove Beta code paths
-def CertificateAttributeConfig(fallthroughs=None):
-  # Certificate is always an anchor attribute so help_text is unused.
-  return concepts.ResourceParameterAttributeConfig(
-      name='certificate',
-      completer=privateca_completers.CertificatesCompleter,
-      fallthroughs=fallthroughs or [])
+    properties.VALUES.core.project
+)
 
 
 def CertificateTemplateAttributeConfig():
@@ -65,33 +51,27 @@ def CaPoolAttributeConfig(display_name='pool', fallthroughs=None):
   return concepts.ResourceParameterAttributeConfig(
       name=display_name,
       help_text='The parent CA Pool of the {resource}.',
-      fallthroughs=fallthroughs or [])
+      fallthroughs=fallthroughs or [],
+  )
 
 
 def CertAttributeConfig(fallthroughs=None):
   # TODO(b/186143764): GA Autocompleters
   # Certificate is always an anchor attribute so help_text is unused.
   return concepts.ResourceParameterAttributeConfig(
-      name='certificate', fallthroughs=fallthroughs or [])
+      name='certificate', fallthroughs=fallthroughs or []
+  )
 
 
-def CertAuthorityAttributeConfig(arg_name='certificate_authority',
-                                 fallthroughs=None):
+def CertAuthorityAttributeConfig(
+    arg_name='certificate_authority', fallthroughs=None
+):
   fallthroughs = fallthroughs or []
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
       help_text='The issuing certificate authority of the {resource}.',
-      fallthroughs=fallthroughs)
-
-
-# TODO(b/177604350): Remove Beta code paths
-def CertificateAuthorityAttributeConfig(arg_name='certificate_authority',
-                                        fallthroughs=None):
-  fallthroughs = fallthroughs or []
-  return concepts.ResourceParameterAttributeConfig(
-      name=arg_name,
-      help_text='The issuing certificate authority of the {resource}.',
-      fallthroughs=fallthroughs)
+      fallthroughs=fallthroughs,
+  )
 
 
 def LocationAttributeConfig(arg_name='location', fallthroughs=None):
@@ -100,7 +80,8 @@ def LocationAttributeConfig(arg_name='location', fallthroughs=None):
       name=arg_name,
       help_text='The location of the {resource}.',
       completer=privateca_completers.LocationsCompleter,
-      fallthroughs=fallthroughs)
+      fallthroughs=fallthroughs,
+  )
 
 
 def ProjectAttributeConfig(arg_name='project', fallthroughs=None):
@@ -120,7 +101,8 @@ def ProjectAttributeConfig(arg_name='project', fallthroughs=None):
   return concepts.ResourceParameterAttributeConfig(
       name=arg_name,
       help_text='The project containing the {resource}.',
-      fallthroughs=fallthroughs or [])
+      fallthroughs=fallthroughs or [],
+  )
 
 
 def CreateKmsKeyVersionResourceSpec():
@@ -140,58 +122,13 @@ def CreateKmsKeyVersionResourceSpec():
       keyRingsId=kms_args.KeyringAttributeConfig(kms_prefix=True),
       locationsId=LocationAttributeConfig(
           'kms-location',
-          [deps.ArgFallthrough('location'), LOCATION_PROPERTY_FALLTHROUGH]),
+          [deps.ArgFallthrough('location'), LOCATION_PROPERTY_FALLTHROUGH],
+      ),
       projectsId=ProjectAttributeConfig(
           'kms-project',
-          [deps.ArgFallthrough('project'), PROJECT_PROPERTY_FALLTHROUGH]))
-
-
-# TODO(b/177604350): Remove Beta code paths
-def CreateReusableConfigResourceSpec(location_fallthroughs=None):
-  """Create a resource spec for a ReusableConfig.
-
-  Defaults to the predefined project for reusable configs.
-
-  Args:
-    location_fallthroughs: List of fallthroughs to use for the location of the
-      reusable config, if not explicitly provided.
-
-  Returns:
-    A concepts.ResourceSpec for a reusable config.
-  """
-  # For now, reusable configs exist in a single project.
-  project_fallthrough = deps.Fallthrough(
-      function=lambda: api_constants.PREDEFINED_REUSABLE_CONFIG_PROJECT,
-      hint='project will default to {}'.format(
-          api_constants.PREDEFINED_REUSABLE_CONFIG_PROJECT),
-      active=False,
-      plural=False)
-  return concepts.ResourceSpec(
-      'privateca.projects.locations.reusableConfigs',
-      api_version='v1beta1',
-      resource_name='reusable config',
-      reusableConfigsId=ReusableConfigAttributeConfig(),
-      locationsId=LocationAttributeConfig(fallthroughs=location_fallthroughs),
-      projectsId=ProjectAttributeConfig(fallthroughs=[project_fallthrough]),
-      disable_auto_completers=False)
-
-
-# TODO(b/177604350): Remove Beta code paths
-def CreateCertificateAuthorityResourceSpec(
-    display_name,
-    certificate_authority_attribute='certificate_authority',
-    location_attribute='location',
-    ca_id_fallthroughs=None):
-  return concepts.ResourceSpec(
-      'privateca.projects.locations.certificateAuthorities',
-      api_version='v1beta1',
-      # This will be formatted and used as {resource} in the help text.
-      resource_name=display_name,
-      certificateAuthoritiesId=CertificateAuthorityAttributeConfig(
-          certificate_authority_attribute, fallthroughs=ca_id_fallthroughs),
-      locationsId=LocationAttributeConfig(location_attribute),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+          [deps.ArgFallthrough('project'), PROJECT_PROPERTY_FALLTHROUGH],
+      ),
+  )
 
 
 def CreateCertAuthorityResourceSpec(
@@ -200,7 +137,8 @@ def CreateCertAuthorityResourceSpec(
     location_attribute='location',
     location_fallthroughs=None,
     pool_id_fallthroughs=None,
-    ca_id_fallthroughs=None):
+    ca_id_fallthroughs=None,
+):
   # TODO(b/186143764): GA Autocompleters
   return concepts.ResourceSpec(
       'privateca.projects.locations.caPools.certificateAuthorities',
@@ -208,18 +146,23 @@ def CreateCertAuthorityResourceSpec(
       # This will be formatted and used as {resource} in the help text.
       resource_name=display_name,
       certificateAuthoritiesId=CertAuthorityAttributeConfig(
-          certificate_authority_attribute, fallthroughs=ca_id_fallthroughs),
+          certificate_authority_attribute, fallthroughs=ca_id_fallthroughs
+      ),
       caPoolsId=CaPoolAttributeConfig(fallthroughs=pool_id_fallthroughs),
       locationsId=LocationAttributeConfig(
-          location_attribute, fallthroughs=location_fallthroughs),
+          location_attribute, fallthroughs=location_fallthroughs
+      ),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=True)
+      disable_auto_completers=True,
+  )
 
 
-def CreateCaPoolResourceSpec(display_name,
-                             location_attribute='location',
-                             pool_id_fallthroughs=None,
-                             location_fallthroughs=None):
+def CreateCaPoolResourceSpec(
+    display_name,
+    location_attribute='location',
+    pool_id_fallthroughs=None,
+    location_fallthroughs=None,
+):
   # TODO(b/186143764): GA Autocompleters
   return concepts.ResourceSpec(
       'privateca.projects.locations.caPools',
@@ -228,9 +171,11 @@ def CreateCaPoolResourceSpec(display_name,
       resource_name=display_name,
       caPoolsId=CaPoolAttributeConfig(fallthroughs=pool_id_fallthroughs),
       locationsId=LocationAttributeConfig(
-          location_attribute, fallthroughs=location_fallthroughs),
+          location_attribute, fallthroughs=location_fallthroughs
+      ),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=True)
+      disable_auto_completers=True,
+  )
 
 
 def CreateCertResourceSpec(display_name, id_fallthroughs=None):
@@ -243,7 +188,8 @@ def CreateCertResourceSpec(display_name, id_fallthroughs=None):
       caPoolsId=CaPoolAttributeConfig('issuer-pool'),
       locationsId=LocationAttributeConfig('issuer-location'),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
+      disable_auto_completers=False,
+  )
 
 
 def CreateCertificateTemplateResourceSpec(display_name):
@@ -256,40 +202,8 @@ def CreateCertificateTemplateResourceSpec(display_name):
       certificateTemplatesId=CertificateTemplateAttributeConfig(),
       locationsId=LocationAttributeConfig(),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=True)
-
-
-# TODO(b/177604350): Remove Beta code paths
-def CreateCertificateResourceSpec(display_name, id_fallthroughs=None):
-  return concepts.ResourceSpec(
-      'privateca.projects.locations.certificateAuthorities.certificates',
-      api_version='v1beta1',
-      # This will be formatted and used as {resource} in the help text.
-      resource_name=display_name,
-      certificatesId=CertificateAttributeConfig(
-          fallthroughs=id_fallthroughs or []),
-      certificateAuthoritiesId=CertificateAuthorityAttributeConfig('issuer'),
-      locationsId=LocationAttributeConfig('issuer-location'),
-      projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
-      disable_auto_completers=False)
-
-
-# TODO(b/177604350): Remove Beta code paths
-def AddCertificateAuthorityPositionalResourceArg(parser, verb):
-  """Add a positional resource argument for a Certificate Authority.
-
-  NOTE: Must be used only if it's the only resource arg in the command.
-
-  Args:
-    parser: the parser for the command.
-    verb: str, the verb to describe the resource, such as 'to update'.
-  """
-  arg_name = 'CERTIFICATE_AUTHORITY'
-  concept_parsers.ConceptParser.ForResource(
-      arg_name,
-      CreateCertificateAuthorityResourceSpec(arg_name),
-      'The certificate authority {}.'.format(verb),
-      required=True).AddToParser(parser)
+      disable_auto_completers=True,
+  )
 
 
 def AddCertAuthorityPositionalResourceArg(parser, verb):
@@ -306,7 +220,8 @@ def AddCertAuthorityPositionalResourceArg(parser, verb):
       arg_name,
       CreateCertAuthorityResourceSpec(arg_name),
       'The certificate authority {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddCaPoolPositionalResourceArg(parser, verb):
@@ -323,25 +238,8 @@ def AddCaPoolPositionalResourceArg(parser, verb):
       arg_name,
       CreateCaPoolResourceSpec(arg_name),
       'The ca pool {}.'.format(verb),
-      required=True).AddToParser(parser)
-
-
-# TODO(b/177604350): Remove Beta code paths
-def AddCertificatePositionalResourceArg(parser, verb):
-  """Add a positional resource argument for a Certificate.
-
-  NOTE: Must be used only if it's the only resource arg in the command.
-
-  Args:
-    parser: the parser for the command.
-    verb: str, the verb to describe the resource, such as 'to update'.
-  """
-  arg_name = 'CERTIFICATE'
-  concept_parsers.ConceptParser.ForResource(
-      arg_name,
-      CreateCertificateResourceSpec(arg_name),
-      'The certificate {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddCertPositionalResourceArg(parser, verb):
@@ -358,7 +256,8 @@ def AddCertPositionalResourceArg(parser, verb):
       arg_name,
       CreateCertResourceSpec(arg_name),
       'The certificate {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 def AddCertificateTemplatePositionalResourceArg(parser, verb):
@@ -375,23 +274,25 @@ def AddCertificateTemplatePositionalResourceArg(parser, verb):
       arg_name,
       CreateCertificateTemplateResourceSpec(arg_name),
       'The template {}.'.format(verb),
-      required=True).AddToParser(parser)
+      required=True,
+  ).AddToParser(parser)
 
 
 # Resource validation.
 
 
-def ValidateResourceLocation(resource_ref, arg_name, version='v1beta1'):
+def ValidateResourceLocation(resource_ref, arg_name, version='v1'):
   """Raises an exception if the given resource is in an unsupported location."""
   supported_locations = locations.GetSupportedLocations(version=version)
   if resource_ref.locationsId not in supported_locations:
     raise exceptions.InvalidArgumentException(
         arg_name,
         'Resource is in an unsupported location. Supported locations are: {}.'
-        .format(', '.join(sorted(supported_locations))))
+        .format(', '.join(sorted(supported_locations))),
+    )
 
 
-def CheckExpectedCAType(expected_type, ca, version='v1beta1'):
+def CheckExpectedCAType(expected_type, ca, version='v1'):
   """Raises an exception if the Certificate Authority type is not expected_type.
 
   Args:
@@ -400,14 +301,17 @@ def CheckExpectedCAType(expected_type, ca, version='v1beta1'):
     version: The version of the API to check against.
   """
   ca_type_enum = base.GetMessagesModule(
-      api_version=version).CertificateAuthority.TypeValueValuesEnum
+      api_version=version
+  ).CertificateAuthority.TypeValueValuesEnum
   if expected_type == ca_type_enum.SUBORDINATE and ca.type != expected_type:
     raise privateca_exceptions.InvalidCertificateAuthorityTypeError(
-        'Cannot perform subordinates command on Root CA. Please use the `privateca roots` command group instead.'
+        'Cannot perform subordinates command on Root CA. Please use the'
+        ' `privateca roots` command group instead.'
     )
   elif expected_type == ca_type_enum.SELF_SIGNED and ca.type != expected_type:
     raise privateca_exceptions.InvalidCertificateAuthorityTypeError(
-        'Cannot perform roots command on Subordinate CA. Please use the `privateca subordinates` command group instead.'
+        'Cannot perform roots command on Subordinate CA. Please use the'
+        ' `privateca subordinates` command group instead.'
     )
 
 

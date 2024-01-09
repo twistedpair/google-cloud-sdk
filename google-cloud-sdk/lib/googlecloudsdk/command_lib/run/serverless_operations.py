@@ -53,6 +53,7 @@ from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
 from googlecloudsdk.command_lib.run import exceptions as serverless_exceptions
 from googlecloudsdk.command_lib.run import messages_util
 from googlecloudsdk.command_lib.run import name_generator
+from googlecloudsdk.command_lib.run import op_pollers
 from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run import stages
 from googlecloudsdk.core import exceptions
@@ -138,267 +139,6 @@ def Connect(conn_context, already_activated_service=False):
     )
 
 
-class DomainMappingResourceRecordPoller(waiter.OperationPoller):
-  """Poll for when a DomainMapping first has resourceRecords."""
-
-  def __init__(self, ops):
-    self._ops = ops
-
-  def IsDone(self, mapping):
-    if getattr(mapping.status, 'resourceRecords', None):
-      return True
-    conditions = mapping.conditions
-    # pylint: disable=g-bool-id-comparison
-    # False (indicating failure) as distinct from None (indicating not sure yet)
-    if conditions and conditions['Ready']['status'] is False:
-      return True
-    # pylint: enable=g-bool-id-comparison
-    return False
-
-  def GetResult(self, mapping):
-    return mapping
-
-  def Poll(self, domain_mapping_ref):
-    return self._ops.GetDomainMapping(domain_mapping_ref)
-
-
-class ConditionPoller(waiter.OperationPoller):
-  """A poller for CloudRun resource creation or update.
-
-  Takes in a reference to a StagedProgressTracker, and updates it with progress.
-  """
-
-  def __init__(
-      self, resource_getter, tracker, dependencies=None, ready_message='Done.'
-  ):
-    """Initialize the ConditionPoller.
-
-    Start any unblocked stages in the tracker immediately.
-
-    Arguments:
-      resource_getter: function, returns a resource with conditions.
-      tracker: a StagedProgressTracker to keep updated. It must contain a stage
-        for each condition in the dependencies map, if the dependencies map is
-        provided.  The stage represented by each key can only start when the set
-        of conditions in the corresponding value have all completed. If a
-        condition should be managed by this ConditionPoller but depends on
-        nothing, it should map to an empty set. Conditions in the tracker but
-        *not* managed by the ConditionPoller should not appear in the dict.
-      dependencies: Dict[str, Set[str]], The dependencies between conditions
-        that are managed by this ConditionPoller. The values are the set of
-        conditions that must become true before the key begins being worked on
-        by the server.  If the entire dependencies dict is None, the poller will
-        assume that all keys in the tracker are relevant and none have
-        dependencies.
-      ready_message: str, message to display in header of tracker when
-        conditions are ready.
-    """
-    # _dependencies is a map of condition -> {preceding conditions}
-    # It is meant to be checked off as we finish things.
-    self._dependencies = {k: set() for k in tracker}
-    if dependencies is not None:
-      for k in dependencies:
-        # Add dependencies, only if they're still not complete. If a stage isn't
-        # in the tracker. consider it "already complete".
-        self._dependencies[k] = {
-            c
-            for c in dependencies[k]
-            if c in tracker and not tracker.IsComplete(c)
-        }
-    self._resource_getter = resource_getter
-    self._tracker = tracker
-    self._resource_fail_type = exceptions.Error
-    self._ready_message = ready_message
-    self._StartUnblocked()
-
-  def _IsBlocked(self, condition):
-    return condition in self._dependencies and self._dependencies[condition]
-
-  def IsDone(self, conditions):
-    """Overrides.
-
-    Args:
-      conditions: A condition.Conditions object.
-
-    Returns:
-      a bool indicates whether `conditions` is terminal.
-    """
-    if conditions is None:
-      return False
-    return conditions.IsTerminal()
-
-  def _PollTerminalSubconditions(self, conditions, conditions_message):
-    for condition in conditions.TerminalSubconditions():
-      if condition not in self._dependencies:
-        continue
-      message = conditions[condition]['message']
-      status = conditions[condition]['status']
-      self._PossiblyUpdateMessage(condition, message, conditions_message)
-      if status is None:
-        continue
-      elif status:
-        if self._PossiblyCompleteStage(condition, message):
-          # Check all terminal subconditions again to ensure any stages that
-          # were unblocked by this stage completing are re-checked before we
-          # check the ready condition
-          self._PollTerminalSubconditions(conditions, conditions_message)
-          break
-      else:
-        self._PossiblyFailStage(condition, message)
-
-  def Poll(self, unused_ref):
-    """Overrides.
-
-    Args:
-      unused_ref: A string representing the operation reference. Currently it
-        must be 'deploy'.
-
-    Returns:
-      A condition.Conditions object.
-    """
-    conditions = self.GetConditions()
-
-    if conditions is None or not conditions.IsFresh():
-      return None
-
-    conditions_message = conditions.DescriptiveMessage()
-    self._tracker.UpdateHeaderMessage(conditions_message)
-
-    self._PollTerminalSubconditions(conditions, conditions_message)
-
-    terminal_condition = conditions.TerminalCondition()
-    if conditions.IsReady():
-      self._tracker.UpdateHeaderMessage(self._ready_message)
-      if terminal_condition in self._dependencies:
-        self._PossiblyCompleteStage(terminal_condition, None)
-      self._tracker.Tick()
-    elif conditions.IsFailed():
-      if terminal_condition in self._dependencies:
-        self._PossiblyFailStage(terminal_condition, None)
-      raise self._resource_fail_type(conditions_message)
-
-    return conditions
-
-  def _PossiblyUpdateMessage(self, condition, message, conditions_message):
-    """Update the stage message.
-
-    Args:
-      condition: str, The name of the status condition.
-      message: str, The new message to display
-      conditions_message: str, The message from the conditions object we're
-        displaying..
-    """
-    if condition not in self._tracker or self._tracker.IsComplete(condition):
-      return
-
-    if self._IsBlocked(condition):
-      return
-
-    if message != conditions_message:
-      self._tracker.UpdateStage(condition, message)
-
-  def _RecordConditionComplete(self, condition):
-    """Take care of the internal-to-this-class bookkeeping stage complete."""
-    # Unblock anything that was blocked on this.
-
-    # Strategy: "check off" each dependency as we complete it by removing from
-    # the set in the value.
-    for requirements in self._dependencies.values():
-      requirements.discard(condition)
-
-  def _PossiblyCompleteStage(self, condition, message):
-    """Complete the stage if it's not already complete.
-
-    Make sure the necessary internal bookkeeping is done.
-
-    Args:
-      condition: str, The name of the condition whose stage should be completed.
-      message: str, The detailed message for the condition.
-
-    Returns:
-      bool: True if stage was completed, False if no action taken
-    """
-    if condition not in self._tracker or self._tracker.IsComplete(condition):
-      return False
-    # A blocked condition is likely to remain True (indicating the previous
-    # operation concerning it was successful) until the blocking condition(s)
-    # finish and it's time to switch to Unknown (the current operation
-    # concerning it is in progress). Don't mark those done before they switch to
-    # Unknown.
-    if not self._tracker.IsRunning(condition):
-      return False
-    self._RecordConditionComplete(condition)
-    self._StartUnblocked()
-    self._tracker.CompleteStage(condition, message)
-    return True
-
-  def _StartUnblocked(self):
-    """Call StartStage in the tracker for any not-started not-blocked tasks.
-
-    Record the fact that they're started in our internal bookkeeping.
-    """
-    # The set of stages that aren't marked started and don't have unsatisfied
-    # dependencies are newly unblocked.
-    for c in self._dependencies:
-      if c not in self._tracker:
-        continue
-      if self._tracker.IsWaiting(c) and not self._IsBlocked(c):
-        self._tracker.StartStage(c)
-    # TODO(b/120679874): Should not have to manually call Tick()
-    self._tracker.Tick()
-
-  def _PossiblyFailStage(self, condition, message):
-    """Possibly fail the stage.
-
-    Args:
-      condition: str, The name of the status whose stage failed.
-      message: str, The detailed message for the condition.
-
-    Raises:
-      DeploymentFailedError: If the 'Ready' condition failed.
-    """
-    # Don't fail an already failed stage.
-    if condition not in self._tracker or self._tracker.IsComplete(condition):
-      return
-
-    self._tracker.FailStage(
-        condition, self._resource_fail_type(message), message
-    )
-
-  def GetResult(self, conditions):
-    """Overrides.
-
-    Get terminal conditions as the polling result.
-
-    Args:
-      conditions: A condition.Conditions object.
-
-    Returns:
-      A condition.Conditions object.
-    """
-    return conditions
-
-  def GetConditions(self):
-    """Returns the resource conditions wrapped in condition.Conditions.
-
-    Returns:
-      A condition.Conditions object.
-    """
-    resource = self._resource_getter()
-
-    if resource is None:
-      return None
-    return resource.conditions
-
-
-class ServiceConditionPoller(ConditionPoller):
-  """A ConditionPoller for services."""
-
-  def __init__(self, getter, tracker, dependencies=None, serv=None):
-    super().__init__(getter, tracker, dependencies)
-    self._resource_fail_type = serverless_exceptions.DeploymentFailedError
-
-
 def _Nonce():
   """Return a random string with unlikely collision to use as a nonce."""
   return ''.join(
@@ -430,89 +170,6 @@ class _NewRevisionForcingChange(config_changes_mod.RevisionNameChanges):
 def _IsDigest(url):
   """Return true if the given image url is by-digest."""
   return '@sha256:' in url
-
-
-class RevisionNameBasedPoller(waiter.OperationPoller):
-  """Poll for the revision with the given name to exist."""
-
-  def __init__(self, operations, revision_ref_getter):
-    self._operations = operations
-    self._revision_ref_getter = revision_ref_getter
-
-  def IsDone(self, revision_obj):
-    return bool(revision_obj)
-
-  def Poll(self, revision_name):
-    revision_ref = self._revision_ref_getter(revision_name)
-    return self._operations.GetRevision(revision_ref)
-
-  def GetResult(self, revision_obj):
-    return revision_obj
-
-
-class NonceBasedRevisionPoller(waiter.OperationPoller):
-  """To poll for exactly one revision with the given nonce to appear."""
-
-  def __init__(self, operations, namespace_ref):
-    self._operations = operations
-    self._namespace = namespace_ref
-
-  def IsDone(self, revisions):
-    return bool(revisions)
-
-  def Poll(self, nonce):
-    return self._operations.GetRevisionsByNonce(self._namespace, nonce)
-
-  def GetResult(self, revisions):
-    if len(revisions) == 1:
-      return revisions[0]
-    return None
-
-
-class ExecutionConditionPoller(ConditionPoller):
-  """A ConditionPoller for jobs."""
-
-  def __init__(self, getter, tracker, terminal_condition, dependencies=None):
-    super().__init__(getter, tracker, dependencies)
-    self._resource_fail_type = serverless_exceptions.ExecutionFailedError
-    self._terminal_condition = terminal_condition
-
-  def _PotentiallyUpdateInstanceCompletions(self, job_obj, conditions):
-    """Maybe update the terminal condition stage message with number of completions."""
-    terminal_condition = conditions.TerminalCondition()
-    if terminal_condition not in self._tracker or self._IsBlocked(
-        terminal_condition
-    ):
-      return
-
-    self._tracker.UpdateStage(
-        terminal_condition,
-        '{} / {} complete'.format(
-            job_obj.status.succeededCount or 0, job_obj.task_count
-        ),
-    )
-
-  def GetConditions(self):
-    """Returns the resource conditions wrapped in condition.Conditions.
-
-    Returns:
-      A condition.Conditions object.
-    """
-    job_obj = self._resource_getter()
-
-    if job_obj is None:
-      return None
-
-    conditions = job_obj.GetConditions(self._terminal_condition)
-
-    # This is a bit of a cheat to hook into the polling method. This is done
-    # because this is only place where the resource is gotten from the server,
-    # so reusing it saves an api call. This is also simpler than attempting to
-    # override the Poll method which would likely lead to duplicate code and/or
-    # complicated error handling.
-    self._PotentiallyUpdateInstanceCompletions(job_obj, conditions)
-
-    return conditions
 
 
 @dataclasses.dataclass(frozen=True)
@@ -624,10 +281,6 @@ class ServerlessOperations(object):
       if msg:
         log.error('Still waiting: {}'.format(msg))
       raise err
-    if not conditions.IsReady():
-      raise serverless_exceptions.ConfigurationError(
-          conditions.DescriptiveMessage()
-      )
 
   def ListServices(self, namespace_ref):
     """Returns all services in the namespace."""
@@ -680,6 +333,31 @@ class ServerlessOperations(object):
             service_get_request
         )
         return service.Service(service_get_response, messages)
+    except api_exceptions.InvalidDataFromServerError as e:
+      serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
+    except api_exceptions.HttpNotFoundError:
+      return None
+
+  def WaitService(self, operation_id):
+    """Return the relevant Service from the server, or None if 404."""
+    messages = self.messages_module
+    project = properties.VALUES.core.project.Get(required=True)
+    op_name = (
+        f'projects/{project}/locations/{self._region}/operations/{operation_id}'
+    )
+    op_ref = self._registry.ParseRelativeName(
+        op_name, collection='run.projects.locations.operations'
+    )
+    try:
+      with metrics.RecordDuration(metric_names.WAIT_OPERATION):
+        poller = op_pollers.WaitOperationPoller(
+            self._client.projects_locations_services,
+            self._client.projects_locations_operations,
+        )
+        operation = waiter.PollUntilDone(poller, op_ref)
+        as_dict = encoding.MessageToPyValue(operation.response)
+        as_pb = encoding.PyValueToMessage(messages.Service, as_dict)
+        return service.Service(as_pb, self.messages_module)
     except api_exceptions.InvalidDataFromServerError as e:
       serverless_exceptions.MaybeRaiseCustomFieldMismatch(e)
     except api_exceptions.HttpNotFoundError:
@@ -828,7 +506,7 @@ class ServerlessOperations(object):
             params={'namespacesId': metadata.namespace},
             collection='run.namespaces.revisions',
         )
-        poller = RevisionNameBasedPoller(self, revision_ref_getter)
+        poller = op_pollers.RevisionNameBasedPoller(self, revision_ref_getter)
         base_revision = poller.GetResult(
             waiter.PollUntilDone(
                 poller, base_revision_name, sleep_ms=500, max_wait_ms=2000
@@ -852,7 +530,7 @@ class ServerlessOperations(object):
             namespace_ref = self._registry.Parse(
                 metadata.namespace, collection='run.api.v1.namespaces'
             )
-          poller = NonceBasedRevisionPoller(self, namespace_ref)
+          poller = op_pollers.NonceBasedRevisionPoller(self, namespace_ref)
           base_revision = poller.GetResult(
               waiter.PollUntilDone(
                   poller, base_revision_nonce, sleep_ms=500, max_wait_ms=2000
@@ -987,7 +665,9 @@ class ServerlessOperations(object):
           )
       )
 
-  def UpdateTraffic(self, service_ref, config_changes, tracker, asyn):
+  def UpdateTraffic(
+      self, service_ref, config_changes, tracker, asyn, use_wait=False
+  ):
     """Update traffic splits for service."""
     if tracker is None:
       tracker = progress_tracker.NoOpStagedProgressTracker(
@@ -1004,8 +684,15 @@ class ServerlessOperations(object):
     self._UpdateOrCreateService(service_ref, config_changes, False, serv)
 
     if not asyn:
-      getter = functools.partial(self.GetService, service_ref)
-      self.WaitForCondition(ServiceConditionPoller(getter, tracker, serv=serv))
+      getter = (
+          functools.partial(self.WaitService, serv.operation_id)
+          if use_wait
+          else functools.partial(self.GetService, service_ref)
+      )
+      poller = op_pollers.ServiceConditionPoller(getter, tracker, serv=serv)
+      self.WaitForCondition(poller)
+      serv = poller.GetResource()
+    return serv
 
   def _AddRevisionForcingChange(self, serv, config_changes):
     """Get a new revision forcing config change for the given service."""
@@ -1071,6 +758,7 @@ class ServerlessOperations(object):
       already_activated_services=False,
       dry_run=False,
       generate_name=False,
+      use_wait=False,
   ):
     """Change the given service in prod using the given config_changes.
 
@@ -1101,6 +789,7 @@ class ServerlessOperations(object):
         services
       dry_run: bool. If true, only validate the configuration.
       generate_name: bool. If true, create a revision name, otherwise add nonce.
+      use_wait: uses wait-operation for async instead of polling get
 
     Returns:
       service.Service, the service as returned by the server on the POST/PUT
@@ -1178,7 +867,7 @@ class ServerlessOperations(object):
           )
       )
 
-    created_or_updated_service = self._UpdateOrCreateService(
+    updated_service = self._UpdateOrCreateService(
         service_ref, config_changes, with_image, serv, dry_run
     )
 
@@ -1208,14 +897,20 @@ class ServerlessOperations(object):
         )
 
     if not asyn and not dry_run:
-      getter = functools.partial(self.GetService, service_ref)
-      poller = ServiceConditionPoller(
+      getter = (
+          functools.partial(self.WaitService, updated_service.operation_id)
+          if use_wait
+          else functools.partial(self.GetService, service_ref)
+      )
+      poller = op_pollers.ServiceConditionPoller(
           getter, tracker, dependencies=stages.ServiceDependencies(), serv=serv
       )
       self.WaitForCondition(poller)
       for msg in run_condition.GetNonTerminalMessages(poller.GetConditions()):
         tracker.AddWarning(msg)
-    return created_or_updated_service
+      updated_service = poller.GetResource()
+
+    return updated_service
 
   def ListExecutions(
       self, namespace_ref, label_selector='', limit=None, page_size=100
@@ -1427,7 +1122,8 @@ class ServerlessOperations(object):
       # 'run domain-mappings create' is synchronous. Poll for its completion.x
       with progress_tracker.ProgressTracker('Creating...'):
         mapping = waiter.PollUntilDone(
-            DomainMappingResourceRecordPoller(self), domain_mapping_ref
+            op_pollers.DomainMappingResourceRecordPoller(self),
+            domain_mapping_ref,
         )
       ready = mapping.conditions.get('Ready')
       message = None
@@ -1599,7 +1295,7 @@ class ServerlessOperations(object):
 
     if not asyn:
       getter = functools.partial(self.GetJob, job_ref)
-      poller = ConditionPoller(getter, tracker)
+      poller = op_pollers.ConditionPoller(getter, tracker)
       self.WaitForCondition(poller)
 
     return job.Job(created_job, messages)
@@ -1632,7 +1328,7 @@ class ServerlessOperations(object):
 
     if not asyn:
       getter = functools.partial(self.GetJob, job_ref)
-      poller = ConditionPoller(getter, tracker)
+      poller = op_pollers.ConditionPoller(getter, tracker)
       self.WaitForCondition(poller)
 
     return job.Job(returned_job, messages)
@@ -1694,7 +1390,7 @@ class ServerlessOperations(object):
         ex.conditions, ignore_retry=True
     ):
       tracker.AddWarning(msg)
-    poller = ExecutionConditionPoller(
+    poller = op_pollers.ExecutionConditionPoller(
         getter,
         tracker,
         terminal_condition,

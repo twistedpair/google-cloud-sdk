@@ -42,7 +42,7 @@ class ETDCustomModuleClient(object):
 
   def Validate(
       self, parent: str, custom_config_json: str, module_type: str
-  ) -> messages.ValidateEventThreatDetectionCustomModuleResponse | None:
+  ) -> messages.ValidateEventThreatDetectionCustomModuleResponse:
     """Validate a ETD module."""
 
     validate_request = messages.ValidateEventThreatDetectionCustomModuleRequest(

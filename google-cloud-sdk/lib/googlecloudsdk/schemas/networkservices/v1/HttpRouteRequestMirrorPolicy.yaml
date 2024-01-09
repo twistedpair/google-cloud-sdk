@@ -30,3 +30,7 @@ properties:
       The destination the requests will be mirrored to. The weight of the
       destination will be ignored.
     $ref: HttpRouteDestination.yaml
+  mirrorPercent:
+    description: |-
+      The percentage of requests to get mirrored to the desired destination.
+    type: number

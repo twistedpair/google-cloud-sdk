@@ -22,6 +22,7 @@ import abc
 
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
+from googlecloudsdk.calliope.concepts import deps as deps_lib
 from googlecloudsdk.calliope.concepts import util
 from googlecloudsdk.command_lib.util.concepts import completers
 from googlecloudsdk.core.util import text
@@ -190,8 +191,7 @@ class ResourceInfo(ConceptInfo):
   def BuildFullFallthroughsMap(self):
     return self.concept_spec.BuildFullFallthroughsMap(
         self.attribute_to_args_map,
-        self.fallthroughs_map,
-        plural=self.plural)
+        self.fallthroughs_map)
 
   def GetHints(self, attribute_name):
     """Gets a list of string hints for how to set an attribute.
@@ -206,11 +206,7 @@ class ResourceInfo(ConceptInfo):
       A list of hints for its fallthroughs, including its primary arg if any.
     """
     fallthroughs = self.BuildFullFallthroughsMap().get(attribute_name, [])
-    hints = []
-    for f in fallthroughs:
-      if f.hint not in hints:
-        hints.append(f.hint)
-    return hints
+    return deps_lib.GetHints(fallthroughs)
 
   def GetGroupHelp(self):
     """Build group help for the argument group."""

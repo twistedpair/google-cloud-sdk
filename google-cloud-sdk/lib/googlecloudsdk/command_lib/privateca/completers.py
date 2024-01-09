@@ -27,15 +27,5 @@ class LocationsCompleter(completers.ListCommandCompleter):
   def __init__(self, **kwargs):
     super(LocationsCompleter, self).__init__(
         collection='privateca.projects.locations',
-        list_command='beta privateca locations list --uri',
-        **kwargs)
-
-
-class CertificatesCompleter(completers.ListCommandCompleter):
-  """The certificate completer."""
-
-  def __init__(self, **kwargs):
-    super(CertificatesCompleter, self).__init__(
-        collection='privateca.projects.locations.certificateAuthorities.certificates',
-        list_command='beta privateca certificates list --uri',
+        list_command='privateca locations list --uri',
         **kwargs)

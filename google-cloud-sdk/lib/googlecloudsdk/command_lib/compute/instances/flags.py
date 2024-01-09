@@ -1154,7 +1154,8 @@ def ValidateDiskBootFlags(args, enable_kms=False):
         not disks_util.IsProvisioingTypeIops(args.boot_disk_type)):
       raise exceptions.InvalidArgumentException(
           '--boot-disk-provisioned-iops',
-          '--boot-disk-provisioned-iops cannot be used with the given disk type.'
+          '--boot-disk-provisioned-iops cannot be used with the given disk '
+          'type.',
       )
 
   if args.IsSpecified('boot_disk_provisioned_throughput'):
@@ -1535,29 +1536,29 @@ def AddAddressArgs(parser,
       """)
   if instances:
     network_interface_help_texts.append("""
-        Each IP alias range consists of a range name and an IP range
-        separated by a colon, or just the IP range.
-        The range name is the name of the range within the network
-        interface's subnet from which to allocate an IP alias range. If
-        unspecified, it defaults to the primary IP range of the subnet.
-        The IP range can be a CIDR range (e.g. `192.168.100.0/24`), a single
-        IP address (e.g. `192.168.100.1`), or a netmask in CIDR format (e.g.
-        `/24`). If the IP range is specified by CIDR range or single IP
-        address, it must belong to the CIDR range specified by the range
-        name on the subnet. If the IP range is specified by netmask, the
-        IP allocator will pick an available range with the specified netmask
-        and allocate it to this network interface.
-        """)
+      Each IP alias range consists of a range name and an IP range
+      separated by a colon, or just the IP range.
+      The range name is the name of the range within the network
+      interface's subnet from which to allocate an IP alias range. If
+      unspecified, it defaults to the primary IP range of the subnet.
+      The IP range can be a CIDR range (e.g. `192.168.100.0/24`), a single
+      IP address (e.g. `192.168.100.1`), or a netmask in CIDR format (e.g.
+      `/24`). If the IP range is specified by CIDR range or single IP
+      address, it must belong to the CIDR range specified by the range
+      name on the subnet. If the IP range is specified by netmask, the
+      IP allocator will pick an available range with the specified netmask
+      and allocate it to this network interface.
+      """)
   else:
     network_interface_help_texts.append("""
-        Each IP alias range consists of a range name and a CIDR netmask
-        (e.g. `/24`) separated by a colon or just the netmask.
-        The range name is the name of the range within the network
-        interface's subnet from which to allocate an IP alias range. If
-        unspecified, it defaults to the primary IP range of the subnet.
-        The IP allocator will pick an available range with the specified
-        netmask and allocate it to this network interface.
-        """)
+      Each IP alias range consists of a range name and a CIDR netmask
+      (e.g. `/24`) separated by a colon or just the netmask.
+      The range name is the name of the range within the network
+      interface's subnet from which to allocate an IP alias range. If
+      unspecified, it defaults to the primary IP range of the subnet.
+      The IP allocator will pick an available range with the specified
+      netmask and allocate it to this network interface.
+      """)
 
   if support_network_attachments:
     # TODO(b/265153883): Add a link to the user guide.
@@ -1864,14 +1865,25 @@ def AddHostErrorTimeoutSecondsArgs(parser):
     """)
 
 
-def AddGracefulShutdownArgs(parser):
-  parser.add_argument(
-      '--graceful-shutdown',
-      action=arg_parsers.StoreTrueFalseAction,
-      help="""\
-      If set to true, enables graceful shutdown for the instance.
-      """,
-  )
+def AddGracefulShutdownArgs(parser, is_create=False):
+  """Set arguments for graceful shutdown."""
+  if is_create:
+    parser.add_argument(
+        '--graceful-shutdown',
+        action='store_const',
+        const=True,
+        help="""\
+        Enables graceful shutdown for the instance.
+        """,
+    )
+  else:
+    parser.add_argument(
+        '--graceful-shutdown',
+        action=arg_parsers.StoreTrueFalseAction,
+        help="""\
+        If set to true, enables graceful shutdown for the instance.
+        """,
+    )
   parser.add_argument(
       '--graceful-shutdown-max-duration',
       type=arg_parsers.Duration(lower_bound='1s', upper_bound='3600s'),
@@ -2099,8 +2111,11 @@ def AddNetworkTierArgs(parser, instance=True, for_update=False):
     parser.add_argument(
         '--network-tier',
         type=lambda x: x.upper(),
-        help='Update the network tier of the access configuration. It does not allow'
-        ' to change from `PREMIUM` to `STANDARD` and visa versa.')
+        help="""\
+        Update the network tier of the access configuration. It does not allow
+        to change from `PREMIUM` to `STANDARD` and visa versa.
+        """,
+    )
     return
 
   if instance:

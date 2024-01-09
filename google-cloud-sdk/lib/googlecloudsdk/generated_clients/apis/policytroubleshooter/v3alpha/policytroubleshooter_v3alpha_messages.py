@@ -2048,14 +2048,13 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPoliciesExplan
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPolicyExplanation(_messages.Message):
-  r"""Explanation of an egress policy NextTAG: 7
+  r"""Explanation of an egress policy NextTAG: 8
 
   Enums:
     ApiOperationEvalStatesValueListEntryValuesEnum:
     EgressPolicyEvalStateValueValuesEnum: The overall evaluation state of the
       egress policy
     ExternalResourceEvalStatesValueListEntryValuesEnum:
-    IdentityEvalStatesValueListEntryValuesEnum:
     IdentityTypeEvalStateValueValuesEnum: Details of the evaluation state of
       the identity type
     ResourceEvalStatesValueListEntryValuesEnum:
@@ -2065,7 +2064,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPolicyExplanat
     egressPolicyEvalState: The overall evaluation state of the egress policy
     externalResourceEvalStates: Details of the evaluation states of external
       resources
-    identityEvalStates: Details of the evaluation states of identities
+    identityExplanations: Detailed explanation of the identities.
     identityTypeEvalState: Details of the evaluation state of the identity
       type
     resourceEvalStates: Details of the evaluation states of resources
@@ -2119,23 +2118,6 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPolicyExplanat
     RESOURCE_EVAL_STATE_MATCH = 1
     RESOURCE_EVAL_STATE_NOT_MATCH = 2
 
-  class IdentityEvalStatesValueListEntryValuesEnum(_messages.Enum):
-    r"""IdentityEvalStatesValueListEntryValuesEnum enum type.
-
-    Values:
-      IDENTITY_EVAL_STATE_UNSPECIFIED: Not used
-      IDENTITY_EVAL_STATE_MATCH: The request matches the identity
-      IDENTITY_EVAL_STATE_NOT_MATCH: The request doesn't match the identity
-      IDENTITY_EVAL_STATE_NOT_SUPPORTED: The identity is not supported
-      IDENTITY_EVAL_STATE_INFO_DENIED: The sender of the request is not
-        allowed to verify the identity.
-    """
-    IDENTITY_EVAL_STATE_UNSPECIFIED = 0
-    IDENTITY_EVAL_STATE_MATCH = 1
-    IDENTITY_EVAL_STATE_NOT_MATCH = 2
-    IDENTITY_EVAL_STATE_NOT_SUPPORTED = 3
-    IDENTITY_EVAL_STATE_INFO_DENIED = 4
-
   class IdentityTypeEvalStateValueValuesEnum(_messages.Enum):
     r"""Details of the evaluation state of the identity type
 
@@ -2167,9 +2149,59 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaEgressPolicyExplanat
   apiOperationEvalStates = _messages.EnumField('ApiOperationEvalStatesValueListEntryValuesEnum', 1, repeated=True)
   egressPolicyEvalState = _messages.EnumField('EgressPolicyEvalStateValueValuesEnum', 2)
   externalResourceEvalStates = _messages.EnumField('ExternalResourceEvalStatesValueListEntryValuesEnum', 3, repeated=True)
-  identityEvalStates = _messages.EnumField('IdentityEvalStatesValueListEntryValuesEnum', 4, repeated=True)
+  identityExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIdentityExplanation', 4, repeated=True)
   identityTypeEvalState = _messages.EnumField('IdentityTypeEvalStateValueValuesEnum', 5)
   resourceEvalStates = _messages.EnumField('ResourceEvalStatesValueListEntryValuesEnum', 6, repeated=True)
+
+
+class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIdentityExplanation(_messages.Message):
+  r"""Explanation of an identity. NextTAG: 3
+
+  Enums:
+    IdentityEvalStateValueValuesEnum: Output only. Details about the
+      evaluation state of the identity set in policy.
+    IdentityStateValueValuesEnum: Output only. The current state of an
+      identity set in policy.
+
+  Fields:
+    identityEvalState: Output only. Details about the evaluation state of the
+      identity set in policy.
+    identityState: Output only. The current state of an identity set in
+      policy.
+  """
+
+  class IdentityEvalStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Details about the evaluation state of the identity set in
+    policy.
+
+    Values:
+      IDENTITY_EVAL_STATE_UNSPECIFIED: Not used
+      MATCH: The request matches the identity
+      NOT_MATCH: The request doesn't match the identity
+      NOT_SUPPORTED: The identity is not supported
+      INFO_DENIED: The sender of the request is not allowed to verify the
+        identity.
+    """
+    IDENTITY_EVAL_STATE_UNSPECIFIED = 0
+    MATCH = 1
+    NOT_MATCH = 2
+    NOT_SUPPORTED = 3
+    INFO_DENIED = 4
+
+  class IdentityStateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of an identity set in policy.
+
+    Values:
+      IDENTITY_STATE_UNSPECIFIED: Not used
+      ACTIVE: Identity is active.
+      DELETED: Identity is deleted.
+    """
+    IDENTITY_STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    DELETED = 2
+
+  identityEvalState = _messages.EnumField('IdentityEvalStateValueValuesEnum', 1)
+  identityState = _messages.EnumField('IdentityStateValueValuesEnum', 2)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPoliciesExplanation(_messages.Message):
@@ -2184,7 +2216,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPoliciesExpla
     ingressPolicyEvalStates: Details about the evaluation state of the ingress
       policy
     ingressPolicyExplanations: Explanations of ingress policies
-    targetyResource: The target resource to ingress to
+    targetResource: The target resource to ingress to
     topLevelAccessLevelsEvalState: The overall evaluation state of the top
       level access levels
   """
@@ -2231,16 +2263,15 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPoliciesExpla
 
   ingressPolicyEvalStates = _messages.EnumField('IngressPolicyEvalStatesValueListEntryValuesEnum', 1, repeated=True)
   ingressPolicyExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplanation', 2, repeated=True)
-  targetyResource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 3)
+  targetResource = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaResource', 3)
   topLevelAccessLevelsEvalState = _messages.EnumField('TopLevelAccessLevelsEvalStateValueValuesEnum', 4)
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplanation(_messages.Message):
-  r"""Explanation of an ingress policy NextTAG: 7
+  r"""Explanation of an ingress policy NextTAG: 8
 
   Enums:
     ApiOperationEvalStatesValueListEntryValuesEnum:
-    IdentityEvalStatesValueListEntryValuesEnum:
     IdentityTypeEvalStateValueValuesEnum: Details of the evaluation state of
       the identity type
     IngressPolicyEvalStateValueValuesEnum: The overall evaluation state of the
@@ -2250,7 +2281,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplana
 
   Fields:
     apiOperationEvalStates: Details of the evaluation states of api operations
-    identityEvalStates: Details of the evaluation states of identities
+    identityExplanations: Detailed explanation of the identities.
     identityTypeEvalState: Details of the evaluation state of the identity
       type
     ingressPolicyEvalState: The overall evaluation state of the ingress policy
@@ -2271,23 +2302,6 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplana
     API_OPERATION_EVAL_STATE_UNSPECIFIED = 0
     API_OPERATION_EVAL_STATE_MATCH = 1
     API_OPERATION_EVAL_STATE_NOT_MATCH = 2
-
-  class IdentityEvalStatesValueListEntryValuesEnum(_messages.Enum):
-    r"""IdentityEvalStatesValueListEntryValuesEnum enum type.
-
-    Values:
-      IDENTITY_EVAL_STATE_UNSPECIFIED: Not used
-      IDENTITY_EVAL_STATE_MATCH: The request matches the identity
-      IDENTITY_EVAL_STATE_NOT_MATCH: The request doesn't match the identity
-      IDENTITY_EVAL_STATE_NOT_SUPPORTED: The identity is not supported
-      IDENTITY_EVAL_STATE_INFO_DENIED: The sender of the request is not
-        allowed to verify the identity.
-    """
-    IDENTITY_EVAL_STATE_UNSPECIFIED = 0
-    IDENTITY_EVAL_STATE_MATCH = 1
-    IDENTITY_EVAL_STATE_NOT_MATCH = 2
-    IDENTITY_EVAL_STATE_NOT_SUPPORTED = 3
-    IDENTITY_EVAL_STATE_INFO_DENIED = 4
 
   class IdentityTypeEvalStateValueValuesEnum(_messages.Enum):
     r"""Details of the evaluation state of the identity type
@@ -2354,7 +2368,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIngressPolicyExplana
     RESOURCE_EVAL_STATE_NOT_MATCH = 2
 
   apiOperationEvalStates = _messages.EnumField('ApiOperationEvalStatesValueListEntryValuesEnum', 1, repeated=True)
-  identityEvalStates = _messages.EnumField('IdentityEvalStatesValueListEntryValuesEnum', 2, repeated=True)
+  identityExplanations = _messages.MessageField('GoogleCloudPolicytroubleshooterServiceperimeterV3alphaIdentityExplanation', 2, repeated=True)
   identityTypeEvalState = _messages.EnumField('IdentityTypeEvalStateValueValuesEnum', 3)
   ingressPolicyEvalState = _messages.EnumField('IngressPolicyEvalStateValueValuesEnum', 4)
   ingressSourceEvalStates = _messages.EnumField('IngressSourceEvalStatesValueListEntryValuesEnum', 5, repeated=True)
@@ -2564,7 +2578,7 @@ class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaServicePerimeterExpl
 
 
 class GoogleCloudPolicytroubleshooterServiceperimeterV3alphaTroubleshootServicePerimeterRequest(_messages.Message):
-  r"""Request to troubleshoot service perimeters
+  r"""LINT.IfChange Request to troubleshoot service perimeters
 
   Fields:
     troubleshootingToken: The troubleshooting token can be generated when
@@ -2767,12 +2781,31 @@ class GoogleIamV1Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -2784,7 +2817,11 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -2936,11 +2973,14 @@ class GoogleIamV1LogConfigCloudAuditOptions(_messages.Message):
   Enums:
     LogNameValueValuesEnum: The log_name to populate in the Cloud Audit
       Record.
+    PermissionTypeValueValuesEnum: The type associated with the permission.
 
   Fields:
     authorizationLoggingOptions: Information used by the Cloud Audit Logging
-      pipeline.
+      pipeline. Will be deprecated once the migration to PermissionType is
+      complete (b/201806118).
     logName: The log_name to populate in the Cloud Audit Record.
+    permissionType: The type associated with the permission.
   """
 
   class LogNameValueValuesEnum(_messages.Enum):
@@ -2955,8 +2995,27 @@ class GoogleIamV1LogConfigCloudAuditOptions(_messages.Message):
     ADMIN_ACTIVITY = 1
     DATA_ACCESS = 2
 
+  class PermissionTypeValueValuesEnum(_messages.Enum):
+    r"""The type associated with the permission.
+
+    Values:
+      PERMISSION_TYPE_UNSPECIFIED: Default. Should not be used.
+      ADMIN_READ: Permissions that gate reading resource configuration or
+        metadata.
+      ADMIN_WRITE: Permissions that gate modification of resource
+        configuration or metadata.
+      DATA_READ: Permissions that gate reading user-provided data.
+      DATA_WRITE: Permissions that gate writing user-provided data.
+    """
+    PERMISSION_TYPE_UNSPECIFIED = 0
+    ADMIN_READ = 1
+    ADMIN_WRITE = 2
+    DATA_READ = 3
+    DATA_WRITE = 4
+
   authorizationLoggingOptions = _messages.MessageField('GoogleCloudAuditAuthorizationLoggingOptions', 1)
   logName = _messages.EnumField('LogNameValueValuesEnum', 2)
+  permissionType = _messages.EnumField('PermissionTypeValueValuesEnum', 3)
 
 
 class GoogleIamV1LogConfigCounterOptions(_messages.Message):
@@ -3224,38 +3283,62 @@ class GoogleIamV2DenyRule(_messages.Message):
       `iam.googleapis.com/roles.list`.
     deniedPrincipals: The identities that are prevented from using one or more
       permissions on Google Cloud resources. This field can contain the
-      following values: * `principalSet://goog/public:all`: A special
-      identifier that represents any principal that is on the internet, even
-      if they do not have a Google Account or are not logged in. *
-      `principal://goog/subject/{email_id}`: A specific Google Account.
-      Includes Gmail, Cloud Identity, and Google Workspace user accounts. For
-      example, `principal://goog/subject/alice@example.com`. *
+      following values: * `principal://goog/subject/{email_id}`: A specific
+      Google Account. Includes Gmail, Cloud Identity, and Google Workspace
+      user accounts. For example,
+      `principal://goog/subject/alice@example.com`. * `principal://iam.googlea
+      pis.com/projects/-/serviceAccounts/{service_account_id}`: A Google Cloud
+      service account. For example,
+      `principal://iam.googleapis.com/projects/-/serviceAccounts/my-service-
+      account@iam.gserviceaccount.com`. *
+      `principalSet://goog/group/{group_id}`: A Google group. For example,
+      `principalSet://goog/group/admins@example.com`. *
+      `principalSet://goog/public:all`: A special identifier that represents
+      any principal that is on the internet, even if they do not have a Google
+      Account or are not logged in. *
+      `principalSet://goog/cloudIdentityCustomerId/{customer_id}`: All of the
+      principals associated with the specified Google Workspace or Cloud
+      Identity customer ID. For example,
+      `principalSet://goog/cloudIdentityCustomerId/C01Abc35`. * `principal://i
+      am.googleapis.com/locations/global/workforcePools/{pool_id}/subject/{sub
+      ject_attribute_value}`: A single identity in a workforce identity pool.
+      * `principalSet://iam.googleapis.com/locations/global/workforcePools/{po
+      ol_id}/group/{group_id}`: All workforce identities in a group. * `princi
+      palSet://iam.googleapis.com/locations/global/workforcePools/{pool_id}/at
+      tribute.{attribute_name}/{attribute_value}`: All workforce identities
+      with a specific attribute value. * `principalSet://iam.googleapis.com/lo
+      cations/global/workforcePools/{pool_id}/*`: All identities in a
+      workforce identity pool. * `principal://iam.googleapis.com/projects/{pro
+      ject_number}/locations/global/workloadIdentityPools/{pool_id}/subject/{s
+      ubject_attribute_value}`: A single identity in a workload identity pool.
+      * `principalSet://iam.googleapis.com/projects/{project_number}/locations
+      /global/workloadIdentityPools/{pool_id}/group/{group_id}`: A workload
+      identity pool group. * `principalSet://iam.googleapis.com/projects/{proj
+      ect_number}/locations/global/workloadIdentityPools/{pool_id}/attribute.{
+      attribute_name}/{attribute_value}`: All identities in a workload
+      identity pool with a certain attribute. * `principalSet://iam.googleapis
+      .com/projects/{project_number}/locations/global/workloadIdentityPools/{p
+      ool_id}/*`: All identities in a workload identity pool. *
       `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
       Google Account that was deleted recently. For example,
       `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
       the Google Account is recovered, this identifier reverts to the standard
       identifier for a Google Account. *
-      `principalSet://goog/group/{group_id}`: A Google group. For example,
-      `principalSet://goog/group/admins@example.com`. *
       `deleted:principalSet://goog/group/{group_id}?uid={uid}`: A Google group
       that was deleted recently. For example,
       `deleted:principalSet://goog/group/admins@example.com?uid=1234567890`.
       If the Google group is restored, this identifier reverts to the standard
-      identifier for a Google group. * `principal://iam.googleapis.com/project
-      s/-/serviceAccounts/{service_account_id}`: A Google Cloud service
-      account. For example,
-      `principal://iam.googleapis.com/projects/-/serviceAccounts/my-service-
-      account@iam.gserviceaccount.com`. * `deleted:principal://iam.googleapis.
-      com/projects/-/serviceAccounts/{service_account_id}?uid={uid}`: A Google
+      identifier for a Google group. * `deleted:principal://iam.googleapis.com
+      /projects/-/serviceAccounts/{service_account_id}?uid={uid}`: A Google
       Cloud service account that was deleted recently. For example,
       `deleted:principal://iam.googleapis.com/projects/-/serviceAccounts/my-
       service-account@iam.gserviceaccount.com?uid=1234567890`. If the service
       account is undeleted, this identifier reverts to the standard identifier
-      for a service account. *
-      `principalSet://goog/cloudIdentityCustomerId/{customer_id}`: All of the
-      principals associated with the specified Google Workspace or Cloud
-      Identity customer ID. For example,
-      `principalSet://goog/cloudIdentityCustomerId/C01Abc35`.
+      for a service account. * `deleted:principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`:
+      Deleted single identity in a workforce identity pool. For example, `dele
+      ted:principal://iam.googleapis.com/locations/global/workforcePools/my-
+      pool-id/subject/my-subject-attribute-value`.
     exceptionPermissions: Specifies the permissions that this rule excludes
       from the set of denied permissions given by `denied_permissions`. If a
       permission appears in `denied_permissions` _and_ in
@@ -3435,12 +3518,7 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
       or + must set to the input policy kind
     policyUid: Output only. The globally unique ID of the policy to be bound.
     target: Immutable. Target is the full resource name of the resource to
-      which the policy will be bound. Immutable once set. Exampples: Workforce
-      Identity: 'principalSet://iam.googleapis.com/locations/global/workforceP
-      ools/POOL_ID/*' Workload Identity Pool: 'principalSet://iam.googleapis.c
-      om/projects/PROJECT_NUMBER/locations/global/workloadIdentityPools/POOL_I
-      D/*' Workspace Identity: 'principalSet://iam.googleapis.com/locations/gl
-      obal/workspace/WORKSPACE_ID/*'
+      which the policy will be bound. Immutable once set.
     uid: Output only. The globally unique ID of the policy binding. Assigned
       when the policy binding is created.
     updateTime: Output only. The time when the policy binding was most
@@ -3496,9 +3574,30 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
   policy = _messages.StringField(7)
   policyKind = _messages.EnumField('PolicyKindValueValuesEnum', 8)
   policyUid = _messages.StringField(9)
-  target = _messages.StringField(10)
+  target = _messages.MessageField('GoogleIamV3betaPolicyBindingTarget', 10)
   uid = _messages.StringField(11)
   updateTime = _messages.StringField(12)
+
+
+class GoogleIamV3betaPolicyBindingTarget(_messages.Message):
+  r"""Target is the full resource name of the resource to which the policy
+  will be bound. Immutable once set.
+
+  Fields:
+    principalSet: Immutable. Full Resource Name used for principal access
+      boundary policy bindings Examples: Organization:
+      "//cloudresourcemanager.googleapis.com/organizations/ORGANIZATION_ID"
+      Folder: "//cloudresourcemanager.googleapis.com/folders/FOLDER_ID"
+      Project: "//cloudresourcemanager.googleapis.com/projects/PROJECT_NUMBER"
+      "//cloudresourcemanager.googleapis.com/projects/PROJECT_ID" Workload
+      Identity Pool: "//iam.googleapis.com/projects/PROJECT_NUMBER/locations/L
+      OCATION/workloadIdentityPools/WORKLOAD_POOL_ID" Workforce Identity:
+      "//iam.googleapis.com/locations/global/workforcePools/WORKFORCE_POOL_ID"
+      Workspace Identity:
+      "//iam.googleapis.com/locations/global/workspacePools/WORKSPACE_ID"
+  """
+
+  principalSet = _messages.StringField(1)
 
 
 class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
@@ -4039,11 +4138,11 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigMethodSelector(_
   r"""An allowed method or permission of a service specified in ApiOperation.
 
   Fields:
-    method: Value for `method` should be a valid method name for the
-      corresponding `service_name` in ApiOperation. If `*` used as value for
-      `method`, then ALL methods and permissions are allowed.
-    permission: Value for `permission` should be a valid Cloud IAM permission
-      for the corresponding `service_name` in ApiOperation.
+    method: A valid method name for the corresponding `service_name` in
+      ApiOperation. If `*` is used as the value for the `method`, then ALL
+      methods and permissions are allowed.
+    permission: A valid Cloud IAM permission for the corresponding
+      `service_name` in ApiOperation.
   """
 
   method = _messages.StringField(1)

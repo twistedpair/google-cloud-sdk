@@ -110,12 +110,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -127,7 +146,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1452,6 +1475,11 @@ class WorkstationConfig(_messages.Message):
       over https or wss.
     displayName: Optional. Human-readable name for this workstation
       configuration.
+    enableAuditAgent: Optional. Whether to enable Linux `auditd` logging on
+      the workstation. When enabled, a service account must also be specified
+      that has `logging.buckets.write` permission on the project. Operating
+      system audit logging is distinct from [Cloud Audit
+      Logs](https://cloud.google.com/workstations/docs/audit-logging).
     encryptionKey: Immutable. Encrypts resources of this workstation
       configuration using a customer-managed encryption key (CMEK). If
       specified, the boot disk of the Compute Engine instance and the
@@ -1575,19 +1603,20 @@ class WorkstationConfig(_messages.Message):
   deleteTime = _messages.StringField(6)
   disableTcpConnections = _messages.BooleanField(7)
   displayName = _messages.StringField(8)
-  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 9)
-  etag = _messages.StringField(10)
-  host = _messages.MessageField('Host', 11)
-  idleTimeout = _messages.StringField(12)
-  labels = _messages.MessageField('LabelsValue', 13)
-  name = _messages.StringField(14)
-  persistentDirectories = _messages.MessageField('PersistentDirectory', 15, repeated=True)
-  readinessChecks = _messages.MessageField('ReadinessCheck', 16, repeated=True)
-  reconciling = _messages.BooleanField(17)
-  replicaZones = _messages.StringField(18, repeated=True)
-  runningTimeout = _messages.StringField(19)
-  uid = _messages.StringField(20)
-  updateTime = _messages.StringField(21)
+  enableAuditAgent = _messages.BooleanField(9)
+  encryptionKey = _messages.MessageField('CustomerEncryptionKey', 10)
+  etag = _messages.StringField(11)
+  host = _messages.MessageField('Host', 12)
+  idleTimeout = _messages.StringField(13)
+  labels = _messages.MessageField('LabelsValue', 14)
+  name = _messages.StringField(15)
+  persistentDirectories = _messages.MessageField('PersistentDirectory', 16, repeated=True)
+  readinessChecks = _messages.MessageField('ReadinessCheck', 17, repeated=True)
+  reconciling = _messages.BooleanField(18)
+  replicaZones = _messages.StringField(19, repeated=True)
+  runningTimeout = _messages.StringField(20)
+  uid = _messages.StringField(21)
+  updateTime = _messages.StringField(22)
 
 
 class WorkstationsProjectsLocationsGetRequest(_messages.Message):

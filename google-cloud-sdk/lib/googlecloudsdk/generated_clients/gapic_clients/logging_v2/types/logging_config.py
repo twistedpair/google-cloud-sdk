@@ -26,57 +26,57 @@ from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 __protobuf__ = proto.module(
     package='google.logging.v2',
     manifest={
-        'OperationState',
         'LifecycleState',
         'IndexType',
+        'OperationState',
         'IndexConfig',
         'LogBucket',
         'LogView',
+        'LogExclusion',
+        'BigQueryOptions',
         'LogSink',
         'BigQueryDataset',
         'Link',
-        'BigQueryOptions',
+        'CmekSettings',
+        'Settings',
+        'LoggingQuery',
+        'OpsAnalyticsQuery',
+        'SavedQuery',
+        'RecentQuery',
         'ListBucketsRequest',
         'ListBucketsResponse',
+        'GetBucketRequest',
         'CreateBucketRequest',
         'UpdateBucketRequest',
-        'GetBucketRequest',
         'DeleteBucketRequest',
         'UndeleteBucketRequest',
         'ListViewsRequest',
         'ListViewsResponse',
+        'GetViewRequest',
         'CreateViewRequest',
         'UpdateViewRequest',
-        'GetViewRequest',
         'DeleteViewRequest',
-        'ListSinksRequest',
-        'ListSinksResponse',
-        'GetSinkRequest',
-        'CreateSinkRequest',
-        'UpdateSinkRequest',
-        'DeleteSinkRequest',
-        'CreateLinkRequest',
-        'DeleteLinkRequest',
-        'ListLinksRequest',
-        'ListLinksResponse',
-        'GetLinkRequest',
-        'LogExclusion',
         'ListExclusionsRequest',
         'ListExclusionsResponse',
         'GetExclusionRequest',
         'CreateExclusionRequest',
         'UpdateExclusionRequest',
         'DeleteExclusionRequest',
+        'ListSinksRequest',
+        'ListSinksResponse',
+        'GetSinkRequest',
+        'CreateSinkRequest',
+        'UpdateSinkRequest',
+        'DeleteSinkRequest',
+        'ListLinksRequest',
+        'ListLinksResponse',
+        'GetLinkRequest',
+        'CreateLinkRequest',
+        'DeleteLinkRequest',
         'GetCmekSettingsRequest',
         'UpdateCmekSettingsRequest',
-        'CmekSettings',
         'GetSettingsRequest',
         'UpdateSettingsRequest',
-        'Settings',
-        'LoggingQuery',
-        'OpsAnalyticsQuery',
-        'SavedQuery',
-        'RecentQuery',
         'ListSavedQueriesRequest',
         'ListSavedQueriesResponse',
         'CreateSavedQueryRequest',
@@ -84,46 +84,13 @@ __protobuf__ = proto.module(
         'ListRecentQueriesRequest',
         'ListRecentQueriesResponse',
         'CopyLogEntriesRequest',
-        'CopyLogEntriesMetadata',
         'CopyLogEntriesResponse',
+        'CopyLogEntriesMetadata',
+        'LocationMetadata',
         'BucketMetadata',
         'LinkMetadata',
-        'LocationMetadata',
     },
 )
-
-
-class OperationState(proto.Enum):
-    r"""List of different operation states.
-    High level state of the operation. This is used to report the
-    job's current state to the user. Once a long running operation
-    is created, the current state of the operation can be queried
-    even before the operation is finished and the final result is
-    available.
-
-    Values:
-        OPERATION_STATE_UNSPECIFIED (0):
-            Should not be used.
-        OPERATION_STATE_SCHEDULED (1):
-            The operation is scheduled.
-        OPERATION_STATE_WAITING_FOR_PERMISSIONS (2):
-            Waiting for necessary permissions.
-        OPERATION_STATE_RUNNING (3):
-            The operation is running.
-        OPERATION_STATE_SUCCEEDED (4):
-            The operation was completed successfully.
-        OPERATION_STATE_FAILED (5):
-            The operation failed.
-        OPERATION_STATE_CANCELLED (6):
-            The operation was cancelled by the user.
-    """
-    OPERATION_STATE_UNSPECIFIED = 0
-    OPERATION_STATE_SCHEDULED = 1
-    OPERATION_STATE_WAITING_FOR_PERMISSIONS = 2
-    OPERATION_STATE_RUNNING = 3
-    OPERATION_STATE_SUCCEEDED = 4
-    OPERATION_STATE_FAILED = 5
-    OPERATION_STATE_CANCELLED = 6
 
 
 class LifecycleState(proto.Enum):
@@ -173,6 +140,42 @@ class IndexType(proto.Enum):
     INDEX_TYPE_UNSPECIFIED = 0
     INDEX_TYPE_STRING = 1
     INDEX_TYPE_INTEGER = 2
+
+
+class OperationState(proto.Enum):
+    r"""List of different operation states.
+    High level state of the operation. This is used to report the
+    job's current state to the user. Once a long running operation
+    is created, the current state of the operation can be queried
+    even before the operation is finished and the final result is
+    available.
+
+    Values:
+        OPERATION_STATE_UNSPECIFIED (0):
+            Should not be used.
+        OPERATION_STATE_SCHEDULED (1):
+            The operation is scheduled.
+        OPERATION_STATE_WAITING_FOR_PERMISSIONS (2):
+            Waiting for necessary permissions.
+        OPERATION_STATE_RUNNING (3):
+            The operation is running.
+        OPERATION_STATE_SUCCEEDED (4):
+            The operation was completed successfully.
+        OPERATION_STATE_FAILED (5):
+            The operation failed.
+        OPERATION_STATE_CANCELLED (6):
+            The operation was cancelled by the user.
+        OPERATION_STATE_PENDING (7):
+            The operation is waiting for quota.
+    """
+    OPERATION_STATE_UNSPECIFIED = 0
+    OPERATION_STATE_SCHEDULED = 1
+    OPERATION_STATE_WAITING_FOR_PERMISSIONS = 2
+    OPERATION_STATE_RUNNING = 3
+    OPERATION_STATE_SUCCEEDED = 4
+    OPERATION_STATE_FAILED = 5
+    OPERATION_STATE_CANCELLED = 6
+    OPERATION_STATE_PENDING = 7
 
 
 class IndexConfig(proto.Message):
@@ -233,7 +236,7 @@ class LogBucket(proto.Message):
             After a bucket has been created, the location cannot be
             changed.
         description (str):
-            Describes this bucket.
+            Optional. Describes this bucket.
         create_time (google.protobuf.timestamp_pb2.Timestamp):
             Output only. The creation timestamp of the
             bucket. This is not set for any of the default
@@ -242,14 +245,14 @@ class LogBucket(proto.Message):
             Output only. The last update timestamp of the
             bucket.
         retention_days (int):
-            Logs will be retained by default for this
-            amount of time, after which they will
+            Optional. Logs will be retained by default
+            for this amount of time, after which they will
             automatically be deleted. The minimum retention
             period is 1 day. If this value is set to zero at
             bucket creation time, the default time of 30
             days will be used.
         locked (bool):
-            Whether the bucket is locked.
+            Optional. Whether the bucket is locked.
 
             The retention period on a locked bucket cannot
             be changed. Locked buckets may only be deleted
@@ -257,12 +260,13 @@ class LogBucket(proto.Message):
         lifecycle_state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LifecycleState):
             Output only. The bucket lifecycle state.
         analytics_enabled (bool):
-            Whether log analytics is enabled for this
-            bucket.
+            Optional. Whether log analytics is enabled
+            for this bucket.
             Once enabled, log analytics features cannot be
             disabled.
         restricted_fields (MutableSequence[str]):
-            Log entry field paths that are denied access in this bucket.
+            Optional. Log entry field paths that are denied access in
+            this bucket.
 
             The following fields and their children are eligible:
             ``textPayload``, ``jsonPayload``, ``protoPayload``,
@@ -272,16 +276,16 @@ class LogBucket(proto.Message):
             Adding a parent will block all child fields. (e.g.
             ``foo.bar`` will block ``foo.bar.baz``)
         index_configs (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.IndexConfig]):
-            A list of indexed fields and related
-            configuration data.
+            Optional. A list of indexed fields and
+            related configuration data.
         cmek_settings (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CmekSettings):
-            The CMEK settings of the log bucket. If
-            present, new log entries written to this log
-            bucket are encrypted using the CMEK key provided
-            in this configuration. If a log bucket has CMEK
-            settings, the CMEK settings cannot be disabled
-            later by updating the log bucket. Changing the
-            KMS key is allowed.
+            Optional. The CMEK settings of the log
+            bucket. If present, new log entries written to
+            this log bucket are encrypted using the CMEK key
+            provided in this configuration. If a log bucket
+            has CMEK settings, the CMEK settings cannot be
+            disabled later by updating the log bucket.
+            Changing the KMS key is allowed.
     """
 
     name: str = proto.Field(
@@ -340,13 +344,13 @@ class LogView(proto.Message):
 
     Attributes:
         name (str):
-            The resource name of the view.
+            Output only. The resource name of the view.
 
             For example:
 
             ``projects/my-project/locations/global/buckets/my-bucket/views/my-view``
         description (str):
-            Describes this view.
+            Optional. Describes this view.
         create_time (google.protobuf.timestamp_pb2.Timestamp):
             Output only. The creation timestamp of the
             view.
@@ -354,8 +358,8 @@ class LogView(proto.Message):
             Output only. The last update timestamp of the
             view.
         filter (str):
-            Filter that restricts which log entries in a bucket are
-            visible in this view.
+            Optional. Filter that restricts which log entries in a
+            bucket are visible in this view.
 
             Filters must be logical conjunctions that use the AND
             operator, and they can use any of the following qualifiers:
@@ -398,6 +402,117 @@ class LogView(proto.Message):
     )
 
 
+class LogExclusion(proto.Message):
+    r"""Specifies a set of log entries that are filtered out by a sink. If
+    your Google Cloud resource receives a large volume of log entries,
+    you can use exclusions to reduce your chargeable logs. Note that
+    exclusions on organization-level and folder-level sinks don't apply
+    to child resources. Note also that you cannot modify the \_Required
+    sink or exclude logs from it.
+
+    Attributes:
+        name (str):
+            Output only. A client-assigned identifier, such as
+            ``"load-balancer-exclusion"``. Identifiers are limited to
+            100 characters and can include only letters, digits,
+            underscores, hyphens, and periods. First character has to be
+            alphanumeric.
+        description (str):
+            Optional. A description of this exclusion.
+        filter (str):
+            Required. An `advanced logs
+            filter <https://cloud.google.com/logging/docs/view/advanced-queries>`__
+            that matches the log entries to be excluded. By using the
+            `sample
+            function <https://cloud.google.com/logging/docs/view/advanced-queries#sample>`__,
+            you can exclude less than 100% of the matching log entries.
+
+            For example, the following query matches 99% of low-severity
+            log entries from Google Cloud Storage buckets:
+
+            ``resource.type=gcs_bucket severity<ERROR sample(insertId, 0.99)``
+        disabled (bool):
+            Optional. If set to True, then this exclusion is disabled
+            and it does not exclude any log entries. You can [update an
+            exclusion][google.logging.v2.ConfigServiceV2.UpdateExclusion]
+            to change the value of this field.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The creation timestamp of the
+            exclusion.
+            This field may not be present for older
+            exclusions.
+        update_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The last update timestamp of the
+            exclusion.
+            This field may not be present for older
+            exclusions.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    description: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    filter: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    disabled: bool = proto.Field(
+        proto.BOOL,
+        number=4,
+    )
+    create_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=timestamp_pb2.Timestamp,
+    )
+
+
+class BigQueryOptions(proto.Message):
+    r"""Options that change functionality of a sink exporting data to
+    BigQuery.
+
+    Attributes:
+        use_partitioned_tables (bool):
+            Optional. Whether to use `BigQuery's partition
+            tables <https://cloud.google.com/bigquery/docs/partitioned-tables>`__.
+            By default, Cloud Logging creates dated tables based on the
+            log entries' timestamps, e.g. syslog_20170523. With
+            partitioned tables the date suffix is no longer present and
+            `special query
+            syntax <https://cloud.google.com/bigquery/docs/querying-partitioned-tables>`__
+            has to be used instead. In both cases, tables are sharded
+            based on UTC timezone.
+        uses_timestamp_column_partitioning (bool):
+            Output only. True if new timestamp column based partitioning
+            is in use, false if legacy ingress-time partitioning is in
+            use.
+
+            All new sinks will have this field set true and will use
+            timestamp column based partitioning. If
+            use_partitioned_tables is false, this value has no meaning
+            and will be false. Legacy sinks using partitioned tables
+            will have this field set to false.
+    """
+
+    use_partitioned_tables: bool = proto.Field(
+        proto.BOOL,
+        number=1,
+    )
+    uses_timestamp_column_partitioning: bool = proto.Field(
+        proto.BOOL,
+        number=3,
+    )
+
+
 class LogSink(proto.Message):
     r"""Describes a sink used to export log entries to one of the following
     destinations:
@@ -417,8 +532,8 @@ class LogSink(proto.Message):
 
     Attributes:
         name (str):
-            Required. The client-assigned sink identifier, unique within
-            the project.
+            Output only. The client-assigned sink identifier, unique
+            within the project.
 
             For example: ``"my-syslog-errors-to-pubsub"``.
 
@@ -625,10 +740,10 @@ class Link(proto.Message):
 
     Attributes:
         name (str):
-            The resource name of the link. The name can have up to 100
-            characters. A valid link id (at the end of the link name)
-            must only have alphanumeric characters and underscores
-            within it.
+            Output only. The resource name of the link. The name can
+            have up to 100 characters. A valid link id (at the end of
+            the link name) must only have alphanumeric characters and
+            underscores within it.
 
             ::
 
@@ -641,7 +756,7 @@ class Link(proto.Message):
 
             \`projects/my-project/locations/global/buckets/my-bucket/links/my_link
         description (str):
-            Describes this link.
+            Optional. Describes this link.
 
             The maximum length of the description is 8000
             characters.
@@ -651,12 +766,12 @@ class Link(proto.Message):
         lifecycle_state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LifecycleState):
             Output only. The resource lifecycle state.
         bigquery_dataset (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.BigQueryDataset):
-            The information of a BigQuery Dataset. When a
-            link is created, a BigQuery dataset is created
-            along with it, in the same project as the
-            LogBucket it's linked to. This dataset will also
-            have BigQuery Views corresponding to the
-            LogViews in the bucket.
+            Optional. The information of a BigQuery
+            Dataset. When a link is created, a BigQuery
+            dataset is created along with it, in the same
+            project as the LogBucket it's linked to. This
+            dataset will also have BigQuery Views
+            corresponding to the LogViews in the bucket.
     """
 
     name: str = proto.Field(
@@ -684,40 +799,532 @@ class Link(proto.Message):
     )
 
 
-class BigQueryOptions(proto.Message):
-    r"""Options that change functionality of a sink exporting data to
-    BigQuery.
+class CmekSettings(proto.Message):
+    r"""Describes the customer-managed encryption key (CMEK) settings
+    associated with a project, folder, organization, billing account, or
+    flexible resource.
+
+    Note: CMEK for the Log Router can currently only be configured for
+    Google Cloud organizations. Once configured, it applies to all
+    projects and folders in the Google Cloud organization.
+
+    See `Enabling CMEK for Log
+    Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+    for more information.
 
     Attributes:
-        use_partitioned_tables (bool):
-            Optional. Whether to use `BigQuery's partition
-            tables <https://cloud.google.com/bigquery/docs/partitioned-tables>`__.
-            By default, Cloud Logging creates dated tables based on the
-            log entries' timestamps, e.g. syslog_20170523. With
-            partitioned tables the date suffix is no longer present and
-            `special query
-            syntax <https://cloud.google.com/bigquery/docs/querying-partitioned-tables>`__
-            has to be used instead. In both cases, tables are sharded
-            based on UTC timezone.
-        uses_timestamp_column_partitioning (bool):
-            Output only. True if new timestamp column based partitioning
-            is in use, false if legacy ingress-time partitioning is in
-            use.
+        name (str):
+            Output only. The resource name of the CMEK
+            settings.
+        kms_key_name (str):
+            Optional. The resource name for the configured Cloud KMS
+            key.
 
-            All new sinks will have this field set true and will use
-            timestamp column based partitioning. If
-            use_partitioned_tables is false, this value has no meaning
-            and will be false. Legacy sinks using partitioned tables
-            will have this field set to false.
+            KMS key name format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]"
+
+            For example:
+
+            ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"``
+
+            To enable CMEK for the Log Router, set this field to a valid
+            ``kms_key_name`` for which the associated service account
+            has the needed cloudkms.cryptoKeyEncrypterDecrypter roles
+            assigned for the key.
+
+            The Cloud KMS key used by the Log Router can be updated by
+            changing the ``kms_key_name`` to a new valid key name or
+            disabled by setting the key name to an empty string.
+            Encryption operations that are in progress will be completed
+            with the key that was in use when they started. Decryption
+            operations will be completed using the key that was used at
+            the time of encryption unless access to that key has been
+            revoked.
+
+            To disable CMEK for the Log Router, set this field to an
+            empty string.
+
+            See `Enabling CMEK for Log
+            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+            for more information.
+        kms_key_version_name (str):
+            Output only. The CryptoKeyVersion resource name for the
+            configured Cloud KMS key.
+
+            KMS key name format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]/cryptoKeyVersions/[VERSION]"
+
+            For example:
+
+            ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key/cryptoKeyVersions/1"``
+
+            This is a read-only field used to convey the specific
+            configured CryptoKeyVersion of ``kms_key`` that has been
+            configured. It will be populated in cases where the CMEK
+            settings are bound to a single key version.
+
+            If this field is populated, the ``kms_key`` is tied to a
+            specific CryptoKeyVersion.
+        service_account_id (str):
+            Output only. The service account that will be used by the
+            Log Router to access your Cloud KMS key.
+
+            Before enabling CMEK for Log Router, you must first assign
+            the cloudkms.cryptoKeyEncrypterDecrypter role to the service
+            account that the Log Router will use to access your Cloud
+            KMS key. Use
+            [GetCmekSettings][google.logging.v2.ConfigServiceV2.GetCmekSettings]
+            to obtain the service account ID.
+
+            See `Enabling CMEK for Log
+            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+            for more information.
     """
 
-    use_partitioned_tables: bool = proto.Field(
-        proto.BOOL,
+    name: str = proto.Field(
+        proto.STRING,
         number=1,
     )
-    uses_timestamp_column_partitioning: bool = proto.Field(
-        proto.BOOL,
+    kms_key_name: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    kms_key_version_name: str = proto.Field(
+        proto.STRING,
+        number=4,
+    )
+    service_account_id: str = proto.Field(
+        proto.STRING,
         number=3,
+    )
+
+
+class Settings(proto.Message):
+    r"""Describes the settings associated with a project, folder,
+    organization, or billing account.
+
+    Attributes:
+        name (str):
+            Output only. The resource name of the
+            settings.
+        kms_key_name (str):
+            Optional. The resource name for the configured Cloud KMS
+            key.
+
+            KMS key name format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]"
+
+            For example:
+
+            ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"``
+
+            To enable CMEK, set this field to a valid ``kms_key_name``
+            for which the associated service account has the required
+            ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned
+            for the key.
+
+            The Cloud KMS key used by the Log Router can be updated by
+            changing the ``kms_key_name`` to a new valid key name.
+
+            To disable CMEK for the Log Router, set this field to an
+            empty string.
+
+            See `Enabling CMEK for Log
+            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+            for more information.
+        kms_service_account_id (str):
+            Output only. The service account that will be used by the
+            Log Router to access your Cloud KMS key.
+
+            Before enabling CMEK, you must first assign the role
+            ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` to the
+            service account that will be used to access your Cloud KMS
+            key. Use
+            [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings]
+            to obtain the service account ID.
+
+            See `Enabling CMEK for Log
+            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
+            for more information.
+        storage_location (str):
+            Optional. The storage location for the ``_Default`` and
+            ``_Required`` log buckets of newly created projects and
+            folders, unless the storage location is explicitly provided.
+
+            Example value: ``europe-west1``.
+
+            Note: this setting does not affect the location of resources
+            where a location is explicitly provided when created, such
+            as custom log buckets.
+        disable_default_sink (bool):
+            Optional. If set to true, the ``_Default`` sink in newly
+            created projects and folders will created in a disabled
+            state. This can be used to automatically disable log storage
+            if there is already an aggregated sink configured in the
+            hierarchy. The ``_Default`` sink can be re-enabled manually
+            if needed.
+        default_sink_config (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings.DefaultSinkConfig):
+            Optional. Overrides the built-in configuration for
+            ``_Default`` sink.
+        logging_service_account_id (str):
+            Output only. The service account for the given resource
+            container, such as project or folder. Log sinks use this
+            service account as their ``writer_identity`` if no custom
+            service account is provided in the request when calling the
+            create sink method.
+    """
+
+    class DefaultSinkConfig(proto.Message):
+        r"""Describes the custom ``_Default`` sink configuration that is used to
+        override the built-in ``_Default`` sink configuration in newly
+        created resource containers, such as projects or folders.
+
+        Attributes:
+            filter (str):
+                Optional. An `advanced logs
+                filter <https://cloud.google.com/logging/docs/view/advanced-queries>`__.
+                The only exported log entries are those that are in the
+                resource owning the sink and that match the filter.
+
+                For example:
+
+                ``logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR``
+
+                To match all logs, don't add exclusions and use the
+                following line as the value of ``filter``:
+
+                ``logName:*``
+
+                Cannot be empty or unset when the value of ``mode`` is
+                ``OVERWRITE``.
+            exclusions (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
+                Optional. Specifies the set of exclusions to be added to the
+                ``_Default`` sink in newly created resource containers.
+            mode (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings.DefaultSinkConfig.FilterWriteMode):
+                Required. Determines the behavior to apply to the built-in
+                ``_Default`` sink inclusion filter.
+
+                Exclusions are always appended, as built-in ``_Default``
+                sinks have no exclusions.
+        """
+        class FilterWriteMode(proto.Enum):
+            r"""Behavior to apply to the built-in ``_Default`` sink inclusion
+            filter.
+
+            Values:
+                FILTER_WRITE_MODE_UNSPECIFIED (0):
+                    The filter's write mode is unspecified. This
+                    mode must not be used.
+                APPEND (1):
+                    The contents of ``filter`` will be appended to the built-in
+                    ``_Default`` sink filter. Using the append mode with an
+                    empty filter will keep the sink inclusion filter unchanged.
+                OVERWRITE (2):
+                    The contents of ``filter`` will overwrite the built-in
+                    ``_Default`` sink filter.
+            """
+            FILTER_WRITE_MODE_UNSPECIFIED = 0
+            APPEND = 1
+            OVERWRITE = 2
+
+        filter: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+        exclusions: MutableSequence['LogExclusion'] = proto.RepeatedField(
+            proto.MESSAGE,
+            number=2,
+            message='LogExclusion',
+        )
+        mode: 'Settings.DefaultSinkConfig.FilterWriteMode' = proto.Field(
+            proto.ENUM,
+            number=3,
+            enum='Settings.DefaultSinkConfig.FilterWriteMode',
+        )
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    kms_key_name: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    kms_service_account_id: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    storage_location: str = proto.Field(
+        proto.STRING,
+        number=4,
+    )
+    disable_default_sink: bool = proto.Field(
+        proto.BOOL,
+        number=5,
+    )
+    default_sink_config: DefaultSinkConfig = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=DefaultSinkConfig,
+    )
+    logging_service_account_id: str = proto.Field(
+        proto.STRING,
+        number=7,
+    )
+
+
+class LoggingQuery(proto.Message):
+    r"""Describes a Cloud Logging query that can be run in Logs
+    Explorer UI or via the logging API.
+
+    In addition to the query itself, additional information may be
+    stored to capture the display configuration and other UI state
+    used in association with analysis of query results.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        filter (str):
+            Required. An `advanced query using the Logging Query
+            Language <https://cloud.google.com/logging/docs/view/logging-query-language>`__.
+            The maximum length of the filter is 20000 characters.
+        summary_fields (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery.SummaryField]):
+            Optional. The set of summary fields to
+            display for this saved query.
+        summary_field_start (int):
+            Characters will be counted from the start of
+            the string.
+
+            This field is a member of `oneof`_ ``summary_field_width``.
+        summary_field_end (int):
+            Characters will be counted from the end of
+            the string.
+
+            This field is a member of `oneof`_ ``summary_field_width``.
+    """
+
+    class SummaryField(proto.Message):
+        r"""A field from the LogEntry that is `added to the summary
+        line <https://cloud.google.com/logging/docs/view/logs-explorer-interface#add-summary-fields>`__
+        for a query in the Logs Explorer.
+
+        Attributes:
+            field (str):
+                Optional. The field from the LogEntry to include in the
+                summary line, for example ``resource.type`` or
+                ``jsonPayload.name``.
+        """
+
+        field: str = proto.Field(
+            proto.STRING,
+            number=1,
+        )
+
+    filter: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    summary_fields: MutableSequence[SummaryField] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=2,
+        message=SummaryField,
+    )
+    summary_field_start: int = proto.Field(
+        proto.INT32,
+        number=3,
+        oneof='summary_field_width',
+    )
+    summary_field_end: int = proto.Field(
+        proto.INT32,
+        number=4,
+        oneof='summary_field_width',
+    )
+
+
+class OpsAnalyticsQuery(proto.Message):
+    r"""Describes an analytics query that can be run in the Log
+    Analytics page of Google Cloud console.
+
+    Preview: This is a preview feature and may be subject to change
+    before final release.
+
+    Attributes:
+        sql_query_text (str):
+            Required. A logs analytics SQL query, which
+            generally follows BigQuery format.
+
+            This is the SQL query that appears in the Log
+            Analytics UI's query editor.
+    """
+
+    sql_query_text: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+
+
+class SavedQuery(proto.Message):
+    r"""Describes a query that has been saved by a user.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        name (str):
+            Output only. Resource name of the saved query.
+
+            In the format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
+
+            For a list of supported locations, see `Supported
+            Regions <https://cloud.google.com/logging/docs/region-support#bucket-regions>`__
+
+            After the saved query is created, the location cannot be
+            changed.
+
+            If the user doesn't provide a [QUERY_ID], the system will
+            generate an alphanumeric ID.
+        display_name (str):
+            Optional. The user specified title for the
+            SavedQuery.
+        description (str):
+            Optional. A human readable description of the
+            saved query.
+        logging_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery):
+            Logging query that can be executed in Logs
+            Explorer or via Logging API.
+
+            This field is a member of `oneof`_ ``query_oneof``.
+        ops_analytics_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OpsAnalyticsQuery):
+            Analytics query that can be executed in Log
+            Analytics.
+
+            This field is a member of `oneof`_ ``query_oneof``.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The timestamp when the saved
+            query was created.
+        update_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The timestamp when the saved
+            query was last updated.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    display_name: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    description: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    logging_query: 'LoggingQuery' = proto.Field(
+        proto.MESSAGE,
+        number=4,
+        oneof='query_oneof',
+        message='LoggingQuery',
+    )
+    ops_analytics_query: 'OpsAnalyticsQuery' = proto.Field(
+        proto.MESSAGE,
+        number=10,
+        oneof='query_oneof',
+        message='OpsAnalyticsQuery',
+    )
+    create_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=timestamp_pb2.Timestamp,
+    )
+
+
+class RecentQuery(proto.Message):
+    r"""Describes a recent query executed on the Logs Explorer or Log
+    Analytics page within the last ~ 30 days.
+
+    This message has `oneof`_ fields (mutually exclusive fields).
+    For each oneof, at most one member field can be set at the same time.
+    Setting any member of the oneof automatically clears all other
+    members.
+
+    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
+
+    Attributes:
+        name (str):
+            Output only. Resource name of the recent query.
+
+            In the format:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/recentQueries/[QUERY_ID]"
+
+            For a list of supported locations, see `Supported
+            Regions <https://cloud.google.com/logging/docs/region-support>`__
+
+            The [QUERY_ID] is a system generated alphanumeric ID.
+        logging_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery):
+            Logging query that can be executed in Logs
+            Explorer or via Logging API.
+
+            This field is a member of `oneof`_ ``query_oneof``.
+        ops_analytics_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OpsAnalyticsQuery):
+            Analytics query that can be executed in Log
+            Analytics.
+
+            This field is a member of `oneof`_ ``query_oneof``.
+        last_run_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The timestamp when this query
+            was last run.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    logging_query: 'LoggingQuery' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        oneof='query_oneof',
+        message='LoggingQuery',
+    )
+    ops_analytics_query: 'OpsAnalyticsQuery' = proto.Field(
+        proto.MESSAGE,
+        number=5,
+        oneof='query_oneof',
+        message='OpsAnalyticsQuery',
+    )
+    last_run_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=timestamp_pb2.Timestamp,
     )
 
 
@@ -791,6 +1398,31 @@ class ListBucketsResponse(proto.Message):
     next_page_token: str = proto.Field(
         proto.STRING,
         number=2,
+    )
+
+
+class GetBucketRequest(proto.Message):
+    r"""The parameters to ``GetBucket``.
+
+    Attributes:
+        name (str):
+            Required. The resource name of the bucket:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+
+            For example:
+
+            ``"projects/my-project/locations/global/buckets/my-bucket"``
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
     )
 
 
@@ -879,31 +1511,6 @@ class UpdateBucketRequest(proto.Message):
         proto.MESSAGE,
         number=4,
         message=field_mask_pb2.FieldMask,
-    )
-
-
-class GetBucketRequest(proto.Message):
-    r"""The parameters to ``GetBucket``.
-
-    Attributes:
-        name (str):
-            Required. The resource name of the bucket:
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-
-            For example:
-
-            ``"projects/my-project/locations/global/buckets/my-bucket"``
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
     )
 
 
@@ -1024,6 +1631,28 @@ class ListViewsResponse(proto.Message):
     )
 
 
+class GetViewRequest(proto.Message):
+    r"""The parameters to ``GetView``.
+
+    Attributes:
+        name (str):
+            Required. The resource name of the policy:
+
+            ::
+
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
+
+            For example:
+
+            ``"projects/my-project/locations/global/buckets/my-bucket/views/my-view"``
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
 class CreateViewRequest(proto.Message):
     r"""The parameters to ``CreateView``.
 
@@ -1106,28 +1735,6 @@ class UpdateViewRequest(proto.Message):
     )
 
 
-class GetViewRequest(proto.Message):
-    r"""The parameters to ``GetView``.
-
-    Attributes:
-        name (str):
-            Required. The resource name of the policy:
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]"
-
-            For example:
-
-            ``"projects/my-project/locations/global/buckets/my-bucket/views/my-view"``
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
 class DeleteViewRequest(proto.Message):
     r"""The parameters to ``DeleteView``.
 
@@ -1144,6 +1751,211 @@ class DeleteViewRequest(proto.Message):
             ::
 
                `"projects/my-project/locations/global/buckets/my-bucket/views/my-view"`
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class ListExclusionsRequest(proto.Message):
+    r"""The parameters to ``ListExclusions``.
+
+    Attributes:
+        parent (str):
+            Required. The parent resource whose exclusions are to be
+            listed.
+
+            ::
+
+                "projects/[PROJECT_ID]"
+                "organizations/[ORGANIZATION_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]"
+                "folders/[FOLDER_ID]".
+        page_token (str):
+            Optional. If present, then retrieve the next batch of
+            results from the preceding call to this method.
+            ``pageToken`` must be the value of ``nextPageToken`` from
+            the previous response. The values of other method parameters
+            should be identical to those in the previous call.
+        page_size (int):
+            Optional. The maximum number of results to return from this
+            request. Non-positive values are ignored. The presence of
+            ``nextPageToken`` in the response indicates that more
+            results might be available.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    page_size: int = proto.Field(
+        proto.INT32,
+        number=3,
+    )
+
+
+class ListExclusionsResponse(proto.Message):
+    r"""Result returned from ``ListExclusions``.
+
+    Attributes:
+        exclusions (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
+            A list of exclusions.
+        next_page_token (str):
+            If there might be more results than appear in this response,
+            then ``nextPageToken`` is included. To get the next set of
+            results, call the same method again using the value of
+            ``nextPageToken`` as ``pageToken``.
+    """
+
+    @property
+    def raw_page(self):
+        return self
+
+    exclusions: MutableSequence['LogExclusion'] = proto.RepeatedField(
+        proto.MESSAGE,
+        number=1,
+        message='LogExclusion',
+    )
+    next_page_token: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+
+
+class GetExclusionRequest(proto.Message):
+    r"""The parameters to ``GetExclusion``.
+
+    Attributes:
+        name (str):
+            Required. The resource name of an existing exclusion:
+
+            ::
+
+                "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
+                "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
+                "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]"
+
+            For example:
+
+            ``"projects/my-project/exclusions/my-exclusion"``
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+
+
+class CreateExclusionRequest(proto.Message):
+    r"""The parameters to ``CreateExclusion``.
+
+    Attributes:
+        parent (str):
+            Required. The parent resource in which to create the
+            exclusion:
+
+            ::
+
+                "projects/[PROJECT_ID]"
+                "organizations/[ORGANIZATION_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]"
+                "folders/[FOLDER_ID]"
+
+            For examples:
+
+            ``"projects/my-logging-project"``
+            ``"organizations/123456789"``
+        exclusion (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion):
+            Required. The new exclusion, whose ``name`` parameter is an
+            exclusion name that is not already used in the parent
+            resource.
+    """
+
+    parent: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    exclusion: 'LogExclusion' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='LogExclusion',
+    )
+
+
+class UpdateExclusionRequest(proto.Message):
+    r"""The parameters to ``UpdateExclusion``.
+
+    Attributes:
+        name (str):
+            Required. The resource name of the exclusion to update:
+
+            ::
+
+                "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
+                "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
+                "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]"
+
+            For example:
+
+            ``"projects/my-project/exclusions/my-exclusion"``
+        exclusion (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion):
+            Required. New values for the existing exclusion. Only the
+            fields specified in ``update_mask`` are relevant.
+        update_mask (google.protobuf.field_mask_pb2.FieldMask):
+            Required. A non-empty list of fields to change in the
+            existing exclusion. New values for the fields are taken from
+            the corresponding fields in the
+            [LogExclusion][google.logging.v2.LogExclusion] included in
+            this request. Fields not mentioned in ``update_mask`` are
+            not changed and are ignored in the request.
+
+            For example, to change the filter and description of an
+            exclusion, specify an ``update_mask`` of
+            ``"filter,description"``.
+    """
+
+    name: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    exclusion: 'LogExclusion' = proto.Field(
+        proto.MESSAGE,
+        number=2,
+        message='LogExclusion',
+    )
+    update_mask: field_mask_pb2.FieldMask = proto.Field(
+        proto.MESSAGE,
+        number=3,
+        message=field_mask_pb2.FieldMask,
+    )
+
+
+class DeleteExclusionRequest(proto.Message):
+    r"""The parameters to ``DeleteExclusion``.
+
+    Attributes:
+        name (str):
+            Required. The resource name of an existing exclusion to
+            delete:
+
+            ::
+
+                "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
+                "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
+                "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]"
+
+            For example:
+
+            ``"projects/my-project/exclusions/my-exclusion"``
     """
 
     name: str = proto.Field(
@@ -1425,64 +2237,6 @@ class DeleteSinkRequest(proto.Message):
     )
 
 
-class CreateLinkRequest(proto.Message):
-    r"""The parameters to CreateLink.
-
-    Attributes:
-        parent (str):
-            Required. The full resource name of the bucket to create a
-            link for.
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
-                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]".
-        link (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Link):
-            Required. The new link.
-        link_id (str):
-            Required. The ID to use for the link. The link_id can have
-            up to 100 characters. A valid link_id must only have
-            alphanumeric characters and underscores within it.
-    """
-
-    parent: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    link: 'Link' = proto.Field(
-        proto.MESSAGE,
-        number=2,
-        message='Link',
-    )
-    link_id: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-
-
-class DeleteLinkRequest(proto.Message):
-    r"""The parameters to DeleteLink.
-
-    Attributes:
-        name (str):
-            Required. The full resource name of the link to delete.
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
-                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]".
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
 class ListLinksRequest(proto.Message):
     r"""The parameters to ListLinks.
 
@@ -1569,277 +2323,56 @@ class GetLinkRequest(proto.Message):
     )
 
 
-class LogExclusion(proto.Message):
-    r"""Specifies a set of log entries that are filtered out by a sink. If
-    your Google Cloud resource receives a large volume of log entries,
-    you can use exclusions to reduce your chargeable logs. Note that
-    exclusions on organization-level and folder-level sinks don't apply
-    to child resources. Note also that you cannot modify the \_Required
-    sink or exclude logs from it.
-
-    Attributes:
-        name (str):
-            Required. A client-assigned identifier, such as
-            ``"load-balancer-exclusion"``. Identifiers are limited to
-            100 characters and can include only letters, digits,
-            underscores, hyphens, and periods. First character has to be
-            alphanumeric.
-        description (str):
-            Optional. A description of this exclusion.
-        filter (str):
-            Required. An `advanced logs
-            filter <https://cloud.google.com/logging/docs/view/advanced-queries>`__
-            that matches the log entries to be excluded. By using the
-            `sample
-            function <https://cloud.google.com/logging/docs/view/advanced-queries#sample>`__,
-            you can exclude less than 100% of the matching log entries.
-
-            For example, the following query matches 99% of low-severity
-            log entries from Google Cloud Storage buckets:
-
-            ``resource.type=gcs_bucket severity<ERROR sample(insertId, 0.99)``
-        disabled (bool):
-            Optional. If set to True, then this exclusion is disabled
-            and it does not exclude any log entries. You can [update an
-            exclusion][google.logging.v2.ConfigServiceV2.UpdateExclusion]
-            to change the value of this field.
-        create_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The creation timestamp of the
-            exclusion.
-            This field may not be present for older
-            exclusions.
-        update_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The last update timestamp of the
-            exclusion.
-            This field may not be present for older
-            exclusions.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    description: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-    filter: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-    disabled: bool = proto.Field(
-        proto.BOOL,
-        number=4,
-    )
-    create_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=5,
-        message=timestamp_pb2.Timestamp,
-    )
-    update_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=6,
-        message=timestamp_pb2.Timestamp,
-    )
-
-
-class ListExclusionsRequest(proto.Message):
-    r"""The parameters to ``ListExclusions``.
+class CreateLinkRequest(proto.Message):
+    r"""The parameters to CreateLink.
 
     Attributes:
         parent (str):
-            Required. The parent resource whose exclusions are to be
-            listed.
+            Required. The full resource name of the bucket to create a
+            link for.
 
             ::
 
-                "projects/[PROJECT_ID]"
-                "organizations/[ORGANIZATION_ID]"
-                "billingAccounts/[BILLING_ACCOUNT_ID]"
-                "folders/[FOLDER_ID]".
-        page_token (str):
-            Optional. If present, then retrieve the next batch of
-            results from the preceding call to this method.
-            ``pageToken`` must be the value of ``nextPageToken`` from
-            the previous response. The values of other method parameters
-            should be identical to those in the previous call.
-        page_size (int):
-            Optional. The maximum number of results to return from this
-            request. Non-positive values are ignored. The presence of
-            ``nextPageToken`` in the response indicates that more
-            results might be available.
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]".
+        link (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Link):
+            Required. The new link.
+        link_id (str):
+            Required. The ID to use for the link. The link_id can have
+            up to 100 characters. A valid link_id must only have
+            alphanumeric characters and underscores within it.
     """
 
     parent: str = proto.Field(
         proto.STRING,
         number=1,
     )
-    page_token: str = proto.Field(
-        proto.STRING,
+    link: 'Link' = proto.Field(
+        proto.MESSAGE,
         number=2,
+        message='Link',
     )
-    page_size: int = proto.Field(
-        proto.INT32,
+    link_id: str = proto.Field(
+        proto.STRING,
         number=3,
     )
 
 
-class ListExclusionsResponse(proto.Message):
-    r"""Result returned from ``ListExclusions``.
-
-    Attributes:
-        exclusions (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
-            A list of exclusions.
-        next_page_token (str):
-            If there might be more results than appear in this response,
-            then ``nextPageToken`` is included. To get the next set of
-            results, call the same method again using the value of
-            ``nextPageToken`` as ``pageToken``.
-    """
-
-    @property
-    def raw_page(self):
-        return self
-
-    exclusions: MutableSequence['LogExclusion'] = proto.RepeatedField(
-        proto.MESSAGE,
-        number=1,
-        message='LogExclusion',
-    )
-    next_page_token: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-
-
-class GetExclusionRequest(proto.Message):
-    r"""The parameters to ``GetExclusion``.
+class DeleteLinkRequest(proto.Message):
+    r"""The parameters to DeleteLink.
 
     Attributes:
         name (str):
-            Required. The resource name of an existing exclusion:
+            Required. The full resource name of the link to delete.
 
             ::
 
-                "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
-                "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
-                "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-                "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]"
-
-            For example:
-
-            ``"projects/my-project/exclusions/my-exclusion"``
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-
-
-class CreateExclusionRequest(proto.Message):
-    r"""The parameters to ``CreateExclusion``.
-
-    Attributes:
-        parent (str):
-            Required. The parent resource in which to create the
-            exclusion:
-
-            ::
-
-                "projects/[PROJECT_ID]"
-                "organizations/[ORGANIZATION_ID]"
-                "billingAccounts/[BILLING_ACCOUNT_ID]"
-                "folders/[FOLDER_ID]"
-
-            For examples:
-
-            ``"projects/my-logging-project"``
-            ``"organizations/123456789"``
-        exclusion (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion):
-            Required. The new exclusion, whose ``name`` parameter is an
-            exclusion name that is not already used in the parent
-            resource.
-    """
-
-    parent: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    exclusion: 'LogExclusion' = proto.Field(
-        proto.MESSAGE,
-        number=2,
-        message='LogExclusion',
-    )
-
-
-class UpdateExclusionRequest(proto.Message):
-    r"""The parameters to ``UpdateExclusion``.
-
-    Attributes:
-        name (str):
-            Required. The resource name of the exclusion to update:
-
-            ::
-
-                "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
-                "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
-                "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-                "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]"
-
-            For example:
-
-            ``"projects/my-project/exclusions/my-exclusion"``
-        exclusion (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion):
-            Required. New values for the existing exclusion. Only the
-            fields specified in ``update_mask`` are relevant.
-        update_mask (google.protobuf.field_mask_pb2.FieldMask):
-            Required. A non-empty list of fields to change in the
-            existing exclusion. New values for the fields are taken from
-            the corresponding fields in the
-            [LogExclusion][google.logging.v2.LogExclusion] included in
-            this request. Fields not mentioned in ``update_mask`` are
-            not changed and are ignored in the request.
-
-            For example, to change the filter and description of an
-            exclusion, specify an ``update_mask`` of
-            ``"filter,description"``.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    exclusion: 'LogExclusion' = proto.Field(
-        proto.MESSAGE,
-        number=2,
-        message='LogExclusion',
-    )
-    update_mask: field_mask_pb2.FieldMask = proto.Field(
-        proto.MESSAGE,
-        number=3,
-        message=field_mask_pb2.FieldMask,
-    )
-
-
-class DeleteExclusionRequest(proto.Message):
-    r"""The parameters to ``DeleteExclusion``.
-
-    Attributes:
-        name (str):
-            Required. The resource name of an existing exclusion to
-            delete:
-
-            ::
-
-                "projects/[PROJECT_ID]/exclusions/[EXCLUSION_ID]"
-                "organizations/[ORGANIZATION_ID]/exclusions/[EXCLUSION_ID]"
-                "billingAccounts/[BILLING_ACCOUNT_ID]/exclusions/[EXCLUSION_ID]"
-                "folders/[FOLDER_ID]/exclusions/[EXCLUSION_ID]"
-
-            For example:
-
-            ``"projects/my-project/exclusions/my-exclusion"``
+                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "organizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]"
+                "folders/[FOLDER_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]".
     """
 
     name: str = proto.Field(
@@ -1944,111 +2477,6 @@ class UpdateCmekSettingsRequest(proto.Message):
     )
 
 
-class CmekSettings(proto.Message):
-    r"""Describes the customer-managed encryption key (CMEK) settings
-    associated with a project, folder, organization, billing account, or
-    flexible resource.
-
-    Note: CMEK for the Log Router can currently only be configured for
-    Google Cloud organizations. Once configured, it applies to all
-    projects and folders in the Google Cloud organization.
-
-    See `Enabling CMEK for Log
-    Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
-    for more information.
-
-    Attributes:
-        name (str):
-            Output only. The resource name of the CMEK
-            settings.
-        kms_key_name (str):
-            The resource name for the configured Cloud KMS key.
-
-            KMS key name format:
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]"
-
-            For example:
-
-            ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"``
-
-            To enable CMEK for the Log Router, set this field to a valid
-            ``kms_key_name`` for which the associated service account
-            has the needed cloudkms.cryptoKeyEncrypterDecrypter roles
-            assigned for the key.
-
-            The Cloud KMS key used by the Log Router can be updated by
-            changing the ``kms_key_name`` to a new valid key name or
-            disabled by setting the key name to an empty string.
-            Encryption operations that are in progress will be completed
-            with the key that was in use when they started. Decryption
-            operations will be completed using the key that was used at
-            the time of encryption unless access to that key has been
-            revoked.
-
-            To disable CMEK for the Log Router, set this field to an
-            empty string.
-
-            See `Enabling CMEK for Log
-            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
-            for more information.
-        kms_key_version_name (str):
-            The CryptoKeyVersion resource name for the configured Cloud
-            KMS key.
-
-            KMS key name format:
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]/cryptoKeyVersions/[VERSION]"
-
-            For example:
-
-            ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key/cryptoKeyVersions/1"``
-
-            This is a read-only field used to convey the specific
-            configured CryptoKeyVersion of ``kms_key`` that has been
-            configured. It will be populated in cases where the CMEK
-            settings are bound to a single key version.
-
-            If this field is populated, the ``kms_key`` is tied to a
-            specific CryptoKeyVersion.
-        service_account_id (str):
-            Output only. The service account that will be used by the
-            Log Router to access your Cloud KMS key.
-
-            Before enabling CMEK for Log Router, you must first assign
-            the cloudkms.cryptoKeyEncrypterDecrypter role to the service
-            account that the Log Router will use to access your Cloud
-            KMS key. Use
-            [GetCmekSettings][google.logging.v2.ConfigServiceV2.GetCmekSettings]
-            to obtain the service account ID.
-
-            See `Enabling CMEK for Log
-            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
-            for more information.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    kms_key_name: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-    kms_key_version_name: str = proto.Field(
-        proto.STRING,
-        number=4,
-    )
-    service_account_id: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-
-
 class GetSettingsRequest(proto.Message):
     r"""The parameters to
     [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings].
@@ -2132,426 +2560,6 @@ class UpdateSettingsRequest(proto.Message):
         proto.MESSAGE,
         number=3,
         message=field_mask_pb2.FieldMask,
-    )
-
-
-class Settings(proto.Message):
-    r"""Describes the settings associated with a project, folder,
-    organization, or billing account.
-
-    Attributes:
-        name (str):
-            Output only. The resource name of the
-            settings.
-        kms_key_name (str):
-            Optional. The resource name for the configured Cloud KMS
-            key.
-
-            KMS key name format:
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]"
-
-            For example:
-
-            ``"projects/my-project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"``
-
-            To enable CMEK, set this field to a valid ``kms_key_name``
-            for which the associated service account has the required
-            ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` role assigned
-            for the key.
-
-            The Cloud KMS key used by the Log Router can be updated by
-            changing the ``kms_key_name`` to a new valid key name.
-
-            To disable CMEK for the Log Router, set this field to an
-            empty string.
-
-            See `Enabling CMEK for Log
-            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
-            for more information.
-        kms_service_account_id (str):
-            Output only. The service account that will be used by the
-            Log Router to access your Cloud KMS key.
-
-            Before enabling CMEK, you must first assign the role
-            ``roles/cloudkms.cryptoKeyEncrypterDecrypter`` to the
-            service account that will be used to access your Cloud KMS
-            key. Use
-            [GetSettings][google.logging.v2.ConfigServiceV2.GetSettings]
-            to obtain the service account ID.
-
-            See `Enabling CMEK for Log
-            Router <https://cloud.google.com/logging/docs/routing/managed-encryption>`__
-            for more information.
-        storage_location (str):
-            Optional. The storage location for the ``_Default`` and
-            ``_Required`` log buckets of newly created projects and
-            folders, unless the storage location is explicitly provided.
-
-            Example value: ``europe-west1``.
-
-            Note: this setting does not affect the location of resources
-            where a location is explicitly provided when created, such
-            as custom log buckets.
-        disable_default_sink (bool):
-            Optional. If set to true, the ``_Default`` sink in newly
-            created projects and folders will created in a disabled
-            state. This can be used to automatically disable log storage
-            if there is already an aggregated sink configured in the
-            hierarchy. The ``_Default`` sink can be re-enabled manually
-            if needed.
-        default_sink_config (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings.DefaultSinkConfig):
-            Optional. Overrides the built-in configuration for
-            ``_Default`` sink.
-        logging_service_account_id (str):
-            Output only. The service account for the given resource
-            container, such as project or folder. Log sinks use this
-            service account as their ``writer_identity`` if no custom
-            service account is provided in the request when calling the
-            create sink method.
-    """
-
-    class DefaultSinkConfig(proto.Message):
-        r"""Describes the custom ``_Default`` sink configuration that is used to
-        override the built-in ``_Default`` sink configuration in newly
-        created resource containers, such as projects or folders.
-
-        Attributes:
-            filter (str):
-                Optional. An `advanced logs
-                filter <https://cloud.google.com/logging/docs/view/advanced-queries>`__.
-                The only exported log entries are those that are in the
-                resource owning the sink and that match the filter.
-
-                For example:
-
-                ``logName="projects/[PROJECT_ID]/logs/[LOG_ID]" AND severity>=ERROR``
-
-                To match all logs, don't add exclusions and use the
-                following line as the value of ``filter``:
-
-                ``logName:*``
-
-                Cannot be empty or unset when the value of ``mode`` is
-                ``OVERWRITE``.
-            exclusions (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LogExclusion]):
-                Optional. Specifies the set of exclusions to be added to the
-                ``_Default`` sink in newly created resource containers.
-            mode (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings.DefaultSinkConfig.FilterWriteMode):
-                Required. Determines the behavior to apply to the built-in
-                ``_Default`` sink inclusion filter.
-
-                Exclusions are always appended, as built-in ``_Default``
-                sinks have no exclusions.
-        """
-        class FilterWriteMode(proto.Enum):
-            r"""Behavior to apply to the built-in ``_Default`` sink inclusion
-            filter.
-
-            Values:
-                FILTER_WRITE_MODE_UNSPECIFIED (0):
-                    The filter's write mode is unspecified. This
-                    mode must not be used.
-                APPEND (1):
-                    The contents of ``filter`` will be appended to the built-in
-                    ``_Default`` sink filter. Using the append mode with an
-                    empty filter will keep the sink inclusion filter unchanged.
-                OVERWRITE (2):
-                    The contents of ``filter`` will overwrite the built-in
-                    ``_Default`` sink filter.
-            """
-            FILTER_WRITE_MODE_UNSPECIFIED = 0
-            APPEND = 1
-            OVERWRITE = 2
-
-        filter: str = proto.Field(
-            proto.STRING,
-            number=1,
-        )
-        exclusions: MutableSequence['LogExclusion'] = proto.RepeatedField(
-            proto.MESSAGE,
-            number=2,
-            message='LogExclusion',
-        )
-        mode: 'Settings.DefaultSinkConfig.FilterWriteMode' = proto.Field(
-            proto.ENUM,
-            number=3,
-            enum='Settings.DefaultSinkConfig.FilterWriteMode',
-        )
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    kms_key_name: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-    kms_service_account_id: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-    storage_location: str = proto.Field(
-        proto.STRING,
-        number=4,
-    )
-    disable_default_sink: bool = proto.Field(
-        proto.BOOL,
-        number=5,
-    )
-    default_sink_config: DefaultSinkConfig = proto.Field(
-        proto.MESSAGE,
-        number=6,
-        message=DefaultSinkConfig,
-    )
-    logging_service_account_id: str = proto.Field(
-        proto.STRING,
-        number=7,
-    )
-
-
-class LoggingQuery(proto.Message):
-    r"""Describes a Cloud Logging query that can be run in Logs
-    Explorer UI or via the logging API.
-
-    In addition to the query itself, additional information may be
-    stored to capture the display configuration and other UI state
-    used in association with analysis of query results.
-
-    This message has `oneof`_ fields (mutually exclusive fields).
-    For each oneof, at most one member field can be set at the same time.
-    Setting any member of the oneof automatically clears all other
-    members.
-
-    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
-
-    Attributes:
-        filter (str):
-            An `advanced query using the Logging Query
-            Language <https://cloud.google.com/logging/docs/view/logging-query-language>`__.
-            The maximum length of the filter is 20000 characters.
-        summary_fields (MutableSequence[googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery.SummaryField]):
-            The set of summary fields to display for this
-            saved query.
-        summary_field_start (int):
-            Characters will be counted from the start of
-            the string.
-
-            This field is a member of `oneof`_ ``summary_field_width``.
-        summary_field_end (int):
-            Characters will be counted from the end of
-            the string.
-
-            This field is a member of `oneof`_ ``summary_field_width``.
-    """
-
-    class SummaryField(proto.Message):
-        r"""A field from the LogEntry that is `added to the summary
-        line <https://cloud.google.com/logging/docs/view/logs-explorer-interface#add-summary-fields>`__
-        for a query in the Logs Explorer.
-
-        Attributes:
-            field (str):
-                The field from the LogEntry to include in the summary line,
-                for example ``resource.type`` or ``jsonPayload.name``.
-        """
-
-        field: str = proto.Field(
-            proto.STRING,
-            number=1,
-        )
-
-    filter: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    summary_fields: MutableSequence[SummaryField] = proto.RepeatedField(
-        proto.MESSAGE,
-        number=2,
-        message=SummaryField,
-    )
-    summary_field_start: int = proto.Field(
-        proto.INT32,
-        number=3,
-        oneof='summary_field_width',
-    )
-    summary_field_end: int = proto.Field(
-        proto.INT32,
-        number=4,
-        oneof='summary_field_width',
-    )
-
-
-class OpsAnalyticsQuery(proto.Message):
-    r"""Describes an analytics query that can be run in the Log
-    Analytics page of Google Cloud console.
-
-    Preview: This is a preview feature and may be subject to change
-    before final release.
-
-    Attributes:
-        sql_query_text (str):
-            Required. A logs analytics SQL query, which
-            generally follows BigQuery format.
-
-            This is the SQL query that appears in the Log
-            Analytics UI's query editor.
-    """
-
-    sql_query_text: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-
-
-class SavedQuery(proto.Message):
-    r"""Describes a query that has been saved by a user.
-
-    This message has `oneof`_ fields (mutually exclusive fields).
-    For each oneof, at most one member field can be set at the same time.
-    Setting any member of the oneof automatically clears all other
-    members.
-
-    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
-
-    Attributes:
-        name (str):
-            Output only. Resource name of the saved query.
-
-            In the format:
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/savedQueries/[QUERY_ID]"
-
-            For a list of supported locations, see `Supported
-            Regions <https://cloud.google.com/logging/docs/region-support#bucket-regions>`__
-
-            After the saved query is created, the location cannot be
-            changed.
-
-            If the user doesn't provide a [QUERY_ID], the system will
-            generate an alphanumeric ID.
-        display_name (str):
-            The user specified title for the SavedQuery.
-        description (str):
-            A human readable description of the saved
-            query.
-        logging_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery):
-            Logging query that can be executed in Logs
-            Explorer or via Logging API.
-
-            This field is a member of `oneof`_ ``query_oneof``.
-        ops_analytics_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OpsAnalyticsQuery):
-            Analytics query that can be executed in Log
-            Analytics.
-
-            This field is a member of `oneof`_ ``query_oneof``.
-        create_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The timestamp when the saved
-            query was created.
-        update_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The timestamp when the saved
-            query was last updated.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    display_name: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-    description: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-    logging_query: 'LoggingQuery' = proto.Field(
-        proto.MESSAGE,
-        number=4,
-        oneof='query_oneof',
-        message='LoggingQuery',
-    )
-    ops_analytics_query: 'OpsAnalyticsQuery' = proto.Field(
-        proto.MESSAGE,
-        number=10,
-        oneof='query_oneof',
-        message='OpsAnalyticsQuery',
-    )
-    create_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=5,
-        message=timestamp_pb2.Timestamp,
-    )
-    update_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=6,
-        message=timestamp_pb2.Timestamp,
-    )
-
-
-class RecentQuery(proto.Message):
-    r"""Describes a recent query executed on the Logs Explorer or Log
-    Analytics page within the last ~ 30 days.
-
-    This message has `oneof`_ fields (mutually exclusive fields).
-    For each oneof, at most one member field can be set at the same time.
-    Setting any member of the oneof automatically clears all other
-    members.
-
-    .. _oneof: https://proto-plus-python.readthedocs.io/en/stable/fields.html#oneofs-mutually-exclusive-fields
-
-    Attributes:
-        name (str):
-            Output only. Resource name of the recent query.
-
-            In the format:
-
-            ::
-
-                "projects/[PROJECT_ID]/locations/[LOCATION_ID]/recentQueries/[QUERY_ID]"
-
-            For a list of supported locations, see `Supported
-            Regions <https://cloud.google.com/logging/docs/region-support>`__
-
-            The [QUERY_ID] is a system generated alphanumeric ID.
-        logging_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.LoggingQuery):
-            Logging query that can be executed in Logs
-            Explorer or via Logging API.
-
-            This field is a member of `oneof`_ ``query_oneof``.
-        ops_analytics_query (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OpsAnalyticsQuery):
-            Analytics query that can be executed in Log
-            Analytics.
-
-            This field is a member of `oneof`_ ``query_oneof``.
-        last_run_time (google.protobuf.timestamp_pb2.Timestamp):
-            The timestamp when this query was last run.
-    """
-
-    name: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    logging_query: 'LoggingQuery' = proto.Field(
-        proto.MESSAGE,
-        number=2,
-        oneof='query_oneof',
-        message='LoggingQuery',
-    )
-    ops_analytics_query: 'OpsAnalyticsQuery' = proto.Field(
-        proto.MESSAGE,
-        number=5,
-        oneof='query_oneof',
-        message='OpsAnalyticsQuery',
-    )
-    last_run_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=3,
-        message=timestamp_pb2.Timestamp,
     )
 
 
@@ -2880,6 +2888,20 @@ class CopyLogEntriesRequest(proto.Message):
     )
 
 
+class CopyLogEntriesResponse(proto.Message):
+    r"""Response type for CopyLogEntries long running operations.
+
+    Attributes:
+        log_entries_copied_count (int):
+            Number of log entries copied.
+    """
+
+    log_entries_copied_count: int = proto.Field(
+        proto.INT64,
+        number=1,
+    )
+
+
 class CopyLogEntriesMetadata(proto.Message):
     r"""Metadata for CopyLogEntries long running operations.
 
@@ -2889,7 +2911,7 @@ class CopyLogEntriesMetadata(proto.Message):
         end_time (google.protobuf.timestamp_pb2.Timestamp):
             The end time of an operation.
         state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OperationState):
-            State of an operation.
+            Output only. State of an operation.
         cancellation_requested (bool):
             Identifies whether the user has requested
             cancellation of the operation.
@@ -2942,16 +2964,17 @@ class CopyLogEntriesMetadata(proto.Message):
     )
 
 
-class CopyLogEntriesResponse(proto.Message):
-    r"""Response type for CopyLogEntries long running operations.
+class LocationMetadata(proto.Message):
+    r"""Cloud Logging specific location metadata.
 
     Attributes:
-        log_entries_copied_count (int):
-            Number of log entries copied.
+        log_analytics_enabled (bool):
+            Indicates whether or not Log Analytics
+            features are supported in the given location.
     """
 
-    log_entries_copied_count: int = proto.Field(
-        proto.INT64,
+    log_analytics_enabled: bool = proto.Field(
+        proto.BOOL,
         number=1,
     )
 
@@ -2972,7 +2995,7 @@ class BucketMetadata(proto.Message):
         end_time (google.protobuf.timestamp_pb2.Timestamp):
             The end time of an operation.
         state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OperationState):
-            State of an operation.
+            Output only. State of an operation.
         create_bucket_request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateBucketRequest):
             LongRunningCreateBucket RPC request.
 
@@ -3028,7 +3051,7 @@ class LinkMetadata(proto.Message):
         end_time (google.protobuf.timestamp_pb2.Timestamp):
             The end time of an operation.
         state (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.OperationState):
-            State of an operation.
+            Output only. State of an operation.
         create_link_request (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.CreateLinkRequest):
             CreateLink RPC request.
 
@@ -3065,21 +3088,6 @@ class LinkMetadata(proto.Message):
         number=5,
         oneof='request',
         message='DeleteLinkRequest',
-    )
-
-
-class LocationMetadata(proto.Message):
-    r"""Cloud Logging specific location metadata.
-
-    Attributes:
-        log_analytics_enabled (bool):
-            Indicates whether or not Log Analytics
-            features are supported in the given location.
-    """
-
-    log_analytics_enabled: bool = proto.Field(
-        proto.BOOL,
-        number=1,
     )
 
 

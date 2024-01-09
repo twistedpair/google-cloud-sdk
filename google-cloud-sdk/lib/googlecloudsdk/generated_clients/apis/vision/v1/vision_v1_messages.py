@@ -1993,7 +1993,8 @@ class GoogleCloudVisionV1p1beta1SafeSearchAnnotation(_messages.Message):
       modification was made to the image's canonical version to make it appear
       funny or offensive.
     ViolenceValueValuesEnum: Likelihood that this image contains violent
-      content.
+      content. Violent content may include death, serious harm, or injury to
+      individuals or groups of individuals.
 
   Fields:
     adult: Represents the adult content likelihood for the image. Adult
@@ -2006,7 +2007,9 @@ class GoogleCloudVisionV1p1beta1SafeSearchAnnotation(_messages.Message):
       sensitive body areas.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
-    violence: Likelihood that this image contains violent content.
+    violence: Likelihood that this image contains violent content. Violent
+      content may include death, serious harm, or injury to individuals or
+      groups of individuals.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -2088,7 +2091,9 @@ class GoogleCloudVisionV1p1beta1SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   class ViolenceValueValuesEnum(_messages.Enum):
-    r"""Likelihood that this image contains violent content.
+    r"""Likelihood that this image contains violent content. Violent content
+    may include death, serious harm, or injury to individuals or groups of
+    individuals.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -3254,7 +3259,8 @@ class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
       modification was made to the image's canonical version to make it appear
       funny or offensive.
     ViolenceValueValuesEnum: Likelihood that this image contains violent
-      content.
+      content. Violent content may include death, serious harm, or injury to
+      individuals or groups of individuals.
 
   Fields:
     adult: Represents the adult content likelihood for the image. Adult
@@ -3267,7 +3273,9 @@ class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
       sensitive body areas.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
-    violence: Likelihood that this image contains violent content.
+    violence: Likelihood that this image contains violent content. Violent
+      content may include death, serious harm, or injury to individuals or
+      groups of individuals.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -3349,7 +3357,9 @@ class GoogleCloudVisionV1p2beta1SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   class ViolenceValueValuesEnum(_messages.Enum):
-    r"""Likelihood that this image contains violent content.
+    r"""Likelihood that this image contains violent content. Violent content
+    may include death, serious harm, or injury to individuals or groups of
+    individuals.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -4597,7 +4607,8 @@ class GoogleCloudVisionV1p3beta1SafeSearchAnnotation(_messages.Message):
       modification was made to the image's canonical version to make it appear
       funny or offensive.
     ViolenceValueValuesEnum: Likelihood that this image contains violent
-      content.
+      content. Violent content may include death, serious harm, or injury to
+      individuals or groups of individuals.
 
   Fields:
     adult: Represents the adult content likelihood for the image. Adult
@@ -4610,7 +4621,9 @@ class GoogleCloudVisionV1p3beta1SafeSearchAnnotation(_messages.Message):
       sensitive body areas.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
-    violence: Likelihood that this image contains violent content.
+    violence: Likelihood that this image contains violent content. Violent
+      content may include death, serious harm, or injury to individuals or
+      groups of individuals.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -4692,7 +4705,9 @@ class GoogleCloudVisionV1p3beta1SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   class ViolenceValueValuesEnum(_messages.Enum):
-    r"""Likelihood that this image contains violent content.
+    r"""Likelihood that this image contains violent content. Violent content
+    may include death, serious harm, or injury to individuals or groups of
+    individuals.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -5994,7 +6009,8 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
       modification was made to the image's canonical version to make it appear
       funny or offensive.
     ViolenceValueValuesEnum: Likelihood that this image contains violent
-      content.
+      content. Violent content may include death, serious harm, or injury to
+      individuals or groups of individuals.
 
   Fields:
     adult: Represents the adult content likelihood for the image. Adult
@@ -6007,7 +6023,9 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
       sensitive body areas.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
-    violence: Likelihood that this image contains violent content.
+    violence: Likelihood that this image contains violent content. Violent
+      content may include death, serious harm, or injury to individuals or
+      groups of individuals.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -6089,7 +6107,9 @@ class GoogleCloudVisionV1p4beta1SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   class ViolenceValueValuesEnum(_messages.Enum):
-    r"""Likelihood that this image contains violent content.
+    r"""Likelihood that this image contains violent content. Violent content
+    may include death, serious harm, or injury to individuals or groups of
+    individuals.
 
     Values:
       UNKNOWN: Unknown likelihood.
@@ -7267,7 +7287,8 @@ class SafeSearchAnnotation(_messages.Message):
       modification was made to the image's canonical version to make it appear
       funny or offensive.
     ViolenceValueValuesEnum: Likelihood that this image contains violent
-      content.
+      content. Violent content may include death, serious harm, or injury to
+      individuals or groups of individuals.
 
   Fields:
     adult: Represents the adult content likelihood for the image. Adult
@@ -7280,7 +7301,9 @@ class SafeSearchAnnotation(_messages.Message):
       sensitive body areas.
     spoof: Spoof likelihood. The likelihood that an modification was made to
       the image's canonical version to make it appear funny or offensive.
-    violence: Likelihood that this image contains violent content.
+    violence: Likelihood that this image contains violent content. Violent
+      content may include death, serious harm, or injury to individuals or
+      groups of individuals.
   """
 
   class AdultValueValuesEnum(_messages.Enum):
@@ -7362,7 +7385,9 @@ class SafeSearchAnnotation(_messages.Message):
     VERY_LIKELY = 5
 
   class ViolenceValueValuesEnum(_messages.Enum):
-    r"""Likelihood that this image contains violent content.
+    r"""Likelihood that this image contains violent content. Violent content
+    may include death, serious harm, or injury to individuals or groups of
+    individuals.
 
     Values:
       UNKNOWN: Unknown likelihood.

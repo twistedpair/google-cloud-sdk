@@ -492,12 +492,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -509,7 +528,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1021,9 +1044,10 @@ class CloudassetEffectiveIamPoliciesBatchGetRequest(_messages.Message):
   Fields:
     names: Required. The names refer to the [full_resource_names]
       (https://cloud.google.com/asset-inventory/docs/resource-name-format) of
-      [searchable asset types](https://cloud.google.com/asset-
-      inventory/docs/supported-asset-types). A maximum of 20 resources'
-      effective policies can be retrieved in a batch.
+      the asset types [supported by search
+      APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types). A maximum of 20 resources' effective policies can be retrieved
+      in a batch.
     scope: Required. Only IAM policies on or below the scope will be returned.
       This can only be an organization number (such as "organizations/123"), a
       folder number (such as "folders/123"), a project ID (such as
@@ -1259,13 +1283,13 @@ class CloudassetSearchAllIamPoliciesRequest(_messages.Message):
   Fields:
     assetTypes: Optional. A list of asset types that the IAM policies are
       attached to. If empty, it will search the IAM policies that are attached
-      to all the [searchable asset types](https://cloud.google.com/asset-
-      inventory/docs/supported-asset-types). Regular expressions are also
-      supported. For example: * "compute.googleapis.com.*" snapshots IAM
-      policies attached to asset type starts with "compute.googleapis.com". *
-      ".*Instance" snapshots IAM policies attached to asset type ends with
-      "Instance". * ".*Instance.*" snapshots IAM policies attached to asset
-      type contains "Instance". See
+      to all the asset types [supported by search
+      APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      types) Regular expressions are also supported. For example: *
+      "compute.googleapis.com.*" snapshots IAM policies attached to asset type
+      starts with "compute.googleapis.com". * ".*Instance" snapshots IAM
+      policies attached to asset type ends with "Instance". * ".*Instance.*"
+      snapshots IAM policies attached to asset type contains "Instance". See
       [RE2](https://github.com/google/re2/wiki/Syntax) for all supported
       regular expression syntax. If the regular expression does not match any
       supported asset type, an INVALID_ARGUMENT error will be returned.
@@ -1344,8 +1368,8 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
 
   Fields:
     assetTypes: Optional. A list of asset types that this request searches
-      for. If empty, it will search all the [searchable asset
-      types](https://cloud.google.com/asset-inventory/docs/supported-asset-
+      for. If empty, it will search all the asset types [supported by search
+      APIs](https://cloud.google.com/asset-inventory/docs/supported-asset-
       types). Regular expressions are also supported. For example: *
       "compute.googleapis.com.*" snapshots resources whose asset type starts
       with "compute.googleapis.com". * ".*Instance" snapshots resources whose
@@ -3002,38 +3026,62 @@ class GoogleIamV2DenyRule(_messages.Message):
       `iam.googleapis.com/roles.list`.
     deniedPrincipals: The identities that are prevented from using one or more
       permissions on Google Cloud resources. This field can contain the
-      following values: * `principalSet://goog/public:all`: A special
-      identifier that represents any principal that is on the internet, even
-      if they do not have a Google Account or are not logged in. *
-      `principal://goog/subject/{email_id}`: A specific Google Account.
-      Includes Gmail, Cloud Identity, and Google Workspace user accounts. For
-      example, `principal://goog/subject/alice@example.com`. *
+      following values: * `principal://goog/subject/{email_id}`: A specific
+      Google Account. Includes Gmail, Cloud Identity, and Google Workspace
+      user accounts. For example,
+      `principal://goog/subject/alice@example.com`. * `principal://iam.googlea
+      pis.com/projects/-/serviceAccounts/{service_account_id}`: A Google Cloud
+      service account. For example,
+      `principal://iam.googleapis.com/projects/-/serviceAccounts/my-service-
+      account@iam.gserviceaccount.com`. *
+      `principalSet://goog/group/{group_id}`: A Google group. For example,
+      `principalSet://goog/group/admins@example.com`. *
+      `principalSet://goog/public:all`: A special identifier that represents
+      any principal that is on the internet, even if they do not have a Google
+      Account or are not logged in. *
+      `principalSet://goog/cloudIdentityCustomerId/{customer_id}`: All of the
+      principals associated with the specified Google Workspace or Cloud
+      Identity customer ID. For example,
+      `principalSet://goog/cloudIdentityCustomerId/C01Abc35`. * `principal://i
+      am.googleapis.com/locations/global/workforcePools/{pool_id}/subject/{sub
+      ject_attribute_value}`: A single identity in a workforce identity pool.
+      * `principalSet://iam.googleapis.com/locations/global/workforcePools/{po
+      ol_id}/group/{group_id}`: All workforce identities in a group. * `princi
+      palSet://iam.googleapis.com/locations/global/workforcePools/{pool_id}/at
+      tribute.{attribute_name}/{attribute_value}`: All workforce identities
+      with a specific attribute value. * `principalSet://iam.googleapis.com/lo
+      cations/global/workforcePools/{pool_id}/*`: All identities in a
+      workforce identity pool. * `principal://iam.googleapis.com/projects/{pro
+      ject_number}/locations/global/workloadIdentityPools/{pool_id}/subject/{s
+      ubject_attribute_value}`: A single identity in a workload identity pool.
+      * `principalSet://iam.googleapis.com/projects/{project_number}/locations
+      /global/workloadIdentityPools/{pool_id}/group/{group_id}`: A workload
+      identity pool group. * `principalSet://iam.googleapis.com/projects/{proj
+      ect_number}/locations/global/workloadIdentityPools/{pool_id}/attribute.{
+      attribute_name}/{attribute_value}`: All identities in a workload
+      identity pool with a certain attribute. * `principalSet://iam.googleapis
+      .com/projects/{project_number}/locations/global/workloadIdentityPools/{p
+      ool_id}/*`: All identities in a workload identity pool. *
       `deleted:principal://goog/subject/{email_id}?uid={uid}`: A specific
       Google Account that was deleted recently. For example,
       `deleted:principal://goog/subject/alice@example.com?uid=1234567890`. If
       the Google Account is recovered, this identifier reverts to the standard
       identifier for a Google Account. *
-      `principalSet://goog/group/{group_id}`: A Google group. For example,
-      `principalSet://goog/group/admins@example.com`. *
       `deleted:principalSet://goog/group/{group_id}?uid={uid}`: A Google group
       that was deleted recently. For example,
       `deleted:principalSet://goog/group/admins@example.com?uid=1234567890`.
       If the Google group is restored, this identifier reverts to the standard
-      identifier for a Google group. * `principal://iam.googleapis.com/project
-      s/-/serviceAccounts/{service_account_id}`: A Google Cloud service
-      account. For example,
-      `principal://iam.googleapis.com/projects/-/serviceAccounts/my-service-
-      account@iam.gserviceaccount.com`. * `deleted:principal://iam.googleapis.
-      com/projects/-/serviceAccounts/{service_account_id}?uid={uid}`: A Google
+      identifier for a Google group. * `deleted:principal://iam.googleapis.com
+      /projects/-/serviceAccounts/{service_account_id}?uid={uid}`: A Google
       Cloud service account that was deleted recently. For example,
       `deleted:principal://iam.googleapis.com/projects/-/serviceAccounts/my-
       service-account@iam.gserviceaccount.com?uid=1234567890`. If the service
       account is undeleted, this identifier reverts to the standard identifier
-      for a service account. *
-      `principalSet://goog/cloudIdentityCustomerId/{customer_id}`: All of the
-      principals associated with the specified Google Workspace or Cloud
-      Identity customer ID. For example,
-      `principalSet://goog/cloudIdentityCustomerId/C01Abc35`.
+      for a service account. * `deleted:principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`:
+      Deleted single identity in a workforce identity pool. For example, `dele
+      ted:principal://iam.googleapis.com/locations/global/workforcePools/my-
+      pool-id/subject/my-subject-attribute-value`.
     exceptionPermissions: Specifies the permissions that this rule excludes
       from the set of denied permissions given by `denied_permissions`. If a
       permission appears in `denied_permissions` _and_ in
@@ -3575,11 +3623,11 @@ class GoogleIdentityAccesscontextmanagerV1MethodSelector(_messages.Message):
   r"""An allowed method or permission of a service specified in ApiOperation.
 
   Fields:
-    method: Value for `method` should be a valid method name for the
-      corresponding `service_name` in ApiOperation. If `*` used as value for
-      `method`, then ALL methods and permissions are allowed.
-    permission: Value for `permission` should be a valid Cloud IAM permission
-      for the corresponding `service_name` in ApiOperation.
+    method: A valid method name for the corresponding `service_name` in
+      ApiOperation. If `*` is used as the value for the `method`, then ALL
+      methods and permissions are allowed.
+    permission: A valid Cloud IAM permission for the corresponding
+      `service_name` in ApiOperation.
   """
 
   method = _messages.StringField(1)

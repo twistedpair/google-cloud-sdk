@@ -188,16 +188,6 @@ MAP = {
                 default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
-        'v1beta':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.accesscontextmanager.v1beta',
-                    client_classpath='accesscontextmanager_v1beta_client.AccesscontextmanagerV1beta',
-                    base_url='https://accesscontextmanager.googleapis.com/',
-                    messages_modulepath='accesscontextmanager_v1beta_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
     },
     'admin': {
         'v1':
@@ -2881,16 +2871,6 @@ MAP = {
                     client_classpath='privateca_v1_client.PrivatecaV1',
                     base_url='https://privateca.googleapis.com/',
                     messages_modulepath='privateca_v1_messages'),
-                default_version=False,
-                enable_mtls=True,
-                mtls_endpoint_override=''),
-        'v1beta1':
-            APIDef(
-                apitools=ApitoolsClientDef(
-                    class_path='googlecloudsdk.generated_clients.apis.privateca.v1beta1',
-                    client_classpath='privateca_v1beta1_client.PrivatecaV1beta1',
-                    base_url='https://privateca.googleapis.com/',
-                    messages_modulepath='privateca_v1beta1_messages'),
                 default_version=True,
                 enable_mtls=True,
                 mtls_endpoint_override=''),

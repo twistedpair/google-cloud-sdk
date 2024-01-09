@@ -140,7 +140,7 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintTemplatesGetRequ
   Fields:
     name: Required. The name of the membership constraint template to
       retrieve. Format: projects/{project_id}/membershipConstraintTemplates/{c
-      onstraint_template_name}/{membership_id}.
+      onstraint_template_name}/{membership_uuid}.
   """
 
   name = _messages.StringField(1, required=True)
@@ -176,7 +176,7 @@ class AnthospolicycontrollerstatusPaProjectsMembershipConstraintsGetRequest(_mes
   Fields:
     name: Required. The name of the membership constraint to retrieve. Format:
       projects/{project_id}/membershipConstraints/{constraint_template_name}/{
-      constraint_name}/{membership_id}.
+      constraint_name}/{membership_uuid}.
   """
 
   name = _messages.StringField(1, required=True)

@@ -7285,10 +7285,15 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
       updating, or deleting target servers
     description: Optional. Description of the environment.
     displayName: Optional. Display name for this environment.
-    forwardProxyUri: Optional. Url of the forward proxy to be applied to the
+    forwardProxyUri: Optional. URI of the forward proxy to be applied to the
       runtime instances in this environment. Must be in the format of
-      {scheme}://{hostname}:{port}. Note that scheme must be one of "http" or
-      "https", and port must be supplied.
+      {scheme}://{hostname}:{port}. Note that the scheme must be one of "http"
+      or "https", and the port must be supplied. To remove a forward proxy
+      setting, update the field to an empty value. Note: At this time, PUT
+      operations to add forwardProxyUri to an existing environment fail if the
+      environment has nodeConfig set up. To successfully add the
+      forwardProxyUri setting in this case, include the NodeConfig details
+      with the request.
     hasAttachedFlowHooks: A boolean attribute.
     lastModifiedAt: Output only. Last modification time of this environment as
       milliseconds since epoch.
@@ -7368,13 +7373,13 @@ class GoogleCloudApigeeV1Environment(_messages.Message):
 
     Values:
       ENVIRONMENT_TYPE_UNSPECIFIED: Environment type not specified.
-      BASE: Base environment has limited capacity and capabilities and are
-        usually used when you are getting started with Apigee or while
-        experimenting. Refer to Apigee's public documentation for more
-        details.
-      INTERMEDIATE: This is the default type and it supports API management
-        features and higher capacity than Base environment. Refer to Apigee's
-        public documentation for more details.
+      BASE: This is the default type. Base environment has limited capacity
+        and capabilities and are usually used when you are getting started
+        with Apigee or while experimenting. Refer to Apigee's public
+        documentation for more details.
+      INTERMEDIATE: Intermediate environment supports API management features
+        and higher capacity than Base environment. Refer to Apigee's public
+        documentation for more details.
       COMPREHENSIVE: Comprehensive environment supports advanced capabilites
         and even higher capacity than Intermediate environment. Refer to
         Apigee's public documentation for more details.
@@ -11972,12 +11977,31 @@ class GoogleIamV1Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -11989,7 +12013,11 @@ class GoogleIamV1Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """

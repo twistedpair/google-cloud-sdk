@@ -328,12 +328,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -345,7 +364,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1985,6 +2008,8 @@ class InstanceConfig(_messages.Message):
       and their replication properties.
     state: Output only. The current instance config state. Applicable only for
       USER_MANAGED configs.
+    storageLimitPerProcessingUnit: Output only. The storage limit in bytes per
+      processing unit.
   """
 
   class AllowedStorageTypesValueListEntryValuesEnum(_messages.Enum):
@@ -2122,6 +2147,7 @@ class InstanceConfig(_messages.Message):
   reconciling = _messages.BooleanField(12)
   replicas = _messages.MessageField('ReplicaInfo', 13, repeated=True)
   state = _messages.EnumField('StateValueValuesEnum', 14)
+  storageLimitPerProcessingUnit = _messages.IntegerField(15)
 
 
 class InstanceOperationProgress(_messages.Message):
@@ -3105,13 +3131,14 @@ class PartitionQueryRequest(_messages.Message):
       created.
     sql: Required. The query request to generate partitions for. The request
       will fail if the query is not root partitionable. For a query to be root
-      partitionable, it needs to satisfy a few conditions. For example, the
-      first operator in the query execution plan must be a distributed union
-      operator. For more information about other conditions, see [Read data in
-      parallel](https://cloud.google.com/spanner/docs/reads#read_data_in_paral
-      lel). The query request must not contain DML commands, such as INSERT,
-      UPDATE, or DELETE. Use ExecuteStreamingSql with a PartitionedDml
-      transaction for large, partition-friendly DML operations.
+      partitionable, it needs to satisfy a few conditions. For example, if the
+      query execution plan contains a distributed union operator, then it must
+      be the first operator in the plan. For more information about other
+      conditions, see [Read data in parallel](https://cloud.google.com/spanner
+      /docs/reads#read_data_in_parallel). The query request must not contain
+      DML commands, such as INSERT, UPDATE, or DELETE. Use ExecuteStreamingSql
+      with a PartitionedDml transaction for large, partition-friendly DML
+      operations.
     transaction: Read only snapshot transactions are supported, read/write and
       single use transactions are not.
   """
@@ -3747,23 +3774,6 @@ class ReconfigurationType(_messages.Message):
 
   dualRegion = _messages.MessageField('DualRegion', 1)
   singleRegion = _messages.MessageField('SingleRegion', 2)
-
-
-class ReconfigureDatabaseRequest(_messages.Message):
-  r"""The request for ReconfigureDatabase.
-
-  Fields:
-    etag: Required. The etag is the hash of the database resource. The
-      operation will only performed if the etag matches that of the current
-      database resource. Otherwise the API will return an `INVALID_ARGUMENT`
-      error. The etag is used for optimistic concurrency control as a way to
-      help prevent simultaneous reconfiguration requests that could create a
-      race condition.
-    reconfigurationType: Required. The type of this reconfiguration.
-  """
-
-  etag = _messages.StringField(1)
-  reconfigurationType = _messages.MessageField('ReconfigurationType', 2)
 
 
 class ReplicaInfo(_messages.Message):
@@ -5310,21 +5320,6 @@ class SpannerProjectsInstancesDatabasesPatchRequest(_messages.Message):
   database = _messages.MessageField('Database', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
-
-
-class SpannerProjectsInstancesDatabasesReconfigureRequest(_messages.Message):
-  r"""A SpannerProjectsInstancesDatabasesReconfigureRequest object.
-
-  Fields:
-    name: Required. Name of the database in which to apply the
-      reconfiguration. Values are of the form
-      `projects//instances//databases/`.
-    reconfigureDatabaseRequest: A ReconfigureDatabaseRequest resource to be
-      passed as the request body.
-  """
-
-  name = _messages.StringField(1, required=True)
-  reconfigureDatabaseRequest = _messages.MessageField('ReconfigureDatabaseRequest', 2)
 
 
 class SpannerProjectsInstancesDatabasesRestoreRequest(_messages.Message):

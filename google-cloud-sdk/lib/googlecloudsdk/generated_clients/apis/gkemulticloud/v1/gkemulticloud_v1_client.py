@@ -116,7 +116,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def GenerateAttachedClusterAgentToken(self, request, global_params=None):
-      r"""GenerateAttachedClusterAgentToken method for the projects_locations_attachedClusters service.
+      r"""Generates an access token for a cluster agent.
 
       Args:
         request: (GkemulticloudProjectsLocationsAttachedClustersGenerateAttachedClusterAgentTokenRequest) input message
@@ -551,7 +551,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def GenerateAwsClusterAgentToken(self, request, global_params=None):
-      r"""GenerateAwsClusterAgentToken method for the projects_locations_awsClusters service.
+      r"""Generates an access token for a cluster agent.
 
       Args:
         request: (GkemulticloudProjectsLocationsAwsClustersGenerateAwsClusterAgentTokenRequest) input message
@@ -1077,7 +1077,7 @@ class GkemulticloudV1(base_api.BaseApiClient):
     )
 
     def GenerateAzureClusterAgentToken(self, request, global_params=None):
-      r"""GenerateAzureClusterAgentToken method for the projects_locations_azureClusters service.
+      r"""Generates an access token for a cluster agent.
 
       Args:
         request: (GkemulticloudProjectsLocationsAzureClustersGenerateAzureClusterAgentTokenRequest) input message

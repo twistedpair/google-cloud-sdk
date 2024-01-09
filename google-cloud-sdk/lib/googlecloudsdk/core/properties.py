@@ -1361,7 +1361,7 @@ class _SectionApiEndpointOverrides(_Section):
 
     default_endpoint = self.GetDefaultEndpoint(name)
     if command and default_endpoint:
-      help_text = ('{} Defaults to {}').format(help_text, default_endpoint)
+      help_text = f'{help_text} Defaults to `{default_endpoint}`'
 
     return super(_SectionApiEndpointOverrides, self)._Add(
         name,
@@ -4414,6 +4414,12 @@ def _GetIntProperty(prop, properties_file, required):
 def IsDefaultUniverse():
   universe_domain_property = VALUES.core.universe_domain
   return universe_domain_property.Get() == universe_domain_property.default
+
+
+def GetUniverseDomain():
+  """Get the universe domain."""
+
+  return VALUES.core.universe_domain.Get()
 
 
 def GetMetricsEnvironment():

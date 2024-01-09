@@ -319,7 +319,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists routes in a given project.
+      r"""Lists routes in a given route table.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesRoutesListRequest) input message
@@ -383,7 +383,7 @@ class NetworkconnectivityV1(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists route tables in a given project.
+      r"""Lists route tables in a given hub.
 
       Args:
         request: (NetworkconnectivityProjectsLocationsGlobalHubsRouteTablesListRequest) input message

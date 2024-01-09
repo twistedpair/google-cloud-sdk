@@ -16,7 +16,6 @@ package = 'bigtableadmin'
 
 class AppProfile(_messages.Message):
   r"""A configuration object describing how Cloud Bigtable should treat
-
   traffic from a particular end user application.
 
   Enums:
@@ -66,14 +65,10 @@ class AppProfile(_messages.Message):
     PRIORITY_MEDIUM = 2
     PRIORITY_HIGH = 3
 
-  databoostIsolationReadOnly = _messages.MessageField(
-      'DataboostIsolationReadOnly', 1
-  )
+  databoostIsolationReadOnly = _messages.MessageField('DataboostIsolationReadOnly', 1)
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
-  multiClusterRoutingUseAny = _messages.MessageField(
-      'MultiClusterRoutingUseAny', 4
-  )
+  multiClusterRoutingUseAny = _messages.MessageField('MultiClusterRoutingUseAny', 4)
   name = _messages.StringField(5)
   priority = _messages.EnumField('PriorityValueValuesEnum', 6)
   singleClusterRouting = _messages.MessageField('SingleClusterRouting', 7)
@@ -1250,12 +1245,31 @@ class Binding(_messages.Message):
       `group:{emailid}`: An email address that represents a Google group. For
       example, `admins@example.com`. * `domain:{domain}`: The G Suite domain
       (primary) that represents all the users of that domain. For example,
-      `google.com` or `example.com`. *
-      `deleted:user:{emailid}?uid={uniqueid}`: An email address (plus unique
-      identifier) representing a user that has been recently deleted. For
-      example, `alice@example.com?uid=123456789012345678901`. If the user is
-      recovered, this value reverts to `user:{emailid}` and the recovered user
-      retains the role in the binding. *
+      `google.com` or `example.com`. * `principal://iam.googleapis.com/locatio
+      ns/global/workforcePools/{pool_id}/subject/{subject_attribute_value}`: A
+      single identity in a workforce identity pool. * `principalSet://iam.goog
+      leapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}`:
+      All workforce identities in a group. * `principalSet://iam.googleapis.co
+      m/locations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{
+      attribute_value}`: All workforce identities with a specific attribute
+      value. * `principalSet://iam.googleapis.com/locations/global/workforcePo
+      ols/{pool_id}/*`: All identities in a workforce identity pool. * `princi
+      pal://iam.googleapis.com/projects/{project_number}/locations/global/work
+      loadIdentityPools/{pool_id}/subject/{subject_attribute_value}`: A single
+      identity in a workload identity pool. * `principalSet://iam.googleapis.c
+      om/projects/{project_number}/locations/global/workloadIdentityPools/{poo
+      l_id}/group/{group_id}`: A workload identity pool group. * `principalSet
+      ://iam.googleapis.com/projects/{project_number}/locations/global/workloa
+      dIdentityPools/{pool_id}/attribute.{attribute_name}/{attribute_value}`:
+      All identities in a workload identity pool with a certain attribute. * `
+      principalSet://iam.googleapis.com/projects/{project_number}/locations/gl
+      obal/workloadIdentityPools/{pool_id}/*`: All identities in a workload
+      identity pool. * `deleted:user:{emailid}?uid={uniqueid}`: An email
+      address (plus unique identifier) representing a user that has been
+      recently deleted. For example,
+      `alice@example.com?uid=123456789012345678901`. If the user is recovered,
+      this value reverts to `user:{emailid}` and the recovered user retains
+      the role in the binding. *
       `deleted:serviceAccount:{emailid}?uid={uniqueid}`: An email address
       (plus unique identifier) representing a service account that has been
       recently deleted. For example, `my-other-
@@ -1267,7 +1281,11 @@ class Binding(_messages.Message):
       has been recently deleted. For example,
       `admins@example.com?uid=123456789012345678901`. If the group is
       recovered, this value reverts to `group:{emailid}` and the recovered
-      group retains the role in the binding.
+      group retains the role in the binding. * `deleted:principal://iam.google
+      apis.com/locations/global/workforcePools/{pool_id}/subject/{subject_attr
+      ibute_value}`: Deleted single identity in a workforce identity pool. For
+      example, `deleted:principal://iam.googleapis.com/locations/global/workfo
+      rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
       example, `roles/viewer`, `roles/editor`, or `roles/owner`.
   """
@@ -1297,13 +1315,18 @@ class CheckConsistencyRequest(_messages.Message):
   Fields:
     consistencyToken: Required. The token created using
       GenerateConsistencyToken for the Table.
+    databoostReadLocalWrites: Checks that reads using an app profile with
+      `DataboostIsolationReadOnly` can see all writes committed before the
+      token was created, but only if the read and write target the same
+      cluster.
     standardReadRemoteWrites: Checks that reads using an app profile with
       `StandardIsolation` can see all writes committed before the token was
       created, even if the read and write target different clusters.
   """
 
   consistencyToken = _messages.StringField(1)
-  standardReadRemoteWrites = _messages.MessageField('StandardReadRemoteWrites', 2)
+  databoostReadLocalWrites = _messages.MessageField('DataboostReadLocalWrites', 2)
+  standardReadRemoteWrites = _messages.MessageField('StandardReadRemoteWrites', 3)
 
 
 class CheckConsistencyResponse(_messages.Message):
@@ -1789,7 +1812,6 @@ class CreateViewRequest(_messages.Message):
 
 class DataboostIsolationReadOnly(_messages.Message):
   r"""Databoost allows a customer to bypass Bigtable nodes when it comes to
-
   fetching their data. The data is instead read directly from the filesystem,
   which enables the customer to isolate specific read-only workflows.
   Databoost reads are only guaranteed to see the results of writes that were
@@ -1814,12 +1836,18 @@ class DataboostIsolationReadOnly(_messages.Message):
       PRODUCER: Billing should be accounted towards the producer Cloud Project
       CONSUMER: Billing should be accounted towards the consumer Cloud Project
     """
-
     BILLING_OWNER_UNSPECIFIED = 0
     PRODUCER = 1
     CONSUMER = 2
 
   billingOwner = _messages.EnumField('BillingOwnerValueValuesEnum', 1)
+
+
+class DataboostReadLocalWrites(_messages.Message):
+  r"""Checks that all writes before the consistency token was generated in the
+  same cluster is readable by Databoost.
+  """
+
 
 
 class DropRowRangeRequest(_messages.Message):
@@ -1843,6 +1871,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EncryptionConfig(_messages.Message):
@@ -1980,6 +2009,7 @@ class GenerateConsistencyTokenRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
   """
+
 
 
 class GenerateConsistencyTokenResponse(_messages.Message):
@@ -2867,6 +2897,7 @@ class RowAffinity(_messages.Message):
   """
 
 
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3008,6 +3039,7 @@ class StandardReadRemoteWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated is
   replicated in every cluster and readable.
   """
+
 
 
 class Status(_messages.Message):
@@ -3352,6 +3384,7 @@ class UndeleteTableRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable
   """
+
 
 
 class Union(_messages.Message):

@@ -46,11 +46,12 @@ from six.moves import range
 # List of required files for each runtime per
 # https://cloud.google.com/functions/docs/writing#directory-structure
 # To keep things simple we don't check for file extensions, just required files.
-# Every language except dotnet has a required file with an invariant name.
+# Every language except dotnet and java have a required file with an invariant
+# name.
 _REQUIRED_SOURCE_FILES = {
     'dotnet': [],
     'go': ['go.mod'],
-    'java': ['pom.xml'],
+    'java': [],
     'nodejs': ['package.json'],
     'php': ['index.php', 'composer.json'],
     'python': ['main.py', 'requirements.txt'],

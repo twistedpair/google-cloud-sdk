@@ -5578,6 +5578,8 @@ class GoogleCloudDialogflowCxV3Page(_messages.Message):
     advancedSettings: Hierarchical advanced settings for this page. The
       settings exposed at the lower level overrides the settings exposed at
       the higher level.
+    description: The description of the page. The maximum length is 500
+      characters.
     displayName: Required. The human-readable name of the page, unique within
       the flow.
     entryFulfillment: The fulfillment to call when the session is entering the
@@ -5616,14 +5618,15 @@ class GoogleCloudDialogflowCxV3Page(_messages.Message):
   """
 
   advancedSettings = _messages.MessageField('GoogleCloudDialogflowCxV3AdvancedSettings', 1)
-  displayName = _messages.StringField(2)
-  entryFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 3)
-  eventHandlers = _messages.MessageField('GoogleCloudDialogflowCxV3EventHandler', 4, repeated=True)
-  form = _messages.MessageField('GoogleCloudDialogflowCxV3Form', 5)
-  knowledgeConnectorSettings = _messages.MessageField('GoogleCloudDialogflowCxV3KnowledgeConnectorSettings', 6)
-  name = _messages.StringField(7)
-  transitionRouteGroups = _messages.StringField(8, repeated=True)
-  transitionRoutes = _messages.MessageField('GoogleCloudDialogflowCxV3TransitionRoute', 9, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  entryFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3Fulfillment', 4)
+  eventHandlers = _messages.MessageField('GoogleCloudDialogflowCxV3EventHandler', 5, repeated=True)
+  form = _messages.MessageField('GoogleCloudDialogflowCxV3Form', 6)
+  knowledgeConnectorSettings = _messages.MessageField('GoogleCloudDialogflowCxV3KnowledgeConnectorSettings', 7)
+  name = _messages.StringField(8)
+  transitionRouteGroups = _messages.StringField(9, repeated=True)
+  transitionRoutes = _messages.MessageField('GoogleCloudDialogflowCxV3TransitionRoute', 10, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3PageInfo(_messages.Message):
@@ -5716,6 +5719,7 @@ class GoogleCloudDialogflowCxV3QueryInput(_messages.Message):
   query in the form of text. 2. An intent query that specifies which intent to
   trigger. 3. Natural language speech audio to be processed. 4. An event to be
   triggered. 5. DTMF digits to invoke an intent and fill in parameter value.
+  6. The results of a tool executed by the client.
 
   Fields:
     audio: The natural language speech audio to be processed.
@@ -8138,6 +8142,8 @@ class GoogleCloudDialogflowCxV3beta1Page(_messages.Message):
     advancedSettings: Hierarchical advanced settings for this page. The
       settings exposed at the lower level overrides the settings exposed at
       the higher level.
+    description: The description of the page. The maximum length is 500
+      characters.
     displayName: Required. The human-readable name of the page, unique within
       the flow.
     entryFulfillment: The fulfillment to call when the session is entering the
@@ -8176,14 +8182,15 @@ class GoogleCloudDialogflowCxV3beta1Page(_messages.Message):
   """
 
   advancedSettings = _messages.MessageField('GoogleCloudDialogflowCxV3beta1AdvancedSettings', 1)
-  displayName = _messages.StringField(2)
-  entryFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 3)
-  eventHandlers = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EventHandler', 4, repeated=True)
-  form = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Form', 5)
-  knowledgeConnectorSettings = _messages.MessageField('GoogleCloudDialogflowCxV3beta1KnowledgeConnectorSettings', 6)
-  name = _messages.StringField(7)
-  transitionRouteGroups = _messages.StringField(8, repeated=True)
-  transitionRoutes = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TransitionRoute', 9, repeated=True)
+  description = _messages.StringField(2)
+  displayName = _messages.StringField(3)
+  entryFulfillment = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Fulfillment', 4)
+  eventHandlers = _messages.MessageField('GoogleCloudDialogflowCxV3beta1EventHandler', 5, repeated=True)
+  form = _messages.MessageField('GoogleCloudDialogflowCxV3beta1Form', 6)
+  knowledgeConnectorSettings = _messages.MessageField('GoogleCloudDialogflowCxV3beta1KnowledgeConnectorSettings', 7)
+  name = _messages.StringField(8)
+  transitionRouteGroups = _messages.StringField(9, repeated=True)
+  transitionRoutes = _messages.MessageField('GoogleCloudDialogflowCxV3beta1TransitionRoute', 10, repeated=True)
 
 
 class GoogleCloudDialogflowCxV3beta1PageInfo(_messages.Message):
@@ -8276,6 +8283,7 @@ class GoogleCloudDialogflowCxV3beta1QueryInput(_messages.Message):
   query in the form of text. 2. An intent query that specifies which intent to
   trigger. 3. Natural language speech audio to be processed. 4. An event to be
   triggered. 5. DTMF digits to invoke an intent and fill in parameter value.
+  6. The results of a tool executed by the client.
 
   Fields:
     audio: The natural language speech audio to be processed.
@@ -10025,10 +10033,10 @@ class GoogleCloudDialogflowV2AutomatedAgentConfig(_messages.Message):
       For CX agents, use format `projects//locations//agents//environments/`.
       If environment is not specified, the default `draft` environment is
       used.
-    sessionTtl: Optional. Sets Dialogflow CX session life time. By default, a
-      Dialogflow CX session remains active and its data is stored for 30
-      minutes after the last request is sent for the session. This value
-      should be no longer than 1 day.
+    sessionTtl: Optional. Configure lifetime of the Dialogflow session. By
+      default, a Dialogflow CX session remains active and its data is stored
+      for 30 minutes after the last request is sent for the session. This
+      value should be no longer than 1 day.
   """
 
   agent = _messages.StringField(1)

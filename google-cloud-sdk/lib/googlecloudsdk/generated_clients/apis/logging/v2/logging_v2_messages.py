@@ -239,18 +239,18 @@ class BucketMetadata(_messages.Message):
   r"""Metadata for LongRunningUpdateBucket Operations.
 
   Enums:
-    StateValueValuesEnum: State of an operation.
+    StateValueValuesEnum: Output only. State of an operation.
 
   Fields:
     createBucketRequest: LongRunningCreateBucket RPC request.
     endTime: The end time of an operation.
     startTime: The create time of an operation.
-    state: State of an operation.
+    state: Output only. State of an operation.
     updateBucketRequest: LongRunningUpdateBucket RPC request.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of an operation.
+    r"""Output only. State of an operation.
 
     Values:
       OPERATION_STATE_UNSPECIFIED: Should not be used.
@@ -261,6 +261,7 @@ class BucketMetadata(_messages.Message):
       OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
       OPERATION_STATE_FAILED: The operation failed.
       OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+      OPERATION_STATE_PENDING: The operation is waiting for quota.
     """
     OPERATION_STATE_UNSPECIFIED = 0
     OPERATION_STATE_SCHEDULED = 1
@@ -269,6 +270,7 @@ class BucketMetadata(_messages.Message):
     OPERATION_STATE_SUCCEEDED = 4
     OPERATION_STATE_FAILED = 5
     OPERATION_STATE_CANCELLED = 6
+    OPERATION_STATE_PENDING = 7
 
   createBucketRequest = _messages.MessageField('CreateBucketRequest', 1)
   endTime = _messages.StringField(2)
@@ -474,31 +476,32 @@ class CmekSettings(_messages.Message):
   information.
 
   Fields:
-    kmsKeyName: The resource name for the configured Cloud KMS key.KMS key
-      name format: "projects/[PROJECT_ID]/locations/[LOCATION]/keyRings/[KEYRI
-      NG]/cryptoKeys/[KEY]" For example:"projects/my-project/locations/us-
-      central1/keyRings/my-ring/cryptoKeys/my-key"To enable CMEK for the Log
-      Router, set this field to a valid kms_key_name for which the associated
-      service account has the needed cloudkms.cryptoKeyEncrypterDecrypter
-      roles assigned for the key.The Cloud KMS key used by the Log Router can
-      be updated by changing the kms_key_name to a new valid key name or
-      disabled by setting the key name to an empty string. Encryption
-      operations that are in progress will be completed with the key that was
-      in use when they started. Decryption operations will be completed using
-      the key that was used at the time of encryption unless access to that
-      key has been revoked.To disable CMEK for the Log Router, set this field
-      to an empty string.See Enabling CMEK for Log Router
-      (https://cloud.google.com/logging/docs/routing/managed-encryption) for
-      more information.
-    kmsKeyVersionName: The CryptoKeyVersion resource name for the configured
-      Cloud KMS key.KMS key name format: "projects/[PROJECT_ID]/locations/[LOC
-      ATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]/cryptoKeyVersions/[VERSION]"
-      For example:"projects/my-project/locations/us-central1/keyRings/my-
-      ring/cryptoKeys/my-key/cryptoKeyVersions/1"This is a read-only field
-      used to convey the specific configured CryptoKeyVersion of kms_key that
-      has been configured. It will be populated in cases where the CMEK
-      settings are bound to a single key version.If this field is populated,
-      the kms_key is tied to a specific CryptoKeyVersion.
+    kmsKeyName: Optional. The resource name for the configured Cloud KMS
+      key.KMS key name format: "projects/[PROJECT_ID]/locations/[LOCATION]/key
+      Rings/[KEYRING]/cryptoKeys/[KEY]" For example:"projects/my-
+      project/locations/us-central1/keyRings/my-ring/cryptoKeys/my-key"To
+      enable CMEK for the Log Router, set this field to a valid kms_key_name
+      for which the associated service account has the needed
+      cloudkms.cryptoKeyEncrypterDecrypter roles assigned for the key.The
+      Cloud KMS key used by the Log Router can be updated by changing the
+      kms_key_name to a new valid key name or disabled by setting the key name
+      to an empty string. Encryption operations that are in progress will be
+      completed with the key that was in use when they started. Decryption
+      operations will be completed using the key that was used at the time of
+      encryption unless access to that key has been revoked.To disable CMEK
+      for the Log Router, set this field to an empty string.See Enabling CMEK
+      for Log Router (https://cloud.google.com/logging/docs/routing/managed-
+      encryption) for more information.
+    kmsKeyVersionName: Output only. The CryptoKeyVersion resource name for the
+      configured Cloud KMS key.KMS key name format: "projects/[PROJECT_ID]/loc
+      ations/[LOCATION]/keyRings/[KEYRING]/cryptoKeys/[KEY]/cryptoKeyVersions/
+      [VERSION]" For example:"projects/my-project/locations/us-
+      central1/keyRings/my-ring/cryptoKeys/my-key/cryptoKeyVersions/1"This is
+      a read-only field used to convey the specific configured
+      CryptoKeyVersion of kms_key that has been configured. It will be
+      populated in cases where the CMEK settings are bound to a single key
+      version.If this field is populated, the kms_key is tied to a specific
+      CryptoKeyVersion.
     name: Output only. The resource name of the CMEK settings.
     serviceAccountId: Output only. The service account that will be used by
       the Log Router to access your Cloud KMS key.Before enabling CMEK for Log
@@ -520,7 +523,7 @@ class CopyLogEntriesMetadata(_messages.Message):
   r"""Metadata for CopyLogEntries long running operations.
 
   Enums:
-    StateValueValuesEnum: State of an operation.
+    StateValueValuesEnum: Output only. State of an operation.
 
   Fields:
     cancellationRequested: Identifies whether the user has requested
@@ -529,7 +532,7 @@ class CopyLogEntriesMetadata(_messages.Message):
     progress: Estimated progress of the operation (0 - 100%).
     request: CopyLogEntries RPC request.
     startTime: The create time of an operation.
-    state: State of an operation.
+    state: Output only. State of an operation.
     writerIdentity: The IAM identity of a service account that must be granted
       access to the destination.If the service account is not granted
       permission to the destination within an hour, the operation will be
@@ -537,7 +540,7 @@ class CopyLogEntriesMetadata(_messages.Message):
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of an operation.
+    r"""Output only. State of an operation.
 
     Values:
       OPERATION_STATE_UNSPECIFIED: Should not be used.
@@ -548,6 +551,7 @@ class CopyLogEntriesMetadata(_messages.Message):
       OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
       OPERATION_STATE_FAILED: The operation failed.
       OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+      OPERATION_STATE_PENDING: The operation is waiting for quota.
     """
     OPERATION_STATE_UNSPECIFIED = 0
     OPERATION_STATE_SCHEDULED = 1
@@ -556,6 +560,7 @@ class CopyLogEntriesMetadata(_messages.Message):
     OPERATION_STATE_SUCCEEDED = 4
     OPERATION_STATE_FAILED = 5
     OPERATION_STATE_CANCELLED = 6
+    OPERATION_STATE_PENDING = 7
 
   cancellationRequested = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
@@ -741,545 +746,32 @@ class Exponential(_messages.Message):
   scale = _messages.FloatField(3)
 
 
-class GoogleLoggingV2QueryDataRequestQueryStep(_messages.Message):
-  r"""One step of the query. Each query step other than the first implicitly
-  takes the output of the previous step as its input. Steps will be executed
-  in sequence and will return their results independently (in other words,
-  each step will finish at a different time and potentially return a different
-  schema).
+class GenerateQueryRequest(_messages.Message):
+  r"""Parameters to GenerateQuery.
 
   Fields:
-    alertingQueryStep: A query step that builds an alerting query from
-      configuration data.
-    chartingQueryStep: A query step that builds a charting query from
-      configuration data.
-    handleQueryStep: A query step that refers to a step within a previously-
-      executed query.
-    outputNotRequired: Optional. Set this flag to indicate that you don't
-      intend to retrieve the results for this query step. No handle will be
-      generated for the step in the QueryDataResponse message.
-    sqlQueryStep: A query step containing a SQL query.
+    prompt: Required. The prompt, which may consist of natural language, SQL,
+      or any combination.
+    resourceNames: Required. Names of one or more views that the generated
+      query is intended to target. Any views in the prompt that are not in
+      this list will not be passed to Anarres.Example: projects/[PROJECT_ID]/l
+      ocations/[LOCATION_ID]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires
+      appropriate permissions on each resource such as 'logging.views.access'
+      on log view resources.
   """
 
-  alertingQueryStep = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStep', 1)
-  chartingQueryStep = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStep', 2)
-  handleQueryStep = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepHandleQueryStep', 3)
-  outputNotRequired = _messages.BooleanField(4)
-  sqlQueryStep = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStep', 5)
+  prompt = _messages.StringField(1)
+  resourceNames = _messages.StringField(2, repeated=True)
 
 
-class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStep(_messages.Message):
-  r"""A query step defined as a set of alerting configuration options. This
-  may not be used as the first step in a query.
+class GenerateQueryResponse(_messages.Message):
+  r"""The response data from GenerateQuery.
 
   Fields:
-    booleanCondition: A test representing the boolean value of a column.
-    partitionColumns: Optional. The list of columns to GROUP BY in the
-      generated SQL. NOTE: partition columns are not yet supported.
-    stringCondition: A test representing a comparison against a string.
-    thresholdCondition: A test representing a comparison against a threshold.
+    query: The generated SQL query.
   """
 
-  booleanCondition = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepBooleanTest', 1)
-  partitionColumns = _messages.StringField(2, repeated=True)
-  stringCondition = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepStringTest', 3)
-  thresholdCondition = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTest', 4)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepBooleanTest(_messages.Message):
-  r"""A test that reads a boolean column as the result.
-
-  Fields:
-    booleanColumn: Required. The column that contains a boolean that we want
-      to use as our result.
-    trigger: Optional. The number/percent of rows that must match in order for
-      the result set (partition set) to be considered in violation. If
-      unspecified, then the result set (partition set) will be in violation if
-      a single row matches.NOTE: Triggers are not yet supported for
-      BooleanTest.
-  """
-
-  booleanColumn = _messages.StringField(1)
-  trigger = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger', 2)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepStringTest(_messages.Message):
-  r"""A test that compares a string column against a string to match. NOTE:
-  StringTest is not yet supported.
-
-  Enums:
-    ComparisonValueValuesEnum: Required. The comparison operator to use.
-
-  Fields:
-    column: Required. The column that contains the strings we want to search
-      on.
-    comparison: Required. The comparison operator to use.
-    pattern: Required. The string or regular expression which is compared to
-      the value in the column.
-    trigger: Optional. The number/percent of rows that must match in order for
-      the result set (partition set) to be considered in violation. If
-      unspecified, then the result set (partition set) will be in violation if
-      a single row matches.
-  """
-
-  class ComparisonValueValuesEnum(_messages.Enum):
-    r"""Required. The comparison operator to use.
-
-    Values:
-      STRING_COMPARISON_TYPE_UNSPECIFIED: No string comparison specified,
-        should never happen.
-      STRING_COMPARISON_MATCH: String column must equal the pattern.
-      STRING_COMPARISON_NOT_MATCH: String column must not equal the pattern.
-      STRING_COMPARISON_CONTAINS: String contains contains the pattern as a
-        substring.
-      STRING_COMPARISON_NOT_CONTAINS: String column does not contain the
-        pattern as a substring.
-      STRING_COMPARISON_REGEX_MATCH: Regular expression pattern found in
-        string column.
-      STRING_COMPARISON_REGEX_NOT_MATCH: Regular expression pattern not found
-        in string column.
-    """
-    STRING_COMPARISON_TYPE_UNSPECIFIED = 0
-    STRING_COMPARISON_MATCH = 1
-    STRING_COMPARISON_NOT_MATCH = 2
-    STRING_COMPARISON_CONTAINS = 3
-    STRING_COMPARISON_NOT_CONTAINS = 4
-    STRING_COMPARISON_REGEX_MATCH = 5
-    STRING_COMPARISON_REGEX_NOT_MATCH = 6
-
-  column = _messages.StringField(1)
-  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
-  pattern = _messages.StringField(3)
-  trigger = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger', 4)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTest(_messages.Message):
-  r"""A test that compares some LHS against a threshold. NOTE: Only
-  RowCountThreshold is currently supported.
-
-  Enums:
-    ComparisonValueValuesEnum: Required. The comparison to be applied in the
-      __alert_result condition.
-
-  Fields:
-    aggregateValueThreshold: A value threshold comparison that includes an
-      aggregation of the value column.
-    comparison: Required. The comparison to be applied in the __alert_result
-      condition.
-    rowCountThreshold: A threshold based on the number of rows present.
-    threshold: Required. The threshold that will be used as the RHS of a
-      comparison.
-    valueThreshold: A value threshold comparison.
-  """
-
-  class ComparisonValueValuesEnum(_messages.Enum):
-    r"""Required. The comparison to be applied in the __alert_result
-    condition.
-
-    Values:
-      COMPARISON_TYPE_UNSPECIFIED: No comparison relationship is specified.
-      COMPARISON_GT: True if the aggregate / value_column is greater than the
-        threshold.
-      COMPARISON_GE: True if the aggregate / value_column is greater than or
-        equal to the threshold.
-      COMPARISON_LT: True if the aggregate / value_column is less than the
-        threshold.
-      COMPARISON_LE: True if the aggregate / value_column is less than or
-        equal to the threshold.
-      COMPARISON_EQ: True if the aggregate / value_column is equal to the
-        threshold.
-      COMPARISON_NE: True if the aggregate / value_column is not equal to the
-        threshold.
-    """
-    COMPARISON_TYPE_UNSPECIFIED = 0
-    COMPARISON_GT = 1
-    COMPARISON_GE = 2
-    COMPARISON_LT = 3
-    COMPARISON_LE = 4
-    COMPARISON_EQ = 5
-    COMPARISON_NE = 6
-
-  aggregateValueThreshold = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestAggregateValueThreshold', 1)
-  comparison = _messages.EnumField('ComparisonValueValuesEnum', 2)
-  rowCountThreshold = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestRowCountThreshold', 3)
-  threshold = _messages.FloatField(4)
-  valueThreshold = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestValueThreshold', 5)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestAggregateValueThreshold(_messages.Message):
-  r"""A threshold condition that compares an aggregation to a threshold.
-
-  Fields:
-    aggregateColumn: Required. The column to provide aggregation on for
-      comparison.
-    aggregation: Required. The aggregation config that will be applied to the
-      provided column.
-  """
-
-  aggregateColumn = _messages.StringField(1)
-  aggregation = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregation', 2)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestRowCountThreshold(_messages.Message):
-  r"""A threshold condition that compares the row count to a threshold. Ex.
-  COUNT(*) > 10
-
-  Fields:
-    trigger: Optional. The number/percent of rows that must exceed the
-      threshold in order for this result set (partition set) to be considered
-      in violation. If unspecified, then the result set (partition set) will
-      be in violation when a single row violates the threshold.
-  """
-
-  trigger = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger', 1)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepThresholdTestValueThreshold(_messages.Message):
-  r"""A threshold condition that compares a value to a threshold.
-
-  Fields:
-    trigger: Optional. The number/percent of rows that must exceed the
-      threshold in order for this result set (partition set) to be considered
-      in violation. If unspecified, then the result set (partition set) will
-      be in violation when a single row violates the threshold.
-    valueColumn: Required. The column to compare the threshold against.
-  """
-
-  trigger = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger', 1)
-  valueColumn = _messages.StringField(2)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepAlertingQueryStepTrigger(_messages.Message):
-  r"""A restriction on the alert test to require a certain count or percent of
-  rows to be present.
-
-  Fields:
-    count: Optional. The absolute number of time series that must fail the
-      predicate for the test to be triggered.
-    percent: Optional. The percentage of time series that must fail the
-      predicate for the test to be triggered.
-  """
-
-  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  percent = _messages.FloatField(2)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStep(_messages.Message):
-  r"""A query step defined as a set of charting configuration options. This
-  may not be used as the first step in a query.
-
-  Enums:
-    SortOrderValueValuesEnum: Optional. The sort order that controls the final
-      results.
-
-  Fields:
-    breakdowns: Optional. The breakdowns for the measures of the chart. A
-      breakdown turns a single measure into multiple effective measures, each
-      one associated with a single value from the breakdown column.
-    dimensions: Required. The dimension columns. How many dimensions to choose
-      and how they're configured will depend on the chart type. A dimension is
-      the labels for the data; e.g., the X axis for a line graph or the
-      segment labels for a pie chart.
-    measures: Required. The measures to be displayed within the chart. A
-      measure is a data set to be displayed; e.g., a line on a line graph, a
-      set of bars on a bar graph, or the segment widths on a pie chart.
-    sortColumn: Optional. The column name to sort the results on. This may be
-      set to one of the dimension columns or left empty, which is equivalent.
-      If no breakdowns are requested, it may be set to any measure column; if
-      breakdowns are requested, sorting by measures is not supported. If
-      sort_order is SORT_ORDER_NONE, this value is not used. If there is an
-      anonymous measure using aggregation "count", use the string "*" to name
-      it here.
-    sortOrder: Optional. The sort order that controls the final results.
-  """
-
-  class SortOrderValueValuesEnum(_messages.Enum):
-    r"""Optional. The sort order that controls the final results.
-
-    Values:
-      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
-      SORT_ORDER_NONE: No sorting will be applied.
-      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
-      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
-    """
-    SORT_ORDER_UNSPECIFIED = 0
-    SORT_ORDER_NONE = 1
-    SORT_ORDER_ASCENDING = 2
-    SORT_ORDER_DESCENDING = 3
-
-  breakdowns = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepBreakdown', 1, repeated=True)
-  dimensions = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepDimension', 2, repeated=True)
-  measures = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepMeasure', 3, repeated=True)
-  sortColumn = _messages.StringField(4)
-  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 5)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepBreakdown(_messages.Message):
-  r"""Columns within the output of the previous step to use to break down the
-  measures. We will generate one output measure for each value in the cross
-  product of measure_columns plus the top limit values in each of the
-  breakdown columns.In other words, if there is one measure column "foo" and
-  two breakdown columns "bar" with values ("bar1","bar2") and "baz" with
-  values ("baz1", "baz2"), we will end up with four output measures with
-  names: foo_bar1_baz1, foo_bar1_baz2, foo_bar2_baz1, foo_bar2_baz2 Each of
-  these measures will contain a subset of the values in "foo".
-
-  Enums:
-    SortOrderValueValuesEnum: Optional. The ordering that defines the behavior
-      of limit. If limit is not zero, this may not be set to
-      SORT_ORDER_NONE.Note that this will not control the ordering of the rows
-      in the result table in any useful way. Use the top-level sort ordering
-      for that purpose.
-
-  Fields:
-    column: Required. The name of the column containing the breakdown values.
-    limit: Optional. Values to choose how many breakdowns to create for each
-      measure. If limit is zero, all possible breakdowns will be generated. If
-      not, limit determines how many breakdowns, and sort_aggregation
-      determines the function we will use to sort the breakdowns.For example,
-      if limit is 3, we will generate at most three breakdowns per measure. If
-      sort_aggregation is "average" and sort_order is DESCENDING, those three
-      will be chosen as the ones where the average of all the points in the
-      breakdown set is the greatest.
-    sortAggregation: Optional. The aggregation to apply to the measure values
-      when choosing which breakdowns to generate. If sort_order is
-      SORT_ORDER_NONE, this is not used.
-    sortOrder: Optional. The ordering that defines the behavior of limit. If
-      limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
-      will not control the ordering of the rows in the result table in any
-      useful way. Use the top-level sort ordering for that purpose.
-  """
-
-  class SortOrderValueValuesEnum(_messages.Enum):
-    r"""Optional. The ordering that defines the behavior of limit. If limit is
-    not zero, this may not be set to SORT_ORDER_NONE.Note that this will not
-    control the ordering of the rows in the result table in any useful way.
-    Use the top-level sort ordering for that purpose.
-
-    Values:
-      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
-      SORT_ORDER_NONE: No sorting will be applied.
-      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
-      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
-    """
-    SORT_ORDER_UNSPECIFIED = 0
-    SORT_ORDER_NONE = 1
-    SORT_ORDER_ASCENDING = 2
-    SORT_ORDER_DESCENDING = 3
-
-  column = _messages.StringField(1)
-  limit = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  sortAggregation = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregation', 3)
-  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 4)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepDimension(_messages.Message):
-  r"""A definition for the (one) dimension column in the output. Multiple
-  dimensions can be defined, but only a single column will be generated,
-  containing the cross-product of the defined dimensions.
-
-  Enums:
-    SortOrderValueValuesEnum: Optional. The ordering that defines the behavior
-      of limit. If limit is not zero, this may not be set to
-      SORT_ORDER_NONE.Note that this will not control the ordering of the rows
-      in the result table in any useful way. Use the top-level sort ordering
-      for that purpose.
-
-  Fields:
-    column: Required. The column name within the output of the previous step
-      to use.
-    columnType: Optional. The type of the dimension column. This is relevant
-      only if one of the bin_size fields is set. If it is empty, the type
-      TIMESTAMP or INT64 will be assumed based on which bin_size field is set.
-      If populated, this should be set to one of the following types: DATE,
-      TIME, DATETIME, TIMESTAMP, BIGNUMERIC, INT64, NUMERIC, FLOAT64. We also
-      accept all the documented aliases from
-      https://cloud.google.com/bigquery/docs/reference/standard-sql/data-
-      types#numeric_types as well as FLOAT (as an alias for FLOAT64).
-    floatBinSize: Optional. Used for a floating-point column: FLOAT64.
-    integerBinSize: Optional. Used for an integer column: INT64, NUMERIC, or
-      BIGNUMERIC.
-    limit: Optional. If set, any bins beyond this number will be dropped.
-    limitPlusOther: Optional. If set, up to this many bins will be generated
-      plus one optional additional bin. The extra bin will be named "Other"
-      and will contain the sum of the (aggregated) measure points from all
-      remaining bins. Setting this field will cause the dimension column type
-      to be coerced to STRING if it is not already that type.
-    sortColumn: Optional. The column name to sort on. This may be set to this
-      dimension column or any measure column. If the field is empty, it will
-      sort on the dimension column. If sort_order is SORT_ORDER_NONE, this
-      value is not used. If there is an anonymous measure using aggregation
-      "count", use the string "*" to name it here.
-    sortOrder: Optional. The ordering that defines the behavior of limit. If
-      limit is not zero, this may not be set to SORT_ORDER_NONE.Note that this
-      will not control the ordering of the rows in the result table in any
-      useful way. Use the top-level sort ordering for that purpose.
-    timeBinSize: Optional. Used for a time or date column: DATE, TIME,
-      DATETIME, or TIMESTAMP. If column_type is DATE, this must be a multiple
-      of 1 day. If column_type is TIME, this must be less than or equal to 24
-      hours.
-  """
-
-  class SortOrderValueValuesEnum(_messages.Enum):
-    r"""Optional. The ordering that defines the behavior of limit. If limit is
-    not zero, this may not be set to SORT_ORDER_NONE.Note that this will not
-    control the ordering of the rows in the result table in any useful way.
-    Use the top-level sort ordering for that purpose.
-
-    Values:
-      SORT_ORDER_UNSPECIFIED: Invalid value, do not use.
-      SORT_ORDER_NONE: No sorting will be applied.
-      SORT_ORDER_ASCENDING: The lowest-valued entries will be selected.
-      SORT_ORDER_DESCENDING: The highest-valued entries will be selected.
-    """
-    SORT_ORDER_UNSPECIFIED = 0
-    SORT_ORDER_NONE = 1
-    SORT_ORDER_ASCENDING = 2
-    SORT_ORDER_DESCENDING = 3
-
-  column = _messages.StringField(1)
-  columnType = _messages.StringField(2)
-  floatBinSize = _messages.FloatField(3)
-  integerBinSize = _messages.IntegerField(4)
-  limit = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  limitPlusOther = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  sortColumn = _messages.StringField(7)
-  sortOrder = _messages.EnumField('SortOrderValueValuesEnum', 8)
-  timeBinSize = _messages.StringField(9)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepChartingQueryStepMeasure(_messages.Message):
-  r"""A definition for a single measure column in the output table. Multiple
-  measure columns will produce multiple curves, stacked bars, etc. depending
-  on chart type.
-
-  Fields:
-    aggregation: The aggregation to apply to the input column. Required if
-      binning is enabled on the dimension.
-    column: Required. The column name within the output of the previous step
-      to use. May be the same column as the dimension. May be left empty if
-      the aggregation is set to "count" (but not "count-distinct" or "count-
-      distinct-approx").
-  """
-
-  aggregation = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregation', 1)
-  column = _messages.StringField(2)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepHandleQueryStep(_messages.Message):
-  r"""A query step that reads the results of a step in a previous query
-  operation as its input.
-
-  Fields:
-    queryStepHandle: Required. A handle to a query step from a previous call
-      to QueryData.
-  """
-
-  queryStepHandle = _messages.StringField(1)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregation(_messages.Message):
-  r"""An identifier for an aggregation. Aggregations are used for cases where
-  we need to collapse a set of values into a single value, such as multiple
-  points in a measure into a single bin.
-
-  Fields:
-    parameters: Parameters to be applied to the aggregation. Aggregations that
-      support or require parameters are listed above.
-    type: Required. The type of aggregation to apply. Legal values for this
-      string are: "percentile" - Generates an APPROX_QUANTILES. Requires one
-      integer or double parameter. Applies only to numeric values. Supports
-      precision of up to 3 decimal places. "average" - Generates AVG().
-      Applies only to numeric values. "count" - Generates COUNT(). "count-
-      distinct" - Generates COUNT(DISTINCT). "count-distinct-approx" -
-      Generates APPROX_COUNT_DISTINCT(). "max" - Generates MAX(). Applies only
-      to numeric values. "min" - Generates MIN(). Applies only to numeric
-      values. "sum" - Generates SUM(). Applies only to numeric values. "or" -
-      Generates LOGICAL_OR(). Applies only to boolean values. "and" -
-      Generates LOGICAL_AND(). Applies only to boolean values. "none", "" -
-      Equivalent to no aggregation.
-  """
-
-  parameters = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregationParameter', 1, repeated=True)
-  type = _messages.StringField(2)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepQueryStepAggregationParameter(_messages.Message):
-  r"""A parameter value to be applied to an aggregation.
-
-  Fields:
-    doubleValue: Optional. A floating-point parameter value.
-    intValue: Optional. An integer parameter value.
-  """
-
-  doubleValue = _messages.FloatField(1)
-  intValue = _messages.IntegerField(2)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStep(_messages.Message):
-  r"""A query step defined in raw SQL.
-
-  Fields:
-    parameters: Optional. Parameters to be injected into the query at
-      execution time.
-    queryRestriction: Optional. Restrictions being requested, e.g. timerange
-      restrictions.
-    sqlQuery: Required. A query string, following the BigQuery SQL query
-      syntax. The FROM clause should specify a fully qualified log view
-      corresponding to the log view in the resource_names in dot separated
-      format like PROJECT_ID.LOCATION_ID.BUCKET_ID.VIEW_ID.For example: SELECT
-      count(*) FROM my_project.us.my_bucket._AllLogs;If any of the dot
-      separated components have special characters, that component needs to be
-      escaped separately like the following example:SELECT count(*) FROM
-      company.com:abc.us.my-bucket._AllLogs;
-  """
-
-  parameters = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameter', 1, repeated=True)
-  queryRestriction = _messages.MessageField('QueryRestriction', 2)
-  sqlQuery = _messages.StringField(3)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameter(_messages.Message):
-  r"""A parameter given to a query.
-
-  Fields:
-    description: Optional. Human-oriented description of the field.
-    intArray: Optional. The value of a parameter containing an array of
-      integers.
-    intValue: Optional. The value of an integer parameter.
-    name: Optional. If unset, this is a positional parameter. Otherwise,
-      should be unique within a query.
-    stringArray: Optional. The value of a parameter containing an array of
-      strings.
-    stringValue: Optional. The value of a string parameter.
-  """
-
-  description = _messages.StringField(1)
-  intArray = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameterIntegerArrayValue', 2)
-  intValue = _messages.IntegerField(3)
-  name = _messages.StringField(4)
-  stringArray = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameterStringArrayValue', 5)
-  stringValue = _messages.StringField(6)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameterIntegerArrayValue(_messages.Message):
-  r"""An array of integers within a parameter.
-
-  Fields:
-    values: Required. The values of the array.
-  """
-
-  values = _messages.IntegerField(1, repeated=True)
-
-
-class GoogleLoggingV2QueryDataRequestQueryStepSqlQueryStepQueryParameterStringArrayValue(_messages.Message):
-  r"""An array of strings within a parameter.
-
-  Fields:
-    values: Required. The values of the array.
-  """
-
-  values = _messages.StringField(1, repeated=True)
+  query = _messages.StringField(1)
 
 
 class HandleQueryStep(_messages.Message):
@@ -1471,22 +963,22 @@ class Link(_messages.Message):
     LifecycleStateValueValuesEnum: Output only. The resource lifecycle state.
 
   Fields:
-    bigqueryDataset: The information of a BigQuery Dataset. When a link is
-      created, a BigQuery dataset is created along with it, in the same
-      project as the LogBucket it's linked to. This dataset will also have
-      BigQuery Views corresponding to the LogViews in the bucket.
+    bigqueryDataset: Optional. The information of a BigQuery Dataset. When a
+      link is created, a BigQuery dataset is created along with it, in the
+      same project as the LogBucket it's linked to. This dataset will also
+      have BigQuery Views corresponding to the LogViews in the bucket.
     createTime: Output only. The creation timestamp of the link.
-    description: Describes this link.The maximum length of the description is
-      8000 characters.
+    description: Optional. Describes this link.The maximum length of the
+      description is 8000 characters.
     lifecycleState: Output only. The resource lifecycle state.
-    name: The resource name of the link. The name can have up to 100
-      characters. A valid link id (at the end of the link name) must only have
-      alphanumeric characters and underscores within it. "projects/[PROJECT_ID
-      ]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "organiza
-      tions/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/link
-      s/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCATION_I
-      D]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/locations/[
-      LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" For
+    name: Output only. The resource name of the link. The name can have up to
+      100 characters. A valid link id (at the end of the link name) must only
+      have alphanumeric characters and underscores within it. "projects/[PROJE
+      CT_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "org
+      anizations/[ORGANIZATION_ID]/locations/[LOCATION_ID]/buckets/[BUCKET_ID]
+      /links/[LINK_ID]" "billingAccounts/[BILLING_ACCOUNT_ID]/locations/[LOCAT
+      ION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" "folders/[FOLDER_ID]/locati
+      ons/[LOCATION_ID]/buckets/[BUCKET_ID]/links/[LINK_ID]" For
       example:`projects/my-project/locations/global/buckets/my-
       bucket/links/my_link
   """
@@ -1529,18 +1021,18 @@ class LinkMetadata(_messages.Message):
   r"""Metadata for long running Link operations.
 
   Enums:
-    StateValueValuesEnum: State of an operation.
+    StateValueValuesEnum: Output only. State of an operation.
 
   Fields:
     createLinkRequest: CreateLink RPC request.
     deleteLinkRequest: DeleteLink RPC request.
     endTime: The end time of an operation.
     startTime: The start time of an operation.
-    state: State of an operation.
+    state: Output only. State of an operation.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of an operation.
+    r"""Output only. State of an operation.
 
     Values:
       OPERATION_STATE_UNSPECIFIED: Should not be used.
@@ -1551,6 +1043,7 @@ class LinkMetadata(_messages.Message):
       OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
       OPERATION_STATE_FAILED: The operation failed.
       OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+      OPERATION_STATE_PENDING: The operation is waiting for quota.
     """
     OPERATION_STATE_UNSPECIFIED = 0
     OPERATION_STATE_SCHEDULED = 1
@@ -1559,6 +1052,7 @@ class LinkMetadata(_messages.Message):
     OPERATION_STATE_SUCCEEDED = 4
     OPERATION_STATE_FAILED = 5
     OPERATION_STATE_CANCELLED = 6
+    OPERATION_STATE_PENDING = 7
 
   createLinkRequest = _messages.MessageField('CreateLinkRequest', 1)
   deleteLinkRequest = _messages.MessageField('DeleteLinkRequest', 2)
@@ -1937,29 +1431,30 @@ class LogBucket(_messages.Message):
     UnmetAnalyticsUpgradeRequirementsValueListEntryValuesEnum:
 
   Fields:
-    analyticsEnabled: Whether log analytics is enabled for this bucket.Once
-      enabled, log analytics features cannot be disabled.
+    analyticsEnabled: Optional. Whether log analytics is enabled for this
+      bucket.Once enabled, log analytics features cannot be disabled.
     analyticsUpgradeTime: Output only. The time that the bucket was upgraded
       to enable analytics. This will eventually be deprecated once there is
       not a need to upgrade existing buckets (i.e. when analytics becomes
       default-enabled).
-    cmekSettings: The CMEK settings of the log bucket. If present, new log
-      entries written to this log bucket are encrypted using the CMEK key
-      provided in this configuration. If a log bucket has CMEK settings, the
-      CMEK settings cannot be disabled later by updating the log bucket.
+    cmekSettings: Optional. The CMEK settings of the log bucket. If present,
+      new log entries written to this log bucket are encrypted using the CMEK
+      key provided in this configuration. If a log bucket has CMEK settings,
+      the CMEK settings cannot be disabled later by updating the log bucket.
       Changing the KMS key is allowed.
     createTime: Output only. The creation timestamp of the bucket. This is not
       set for any of the default buckets.
-    description: Describes this bucket.
-    indexConfigs: A list of indexed fields and related configuration data.
+    description: Optional. Describes this bucket.
+    indexConfigs: Optional. A list of indexed fields and related configuration
+      data.
     lifecycleState: Output only. The bucket lifecycle state.
     linkedBigqueryDataset: Output only. The name of the BigQuery dataset this
       log bucket is linked to.For
       example:bigquery.googleapis.com/projects/[PROJECT_ID]/datasets/[DATASET]
       DEPRECATED: Do not use this field. Use the Link API instead.
-    locked: Whether the bucket is locked.The retention period on a locked
-      bucket cannot be changed. Locked buckets may only be deleted if they are
-      empty.
+    locked: Optional. Whether the bucket is locked.The retention period on a
+      locked bucket cannot be changed. Locked buckets may only be deleted if
+      they are empty.
     logLink: Configures a linked dataset in BigQuery corresponding to this log
       bucket.Requires analytics_enabled to be true. A log link can only be
       enabled by updating an existing bucket with analytics enabled.
@@ -1970,16 +1465,16 @@ class LogBucket(_messages.Message):
       (https://cloud.google.com/logging/docs/region-support)For the location
       of global it is unspecified where log entries are actually stored.After
       a bucket has been created, the location cannot be changed.
-    restrictedFields: Log entry field paths that are denied access in this
-      bucket.The following fields and their children are eligible:
+    restrictedFields: Optional. Log entry field paths that are denied access
+      in this bucket.The following fields and their children are eligible:
       textPayload, jsonPayload, protoPayload, httpRequest, labels,
       sourceLocation.Restricting a repeated field will restrict all values.
       Adding a parent will block all child fields. (e.g. foo.bar will block
       foo.bar.baz)
-    retentionDays: Logs will be retained by default for this amount of time,
-      after which they will automatically be deleted. The minimum retention
-      period is 1 day. If this value is set to zero at bucket creation time,
-      the default time of 30 days will be used.
+    retentionDays: Optional. Logs will be retained by default for this amount
+      of time, after which they will automatically be deleted. The minimum
+      retention period is 1 day. If this value is set to zero at bucket
+      creation time, the default time of 30 days will be used.
     unmetAnalyticsUpgradeRequirements: Output only. The requirements for an
       upgrade to analytics that are not satisfied by the current bucket
       configuration, in an arbitrary order. This will eventually be deprecated
@@ -2438,7 +1933,7 @@ class LogExclusion(_messages.Message):
       the following query matches 99% of low-severity log entries from Google
       Cloud Storage buckets:resource.type=gcs_bucket severity<ERROR
       sample(insertId, 0.99)
-    name: Required. A client-assigned identifier, such as "load-balancer-
+    name: Output only. A client-assigned identifier, such as "load-balancer-
       exclusion". Identifiers are limited to 100 characters and can include
       only letters, digits, underscores, hyphens, and periods. First character
       has to be alphanumeric.
@@ -2729,7 +2224,7 @@ class LogSink(_messages.Message):
       sink's parent.To only export entries from certain child projects, filter
       on the project part of the log name:logName:("projects/test-project1/"
       OR "projects/test-project2/") AND resource.type=gce_instance
-    name: Required. The client-assigned sink identifier, unique within the
+    name: Output only. The client-assigned sink identifier, unique within the
       project.For example: "my-syslog-errors-to-pubsub".Sink identifiers are
       limited to 100 characters and can include only the following characters:
       upper and lower-case alphanumeric characters, underscores, hyphens,
@@ -2806,17 +2301,17 @@ class LogView(_messages.Message):
 
   Fields:
     createTime: Output only. The creation timestamp of the view.
-    description: Describes this view.
-    filter: Filter that restricts which log entries in a bucket are visible in
-      this view.Filters must be logical conjunctions that use the AND
-      operator, and they can use any of the following qualifiers: SOURCE(),
-      which specifies a project, folder, organization, or billing account of
-      origin. resource.type, which specifies the resource type. LOG_ID(),
-      which identifies the log.They can also use the negations of these
-      qualifiers with the NOT operator.For
+    description: Optional. Describes this view.
+    filter: Optional. Filter that restricts which log entries in a bucket are
+      visible in this view.Filters must be logical conjunctions that use the
+      AND operator, and they can use any of the following qualifiers:
+      SOURCE(), which specifies a project, folder, organization, or billing
+      account of origin. resource.type, which specifies the resource type.
+      LOG_ID(), which identifies the log.They can also use the negations of
+      these qualifiers with the NOT operator.For
       example:SOURCE("projects/myproject") AND resource.type = "gce_instance"
       AND NOT LOG_ID("stdout")
-    name: The resource name of the view.For example:projects/my-
+    name: Output only. The resource name of the view.For example:projects/my-
       project/locations/global/buckets/my-bucket/views/my-view
     schema: Output only. Describes the schema of the logs stored in the bucket
       that are accessible via this view.This field is only populated for views
@@ -7093,13 +6588,14 @@ class LoggingQuery(_messages.Message):
   in association with analysis of query results.
 
   Fields:
-    filter: An advanced query using the Logging Query Language
+    filter: Required. An advanced query using the Logging Query Language
       (https://cloud.google.com/logging/docs/view/logging-query-language). The
       maximum length of the filter is 20000 characters.
     summaryFieldEnd: Characters will be counted from the end of the string.
     summaryFieldStart: Characters will be counted from the start of the
       string.
-    summaryFields: The set of summary fields to display for this saved query.
+    summaryFields: Optional. The set of summary fields to display for this
+      saved query.
   """
 
   filter = _messages.StringField(1)
@@ -7641,7 +7137,7 @@ class MonitoredResourceDescriptor(_messages.Message):
       format "monitoredResourceDescriptors/{type}".
     type: Required. The monitored resource type. For example, the type
       "cloudsql_database" represents databases in Google Cloud SQL. For a list
-      of types, see Monitoring resource types
+      of types, see Monitored resource types
       (https://cloud.google.com/monitoring/api/resources) and Logging resource
       types (https://cloud.google.com/logging/docs/api/v2/resource-list).
   """
@@ -7786,17 +7282,17 @@ class MoveBucketMetadata(_messages.Message):
   r"""Metadata for long running MoveBucket operations.
 
   Enums:
-    StateValueValuesEnum: State of the operation.
+    StateValueValuesEnum: Output only. State of the operation.
 
   Fields:
     endTime: The end time of the operation.
     request: MoveBucket RPC request.
     startTime: The create time of the operation.
-    state: State of the operation.
+    state: Output only. State of the operation.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of the operation.
+    r"""Output only. State of the operation.
 
     Values:
       OPERATION_STATE_UNSPECIFIED: Should not be used.
@@ -7807,6 +7303,7 @@ class MoveBucketMetadata(_messages.Message):
       OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
       OPERATION_STATE_FAILED: The operation failed.
       OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+      OPERATION_STATE_PENDING: The operation is waiting for quota.
     """
     OPERATION_STATE_UNSPECIFIED = 0
     OPERATION_STATE_SCHEDULED = 1
@@ -7815,6 +7312,7 @@ class MoveBucketMetadata(_messages.Message):
     OPERATION_STATE_SUCCEEDED = 4
     OPERATION_STATE_FAILED = 5
     OPERATION_STATE_CANCELLED = 6
+    OPERATION_STATE_PENDING = 7
 
   endTime = _messages.StringField(1)
   request = _messages.MessageField('MoveBucketRequest', 2)
@@ -8012,8 +7510,6 @@ class QueryDataRequest(_messages.Message):
       on both the Log Analytics and BigQuery sides.
     query: Optional. The contents of the query. If this field is populated,
       query_steps will be ignored.
-    querySteps: The query steps to execute. Each query step will correspond to
-      a handle in the result proto. Deprecated in favor of query, above.
     resourceNames: Required. Names of one or more log views to run a SQL
       query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID]/buckets/[BU
       CKET_ID]/views/[VIEW_ID]Requires appropriate permissions on each
@@ -8024,9 +7520,8 @@ class QueryDataRequest(_messages.Message):
 
   disableQueryCaching = _messages.BooleanField(1)
   query = _messages.MessageField('AnalyticsQuery', 2)
-  querySteps = _messages.MessageField('GoogleLoggingV2QueryDataRequestQueryStep', 3, repeated=True)
-  resourceNames = _messages.StringField(4, repeated=True)
-  timeout = _messages.StringField(5)
+  resourceNames = _messages.StringField(3, repeated=True)
+  timeout = _messages.StringField(4)
 
 
 class QueryDataResponse(_messages.Message):
@@ -8324,6 +7819,11 @@ class ReadQueryResultsRequest(_messages.Message):
       the original query.Example: projects/[PROJECT_ID]/locations/[LOCATION_ID
       ]/buckets/[BUCKET_ID]/views/[VIEW_ID]Requires appropriate permissions on
       each resource such as 'logging.views.access' on log view resources.
+    timeout: Optional. The maximum amount of time, in milliseconds, that the
+      client is willing to wait for the query to complete. If this is not set,
+      the call will return immediately with query_complete set to false.
+      Otherwise, the call will block for the specified time and then return
+      the state at that time.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -8331,6 +7831,7 @@ class ReadQueryResultsRequest(_messages.Message):
   queryStepHandle = _messages.StringField(3)
   readMetadataOnly = _messages.BooleanField(4)
   resourceNames = _messages.StringField(5, repeated=True)
+  timeout = _messages.StringField(6)
 
 
 class RecentQuery(_messages.Message):
@@ -8338,7 +7839,7 @@ class RecentQuery(_messages.Message):
   page within the last ~ 30 days.
 
   Fields:
-    lastRunTime: The timestamp when this query was last run.
+    lastRunTime: Output only. The timestamp when this query was last run.
     loggingQuery: Logging query that can be executed in Logs Explorer or via
       Logging API.
     name: Output only. Resource name of the recent query.In the format:
@@ -8379,7 +7880,7 @@ class RedactLogEntriesMetadata(_messages.Message):
   r"""Metadata for RedactLogEntries long running operations.
 
   Enums:
-    StateValueValuesEnum: State of an operation.
+    StateValueValuesEnum: Output only. State of an operation.
 
   Fields:
     cancellationRequested: Identifies whether the user has requested
@@ -8391,11 +7892,11 @@ class RedactLogEntriesMetadata(_messages.Message):
     receiveTime: The time at which the redaction request was received.
     request: RedactLogEntries RPC request.
     startTime: The time at which redaction of log entries commenced.
-    state: State of an operation.
+    state: Output only. State of an operation.
   """
 
   class StateValueValuesEnum(_messages.Enum):
-    r"""State of an operation.
+    r"""Output only. State of an operation.
 
     Values:
       OPERATION_STATE_UNSPECIFIED: Should not be used.
@@ -8406,6 +7907,7 @@ class RedactLogEntriesMetadata(_messages.Message):
       OPERATION_STATE_SUCCEEDED: The operation was completed successfully.
       OPERATION_STATE_FAILED: The operation failed.
       OPERATION_STATE_CANCELLED: The operation was cancelled by the user.
+      OPERATION_STATE_PENDING: The operation is waiting for quota.
     """
     OPERATION_STATE_UNSPECIFIED = 0
     OPERATION_STATE_SCHEDULED = 1
@@ -8414,6 +7916,7 @@ class RedactLogEntriesMetadata(_messages.Message):
     OPERATION_STATE_SUCCEEDED = 4
     OPERATION_STATE_FAILED = 5
     OPERATION_STATE_CANCELLED = 6
+    OPERATION_STATE_PENDING = 7
 
   cancellationRequested = _messages.BooleanField(1)
   endTime = _messages.StringField(2)
@@ -8565,8 +8068,8 @@ class SavedQuery(_messages.Message):
 
   Fields:
     createTime: Output only. The timestamp when the saved query was created.
-    description: A human readable description of the saved query.
-    displayName: The user specified title for the SavedQuery.
+    description: Optional. A human readable description of the saved query.
+    displayName: Optional. The user specified title for the SavedQuery.
     loggingQuery: Logging query that can be executed in Logs Explorer or via
       Logging API.
     name: Output only. Resource name of the saved query.In the format:
@@ -8862,8 +8365,8 @@ class SummaryField(_messages.Message):
   summary-fields) for a query in the Logs Explorer.
 
   Fields:
-    field: The field from the LogEntry to include in the summary line, for
-      example resource.type or jsonPayload.name.
+    field: Optional. The field from the LogEntry to include in the summary
+      line, for example resource.type or jsonPayload.name.
   """
 
   field = _messages.StringField(1)
@@ -8932,7 +8435,7 @@ class TableSchema(_messages.Message):
   r"""Schema of a table containing logs.
 
   Fields:
-    fields: Describes the fields in a table.
+    fields: Output only. Describes the fields in a table.
   """
 
   fields = _messages.MessageField('TableFieldSchema', 1, repeated=True)

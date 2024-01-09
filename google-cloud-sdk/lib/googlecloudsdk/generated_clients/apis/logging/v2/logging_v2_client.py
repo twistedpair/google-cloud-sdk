@@ -1420,6 +1420,32 @@ class LoggingV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GenerateQuery(self, request, global_params=None):
+      r"""Generates a suggested SQL query from a prompt.
+
+      Args:
+        request: (GenerateQueryRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GenerateQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateQuery')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateQuery.method_config = lambda: base_api.ApiMethodInfo(
+        http_method='POST',
+        method_id='logging.data.generateQuery',
+        ordered_params=[],
+        path_params=[],
+        query_params=[],
+        relative_path='v2/data:generateQuery',
+        request_field='<request>',
+        request_type_name='GenerateQueryRequest',
+        response_type_name='GenerateQueryResponse',
+        supports_download=False,
+    )
+
     def QueryLocal(self, request, global_params=None):
       r"""Runs a (possibly multi-step) SQL query asynchronously in the customer project and returns handles that can be used to fetch the results of each step. View references are translated to linked dataset tables, and references to other raw BigQuery tables are permitted.
 

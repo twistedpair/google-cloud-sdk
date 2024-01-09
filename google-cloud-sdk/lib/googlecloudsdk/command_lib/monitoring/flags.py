@@ -492,7 +492,8 @@ def AddUptimeResourceFlags(parser):
   uptime_resource_group.add_argument(
       '--synthetic-target',
       help="""The target of the Synthetic Monitor.
-        This is the fully qualified GCFv2 resource name.""",
+        This is the fully qualified GCFv2 resource name.
+        """,
       type=str,
   )
 
@@ -500,7 +501,8 @@ def AddUptimeResourceFlags(parser):
 def AddUptimeProtocolFlags(parser, update=False):
   """Adds uptime protocol settings flags to the parser."""
   uptime_protocol_group = parser.add_group(
-      help='Uptime check protocol settings'
+      help="""Uptime check protocol settings.
+      Cannot be used if --synthetic-target is set."""
   )
   if not update:
     uptime_protocol_group.add_argument(
@@ -719,7 +721,8 @@ def AddUptimeRunFlags(parser, update=False):
         uptime_settings_group, resource='Uptime Check', positional=False
     )
     uptime_regions_group = uptime_settings_group.add_group(
-        help='Uptime Selected Regions',
+        help="""Uptime Selected Regions.
+        Cannot be used if --synthetic-target is set.""",
         mutex=True,
     )
     uptime_regions_group.add_argument(
@@ -752,7 +755,7 @@ def AddUptimeRunFlags(parser, update=False):
         '--regions',
         metavar='field',
         help="""The list of regions from which the check will be run. At least 3 regions must be selected.
-          Defaults to all available regions.""",
+          Defaults to all available regions. Cannot be used if --synthetic-target is set.""",
         type=arg_parsers.ArgList(choices=UPTIME_REGIONS),
     )
   if update:
@@ -763,7 +766,10 @@ def AddUptimeRunFlags(parser, update=False):
 
 def AddUptimeMatcherFlags(parser):
   """Adds uptime matcher flags to the parser."""
-  uptime_matcher_group = parser.add_group(help='Uptime matcher settings')
+  uptime_matcher_group = parser.add_group(
+      help="""Uptime matcher settings.
+      Cannot be used if --synthetic-target is set."""
+  )
   uptime_matcher_group.add_argument(
       '--matcher-content',
       required=True,

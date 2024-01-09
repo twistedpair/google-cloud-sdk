@@ -47,14 +47,14 @@ def _FormatArgName(base_name, positional):
     return '--' + base_name.replace('_', '-').lower()
 
 
-def GetAuthorityNotePresentationSpec(
+def GetNotePresentationSpec(
     group_help,
-    base_name='authority-note',
+    base_name='note',
     required=True,
     positional=True,
     use_global_project_flag=False,
 ):
-  """Construct a resource spec for an attestation authority note flag."""
+  """Construct a resource spec for a Container Analysis note flag."""
   flag_overrides = None
   if not use_global_project_flag:
     flag_overrides = {

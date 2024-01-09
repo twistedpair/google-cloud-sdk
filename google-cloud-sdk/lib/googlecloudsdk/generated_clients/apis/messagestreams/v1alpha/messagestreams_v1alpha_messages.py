@@ -28,6 +28,51 @@ class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
 
+class CreateReferenceRequest(_messages.Message):
+  r"""The CreateReferenceRequest request.
+
+  Fields:
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+    reference: Required. The reference to be created.
+    referenceId: The unique id of this resource. Must be unique within a scope
+      of a target resource, but does not have to be globally unique. Reference
+      ID is part of resource name of the reference. Resource name is generated
+      in the following way: {parent}/references/{reference_id}. Reference ID
+      field is currently required but id auto generation might be added in the
+      future. It can be any arbitrary string, either GUID or any other string,
+      however CLHs can use preprocess callbacks to perform a custom
+      validation.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  parent = _messages.StringField(1)
+  reference = _messages.MessageField('Reference', 2)
+  referenceId = _messages.StringField(3)
+  requestId = _messages.StringField(4)
+
+
+class DeleteReferenceRequest(_messages.Message):
+  r"""The DeleteReferenceRequest request.
+
+  Fields:
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{targer_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+    requestId: Optional. Request ID is an idempotency ID of the request. It
+      must be a valid UUID. Zero UUID (00000000-0000-0000-0000-000000000000)
+      is not supported.
+  """
+
+  name = _messages.StringField(1)
+  requestId = _messages.StringField(2)
+
+
 class Destination(_messages.Message):
   r"""Specifications of a destination to which the request should be routed
   to.
@@ -59,6 +104,20 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class GetReferenceRequest(_messages.Message):
+  r"""The GetReferenceRequest request.
+
+  Fields:
+    name: Required. Full resource name of the reference, in the following
+      format:
+      `//{target_service}/{target_resource}/references/{reference_id}`. For
+      example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}/references/{xyz}`.
+  """
+
+  name = _messages.StringField(1)
 
 
 class GoogleOidc(_messages.Message):
@@ -102,6 +161,39 @@ class ListOperationsResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   operations = _messages.MessageField('Operation', 2, repeated=True)
+
+
+class ListReferencesRequest(_messages.Message):
+  r"""The ListResourceMetadataRequest request.
+
+  Fields:
+    pageSize: The maximum number of items to return. If unspecified, server
+      will pick an appropriate default. Server may return fewer items than
+      requested. A caller should only rely on response's next_page_token to
+      determine if there are more References left to be queried.
+    pageToken: The next_page_token value returned from a previous List
+      request, if any.
+    parent: Required. The parent resource name (target_resource of this
+      reference). For example: `//targetservice.googleapis.com/projects/{my-
+      project}/locations/{location}/instances/{my-instance}`.
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3)
+
+
+class ListReferencesResponse(_messages.Message):
+  r"""The ListReferencesResponse response.
+
+  Fields:
+    nextPageToken: Token to retrieve the next page of results, or empty if
+      there are no more results in the list.
+    references: The list of references.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  references = _messages.MessageField('Reference', 2, repeated=True)
 
 
 class ListStreamsResponse(_messages.Message):
@@ -542,6 +634,67 @@ class OperationMetadata(_messages.Message):
   statusMessage = _messages.StringField(5)
   target = _messages.StringField(6)
   verb = _messages.StringField(7)
+
+
+class Reference(_messages.Message):
+  r"""Represents a reference to a resource.
+
+  Messages:
+    DetailsValueListEntry: A DetailsValueListEntry object.
+
+  Fields:
+    createTime: Output only. The creation time.
+    details: Details of the reference type with no implied semantics.
+      Cumulative size of the field must not be more than 1KiB.
+    name: Output only. Relative resource name of the reference. Includes
+      target resource as a parent and reference uid
+      `{target_resource}/references/{reference_id}`. For example,
+      `projects/{my-project}/locations/{location}/instances/{my-
+      instance}/references/{xyz}`.
+    sourceResource: Required. Full resource name of the resource which refers
+      the target resource. For example:
+      //tpu.googleapis.com/projects/myproject/nodes/mynode
+    targetUniqueId: Output only. The unique_id of the target resource. Example
+      1: (For arcus resource) A-1-0-2-387420123-13-913517247483640811
+      unique_id format defined in go/m11n-unique-id-as-resource-id Example 2:
+      (For CCFE resource) 123e4567-e89b-12d3-a456-426614174000
+    type: Required. Type of the reference. A service might impose limits on
+      number of references of a specific type. Note: It's recommended to use
+      CAPITALS_WITH_UNDERSCORES style for a type name.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class DetailsValueListEntry(_messages.Message):
+    r"""A DetailsValueListEntry object.
+
+    Messages:
+      AdditionalProperty: An additional property for a DetailsValueListEntry
+        object.
+
+    Fields:
+      additionalProperties: Properties of the object. Contains field @type
+        with type URL.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a DetailsValueListEntry object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  details = _messages.MessageField('DetailsValueListEntry', 2, repeated=True)
+  name = _messages.StringField(3)
+  sourceResource = _messages.StringField(4)
+  targetUniqueId = _messages.StringField(5)
+  type = _messages.StringField(6)
 
 
 class Source(_messages.Message):

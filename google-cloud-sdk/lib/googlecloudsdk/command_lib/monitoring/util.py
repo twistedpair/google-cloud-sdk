@@ -1221,6 +1221,10 @@ def ModifyUptimeCheck(
     }
     uptime_check.period = period_mapping.get(args.period)
   if regions is not None:
+    if uptime_check.syntheticMonitor is not None:
+      raise calliope_exc.InvalidArgumentException(
+          'regions', 'Should not be set or updated for Synthetic Monitor.'
+      )
     region_mapping = {
         'usa-oregon': (
             messages.UptimeCheckConfig.SelectedRegionsValueListEntryValuesEnum.USA_OREGON
@@ -1360,6 +1364,11 @@ def SetUptimeCheckSyntheticFields(args, messages, uptime_check):
 def SetUptimeCheckMatcherFields(args, messages, uptime_check):
   """Set Matcher fields based on args."""
   if args.IsSpecified('matcher_content'):
+    if uptime_check.syntheticMonitor is not None:
+      raise calliope_exc.InvalidArgumentException(
+          '--matcher_content', 'Should not be set for Synthetic Monitor.'
+      )
+
     content_matcher = messages.ContentMatcher()
     content_matcher.content = args.matcher_content
     matcher_mapping = {
@@ -1385,6 +1394,14 @@ def SetUptimeCheckMatcherFields(args, messages, uptime_check):
     }
     content_matcher.matcher = matcher_mapping.get(args.matcher_type)
     if args.IsSpecified('json_path'):
+      if content_matcher.matcher not in (
+          messages.ContentMatcher.MatcherValueValuesEnum.MATCHES_JSON_PATH,
+          messages.ContentMatcher.MatcherValueValuesEnum.NOT_MATCHES_JSON_PATH,
+      ):
+        raise calliope_exc.InvalidArgumentException(
+            '--json-path', 'Should only be used with JSON_PATH matcher types.'
+        )
+
       content_matcher.jsonPathMatcher = messages.JsonPathMatcher()
       content_matcher.jsonPathMatcher.jsonPath = args.json_path
       jsonpath_matcher_mapping = {
@@ -1417,6 +1434,39 @@ def SetUptimeCheckProtocolFields(
   if (
       not update and args.IsSpecified('synthetic_target')
   ) or uptime_check.syntheticMonitor is not None:
+    # Cannot set HTTP or TCP field for Synthetic Monitor
+    should_not_be_set = [
+        '--path',
+        '--validate-ssl',
+        '--mask-headers',
+        '--custom-content-type',
+        '--username',
+        '--password',
+        '--body',
+        '--request-method',
+        '--content-type',
+        '--port',
+        '--pings-count',
+    ]
+    for flag in should_not_be_set:
+      dest = _FlagToDest(flag)
+      if args.IsSpecified(dest):
+        raise calliope_exc.InvalidArgumentException(
+            flag, 'Should not be set for Synthetic Monitor.'
+        )
+    if headers:
+      raise calliope_exc.InvalidArgumentException(
+          'headers', 'Should not be set or updated for Synthetic Monitor.'
+      )
+    if status_classes:
+      raise calliope_exc.InvalidArgumentException(
+          'status-classes',
+          'Should not be set or updated for Synthetic Monitor.',
+      )
+    if status_codes:
+      raise calliope_exc.InvalidArgumentException(
+          'status-codes', 'Should not be set or updated for Synthetic Monitor.'
+      )
     return
 
   if (
@@ -1433,6 +1483,36 @@ def SetUptimeCheckProtocolFields(
     if args.pings_count is not None:
       tcp_check.pingConfig = messages.PingConfig()
       tcp_check.pingConfig.pingsCount = args.pings_count
+    # Cannot set HTTP field when using TCP protocol
+    should_not_be_set = [
+        '--path',
+        '--validate-ssl',
+        '--mask-headers',
+        '--custom-content-type',
+        '--username',
+        '--password',
+        '--body',
+        '--request-method',
+        '--content-type',
+    ]
+    for flag in should_not_be_set:
+      dest = _FlagToDest(flag)
+      if args.IsSpecified(dest):
+        raise calliope_exc.InvalidArgumentException(
+            flag, 'Should not be set for TCP Uptime Check.'
+        )
+    if headers:
+      raise calliope_exc.InvalidArgumentException(
+          'headers', 'Should not be set or updated for TCP Uptime Check.'
+      )
+    if status_classes:
+      raise calliope_exc.InvalidArgumentException(
+          'status-classes', 'Should not be set or updated for TCP Uptime Check.'
+      )
+    if status_codes:
+      raise calliope_exc.InvalidArgumentException(
+          'status-codes', 'Should not be set or updated for TCP Uptime Check.'
+      )
   else:
     if uptime_check.httpCheck is None:
       uptime_check.httpCheck = messages.HttpCheck()

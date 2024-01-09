@@ -28,14 +28,8 @@ properties:
   numRetries:
     description: |-
       Specifies the allowed number of retries. This number must be > 0. If not
-      specpfied, default to 1.
+      specified, default to 1.
     type: integer
-  perTryTimeout:
-    description: |-
-      If not specified, will use the timeout set in the RouteAction. If timeout
-      is not set in the RouteAction, will use the largest timeout among all
-      Backend Services associated with the route.
-    type: string
   retryConditions:
     description: |-
       - connect-failure: Router will retry on failures connecting to Backend

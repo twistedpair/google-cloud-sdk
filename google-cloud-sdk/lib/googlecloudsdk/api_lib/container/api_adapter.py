@@ -270,7 +270,7 @@ HOST_MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\
 Provided host maintenance interval type '{type}' is not supported.
 """
 
-MAX_NODES_PER_POOL = 1000
+MAX_NODES_PER_POOL = 2000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
 MAX_AUTHORIZED_NETWORKS_CIDRS_PUBLIC = 50
@@ -712,6 +712,7 @@ class CreateClusterOptions(object):
       resource_manager_tags=None,
       autoprovisioning_resource_manager_tags=None,
       enable_secret_manager=None,
+      enable_cilium_clusterwide_network_policy=None,
   ):
     self.node_machine_type = node_machine_type
     self.node_source_image = node_source_image
@@ -928,6 +929,9 @@ class CreateClusterOptions(object):
         autoprovisioning_resource_manager_tags
     )
     self.enable_secret_manager = enable_secret_manager
+    self.enable_cilium_clusterwide_network_policy = (
+        enable_cilium_clusterwide_network_policy
+    )
 
 
 class UpdateClusterOptions(object):
@@ -1072,6 +1076,7 @@ class UpdateClusterOptions(object):
       convert_to_autopilot=None,
       convert_to_standard=None,
       enable_secret_manager=None,
+      enable_cilium_clusterwide_network_policy=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1219,6 +1224,9 @@ class UpdateClusterOptions(object):
     self.convert_to_autopilot = convert_to_autopilot
     self.convert_to_standard = convert_to_standard
     self.enable_secret_manager = enable_secret_manager
+    self.enable_cilium_clusterwide_network_policy = (
+        enable_cilium_clusterwide_network_policy
+    )
 
 
 class SetMasterAuthOptions(object):
@@ -2337,6 +2345,13 @@ class APIAdapter(object):
       if cluster.secretManagerConfig is None:
         cluster.secretManagerConfig = self.messages.SecretManagerConfig()
       cluster.secretManagerConfig.enabled = options.enable_secret_manager
+
+    if options.enable_cilium_clusterwide_network_policy is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.enableCiliumClusterwideNetworkPolicy = (
+          options.enable_cilium_clusterwide_network_policy
+      )
 
     return cluster
 
@@ -3739,6 +3754,13 @@ class APIAdapter(object):
       update = self.messages.ClusterUpdate(
           desiredSecretManagerConfig=self.messages.SecretManagerConfig(
               enabled=options.enable_secret_manager
+          )
+      )
+
+    if options.enable_cilium_clusterwide_network_policy is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableCiliumClusterwideNetworkPolicy=(
+              options.enable_cilium_clusterwide_network_policy
           )
       )
 

@@ -1059,6 +1059,24 @@ class IncidentList(_messages.Message):
   policyNames = _messages.StringField(2, repeated=True)
 
 
+class Interval(_messages.Message):
+  r"""Represents a time interval, encoded as a Timestamp start (inclusive) and
+  a Timestamp end (exclusive).The start must be less than or equal to the end.
+  When the start equals the end, the interval is empty (matches no time). When
+  both start and end are unspecified, the interval matches any time.
+
+  Fields:
+    endTime: Optional. Exclusive end of the interval.If specified, a Timestamp
+      matching this interval will have to be before the end.
+    startTime: Optional. Inclusive start of the interval.If specified, a
+      Timestamp matching this interval will have to be the same or after the
+      start.
+  """
+
+  endTime = _messages.StringField(1)
+  startTime = _messages.StringField(2)
+
+
 class ListDashboardsResponse(_messages.Message):
   r"""The ListDashboards request.
 
@@ -1757,6 +1775,7 @@ class PickTimeSeriesFilter(_messages.Message):
   Fields:
     direction: How to use the ranking to select time series that pass through
       the filter.
+    interval: Select the top N streams/time series within this time interval
     numTimeSeries: How many time series to allow to pass through the filter.
     rankingMethod: ranking_method is applied to each time series independently
       to produce the value which will be used to compare the time series to
@@ -1799,8 +1818,9 @@ class PickTimeSeriesFilter(_messages.Message):
     METHOD_LATEST = 5
 
   direction = _messages.EnumField('DirectionValueValuesEnum', 1)
-  numTimeSeries = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  rankingMethod = _messages.EnumField('RankingMethodValueValuesEnum', 3)
+  interval = _messages.MessageField('Interval', 2)
+  numTimeSeries = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  rankingMethod = _messages.EnumField('RankingMethodValueValuesEnum', 4)
 
 
 class PieChart(_messages.Message):
@@ -2054,6 +2074,14 @@ class SectionHeader(_messages.Message):
 
   dividerBelow = _messages.BooleanField(1)
   subtitle = _messages.StringField(2)
+
+
+class SingleViewGroup(_messages.Message):
+  r"""A widget that groups the other widgets by using a dropdown menu. All
+  widgets that are within the area spanned by the grouping widget are
+  considered member widgets.
+  """
+
 
 
 class SourceContext(_messages.Message):
@@ -2741,6 +2769,8 @@ class Widget(_messages.Message):
     scorecard: A scorecard summarizing time series data.
     sectionHeader: A widget that defines a section header for easier
       navigation of the dashboard.
+    singleViewGroup: A widget that groups the other widgets by using a
+      dropdown menu.
     text: A raw string or markdown displaying textual content.
     timeSeriesTable: A widget that displays time series data in a tabular
       format.
@@ -2758,10 +2788,11 @@ class Widget(_messages.Message):
   pieChart = _messages.MessageField('PieChart', 8)
   scorecard = _messages.MessageField('Scorecard', 9)
   sectionHeader = _messages.MessageField('SectionHeader', 10)
-  text = _messages.MessageField('Text', 11)
-  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 12)
-  title = _messages.StringField(13)
-  xyChart = _messages.MessageField('XyChart', 14)
+  singleViewGroup = _messages.MessageField('SingleViewGroup', 11)
+  text = _messages.MessageField('Text', 12)
+  timeSeriesTable = _messages.MessageField('TimeSeriesTable', 13)
+  title = _messages.StringField(14)
+  xyChart = _messages.MessageField('XyChart', 15)
 
 
 class XyChart(_messages.Message):

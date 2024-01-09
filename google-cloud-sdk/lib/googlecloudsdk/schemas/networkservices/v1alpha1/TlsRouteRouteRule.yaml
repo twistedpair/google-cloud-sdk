@@ -5,6 +5,7 @@ description: A gcloud export/import command YAML validation schema.
 type: object
 required:
 - action
+- matches
 additionalProperties: false
 properties:
   COMMENT:
@@ -33,8 +34,7 @@ properties:
   matches:
     description: |-
       RouteMatch defines the predicate used to match requests to a given action.
-      Multiple match types are "OR"ed for evaluation. If no routeMatch field is
-      specified, this rule will unconditionally match traffic.
+      Multiple match types are "OR"ed for evaluation.
     type: array
     items:
       $ref: TlsRouteRouteMatch.yaml

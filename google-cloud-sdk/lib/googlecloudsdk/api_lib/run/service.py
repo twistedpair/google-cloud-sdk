@@ -33,6 +33,7 @@ INGRESS_INTERNAL = 'internal'
 INGRESS_INTERNAL_AND_CLOUD_LOAD_BALANCING = 'internal-and-cloud-load-balancing'
 
 SERVICE_MIN_SCALE_ANNOTATION = 'run.googleapis.com/minScale'
+OPERATION_ID_ANNOTATION = 'run.googleapis.com/operation-id'
 
 
 class Service(k8s_object.KubernetesObject):
@@ -158,6 +159,14 @@ class Service(k8s_object.KubernetesObject):
   @image.setter
   def image(self, value):
     self.template.image = value
+
+  @property
+  def operation_id(self):
+    return self.annotations.get(OPERATION_ID_ANNOTATION)
+
+  @operation_id.setter
+  def operation_id(self, value):
+    self.annotations[OPERATION_ID_ANNOTATION] = value
 
   @property
   def description(self):

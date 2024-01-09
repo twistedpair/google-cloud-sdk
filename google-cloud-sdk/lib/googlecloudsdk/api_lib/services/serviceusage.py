@@ -13,11 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """services helper functions."""
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 import collections
 import copy
 import enum
@@ -141,38 +136,39 @@ def GetConsumerPolicyV2(policy_name):
     )
 
 
-def CheckValue(name, service):
-  """Make API call to check value.
+def TestEnabled(name: str, service: str):
+  """Make API call to test enabled.
 
   Args:
-    name: Parent resource to check the value against hierarchically.
-      format-"projects/100", "folders/101" or "organizations/102".
+    name: Parent resource to test a value against the result of merging consumer
+      policies in the resource hierarchy. format-"projects/100", "folders/101"
+      or "organizations/102".
     service: Service name to check if the targeted resource can use this
       service. Current supported value: SERVICE (format: "services/{service}").
 
   Raises:
-    exceptions.CheckValuePermissionDeniedException: when checking value for a
+    exceptions.TestEnabledPermissionDeniedException: when testing value for a
       service and resource.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    Checked Value.
+    State of the service.
   """
-  client = _GetClientInstance('v2')
+  client = _GetClientInstance('v2alpha')
   messages = client.MESSAGES_MODULE
 
-  request = messages.ServiceusageCheckValueRequest(
+  request = messages.ServiceusageTestEnabledRequest(
       name=name,
-      checkValueRequest=messages.CheckValueRequest(checkedValue=service),
+      testEnabledRequest=messages.TestEnabledRequest(serviceName=service),
   )
 
   try:
-    return client.v2.CheckValue(request)
+    return client.v2alpha.TestEnabled(request)
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
-    exceptions.ReraiseError(e, exceptions.CheckValuePermissionDeniedException)
+    exceptions.ReraiseError(e, exceptions.TestEnabledPermissionDeniedException)
 
 
 def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):

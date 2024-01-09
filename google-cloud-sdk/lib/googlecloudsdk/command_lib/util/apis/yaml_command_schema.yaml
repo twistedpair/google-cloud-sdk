@@ -87,6 +87,14 @@ definitions:
         arg_name: {type: string}
         help_text: {type: string}
         hidden: {type: boolean}
+        # TODO(b/291130667): enable mutex for arg_object
+        # one_of_index is to determine which items are in a mutex group.
+        # Not available for public use yet.
+        one_of_index: {type: number}
+        # TODO(b/304805943): enable resource pattern
+        # resource_pattern is a regex pattern used to verify resource strings.
+        # Not available for public use yet.
+        resource_pattern: {type: string}
         spec: {$ref: "#/definitions/flag_spec"}
 
   fallthrough:
@@ -458,6 +466,9 @@ properties:
 
   # Determines whether the command is visible in help text or not.
   hidden: {type: boolean}
+
+  # Determines whether the command is available in univserse or not.
+  universe_compatible: {type: boolean}
 
   # Determines which release tracks this command implementation will apply to.
   release_tracks:

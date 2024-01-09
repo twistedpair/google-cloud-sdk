@@ -196,25 +196,38 @@ def ProcessCustomConfigFile(file_contents):
         "Error parsing custom config file [{}]".format(ype))
 
 
+def ExtractTestData(test_data_input):
+  """Extract test data into list structure, accept both list and dict."""
+  if isinstance(test_data_input, list):
+    return test_data_input
+  elif isinstance(test_data_input, dict):
+    if "testData" in test_data_input:
+      return test_data_input["testData"]
+    else:
+      return None
+  else:
+    if not test_data_input:
+      raise InvalidTestDataFileError(
+          "Error parsing test data file: no data records defined in file"
+      )
+
+
 def ProcessTestResourceDataFile(file_contents):
   """Process the test resource data file for the custom module to test against."""
   messages = sc_client.GetMessages()
   try:
-    test_data_dict = yaml.load(file_contents)
-
-    if not test_data_dict or not isinstance(test_data_dict, list):
-      raise InvalidTestDataFileError(
-          "Error parsing test data file: no data records defined in file")
-
+    test_data = ExtractTestData(yaml.load(file_contents))
     test_data_messages = []
-    for field in test_data_dict:
+    for field in test_data:
       test_data_messages.append(
-          encoding.DictToMessage(field, messages.TestData))
+          encoding.DictToMessage(field, messages.TestData)
+      )
 
     return test_data_messages
   except yaml.YAMLParseError as ype:
     raise InvalidTestDataFileError(
-        "Error parsing test data file [{}]".format(ype))
+        "Error parsing test data file [{}]".format(ype)
+    )
 
 
 def ProcessSimulatedResourceFile(file_contents):

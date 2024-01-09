@@ -1045,7 +1045,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Get(self, request, global_params=None):
-      r"""Get a {{vpcsvcctl_name_short}} Supported Service by name.
+      r"""Get a VPS-SC Supported Service by name.
 
       Args:
         request: (AccesscontextmanagerServicesGetRequest) input message
@@ -1071,7 +1071,7 @@ class AccesscontextmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def List(self, request, global_params=None):
-      r"""Lists all {{vpcsvcctl_name_short}} supported services.
+      r"""Lists all VPC-SC supported services.
 
       Args:
         request: (AccesscontextmanagerServicesListRequest) input message

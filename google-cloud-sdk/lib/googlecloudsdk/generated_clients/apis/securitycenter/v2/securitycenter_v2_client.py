@@ -47,14 +47,23 @@ class SecuritycenterV2(base_api.BaseApiClient):
     self.folders_locations_notificationConfigs = self.FoldersLocationsNotificationConfigsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders_muteConfigs = self.FoldersMuteConfigsService(self)
+    self.folders_sources___locations_findings = self.FoldersSourcesLocationsFindingsService(self)
+    self.folders_sources___locations = self.FoldersSourcesLocationsService(self)
+    self.folders_sources__ = self.FoldersSourcesService(self)
+    self.folders_sources_findings_explanations = self.FoldersSourcesFindingsExplanationsService(self)
     self.folders_sources_findings_externalSystems = self.FoldersSourcesFindingsExternalSystemsService(self)
     self.folders_sources_findings = self.FoldersSourcesFindingsService(self)
+    self.folders_sources_locations_complianceSnapshots = self.FoldersSourcesLocationsComplianceSnapshotsService(self)
+    self.folders_sources_locations_findings_explanations = self.FoldersSourcesLocationsFindingsExplanationsService(self)
     self.folders_sources_locations_findings_externalSystems = self.FoldersSourcesLocationsFindingsExternalSystemsService(self)
     self.folders_sources_locations_findings = self.FoldersSourcesLocationsFindingsService(self)
     self.folders_sources_locations = self.FoldersSourcesLocationsService(self)
     self.folders_sources = self.FoldersSourcesService(self)
     self.folders = self.FoldersService(self)
     self.organizations_assets = self.OrganizationsAssetsService(self)
+    self.organizations_attackExposureResults_exposurePaths_explanationTypes = self.OrganizationsAttackExposureResultsExposurePathsExplanationTypesService(self)
+    self.organizations_attackExposureResults_exposurePaths = self.OrganizationsAttackExposureResultsExposurePathsService(self)
+    self.organizations_attackExposureResults = self.OrganizationsAttackExposureResultsService(self)
     self.organizations_findings = self.OrganizationsFindingsService(self)
     self.organizations_locations_bigQueryExports = self.OrganizationsLocationsBigQueryExportsService(self)
     self.organizations_locations_findings = self.OrganizationsLocationsFindingsService(self)
@@ -71,8 +80,14 @@ class SecuritycenterV2(base_api.BaseApiClient):
     self.organizations_simulations_valuedResources_attackPaths = self.OrganizationsSimulationsValuedResourcesAttackPathsService(self)
     self.organizations_simulations_valuedResources = self.OrganizationsSimulationsValuedResourcesService(self)
     self.organizations_simulations = self.OrganizationsSimulationsService(self)
+    self.organizations_sources___locations_findings = self.OrganizationsSourcesLocationsFindingsService(self)
+    self.organizations_sources___locations = self.OrganizationsSourcesLocationsService(self)
+    self.organizations_sources__ = self.OrganizationsSourcesService(self)
+    self.organizations_sources_findings_explanations = self.OrganizationsSourcesFindingsExplanationsService(self)
     self.organizations_sources_findings_externalSystems = self.OrganizationsSourcesFindingsExternalSystemsService(self)
     self.organizations_sources_findings = self.OrganizationsSourcesFindingsService(self)
+    self.organizations_sources_locations_complianceSnapshots = self.OrganizationsSourcesLocationsComplianceSnapshotsService(self)
+    self.organizations_sources_locations_findings_explanations = self.OrganizationsSourcesLocationsFindingsExplanationsService(self)
     self.organizations_sources_locations_findings_externalSystems = self.OrganizationsSourcesLocationsFindingsExternalSystemsService(self)
     self.organizations_sources_locations_findings = self.OrganizationsSourcesLocationsFindingsService(self)
     self.organizations_sources_locations = self.OrganizationsSourcesLocationsService(self)
@@ -86,8 +101,14 @@ class SecuritycenterV2(base_api.BaseApiClient):
     self.projects_locations_notificationConfigs = self.ProjectsLocationsNotificationConfigsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects_muteConfigs = self.ProjectsMuteConfigsService(self)
+    self.projects_sources___locations_findings = self.ProjectsSourcesLocationsFindingsService(self)
+    self.projects_sources___locations = self.ProjectsSourcesLocationsService(self)
+    self.projects_sources__ = self.ProjectsSourcesService(self)
+    self.projects_sources_findings_explanations = self.ProjectsSourcesFindingsExplanationsService(self)
     self.projects_sources_findings_externalSystems = self.ProjectsSourcesFindingsExternalSystemsService(self)
     self.projects_sources_findings = self.ProjectsSourcesFindingsService(self)
+    self.projects_sources_locations_complianceSnapshots = self.ProjectsSourcesLocationsComplianceSnapshotsService(self)
+    self.projects_sources_locations_findings_explanations = self.ProjectsSourcesLocationsFindingsExplanationsService(self)
     self.projects_sources_locations_findings_externalSystems = self.ProjectsSourcesLocationsFindingsExternalSystemsService(self)
     self.projects_sources_locations_findings = self.ProjectsSourcesLocationsFindingsService(self)
     self.projects_sources_locations = self.ProjectsSourcesLocationsService(self)
@@ -795,6 +816,100 @@ class SecuritycenterV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class FoldersSourcesLocationsFindingsService(base_api.BaseApiService):
+    """Service class for the folders_sources___locations_findings resource."""
+
+    _NAME = 'folders_sources___locations_findings'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.FoldersSourcesLocationsFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ListFindingFieldDetails(self, request, global_params=None):
+      r"""Lists all distinct finding property names along with their details. Specific details include whether they can be used for contains filters and with what subfields. This method is to be used only by Pantheon.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesLocationsFindingsListFindingFieldDetailsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFindingFieldDetailsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListFindingFieldDetails')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListFindingFieldDetails.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/sources/-/locations/{locationsId}/findings:listFindingFieldDetails',
+        http_method='GET',
+        method_id='securitycenter.folders.sources.-.locations.findings.listFindingFieldDetails',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['includeNestedContainsSubfields', 'pageSize', 'pageToken', 'propertyType'],
+        relative_path='v2/{+parent}/findings:listFindingFieldDetails',
+        request_field='',
+        request_type_name='SecuritycenterFoldersSourcesLocationsFindingsListFindingFieldDetailsRequest',
+        response_type_name='ListFindingFieldDetailsResponse',
+        supports_download=False,
+    )
+
+  class FoldersSourcesLocationsService(base_api.BaseApiService):
+    """Service class for the folders_sources___locations resource."""
+
+    _NAME = 'folders_sources___locations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.FoldersSourcesLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class FoldersSourcesService(base_api.BaseApiService):
+    """Service class for the folders_sources__ resource."""
+
+    _NAME = 'folders_sources__'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.FoldersSourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class FoldersSourcesFindingsExplanationsService(base_api.BaseApiService):
+    """Service class for the folders_sources_findings_explanations resource."""
+
+    _NAME = 'folders_sources_findings_explanations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.FoldersSourcesFindingsExplanationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a text explanation for the given finding. If no location is specified, finding is assumed to be in global. If the explanation was recently generated, a cached version is returned.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesFindingsExplanationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindingExplanation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/sources/{sourcesId}/findings/{findingsId}/explanations/{explanationsId}',
+        http_method='GET',
+        method_id='securitycenter.folders.sources.findings.explanations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersSourcesFindingsExplanationsGetRequest',
+        response_type_name='FindingExplanation',
+        supports_download=False,
+    )
+
   class FoldersSourcesFindingsExternalSystemsService(base_api.BaseApiService):
     """Service class for the folders_sources_findings_externalSystems resource."""
 
@@ -842,33 +957,6 @@ class SecuritycenterV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a finding in a location. The corresponding source must exist for finding creation to succeed.
-
-      Args:
-        request: (SecuritycenterFoldersSourcesFindingsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudSecuritycenterV2Finding) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/folders/{foldersId}/sources/{sourcesId}/findings',
-        http_method='POST',
-        method_id='securitycenter.folders.sources.findings.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['findingId'],
-        relative_path='v2/{+parent}/findings',
-        request_field='googleCloudSecuritycenterV2Finding',
-        request_type_name='SecuritycenterFoldersSourcesFindingsCreateRequest',
-        response_type_name='GoogleCloudSecuritycenterV2Finding',
-        supports_download=False,
-    )
-
     def Group(self, request, global_params=None):
       r"""Filters an organization or source's findings and groups them by their specified properties in a location. If no location is specified, findings are assumed to be in global To group across all sources provide a `-` as the source id. The following list shows some examples: + `/v2/organizations/{organization_id}/sources/-/findings` + `/v2/organizations/{organization_id}/sources/-/locations/{location_id}/findings` + `/v2/folders/{folder_id}/sources/-/findings` + `/v2/folders/{folder_id}/sources/-/locations/{location_id}/findings` + `/v2/projects/{project_id}/sources/-/findings` + `/v2/projects/{project_id}/sources/-/locations/{location_id}/findings`.
 
@@ -915,7 +1003,7 @@ class SecuritycenterV2(base_api.BaseApiClient):
         method_id='securitycenter.folders.sources.findings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['fieldMask', 'filter', 'omitTotalSize', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/findings',
         request_field='',
         request_type_name='SecuritycenterFoldersSourcesFindingsListRequest',
@@ -1031,6 +1119,80 @@ class SecuritycenterV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class FoldersSourcesLocationsComplianceSnapshotsService(base_api.BaseApiService):
+    """Service class for the folders_sources_locations_complianceSnapshots resource."""
+
+    _NAME = 'folders_sources_locations_complianceSnapshots'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.FoldersSourcesLocationsComplianceSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Query for compliance snapshots.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesLocationsComplianceSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListComplianceSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/sources/{sourcesId}/locations/{locationsId}/complianceSnapshots',
+        http_method='GET',
+        method_id='securitycenter.folders.sources.locations.complianceSnapshots.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/complianceSnapshots',
+        request_field='',
+        request_type_name='SecuritycenterFoldersSourcesLocationsComplianceSnapshotsListRequest',
+        response_type_name='ListComplianceSnapshotsResponse',
+        supports_download=False,
+    )
+
+  class FoldersSourcesLocationsFindingsExplanationsService(base_api.BaseApiService):
+    """Service class for the folders_sources_locations_findings_explanations resource."""
+
+    _NAME = 'folders_sources_locations_findings_explanations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.FoldersSourcesLocationsFindingsExplanationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a text explanation for the given finding. If no location is specified, finding is assumed to be in global. If the explanation was recently generated, a cached version is returned.
+
+      Args:
+        request: (SecuritycenterFoldersSourcesLocationsFindingsExplanationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindingExplanation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/folders/{foldersId}/sources/{sourcesId}/locations/{locationsId}/findings/{findingsId}/explanations/{explanationsId}',
+        http_method='GET',
+        method_id='securitycenter.folders.sources.locations.findings.explanations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterFoldersSourcesLocationsFindingsExplanationsGetRequest',
+        response_type_name='FindingExplanation',
+        supports_download=False,
+    )
+
   class FoldersSourcesLocationsFindingsExternalSystemsService(base_api.BaseApiService):
     """Service class for the folders_sources_locations_findings_externalSystems resource."""
 
@@ -1078,33 +1240,6 @@ class SecuritycenterV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a finding in a location. The corresponding source must exist for finding creation to succeed.
-
-      Args:
-        request: (SecuritycenterFoldersSourcesLocationsFindingsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudSecuritycenterV2Finding) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/folders/{foldersId}/sources/{sourcesId}/locations/{locationsId}/findings',
-        http_method='POST',
-        method_id='securitycenter.folders.sources.locations.findings.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['findingId'],
-        relative_path='v2/{+parent}/findings',
-        request_field='googleCloudSecuritycenterV2Finding',
-        request_type_name='SecuritycenterFoldersSourcesLocationsFindingsCreateRequest',
-        response_type_name='GoogleCloudSecuritycenterV2Finding',
-        supports_download=False,
-    )
-
     def Group(self, request, global_params=None):
       r"""Filters an organization or source's findings and groups them by their specified properties in a location. If no location is specified, findings are assumed to be in global To group across all sources provide a `-` as the source id. The following list shows some examples: + `/v2/organizations/{organization_id}/sources/-/findings` + `/v2/organizations/{organization_id}/sources/-/locations/{location_id}/findings` + `/v2/folders/{folder_id}/sources/-/findings` + `/v2/folders/{folder_id}/sources/-/locations/{location_id}/findings` + `/v2/projects/{project_id}/sources/-/findings` + `/v2/projects/{project_id}/sources/-/locations/{location_id}/findings`.
 
@@ -1151,7 +1286,7 @@ class SecuritycenterV2(base_api.BaseApiClient):
         method_id='securitycenter.folders.sources.locations.findings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['fieldMask', 'filter', 'omitTotalSize', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/findings',
         request_field='',
         request_type_name='SecuritycenterFoldersSourcesLocationsFindingsListRequest',
@@ -1360,6 +1495,63 @@ class SecuritycenterV2(base_api.BaseApiClient):
         response_type_name='GoogleCloudSecuritycenterV2SecurityMarks',
         supports_download=False,
     )
+
+  class OrganizationsAttackExposureResultsExposurePathsExplanationTypesService(base_api.BaseApiService):
+    """Service class for the organizations_attackExposureResults_exposurePaths_explanationTypes resource."""
+
+    _NAME = 'organizations_attackExposureResults_exposurePaths_explanationTypes'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsAttackExposureResultsExposurePathsExplanationTypesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def GetExposurePathExplanation(self, request, global_params=None):
+      r"""Gets a text explanation for the given exposure path. If the explanation was recently generated, a cached version is returned.
+
+      Args:
+        request: (SecuritycenterOrganizationsAttackExposureResultsExposurePathsExplanationTypesGetExposurePathExplanationRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudSecuritycenterV2ExposurePathExplanation) The response message.
+      """
+      config = self.GetMethodConfig('GetExposurePathExplanation')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetExposurePathExplanation.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/attackExposureResults/{attackExposureResultsId}/exposurePaths/{exposurePathsId}/explanationTypes/{explanationTypesId}/exposurePathExplanation',
+        http_method='GET',
+        method_id='securitycenter.organizations.attackExposureResults.exposurePaths.explanationTypes.getExposurePathExplanation',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['attackPathExplanationName'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsAttackExposureResultsExposurePathsExplanationTypesGetExposurePathExplanationRequest',
+        response_type_name='GoogleCloudSecuritycenterV2ExposurePathExplanation',
+        supports_download=False,
+    )
+
+  class OrganizationsAttackExposureResultsExposurePathsService(base_api.BaseApiService):
+    """Service class for the organizations_attackExposureResults_exposurePaths resource."""
+
+    _NAME = 'organizations_attackExposureResults_exposurePaths'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsAttackExposureResultsExposurePathsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsAttackExposureResultsService(base_api.BaseApiService):
+    """Service class for the organizations_attackExposureResults resource."""
+
+    _NAME = 'organizations_attackExposureResults'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsAttackExposureResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
 
   class OrganizationsFindingsService(base_api.BaseApiService):
     """Service class for the organizations_findings resource."""
@@ -2456,6 +2648,33 @@ class SecuritycenterV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      r"""Get the valued resource by name.
+
+      Args:
+        request: (SecuritycenterOrganizationsSimulationsValuedResourcesGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ValuedResource) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/simulations/{simulationsId}/valuedResources/{valuedResourcesId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.simulations.valuedResources.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsSimulationsValuedResourcesGetRequest',
+        response_type_name='ValuedResource',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists the valued resources for a set of simulation results and filter.
 
@@ -2517,6 +2736,100 @@ class SecuritycenterV2(base_api.BaseApiClient):
         request_field='',
         request_type_name='SecuritycenterOrganizationsSimulationsGetRequest',
         response_type_name='Simulation',
+        supports_download=False,
+    )
+
+  class OrganizationsSourcesLocationsFindingsService(base_api.BaseApiService):
+    """Service class for the organizations_sources___locations_findings resource."""
+
+    _NAME = 'organizations_sources___locations_findings'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsSourcesLocationsFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ListFindingFieldDetails(self, request, global_params=None):
+      r"""Lists all distinct finding property names along with their details. Specific details include whether they can be used for contains filters and with what subfields. This method is to be used only by Pantheon.
+
+      Args:
+        request: (SecuritycenterOrganizationsSourcesLocationsFindingsListFindingFieldDetailsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFindingFieldDetailsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListFindingFieldDetails')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListFindingFieldDetails.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/sources/-/locations/{locationsId}/findings:listFindingFieldDetails',
+        http_method='GET',
+        method_id='securitycenter.organizations.sources.-.locations.findings.listFindingFieldDetails',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['includeNestedContainsSubfields', 'pageSize', 'pageToken', 'propertyType'],
+        relative_path='v2/{+parent}/findings:listFindingFieldDetails',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsSourcesLocationsFindingsListFindingFieldDetailsRequest',
+        response_type_name='ListFindingFieldDetailsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsSourcesLocationsService(base_api.BaseApiService):
+    """Service class for the organizations_sources___locations resource."""
+
+    _NAME = 'organizations_sources___locations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsSourcesLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsSourcesService(base_api.BaseApiService):
+    """Service class for the organizations_sources__ resource."""
+
+    _NAME = 'organizations_sources__'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsSourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class OrganizationsSourcesFindingsExplanationsService(base_api.BaseApiService):
+    """Service class for the organizations_sources_findings_explanations resource."""
+
+    _NAME = 'organizations_sources_findings_explanations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsSourcesFindingsExplanationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a text explanation for the given finding. If no location is specified, finding is assumed to be in global. If the explanation was recently generated, a cached version is returned.
+
+      Args:
+        request: (SecuritycenterOrganizationsSourcesFindingsExplanationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindingExplanation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/sources/{sourcesId}/findings/{findingsId}/explanations/{explanationsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.sources.findings.explanations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsSourcesFindingsExplanationsGetRequest',
+        response_type_name='FindingExplanation',
         supports_download=False,
     )
 
@@ -2640,7 +2953,7 @@ class SecuritycenterV2(base_api.BaseApiClient):
         method_id='securitycenter.organizations.sources.findings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['fieldMask', 'filter', 'omitTotalSize', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/findings',
         request_field='',
         request_type_name='SecuritycenterOrganizationsSourcesFindingsListRequest',
@@ -2753,6 +3066,80 @@ class SecuritycenterV2(base_api.BaseApiClient):
         request_field='googleCloudSecuritycenterV2SecurityMarks',
         request_type_name='SecuritycenterOrganizationsSourcesFindingsUpdateSecurityMarksRequest',
         response_type_name='GoogleCloudSecuritycenterV2SecurityMarks',
+        supports_download=False,
+    )
+
+  class OrganizationsSourcesLocationsComplianceSnapshotsService(base_api.BaseApiService):
+    """Service class for the organizations_sources_locations_complianceSnapshots resource."""
+
+    _NAME = 'organizations_sources_locations_complianceSnapshots'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsSourcesLocationsComplianceSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Query for compliance snapshots.
+
+      Args:
+        request: (SecuritycenterOrganizationsSourcesLocationsComplianceSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListComplianceSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/sources/{sourcesId}/locations/{locationsId}/complianceSnapshots',
+        http_method='GET',
+        method_id='securitycenter.organizations.sources.locations.complianceSnapshots.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/complianceSnapshots',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsSourcesLocationsComplianceSnapshotsListRequest',
+        response_type_name='ListComplianceSnapshotsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsSourcesLocationsFindingsExplanationsService(base_api.BaseApiService):
+    """Service class for the organizations_sources_locations_findings_explanations resource."""
+
+    _NAME = 'organizations_sources_locations_findings_explanations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.OrganizationsSourcesLocationsFindingsExplanationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a text explanation for the given finding. If no location is specified, finding is assumed to be in global. If the explanation was recently generated, a cached version is returned.
+
+      Args:
+        request: (SecuritycenterOrganizationsSourcesLocationsFindingsExplanationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindingExplanation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/organizations/{organizationsId}/sources/{sourcesId}/locations/{locationsId}/findings/{findingsId}/explanations/{explanationsId}',
+        http_method='GET',
+        method_id='securitycenter.organizations.sources.locations.findings.explanations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterOrganizationsSourcesLocationsFindingsExplanationsGetRequest',
+        response_type_name='FindingExplanation',
         supports_download=False,
     )
 
@@ -2876,7 +3263,7 @@ class SecuritycenterV2(base_api.BaseApiClient):
         method_id='securitycenter.organizations.sources.locations.findings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['fieldMask', 'filter', 'omitTotalSize', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/findings',
         request_field='',
         request_type_name='SecuritycenterOrganizationsSourcesLocationsFindingsListRequest',
@@ -3912,6 +4299,100 @@ class SecuritycenterV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsSourcesLocationsFindingsService(base_api.BaseApiService):
+    """Service class for the projects_sources___locations_findings resource."""
+
+    _NAME = 'projects_sources___locations_findings'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.ProjectsSourcesLocationsFindingsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def ListFindingFieldDetails(self, request, global_params=None):
+      r"""Lists all distinct finding property names along with their details. Specific details include whether they can be used for contains filters and with what subfields. This method is to be used only by Pantheon.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesLocationsFindingsListFindingFieldDetailsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListFindingFieldDetailsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListFindingFieldDetails')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListFindingFieldDetails.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/sources/-/locations/{locationsId}/findings:listFindingFieldDetails',
+        http_method='GET',
+        method_id='securitycenter.projects.sources.-.locations.findings.listFindingFieldDetails',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['includeNestedContainsSubfields', 'pageSize', 'pageToken', 'propertyType'],
+        relative_path='v2/{+parent}/findings:listFindingFieldDetails',
+        request_field='',
+        request_type_name='SecuritycenterProjectsSourcesLocationsFindingsListFindingFieldDetailsRequest',
+        response_type_name='ListFindingFieldDetailsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsSourcesLocationsService(base_api.BaseApiService):
+    """Service class for the projects_sources___locations resource."""
+
+    _NAME = 'projects_sources___locations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.ProjectsSourcesLocationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsSourcesService(base_api.BaseApiService):
+    """Service class for the projects_sources__ resource."""
+
+    _NAME = 'projects_sources__'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.ProjectsSourcesService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+  class ProjectsSourcesFindingsExplanationsService(base_api.BaseApiService):
+    """Service class for the projects_sources_findings_explanations resource."""
+
+    _NAME = 'projects_sources_findings_explanations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.ProjectsSourcesFindingsExplanationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a text explanation for the given finding. If no location is specified, finding is assumed to be in global. If the explanation was recently generated, a cached version is returned.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesFindingsExplanationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindingExplanation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/sources/{sourcesId}/findings/{findingsId}/explanations/{explanationsId}',
+        http_method='GET',
+        method_id='securitycenter.projects.sources.findings.explanations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsSourcesFindingsExplanationsGetRequest',
+        response_type_name='FindingExplanation',
+        supports_download=False,
+    )
+
   class ProjectsSourcesFindingsExternalSystemsService(base_api.BaseApiService):
     """Service class for the projects_sources_findings_externalSystems resource."""
 
@@ -3959,33 +4440,6 @@ class SecuritycenterV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a finding in a location. The corresponding source must exist for finding creation to succeed.
-
-      Args:
-        request: (SecuritycenterProjectsSourcesFindingsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudSecuritycenterV2Finding) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/sources/{sourcesId}/findings',
-        http_method='POST',
-        method_id='securitycenter.projects.sources.findings.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['findingId'],
-        relative_path='v2/{+parent}/findings',
-        request_field='googleCloudSecuritycenterV2Finding',
-        request_type_name='SecuritycenterProjectsSourcesFindingsCreateRequest',
-        response_type_name='GoogleCloudSecuritycenterV2Finding',
-        supports_download=False,
-    )
-
     def Group(self, request, global_params=None):
       r"""Filters an organization or source's findings and groups them by their specified properties in a location. If no location is specified, findings are assumed to be in global To group across all sources provide a `-` as the source id. The following list shows some examples: + `/v2/organizations/{organization_id}/sources/-/findings` + `/v2/organizations/{organization_id}/sources/-/locations/{location_id}/findings` + `/v2/folders/{folder_id}/sources/-/findings` + `/v2/folders/{folder_id}/sources/-/locations/{location_id}/findings` + `/v2/projects/{project_id}/sources/-/findings` + `/v2/projects/{project_id}/sources/-/locations/{location_id}/findings`.
 
@@ -4032,7 +4486,7 @@ class SecuritycenterV2(base_api.BaseApiClient):
         method_id='securitycenter.projects.sources.findings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['fieldMask', 'filter', 'omitTotalSize', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/findings',
         request_field='',
         request_type_name='SecuritycenterProjectsSourcesFindingsListRequest',
@@ -4148,6 +4602,80 @@ class SecuritycenterV2(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsSourcesLocationsComplianceSnapshotsService(base_api.BaseApiService):
+    """Service class for the projects_sources_locations_complianceSnapshots resource."""
+
+    _NAME = 'projects_sources_locations_complianceSnapshots'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.ProjectsSourcesLocationsComplianceSnapshotsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Query for compliance snapshots.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesLocationsComplianceSnapshotsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListComplianceSnapshotsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/sources/{sourcesId}/locations/{locationsId}/complianceSnapshots',
+        http_method='GET',
+        method_id='securitycenter.projects.sources.locations.complianceSnapshots.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v2/{+parent}/complianceSnapshots',
+        request_field='',
+        request_type_name='SecuritycenterProjectsSourcesLocationsComplianceSnapshotsListRequest',
+        response_type_name='ListComplianceSnapshotsResponse',
+        supports_download=False,
+    )
+
+  class ProjectsSourcesLocationsFindingsExplanationsService(base_api.BaseApiService):
+    """Service class for the projects_sources_locations_findings_explanations resource."""
+
+    _NAME = 'projects_sources_locations_findings_explanations'
+
+    def __init__(self, client):
+      super(SecuritycenterV2.ProjectsSourcesLocationsFindingsExplanationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Gets a text explanation for the given finding. If no location is specified, finding is assumed to be in global. If the explanation was recently generated, a cached version is returned.
+
+      Args:
+        request: (SecuritycenterProjectsSourcesLocationsFindingsExplanationsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (FindingExplanation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/sources/{sourcesId}/locations/{locationsId}/findings/{findingsId}/explanations/{explanationsId}',
+        http_method='GET',
+        method_id='securitycenter.projects.sources.locations.findings.explanations.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='SecuritycenterProjectsSourcesLocationsFindingsExplanationsGetRequest',
+        response_type_name='FindingExplanation',
+        supports_download=False,
+    )
+
   class ProjectsSourcesLocationsFindingsExternalSystemsService(base_api.BaseApiService):
     """Service class for the projects_sources_locations_findings_externalSystems resource."""
 
@@ -4195,33 +4723,6 @@ class SecuritycenterV2(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def Create(self, request, global_params=None):
-      r"""Creates a finding in a location. The corresponding source must exist for finding creation to succeed.
-
-      Args:
-        request: (SecuritycenterProjectsSourcesLocationsFindingsCreateRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (GoogleCloudSecuritycenterV2Finding) The response message.
-      """
-      config = self.GetMethodConfig('Create')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    Create.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v2/projects/{projectsId}/sources/{sourcesId}/locations/{locationsId}/findings',
-        http_method='POST',
-        method_id='securitycenter.projects.sources.locations.findings.create',
-        ordered_params=['parent'],
-        path_params=['parent'],
-        query_params=['findingId'],
-        relative_path='v2/{+parent}/findings',
-        request_field='googleCloudSecuritycenterV2Finding',
-        request_type_name='SecuritycenterProjectsSourcesLocationsFindingsCreateRequest',
-        response_type_name='GoogleCloudSecuritycenterV2Finding',
-        supports_download=False,
-    )
-
     def Group(self, request, global_params=None):
       r"""Filters an organization or source's findings and groups them by their specified properties in a location. If no location is specified, findings are assumed to be in global To group across all sources provide a `-` as the source id. The following list shows some examples: + `/v2/organizations/{organization_id}/sources/-/findings` + `/v2/organizations/{organization_id}/sources/-/locations/{location_id}/findings` + `/v2/folders/{folder_id}/sources/-/findings` + `/v2/folders/{folder_id}/sources/-/locations/{location_id}/findings` + `/v2/projects/{project_id}/sources/-/findings` + `/v2/projects/{project_id}/sources/-/locations/{location_id}/findings`.
 
@@ -4268,7 +4769,7 @@ class SecuritycenterV2(base_api.BaseApiClient):
         method_id='securitycenter.projects.sources.locations.findings.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['fieldMask', 'filter', 'orderBy', 'pageSize', 'pageToken'],
+        query_params=['fieldMask', 'filter', 'omitTotalSize', 'orderBy', 'pageSize', 'pageToken'],
         relative_path='v2/{+parent}/findings',
         request_field='',
         request_type_name='SecuritycenterProjectsSourcesLocationsFindingsListRequest',

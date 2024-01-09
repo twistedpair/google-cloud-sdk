@@ -401,4 +401,7 @@ def HandleUniverseDomainConflict(new_universe_domain, account):
 
   if should_update_universe_domain:
     properties.VALUES.core.universe_domain.Set(new_universe_domain)
-    log.info('Updated property [core/universe_domain].')
+    properties.PersistProperty(
+        properties.VALUES.core.universe_domain, new_universe_domain
+    )
+    log.status.Print('Updated property [core/universe_domain].')

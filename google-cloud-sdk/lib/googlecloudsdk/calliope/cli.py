@@ -619,9 +619,20 @@ class CLILoader(object):
         default=None,  # Tri-valued, None => don't override the property.
         const='true',
         choices=('true', 'false'),
-        action=actions.StoreBooleanProperty(
-            properties.VALUES.core.user_output_enabled),
-        help='Print user intended output to the console.')
+        action=actions.DeprecationAction(
+            '--user-output-enabled',
+            warn=(
+                'The `{flag_name}` flag will no longer support the explicit use'
+                ' of the `true/false` optional value in an upcoming release.'
+            ),
+            removed=False,
+            show_message=lambda _: False,
+            action=actions.StoreBooleanProperty(
+                properties.VALUES.core.user_output_enabled
+            ),
+        ),
+        help='Print user intended output to the console.',
+    )
 
     top_element.ai.add_argument(
         '--log-http',

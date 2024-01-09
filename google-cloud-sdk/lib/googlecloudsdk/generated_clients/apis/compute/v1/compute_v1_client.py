@@ -6198,12 +6198,12 @@ class ComputeV1(base_api.BaseApiClient):
       Args:
         request: (ComputeInstancesPerformMaintenanceRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
-
       Returns:
         (Operation) The response message.
       """
       config = self.GetMethodConfig('PerformMaintenance')
-      return self._RunMethod(config, request, global_params=global_params)
+      return self._RunMethod(
+          config, request, global_params=global_params)
 
     PerformMaintenance.method_config = lambda: base_api.ApiMethodInfo(
         http_method='POST',

@@ -184,6 +184,55 @@ class ConfigServiceV2Transport(abc.ABC):
                 default_timeout=None,
                 client_info=client_info,
             ),
+            self.list_exclusions: gapic_v1.method.wrap_method(
+                self.list_exclusions,
+                default_retry=retries.Retry(
+initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.DeadlineExceeded,
+                        core_exceptions.InternalServerError,
+                        core_exceptions.ServiceUnavailable,
+                    ),
+                    deadline=60.0,
+                ),
+                default_timeout=60.0,
+                client_info=client_info,
+            ),
+            self.get_exclusion: gapic_v1.method.wrap_method(
+                self.get_exclusion,
+                default_retry=retries.Retry(
+initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.DeadlineExceeded,
+                        core_exceptions.InternalServerError,
+                        core_exceptions.ServiceUnavailable,
+                    ),
+                    deadline=60.0,
+                ),
+                default_timeout=60.0,
+                client_info=client_info,
+            ),
+            self.create_exclusion: gapic_v1.method.wrap_method(
+                self.create_exclusion,
+                default_timeout=120.0,
+                client_info=client_info,
+            ),
+            self.update_exclusion: gapic_v1.method.wrap_method(
+                self.update_exclusion,
+                default_timeout=120.0,
+                client_info=client_info,
+            ),
+            self.delete_exclusion: gapic_v1.method.wrap_method(
+                self.delete_exclusion,
+                default_retry=retries.Retry(
+initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if_exception_type(
+                        core_exceptions.DeadlineExceeded,
+                        core_exceptions.InternalServerError,
+                        core_exceptions.ServiceUnavailable,
+                    ),
+                    deadline=60.0,
+                ),
+                default_timeout=60.0,
+                client_info=client_info,
+            ),
             self.list_sinks: gapic_v1.method.wrap_method(
                 self.list_sinks,
                 default_retry=retries.Retry(
@@ -241,16 +290,6 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
                 default_timeout=60.0,
                 client_info=client_info,
             ),
-            self.create_link: gapic_v1.method.wrap_method(
-                self.create_link,
-                default_timeout=None,
-                client_info=client_info,
-            ),
-            self.delete_link: gapic_v1.method.wrap_method(
-                self.delete_link,
-                default_timeout=None,
-                client_info=client_info,
-            ),
             self.list_links: gapic_v1.method.wrap_method(
                 self.list_links,
                 default_timeout=None,
@@ -261,53 +300,14 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
                 default_timeout=None,
                 client_info=client_info,
             ),
-            self.list_exclusions: gapic_v1.method.wrap_method(
-                self.list_exclusions,
-                default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if_exception_type(
-                        core_exceptions.DeadlineExceeded,
-                        core_exceptions.InternalServerError,
-                        core_exceptions.ServiceUnavailable,
-                    ),
-                    deadline=60.0,
-                ),
-                default_timeout=60.0,
+            self.create_link: gapic_v1.method.wrap_method(
+                self.create_link,
+                default_timeout=None,
                 client_info=client_info,
             ),
-            self.get_exclusion: gapic_v1.method.wrap_method(
-                self.get_exclusion,
-                default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if_exception_type(
-                        core_exceptions.DeadlineExceeded,
-                        core_exceptions.InternalServerError,
-                        core_exceptions.ServiceUnavailable,
-                    ),
-                    deadline=60.0,
-                ),
-                default_timeout=60.0,
-                client_info=client_info,
-            ),
-            self.create_exclusion: gapic_v1.method.wrap_method(
-                self.create_exclusion,
-                default_timeout=120.0,
-                client_info=client_info,
-            ),
-            self.update_exclusion: gapic_v1.method.wrap_method(
-                self.update_exclusion,
-                default_timeout=120.0,
-                client_info=client_info,
-            ),
-            self.delete_exclusion: gapic_v1.method.wrap_method(
-                self.delete_exclusion,
-                default_retry=retries.Retry(
-initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if_exception_type(
-                        core_exceptions.DeadlineExceeded,
-                        core_exceptions.InternalServerError,
-                        core_exceptions.ServiceUnavailable,
-                    ),
-                    deadline=60.0,
-                ),
-                default_timeout=60.0,
+            self.delete_link: gapic_v1.method.wrap_method(
+                self.delete_link,
+                default_timeout=None,
                 client_info=client_info,
             ),
             self.get_cmek_settings: gapic_v1.method.wrap_method(
@@ -489,6 +489,51 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
         raise NotImplementedError()
 
     @property
+    def list_exclusions(self) -> Callable[
+            [logging_config.ListExclusionsRequest],
+            Union[
+                logging_config.ListExclusionsResponse,
+                Awaitable[logging_config.ListExclusionsResponse]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def get_exclusion(self) -> Callable[
+            [logging_config.GetExclusionRequest],
+            Union[
+                logging_config.LogExclusion,
+                Awaitable[logging_config.LogExclusion]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def create_exclusion(self) -> Callable[
+            [logging_config.CreateExclusionRequest],
+            Union[
+                logging_config.LogExclusion,
+                Awaitable[logging_config.LogExclusion]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def update_exclusion(self) -> Callable[
+            [logging_config.UpdateExclusionRequest],
+            Union[
+                logging_config.LogExclusion,
+                Awaitable[logging_config.LogExclusion]
+            ]]:
+        raise NotImplementedError()
+
+    @property
+    def delete_exclusion(self) -> Callable[
+            [logging_config.DeleteExclusionRequest],
+            Union[
+                empty_pb2.Empty,
+                Awaitable[empty_pb2.Empty]
+            ]]:
+        raise NotImplementedError()
+
+    @property
     def list_sinks(self) -> Callable[
             [logging_config.ListSinksRequest],
             Union[
@@ -534,24 +579,6 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
         raise NotImplementedError()
 
     @property
-    def create_link(self) -> Callable[
-            [logging_config.CreateLinkRequest],
-            Union[
-                operations_pb2.Operation,
-                Awaitable[operations_pb2.Operation]
-            ]]:
-        raise NotImplementedError()
-
-    @property
-    def delete_link(self) -> Callable[
-            [logging_config.DeleteLinkRequest],
-            Union[
-                operations_pb2.Operation,
-                Awaitable[operations_pb2.Operation]
-            ]]:
-        raise NotImplementedError()
-
-    @property
     def list_links(self) -> Callable[
             [logging_config.ListLinksRequest],
             Union[
@@ -570,47 +597,20 @@ initial=0.1,maximum=60.0,multiplier=1.3,                    predicate=retries.if
         raise NotImplementedError()
 
     @property
-    def list_exclusions(self) -> Callable[
-            [logging_config.ListExclusionsRequest],
+    def create_link(self) -> Callable[
+            [logging_config.CreateLinkRequest],
             Union[
-                logging_config.ListExclusionsResponse,
-                Awaitable[logging_config.ListExclusionsResponse]
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
             ]]:
         raise NotImplementedError()
 
     @property
-    def get_exclusion(self) -> Callable[
-            [logging_config.GetExclusionRequest],
+    def delete_link(self) -> Callable[
+            [logging_config.DeleteLinkRequest],
             Union[
-                logging_config.LogExclusion,
-                Awaitable[logging_config.LogExclusion]
-            ]]:
-        raise NotImplementedError()
-
-    @property
-    def create_exclusion(self) -> Callable[
-            [logging_config.CreateExclusionRequest],
-            Union[
-                logging_config.LogExclusion,
-                Awaitable[logging_config.LogExclusion]
-            ]]:
-        raise NotImplementedError()
-
-    @property
-    def update_exclusion(self) -> Callable[
-            [logging_config.UpdateExclusionRequest],
-            Union[
-                logging_config.LogExclusion,
-                Awaitable[logging_config.LogExclusion]
-            ]]:
-        raise NotImplementedError()
-
-    @property
-    def delete_exclusion(self) -> Callable[
-            [logging_config.DeleteExclusionRequest],
-            Union[
-                empty_pb2.Empty,
-                Awaitable[empty_pb2.Empty]
+                operations_pb2.Operation,
+                Awaitable[operations_pb2.Operation]
             ]]:
         raise NotImplementedError()
 

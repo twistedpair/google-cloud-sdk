@@ -61,9 +61,9 @@ properties:
     type: string
   rules:
     description: |-
-      Rules that define how traffic is routed and handled. At least
-      one RouteRule must be supplied. If there are multiple rules
-      then the action taken will be the first rule to match.
+      Rules that define how traffic is routed and handled. At least one
+      RouteRule must be supplied. If there are multiple rules then the
+      action taken will be the first rule to match.
     type: array
     items:
       $ref: TlsRouteRouteRule.yaml

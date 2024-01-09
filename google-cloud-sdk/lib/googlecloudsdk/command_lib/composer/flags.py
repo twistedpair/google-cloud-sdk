@@ -851,6 +851,26 @@ DISABLE_HIGH_RESILIENCE = base.Argument(
     """
 )
 
+ENABLE_LOGS_IN_CLOUD_LOGGING_ONLY = base.Argument(
+    '--enable-logs-in-cloud-logging-only',
+    default=None,
+    const=True,
+    action='store_const',
+    help="""\
+    Enable logs in cloud logging only, supported for Composer 2 Environments.
+    """,
+)
+
+DISABLE_LOGS_IN_CLOUD_LOGGING_ONLY = base.Argument(
+    '--disable-logs-in-cloud-logging-only',
+    default=None,
+    const=True,
+    action='store_const',
+    help="""\
+    Disable logs in cloud logging only, supported for Composer 2 Environments.
+    """,
+)
+
 CLOUD_SQL_PREFERRED_ZONE = base.Argument(
     '--cloud-sql-preferred-zone',
     default=None,

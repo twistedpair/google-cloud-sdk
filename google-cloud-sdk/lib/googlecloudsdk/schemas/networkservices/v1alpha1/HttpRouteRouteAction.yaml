@@ -34,6 +34,10 @@ properties:
     type: array
     items:
       $ref: HttpRouteDestination.yaml
+  directResponse:
+    description: |-
+      Static HTTP Response object to be returned regardless of the request.
+    $ref: HttpRouteHttpDirectResponse.yaml
   faultInjectionPolicy:
     description: |-
       The specification for fault injection introduced into traffic to test
@@ -45,6 +49,13 @@ properties:
       be ignored by clients that are configured with a
       fault_injection_policy
     $ref: HttpRouteFaultInjectionPolicy.yaml
+  idleTimeout:
+    description: |-
+      Specifies the idle timeout for the selected route. The idle timeout is
+      defined as the period in which there are no bytes sent or received on
+      either the upstream or downstream connection. If not set, the default
+      idle timeout is 1 hour. If set to 0s, the timeout will be disabled.
+    type: string
   redirect:
     description: |-
       If set, the request is directed as configured by this field.
@@ -52,7 +63,10 @@ properties:
   requestHeaderModifier:
     description: |-
       The specification for modifying the headers of a matching request
-      prior to delivery of the request to the destination.
+      prior to delivery of the request to the destination. If
+      HeaderModifiers are set on both the Destination and the RouteAction,
+      they will be merged. Conflicts between the two will not be resolved on
+      the configuration.
     $ref: HttpRouteHeaderModifier.yaml
   requestMirrorPolicy:
     description: |-
@@ -65,11 +79,16 @@ properties:
   responseHeaderModifier:
     description: |-
       The specification for modifying the headers of a response prior to
-      sending the response back to the client.
+      sending the response back to the client. If HeaderModifiers are set on
+      both the Destination and the RouteAction, they will be merged.
+      Conflicts between the two will not be resolved on the configuration.
     $ref: HttpRouteHeaderModifier.yaml
   retryPolicy:
     description: Specifies the retry policy associated with this route.
     $ref: HttpRouteRetryPolicy.yaml
+  statefulSessionAffinity:
+    description: Specifies cookie-based stateful session affinity.
+    $ref: HttpRouteStatefulSessionAffinityPolicy.yaml
   timeout:
     description: |-
       Specifies the timeout for selected route. Timeout is computed from the
@@ -82,7 +101,3 @@ properties:
       The specification for rewrite URL before forwarding requests to the
       destination.
     $ref: HttpRouteURLRewrite.yaml
-  statefulSessionAffinity:
-    description: |-
-      Specifies cookie-based stateful session affinity.
-    $ref: HttpRouteStatefulSessionAffinity.yaml

@@ -13,11 +13,6 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Wrapper for user-visible error exceptions to raise in the CLI."""
-
-from __future__ import absolute_import
-from __future__ import division
-from __future__ import unicode_literals
-
 from googlecloudsdk.api_lib.util import exceptions as api_lib_exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
 
@@ -160,8 +155,8 @@ class FetchPublicValueInfoPermissionDeniedException(Error):
   pass
 
 
-class CheckValuePermissionDeniedException(Error):
-  """Permission denied exception for check value."""
+class TestEnabledPermissionDeniedException(Error):
+  """Permission denied exception for test enabled."""
 
   pass
 

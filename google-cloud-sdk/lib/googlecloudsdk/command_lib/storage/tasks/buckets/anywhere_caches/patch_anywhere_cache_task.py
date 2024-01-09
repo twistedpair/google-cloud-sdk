@@ -26,46 +26,51 @@ from googlecloudsdk.core import log
 
 
 class PatchAnywhereCacheTask(task.Task):
-  """Updates an Anywhere Cache instance in particular zone of a bucket."""
+  """Updates an Anywhere Cache instance."""
 
-  def __init__(self, bucket_name, zone, admission_policy=None, ttl=None):
+  def __init__(
+      self, bucket_name, anywhere_cache_id, admission_policy=None, ttl=None
+  ):
     """Initializes task.
 
     Args:
       bucket_name (str): The name of the bucket where the Anywhere Cache should
         be updated.
-      zone (str): Name of the zonal location where the Anywhere Cache should be
-        updated.
+      anywhere_cache_id (str): Name of the zonal location where the Anywhere
+        Cache should be updated.
       admission_policy (str|None): The cache admission policy decides for each
         cache miss, that is whether to insert the missed block or not.
       ttl (str|None): Cache entry time-to-live in seconds
     """
     super(PatchAnywhereCacheTask, self).__init__()
     self._bucket_name = bucket_name
-    self._zone = zone
+    self._anywhere_cache_id = anywhere_cache_id
     self._admission_policy = admission_policy
     self._ttl = ttl
-    self.parallel_processing_key = '{}/{}'.format(bucket_name, zone)
+    self.parallel_processing_key = '{}/{}'.format(
+        bucket_name, anywhere_cache_id
+    )
 
   def execute(self, task_status_queue=None):
     log.status.Print(
-        'Updating a cache instance for bucket gs://{} in zone {}...'.format(
-            self._bucket_name, self._zone
+        'Updating a cache instance of bucket gs://{} having'
+        ' anywhere_cache_id {}'.format(
+            self._bucket_name, self._anywhere_cache_id
         )
     )
 
     provider = storage_url.ProviderPrefix.GCS
     response = api_factory.get_api(provider).patch_anywhere_cache(
         self._bucket_name,
-        self._zone,
+        self._anywhere_cache_id,
         admission_policy=self._admission_policy,
         ttl=self._ttl,
     )
 
     log.status.Print(
-        'Initiated the operation id: {} for updating a cache instance for'
-        ' bucket gs://{} in zone {}...'.format(
-            response.name, self._bucket_name, self._zone
+        'Initiated the operation id: {} for updating a cache instance of bucket'
+        ' gs://{} having anywhere_cache_id {}'.format(
+            response.name, self._bucket_name, self._anywhere_cache_id
         )
     )
 
@@ -77,7 +82,7 @@ class PatchAnywhereCacheTask(task.Task):
       return NotImplemented
     return (
         self._bucket_name == other._bucket_name
-        and self._zone == other._zone
+        and self._anywhere_cache_id == other._anywhere_cache_id
         and self._admission_policy == other._admission_policy
         and self._ttl == other._ttl
     )

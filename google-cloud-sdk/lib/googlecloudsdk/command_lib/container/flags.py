@@ -1369,15 +1369,19 @@ Examples:
   if autopilot:
     help_text = """\
 Set the components that have logging enabled. Valid component values are:
-`SYSTEM`, `WORKLOAD`, `API_SERVER`, `CONTROLLER_MANAGER`, `SCHEDULER`, `NONE`
+`SYSTEM`, `WORKLOAD`, `API_SERVER`, `CONTROLLER_MANAGER`, `SCHEDULER`
+
+The default is `SYSTEM,WORKLOAD`. If this flag is set, then `SYSTEM` must be
+included.
 
 For more information, see
 https://cloud.google.com/stackdriver/docs/solutions/gke/installing#available-logs
 
 Examples:
 
+  $ {command} --logging=SYSTEM
   $ {command} --logging=SYSTEM,WORKLOAD
-  $ {command} --logging=SYSTEM,API_SERVER,WORKLOAD
+  $ {command} --logging=SYSTEM,WORKLOAD,API_SERVER,CONTROLLER_MANAGER,SCHEDULER
 """
 
   parser.add_argument(
@@ -5170,6 +5174,16 @@ Examples:
       '--dataplane-v2-observability-mode',
       choices=_DPV2_OBS_MODE,
       help=help_text,
+      action=actions.DeprecationAction(
+          '--dataplane-v2-observability-mode',
+          warn=(
+              'The --dataplane-v2-observability-mode flag is deprecated and '
+              'will be removed in an upcoming release. '
+              'Please use `--enable-dataplane-v2-flow-observability` or '
+              '`--disable-dataplane-v2-flow-observability`.'
+          ),
+          removed=False,
+      ),
   )
 
 
@@ -6140,6 +6154,32 @@ def AddInTransitEncryptionFlag(parser):
   )
 
 
+def AddEnableCiliumClusterwideNetworkPolicyFlag(parser, is_update=False):
+  """adds --enable-cilium-clusterwide-network-policy flag to the given parser.
+
+  Args:
+    parser: A given parser.
+    is_update: Indicates that this is an update instead of create command.
+  """
+  help_text = 'Enable Cilium Clusterwide Network Policies on the cluster.'
+  if is_update:
+    parser.add_argument(
+        '--enable-cilium-clusterwide-network-policy',
+        action=arg_parsers.StoreTrueFalseAction,
+        help=help_text,
+        hidden=True,
+    )
+  else:
+    help_text += ' Disabled by default.'
+    parser.add_argument(
+        '--enable-cilium-clusterwide-network-policy',
+        action='store_true',
+        default=None,
+        help=help_text,
+        hidden=True,
+    )
+
+
 def AddSoleTenantNodeAffinityFileFlag(parser, hidden=False):
   """Adds --sole-tenant-node-affinity-file flag to the given parser.
 
@@ -6284,8 +6324,12 @@ def AddSecretManagerEnableFlag(parser, hidden=True):
     hidden: hidden status
   """
   help_text = """\
-    Enable the Secret Manager provider integration. This is disabled by default. To
-    learn more, see the Secret Manager overview: https://cloud.google.com/secret-manager/.
+        Enables the Secret Manager CSI driver provider component. See
+        https://secrets-store-csi-driver.sigs.k8s.io/introduction
+        https://github.com/GoogleCloudPlatform/secrets-store-csi-driver-provider-gcp
+
+        To disable in an existing cluster, explicitly set flag to
+        --no-enable-secret-manager
     """
   parser.add_argument(
       '--enable-secret-manager',

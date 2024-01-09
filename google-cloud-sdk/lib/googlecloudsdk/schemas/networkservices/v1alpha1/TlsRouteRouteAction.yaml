@@ -3,6 +3,8 @@ $schema: "http://json-schema.org/draft-06/schema#"
 title: networkservices v1alpha1 TlsRouteRouteAction export schema
 description: A gcloud export/import command YAML validation schema.
 type: object
+required:
+- destinations
 additionalProperties: false
 properties:
   COMMENT:
@@ -32,8 +34,10 @@ properties:
     type: array
     items:
       $ref: TlsRouteRouteDestination.yaml
-  originalDestination:
+  idleTimeout:
     description: |-
-      If true, Router will use the destination IP and port of the original
-      connection as the destination of the request. Default is false.
-    type: boolean
+      Specifies the idle timeout for the selected route. The idle timeout is
+      defined as the period in which there are no bytes sent or received on
+      either the upstream or downstream connection. If not set, the default
+      idle timeout is 1 hour. If set to 0s, the timeout will be disabled.
+    type: string

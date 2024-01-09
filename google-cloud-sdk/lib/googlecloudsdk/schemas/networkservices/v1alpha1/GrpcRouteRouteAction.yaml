@@ -44,30 +44,19 @@ properties:
       retry_policy will be ignored by clients that are configured with a
       fault_injection_policy
     $ref: GrpcRouteFaultInjectionPolicy.yaml
-  requestHeaderModifier:
+  idleTimeout:
     description: |-
-      The specification for modifying the headers of a matching request
-      prior to delivery of the request to the destination. Cannot be set if
-      the route is attached to a Router whose type is PROXYLESS_GRPC.
-    $ref: GrpcRouteHeaderModifier.yaml
-  requestMirrorPolicy:
-    description: |-
-      Specifies the policy on how requests intended for the route's
-      destination are mirrored to a separate mirrored destination. The proxy
-      will not wait for the mirrored destination to respond before returning
-      the response. Prior to sending traffic to the mirrored service, the
-      host / authority header is suffixed with -shadow. Cannot be set if the
-      route is attached to a Router whose type is PROXYLESS_GRPC.
-    $ref: GrpcRouteRequestMirrorPolicy.yaml
-  responseHeaderModifier:
-    description: |-
-      The specification for modifying the headers of a response prior to
-      sending the response back to the client. Cannot be set if the route is
-      attached to a Router whose type is PROXYLESS_GRPC.
-    $ref: GrpcRouteHeaderModifier.yaml
+      Specifies the idle timeout for the selected route. The idle timeout is
+      defined as the period in which there are no bytes sent or received on
+      either the upstream or downstream connection. If not set, the default
+      idle timeout is 1 hour. If set to 0s, the timeout will be disabled.
+    type: string
   retryPolicy:
     description: Specifies the retry policy associated with this route.
     $ref: GrpcRouteRetryPolicy.yaml
+  statefulSessionAffinity:
+    description: Specifies cookie-based stateful session affinity.
+    $ref: GrpcRouteStatefulSessionAffinityPolicy.yaml
   timeout:
     description: |-
       Specifies the timeout for selected route. Timeout is computed from the
@@ -75,9 +64,3 @@ properties:
       until the response has been completely processed. Timeout includes all
       retries.
     type: string
-  urlRewrite:
-    description: |-
-      The specification for rewrite URL before forwarding requests to the
-      destination. Cannot be set if the route is attached to a Router whose
-      type is PROXYLESS_GRPC.
-    $ref: GrpcRouteURLRewrite.yaml

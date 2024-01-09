@@ -38,16 +38,16 @@ class CloudquotasFoldersLocationsQuotaPreferencesCreateRequest(_messages.Message
 
     Values:
       QUOTA_SAFETY_CHECK_UNSPECIFIED: Unspecified quota safety check.
-      LIMIT_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
+      QUOTA_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
         cause the consumer's effective limit to be lower than the consumer's
         quota usage.
-      LIMIT_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
+      QUOTA_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
         would not cause the consumer's effective limit to decrease by more
         than 10 percent.
     """
     QUOTA_SAFETY_CHECK_UNSPECIFIED = 0
-    LIMIT_DECREASE_BELOW_USAGE = 1
-    LIMIT_DECREASE_PERCENTAGE_TOO_HIGH = 2
+    QUOTA_DECREASE_BELOW_USAGE = 1
+    QUOTA_DECREASE_PERCENTAGE_TOO_HIGH = 2
 
   ignoreSafetyChecks = _messages.EnumField('IgnoreSafetyChecksValueValuesEnum', 1, repeated=True)
   parent = _messages.StringField(2, required=True)
@@ -71,12 +71,12 @@ class CloudquotasFoldersLocationsQuotaPreferencesListRequest(_messages.Message):
 
   Fields:
     filter: Optional. Filter result QuotaPreferences by their state, type,
-      create/update time range. Example filters: `state=PENDING OR
-      state=PENDING_PARTIALLY_GRANTED` `state=PENDING OR
-      state=PENDING_PARTIALLY_GRANTED AND creation_time>2022-12-03T10:30:00`
-      If no filter is provided, returns all pending quota preferences.
+      create/update time range. Example filters: `reconciling=true AND
+      request_type=CLOUD_CONSOLE`, `reconciling=true OR
+      creation_time>2022-12-03T10:30:00`
     orderBy: Optional. How to order of the results. By default, the results
-      are ordered by create time. Example orders: `type` `state, create_time`
+      are ordered by create time. Example orders: `quota_id`, `service,
+      create_time`
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
@@ -129,16 +129,16 @@ class CloudquotasFoldersLocationsQuotaPreferencesPatchRequest(_messages.Message)
 
     Values:
       QUOTA_SAFETY_CHECK_UNSPECIFIED: Unspecified quota safety check.
-      LIMIT_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
+      QUOTA_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
         cause the consumer's effective limit to be lower than the consumer's
         quota usage.
-      LIMIT_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
+      QUOTA_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
         would not cause the consumer's effective limit to decrease by more
         than 10 percent.
     """
     QUOTA_SAFETY_CHECK_UNSPECIFIED = 0
-    LIMIT_DECREASE_BELOW_USAGE = 1
-    LIMIT_DECREASE_PERCENTAGE_TOO_HIGH = 2
+    QUOTA_DECREASE_BELOW_USAGE = 1
+    QUOTA_DECREASE_PERCENTAGE_TOO_HIGH = 2
 
   allowMissing = _messages.BooleanField(1)
   ignoreSafetyChecks = _messages.EnumField('IgnoreSafetyChecksValueValuesEnum', 2, repeated=True)
@@ -204,16 +204,16 @@ class CloudquotasOrganizationsLocationsQuotaPreferencesCreateRequest(_messages.M
 
     Values:
       QUOTA_SAFETY_CHECK_UNSPECIFIED: Unspecified quota safety check.
-      LIMIT_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
+      QUOTA_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
         cause the consumer's effective limit to be lower than the consumer's
         quota usage.
-      LIMIT_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
+      QUOTA_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
         would not cause the consumer's effective limit to decrease by more
         than 10 percent.
     """
     QUOTA_SAFETY_CHECK_UNSPECIFIED = 0
-    LIMIT_DECREASE_BELOW_USAGE = 1
-    LIMIT_DECREASE_PERCENTAGE_TOO_HIGH = 2
+    QUOTA_DECREASE_BELOW_USAGE = 1
+    QUOTA_DECREASE_PERCENTAGE_TOO_HIGH = 2
 
   ignoreSafetyChecks = _messages.EnumField('IgnoreSafetyChecksValueValuesEnum', 1, repeated=True)
   parent = _messages.StringField(2, required=True)
@@ -237,12 +237,12 @@ class CloudquotasOrganizationsLocationsQuotaPreferencesListRequest(_messages.Mes
 
   Fields:
     filter: Optional. Filter result QuotaPreferences by their state, type,
-      create/update time range. Example filters: `state=PENDING OR
-      state=PENDING_PARTIALLY_GRANTED` `state=PENDING OR
-      state=PENDING_PARTIALLY_GRANTED AND creation_time>2022-12-03T10:30:00`
-      If no filter is provided, returns all pending quota preferences.
+      create/update time range. Example filters: `reconciling=true AND
+      request_type=CLOUD_CONSOLE`, `reconciling=true OR
+      creation_time>2022-12-03T10:30:00`
     orderBy: Optional. How to order of the results. By default, the results
-      are ordered by create time. Example orders: `type` `state, create_time`
+      are ordered by create time. Example orders: `quota_id`, `service,
+      create_time`
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
@@ -295,16 +295,16 @@ class CloudquotasOrganizationsLocationsQuotaPreferencesPatchRequest(_messages.Me
 
     Values:
       QUOTA_SAFETY_CHECK_UNSPECIFIED: Unspecified quota safety check.
-      LIMIT_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
+      QUOTA_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
         cause the consumer's effective limit to be lower than the consumer's
         quota usage.
-      LIMIT_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
+      QUOTA_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
         would not cause the consumer's effective limit to decrease by more
         than 10 percent.
     """
     QUOTA_SAFETY_CHECK_UNSPECIFIED = 0
-    LIMIT_DECREASE_BELOW_USAGE = 1
-    LIMIT_DECREASE_PERCENTAGE_TOO_HIGH = 2
+    QUOTA_DECREASE_BELOW_USAGE = 1
+    QUOTA_DECREASE_PERCENTAGE_TOO_HIGH = 2
 
   allowMissing = _messages.BooleanField(1)
   ignoreSafetyChecks = _messages.EnumField('IgnoreSafetyChecksValueValuesEnum', 2, repeated=True)
@@ -370,16 +370,16 @@ class CloudquotasProjectsLocationsQuotaPreferencesCreateRequest(_messages.Messag
 
     Values:
       QUOTA_SAFETY_CHECK_UNSPECIFIED: Unspecified quota safety check.
-      LIMIT_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
+      QUOTA_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
         cause the consumer's effective limit to be lower than the consumer's
         quota usage.
-      LIMIT_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
+      QUOTA_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
         would not cause the consumer's effective limit to decrease by more
         than 10 percent.
     """
     QUOTA_SAFETY_CHECK_UNSPECIFIED = 0
-    LIMIT_DECREASE_BELOW_USAGE = 1
-    LIMIT_DECREASE_PERCENTAGE_TOO_HIGH = 2
+    QUOTA_DECREASE_BELOW_USAGE = 1
+    QUOTA_DECREASE_PERCENTAGE_TOO_HIGH = 2
 
   ignoreSafetyChecks = _messages.EnumField('IgnoreSafetyChecksValueValuesEnum', 1, repeated=True)
   parent = _messages.StringField(2, required=True)
@@ -403,12 +403,12 @@ class CloudquotasProjectsLocationsQuotaPreferencesListRequest(_messages.Message)
 
   Fields:
     filter: Optional. Filter result QuotaPreferences by their state, type,
-      create/update time range. Example filters: `state=PENDING OR
-      state=PENDING_PARTIALLY_GRANTED` `state=PENDING OR
-      state=PENDING_PARTIALLY_GRANTED AND creation_time>2022-12-03T10:30:00`
-      If no filter is provided, returns all pending quota preferences.
+      create/update time range. Example filters: `reconciling=true AND
+      request_type=CLOUD_CONSOLE`, `reconciling=true OR
+      creation_time>2022-12-03T10:30:00`
     orderBy: Optional. How to order of the results. By default, the results
-      are ordered by create time. Example orders: `type` `state, create_time`
+      are ordered by create time. Example orders: `quota_id`, `service,
+      create_time`
     pageSize: Optional. Requested page size. Server may return fewer items
       than requested. If unspecified, server will pick an appropriate default.
     pageToken: Optional. A token identifying a page of results the server
@@ -461,16 +461,16 @@ class CloudquotasProjectsLocationsQuotaPreferencesPatchRequest(_messages.Message
 
     Values:
       QUOTA_SAFETY_CHECK_UNSPECIFIED: Unspecified quota safety check.
-      LIMIT_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
+      QUOTA_DECREASE_BELOW_USAGE: Validates that a quota mutation would not
         cause the consumer's effective limit to be lower than the consumer's
         quota usage.
-      LIMIT_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
+      QUOTA_DECREASE_PERCENTAGE_TOO_HIGH: Validates that a quota mutation
         would not cause the consumer's effective limit to decrease by more
         than 10 percent.
     """
     QUOTA_SAFETY_CHECK_UNSPECIFIED = 0
-    LIMIT_DECREASE_BELOW_USAGE = 1
-    LIMIT_DECREASE_PERCENTAGE_TOO_HIGH = 2
+    QUOTA_DECREASE_BELOW_USAGE = 1
+    QUOTA_DECREASE_PERCENTAGE_TOO_HIGH = 2
 
   allowMissing = _messages.BooleanField(1)
   ignoreSafetyChecks = _messages.EnumField('IgnoreSafetyChecksValueValuesEnum', 2, repeated=True)
@@ -825,16 +825,12 @@ class QuotaPreference(_messages.Message):
       service specific dimension.
 
   Fields:
-    contactEmail: Optional. Input only. An optional email address that can be
-      used for quota related communication between the Google Cloud and the
-      user in case the Google Cloud needs further information to make a
-      decision on whether the user preferred quota can be granted. The Google
-      account for the email address must have quota update permission for the
-      project, folder or organization this quota preference is for. If no
-      contact email address is provided, or the provided email address does
-      not have the required quota update permission, the quota preference
-      request will be denied in case further information is required to make a
-      decision.
+    contactEmail: Required. Input only. An email address that can be used for
+      quota related communication between the Google Cloud and the user in
+      case the Google Cloud needs further information to make a decision on
+      whether the user preferred quota can be granted. The Google account for
+      the email address must have quota update permission for the project,
+      folder or organization this quota preference is for.
     createTime: Output only. Create time stamp
     dimensions: The dimensions that this quota preference applies to. The key
       of the map entry is the name of a dimension, such as "region", "zone",

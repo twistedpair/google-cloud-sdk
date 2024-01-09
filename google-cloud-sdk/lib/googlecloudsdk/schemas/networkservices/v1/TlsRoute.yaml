@@ -41,6 +41,9 @@ properties:
     type: array
     items:
       type: string
+  labels:
+    description: Set of label tags associated with the TlsRoute resource.
+    $ref: LabelsValue.yaml
   meshes:
     description: |-
       Meshes defines a list of meshes this TlsRoute is attached to, as one

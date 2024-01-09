@@ -572,6 +572,11 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     """
     if self.spec.hidden:
       command = base.Hidden(command)
+    if self.spec.universe_compatible is not None:
+      if self.spec.universe_compatible:
+        command = base.UniverseCompatible(command)
+      else:
+        command = base.DefaultUniverseOnly(command)
     if self.spec.release_tracks:
       command = base.ReleaseTracks(*self.spec.release_tracks)(command)
     if self.spec.deprecated_data:

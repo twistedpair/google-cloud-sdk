@@ -298,9 +298,12 @@ def _BuildUpgradeCandidateList(location_ref,
                       image_version_item.composer_ver) <= 0):
     # If so, builds list of eligible upgrades.
     for version in image_version_service.List(location_ref):
-      if (_ValidateCandidateImageVersionId(
-          image_version_id, version.imageVersionId).upgrade_valid and
-          python_version in version.supportedPythonVersions):
+      if _ValidateCandidateImageVersionId(
+          image_version_id, version.imageVersionId
+      ).upgrade_valid and (
+          not python_version
+          or python_version in version.supportedPythonVersions
+      ):
         available_upgrades.append(version)
   else:
     raise InvalidImageVersionError(

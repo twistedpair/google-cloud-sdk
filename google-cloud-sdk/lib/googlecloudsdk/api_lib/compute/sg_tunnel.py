@@ -146,7 +146,7 @@ class SecurityGatewayTunnel(object):
     while sent_data < data_len:
       try:
         sent_data += self._sock.send(data)
-      except ssl.SSLWantWriteError:
+      except (ssl.SSLWantWriteError, ssl.SSLWantReadError, BlockingIOError):
         select.select((), [self._sock], (), SEND_TIMEOUT_SECONDS)
 
   def _RunReceive(self):
@@ -186,6 +186,6 @@ class SecurityGatewayTunnel(object):
     data = b''
     try:
       data = self._sock.recv(MAX_BYTES_SOCKET_READ)
-    except ssl.SSLWantReadError:
+    except (ssl.SSLWantWriteError, ssl.SSLWantReadError, BlockingIOError):
       return data, -1
     return data, len(data)

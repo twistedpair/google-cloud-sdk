@@ -23,29 +23,8 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 
 
-def AddLabelsFlag(parser):
+def AddLabelsFlag(parser, help_text):
   """Add --labels flag."""
-
-  help_text = """\
-Labels to apply to the deployment. Existing values are overwritten. To retain
-the existing labels on a deployment, do not specify this flag.
-
-Examples:
-
-Update labels for an existing deployment:
-
-  $ {command} projects/p1/location/us-central1/deployments/my-deployment --gcs-source="gs://my-bucket" --labels="env=prod,team=finance"
-
-Clear labels for an existing deployment:
-
-  $ {command} projects/p1/location/us-central1/deployments/my-deployment --gcs-source="gs://my-bucket" --labels=""
-
-Add a label to an existing deployment:
-
-  First, fetch the current labels using the `describe` command, then follow the
-  preceding example for updating labels.
-"""
-
   parser.add_argument(
       '--labels',
       metavar='KEY=VALUE',
@@ -306,4 +285,22 @@ def AddLockFlag(parser, hidden=False):
       required=True,
       hidden=hidden,
       help='Lock ID of the lock file to verify person importing owns lock.',
+  )
+
+
+def AddDeploymentFlag(parser, hidden=False):
+  """Add --deployment flag."""
+  parser.add_argument(
+      '--deployment',
+      hidden=hidden,
+      help='Deployment reference for preview.',
+  )
+
+
+def AddPreviewModeFlag(parser, hidden=False):
+  """Add --preview-mode flag."""
+  parser.add_argument(
+      '--preview-mode',
+      hidden=hidden,
+      help='Preview mode to set it to either default or delete.',
   )

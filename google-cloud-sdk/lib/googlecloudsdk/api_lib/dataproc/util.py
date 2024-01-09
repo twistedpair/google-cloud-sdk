@@ -853,7 +853,6 @@ class PersonalAuthUtils(object):
       # pylint: disable=g-import-not-at-top
       import tink
       from tink import hybrid
-      from tink import cleartext_keyset_handle
       # pylint: enable=g-import-not-at-top
     except ImportError:
       raise exceptions.PersonalAuthError(
@@ -873,7 +872,7 @@ class PersonalAuthUtils(object):
 
     # Load public key and create keyset handle.
     reader = tink.JsonKeysetReader(public_key)
-    kh_pub = cleartext_keyset_handle.read(reader)
+    kh_pub = tink.read_no_secret_keyset_handle(reader)
 
     # Create encrypter instance.
     encrypter = kh_pub.primitive(hybrid.HybridEncrypt)
@@ -889,7 +888,6 @@ class PersonalAuthUtils(object):
       # pylint: disable=unused-import
       import tink
       from tink import hybrid
-      from tink import cleartext_keyset_handle
       # pylint: enable=g-import-not-at-top
       # pylint: enable=unused-import
       return True

@@ -40,6 +40,7 @@ class DataprocV1(base_api.BaseApiClient):
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
     self.projects_locations_autoscalingPolicies = self.ProjectsLocationsAutoscalingPoliciesService(self)
+    self.projects_locations_batches_sparkApplications = self.ProjectsLocationsBatchesSparkApplicationsService(self)
     self.projects_locations_batches = self.ProjectsLocationsBatchesService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations_sessionTemplates = self.ProjectsLocationsSessionTemplatesService(self)
@@ -281,6 +282,367 @@ class DataprocV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class ProjectsLocationsBatchesSparkApplicationsService(base_api.BaseApiService):
+    """Service class for the projects_locations_batches_sparkApplications resource."""
+
+    _NAME = 'projects_locations_batches_sparkApplications'
+
+    def __init__(self, client):
+      super(DataprocV1.ProjectsLocationsBatchesSparkApplicationsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Access(self, request, global_params=None):
+      r"""Obtain high level information corresponding to a single Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsAccessRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSparkApplicationResponse) The response message.
+      """
+      config = self.GetMethodConfig('Access')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Access.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:access',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.access',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:access',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsAccessRequest',
+        response_type_name='AccessSparkApplicationResponse',
+        supports_download=False,
+    )
+
+    def AccessEnvironmentInfo(self, request, global_params=None):
+      r"""Obtain environment details for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsAccessEnvironmentInfoRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSparkApplicationEnvironmentInfoResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessEnvironmentInfo')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessEnvironmentInfo.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:accessEnvironmentInfo',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.accessEnvironmentInfo',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent'],
+        relative_path='v1/{+name}:accessEnvironmentInfo',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsAccessEnvironmentInfoRequest',
+        response_type_name='AccessSparkApplicationEnvironmentInfoResponse',
+        supports_download=False,
+    )
+
+    def AccessJob(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark job for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsAccessJobRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSparkApplicationJobResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessJob')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessJob.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:accessJob',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.accessJob',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['jobId', 'parent'],
+        relative_path='v1/{+name}:accessJob',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsAccessJobRequest',
+        response_type_name='AccessSparkApplicationJobResponse',
+        supports_download=False,
+    )
+
+    def AccessSqlQueries(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark job.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlQueriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSparkApplicationSqlQueryResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessSqlQueries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessSqlQueries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:accessSqlQueries',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.accessSqlQueries',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['details', 'executionId', 'parent', 'planDescription'],
+        relative_path='v1/{+name}:accessSqlQueries',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlQueriesRequest',
+        response_type_name='AccessSparkApplicationSqlQueryResponse',
+        supports_download=False,
+    )
+
+    def AccessStageAttempt(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark stage attempt for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsAccessStageAttemptRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AccessSparkApplicationStageAttemptResponse) The response message.
+      """
+      config = self.GetMethodConfig('AccessStageAttempt')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    AccessStageAttempt.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:accessStageAttempt',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.accessStageAttempt',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['parent', 'stageAttemptId', 'stageId'],
+        relative_path='v1/{+name}:accessStageAttempt',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsAccessStageAttemptRequest',
+        response_type_name='AccessSparkApplicationStageAttemptResponse',
+        supports_download=False,
+    )
+
+    def Search(self, request, global_params=None):
+      r"""Obtain high level information and list of Spark Applications corresponding to a batch.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationsResponse) The response message.
+      """
+      config = self.GetMethodConfig('Search')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Search.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications:search',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.search',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['applicationStatus', 'maxEndTime', 'maxTime', 'minEndTime', 'minTime', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/sparkApplications:search',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchRequest',
+        response_type_name='SearchSparkApplicationsResponse',
+        supports_download=False,
+    )
+
+    def SearchExecutors(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark job.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationExecutorsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchExecutors')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchExecutors.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:searchExecutors',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.searchExecutors',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['executorStatus', 'pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchExecutors',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorsRequest',
+        response_type_name='SearchSparkApplicationExecutorsResponse',
+        supports_download=False,
+    )
+
+    def SearchJobs(self, request, global_params=None):
+      r"""Obtain list of spark jobs corresponding to a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchJobsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationJobsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchJobs')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchJobs.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:searchJobs',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.searchJobs',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['jobStatus', 'pageSize', 'pageToken', 'parent'],
+        relative_path='v1/{+name}:searchJobs',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchJobsRequest',
+        response_type_name='SearchSparkApplicationJobsResponse',
+        supports_download=False,
+    )
+
+    def SearchSqlQueries(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark job.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchSqlQueriesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationSqlQueriesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchSqlQueries')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchSqlQueries.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:searchSqlQueries',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.searchSqlQueries',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['details', 'pageSize', 'pageToken', 'parent', 'planDescription'],
+        relative_path='v1/{+name}:searchSqlQueries',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchSqlQueriesRequest',
+        response_type_name='SearchSparkApplicationSqlQueriesResponse',
+        supports_download=False,
+    )
+
+    def SearchStageAttemptTasks(self, request, global_params=None):
+      r"""Obtain data corresponding to tasks for a spark stage attempt for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptTasksRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationStageAttemptTasksResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchStageAttemptTasks')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchStageAttemptTasks.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:searchStageAttemptTasks',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.searchStageAttemptTasks',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent', 'sortRuntime', 'stageAttemptId', 'stageId', 'taskStatus'],
+        relative_path='v1/{+name}:searchStageAttemptTasks',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptTasksRequest',
+        response_type_name='SearchSparkApplicationStageAttemptTasksResponse',
+        supports_download=False,
+    )
+
+    def SearchStageAttempts(self, request, global_params=None):
+      r"""Obtain data corresponding to a spark stage attempts for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationStageAttemptsResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchStageAttempts')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchStageAttempts.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:searchStageAttempts',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.searchStageAttempts',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent', 'stageId'],
+        relative_path='v1/{+name}:searchStageAttempts',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptsRequest',
+        response_type_name='SearchSparkApplicationStageAttemptsResponse',
+        supports_download=False,
+    )
+
+    def SearchStages(self, request, global_params=None):
+      r"""Obtain data corresponding to stages for a Spark Application.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (SearchSparkApplicationStagesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchStages')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchStages.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:searchStages',
+        http_method='GET',
+        method_id='dataproc.projects.locations.batches.sparkApplications.searchStages',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['pageSize', 'pageToken', 'parent', 'stageStatus'],
+        relative_path='v1/{+name}:searchStages',
+        request_field='',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest',
+        response_type_name='SearchSparkApplicationStagesResponse',
+        supports_download=False,
+    )
+
+    def Write(self, request, global_params=None):
+      r"""Write wrapper objects from dataplane to spanner.
+
+      Args:
+        request: (DataprocProjectsLocationsBatchesSparkApplicationsWriteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (WriteSparkApplicationContextResponse) The response message.
+      """
+      config = self.GetMethodConfig('Write')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Write.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplications/{sparkApplicationsId}:write',
+        http_method='POST',
+        method_id='dataproc.projects.locations.batches.sparkApplications.write',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:write',
+        request_field='writeSparkApplicationContextRequest',
+        request_type_name='DataprocProjectsLocationsBatchesSparkApplicationsWriteRequest',
+        response_type_name='WriteSparkApplicationContextResponse',
+        supports_download=False,
+    )
+
   class ProjectsLocationsBatchesService(base_api.BaseApiService):
     """Service class for the projects_locations_batches resource."""
 
@@ -396,33 +758,6 @@ class DataprocV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='DataprocProjectsLocationsBatchesListRequest',
         response_type_name='ListBatchesResponse',
-        supports_download=False,
-    )
-
-    def UpdateSparkApplicationContext(self, request, global_params=None):
-      r"""Calls SparkIngestionService.PushSparkApplicationContextData to write wrapper objects from dataplane to spanner.
-
-      Args:
-        request: (DataprocProjectsLocationsBatchesUpdateSparkApplicationContextRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (UpdateSparkApplicationContextResponse) The response message.
-      """
-      config = self.GetMethodConfig('UpdateSparkApplicationContext')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    UpdateSparkApplicationContext.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/batches/{batchesId}/sparkApplicationContext',
-        http_method='PUT',
-        method_id='dataproc.projects.locations.batches.updateSparkApplicationContext',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='updateSparkApplicationContextRequest',
-        request_type_name='DataprocProjectsLocationsBatchesUpdateSparkApplicationContextRequest',
-        response_type_name='UpdateSparkApplicationContextResponse',
         supports_download=False,
     )
 

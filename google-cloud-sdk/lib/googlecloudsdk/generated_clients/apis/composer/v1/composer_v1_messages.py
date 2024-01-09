@@ -115,6 +115,17 @@ class CidrBlock(_messages.Message):
   displayName = _messages.StringField(2)
 
 
+class CloudDataLineageIntegration(_messages.Message):
+  r"""Configuration for Cloud Data Lineage integration.
+
+  Fields:
+    enabled: Optional. Whether or not Cloud Data Lineage integration is
+      enabled.
+  """
+
+  enabled = _messages.BooleanField(1)
+
+
 class ComposerProjectsLocationsEnvironmentsCreateRequest(_messages.Message):
   r"""A ComposerProjectsLocationsEnvironmentsCreateRequest object.
 
@@ -1526,6 +1537,8 @@ class SoftwareConfig(_messages.Message):
       format. Certain Apache Airflow configuration property values are
       [blocked](/composer/docs/concepts/airflow-configurations), and cannot be
       overridden.
+    cloudDataLineageIntegration: Optional. The configuration for Cloud Data
+      Lineage integration.
     envVariables: Optional. Additional environment variables to provide to the
       Apache Airflow scheduler, worker, and webserver processes. Environment
       variable names must match the regular expression `a-zA-Z_*`. They cannot
@@ -1674,11 +1687,12 @@ class SoftwareConfig(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   airflowConfigOverrides = _messages.MessageField('AirflowConfigOverridesValue', 1)
-  envVariables = _messages.MessageField('EnvVariablesValue', 2)
-  imageVersion = _messages.StringField(3)
-  pypiPackages = _messages.MessageField('PypiPackagesValue', 4)
-  pythonVersion = _messages.StringField(5)
-  schedulerCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  cloudDataLineageIntegration = _messages.MessageField('CloudDataLineageIntegration', 2)
+  envVariables = _messages.MessageField('EnvVariablesValue', 3)
+  imageVersion = _messages.StringField(4)
+  pypiPackages = _messages.MessageField('PypiPackagesValue', 5)
+  pythonVersion = _messages.StringField(6)
+  schedulerCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -219,6 +219,7 @@ def get_anywhere_cache_resource_from_metadata(metadata):
   )
   return gcs_resource_reference.GcsAnywhereCacheResource(
       admission_policy=metadata.admissionPolicy,
+      anywhere_cache_id=metadata.anywhereCacheId,
       bucket=metadata.bucket,
       create_time=metadata.createTime,
       id_string=metadata.id,
@@ -229,7 +230,7 @@ def get_anywhere_cache_resource_from_metadata(metadata):
       storage_url=url,
       ttl=metadata.ttl,
       update_time=metadata.updateTime,
-      zone=metadata.anywhereCacheId,
+      zone=metadata.zone,
   )
 
 

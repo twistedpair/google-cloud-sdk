@@ -87,6 +87,7 @@ class GcsAnywhereCacheResource(resource_reference.CloudResource):
   def __init__(
       self,
       admission_policy=None,
+      anywhere_cache_id=None,
       bucket=None,
       create_time=None,
       id_string=None,
@@ -100,6 +101,7 @@ class GcsAnywhereCacheResource(resource_reference.CloudResource):
       zone=None,
   ):
     self.admission_policy = admission_policy
+    self.anywhere_cache_id = anywhere_cache_id
     self.bucket = bucket
     self.create_time = create_time
     self.id = id_string
@@ -117,6 +119,7 @@ class GcsAnywhereCacheResource(resource_reference.CloudResource):
       return NotImplemented
     return (
         self.admission_policy == other.admission_policy
+        and self.anywhere_cache_id == other.anywhere_cache_id
         and self.bucket == other.bucket
         and self.create_time == other.create_time
         and self.id == other.id

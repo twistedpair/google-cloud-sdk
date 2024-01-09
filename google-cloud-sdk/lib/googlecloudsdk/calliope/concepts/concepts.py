@@ -38,17 +38,17 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-import copy
+import abc
 import re
 
 from googlecloudsdk.calliope.concepts import deps as deps_lib
+from googlecloudsdk.calliope.concepts import deps_map_util
 from googlecloudsdk.calliope.concepts import util as format_util
 from googlecloudsdk.command_lib.util.apis import registry
 from googlecloudsdk.command_lib.util.apis import yaml_command_schema_util as util
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-import six
 
 
 IGNORED_FIELDS = {
@@ -80,69 +80,43 @@ class InvalidResourceArgumentLists(Error):
             ', '.join(expected), ', '.join(actual)))
 
 
-class ConceptSpec(object):
+class ConceptSpec(object, metaclass=abc.ABCMeta):
   """Base class for concept args."""
 
   @property
+  @abc.abstractmethod
   def attributes(self):
     """A list of Attribute objects representing the attributes of the concept.
-
-    Must be defined in subclasses.
     """
-    raise NotImplementedError
 
   @property
+  @abc.abstractmethod
   def name(self):
-    """The name of the overall concept.
+    """The name of the overall concept."""
 
-    Must be defined in subclasses.
-    """
-    raise NotImplementedError
+  @abc.abstractmethod
+  def IsAnchor(self, attribute):
+    """Returns True if attribute is an anchor."""
 
-  def Initialize(self, deps):
-    """Initializes the concept using information provided by a Deps object.
+  @abc.abstractmethod
+  def Initialize(self, fallthroughs_map, parsed_args=None):
+    """Initializes the concept using fallthroughs and parsed args."""
 
-    Must be defined in subclasses.
-
-    Args:
-      deps: googlecloudsdk.calliope.concepts.deps.Deps object representing the
-        fallthroughs for the concept's attributes.
-
-    Returns:
-      the initialized concept.
-
-    Raises:
-      InitializationError, if the concept cannot be initialized.
-    """
-    raise NotImplementedError
-
+  @abc.abstractmethod
   def Parse(self, attribute_to_args_map, base_fallthroughs_map,
             parsed_args=None, plural=False, allow_empty=False):
-    """Lazy parsing function for resource.
+    """Lazy parsing function for resource."""
 
-    Must be overridden in subclasses.
-
-    Args:
-      attribute_to_args_map: {str: str}, A map of attribute names to the names
-        of their associated flags.
-      base_fallthroughs_map: {str: [deps.Fallthrough]} A map of attribute
-        names to non-argument fallthroughs, including command-level
-        fallthroughs.
-      parsed_args: the parsed Namespace.
-      plural: bool, True if multiple resources can be parsed, False otherwise.
-      allow_empty: bool, True if resource parsing is allowed to return no
-        resource, otherwise False.
-
-    Returns:
-      the initialized resource or a list of initialized resources if the
-        resource argument was pluralized.
-    """
-    raise NotImplementedError
+  @abc.abstractmethod
+  def BuildFullFallthroughsMap(
+      self, attribute_to_args_map, base_fallthroughs_map):
+    """Builds list of fallthroughs for each attribute."""
 
   def __eq__(self, other):
     if not isinstance(other, type(self)):
       return False
-    return self.name == other.name and self.attributes == other.attributes
+    else:
+      return self.name == other.name and self.attributes == other.attributes
 
   def __hash__(self):
     return hash(self.name) + hash(self.attributes)
@@ -154,6 +128,7 @@ class _Attribute(object):
   Attributes:
     name: The name of the attribute. Used primarily to control the arg or flag
       name corresponding to the attribute. Must be in all lower case.
+    param_name: corresponds to where the attribute is mapped in the resource
     help_text: String describing the attribute's relationship to the concept,
       used to generate help for an attribute flag.
     required: True if the attribute is required.
@@ -167,8 +142,8 @@ class _Attribute(object):
     value_type: the type to be accepted by the attribute arg. Defaults to str.
   """
 
-  def __init__(self, name, help_text=None, required=False, fallthroughs=None,
-               completer=None, value_type=None):
+  def __init__(self, name, param_name, help_text=None, required=False,
+               fallthroughs=None, completer=None, value_type=None):
     """Initializes."""
     # Check for attributes that mix lower- and uppercase. Camel case is not
     # handled consistently among libraries.
@@ -178,17 +153,19 @@ class _Attribute(object):
           'snake case (foo_bar) so they can be transformed to flag names.'
           .format(name))
     self.name = name
+    self.param_name = param_name or name
     self.help_text = help_text
     self.required = required
     self.fallthroughs = fallthroughs or []
     self.completer = completer
-    self.value_type = value_type or six.text_type
+    self.value_type = value_type or str
 
   def __eq__(self, other):
     """Overrides."""
     if not isinstance(other, type(self)):
       return False
-    return (self.name == other.name and self.help_text == other.help_text
+    return (self.name == other.name and self.param_name == other.param_name
+            and self.help_text == other.help_text
             and self.required == other.required
             and self.completer == other.completer
             and self.fallthroughs == other.fallthroughs
@@ -196,8 +173,8 @@ class _Attribute(object):
 
   def __hash__(self):
     return sum(map(hash, [
-        self.name, self.help_text, self.required, self.completer,
-        self.value_type])) + sum(map(hash, self.fallthroughs))
+        self.name, self.param_name, self.help_text, self.required,
+        self.completer, self.value_type])) + sum(map(hash, self.fallthroughs))
 
 
 class Attribute(_Attribute):
@@ -229,8 +206,8 @@ class Attribute(_Attribute):
 
   def __hash__(self):
     return super(Attribute, self).__hash__() + sum(
-        map(hash, [six.text_type(self.completer),
-                   six.text_type(self.completion_request_params),
+        map(hash, [str(self.completer),
+                   str(self.completion_request_params),
                    self.completion_id_field]))
 
 
@@ -254,8 +231,6 @@ class ResourceSpec(ConceptSpec):
     Returns:
       A ResourceSpec object.
     """
-    if not yaml_data:
-      return None
     collection = registry.GetAPICollection(
         yaml_data['collection'], api_version=api_version)
     attributes = ParseAttributesFromData(
@@ -319,7 +294,7 @@ class ResourceSpec(ConceptSpec):
     self._attributes = []
     self._param_names_map = {}
 
-    orig_kwargs = list(six.iterkeys(kwargs))
+    orig_kwargs = list(kwargs.keys())
     # Add attributes.
     anchor = False
     for i, param_name in enumerate(collection_params):
@@ -333,6 +308,7 @@ class ResourceSpec(ConceptSpec):
 
       new_attribute = Attribute(
           name=attribute_name,
+          param_name=param_name,
           help_text=attribute_config.help_text,
           required=True,
           fallthroughs=attribute_config.fallthroughs,
@@ -384,6 +360,203 @@ class ResourceSpec(ConceptSpec):
   def collection_info(self):
     return self._collection_info
 
+  # TODO(b/314193603): Add ParamName, AttributeName, and
+  # attribute_to_params_map to multitype to enable resource completers.
+  # Then add items to the meta class.
+  def ParamName(self, attribute_name):
+    """Gets the param name from attribute. Used for autocompleters."""
+    if attribute_name not in self.attribute_to_params_map:
+      raise ValueError(
+          'No param name found for attribute [{}]. Existing attributes are '
+          '[{}]'.format(attribute_name,
+                        ', '.join(sorted(self.attribute_to_params_map.keys()))))
+    return self.attribute_to_params_map[attribute_name]
+
+  def AttributeName(self, param_name):
+    """Gets the attribute name from param name. Used for autocompleters."""
+    for attribute_name, p in self.attribute_to_params_map.items():
+      if p == param_name:
+        return attribute_name
+    else:
+      return None
+
+  def Initialize(self, fallthroughs_map, parsed_args=None):
+    """Initializes a resource given its fallthroughs.
+
+    The fallthrough map is used to derive each resource attribute (including
+    the anchor). Returns a fully parsed resource object.
+
+    Args:
+      fallthroughs_map: {str: [deps_lib._FallthroughBase]}, a dict of finalized
+        fallthroughs for the resource.
+      parsed_args: the argparse namespace.
+
+    Returns:
+      (googlecloudsdk.core.resources.Resource) the fully initialized resource.
+
+    Raises:
+      googlecloudsdk.calliope.concepts.concepts.InitializationError, if the
+        concept can't be initialized.
+    """
+    params = {}
+
+    # Returns a function that can be used to parse each attribute, which will be
+    # used only if the resource parser does not receive a fully qualified
+    # resource name.
+    def LazyGet(name):
+      return lambda: deps_lib.Get(name, fallthroughs_map, parsed_args)
+
+    for attribute in self.attributes:
+      params[attribute.param_name] = LazyGet(attribute.name)
+    self._resources.RegisterApiByName(self._collection_info.api_name,
+                                      self._collection_info.api_version)
+    try:
+      return self._resources.Parse(
+          deps_lib.Get(
+              self.anchor.name, fallthroughs_map, parsed_args=parsed_args),
+          collection=self.collection,
+          params=params)
+    except deps_lib.AttributeNotFoundError as e:
+      raise InitializationError(
+          'The [{}] resource is not properly specified.\n'
+          '{}'.format(self.name, str(e)))
+    except resources.UserError as e:
+      raise InitializationError(str(e))
+
+  def Parse(self, attribute_to_args_map, base_fallthroughs_map,
+            parsed_args=None, plural=False, allow_empty=False):
+    """Lazy parsing function for resource.
+
+    Generates resource based off of the parsed_args (user provided
+    arguments) and specified fallthrough behavior.
+
+    Args:
+      attribute_to_args_map: {str: str}, A map of attribute names to the names
+        of their associated flags.
+      base_fallthroughs_map: {str: [deps.Fallthrough]}, A map of attribute
+        names to non-argument fallthroughs, including command-level
+        fallthroughs.
+      parsed_args: the parsed Namespace.
+      plural: bool, True if multiple resources can be parsed, False otherwise.
+      allow_empty: bool, True if resource parsing is allowed to return no
+        resource, otherwise False.
+
+    Returns:
+      the initialized resources.Resource or a list of resources.Resource if the
+        resource argument is plural.
+    """
+    if plural:
+      return self._ParseFromPluralValue(
+          attribute_to_args_map, base_fallthroughs_map, parsed_args,
+          allow_empty=allow_empty)
+    else:
+      return self._ParseFromValue(
+          attribute_to_args_map, base_fallthroughs_map, parsed_args,
+          allow_empty=allow_empty)
+
+  def BuildFullFallthroughsMap(
+      self, attribute_to_args_map, base_fallthroughs_map, parsed_args=None):
+    """Generate fallthrough map that is used to resolve resource params.
+
+    Used as source of truth for how each attribute is resolved. It is also used
+    to generate help text for both plural and singular resources.
+    Fallthroughs are a list of objects that, when called, try different ways of
+    resolving a resource attribute (see googlecloudsdk.calliope.concepts.
+    deps_lib._Fallthrough). This method builds a map from the name of each
+    attribute to its list of fallthroughs.
+
+    For each attribute, adds default flag fallthroughs and fully specified
+    anchor fallthroughs.
+
+    Args:
+      attribute_to_args_map: {str: str}, A map of attribute names to the names
+        of their associated flags.
+      base_fallthroughs_map: {str: [deps.Fallthrough]}, A map of attribute
+        names to non-argument fallthroughs, including command-level
+        fallthroughs.
+      parsed_args: Namespace | None, user's CLI input
+
+    Returns:
+      {str: [deps.Fallthrough]}, a map from attribute name to all its
+      fallthroughs.
+    """
+    fallthroughs_map = {**base_fallthroughs_map}
+    deps_map_util.AddFlagFallthroughs(
+        fallthroughs_map, self.attributes, attribute_to_args_map)
+    deps_map_util.UpdateWithValueFallthrough(
+        fallthroughs_map, self.anchor.name, parsed_args)
+    deps_map_util.AddAnchorFallthroughs(
+        fallthroughs_map, self.attributes, self.anchor, self.collection_info,
+        fallthroughs_map.get(self.anchor.name, []))
+    return fallthroughs_map
+
+  def _BuildFullFallthroughsMapList(
+      self, attribute_to_args_map, base_fallthroughs_map, parsed_args=None):
+    """Builds fallthrough map for each anchor value specified in a list.
+
+    For each anchor value, create a falthrough map to derive the rest
+    of the resource params. For each attribute, adds flag fallthroughs
+    and fully specified anchor fallthroughs. For each attribute,
+    adds default flag fallthroughs and fully specified anchor fallthroughs.
+
+    Args:
+      attribute_to_args_map: {str: str}, A map of attribute names to the names
+        of their associated flags.
+      base_fallthroughs_map: FallthroughsMap, A map of attribute names to
+        non-argument fallthroughs, including command-level fallthroughs.
+      parsed_args: Namespace, used to parse the anchor value and derive
+        fully specified fallthroughs.
+
+    Returns:
+      list[FallthroughsMap], fallthrough map for each anchor value
+    """
+    fallthroughs_map = {**base_fallthroughs_map}
+    deps_map_util.AddFlagFallthroughs(
+        fallthroughs_map, self.attributes, attribute_to_args_map)
+    deps_map_util.PluralizeFallthroughs(fallthroughs_map, self.anchor.name)
+
+    map_list = deps_map_util.CreateValueFallthroughMapList(
+        fallthroughs_map, self.anchor.name, parsed_args)
+    for full_map in map_list:
+      deps_map_util.AddAnchorFallthroughs(
+          full_map, self.attributes, self.anchor, self.collection_info,
+          full_map.get(self.anchor.name, []))
+
+    return map_list
+
+  def _ParseFromValue(
+      self, attribute_to_args_map, base_fallthroughs_map,
+      parsed_args, allow_empty=False):
+    """Helper for parsing a singular resource from user input."""
+    fallthroughs_map = self.BuildFullFallthroughsMap(
+        attribute_to_args_map, base_fallthroughs_map, parsed_args)
+    try:
+      return self.Initialize(
+          fallthroughs_map, parsed_args=parsed_args)
+    except InitializationError:
+      if allow_empty:
+        return None
+      raise
+
+  def _ParseFromPluralValue(
+      self, attribute_to_args_map, base_fallthroughs_map,
+      parsed_args, allow_empty=False):
+    """Helper for parsing a list of resources from user input."""
+    map_list = self._BuildFullFallthroughsMapList(
+        attribute_to_args_map, base_fallthroughs_map,
+        parsed_args=parsed_args)
+    parsed_resources = []
+    for fallthroughs_map in map_list:
+      resource = self.Initialize(fallthroughs_map, parsed_args=parsed_args)
+      parsed_resources.append(resource)
+
+    if parsed_resources:
+      return parsed_resources
+    elif allow_empty:
+      return []
+    else:
+      return self.Initialize(base_fallthroughs_map, parsed_args=parsed_args)
+
   def _AttributeName(self, param_name, attribute_config, anchor=False,
                      is_positional=None):
     """Chooses attribute name for a param name.
@@ -418,232 +591,6 @@ class ResourceSpec(ConceptSpec):
       return 'name'
     return param_name.replace('Id', '_id').lower()
 
-  def ParamName(self, attribute_name):
-    """Given an attribute name, gets the param name for resource parsing."""
-    if attribute_name not in self.attribute_to_params_map:
-      raise ValueError(
-          'No param name found for attribute [{}]. Existing attributes are '
-          '[{}]'.format(attribute_name,
-                        ', '.join(sorted(self.attribute_to_params_map.keys()))))
-    return self.attribute_to_params_map[attribute_name]
-
-  def AttributeName(self, param_name):
-    """Given a param name, gets the attribute name."""
-    for attribute_name, p in six.iteritems(self.attribute_to_params_map):
-      if p == param_name:
-        return attribute_name
-
-  def Initialize(self, fallthroughs_map, parsed_args=None):
-    """Initializes a resource given its fallthroughs.
-
-    If the attributes have a property or arg fallthrough but the full
-    resource name is provided to the anchor attribute flag, the information
-    from the resource name is used over the properties and args. This
-    preserves typical resource parsing behavior in existing surfaces.
-
-    Args:
-      fallthroughs_map: {str: [deps_lib._FallthroughBase]}, a dict of finalized
-        fallthroughs for the resource.
-      parsed_args: the argparse namespace.
-
-    Returns:
-      (googlecloudsdk.core.resources.Resource) the fully initialized resource.
-
-    Raises:
-      googlecloudsdk.calliope.concepts.concepts.InitializationError, if the
-        concept can't be initialized.
-    """
-    params = {}
-
-    # Returns a function that can be used to parse each attribute, which will be
-    # used only if the resource parser does not receive a fully qualified
-    # resource name.
-    def LazyGet(name):
-      f = lambda: deps_lib.Get(name, fallthroughs_map, parsed_args=parsed_args)
-      return f
-
-    for attribute in self.attributes:
-      params[self.ParamName(attribute.name)] = LazyGet(attribute.name)
-    self._resources.RegisterApiByName(self._collection_info.api_name,
-                                      self._collection_info.api_version)
-    try:
-      return self._resources.Parse(
-          deps_lib.Get(
-              self.anchor.name, fallthroughs_map, parsed_args=parsed_args),
-          collection=self.collection,
-          params=params)
-    except deps_lib.AttributeNotFoundError as e:
-      raise InitializationError(
-          'The [{}] resource is not properly specified.\n'
-          '{}'.format(self.name, six.text_type(e)))
-    except resources.UserError as e:
-      raise InitializationError(six.text_type(e))
-
-  def Parse(self, attribute_to_args_map, base_fallthroughs_map,
-            parsed_args=None, plural=False, allow_empty=False):
-    """Lazy parsing function for resource.
-
-    Args:
-      attribute_to_args_map: {str: str}, A map of attribute names to the names
-        of their associated flags.
-      base_fallthroughs_map: {str: [deps_lib.Fallthrough]} A map of attribute
-        names to non-argument fallthroughs, including command-level
-        fallthroughs.
-      parsed_args: the parsed Namespace.
-      plural: bool, True if multiple resources can be parsed, False otherwise.
-      allow_empty: bool, True if resource parsing is allowed to return no
-        resource, otherwise False.
-
-    Returns:
-      the initialized resource or a list of initialized resources if the
-        resource argument was pluralized.
-    """
-    if not plural:
-      fallthroughs_map = self.BuildFullFallthroughsMap(
-          attribute_to_args_map, base_fallthroughs_map,
-          with_anchor_fallthroughs=False)
-      try:
-        return self.Initialize(
-            fallthroughs_map, parsed_args=parsed_args)
-      except InitializationError:
-        if allow_empty:
-          return None
-        raise
-
-    results = self._ParseFromPluralValue(attribute_to_args_map,
-                                         base_fallthroughs_map,
-                                         self.anchor,
-                                         parsed_args)
-    if results:
-      return results
-
-    if allow_empty:
-      return []
-    fallthroughs_map = self.BuildFullFallthroughsMap(
-        attribute_to_args_map, base_fallthroughs_map)
-    return self.Initialize(
-        base_fallthroughs_map, parsed_args=parsed_args)
-
-  def _ParseFromPluralValue(self, attribute_to_args_map, base_fallthroughs_map,
-                            plural_attribute, parsed_args):
-    """Helper for parsing a list of results from a plural fallthrough."""
-    attribute_name = plural_attribute.name
-    fallthroughs_map = self.BuildFullFallthroughsMap(
-        attribute_to_args_map, base_fallthroughs_map, plural=True,
-        with_anchor_fallthroughs=False)
-    current_fallthroughs = fallthroughs_map.get(attribute_name, [])
-    # Iterate through the values provided to the argument, creating for
-    # each a separate parsed resource.
-    parsed_resources = []
-    for fallthrough in current_fallthroughs:
-      try:
-        values = fallthrough.GetValue(parsed_args)
-      except deps_lib.FallthroughNotFoundError:
-        continue
-      for value in values:
-        def F(return_value=value):
-          return return_value
-
-        new_fallthrough = deps_lib.Fallthrough(
-            F, fallthrough.hint, active=fallthrough.active)
-        fallthroughs_map[attribute_name] = [new_fallthrough]
-        # Add the anchor fallthroughs for this particular value, so that the
-        # error messages will contain the appropriate hints.
-        self._AddAnchorFallthroughs(plural_attribute, fallthroughs_map)
-        parsed_resources.append(
-            self.Initialize(
-                fallthroughs_map, parsed_args=parsed_args))
-      return parsed_resources
-
-  def BuildFullFallthroughsMap(self, attribute_to_args_map,
-                               base_fallthroughs_map, plural=False,
-                               with_anchor_fallthroughs=True):
-    """Builds map of all fallthroughs including arg names.
-
-    Fallthroughs are a list of objects that, when called, try different ways of
-    getting values for attributes (see googlecloudsdk.calliope.concepts.
-    deps_lib._Fallthrough). This method builds a map from the name of each
-    attribute to its fallthroughs, including the "primary" fallthrough
-    representing its corresponding argument value in parsed_args if any, and any
-    fallthroughs that were configured for the attribute beyond that.
-
-    Args:
-      attribute_to_args_map: {str: str}, A map of attribute names to the names
-        of their associated flags.
-      base_fallthroughs_map: {str: [deps_lib._FallthroughBase]}, A map of
-        attribute names to non-argument fallthroughs, including command-level
-        fallthroughs.
-      plural: bool, True if multiple resources can be parsed, False otherwise.
-      with_anchor_fallthroughs: bool, whether to add fully specified anchor
-        fallthroughs. Used only for getting help text/error messages,
-        and for determining which attributes are specified -- not for parsing.
-
-    Returns:
-      {str: [deps_lib._Fallthrough]}, a map from attribute name to its
-      fallthroughs.
-    """
-    fallthroughs_map = {}
-    for attribute in self.attributes:
-      fallthroughs_map[attribute.name] = (
-          self.GetArgAndBaseFallthroughsForAttribute(attribute_to_args_map,
-                                                     base_fallthroughs_map,
-                                                     attribute,
-                                                     plural=plural))
-    if not with_anchor_fallthroughs:
-      return fallthroughs_map
-    for attribute in self.attributes:
-      if self.IsAnchor(attribute):
-        self._AddAnchorFallthroughs(attribute, fallthroughs_map)
-    return fallthroughs_map
-
-  def GetArgAndBaseFallthroughsForAttribute(self,
-                                            attribute_to_args_map,
-                                            base_fallthroughs_map,
-                                            attribute,
-                                            plural=False):
-    """Gets all fallthroughs for an attribute except anchor-dependent ones."""
-    attribute_name = attribute.name
-    attribute_fallthroughs = []
-    # The only args that should be lists are anchor args for plural
-    # resources.
-    attribute_is_plural = self.IsAnchor(attribute) and plural
-
-    # Start the fallthroughs list with the primary associated arg for the
-    # attribute.
-    arg_name = attribute_to_args_map.get(attribute_name)
-    if arg_name:
-      attribute_fallthroughs.append(
-          deps_lib.ArgFallthrough(arg_name, plural=attribute_is_plural))
-
-    given_fallthroughs = base_fallthroughs_map.get(attribute_name, [])
-    for fallthrough in given_fallthroughs:
-      if attribute_is_plural:
-        fallthrough = copy.deepcopy(fallthrough)
-        fallthrough.plural = attribute_is_plural
-      attribute_fallthroughs.append(fallthrough)
-    return attribute_fallthroughs
-
-  def _GetAttributeAnchorFallthroughs(self, anchor_fallthroughs, attribute):
-    """Helper to get anchor-depednent fallthroughs for a specific attribute."""
-    parameter_name = self.ParamName(attribute.name)
-    anchor_based_fallthroughs = [
-        deps_lib.FullySpecifiedAnchorFallthrough(
-            anchor_fallthrough, self.collection_info, parameter_name)
-        for anchor_fallthrough in anchor_fallthroughs
-    ]
-    return anchor_based_fallthroughs
-
-  def _AddAnchorFallthroughs(self, anchor, fallthroughs_map):
-    """Helper for adding anchor fallthroughs to the fallthroughs map."""
-    anchor_fallthroughs = fallthroughs_map.get(anchor.name, [])
-    for attribute in self.attributes:
-      if attribute == anchor:
-        continue
-      anchor_based_fallthroughs = self._GetAttributeAnchorFallthroughs(
-          anchor_fallthroughs, attribute)
-      fallthroughs_map[attribute.name] = (
-          anchor_based_fallthroughs + fallthroughs_map[attribute.name])
-
   def __eq__(self, other):
     return (super(ResourceSpec, self).__eq__(other)
             and self.disable_auto_completers == other.disable_auto_completers
@@ -667,9 +614,6 @@ class ResourceParameterAttributeConfig(object):
     Returns:
       ResourceParameterAttributeConfig
     """
-    if not data:
-      return None
-
     attribute_name = data['attribute_name']
     parameter_name = data['parameter_name']
     help_text = data['help']
@@ -753,7 +697,7 @@ class ResourceParameterAttributeConfig(object):
     self.completer = completer
     self.completion_request_params = completion_request_params
     self.completion_id_field = completion_id_field
-    self.value_type = value_type or six.text_type
+    self.value_type = value_type or str
     self.parameter_name = parameter_name
 
 

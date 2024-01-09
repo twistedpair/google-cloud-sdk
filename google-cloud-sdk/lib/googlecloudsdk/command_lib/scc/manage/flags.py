@@ -14,7 +14,6 @@
 # limitations under the License.
 """Specify common flags for management gcloud."""
 
-from typing import Literal
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.resource_manager import completers
@@ -134,7 +133,7 @@ def CreateValidateOnlyFlag(required=False) -> base.Argument:
 
 def CreateUpdateFlags(
     module_type: constants.CustomModuleType,
-    file_type: Literal['JSON'] | Literal['YAML'],
+    file_type,
     required=True,
 ) -> base.Argument:
   """Returns a custom-config flag or an enablement-state flag, or both."""

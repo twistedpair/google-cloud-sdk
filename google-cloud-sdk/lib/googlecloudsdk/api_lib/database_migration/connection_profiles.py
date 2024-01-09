@@ -315,9 +315,9 @@ class ConnectionProfilesClient(object):
       version: database version.
 
     Raises:
-    BadArgumentException: database-version is MYSQL_8_0_35 or MYSQL_8_0_36
+    BadArgumentException: database-version is MYSQL_8_0_36
     """
-    if version == 'MYSQL_8_0_35' or version == 'MYSQL_8_0_36':
+    if version == 'MYSQL_8_0_36':
       raise calliope_exceptions.BadArgumentException(
           'database-version',
           'The requested connection profile contains unsupported database'

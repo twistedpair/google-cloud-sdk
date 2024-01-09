@@ -40,6 +40,58 @@ class AcceleratorConfig(_messages.Message):
   acceleratorTypeUri = _messages.StringField(2)
 
 
+class AccessSparkApplicationEnvironmentInfoResponse(_messages.Message):
+  r"""Environment details of a Saprk Application.
+
+  Fields:
+    applicationEnvironmentInfo: Output only. Details about the Environment
+      that the application is running in.
+  """
+
+  applicationEnvironmentInfo = _messages.MessageField('ApplicationEnvironmentInfo', 1)
+
+
+class AccessSparkApplicationJobResponse(_messages.Message):
+  r"""Details of a particular job associated with Spark Application
+
+  Fields:
+    jobData: Output only. Data corresponding to a spark job.
+  """
+
+  jobData = _messages.MessageField('JobData', 1)
+
+
+class AccessSparkApplicationResponse(_messages.Message):
+  r"""A summary of Spark Application
+
+  Fields:
+    application: Output only. High level information corresponding to an
+      application.
+  """
+
+  application = _messages.MessageField('ApplicationInfo', 1)
+
+
+class AccessSparkApplicationSqlQueryResponse(_messages.Message):
+  r"""Details of a query for a Spark Application
+
+  Fields:
+    executionData: Output only. SQL Execution Data
+  """
+
+  executionData = _messages.MessageField('SqlExecutionUiData', 1)
+
+
+class AccessSparkApplicationStageAttemptResponse(_messages.Message):
+  r"""Stage Attempt for a Stage of a Spark Application
+
+  Fields:
+    stageData: Output only. Data corresponding to a stage.
+  """
+
+  stageData = _messages.MessageField('StageData', 1)
+
+
 class AccumulableInfo(_messages.Message):
   r"""A AccumulableInfo object.
 
@@ -408,9 +460,11 @@ class AutotuningConfig(_messages.Message):
     Values:
       SCENARIO_UNSPECIFIED: Default value.
       OOM: Out-of-memory errors remediation.
+      SCALING: Scaling recommendations such as initialExecutors.
     """
     SCENARIO_UNSPECIFIED = 0
     OOM = 1
+    SCALING = 2
 
   cohort = _messages.StringField(1)
   scenarios = _messages.EnumField('ScenariosValueListEntryValuesEnum', 2, repeated=True)
@@ -715,7 +769,25 @@ class Binding(_messages.Message):
       kubernetes-sa]. group:{emailid}: An email address that represents a
       Google group. For example, admins@example.com. domain:{domain}: The G
       Suite domain (primary) that represents all the users of that domain. For
-      example, google.com or example.com.
+      example, google.com or example.com. principal://iam.googleapis.com/locat
+      ions/global/workforcePools/{pool_id}/subject/{subject_attribute_value}:
+      A single identity in a workforce identity pool. principalSet://iam.googl
+      eapis.com/locations/global/workforcePools/{pool_id}/group/{group_id}:
+      All workforce identities in a group. principalSet://iam.googleapis.com/l
+      ocations/global/workforcePools/{pool_id}/attribute.{attribute_name}/{att
+      ribute_value}: All workforce identities with a specific attribute value.
+      principalSet://iam.googleapis.com/locations/global/workforcePools/{pool_
+      id}/*: All identities in a workforce identity pool. principal://iam.goog
+      leapis.com/projects/{project_number}/locations/global/workloadIdentityPo
+      ols/{pool_id}/subject/{subject_attribute_value}: A single identity in a
+      workload identity pool. principalSet://iam.googleapis.com/projects/{proj
+      ect_number}/locations/global/workloadIdentityPools/{pool_id}/group/{grou
+      p_id}: A workload identity pool group. principalSet://iam.googleapis.com
+      /projects/{project_number}/locations/global/workloadIdentityPools/{pool_
+      id}/attribute.{attribute_name}/{attribute_value}: All identities in a
+      workload identity pool with a certain attribute. principalSet://iam.goog
+      leapis.com/projects/{project_number}/locations/global/workloadIdentityPo
+      ols/{pool_id}/*: All identities in a workload identity pool.
       deleted:user:{emailid}?uid={uniqueid}: An email address (plus unique
       identifier) representing a user that has been recently deleted. For
       example, alice@example.com?uid=123456789012345678901. If the user is
@@ -732,7 +804,11 @@ class Binding(_messages.Message):
       been recently deleted. For example,
       admins@example.com?uid=123456789012345678901. If the group is recovered,
       this value reverts to group:{emailid} and the recovered group retains
-      the role in the binding.
+      the role in the binding. deleted:principal://iam.googleapis.com/location
+      s/global/workforcePools/{pool_id}/subject/{subject_attribute_value}:
+      Deleted single identity in a workforce identity pool. For example, delet
+      ed:principal://iam.googleapis.com/locations/global/workforcePools/my-
+      pool-id/subject/my-subject-attribute-value.
     role: Role that is assigned to the list of members, or principals. For
       example, roles/viewer, roles/editor, or roles/owner.
   """
@@ -1453,19 +1529,397 @@ class DataprocProjectsLocationsBatchesListRequest(_messages.Message):
   parent = _messages.StringField(5, required=True)
 
 
-class DataprocProjectsLocationsBatchesUpdateSparkApplicationContextRequest(_messages.Message):
-  r"""A DataprocProjectsLocationsBatchesUpdateSparkApplicationContextRequest
-  object.
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessEnvironmentInfoRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsAccessEnvironmentInfo
+  Request object.
 
   Fields:
-    name: A string attribute.
-    updateSparkApplicationContextRequest: A
-      UpdateSparkApplicationContextRequest resource to be passed as the
-      request body.
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
   """
 
   name = _messages.StringField(1, required=True)
-  updateSparkApplicationContextRequest = _messages.MessageField('UpdateSparkApplicationContextRequest', 2)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessJobRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsAccessJobRequest
+  object.
+
+  Fields:
+    jobId: Required. Job ID to fetch data for.
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  jobId = _messages.IntegerField(1)
+  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsAccessRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlQueriesRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlQueriesRequest
+  object.
+
+  Fields:
+    details: Optional. Lists/ hides details of Spark plan nodes. True is set
+      to list and false to hide.
+    executionId: Required. Execution ID
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+    planDescription: Optional. Enables/ disables physical plan description on
+      demand
+  """
+
+  details = _messages.BooleanField(1)
+  executionId = _messages.IntegerField(2)
+  name = _messages.StringField(3, required=True)
+  parent = _messages.StringField(4)
+  planDescription = _messages.BooleanField(5)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessStageAttemptRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsAccessStageAttemptRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+    stageAttemptId: Required. Stage Attempt ID
+    stageId: Required. Stage ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+  stageAttemptId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(4)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorsRequest
+  object.
+
+  Enums:
+    ExecutorStatusValueValuesEnum: Optional. Filter to select whether active/
+      dead or all executors should be selected.
+
+  Fields:
+    executorStatus: Optional. Filter to select whether active/ dead or all
+      executors should be selected.
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of executors to return in each
+      response. The service may return fewer than this. The default page size
+      is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      AccessSparkApplicationExecutorsList call. Provide this token to retrieve
+      the subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  class ExecutorStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. Filter to select whether active/ dead or all executors
+    should be selected.
+
+    Values:
+      EXECUTOR_STATUS_UNSPECIFIED: <no description>
+      EXECUTOR_STATUS_ACTIVE: <no description>
+      EXECUTOR_STATUS_DEAD: <no description>
+    """
+    EXECUTOR_STATUS_UNSPECIFIED = 0
+    EXECUTOR_STATUS_ACTIVE = 1
+    EXECUTOR_STATUS_DEAD = 2
+
+  executorStatus = _messages.EnumField('ExecutorStatusValueValuesEnum', 1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchJobsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsSearchJobsRequest
+  object.
+
+  Enums:
+    JobStatusValueValuesEnum: Optional. List only jobs in the specific state.
+
+  Fields:
+    jobStatus: Optional. List only jobs in the specific state.
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of jobs to return in each response. The
+      service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSparkApplicationJobs call. Provide this token to retrieve the
+      subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  class JobStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. List only jobs in the specific state.
+
+    Values:
+      JOB_EXECUTION_STATUS_UNSPECIFIED: <no description>
+      JOB_EXECUTION_STATUS_RUNNING: <no description>
+      JOB_EXECUTION_STATUS_SUCCEEDED: <no description>
+      JOB_EXECUTION_STATUS_FAILED: <no description>
+      JOB_EXECUTION_STATUS_UNKNOWN: <no description>
+    """
+    JOB_EXECUTION_STATUS_UNSPECIFIED = 0
+    JOB_EXECUTION_STATUS_RUNNING = 1
+    JOB_EXECUTION_STATUS_SUCCEEDED = 2
+    JOB_EXECUTION_STATUS_FAILED = 3
+    JOB_EXECUTION_STATUS_UNKNOWN = 4
+
+  jobStatus = _messages.EnumField('JobStatusValueValuesEnum', 1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsSearchRequest object.
+
+  Enums:
+    ApplicationStatusValueValuesEnum: Optional. Search only applications in
+      the chosen state.
+
+  Fields:
+    applicationStatus: Optional. Search only applications in the chosen state.
+    maxEndTime: Optional. Latest end timestamp to list.
+    maxTime: Optional. Latest start timestamp to list.
+    minEndTime: Optional. Earliest end timestamp to list.
+    minTime: Optional. Earliest start timestamp to list.
+    pageSize: Optional. Maximum number of applications to return in each
+      response. The service may return fewer than this. The default page size
+      is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSparkApplications call. Provide this token to retrieve the
+      subsequent page.
+    parent: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID"
+  """
+
+  class ApplicationStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. Search only applications in the chosen state.
+
+    Values:
+      APPLICATION_STATUS_UNSPECIFIED: <no description>
+      APPLICATION_STATUS_RUNNING: <no description>
+      APPLICATION_STATUS_COMPLETED: <no description>
+    """
+    APPLICATION_STATUS_UNSPECIFIED = 0
+    APPLICATION_STATUS_RUNNING = 1
+    APPLICATION_STATUS_COMPLETED = 2
+
+  applicationStatus = _messages.EnumField('ApplicationStatusValueValuesEnum', 1)
+  maxEndTime = _messages.StringField(2)
+  maxTime = _messages.StringField(3)
+  minEndTime = _messages.StringField(4)
+  minTime = _messages.StringField(5)
+  pageSize = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(7)
+  parent = _messages.StringField(8, required=True)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchSqlQueriesRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsSearchSqlQueriesRequest
+  object.
+
+  Fields:
+    details: Optional. Lists/ hides details of Spark plan nodes. True is set
+      to list and false to hide.
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of queries to return in each response.
+      The service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      SearchSparkApplicationSqlQueries call. Provide this token to retrieve
+      the subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+    planDescription: Optional. Enables/ disables physical plan description on
+      demand
+  """
+
+  details = _messages.BooleanField(1)
+  name = _messages.StringField(2, required=True)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5)
+  planDescription = _messages.BooleanField(6)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptTasksRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptTas
+  ksRequest object.
+
+  Enums:
+    TaskStatusValueValuesEnum: Optional. List only tasks in the state.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of tasks to return in each response.
+      The service may return fewer than this. The default page size is 10; the
+      maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      ListSparkApplicationStageAttemptTasks call. Provide this token to
+      retrieve the subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+    sortRuntime: Optional. Sort the tasks by runtime.
+    stageAttemptId: Optional. Stage Attempt ID
+    stageId: Optional. Stage ID
+    taskStatus: Optional. List only tasks in the state.
+  """
+
+  class TaskStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. List only tasks in the state.
+
+    Values:
+      TASK_STATUS_UNSPECIFIED: <no description>
+      TASK_STATUS_RUNNING: <no description>
+      TASK_STATUS_SUCCESS: <no description>
+      TASK_STATUS_FAILED: <no description>
+      TASK_STATUS_KILLED: <no description>
+      TASK_STATUS_PENDING: <no description>
+    """
+    TASK_STATUS_UNSPECIFIED = 0
+    TASK_STATUS_RUNNING = 1
+    TASK_STATUS_SUCCESS = 2
+    TASK_STATUS_FAILED = 3
+    TASK_STATUS_KILLED = 4
+    TASK_STATUS_PENDING = 5
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  sortRuntime = _messages.BooleanField(5)
+  stageAttemptId = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(7)
+  taskStatus = _messages.EnumField('TaskStatusValueValuesEnum', 8)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsSearchStageAttemptsRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of stage attempts (paging based on
+      stage_attempt_id) to return in each response. The service may return
+      fewer than this. The default page size is 10; the maximum page size is
+      100.
+    pageToken: Optional. A page token received from a previous
+      SearchSparkApplicationStageAttempts call. Provide this token to retrieve
+      the subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+    stageId: Required. Stage ID for which attempts are to be fetched
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  stageId = _messages.IntegerField(5)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest
+  object.
+
+  Enums:
+    StageStatusValueValuesEnum: Optional. List only stages in the given state.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of stages (paging based on stage_id) to
+      return in each response. The service may return fewer than this. The
+      default page size is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      FetchSparkApplicationStagesList call. Provide this token to retrieve the
+      subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+    stageStatus: Optional. List only stages in the given state.
+  """
+
+  class StageStatusValueValuesEnum(_messages.Enum):
+    r"""Optional. List only stages in the given state.
+
+    Values:
+      STAGE_STATUS_UNSPECIFIED: <no description>
+      STAGE_STATUS_ACTIVE: <no description>
+      STAGE_STATUS_COMPLETE: <no description>
+      STAGE_STATUS_FAILED: <no description>
+      STAGE_STATUS_PENDING: <no description>
+      STAGE_STATUS_SKIPPED: <no description>
+    """
+    STAGE_STATUS_UNSPECIFIED = 0
+    STAGE_STATUS_ACTIVE = 1
+    STAGE_STATUS_COMPLETE = 2
+    STAGE_STATUS_FAILED = 3
+    STAGE_STATUS_PENDING = 4
+    STAGE_STATUS_SKIPPED = 5
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 5)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsWriteRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsWriteRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the spark application to write
+      data about in the format "projects/PROJECT_ID/locations/DATAPROC_REGION/
+      batches/BATCH_ID/sparkApplications/APPLICATION_ID"
+    writeSparkApplicationContextRequest: A WriteSparkApplicationContextRequest
+      resource to be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  writeSparkApplicationContextRequest = _messages.MessageField('WriteSparkApplicationContextRequest', 2)
 
 
 class DataprocProjectsLocationsOperationsCancelRequest(_messages.Message):
@@ -7185,6 +7639,108 @@ class RuntimeInfo(_messages.Message):
   publicKeys = _messages.MessageField('PublicKeys', 7)
 
 
+class SearchSparkApplicationExecutorsResponse(_messages.Message):
+  r"""List of Executors associated with a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSparkApplicationExecutorsListRequest.
+    sparkApplicationExecutors: Output only. Details about executors used by
+      the application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationExecutors = _messages.MessageField('ExecutorSummary', 2, repeated=True)
+
+
+class SearchSparkApplicationJobsResponse(_messages.Message):
+  r"""A list of Jobs associated with a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSparkApplicationJobsRequest.
+    sparkApplicationJobs: Output only. Data corresponding to a spark job.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationJobs = _messages.MessageField('JobData', 2, repeated=True)
+
+
+class SearchSparkApplicationSqlQueriesResponse(_messages.Message):
+  r"""List of all queries for a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSparkApplicationSqlQueriesRequest.
+    sparkApplicationSqlQueries: Output only. SQL Execution Data
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationSqlQueries = _messages.MessageField('SqlExecutionUiData', 2, repeated=True)
+
+
+class SearchSparkApplicationStageAttemptTasksResponse(_messages.Message):
+  r"""List of tasks for a stage of a Spark Application
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent ListSparkApplicationStageAttemptTasksRequest.
+    sparkApplicationStageAttemptTasks: Output only. Data corresponding to
+      tasks created by spark.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationStageAttemptTasks = _messages.MessageField('TaskData', 2, repeated=True)
+
+
+class SearchSparkApplicationStageAttemptsResponse(_messages.Message):
+  r"""A list of Stage Attempts for a Stage of a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent ListSparkApplicationStageAttemptsRequest.
+    sparkApplicationStageAttempts: Output only. Data corresponding to a stage
+      attempts
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationStageAttempts = _messages.MessageField('StageData', 2, repeated=True)
+
+
+class SearchSparkApplicationStagesResponse(_messages.Message):
+  r"""A list of stages associated with a Spark Application.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSparkApplicationStages.
+    sparkApplicationStages: Output only. Data corresponding to a stage.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationStages = _messages.MessageField('StageData', 2, repeated=True)
+
+
+class SearchSparkApplicationsResponse(_messages.Message):
+  r"""A list of summary of Spark Applications
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSparkApplicationsRequest.
+    sparkApplications: Output only. High level information corresponding to an
+      application.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplications = _messages.MessageField('SparkApplication', 2, repeated=True)
+
+
 class SecurityConfig(_messages.Message):
   r"""Security related configuration, including encryption, Kerberos, etc.
 
@@ -7874,6 +8430,19 @@ class SourceProgress(_messages.Message):
   startOffset = _messages.StringField(8)
 
 
+class SparkApplication(_messages.Message):
+  r"""A summary of Spark Application
+
+  Fields:
+    application: Output only. High level information corresponding to an
+      application.
+    name: Identifier. Name of the spark application
+  """
+
+  application = _messages.MessageField('ApplicationInfo', 1)
+  name = _messages.StringField(2)
+
+
 class SparkBatch(_messages.Message):
   r"""A configuration for running an Apache Spark (https://spark.apache.org/)
   batch workload.
@@ -8358,8 +8927,8 @@ class SparkStandaloneAutoscalingConfig(_messages.Message):
 
 
 class SparkWrapperObject(_messages.Message):
-  r"""LINT.IfChange Outer message that contains the data obtained from spark
-  listener, packaged with information that is required to process it.
+  r"""Outer message that contains the data obtained from spark listener,
+  packaged with information that is required to process it.
 
   Fields:
     appSummary: A AppSummary attribute.
@@ -9679,23 +10248,6 @@ class TrinoJob(_messages.Message):
   queryList = _messages.MessageField('QueryList', 7)
 
 
-class UpdateSparkApplicationContextRequest(_messages.Message):
-  r"""A UpdateSparkApplicationContextRequest object.
-
-  Fields:
-    applicationId: Required. Spark generated Application ID for the submitted
-      workload
-    sparkWrapperObjects: A SparkWrapperObject attribute.
-  """
-
-  applicationId = _messages.StringField(1)
-  sparkWrapperObjects = _messages.MessageField('SparkWrapperObject', 2, repeated=True)
-
-
-class UpdateSparkApplicationContextResponse(_messages.Message):
-  r"""A UpdateSparkApplicationContextResponse object."""
-
-
 class UsageMetrics(_messages.Message):
   r"""Usage metrics represent approximate total resources consumed by a
   workload.
@@ -10059,6 +10611,22 @@ class WorkflowTemplatePlacement(_messages.Message):
 
   clusterSelector = _messages.MessageField('ClusterSelector', 1)
   managedCluster = _messages.MessageField('ManagedCluster', 2)
+
+
+class WriteSparkApplicationContextRequest(_messages.Message):
+  r"""Write Spark Application data to internal storage systems
+
+  Fields:
+    parent: Required. Parent (Batch) resource reference.
+    sparkWrapperObjects: A SparkWrapperObject attribute.
+  """
+
+  parent = _messages.StringField(1)
+  sparkWrapperObjects = _messages.MessageField('SparkWrapperObject', 2, repeated=True)
+
+
+class WriteSparkApplicationContextResponse(_messages.Message):
+  r"""Response returned as an acknowledgement of receipt of data."""
 
 
 class YarnApplication(_messages.Message):

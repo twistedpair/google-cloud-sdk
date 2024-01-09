@@ -32,7 +32,6 @@ from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 from googlecloudsdk.core.credentials import creds as c_creds
-from googlecloudsdk.core.credentials import store as c_store
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import platforms
 
@@ -43,12 +42,6 @@ from oauth2client.contrib import gce as oauth2client_gce
 
 SERVICEUSAGE_PERMISSION = 'serviceusage.services.use'
 
-ACCOUNT_TABLE_FORMAT = ("""\
-    table[title='Credentialed Accounts'](
-        status.yesno(yes='*', no=''):label=ACTIVE,
-        account
-    )""")
-
 
 class MissingPermissionOnQuotaProjectError(c_creds.ADCError):
   """An error when ADC does not have permission to bill a quota project."""
@@ -56,26 +49,6 @@ class MissingPermissionOnQuotaProjectError(c_creds.ADCError):
 
 class AddQuotaProjectError(c_creds.ADCError):
   """An error when quota project ID is added to creds that don't support it."""
-
-
-class _AcctInfo(object):
-  """An auth command resource list item.
-
-  Attributes:
-    account: The account name.
-    status: The account status, one of ['ACTIVE', ''].
-  """
-
-  def __init__(self, account, active):
-    self.account = account
-    self.status = 'ACTIVE' if active else ''
-
-
-def AllAccounts():
-  """The resource list return value for the auth command Run() method."""
-  active_account = properties.VALUES.core.account.Get()
-  return [_AcctInfo(account, account == active_account)
-          for account in c_store.AvailableAccounts()]
 
 
 def IsGceAccountCredentials(cred):

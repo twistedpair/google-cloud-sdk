@@ -121,7 +121,7 @@ def PrepareEnvironment(args):
     log.Print('Starting your Cloud Shell machine...')
 
     access_token = None
-    if args.authorize_session:
+    if args.IsKnownAndSpecified('authorize_session') and args.authorize_session:
       access_token = store.GetFreshAccessTokenIfEnabled(
           min_expiry_duration=MIN_CREDS_EXPIRY_SECONDS)
 

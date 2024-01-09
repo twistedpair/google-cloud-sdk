@@ -31,7 +31,14 @@ class CancelOperationRequest(_messages.Message):
 
 
 class ChannelConfig(_messages.Message):
-  r"""Configuration for a release channel."""
+  r"""Configuration for a release channel.
+
+  Fields:
+    defaultVersion: Output only. Default version for this release channel,
+      e.g.: "1.4.0".
+  """
+
+  defaultVersion = _messages.StringField(1)
 
 
 class CloudRouter(_messages.Message):

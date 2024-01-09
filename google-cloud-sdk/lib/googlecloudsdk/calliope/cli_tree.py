@@ -91,6 +91,7 @@ LOOKUP_RELEASE = 'release'
 LOOKUP_REQUIRED = 'required'
 LOOKUP_SECTIONS = 'sections'
 LOOKUP_TYPE = 'type'
+LOOKUP_UNIVERSE_COMPATIBLE = 'universe_compatible'
 LOOKUP_VALUE = 'value'
 
 
@@ -370,6 +371,7 @@ class Command(object):
     flags: {str:Flag}, Command flag dict, indexed by normalized flag name.
     is_global: bool, True if the command is the root command.
     is_hidden: bool, True if the command is hidden.
+    universe_compatible: bool, True if the command is universe compatible.
     name: str, The normalized name ('_' => '-').
     positionals: [dict], Command positionals list.
     release: str, The command release name {'internal', 'alpha', 'beta', 'ga'}.
@@ -385,6 +387,7 @@ class Command(object):
     self.is_global = not bool(parent)
     self.is_group = command.is_group
     self.is_hidden = command.IsHidden()
+    self.universe_compatible = command.IsUniverseCompatible()
     self.name = command.name.replace('_', '-')
     self.path = command.GetPath()
     self.positionals = []

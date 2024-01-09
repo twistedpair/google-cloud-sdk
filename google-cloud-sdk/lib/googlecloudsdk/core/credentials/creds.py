@@ -310,6 +310,28 @@ class SqliteCredentialStore(CredentialStore):
           'SELECT account_id FROM "{}" ORDER BY rowid'
           .format(_CREDENTIAL_TABLE_NAME)))
 
+  def GetAccountsWithUniverseDomain(self):
+    """Get all accounts and their corresponding universe domains.
+
+    Returns:
+      dict[str, str], A dictionary where the key is the account and the value is
+        the universe domain.
+    """
+    accounts_dict = {}
+    with self._cursor as cur:
+      for account_id_and_cred_json_tuple in cur.Execute(
+          'SELECT account_id, value FROM "{}" ORDER BY rowid'.format(
+              _CREDENTIAL_TABLE_NAME
+          )
+      ):
+        account_id = account_id_and_cred_json_tuple[0]
+        cred_json_string = account_id_and_cred_json_tuple[1]
+        cred_json = json.loads(cred_json_string)
+        accounts_dict[account_id] = cred_json.get(
+            'universe_domain', properties.VALUES.core.universe_domain.default
+        )
+    return accounts_dict
+
   def Load(self, account_id, use_google_auth=True):
     with self._cursor as cur:
       item = cur.Execute(
@@ -1497,6 +1519,8 @@ def _ConvertGoogleAuthCredentialsToADC(credentials):
   if creds_type == CredentialTypeGoogleAuth.EXTERNAL_ACCOUNT_AUTHORIZED_USER:
     adc_json = credentials.to_json(strip=('token', 'expiry', 'scopes'))
     adc_json = json.loads(adc_json)
+    if getattr(credentials, 'universe_domain', None) is not None:
+      adc_json['universe_domain'] = credentials.universe_domain
     return adc_json
 
   raise ADCError('Cannot convert credentials of type {} to application '
