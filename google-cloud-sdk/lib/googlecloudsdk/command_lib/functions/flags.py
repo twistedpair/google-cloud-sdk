@@ -890,6 +890,22 @@ def AddCloudEventsFlag(parser):
   )
 
 
+def AddGcloudHttpTimeoutFlag(parser):
+  """Add flag for specifying gcloud timeout to the parser."""
+
+  help_text = """\
+      The gcloud command timeout, e.g. 30s for 30 seconds. Defaults to the
+      function execution timeout duration of the function.
+
+      See $ gcloud topic datetimes for information on duration formats."""
+  parser.add_argument(
+      '--timeout',
+      help=help_text,
+      type=arg_parsers.Duration(lower_bound='1s'),
+      hidden=True,
+  )
+
+
 def AddIAMPolicyFileArg(parser):
   parser.add_argument(
       'policy_file',

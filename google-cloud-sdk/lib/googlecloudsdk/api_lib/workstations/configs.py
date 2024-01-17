@@ -79,6 +79,7 @@ class Configs:
               for key, value in sorted(six.iteritems(args.labels))
           ]
       )
+    config.disableTcpConnections = args.disable_tcp_connections
 
     # GCE Instance Config
     config.host = self.messages.Host()
@@ -292,6 +293,14 @@ class Configs:
     if args.IsSpecified('enable_audit_agent'):
       config.enableAuditAgent = args.enable_audit_agent
       update_mask.append('enable_audit_agent')
+
+    if args.IsSpecified('disable_tcp_connections'):
+      config.disableTcpConnections = args.disable_tcp_connections
+      update_mask.append('disable_tcp_connections')
+
+    if args.IsSpecified('enable_tcp_connections'):
+      config.disableTcpConnections = args.enable_tcp_connections
+      update_mask.append('disable_tcp_connections')
 
     if args.IsSpecified('enable_nested_virtualization'):
       config.host.gceInstance.enableNestedVirtualization = (

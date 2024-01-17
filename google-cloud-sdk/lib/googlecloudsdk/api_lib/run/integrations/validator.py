@@ -49,6 +49,78 @@ def GetIntegrationValidator(integration_type: str):
   return Validator(type_metadata)
 
 
+def _ConstructPrompt(apis_not_enabled: List[str]) -> str:
+  """Returns a prompt to enable APIs with any custom text per-API.
+
+  Args:
+    apis_not_enabled: APIs that are to be enabled.
+  Returns: prompt string to be displayed for confirmation.
+  """
+  if not apis_not_enabled:
+    return ''
+  base_prompt = (
+      'Do you want to enable these APIs to continue (this will take a few'
+      ' minutes)?'
+  )
+
+  prompt = ''
+  for api in apis_not_enabled:
+    if api in _API_ENABLEMENT_CONFIRMATION_TEXT:
+      prompt += _API_ENABLEMENT_CONFIRMATION_TEXT[api] + '\n'
+
+  prompt += base_prompt
+  return prompt
+
+
+def EnableApis(apis_not_enabled: List[str], project_id: str):
+  """Enables the given API on the given project.
+
+  Args:
+    apis_not_enabled: the apis that needs enablement
+    project_id: the project ID
+  """
+  apis_to_enable = '\n\t'.join(apis_not_enabled)
+  console_io.PromptContinue(
+      default=False,
+      cancel_on_no=True,
+      message=(
+          'The following APIs are not enabled on project [{0}]:\n\t{1}'
+          .format(project_id, apis_to_enable)
+      ),
+      prompt_string=_ConstructPrompt(apis_not_enabled),
+  )
+
+  log.status.Print(
+      'Enabling APIs on project [{0}]...'.format(project_id))
+  op = serviceusage.BatchEnableApiCall(project_id, apis_not_enabled)
+  if not op.done:
+    op = services_util.WaitOperation(op.name, serviceusage.GetOperation)
+    services_util.PrintOperation(op)
+
+
+def CheckApiEnablements(types: List[str]):
+  """Checks if all GCP APIs required by the given types are enabled.
+
+  If some required APIs are not enabled, it will prompt the user to enable them.
+  If they do not want to enable them, the process will exit.
+
+  Args:
+    types: list of types to check.
+  """
+  project_id = properties.VALUES.core.project.Get()
+  apis_not_enabled = []
+  for typekit in types:
+    try:
+      validator = GetIntegrationValidator(typekit)
+      apis = validator.GetDisabledGcpApis(project_id)
+      if apis:
+        apis_not_enabled.extend(apis)
+    except ValueError:
+      continue
+  if apis_not_enabled:
+    EnableApis(apis_not_enabled, project_id)
+
+
 class Validator:
   """Validates an integration is setup correctly for deployment."""
 
@@ -63,28 +135,12 @@ class Validator:
     then the process will exit.
     """
     project_id = properties.VALUES.core.project.Get()
-    apis_not_enabled = self._GetDisabledGcpApis(project_id)
+    apis_not_enabled = self.GetDisabledGcpApis(project_id)
 
     if apis_not_enabled:
-      apis_to_enable = '\n\t'.join(apis_not_enabled)
-      console_io.PromptContinue(
-          default=False,
-          cancel_on_no=True,
-          message=(
-              'The following APIs are not enabled on project [{0}]:\n\t{1}'
-              .format(project_id, apis_to_enable)
-          ),
-          prompt_string=self._ConstructPrompt(apis_not_enabled),
-      )
+      EnableApis(apis_not_enabled, project_id)
 
-      log.status.Print(
-          'Enabling APIs on project [{0}]...'.format(project_id))
-      op = serviceusage.BatchEnableApiCall(project_id, apis_not_enabled)
-      if not op.done:
-        op = services_util.WaitOperation(op.name, serviceusage.GetOperation)
-        services_util.PrintOperation(op)
-
-  def _GetDisabledGcpApis(self, project_id: str) -> List[str]:
+  def GetDisabledGcpApis(self, project_id: str) -> List[str]:
     """Returns all GCP APIs needed for an integration.
 
     Args:
@@ -105,28 +161,6 @@ class Validator:
         if not enable_api.IsServiceEnabled(project_id, api)
     ]
     return apis_not_enabled
-
-  def _ConstructPrompt(self, apis_not_enabled: List[str]) -> str:
-    """Returns a prompt to enable APIs with any custom text per-API.
-
-    Args:
-      apis_not_enabled: APIs that are to be enabled.
-    Returns: prompt string to be displayed for confirmation.
-    """
-    if not apis_not_enabled:
-      return ''
-    base_prompt = (
-        'Do you want to enable these APIs to continue (this will take a few'
-        ' minutes)?'
-    )
-
-    prompt = ''
-    for api in apis_not_enabled:
-      if api in _API_ENABLEMENT_CONFIRMATION_TEXT:
-        prompt += _API_ENABLEMENT_CONFIRMATION_TEXT[api] + '\n'
-
-    prompt += base_prompt
-    return prompt
 
   def ValidateCreateParameters(self, parameters: Dict[str, str], service: str):
     """Validates parameters provided for creating an integration.

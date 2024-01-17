@@ -794,13 +794,28 @@ class MembershipFeatureStatus(_messages.Message):
   controller feature on a cluster that is a member of a fleet.
 
   Enums:
+    ClusterStatusValueValuesEnum: The status of cluster underlying the
+      membership.
     LifecycleStatusValueValuesEnum: The lifecycle status of the policy
       controller feature on the membership.
 
   Fields:
+    clusterStatus: The status of cluster underlying the membership.
     lifecycleStatus: The lifecycle status of the policy controller feature on
       the membership.
   """
+
+  class ClusterStatusValueValuesEnum(_messages.Enum):
+    r"""The status of cluster underlying the membership.
+
+    Values:
+      CLUSTER_STATUS_UNSPECIFIED: The cluster status is unspecified.
+      CLUSTER_ACTIVE: The cluster is active.
+      CLUSTER_INACTIVE: The cluster is inactive.
+    """
+    CLUSTER_STATUS_UNSPECIFIED = 0
+    CLUSTER_ACTIVE = 1
+    CLUSTER_INACTIVE = 2
 
   class LifecycleStatusValueValuesEnum(_messages.Enum):
     r"""The lifecycle status of the policy controller feature on the
@@ -863,7 +878,8 @@ class MembershipFeatureStatus(_messages.Message):
     SUSPENDED = 8
     DETACHED = 9
 
-  lifecycleStatus = _messages.EnumField('LifecycleStatusValueValuesEnum', 1)
+  clusterStatus = _messages.EnumField('ClusterStatusValueValuesEnum', 1)
+  lifecycleStatus = _messages.EnumField('LifecycleStatusValueValuesEnum', 2)
 
 
 class MembershipRef(_messages.Message):

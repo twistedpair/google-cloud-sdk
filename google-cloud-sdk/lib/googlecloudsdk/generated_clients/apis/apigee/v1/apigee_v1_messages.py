@@ -1696,7 +1696,7 @@ class ApigeeOrganizationsEnvgroupsCreateRequest(_messages.Message):
   Fields:
     googleCloudApigeeV1EnvironmentGroup: A GoogleCloudApigeeV1EnvironmentGroup
       resource to be passed as the request body.
-    name: ID of the environment group. Overrides any ID in the
+    name: Optional. ID of the environment group. Overrides any ID in the
       environment_group resource.
     parent: Required. Name of the organization in which to create the
       environment group in the following format: `organizations/{org}`.
@@ -1794,7 +1794,7 @@ class ApigeeOrganizationsEnvgroupsPatchRequest(_messages.Message):
       resource to be passed as the request body.
     name: Required. Name of the environment group to update in the format:
       `organizations/{org}/envgroups/{envgroup}.
-    updateMask: List of fields to be updated.
+    updateMask: Optional. List of fields to be updated.
   """
 
   googleCloudApigeeV1EnvironmentGroup = _messages.MessageField('GoogleCloudApigeeV1EnvironmentGroup', 1)

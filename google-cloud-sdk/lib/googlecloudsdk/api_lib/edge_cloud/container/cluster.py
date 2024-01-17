@@ -241,3 +241,26 @@ def GetClusterReference(args):
       args.CONCEPTS.cluster.Parse().RelativeName(),
       collection='edgecontainer.projects.locations.clusters',
   )
+
+
+def ValidateClusterCreateRequest(req, release_track):
+  """Validate cluster create request message.
+
+  Args:
+    req: Create cluster request message.
+    release_track: Release track of the command.
+
+  Returns:
+    Single string of error message.
+  """
+  messages = util.GetMessagesModule(release_track)
+  if (
+      req.cluster.releaseChannel
+      == messages.Cluster.ReleaseChannelValueValuesEnum.REGULAR
+      and req.cluster.targetVersion is not None
+  ):
+    return (
+        'Invalid Argument: REGULAR release channel does not support'
+        ' specification of version'
+    )
+  return None

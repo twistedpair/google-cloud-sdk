@@ -4822,7 +4822,7 @@ class RestrictRollout(_messages.Message):
       restricted.
     name: Required. Restriction rule name. Required and must be unique within
       a DeployPolicy.
-    timeWindows: Time Windows within which actions are restricted.
+    timeWindow: Optional. Time Window within which actions are restricted.
   """
 
   class ActionsValueListEntryValuesEnum(_messages.Enum):
@@ -4867,7 +4867,7 @@ class RestrictRollout(_messages.Message):
   actions = _messages.EnumField('ActionsValueListEntryValuesEnum', 1, repeated=True)
   invoker = _messages.EnumField('InvokerValueListEntryValuesEnum', 2, repeated=True)
   name = _messages.StringField(3)
-  timeWindows = _messages.MessageField('TimeWindow', 4)
+  timeWindow = _messages.MessageField('TimeWindow', 4)
 
 
 class Retry(_messages.Message):

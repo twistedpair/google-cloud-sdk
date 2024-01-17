@@ -31,7 +31,6 @@ from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
 from apitools.base.py import list_pager
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
-from googlecloudsdk.api_lib.cloudbuild.v2 import client_util as cloudbuildv2_util
 from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
@@ -706,16 +705,7 @@ class ServerlessOperations(object):
       self, tracker, build_messages, build_config, skip_activation_prompt=False
   ):
     """Build an image from source if a user specifies a source when deploying."""
-    project = properties.VALUES.core.project.Get(required=True)
-    cloud_build_regions = [
-        location.locationId
-        for location in cloudbuildv2_util.ListLocations(project).locations
-    ]
-    build_region = (
-        self._region
-        if self._region in cloud_build_regions
-        else cloudbuild_util.DEFAULT_REGION
-    )
+    build_region = cloudbuild_util.DEFAULT_REGION
     build, _ = submit_util.Build(
         build_messages,
         True,
@@ -1287,7 +1277,9 @@ class ServerlessOperations(object):
     )
     with metrics.RecordDuration(metric_names.CREATE_JOB):
       try:
-        created_job = self._client.namespaces_jobs.Create(create_request)
+        created_job = job.Job(
+            self._client.namespaces_jobs.Create(create_request), messages
+        )
       except api_exceptions.HttpConflictError:
         raise serverless_exceptions.DeploymentFailedError(
             'Job [{}] already exists.'.format(job_ref.Name())
@@ -1297,8 +1289,9 @@ class ServerlessOperations(object):
       getter = functools.partial(self.GetJob, job_ref)
       poller = op_pollers.ConditionPoller(getter, tracker)
       self.WaitForCondition(poller)
+      created_job = poller.GetResource()
 
-    return job.Job(created_job, messages)
+    return created_job
 
   def UpdateJob(self, job_ref, config_changes, tracker=None, asyn=False):
     """Update an existing Cloud Run Job.
@@ -1324,14 +1317,17 @@ class ServerlessOperations(object):
         job=update_job.Message(), name=job_ref.RelativeName()
     )
     with metrics.RecordDuration(metric_names.UPDATE_JOB):
-      returned_job = self._client.namespaces_jobs.ReplaceJob(replace_request)
+      returned_job = job.Job(
+          self._client.namespaces_jobs.ReplaceJob(replace_request), messages
+      )
 
     if not asyn:
       getter = functools.partial(self.GetJob, job_ref)
       poller = op_pollers.ConditionPoller(getter, tracker)
       self.WaitForCondition(poller)
+      returned_job = poller.GetResource()
 
-    return job.Job(returned_job, messages)
+    return returned_job
 
   def RunJob(
       self,

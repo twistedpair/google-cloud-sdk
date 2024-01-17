@@ -5,6 +5,94 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 460.0.0 (2024-01-17)
+
+### Cloud Bigtable
+
+* Rebuilt cbt cli with golang.org/x/crypto version 0.17.0 which fixed CVE-2023-48795.
+
+### Cloud Bigtable Emulator
+
+* Rebuilt cbt cli with golang.org/x/crypto version 0.17.0 which fixed CVE-2023-48795.
+
+### Cloud Billing
+
+*   Added `ownership-scope` flag to `gcloud billing budget CLI` to select scope of ownership for a budget.
+
+### Cloud Domains
+
+* Deprecated `gcloud domains registrations list-importable-domains` and `gcloud domains registrations get-transfer-parameters` commands. See <https://cloud.google.com/domains/docs/deprecations/feature-deprecations> for more information.
+
+### Cloud Functions
+
+*   Hid `--gen2` flag in `gcloud functions add-iam-policy-binding`,
+    `gcloud functions add-invoker-policy-binding`, `gcloud functions call`,
+    `gcloud functions delete`, `gcloud functions describe`,
+    `gcloud functions get-iam-policy`,
+    `gcloud functions remove-iam-policy-binding`,
+    `gcloud functions remove-invoker-policy-binding`, and
+    `gcloud functions set-iam-policy-binding`.
+    The `--gen2` flag is unnecessary for these commands and will eventually be removed from them in a future release.
+
+### Cloud Healthcare
+
+* Added `gcloud healthcare dicom-stores metrics` command which allows users to retrieve
+  metrics associated with a DICOM store.
+
+### Cloud Monitoring
+
+* Promoted `gcloud monitoring uptime` commands to beta and GA.
+
+### Cloud Org Policy
+
+* Update the error message that mentions the 'update-mask' flag name incorrectly.
+
+### Cloud Run
+
+* Reverted regionalized builds for Cloud Run source deploys.
+
+### Cloud SQL
+
+* Added -i flag to provide the instance for `gcloud sql generate-login-token` command.
+
+### Cloud Workstations
+
+*   Added `--disable-tcp-connections` flag to
+    `gcloud workstations configs`` to support disabling plain
+    TCP connections in workstations.
+
+### Dataproc Diagnose
+
+*   Added `--tarball-access` flag to `gcloud dataproc clusters diagnose` for enabling [Google support](/dataproc/docs/support/getting-support) to access the diagnostic tar file, which supports the following values:-
+      1. `GOOGLE_DATAPROC_DIAGNOSE` : This value transfers the tar file automatically to [Google support](/dataproc/docs/support/getting-support).
+      2. `GOOGLE_CLOUD_SUPPORT` : This flag doesn't transfer the tar file automatically to  [Google support](/dataproc/docs/support/getting-support) but provides the necessary read access for [Google support](/dataproc/docs/support/getting-support) to read or download the tar file.
+*   Added `--start-time` and `--end-time` flags to `gcloud dataproc clusters diagnose` to specify a time range, in `%Y-%m-%dT%H:%M:%S.%fZ` format, for the collection of diagnostic data within this timeframe.
+*   Added `--job-ids` flag to `gcloud dataproc clusters diagnose` to collect job driver, Spark event, YARN application, and Sparklens output logs, in addition to the [default log files](#log_files), for a specified comma-separated list of dataproc job IDs.
+*   Added `--yarn-application-ids` flag to `gcloud dataproc clusters diagnose` to collect job driver, Spark event, YARN application, and Sparklens output logs in addition to the [default log files](#log_files), for a specified comma-separated list of YARN application IDs.
+
+### Eventarc
+
+* Deprecated `gcloud beta eventarc`. Users are expected to use `gcloud eventarc` instead.
+
+### Identity and Access Management
+
+* Added `--include-deny` flag to `gcloud projects get-ancestors-iam-policy`
+  and `gcloud resource-manager folders get-ancestors-iam-policy` to specify
+  if it should return deny policies on the hierarchy.
+
+### Immersive Stream
+
+*   Added `--mode` flag to `gcloud immersive-stream xr instances create` to allow specifying 3D/AR or 3D-only experience modes.
+*   Added `--gpu-class` flag to `gcloud immersive-stream xr instances create` to allow specifying the type of underlying GPU used by the stream instance.
+
+### Network Security
+
+* In `gcloud network-security firewall-endpoint-associations create`, the ASSOCIATION_ID argument is no longer mandatory, and a UUID will be auto-generated on the server if not specified.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 459.0.0 (2024-01-09)
 
 ### Google Cloud CLI

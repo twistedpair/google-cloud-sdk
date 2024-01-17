@@ -712,23 +712,22 @@ class DataSet(_messages.Message):
 
 
 class Dimension(_messages.Message):
-  r"""Preview: A chart dimension for an SQL query. This is applied over the
-  x-axis. This is a preview feature and may be subject to change before final
-  release.
+  r"""A chart dimension. Dimensions are a structured labewl, class, or
+  category for a set of measurements in your data.
 
   Enums:
     SortOrderValueValuesEnum: The sort order applied to the sort column.
 
   Fields:
-    column: Required. The name of the column in the source SQL query that is
-      used to chart the dimension.
-    columnType: Optional. The type of the dimension column. This is relevant
-      only if one of the bin_size fields is set. If it is empty, the type
-      TIMESTAMP or INT64 will be assumed based on which bin_size field is set.
-      If populated, this should be set to one of the following types: DATE,
-      TIME, DATETIME, TIMESTAMP, BIGNUMERIC, INT64, NUMERIC, FLOAT64.
-    floatBinSize: Optional. float_bin_size is used when the column type used
-      for a dimension is a floating point numeric column.
+    column: The name of the column in the source SQL query that is used to
+      chart the dimension.
+    columnType: The type of the dimension column. This is relevant only if one
+      of the bin_size fields is set. If it is empty, the type TIMESTAMP or
+      INT64 will be assumed based on which bin_size field is set. If
+      populated, this should be set to one of the following types: DATE, TIME,
+      DATETIME, TIMESTAMP, BIGNUMERIC, INT64, NUMERIC, FLOAT64.
+    floatBinSize: float_bin_size is used when the column type used for a
+      dimension is a floating point numeric column.
     maxBinCount: A limit to the number of bins generated. When 0 is specified,
       the maximum count is not enforced.
     numericBinSize: numeric_bin_size is used when the column type used for a
@@ -738,9 +737,7 @@ class Dimension(_messages.Message):
       the results. If sort_order is set to NONE, then this value is not used.
     sortOrder: The sort order applied to the sort column.
     timeBinSize: time_bin_size is used when the data type specified by column
-      is a time type and the bin size is determined by a time duration. If
-      column_type is DATE, this must be a whole value multiple of 1 day. If
-      column_type is TIME, this must be less than or equal to 24 hours.
+      is a time type and the bin size is determined by a time duration.
   """
 
   class SortOrderValueValuesEnum(_messages.Enum):
@@ -1120,17 +1117,15 @@ class LogsPanel(_messages.Message):
 
 
 class Measure(_messages.Message):
-  r"""Preview: A chart measure for an SQL query. This is applied over the
-  y-axis. This is a preview feature and may be subject to change before final
-  release.
+  r"""A chart measure. Measures represent a measured property in your chart
+  data such as rainfall in inches, number of units sold, revenue gained, etc.
 
   Fields:
-    aggregationFunction: Required. The aggregation function applied to the
-      input column. This must not be set to "none" unless binning is disabled
-      on the dimension. The aggregation function is used to group points on
-      the dimension bins.
-    column: Required. The column name within in the dataset used for the
-      measure.
+    aggregationFunction: The aggregation function applied to the input column.
+      This must not be set to "none" unless binning is disabled on the
+      dimension. The aggregation function is used to group points on the
+      dimension bins.
+    column: The column name within the dataset used for the measure.
   """
 
   aggregationFunction = _messages.MessageField('AggregationFunction', 1)
@@ -1860,6 +1855,10 @@ class PieChartDataSet(_messages.Message):
   r"""Groups a time series query definition.
 
   Fields:
+    dimensions: A dimension is a structured label, class, or category for a
+      set of measurements in your data.
+    measures: A measure is a measured value of a property in your data. For
+      example, rainfall in inches, number of units sold, revenue gained, etc.
     minAlignmentPeriod: Optional. The lower bound on data point frequency for
       this data set, implemented by specifying the minimum alignment period to
       use in a time series query. For example, if the data is published once
@@ -1875,9 +1874,11 @@ class PieChartDataSet(_messages.Message):
       google.monitoring.dashboard.v1.TimeSeriesQuery.
   """
 
-  minAlignmentPeriod = _messages.StringField(1)
-  sliceNameTemplate = _messages.StringField(2)
-  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 3)
+  dimensions = _messages.MessageField('Dimension', 1, repeated=True)
+  measures = _messages.MessageField('Measure', 2, repeated=True)
+  minAlignmentPeriod = _messages.StringField(3)
+  sliceNameTemplate = _messages.StringField(4)
+  timeSeriesQuery = _messages.MessageField('TimeSeriesQuery', 5)
 
 
 class QueryExemplarsRequest(_messages.Message):

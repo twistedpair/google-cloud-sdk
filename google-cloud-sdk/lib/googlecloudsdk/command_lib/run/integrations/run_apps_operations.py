@@ -28,6 +28,7 @@ from apitools.base.py import exceptions as api_exceptions
 from googlecloudsdk.api_lib.run import global_methods
 from googlecloudsdk.api_lib.run.integrations import api_utils
 from googlecloudsdk.api_lib.run.integrations import types_utils
+from googlecloudsdk.api_lib.run.integrations import validator
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.command_lib.run import connection_context
 from googlecloudsdk.command_lib.run import flags as run_flags
@@ -170,6 +171,9 @@ class RunAppsOperations(object):
     if vpc:
       match_type_names.append({'type': 'vpc', 'name': '*'})
     match_type_names.sort(key=lambda x: x['type'])
+
+    all_types = map(lambda x: x['type'], match_type_names)
+    validator.CheckApiEnablements(all_types)
 
     resource_stages = base.GetComponentTypesFromSelectors(
         selectors=match_type_names

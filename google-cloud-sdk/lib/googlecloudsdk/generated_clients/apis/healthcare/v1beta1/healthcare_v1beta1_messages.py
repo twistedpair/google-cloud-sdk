@@ -1441,7 +1441,7 @@ class Dataset(_messages.Message):
   records or medical imaging data.
 
   Fields:
-    name: Resource name of the dataset, of the form
+    name: Identifier. Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
     timeZone: The default timezone used by this dataset. Must be a either a
       valid IANA time zone name such as "America/New_York" or empty, which
@@ -2624,12 +2624,10 @@ class FhirStore(_messages.Message):
       history APIs, but cannot be updated. If set to true, no historical
       versions are kept. The server sends errors for attempts to read the
       historical versions.
-    enableHistoryModifications: Optional. Whether to allow the
-      [ImportResourcesHistory] and [ExecuteBundle] APIs to accept history
-      bundles, and directly insert and overwrite historical resource versions
-      into the FHIR store. Importing resource histories creates resource
-      interactions that have occurred in the past that clients might not
-      allow. If set to false, using history bundles fail with an error.
+    enableHistoryModifications: Optional. Whether to allow ExecuteBundle to
+      accept history bundles, and directly insert and overwrite historical
+      resource versions into the FHIR store. If set to false, using history
+      bundles fails with an error.
     enableUpdateCreate: Whether this FHIR store has the [updateCreate
       capability](https://www.hl7.org/fhir/capabilitystatement-
       definitions.html#CapabilityStatement.rest.resource.updateCreate). This
@@ -4504,10 +4502,10 @@ class HealthcareProjectsLocationsDatasetsCreateRequest(_messages.Message):
 
   Fields:
     dataset: A Dataset resource to be passed as the request body.
-    datasetId: The ID of the dataset that is being created. The string must
-      match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
-    parent: The name of the project where the server creates the dataset. For
-      example, `projects/{project_id}/locations/{location_id}`.
+    datasetId: Required. The ID of the dataset that is being created. The
+      string must match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
+    parent: Required. The name of the project where the server creates the
+      dataset. For example, `projects/{project_id}/locations/{location_id}`.
   """
 
   dataset = _messages.MessageField('Dataset', 1)
@@ -4533,7 +4531,7 @@ class HealthcareProjectsLocationsDatasetsDeleteRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsDeleteRequest object.
 
   Fields:
-    name: The name of the dataset to delete. For example,
+    name: Required. The name of the dataset to delete. For example,
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
   """
 
@@ -5938,7 +5936,7 @@ class HealthcareProjectsLocationsDatasetsGetRequest(_messages.Message):
   r"""A HealthcareProjectsLocationsDatasetsGetRequest object.
 
   Fields:
-    name: The name of the dataset to read. For example,
+    name: Required. The name of the dataset to read. For example,
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
   """
 
@@ -6399,8 +6397,8 @@ class HealthcareProjectsLocationsDatasetsListRequest(_messages.Message):
       used. May not be larger than 1000.
     pageToken: The next_page_token value returned from a previous List
       request, if any.
-    parent: The name of the project whose datasets should be listed. For
-      example, `projects/{project_id}/locations/{location_id}`.
+    parent: Required. The name of the project whose datasets should be listed.
+      For example, `projects/{project_id}/locations/{location_id}`.
   """
 
   pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -6452,10 +6450,10 @@ class HealthcareProjectsLocationsDatasetsPatchRequest(_messages.Message):
 
   Fields:
     dataset: A Dataset resource to be passed as the request body.
-    name: Resource name of the dataset, of the form
+    name: Identifier. Resource name of the dataset, of the form
       `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}`.
-    updateMask: The update mask applies to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
+    updateMask: Required. The update mask applies to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
 

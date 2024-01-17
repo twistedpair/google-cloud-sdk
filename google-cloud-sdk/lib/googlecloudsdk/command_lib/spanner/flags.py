@@ -603,6 +603,7 @@ def GetSpannerMigrationTargetFlag():
 def GetSpannerMigrationTargetProfileFlag():
   return base.Argument(
       '--target-profile',
+      required=True,
       help='Flag for specifying connection profile for target database '
       '(e.g., "dialect=postgresql)".')
 
@@ -649,5 +650,53 @@ def GetSpannerMigrationWebOpenFlag():
 
 
 def GetSpannerMigrationWebPortFlag():
-  return base.Argument('--port', help='The port in which Spanner migration tool'
-                       ' will run, defaults to 8080')
+  return base.Argument(
+      '--port',
+      help=(
+          'The port in which Spanner migration tool will run, defaults to 8080'
+      ),
+  )
+
+
+def GetSpannerMigrationJobIdFlag():
+  return base.Argument(
+      '--job-id', required=True, help='The job Id of an existing migration job.'
+  )
+
+
+def GetSpannerMigrationDataShardIdsFlag():
+  return base.Argument(
+      '--data-shard-ids',
+      help=(
+          'Relevant to sharded migrations. Optional comma separated list of'
+          ' data shard Ids, if nothing is specified, all shards are cleaned up.'
+      ),
+  )
+
+
+def GetSpannerMigrationCleanupDatastreamResourceFlag():
+  return base.Argument(
+      '--datastream',
+      action='store_true',
+      help='Cleanup datastream resource(s).',
+  )
+
+
+def GetSpannerMigrationCleanupDataflowResourceFlag():
+  return base.Argument(
+      '--dataflow', action='store_true', help='Cleanup dataflow resource(s).'
+  )
+
+
+def GetSpannerMigrationCleanupPubsubResourceFlag():
+  return base.Argument(
+      '--pub-sub', action='store_true', help='Cleanup pubsub resource(s).'
+  )
+
+
+def GetSpannerMigrationCleanupMonitoringResourceFlag():
+  return base.Argument(
+      '--monitoring',
+      action='store_true',
+      help='Cleanup monitoring dashboard(s).',
+  )

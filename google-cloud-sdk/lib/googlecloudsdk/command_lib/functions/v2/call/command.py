@@ -67,6 +67,8 @@ def Run(args, release_track):
       v2_messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
           name=function_ref.RelativeName()))
 
+  call_util.UpdateHttpTimeout(args, function, 'v2', release_track)
+
   cloud_run_uri = function.serviceConfig.uri
   token = GenerateIdToken()
   auth_header = {'Authorization': 'Bearer {}'.format(token)}

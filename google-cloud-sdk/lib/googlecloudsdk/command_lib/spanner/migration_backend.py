@@ -156,6 +156,37 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
       exec_args.extend(['--port', port])
     return exec_args
 
+  def ParseCleanupArgs(self,
+                       job_id,
+                       data_shard_ids=None,
+                       target_profile=None,
+                       datastream=False,
+                       dataflow=False,
+                       pub_sub=False,
+                       monitoring=False,
+                       log_level=None,
+                       **kwargs):
+    """"Parse args for the cleanup command."""
+    del kwargs
+    exec_args = ['cleanup']
+    if job_id:
+      exec_args.extend(['--jobId', job_id])
+    if data_shard_ids:
+      exec_args.extend(['--dataShardIds', data_shard_ids])
+    if target_profile:
+      exec_args.extend(['--target-profile', target_profile])
+    if datastream:
+      exec_args.append('--datastream')
+    if dataflow:
+      exec_args.append('--dataflow')
+    if pub_sub:
+      exec_args.append('--pubsub')
+    if monitoring:
+      exec_args.append('--monitoring')
+    if log_level:
+      exec_args.append('--log-level')
+    return exec_args
+
   def _ParseArgsForCommand(self, command, **kwargs):
     """Call the parser corresponding to the command."""
     if command == 'schema':
@@ -166,6 +197,8 @@ class SpannerMigrationWrapper(binary_operations.StreamingBinaryBackedOperation):
       return self._ParseSchemaAndDataArgs(**kwargs)
     elif command == 'web':
       return self._ParseWebArgs(**kwargs)
+    elif command == 'cleanup':
+      return self.ParseCleanupArgs(**kwargs)
     else:
       raise binary_operations.InvalidOperationForBinary(
           'Invalid Operation [{}] for spanner-migration-tool'.format(command))

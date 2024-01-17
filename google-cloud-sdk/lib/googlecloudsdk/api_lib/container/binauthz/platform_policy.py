@@ -121,12 +121,13 @@ class Client(object):
     )
     return self.client.projects_platforms_policies.Delete(request)
 
-  def Evaluate(self, policy_ref, resource):
+  def Evaluate(self, policy_ref, resource, generate_deploy_attestations=False):
     """Evaluate a policy against a Pod.
 
     Args:
       policy_ref: the resource name of the policy.
       resource: the Pod in JSON or YAML form.
+      generate_deploy_attestations: whether to sign results or not.
 
     Returns:
       The result of the evaluation in EvaluateGkePolicyResponse form.
@@ -140,5 +141,9 @@ class Client(object):
         },
         self.messages.BinaryauthorizationProjectsPlatformsGkePoliciesEvaluateRequest,
     )
+    if generate_deploy_attestations:
+      request.evaluateGkePolicyRequest.attestationMode = (
+          self.messages.EvaluateGkePolicyRequest.AttestationModeValueValuesEnum.GENERATE_DEPLOY
+      )
 
     return self.client.projects_platforms_gke_policies.Evaluate(request)

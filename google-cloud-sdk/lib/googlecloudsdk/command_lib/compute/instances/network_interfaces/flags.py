@@ -29,6 +29,29 @@ def AddNetworkInterfaceArgForUpdate(parser):
   )
 
 
+def AddParentNicNameArg(parser):
+  parser.add_argument(
+      '--parent-nic-name',
+      type=str,
+      help="""
+        Name of the parent network interface of a VLAN based network interface.
+        If this field is specified, vlan must be set.
+      """,
+  )
+
+
+def AddVlanArg(parser):
+  parser.add_argument(
+      '--vlan',
+      type=int,
+      help="""
+        VLAN tag of a VLAN based network interface, must be in range from 2 to
+        4094 inclusively. This field is mandatory if the parent network
+        interface name is set.
+      """,
+  )
+
+
 def AddNetworkArg(parser):
   parser.add_argument(
       '--network',
@@ -45,27 +68,56 @@ def AddSubnetworkArg(parser):
   )
 
 
-def AddPrivateNetworkIpArg(parser):
-  parser.add_argument(
-      '--private-network-ip',
-      dest='private_network_ip',
-      type=str,
-      help="""
+def AddPrivateNetworkIpArg(parser, add_network_interface=False):
+  """Adds --private-network-ip argument to the parser."""
+  if add_network_interface:
+    help_text = """
+        Specifies the RFC1918 IP to assign to the network interface. The IP
+        should be in the subnet IP range.
+      """
+  else:
+    help_text = """
         Assign the given IP address to the interface. Can be specified only
         together with --network and/or --subnetwork to choose the IP address
         in the new subnetwork. If unspecified, then the previous IP address
         will be allocated in the new subnetwork. If the previous IP address is
         not available in the new subnetwork, then another available IP address
         will be allocated automatically from the new subnetwork CIDR range.
-      """,
+      """
+  parser.add_argument(
+      '--private-network-ip',
+      dest='private_network_ip',
+      type=str,
+      help=help_text,
   )
 
 
-def AddAliasesArg(parser):
-  parser.add_argument(
-      '--aliases',
-      type=str,
-      help="""
+def AddAliasesArg(parser, add_network_interface=False):
+  """Adds --aliases argument to the parser."""
+  if add_network_interface:
+    help_text = """
+        The IP alias ranges to allocate for this interface. If there are
+        multiple IP alias ranges, they are separated by semicolons.
+
+        For example:
+
+            --aliases="10.128.1.0/24;range1:/32"
+
+        Each IP alias range consists of a range name and an IP range
+        separated by a colon, or just the IP range.
+        The range name is the name of the range within the network
+        interface's subnet from which to allocate an IP alias range. If
+        unspecified, it defaults to the primary IP range of the subnet.
+        The IP range can be a CIDR range (e.g. `192.168.100.0/24`), a single
+        IP address (e.g. `192.168.100.1`), or a netmask in CIDR format (e.g.
+        `/24`). If the IP range is specified by CIDR range or single IP
+        address, it must belong to the CIDR range specified by the range
+        name on the subnet. If the IP range is specified by netmask, the
+        IP allocator will pick an available range with the specified netmask
+        and allocate it to this network interface.
+      """
+  else:
+    help_text = """
         The IP alias ranges to allocate for this interface. If there are
         multiple IP alias ranges, they are separated by semicolons.
 
@@ -79,7 +131,11 @@ def AddAliasesArg(parser):
         For example:
 
             --aliases="10.128.1.0/24;r1:/32"
-      """,
+      """
+  parser.add_argument(
+      '--aliases',
+      type=str,
+      help=help_text,
   )
 
 
@@ -97,6 +153,23 @@ def AddStackTypeArg(parser):
           'The stack type for the default network interface. Determines if '
           'IPv6 is enabled on the default network interface.'
       ),
+  )
+
+
+def AddNetworkTierArg(parser):
+  parser.add_argument(
+      '--network-tier',
+      choices={
+          'PREMIUM': 'High quality, Google-grade network tier.',
+          'STANDARD': 'Public internet quality.',
+          'FIXED_STANDARD': 'Public internet quality with fixed bandwidth.',
+      },
+      type=arg_utils.ChoiceToEnumName,
+      help="""
+        Specifies the network tier that will be used to configure the instance
+        network interface. ``NETWORK_TIER'' must be one of: `PREMIUM`,
+        `STANDARD`, `FIXED_STANDARD`. The default value is `PREMIUM`.
+      """,
   )
 
 

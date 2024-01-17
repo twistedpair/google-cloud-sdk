@@ -22,15 +22,15 @@ from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.calliope import base
 
 API_NAME = 'securityposture'
-VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha'}
+VERSION_MAP = {base.ReleaseTrack.ALPHA: 'v1alpha', base.ReleaseTrack.GA: 'v1'}
 
 
 # The messages module can also be accessed from client.MESSAGES_MODULE
-def GetMessagesModule(release_track=base.ReleaseTrack.ALPHA):
+def GetMessagesModule(release_track=base.ReleaseTrack.GA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetMessagesModule(API_NAME, api_version)
 
 
-def GetClientInstance(release_track=base.ReleaseTrack.ALPHA):
+def GetClientInstance(release_track=base.ReleaseTrack.GA):
   api_version = VERSION_MAP.get(release_track)
   return apis.GetClientInstance(API_NAME, api_version)

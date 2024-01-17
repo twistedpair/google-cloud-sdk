@@ -132,6 +132,8 @@ class Jobs:
       region_id=None,
       min_num_workers=None,
       max_num_workers=None,
+      worker_utilization_hint=None,
+      unset_worker_utilization_hint=None,
   ):
     """Update pipeline options on a running job.
 
@@ -144,6 +146,8 @@ class Jobs:
       region_id: Region the job is in
       min_num_workers: Lower-bound for worker autoscaling
       max_num_workers: Upper-bound for worker autoscaling
+      worker_utilization_hint: Target CPU utilization for worker autoscaling
+      unset_worker_utilization_hint: Unsets worker_utilization_hint value
 
     Returns:
       The updated Job
@@ -153,7 +157,13 @@ class Jobs:
     region_id = region_id or DATAFLOW_API_DEFAULT_REGION
     job = GetMessagesModule().Job(
         runtimeUpdatableParams=GetMessagesModule().RuntimeUpdatableParams(
-            minNumWorkers=min_num_workers, maxNumWorkers=max_num_workers
+            minNumWorkers=min_num_workers,
+            maxNumWorkers=max_num_workers,
+            workerUtilizationHint=(
+                None
+                if unset_worker_utilization_hint
+                else worker_utilization_hint
+            ),
         )
     )
 
@@ -162,6 +172,13 @@ class Jobs:
       update_mask_pieces.append('runtime_updatable_params.min_num_workers')
     if max_num_workers is not None:
       update_mask_pieces.append('runtime_updatable_params.max_num_workers')
+    if (
+        worker_utilization_hint is not None
+        or unset_worker_utilization_hint
+    ):
+      update_mask_pieces.append(
+          'runtime_updatable_params.worker_utilization_hint'
+      )
     update_mask = ','.join(update_mask_pieces)
 
     request = GetMessagesModule().DataflowProjectsLocationsJobsUpdateRequest(

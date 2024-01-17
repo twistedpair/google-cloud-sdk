@@ -40,6 +40,7 @@ class ProviderPrefix(enum.Enum):
   """Provider prefix strings for storage URLs."""
   FILE = 'file'
   GCS = 'gs'
+  HDFS = 'hdfs'
   HTTP = 'http'
   HTTPS = 'https'
   POSIX = 'posix'
@@ -219,11 +220,85 @@ class FileUrl(StorageUrl):
 
   @property
   def versionless_url_string(self):
-    """Returns the string representation of the instance without the version."""
+    """Returns the string representation of the instance.
+
+    Same as url_string because these files are not versioned.
+    """
     return self.url_string
 
 
-class PosixFileSystemUrl(StorageUrl):
+class BaseHdfsAndPosixUrl(StorageUrl):
+  """Base class designed for HDFS and POSIX file system URLs.
+
+  Attributes:
+    scheme (ProviderPrefix): The cloud provider, must be either POSIX or HDFS.
+    bucket_name (str): None.
+    object_name (str): The file/directory path.
+    generation (str): None.
+  """
+
+  def __init__(self, scheme, url_string):
+    """Initialize BaseHadoopAndPosixUrl instance."""
+    super(BaseHdfsAndPosixUrl, self).__init__()
+    self.scheme = scheme
+    self.bucket_name = None
+    self.generation = None
+    self.object_name = url_string[len(scheme.value +
+                                      SCHEME_DELIMITER):]
+    if self.scheme not in [ProviderPrefix.POSIX, ProviderPrefix.HDFS]:
+      raise errors.InvalidUrlError('Unrecognized scheme "%s"' % self.scheme)
+    if not self.object_name.startswith(self.delimiter):
+      log.warning(
+          '{} URLs typically start at the root directory. Did you mean:'
+          ' {}{}{}{}'.format(
+              self.scheme.name,
+              self.scheme.value,
+              SCHEME_DELIMITER,
+              self.delimiter,
+              self.object_name,
+          )
+      )
+
+  @property
+  def delimiter(self):
+    """Returns the pathname separator character used by POSIX and HDFS."""
+    return '/'
+
+  @property
+  def url_string(self):
+    """Returns the string representation of the instance."""
+    return '{}{}{}'.format(self.scheme.value, SCHEME_DELIMITER,
+                           self.object_name)
+
+  @property
+  def versionless_url_string(self):
+    """Returns the string representation of the instance.
+
+    Same as url_string because these files are not versioned.
+    """
+    return self.url_string
+
+
+class HdfsUrl(BaseHdfsAndPosixUrl):
+  """HDFS URL class providing parsing and convenience methods.
+
+  Attributes:
+    scheme (ProviderPrefix): This will always be "hdfs" for HdfsUrl.
+    bucket_name (str): None for HdfsUrl.
+    object_name (str): The file/directory path.
+    generation (str): None for HdfsUrl.
+  """
+
+  def __init__(self, url_string):
+    """Initialize HdfsUrl instance.
+
+    Args:
+      url_string (str): The string representing the filepath.
+    """
+    super(HdfsUrl, self).__init__(ProviderPrefix.HDFS, url_string)
+
+
+class PosixFileSystemUrl(BaseHdfsAndPosixUrl):
   """URL class representing local and external POSIX file systems.
 
   *Intended for transfer component.*
@@ -253,35 +328,7 @@ class PosixFileSystemUrl(StorageUrl):
     Args:
       url_string (str): Local or external POSIX file path.
     """
-    super(PosixFileSystemUrl, self).__init__()
-    self.scheme = ProviderPrefix.POSIX
-    self.bucket_name = None
-    # Use object_name to represent a schemeless root URL.
-    self.object_name = url_string[len(ProviderPrefix.POSIX.value +
-                                      SCHEME_DELIMITER):]
-    if not self.object_name.startswith(self.delimiter):
-      log.warning(
-          'POSIX URLs typically start at the root directory. Did you mean:'
-          ' {}{}{}{}'.format(self.scheme.value, SCHEME_DELIMITER,
-                             self.delimiter, self.object_name))
-
-    self.generation = None
-
-  @property
-  def delimiter(self):
-    """Returns the pathname separator character used by POSIX."""
-    return '/'
-
-  @property
-  def url_string(self):
-    """Returns the string representation of the instance."""
-    return '{}{}{}'.format(self.scheme.value, SCHEME_DELIMITER,
-                           self.object_name)
-
-  @property
-  def versionless_url_string(self):
-    """Returns the string representation of the instance without the version."""
-    return self.url_string
+    super(PosixFileSystemUrl, self).__init__(ProviderPrefix.POSIX, url_string)
 
 
 class CloudUrl(StorageUrl):
@@ -550,6 +597,8 @@ def storage_url_from_string(url_string):
     return FileUrl(url_string)
   if scheme == ProviderPrefix.POSIX:
     return PosixFileSystemUrl(url_string)
+  if scheme == ProviderPrefix.HDFS:
+    return HdfsUrl(url_string)
   if scheme in VALID_HTTP_SCHEMES:
     # Azure's scheme breaks from other clouds.
     return AzureUrl.from_url_string(url_string)

@@ -592,3 +592,16 @@ def AddStandbyPolicyFlags(parser):
       type=int,
       help='Specifies the target size of stopped VMs in the group.',
   )
+
+
+def AddMigResourceManagerTagsFlags(parser):
+  """Adds resource manager tag related flags."""
+  parser.add_argument(
+      '--resource-manager-tags',
+      type=arg_parsers.ArgDict(),
+      metavar='KEY=VALUE',
+      action=arg_parsers.UpdateAction,
+      help="""\
+      Specifies a list of resource manager tags to apply to the managed instance group.
+      """,
+  )

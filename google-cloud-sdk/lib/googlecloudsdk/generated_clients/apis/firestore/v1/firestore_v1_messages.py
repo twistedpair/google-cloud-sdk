@@ -3013,7 +3013,7 @@ class Order(_messages.Message):
 
   Fields:
     direction: The direction to order by. Defaults to `ASCENDING`.
-    field: Order based on the value referenced by this field.
+    field: The field to order by.
   """
 
   class DirectionValueValuesEnum(_messages.Enum):
@@ -3122,6 +3122,52 @@ class Projection(_messages.Message):
   fields = _messages.MessageField('FieldReference', 1, repeated=True)
 
 
+class QueryPlan(_messages.Message):
+  r"""Plan for the query.
+
+  Messages:
+    PlanInfoValue: Planning phase information for the query. It will include:
+      { "indexes_used": [ {"query_scope": "Collection", "properties": "(foo
+      ASC, __name__ ASC)"}, {"query_scope": "Collection", "properties": "(bar
+      ASC, __name__ ASC)"} ] }
+
+  Fields:
+    planInfo: Planning phase information for the query. It will include: {
+      "indexes_used": [ {"query_scope": "Collection", "properties": "(foo ASC,
+      __name__ ASC)"}, {"query_scope": "Collection", "properties": "(bar ASC,
+      __name__ ASC)"} ] }
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class PlanInfoValue(_messages.Message):
+    r"""Planning phase information for the query. It will include: {
+    "indexes_used": [ {"query_scope": "Collection", "properties": "(foo ASC,
+    __name__ ASC)"}, {"query_scope": "Collection", "properties": "(bar ASC,
+    __name__ ASC)"} ] }
+
+    Messages:
+      AdditionalProperty: An additional property for a PlanInfoValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a PlanInfoValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  planInfo = _messages.MessageField('PlanInfoValue', 1)
+
+
 class QueryTarget(_messages.Message):
   r"""A target specified by a query.
 
@@ -3164,6 +3210,59 @@ class ReadWrite(_messages.Message):
   retryTransaction = _messages.BytesField(1)
 
 
+class ResultSetStats(_messages.Message):
+  r"""Planning and execution statistics for the query.
+
+  Messages:
+    QueryStatsValue: Aggregated statistics from the execution of the query.
+      This will only be present when the request specifies `PROFILE` mode. For
+      example, a query will return the statistics including: {
+      "results_returned": "20", "documents_scanned": "20",
+      "indexes_entries_scanned": "10050", "total_execution_time": "100.7
+      msecs" }
+
+  Fields:
+    queryPlan: Plan for the query.
+    queryStats: Aggregated statistics from the execution of the query. This
+      will only be present when the request specifies `PROFILE` mode. For
+      example, a query will return the statistics including: {
+      "results_returned": "20", "documents_scanned": "20",
+      "indexes_entries_scanned": "10050", "total_execution_time": "100.7
+      msecs" }
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class QueryStatsValue(_messages.Message):
+    r"""Aggregated statistics from the execution of the query. This will only
+    be present when the request specifies `PROFILE` mode. For example, a query
+    will return the statistics including: { "results_returned": "20",
+    "documents_scanned": "20", "indexes_entries_scanned": "10050",
+    "total_execution_time": "100.7 msecs" }
+
+    Messages:
+      AdditionalProperty: An additional property for a QueryStatsValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a QueryStatsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  queryPlan = _messages.MessageField('QueryPlan', 1)
+  queryStats = _messages.MessageField('QueryStatsValue', 2)
+
+
 class RollbackRequest(_messages.Message):
   r"""The request for Firestore.Rollback.
 
@@ -3177,7 +3276,16 @@ class RollbackRequest(_messages.Message):
 class RunAggregationQueryRequest(_messages.Message):
   r"""The request for Firestore.RunAggregationQuery.
 
+  Enums:
+    ModeValueValuesEnum: Optional. The mode in which the query request is
+      processed. This field is optional, and when not provided, it defaults to
+      `NORMAL` mode where no additional statistics will be returned with the
+      query results.
+
   Fields:
+    mode: Optional. The mode in which the query request is processed. This
+      field is optional, and when not provided, it defaults to `NORMAL` mode
+      where no additional statistics will be returned with the query results.
     newTransaction: Starts a new transaction as part of the query, defaulting
       to read-only. The new transaction ID will be returned as the first
       response in the stream.
@@ -3190,10 +3298,27 @@ class RunAggregationQueryRequest(_messages.Message):
       value here is the opaque transaction ID to execute the query in.
   """
 
-  newTransaction = _messages.MessageField('TransactionOptions', 1)
-  readTime = _messages.StringField(2)
-  structuredAggregationQuery = _messages.MessageField('StructuredAggregationQuery', 3)
-  transaction = _messages.BytesField(4)
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode in which the query request is processed. This field
+    is optional, and when not provided, it defaults to `NORMAL` mode where no
+    additional statistics will be returned with the query results.
+
+    Values:
+      NORMAL: The default mode. Only the query results are returned.
+      PLAN: This mode returns only the query plan, without any results or
+        execution statistics information.
+      PROFILE: This mode returns both the query plan and the execution
+        statistics along with the results.
+    """
+    NORMAL = 0
+    PLAN = 1
+    PROFILE = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  newTransaction = _messages.MessageField('TransactionOptions', 2)
+  readTime = _messages.StringField(3)
+  structuredAggregationQuery = _messages.MessageField('StructuredAggregationQuery', 4)
+  transaction = _messages.BytesField(5)
 
 
 class RunAggregationQueryResponse(_messages.Message):
@@ -3208,6 +3333,10 @@ class RunAggregationQueryResponse(_messages.Message):
       this represents the time at which the query was run.
     result: A single aggregation result. Not present when reporting partial
       progress.
+    stats: Query plan and execution statistics. Note that the returned stats
+      are subject to change as Firestore evolves. This is only present when
+      the request specifies a mode other than `NORMAL` and is sent only once
+      with the last response in the stream.
     transaction: The transaction that was started as part of this request.
       Only present on the first response when the request requested to start a
       new transaction.
@@ -3215,13 +3344,23 @@ class RunAggregationQueryResponse(_messages.Message):
 
   readTime = _messages.StringField(1)
   result = _messages.MessageField('AggregationResult', 2)
-  transaction = _messages.BytesField(3)
+  stats = _messages.MessageField('ResultSetStats', 3)
+  transaction = _messages.BytesField(4)
 
 
 class RunQueryRequest(_messages.Message):
   r"""The request for Firestore.RunQuery.
 
+  Enums:
+    ModeValueValuesEnum: Optional. The mode in which the query request is
+      processed. This field is optional, and when not provided, it defaults to
+      `NORMAL` mode where no additional statistics will be returned with the
+      query results.
+
   Fields:
+    mode: Optional. The mode in which the query request is processed. This
+      field is optional, and when not provided, it defaults to `NORMAL` mode
+      where no additional statistics will be returned with the query results.
     newTransaction: Starts a new transaction and reads the documents. Defaults
       to a read-only transaction. The new transaction ID will be returned as
       the first response in the stream.
@@ -3234,10 +3373,27 @@ class RunQueryRequest(_messages.Message):
       here is the opaque transaction ID to execute the query in.
   """
 
-  newTransaction = _messages.MessageField('TransactionOptions', 1)
-  readTime = _messages.StringField(2)
-  structuredQuery = _messages.MessageField('StructuredQuery', 3)
-  transaction = _messages.BytesField(4)
+  class ModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The mode in which the query request is processed. This field
+    is optional, and when not provided, it defaults to `NORMAL` mode where no
+    additional statistics will be returned with the query results.
+
+    Values:
+      NORMAL: The default mode. Only the query results are returned.
+      PLAN: This mode returns only the query plan, without any results or
+        execution statistics information.
+      PROFILE: This mode returns both the query plan and the execution
+        statistics along with the results.
+    """
+    NORMAL = 0
+    PLAN = 1
+    PROFILE = 2
+
+  mode = _messages.EnumField('ModeValueValuesEnum', 1)
+  newTransaction = _messages.MessageField('TransactionOptions', 2)
+  readTime = _messages.StringField(3)
+  structuredQuery = _messages.MessageField('StructuredQuery', 4)
+  transaction = _messages.BytesField(5)
 
 
 class RunQueryResponse(_messages.Message):
@@ -3255,6 +3411,10 @@ class RunQueryResponse(_messages.Message):
       time at which the query was run.
     skippedResults: The number of results that have been skipped due to an
       offset between the last response and the current response.
+    stats: Query plan and execution statistics. Note that the returned stats
+      are subject to change as Firestore evolves. This is only present when
+      the request specifies a mode other than `NORMAL` and is sent only once
+      with the last response in the stream.
     transaction: The transaction that was started as part of this request. Can
       only be set in the first response, and only if
       RunQueryRequest.new_transaction was set in the request. If set, no other
@@ -3265,7 +3425,8 @@ class RunQueryResponse(_messages.Message):
   done = _messages.BooleanField(2)
   readTime = _messages.StringField(3)
   skippedResults = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  transaction = _messages.BytesField(5)
+  stats = _messages.MessageField('ResultSetStats', 5)
+  transaction = _messages.BytesField(6)
 
 
 class StandardQueryParameters(_messages.Message):

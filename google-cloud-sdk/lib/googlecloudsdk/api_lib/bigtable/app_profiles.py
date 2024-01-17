@@ -237,11 +237,11 @@ def Create(
     standard_isolation = msgs.StandardIsolation(priority=priority_enum)
   elif data_boost:
     data_boost_enum = (
-        msgs.DataboostIsolationReadOnly.BillingOwnerValueValuesEnum(
+        msgs.DataBoostIsolationReadOnly.BillingOwnerValueValuesEnum(
             data_boost_billing_owner
         )
     )
-    data_boost_isolation = msgs.DataboostIsolationReadOnly(
+    data_boost_isolation = msgs.DataBoostIsolationReadOnly(
         billingOwner=data_boost_enum
     )
 
@@ -251,7 +251,7 @@ def Create(
           multiClusterRoutingUseAny=multi_cluster_routing,
           singleClusterRouting=single_cluster_routing,
           standardIsolation=standard_isolation,
-          databoostIsolationReadOnly=data_boost_isolation,
+          dataBoostIsolationReadOnly=data_boost_isolation,
       ),
       appProfileId=app_profile_ref.Name(),
       parent=instance_ref.RelativeName(),
@@ -368,12 +368,12 @@ def Update(
 
   elif data_boost:
     data_boost_enum = (
-        msgs.DataboostIsolationReadOnly.BillingOwnerValueValuesEnum(
+        msgs.DataBoostIsolationReadOnly.BillingOwnerValueValuesEnum(
             data_boost_billing_owner
         )
     )
-    changed_fields.append('databoostIsolationReadOnly')
-    app_profile.databoostIsolationReadOnly = msgs.DataboostIsolationReadOnly(
+    changed_fields.append('dataBoostIsolationReadOnly')
+    app_profile.dataBoostIsolationReadOnly = msgs.DataBoostIsolationReadOnly(
         billingOwner=data_boost_enum
     )
 

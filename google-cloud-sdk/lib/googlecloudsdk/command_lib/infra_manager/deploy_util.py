@@ -256,10 +256,11 @@ def _CreateTFBlueprint(
         local_source, stage_bucket, deployment_short_name, location, ignore_file
     )
     terraform_blueprint.gcsSource = upload_bucket
-  # Will fix the local source in a future cl.
-  # TODO(b/312781820)
   elif local_source is not None and preview_short_name is not None:
-    errors.NotSupportedError()
+    upload_bucket = _UploadSourceToGCS(
+        local_source, stage_bucket, preview_short_name, location, ignore_file
+    )
+    terraform_blueprint.gcsSource = upload_bucket
   else:
     terraform_blueprint.gitSource = messages.GitSource(
         repo=git_source_repo,
@@ -1027,6 +1028,7 @@ def Create(
   ):
     raise errors.OperationFailedError(applied_preview.state)
 
+  log.status.Print('Created preview: {}'.format(applied_preview.name))
   return applied_preview
 
 
@@ -1049,7 +1051,7 @@ def _CreatePreviewOp(preview, preview_full_name, location_full_name):
   preview_ref = resources.REGISTRY.Parse(
       preview_full_name, collection='config.projects.locations.previews')
   preview_id = preview_ref.Name()
-  log.info('Creating the deployment')
+  log.info('Creating the preview')
   return configmanager_util.CreatePreview(
       preview, preview_id, location_full_name
   )

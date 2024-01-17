@@ -61,7 +61,7 @@ metrics_scope:
     help: The project ID corresponding to the metrics scope.
 
 uptime_check:
-  name: uptime_check
+  name: uptime check or synthetic monitor
   collection: monitoring.projects.uptimeCheckConfigs
   request_id_field: name
   attributes:

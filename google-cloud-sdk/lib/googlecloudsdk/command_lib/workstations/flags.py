@@ -259,6 +259,39 @@ def AddDisablePublicIpAddresses(parser, use_default=True):
   )
 
 
+def AddDisableTcpConnections(parser, use_default=True):
+  """Adds a --disable-tcp-connections flag to the given parser."""
+  help_text = """\
+  Default value is false.
+  If set, workstations will not allow plain TCP connections."""
+  parser.add_argument(
+      '--disable-tcp-connections',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
+
+
+def AddEnableTcpConnections(parser, use_default=True):
+  """Adds a --enable-tcp-connections flag to the given parser."""
+  help_text = """\
+  Default value is false.
+  If set, workstations will allow plain TCP connections."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--enable-tcp-connections',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
+  group.add_argument(
+      '--disable-tcp-connections',
+      action='store_true',
+      default=False if use_default else None,
+      help=help_text,
+  )
+
+
 def AddShieldedSecureBoot(parser, use_default=True):
   """Adds --shielded-secure-boot flag to the given parser."""
   help_text = """\

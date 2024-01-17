@@ -125,6 +125,7 @@ class TypeMetadata:
     cta: call to action template.
     label: the display name for the integration.
     product: the GCP product behind the integration.
+    example_yaml: Example yaml blocks that will be provided to the user.
     visible: If true, then the integration is useable by anyone without any
       special configuration.
   """
@@ -142,6 +143,7 @@ class TypeMetadata:
                cta: Optional[str] = None,
                label: Optional[str] = None,
                product: Optional[str] = None,
+               example_yaml: Optional[str] = None,
                visible: bool = False):
     self.integration_type = integration_type
     self.resource_type = resource_type
@@ -157,6 +159,7 @@ class TypeMetadata:
     self.cta = cta
     self.label = label
     self.product = product
+    self.example_yaml = example_yaml
     self.visible = visible
 
     if update_exclusive_groups is None:

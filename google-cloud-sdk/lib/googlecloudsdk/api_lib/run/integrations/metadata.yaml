@@ -13,6 +13,19 @@ integrations:
       $ gcloud {track} run integrations create --type=custom-domains --parameters='set-mapping=example.com/*:[SERVICE]'
     Update the integration to add subsequent mappings:
       $ gcloud {track} run integrations update custom-domains --parameters='set-mapping=anotherexample.com/*:[SERVICE]'
+  example_yaml: |
+
+    apiVersion: runapps.googleapis.com/v1alpha1
+    resources:
+    - id: router/custom-domains
+      subresources:
+        - id: domain/example-com
+          config:
+            domain: example.com
+          bindings:
+          - target: service/[SERVICE]
+            config:
+              paths: ["/*"]
   parameters:
   - name: set-mapping
     description: 'Set a route mapping from a path to a service. Format: set-mapping=[DOMAIN]/[PATH]:[SERVICE]'
@@ -42,6 +55,16 @@ integrations:
   description: Configure a Redis instance (Cloud Memorystore) and connect it to a Cloud Run Service.
   example_command: |-
     $ gcloud {track} run integrations create --service=[SERVICE] --type=redis --parameters=memory-size-gb=2
+  example_yaml: |
+
+    apiVersion: runapps.googleapis.com/v1alpha1
+    resources:
+    - id: redis/redis-1
+      config:
+        memorySizeGb: 2
+    - id: service/[SERVICE]
+      bindings:
+      - target: redis/redis-1
   service_type: backing
   visible: true
   eta_in_min: 10
@@ -73,6 +96,7 @@ integrations:
   required_apis:
   - redis.googleapis.com
   - vpcaccess.googleapis.com
+
 - integration_type: firestore
   resource_type: firestore
   label: 'Firestore'
@@ -89,6 +113,7 @@ integrations:
   parameters: []
   required_apis:
   - firestore.googleapis.com
+
 - integration_type: cloudsql
   resource_type: cloudsql
   label: Cloud SQL
@@ -96,6 +121,17 @@ integrations:
   description: Configure a CloudSQL database instance and connect it to a Cloud Run Service.
   example_command: |-
     $ gcloud {track} run integrations create --service=[SERVICE] --type=cloudsql --parameters=version=MYSQL_8_0,tier=db-f1-micro
+  example_yaml: |
+
+    apiVersion: runapps.googleapis.com/v1alpha1
+    resources:
+    - id: cloudsql/cloudsql-1
+      config:
+        version: POSTGRES_11
+        tier: db-f1-micro
+    - id: service/[SERVICE]
+      bindings:
+      - target: cloudsql/cloudsql-1
   service_type: backing
   visible: false
   eta_in_min: 15
@@ -129,6 +165,15 @@ integrations:
   description: Configure custom domains for Cloud Run services with Firebase Hosting.
   example_command: |-
     $ gcloud {track} run integrations create --service=[SERVICE] --type=firebase-hosting --parameters=site-id=examplesite
+  example_yaml: |
+
+    apiVersion: runapps.googleapis.com/v1alpha1
+    resources:
+    - id: firebase-hosting/firebase-hosting-1
+      config:
+        siteId: examplesite
+      bindings:
+      - target: service/cowsay
   service_type: ingress
   visible: true
   eta_in_min: 5

@@ -2864,7 +2864,6 @@ def AddConfidentialComputeArgs(
         are AMD virtualization features for running confidential instances.
         """
 
-    # TODO(b/280820350): unhide when TDX enters private preview
     # It is set in:
     # - third_party/py/googlecloudsdk/surface/compute/instances/..
     #    - create_with_container.py

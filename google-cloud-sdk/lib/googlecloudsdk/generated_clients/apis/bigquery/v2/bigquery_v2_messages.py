@@ -5122,11 +5122,16 @@ class Routine(_messages.Message):
       not defined, the security mode is automatically determined from the
       routine's configuration.
     sparkOptions: Optional. Spark specific options.
-    strictMode: Optional. Can be set for procedures only. If true (default),
-      the definition body will be validated in the creation and the updates of
-      the procedure. For procedures with an argument of ANY TYPE, the
-      definition body validtion is not supported at creation/update time, and
-      thus this field must be set to false explicitly.
+    strictMode: Optional. Use this option to catch many common errors. Error
+      checking is not exhaustive, and successfully creating a procedure
+      doesn't guarantee that the procedure will successfully execute at
+      runtime. If `strictMode` is set to `TRUE`, the procedure body is further
+      checked for errors such as non-existent tables or columns. The `CREATE
+      PROCEDURE` statement fails if the body fails any of these checks. If
+      `strictMode` is set to `FALSE`, the procedure body is checked only for
+      syntax. For procedures that invoke themselves recursively, specify
+      `strictMode=FALSE` to avoid non-existent procedure errors during
+      validation. Default value is `TRUE`.
   """
 
   class DataGovernanceTypeValueValuesEnum(_messages.Enum):

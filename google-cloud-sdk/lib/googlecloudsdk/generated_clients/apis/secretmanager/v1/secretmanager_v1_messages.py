@@ -20,7 +20,8 @@ class AccessSecretVersionResponse(_messages.Message):
 
   Fields:
     name: The resource name of the SecretVersion in the format
-      `projects/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
     payload: Secret payload
   """
 
@@ -664,7 +665,7 @@ class Secret(_messages.Message):
       more than 64 labels can be assigned to a given resource.
     name: Output only. The resource name of the Secret in the format
       `projects/*/secrets/*`.
-    replication: Required. Immutable. The replication policy of the secret
+    replication: Optional. Immutable. The replication policy of the secret
       data attached to the Secret. The replication policy cannot be changed
       after the Secret has been created.
     rotation: Optional. Rotation policy attached to the Secret. May be
@@ -888,6 +889,260 @@ class SecretmanagerProjectsLocationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class SecretmanagerProjectsLocationsSecretsAddVersionRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsAddVersionRequest object.
+
+  Fields:
+    addSecretVersionRequest: A AddSecretVersionRequest resource to be passed
+      as the request body.
+    parent: Required. The resource name of the Secret to associate with the
+      SecretVersion in the format `projects/*/secrets/*` or
+      `projects/*/locations/*/secrets/*`.
+  """
+
+  addSecretVersionRequest = _messages.MessageField('AddSecretVersionRequest', 1)
+  parent = _messages.StringField(2, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsCreateRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsCreateRequest object.
+
+  Fields:
+    parent: Required. The resource name of the project to associate with the
+      Secret, in the format `projects/*` or `projects/*/locations/*`.
+    secret: A Secret resource to be passed as the request body.
+    secretId: Required. This must be unique within the project. A secret ID is
+      a string with a maximum length of 255 characters and can contain
+      uppercase and lowercase letters, numerals, and the hyphen (`-`) and
+      underscore (`_`) characters.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+  secretId = _messages.StringField(3)
+
+
+class SecretmanagerProjectsLocationsSecretsDeleteRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsDeleteRequest object.
+
+  Fields:
+    etag: Optional. Etag of the Secret. The request succeeds if it matches the
+      etag of the currently stored secret object. If the etag is omitted, the
+      request succeeds.
+    name: Required. The resource name of the Secret to delete in the format
+      `projects/*/secrets/*`.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsGetIamPolicyRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsGetRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the Secret, in the format
+      `projects/*/secrets/*` or `projects/*/locations/*/secrets/*`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsListRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsListRequest object.
+
+  Fields:
+    filter: Optional. Filter string, adhering to the rules in [List-operation
+      filtering](https://cloud.google.com/secret-manager/docs/filtering). List
+      only secrets matching the filter. If filter is empty, all secrets are
+      listed.
+    pageSize: Optional. The maximum number of results to be returned in a
+      single page. If set to 0, the server decides the number of results to
+      return. If the number is greater than 25000, it is capped at 25000.
+    pageToken: Optional. Pagination token, returned earlier via
+      ListSecretsResponse.next_page_token.
+    parent: Required. The resource name of the project associated with the
+      Secrets, in the format `projects/*` or `projects/*/locations/*`
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsPatchRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsPatchRequest object.
+
+  Fields:
+    name: Output only. The resource name of the Secret in the format
+      `projects/*/secrets/*`.
+    secret: A Secret resource to be passed as the request body.
+    updateMask: Required. Specifies the fields to be updated.
+  """
+
+  name = _messages.StringField(1, required=True)
+  secret = _messages.MessageField('Secret', 2)
+  updateMask = _messages.StringField(3)
+
+
+class SecretmanagerProjectsLocationsSecretsSetIamPolicyRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsSetIamPolicyRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class SecretmanagerProjectsLocationsSecretsTestIamPermissionsRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsTestIamPermissionsRequest object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    testIamPermissionsRequest: A TestIamPermissionsRequest resource to be
+      passed as the request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class SecretmanagerProjectsLocationsSecretsVersionsAccessRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsVersionsAccessRequest object.
+
+  Fields:
+    name: Required. The resource name of the SecretVersion in the format
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/latest` or
+      `projects/*/locations/*/secrets/*/versions/latest` is an alias to the
+      most recently created SecretVersion.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsVersionsDestroyRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsVersionsDestroyRequest object.
+
+  Fields:
+    destroySecretVersionRequest: A DestroySecretVersionRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the SecretVersion to destroy in the
+      format `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
+  """
+
+  destroySecretVersionRequest = _messages.MessageField('DestroySecretVersionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsVersionsDisableRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsVersionsDisableRequest object.
+
+  Fields:
+    disableSecretVersionRequest: A DisableSecretVersionRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the SecretVersion to disable in the
+      format `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
+  """
+
+  disableSecretVersionRequest = _messages.MessageField('DisableSecretVersionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsVersionsEnableRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsVersionsEnableRequest object.
+
+  Fields:
+    enableSecretVersionRequest: A EnableSecretVersionRequest resource to be
+      passed as the request body.
+    name: Required. The resource name of the SecretVersion to enable in the
+      format `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
+  """
+
+  enableSecretVersionRequest = _messages.MessageField('EnableSecretVersionRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsVersionsGetRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsVersionsGetRequest object.
+
+  Fields:
+    name: Required. The resource name of the SecretVersion in the format
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/latest` or
+      `projects/*/locations/*/secrets/*/versions/latest` is an alias to the
+      most recently created SecretVersion.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class SecretmanagerProjectsLocationsSecretsVersionsListRequest(_messages.Message):
+  r"""A SecretmanagerProjectsLocationsSecretsVersionsListRequest object.
+
+  Fields:
+    filter: Optional. Filter string, adhering to the rules in [List-operation
+      filtering](https://cloud.google.com/secret-manager/docs/filtering). List
+      only secret versions matching the filter. If filter is empty, all secret
+      versions are listed.
+    pageSize: Optional. The maximum number of results to be returned in a
+      single page. If set to 0, the server decides the number of results to
+      return. If the number is greater than 25000, it is capped at 25000.
+    pageToken: Optional. Pagination token, returned earlier via
+      ListSecretVersionsResponse.next_page_token][].
+    parent: Required. The resource name of the Secret associated with the
+      SecretVersions to list, in the format `projects/*/secrets/*` or
+      `projects/*/locations/*/secrets/*`.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class SecretmanagerProjectsSecretsAddVersionRequest(_messages.Message):
   r"""A SecretmanagerProjectsSecretsAddVersionRequest object.
 
@@ -895,7 +1150,8 @@ class SecretmanagerProjectsSecretsAddVersionRequest(_messages.Message):
     addSecretVersionRequest: A AddSecretVersionRequest resource to be passed
       as the request body.
     parent: Required. The resource name of the Secret to associate with the
-      SecretVersion in the format `projects/*/secrets/*`.
+      SecretVersion in the format `projects/*/secrets/*` or
+      `projects/*/locations/*/secrets/*`.
   """
 
   addSecretVersionRequest = _messages.MessageField('AddSecretVersionRequest', 1)
@@ -907,7 +1163,7 @@ class SecretmanagerProjectsSecretsCreateRequest(_messages.Message):
 
   Fields:
     parent: Required. The resource name of the project to associate with the
-      Secret, in the format `projects/*`.
+      Secret, in the format `projects/*` or `projects/*/locations/*`.
     secret: A Secret resource to be passed as the request body.
     secretId: Required. This must be unique within the project. A secret ID is
       a string with a maximum length of 255 characters and can contain
@@ -966,7 +1222,7 @@ class SecretmanagerProjectsSecretsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the Secret, in the format
-      `projects/*/secrets/*`.
+      `projects/*/secrets/*` or `projects/*/locations/*/secrets/*`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -986,7 +1242,7 @@ class SecretmanagerProjectsSecretsListRequest(_messages.Message):
     pageToken: Optional. Pagination token, returned earlier via
       ListSecretsResponse.next_page_token.
     parent: Required. The resource name of the project associated with the
-      Secrets, in the format `projects/*`.
+      Secrets, in the format `projects/*` or `projects/*/locations/*`
   """
 
   filter = _messages.StringField(1)
@@ -1047,9 +1303,11 @@ class SecretmanagerProjectsSecretsVersionsAccessRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the SecretVersion in the format
-      `projects/*/secrets/*/versions/*`.
-      `projects/*/secrets/*/versions/latest` is an alias to the most recently
-      created SecretVersion.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/latest` or
+      `projects/*/locations/*/secrets/*/versions/latest` is an alias to the
+      most recently created SecretVersion.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1062,7 +1320,8 @@ class SecretmanagerProjectsSecretsVersionsDestroyRequest(_messages.Message):
     destroySecretVersionRequest: A DestroySecretVersionRequest resource to be
       passed as the request body.
     name: Required. The resource name of the SecretVersion to destroy in the
-      format `projects/*/secrets/*/versions/*`.
+      format `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
   """
 
   destroySecretVersionRequest = _messages.MessageField('DestroySecretVersionRequest', 1)
@@ -1076,7 +1335,8 @@ class SecretmanagerProjectsSecretsVersionsDisableRequest(_messages.Message):
     disableSecretVersionRequest: A DisableSecretVersionRequest resource to be
       passed as the request body.
     name: Required. The resource name of the SecretVersion to disable in the
-      format `projects/*/secrets/*/versions/*`.
+      format `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
   """
 
   disableSecretVersionRequest = _messages.MessageField('DisableSecretVersionRequest', 1)
@@ -1090,7 +1350,8 @@ class SecretmanagerProjectsSecretsVersionsEnableRequest(_messages.Message):
     enableSecretVersionRequest: A EnableSecretVersionRequest resource to be
       passed as the request body.
     name: Required. The resource name of the SecretVersion to enable in the
-      format `projects/*/secrets/*/versions/*`.
+      format `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
   """
 
   enableSecretVersionRequest = _messages.MessageField('EnableSecretVersionRequest', 1)
@@ -1102,9 +1363,11 @@ class SecretmanagerProjectsSecretsVersionsGetRequest(_messages.Message):
 
   Fields:
     name: Required. The resource name of the SecretVersion in the format
-      `projects/*/secrets/*/versions/*`.
-      `projects/*/secrets/*/versions/latest` is an alias to the most recently
-      created SecretVersion.
+      `projects/*/secrets/*/versions/*` or
+      `projects/*/locations/*/secrets/*/versions/*`.
+      `projects/*/secrets/*/versions/latest` or
+      `projects/*/locations/*/secrets/*/versions/latest` is an alias to the
+      most recently created SecretVersion.
   """
 
   name = _messages.StringField(1, required=True)
@@ -1124,7 +1387,8 @@ class SecretmanagerProjectsSecretsVersionsListRequest(_messages.Message):
     pageToken: Optional. Pagination token, returned earlier via
       ListSecretVersionsResponse.next_page_token][].
     parent: Required. The resource name of the Secret associated with the
-      SecretVersions to list, in the format `projects/*/secrets/*`.
+      SecretVersions to list, in the format `projects/*/secrets/*` or
+      `projects/*/locations/*/secrets/*`.
   """
 
   filter = _messages.StringField(1)

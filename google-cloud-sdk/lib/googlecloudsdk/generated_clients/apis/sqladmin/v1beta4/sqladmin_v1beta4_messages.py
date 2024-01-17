@@ -3061,11 +3061,13 @@ class Settings(_messages.Message):
       PD_HDD: An HDD data disk.
       OBSOLETE_LOCAL_SSD: This field is deprecated and will be removed from a
         future version of the API.
+      HYPERDISK_BALANCED: HYPERDISK_BALANCED data disk
     """
     SQL_DATA_DISK_TYPE_UNSPECIFIED = 0
     PD_SSD = 1
     PD_HDD = 2
     OBSOLETE_LOCAL_SSD = 3
+    HYPERDISK_BALANCED = 4
 
   class EditionValueValuesEnum(_messages.Enum):
     r"""Optional. The edition of the instance.
@@ -3521,6 +3523,9 @@ class SqlExternalSyncSettingError(_messages.Message):
         source to the destination.
       UNABLE_TO_VERIFY_DEFINERS: Unable to verify definers on the source for
         MySQL.
+      SUBSCRIPTION_CALCULATION_STATUS: If a time out occurs while the
+        subscription counts are calculated, then this value is set to 1.
+        Otherwise, this value is set to 2.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3562,6 +3567,7 @@ class SqlExternalSyncSettingError(_messages.Message):
     INCOMPATIBLE_DATABASE_MINOR_VERSION = 37
     SOURCE_MAX_SUBSCRIPTIONS = 38
     UNABLE_TO_VERIFY_DEFINERS = 39
+    SUBSCRIPTION_CALCULATION_STATUS = 40
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

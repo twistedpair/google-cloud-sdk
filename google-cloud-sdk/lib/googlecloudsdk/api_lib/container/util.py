@@ -230,10 +230,10 @@ def _GetDNSEndpoint(cluster):
   """Extract dns endpoint for the kubeconfig from the ControlPlaneEndpointConfig."""
   if (
       not cluster.controlPlaneEndpointsConfig
-      or not cluster.controlPlaneEndpointsConfig.dnsEndpointConfig
+      or not cluster.controlPlaneEndpointsConfig.enhancedIngress
   ):
     raise MissingDnsEndpointConfigError(cluster)
-  dns_endpoint = cluster.controlPlaneEndpointsConfig.dnsEndpointConfig.endpoint
+  dns_endpoint = cluster.controlPlaneEndpointsConfig.enhancedIngress.endpoint
   if dns_endpoint is None:
     raise MissingDNSEndpointError(cluster)
   return dns_endpoint

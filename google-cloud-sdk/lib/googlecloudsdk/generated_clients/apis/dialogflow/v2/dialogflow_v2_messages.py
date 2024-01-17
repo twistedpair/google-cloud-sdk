@@ -6315,7 +6315,6 @@ class GoogleCloudDialogflowCxV3TextInput(_messages.Message):
 
   Fields:
     text: Required. The UTF-8 encoded natural language text to be processed.
-      Text length must not exceed 256 characters.
   """
 
   text = _messages.StringField(1)
@@ -8859,7 +8858,6 @@ class GoogleCloudDialogflowCxV3beta1TextInput(_messages.Message):
 
   Fields:
     text: Required. The UTF-8 encoded natural language text to be processed.
-      Text length must not exceed 256 characters.
   """
 
   text = _messages.StringField(1)

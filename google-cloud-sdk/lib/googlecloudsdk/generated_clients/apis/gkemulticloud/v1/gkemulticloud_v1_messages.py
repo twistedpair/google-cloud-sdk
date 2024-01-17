@@ -1727,8 +1727,8 @@ class GoogleCloudGkemulticloudV1AwsNodeConfig(_messages.Message):
       CloudWatch metrics collection on the Auto Scaling group of the node
       pool. When unspecified, metrics collection is disabled.
     configEncryption: Required. Config encryption for user data.
-    iamInstanceProfile: Required. The name or ARN of the AWS IAM role assigned
-      to nodes in the pool.
+    iamInstanceProfile: Required. The name or ARN of the AWS IAM instance
+      profile to assign to nodes in the pool.
     imageType: Optional. The OS image type to use on node pool instances. Can
       be unspecified, or have a value of `ubuntu`. When unspecified, it
       defaults to `ubuntu`.

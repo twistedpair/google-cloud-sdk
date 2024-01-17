@@ -39,7 +39,7 @@ class StorageV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
-    self.anywhereCache = self.AnywhereCacheService(self)
+    self.anywhereCaches = self.AnywhereCachesService(self)
     self.bucketAccessControls = self.BucketAccessControlsService(self)
     self.buckets = self.BucketsService(self)
     self.channels = self.ChannelsService(self)
@@ -53,13 +53,13 @@ class StorageV1(base_api.BaseApiClient):
     self.projects_serviceAccount = self.ProjectsServiceAccountService(self)
     self.projects = self.ProjectsService(self)
 
-  class AnywhereCacheService(base_api.BaseApiService):
-    """Service class for the anywhereCache resource."""
+  class AnywhereCachesService(base_api.BaseApiService):
+    """Service class for the anywhereCaches resource."""
 
-    _NAME = 'anywhereCache'
+    _NAME = 'anywhereCaches'
 
     def __init__(self, client):
-      super(StorageV1.AnywhereCacheService, self).__init__(client)
+      super(StorageV1.AnywhereCachesService, self).__init__(client)
       self._upload_configs = {
           }
 

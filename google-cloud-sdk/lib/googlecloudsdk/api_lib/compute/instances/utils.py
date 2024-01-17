@@ -58,6 +58,7 @@ def CreateNetworkInterfaceMessage(
     network_attachment=None,
     external_ipv6_address=None,
     external_ipv6_prefix_length=None,
+    parent_nic_name=None,
     vlan=None,
 ):
   """Returns a new NetworkInterface message."""
@@ -231,6 +232,9 @@ def CreateNetworkInterfaceMessage(
 
   if internal_ipv6_prefix_length is not None:
     network_interface.internalIpv6PrefixLength = internal_ipv6_prefix_length
+
+  if parent_nic_name is not None:
+    network_interface.parentNicName = parent_nic_name
 
   if vlan is not None:
     network_interface.vlan = vlan

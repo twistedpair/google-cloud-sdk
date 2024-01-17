@@ -362,7 +362,7 @@ class JsonClient(cloud_api.CloudApi):
     with self._apitools_request_headers_context(
         {'x-goog-gcs-idempotency-token': uuid.uuid4().hex}
     ):
-      operation = self.client.anywhereCache.Insert(request)
+      operation = self.client.anywhereCaches.Insert(request)
     return operation
 
   @error_util.catch_http_error_raise_gcs_api_error()
@@ -376,7 +376,7 @@ class JsonClient(cloud_api.CloudApi):
         bucket=bucket_name,
         anywhereCacheId=anywhere_cache_id,
     )
-    self.client.anywhereCache.Disable(request)
+    self.client.anywhereCaches.Disable(request)
 
   @error_util.catch_http_error_raise_gcs_api_error()
   def get_anywhere_cache(
@@ -390,7 +390,7 @@ class JsonClient(cloud_api.CloudApi):
         anywhereCacheId=anywhere_cache_id,
     )
     return metadata_util.get_anywhere_cache_resource_from_metadata(
-        self.client.anywhereCache.Get(request)
+        self.client.anywhereCaches.Get(request)
     )
 
   @error_util.catch_http_error_raise_gcs_api_error()
@@ -406,7 +406,7 @@ class JsonClient(cloud_api.CloudApi):
     )
 
     anywhere_cache_iterator = list_pager.YieldFromList(
-        self.client.anywhereCache,
+        self.client.anywhereCaches,
         request,
         batch_size=cloud_api.NUM_ITEMS_PER_LIST_PAGE,
         batch_size_attribute='pageSize'
@@ -439,7 +439,7 @@ class JsonClient(cloud_api.CloudApi):
     with self._apitools_request_headers_context(
         {'x-goog-gcs-idempotency-token': uuid.uuid4().hex}
     ):
-      operation = self.client.anywhereCache.Update(request)
+      operation = self.client.anywhereCaches.Update(request)
     return operation
 
   @error_util.catch_http_error_raise_gcs_api_error()
@@ -449,7 +449,7 @@ class JsonClient(cloud_api.CloudApi):
         bucket=bucket_name,
         anywhereCacheId=anywhere_cache_id,
     )
-    self.client.anywhereCache.Pause(request)
+    self.client.anywhereCaches.Pause(request)
 
   @error_util.catch_http_error_raise_gcs_api_error()
   def resume_anywhere_cache(self, bucket_name, anywhere_cache_id):
@@ -458,7 +458,7 @@ class JsonClient(cloud_api.CloudApi):
         bucket=bucket_name,
         anywhereCacheId=anywhere_cache_id,
     )
-    self.client.anywhereCache.Resume(request)
+    self.client.anywhereCaches.Resume(request)
 
   @error_util.catch_http_error_raise_gcs_api_error()
   def create_bucket(self,

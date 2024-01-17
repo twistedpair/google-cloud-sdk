@@ -178,7 +178,7 @@ def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):
     name: The name of the effective policy.Currently supported format
       '{resource_type}/{resource_name}/effectivePolicy'. For example,
       'projects/100/effectivePolicy'.
-    view: The view of the effective policy to use. Default: 'BASIC'.
+    view: The view of the effective policy to use. The default view is 'BASIC'.
 
   Raises:
     exceptions.GetEffectiverPolicyPermissionDeniedException: when getting a
@@ -194,7 +194,7 @@ def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):
     view_type = (
         messages.ServiceusageGetEffectivePolicyRequest.ViewValueValuesEnum.EFFECTIVE_POLICY_VIEW_BASIC
     )
-  elif view == 'FULL':
+  else:
     view_type = (
         messages.ServiceusageGetEffectivePolicyRequest.ViewValueValuesEnum.EFFECTIVE_POLICY_VIEW_FULL
     )
@@ -437,41 +437,7 @@ def GetReverseClosure(resource, service):
     )
 
 
-def ListFlattenedMembers(resource, service_group):
-  """Make API call to list flattened members of a specific service group.
-
-  Args:
-    resource: The target resource.
-    service_group: Service group which owns this collection of flattened
-      members, for example,
-      'services/compute.googleapis.com/groups/dependencies'.
-
-  Raises:
-    exceptions.ListFlattenedMembersPermissionDeniedException: when listing
-      flattened members fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    Flattened members in the given service group.
-  """
-  client = _GetClientInstance('v2')
-  messages = client.MESSAGES_MODULE
-
-  request = messages.ServiceusageServicesGroupsFlattenedMembersListRequest(
-      parent=resource + '/' + service_group
-  )
-
-  try:
-    return client.services_groups_flattenedMembers.List(request)
-  except (
-      apitools_exceptions.HttpForbiddenError,
-      apitools_exceptions.HttpNotFoundError,
-  ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.ListFlattenedMembersPermissionDeniedException
-    )
-
-
+# TODO(b/309115642) Remove after the migration is completed.
 def ListGroupMembers(resource, service_group, page_size=50, limit=sys.maxsize):
   """Make API call to list group members of a specific service group.
 
@@ -515,13 +481,65 @@ def ListGroupMembers(resource, service_group, page_size=50, limit=sys.maxsize):
     )
 
 
-def ListDescendantServices(resource, service_group):
-  """Make API call to list descendant services of a specific service group.
+def ListGroupMembersV2Alpha(
+    resource: str,
+    service_group: str,
+    page_size: int = 50,
+    limit: int = sys.maxsize,
+):
+  """Make API call to list group members of a specific service group.
 
   Args:
     resource: The target resource.
+    service_group: Service group which owns a collection of group members, for
+      example, 'services/compute.googleapis.com/groups/dependencies'.
+    page_size: The page size to list. The default page_size is 50.
+    limit: The max number of services to display.
+
+  Raises:
+    exceptions.ListGroupMembersPermissionDeniedException: when listing
+      group members fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Group members in the given service group.
+  """
+  client = _GetClientInstance('v2alpha')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesGroupsMembersListRequest(
+      parent=resource + '/' + service_group
+  )
+
+  try:
+    return list_pager.YieldFromList(
+        _Lister(client.services_groups_members),
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='memberStates',
+    )
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.ListGroupMembersPermissionDeniedException
+    )
+
+
+def ListDescendantServices(
+    resource: str, service_group: str, page_size: int = 50
+):
+  """Make API call to list descendant services of a specific service group.
+
+  Args:
+    resource: The target resource in the format:
+      '{resource_type}/{resource_name}'.
     service_group: Service group, for example,
       'services/compute.googleapis.com/groups/dependencies'.
+    page_size: The page size to list. The default page_size is 50.
 
   Raises:
     exceptions.ListDescendantServicesPermissionDeniedException: when listing
@@ -539,13 +557,60 @@ def ListDescendantServices(resource, service_group):
   )
 
   try:
-    return client.services_groups_descendantServices.List(request)
+    return list_pager.YieldFromList(
+        _Lister(client.services_groups_descendantServices),
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='services',
+    )
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
     exceptions.ReraiseError(
         e, exceptions.ListDescendantServicesPermissionDeniedException
+    )
+
+
+def ListAncestorGroups(resource: str, service: str, page_size=50):
+  """Make API call to list ancestor groups that depend on the service.
+
+  Args:
+    resource: The target resource.format : '{resource_type}/{resource_name}'.
+    service: The identifier of the service to get ancestor groups of, for
+      example, 'services/compute.googleapis.com'.
+    page_size: The page size to list.The default page_size is 50.
+
+  Raises:
+    exceptions.ListAncestorGroupsPermissionDeniedException: when listing
+      ancestor group fails.
+    apitools_exceptions.HttpError: Another miscellaneous error with the service.
+
+  Returns:
+    Ancestor groups that depend on the service.
+  """
+  client = _GetClientInstance('v2alpha')
+  messages = client.MESSAGES_MODULE
+
+  request = messages.ServiceusageServicesAncestorGroupsListRequest(
+      name=f'{resource}/{service}'
+  )
+
+  try:
+    return list_pager.YieldFromList(
+        _Lister(client.services_ancestorGroups),
+        request,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='groups',
+    )
+  except (
+      apitools_exceptions.HttpForbiddenError,
+      apitools_exceptions.HttpNotFoundError,
+  ) as e:
+    exceptions.ReraiseError(
+        e, exceptions.ListAncestorGroupsPermissionDeniedException
     )
 
 
@@ -597,7 +662,7 @@ def AddEnableRule(
       list_descendant_services = ListDescendantServices(
           resource_name, _SERVICE_RESOURCE % service + _DEPENDENCY_GROUP
       )
-      for member in list_descendant_services.services:
+      for member in list_descendant_services:
         services_to_enabled.add(member.serviceName)
 
     if policy.enableRules:

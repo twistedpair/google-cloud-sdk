@@ -19,9 +19,10 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.functions.v1 import util
+from googlecloudsdk.command_lib.functions import call_util
 
 
-def Run(args):
+def Run(args, release_track=None):
   """Call a v1 Google Cloud Function."""
   client = util.GetApiClientInstance()
   function_ref = args.CONCEPTS.name.Parse()
@@ -30,6 +31,15 @@ def Run(args):
 
   client.projects_locations_functions.client.num_retries = 0
   messages = client.MESSAGES_MODULE
+
+  function = client.projects_locations_functions.Get(
+      messages.CloudfunctionsProjectsLocationsFunctionsGetRequest(
+          name=function_ref.RelativeName()
+      )
+  )
+
+  call_util.UpdateHttpTimeout(args, function, 'v1', release_track)
+
   return client.projects_locations_functions.Call(
       messages.CloudfunctionsProjectsLocationsFunctionsCallRequest(
           name=function_ref.RelativeName(),

@@ -2342,13 +2342,22 @@ class ContainerdConfig(_messages.Message):
 
 
 class ControlPlaneEndpointsConfig(_messages.Message):
-  r"""Configuration for all cluster's control plane endpoints.
+  r"""Configuration for all of the cluster's control plane endpoints.
 
   Fields:
-    dnsEndpointConfig: Cluster's DNS endpoint configuration.
+    dnsEndpointConfig: Internal DNS endpoint information. The enabled field
+      will always be true, because the DNS endpoint is always available for
+      internal clients. This field will *never* be exposed to end users
+      directly, i.e. never remove the GOOGLE_INTERNAL visibility label here.
+      End users should use the ingress_type fields to get this data, which
+      incentivizes them towards enhanced ingress. Once all clusters have an
+      externally visible DNS endpoint, we can migrate internal usage of this
+      field to those fields and remove this.
+    enhancedIngress: Enhanced KCP ingress configuration.
   """
 
   dnsEndpointConfig = _messages.MessageField('DNSEndpointConfig', 1)
+  enhancedIngress = _messages.MessageField('EnhancedKCPIngress', 2)
 
 
 class CostManagementConfig(_messages.Message):
@@ -2521,14 +2530,13 @@ class DNSConfig(_messages.Message):
 
 
 class DNSEndpointConfig(_messages.Message):
-  r"""Cluster's DNS endpoint configuration.
+  r"""Describes the configuration of a DNS endpoint.
 
   Fields:
-    enabled: Whether cluster's control plane access via DNS endpoint is
-      allowed or not. In the Pre-GA stage, field can be enabled at cluster
-      creation time only. Post creation mutation will not be permitted.
-    endpoint: Output only. Cluster's full domain name. Ex: uid.us-
-      central1.gke.goog.
+    enabled: Controls whether this endpoint is available.
+    endpoint: Output only. The KCP's full domain name. Ex: uid.us-
+      central1.gke.goog. If this endpoint is not enabled, this field will be
+      empty.
   """
 
   enabled = _messages.BooleanField(1)
@@ -2668,6 +2676,21 @@ class Empty(_messages.Message):
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
 
+
+
+class EnhancedKCPIngress(_messages.Message):
+  r"""Enhanced KCP ingress configuration.
+
+  Fields:
+    enabled: Controls whether the cluster is configured to use enhanced KCP
+      ingress.
+    endpoint: Output only. The cluster's DNS endpoint configuration. A DNS
+      format address. This is accessible from the public internet. Ex: uid.us-
+      central1.gke.goog.
+  """
+
+  enabled = _messages.BooleanField(1)
+  endpoint = _messages.StringField(2)
 
 
 class EnterpriseConfig(_messages.Message):
@@ -4713,6 +4736,9 @@ class NodeConfigDefaults(_messages.Message):
     hostMaintenancePolicy: HostMaintenancePolicy contains the desired
       maintenance policy for the Google Compute Engine hosts.
     loggingConfig: Logging configuration for node pools.
+    nodeKubeletConfig: NodeKubeletConfig controls the defaults for new node-
+      pools. Currently only `insecure_kubelet_readonly_port_enabled` can be
+      set here.
     stableFleetConfig: Stable fleet configs. Deprecated; use
       HostMaintenancePolicy instead.
   """
@@ -4721,7 +4747,8 @@ class NodeConfigDefaults(_messages.Message):
   gcfsConfig = _messages.MessageField('GcfsConfig', 2)
   hostMaintenancePolicy = _messages.MessageField('HostMaintenancePolicy', 3)
   loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 4)
-  stableFleetConfig = _messages.MessageField('StableFleetConfig', 5)
+  nodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 5)
+  stableFleetConfig = _messages.MessageField('StableFleetConfig', 6)
 
 
 class NodeKubeletConfig(_messages.Message):
@@ -5030,13 +5057,17 @@ class NodePoolAutoConfig(_messages.Message):
       to identify valid sources or targets for network firewalls and are
       specified by the client during cluster creation. Each tag within the
       list must comply with RFC1035.
+    nodeKubeletConfig: NodeKubeletConfig controls the defaults for
+      autoprovisioned node-pools. Currently only
+      `insecure_kubelet_readonly_port_enabled` can be set here.
     resourceManagerTags: Resource manager tag keys and values to be attached
       to the nodes for managing Compute Engine firewalls using Network
       Firewall Policies.
   """
 
   networkTags = _messages.MessageField('NetworkTags', 1)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 2)
+  nodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 2)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 3)
 
 
 class NodePoolAutoscaling(_messages.Message):
@@ -7252,6 +7283,8 @@ class UpdateNodePoolRequest(_messages.Message):
       attached to the nodes for managing Compute Engine firewalls using
       Network Firewall Policies. Existing tags will be replaced with new
       values.
+    storagePools: List of Storage Pools where boot disks are provisioned.
+      Existing Storage Pools will be replaced with storage-pools.
     tags: The desired network tags to be applied to all nodes in the node
       pool. If this field is not present, the tags will not be changed.
       Otherwise, the existing network tags will be *replaced* with the
@@ -7300,13 +7333,14 @@ class UpdateNodePoolRequest(_messages.Message):
   projectId = _messages.StringField(24)
   resourceLabels = _messages.MessageField('ResourceLabels', 25)
   resourceManagerTags = _messages.MessageField('ResourceManagerTags', 26)
-  tags = _messages.MessageField('NetworkTags', 27)
-  taints = _messages.MessageField('NodeTaints', 28)
-  updatedNodePool = _messages.MessageField('NodePool', 29)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 30)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 31)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 32)
-  zone = _messages.StringField(33)
+  storagePools = _messages.StringField(27, repeated=True)
+  tags = _messages.MessageField('NetworkTags', 28)
+  taints = _messages.MessageField('NodeTaints', 29)
+  updatedNodePool = _messages.MessageField('NodePool', 30)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 31)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 32)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 33)
+  zone = _messages.StringField(34)
 
 
 class UpgradeSettings(_messages.Message):

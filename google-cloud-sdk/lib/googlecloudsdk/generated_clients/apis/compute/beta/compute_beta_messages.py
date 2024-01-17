@@ -37534,9 +37534,7 @@ class ForwardingRule(_messages.Message):
       fragment) to be forwarded to the backends configured with this
       forwarding rule. The L3_DEFAULT protocol requires allPorts be set to
       true.
-    allowGlobalAccess: This field is used along with the backend_service field
-      for internal load balancing or with the target field for internal
-      TargetInstance. If set to true, clients can access the internal
+    allowGlobalAccess: If set to true, clients can access the internal
       passthrough Network Load Balancers, the regional internal Application
       Load Balancer, and the regional internal proxy Network Load Balancer
       from all regions. If false, only allows access from the local region the
@@ -54535,10 +54533,12 @@ class NetworkEndpoint(_messages.Message):
     fqdn: Optional fully qualified domain name of network endpoint. This can
       only be specified when NetworkEndpointGroup.network_endpoint_type is
       NON_GCP_FQDN_PORT.
-    instance: The name for a specific VM instance that the IP address belongs
-      to. This is required for network endpoints of type GCE_VM_IP_PORT. The
-      instance must be in the same zone of network endpoint group. The name
-      must be 1-63 characters long, and comply with RFC1035.
+    instance: The name or a URL of a specific VM instance that the IP address
+      belongs to. This is required for network endpoints of type
+      GCE_VM_IP_PORT. The instance must be in the same zone of network
+      endpoint group (for zonal NEGs) or in the zone within the region of the
+      NEG (for regional NEGs). The name must be 1-63 characters long, and
+      comply with RFC1035 or be a valid URL pointing to an existing instance.
     ipAddress: Optional IPv4 address of network endpoint. The IP address must
       belong to a VM in Compute Engine (either the primary IP or as part of an
       aliased IP range). If the IP address is not specified, then the primary

@@ -185,13 +185,13 @@ class BitbucketCloudConfig(_messages.Message):
   r"""Configuration for connections to Bitbucket Cloud.
 
   Fields:
-    authorizerCredential: Required. An http access token with the `webhook`
-      scope access. It can be either a workspace, project or repository access
-      token. It's recommended to use a system account to generate these
-      credentials.
-    readAuthorizerCredential: Required. An http access token with the
-      `repository` access. It can be either a workspace, project or repository
-      access token. It's recommended to use a system account to generate the
+    authorizerCredential: Required. An access token with the `webhook`,
+      `repository`, `repository:admin` and `pullrequest` scope access. It can
+      be either a workspace, project or repository access token. It's
+      recommended to use a system account to generate these credentials.
+    readAuthorizerCredential: Required. An access token with the `repository`
+      access. It can be either a workspace, project or repository access
+      token. It's recommended to use a system account to generate the
       credentials.
     webhookSecretSecretVersion: Required. SecretManager resource containing
       the webhook secret used to verify webhook events, formatted as

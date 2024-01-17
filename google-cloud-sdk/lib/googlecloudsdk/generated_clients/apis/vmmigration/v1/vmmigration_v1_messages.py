@@ -1736,8 +1736,7 @@ class ImageImport(_messages.Message):
     diskImageTargetDefaults: Target details for importing a disk image, will
       be used by ImageImportJob.
     encryption: Optional. Immutable. The encryption details used by the image
-      import process, when applicable (for PD creation and copy file to GCS
-      bucket).
+      import process during the image adaptation for Compute Engine.
     name: Output only. The resource path of the ImageImport.
     recentImageImportJobs: Output only. The result of the most recent runs for
       this ImageImport. All jobs for this ImageImport can be listed via

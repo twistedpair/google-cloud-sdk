@@ -2678,9 +2678,9 @@ class LbRouteExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
-    name: Required. Name of the `LbRouteExtension` resource in the following
-      format: `projects/{project}/locations/{location}/lbRouteExtensions/{lb_r
-      oute_extension}`.
+    name: Required. Identifier. Name of the `LbRouteExtension` resource in the
+      following format: `projects/{project}/locations/{location}/lbRouteExtens
+      ions/{lb_route_extension}`.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -2777,9 +2777,9 @@ class LbTrafficExtension(_messages.Message):
       Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
       information, refer to [Choosing a load
       balancer](https://cloud.google.com/load-balancing/docs/backend-service).
-    name: Required. Name of the `LbTrafficExtension` resource in the following
-      format: `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
-      _traffic_extension}`.
+    name: Required. Identifier. Name of the `LbTrafficExtension` resource in
+      the following format: `projects/{project}/locations/{location}/lbTraffic
+      Extensions/{lb_traffic_extension}`.
     updateTime: Output only. The timestamp when the resource was updated.
   """
 
@@ -5163,9 +5163,9 @@ class NetworkservicesProjectsLocationsLbRouteExtensionsPatchRequest(_messages.Me
   Fields:
     lbRouteExtension: A LbRouteExtension resource to be passed as the request
       body.
-    name: Required. Name of the `LbRouteExtension` resource in the following
-      format: `projects/{project}/locations/{location}/lbRouteExtensions/{lb_r
-      oute_extension}`.
+    name: Required. Identifier. Name of the `LbRouteExtension` resource in the
+      following format: `projects/{project}/locations/{location}/lbRouteExtens
+      ions/{lb_route_extension}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server
@@ -5288,9 +5288,9 @@ class NetworkservicesProjectsLocationsLbTrafficExtensionsPatchRequest(_messages.
   Fields:
     lbTrafficExtension: A LbTrafficExtension resource to be passed as the
       request body.
-    name: Required. Name of the `LbTrafficExtension` resource in the following
-      format: `projects/{project}/locations/{location}/lbTrafficExtensions/{lb
-      _traffic_extension}`.
+    name: Required. Identifier. Name of the `LbTrafficExtension` resource in
+      the following format: `projects/{project}/locations/{location}/lbTraffic
+      Extensions/{lb_traffic_extension}`.
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
       can ignore the request if it has already been completed. The server

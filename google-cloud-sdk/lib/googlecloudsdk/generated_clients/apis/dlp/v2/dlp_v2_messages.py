@@ -1889,7 +1889,7 @@ class DlpProjectsLocationsDlpJobsFinishRequest(_messages.Message):
     googlePrivacyDlpV2FinishDlpJobRequest: A
       GooglePrivacyDlpV2FinishDlpJobRequest resource to be passed as the
       request body.
-    name: Required. The name of the DlpJob resource to be cancelled.
+    name: Required. The name of the DlpJob resource to be finished.
   """
 
   googlePrivacyDlpV2FinishDlpJobRequest = _messages.MessageField('GooglePrivacyDlpV2FinishDlpJobRequest', 1)

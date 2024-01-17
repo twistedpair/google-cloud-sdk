@@ -397,7 +397,7 @@ class ChangeQuorumRequest(_messages.Message):
   r"""The request for ChangeQuorum.
 
   Fields:
-    etag: Required. The etag is the hash of the QuorumInfo. The ChangeQuorum
+    etag: Optional. The etag is the hash of the QuorumInfo. The ChangeQuorum
       operation will only be performed if the etag matches that of the
       QuorumInfo in the current database resource. Otherwise the API will
       return an `ABORTED` error. The etag is used for optimistic concurrency

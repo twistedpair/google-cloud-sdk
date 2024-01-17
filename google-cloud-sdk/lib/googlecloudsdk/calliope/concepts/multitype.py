@@ -107,16 +107,21 @@ class MultitypeResourceSpec(concepts.ConceptSpec):
 
     self.type_enum = enum.Enum('Type', final_names)
 
+    attr_map = {}
     for spec in self._concept_specs:
-      for attribute in spec.attributes:
-        if attribute not in self._attributes:
-          if attribute.name in [existing.name for existing in self._attributes]:
-            raise ConfigurationError(
-                'Multiple non-equivalent attributes found with name [{}]'
-                .format(attribute.name))
-          self._attributes.append(attribute)
-        self._attribute_to_types_map.setdefault(attribute.name, []).append(
+      for i, attribute in enumerate(spec.attributes):
+        attr_name = attribute.name
+        if attr_name in attr_map and attribute != attr_map[attr_name][1]:
+          raise ConfigurationError(
+              'Multiple non-equivalent attributes found with name '
+              f'[{attribute.name}]')
+        attr_map[attr_name] = (i, attribute)
+
+        self._attribute_to_types_map.setdefault(attr_name, []).append(
             (self.type_enum[self._ConceptToName(spec)]))
+
+    attr_list = sorted(list(attr_map.values()), key=lambda x: x[0])
+    self._attributes = [attr[1] for attr in attr_list]
 
   @property
   def name(self):

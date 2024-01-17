@@ -126,7 +126,7 @@ security_posture_location:
 posture:
   name: posture
   collection: securityposture.organizations.locations.postures
-  request_id_field: posture
+  request_id_field: postureId
   attributes:
   - *security_posture_org
   - *security_posture_location
@@ -134,3 +134,30 @@ posture:
     parameter_name: posturesId
     attribute_name: posture
     help: Security Posture resource
+  disable_auto_completers: false
+
+posture_deployment:
+  name: posture_deployment
+  collection: securityposture.organizations.locations.postureDeployments
+  request_id_field: postureDeploymentId
+  attributes:
+  - *security_posture_org
+  - *security_posture_location
+  - &posture_deployment
+    parameter_name: postureDeploymentsId
+    attribute_name: posture_deployment
+    help: Security Posture Deployment resource
+  disable_auto_completers: false
+
+posture_template:
+  name: posture_template
+  collection: securityposture.organizations.locations.postureTemplates
+  request_id_field: postureTemplateId
+  attributes:
+  - *security_posture_org
+  - *security_posture_location
+  - &posture_template
+    parameter_name: postureTemplatesId
+    attribute_name: posture_template
+    help: Security Posture Template resource
+  disable_auto_completers: false

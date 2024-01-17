@@ -122,7 +122,9 @@ def AddStoragePoolNetworkArg(parser, required=True):
         `psa-range` is optional.
         *name*::: The name of the Google Compute Engine
         [VPC network](/compute/docs/networks-and-firewalls#networks) to which
-        the volume is connected.
+        the volume is connected. Short-form (VPC network ID) or long-form
+        (full VPC network name: projects/PROJECT/locations/LOCATION/networks/NETWORK) are both
+        accepted, but please use the long-form when attempting to create a Storage Pool using a shared VPC.
         *psa-range*::: The `psa-range` is the name of the allocated range of the
         Private Service Access connection. The range you specify can't
         overlap with either existing subnets or assigned IP address ranges for

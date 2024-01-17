@@ -13,6 +13,16 @@ from apitools.base.py import extra_types
 package = 'dataprocgdc'
 
 
+class AuxiliaryServicesConfig(_messages.Message):
+  r"""Auxiliary Service Configs.
+
+  Fields:
+    sparkHistoryServer: Optional. Spark History Servor message.
+  """
+
+  sparkHistoryServer = _messages.MessageField('SparkHistoryServer', 1)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -484,6 +494,11 @@ class ServiceInstance(_messages.Message):
     annotations: Optional. The annotations to associate with this service
       instance. Annotations may be used to store client information, but are
       not used by the server.
+    auxiliaryServicesConfig: Optional. Maintenance policy for this service
+      instance. TODO this might end up being a separate API instead of
+      inlined. Not in scope for private GA MaintenancePolicy
+      maintenance_policy = 19; Configuration of auxiliary services used by
+      this instance.
     createTime: Output only. The timestamp when the resource was created.
     displayName: Optional. User-provided human-readable name to be used in
       user interfaces.
@@ -622,18 +637,68 @@ class ServiceInstance(_messages.Message):
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
-  createTime = _messages.StringField(2)
-  displayName = _messages.StringField(3)
-  gdceCluster = _messages.MessageField('GdceCluster', 4)
-  labels = _messages.MessageField('LabelsValue', 5)
-  name = _messages.StringField(6)
-  reconciling = _messages.BooleanField(7)
-  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 8)
-  sparkServiceInstanceConfig = _messages.MessageField('SparkServiceInstanceConfig', 9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateMessage = _messages.StringField(11)
-  uid = _messages.StringField(12)
-  updateTime = _messages.StringField(13)
+  auxiliaryServicesConfig = _messages.MessageField('AuxiliaryServicesConfig', 2)
+  createTime = _messages.StringField(3)
+  displayName = _messages.StringField(4)
+  gdceCluster = _messages.MessageField('GdceCluster', 5)
+  labels = _messages.MessageField('LabelsValue', 6)
+  name = _messages.StringField(7)
+  reconciling = _messages.BooleanField(8)
+  requestedState = _messages.EnumField('RequestedStateValueValuesEnum', 9)
+  sparkServiceInstanceConfig = _messages.MessageField('SparkServiceInstanceConfig', 10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
+  stateMessage = _messages.StringField(12)
+  uid = _messages.StringField(13)
+  updateTime = _messages.StringField(14)
+
+
+class SparkHistoryServer(_messages.Message):
+  r"""Spark History Server.
+
+  Fields:
+    sparkThreeOneConfig: Optional. Spark History Server configurations for a
+      given version.
+  """
+
+  sparkThreeOneConfig = _messages.MessageField('SparkHistoryServerConfig', 1)
+
+
+class SparkHistoryServerConfig(_messages.Message):
+  r"""Spark History Server Config.
+
+  Messages:
+    ConfigurationsValue: Optional. Mapping of configurations.
+
+  Fields:
+    configurations: Optional. Mapping of configurations.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ConfigurationsValue(_messages.Message):
+    r"""Optional. Mapping of configurations.
+
+    Messages:
+      AdditionalProperty: An additional property for a ConfigurationsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type ConfigurationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ConfigurationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  configurations = _messages.MessageField('ConfigurationsValue', 1)
 
 
 class SparkServiceInstanceConfig(_messages.Message):

@@ -60,6 +60,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_MIRRORINGENDPOINTGROUPS = (
+      'organizations.locations.mirroringEndpointGroups',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'mirroringEndpointGroups/{mirroringEndpointGroupsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_OPERATIONS = (
       'organizations.locations.operations',
       '{+name}',
@@ -184,6 +195,40 @@ class Collections(enum.Enum):
               'projects/{projectsId}/locations/{locationsId}/'
               'gatewaySecurityPolicies/{gatewaySecurityPoliciesId}/rules/'
               '{rulesId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MIRRORINGDEPLOYMENTGROUPS = (
+      'projects.locations.mirroringDeploymentGroups',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'mirroringDeploymentGroups/{mirroringDeploymentGroupsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MIRRORINGDEPLOYMENTS = (
+      'projects.locations.mirroringDeployments',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'mirroringDeployments/{mirroringDeploymentsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_MIRRORINGENDPOINTGROUPASSOCIATIONS = (
+      'projects.locations.mirroringEndpointGroupAssociations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/'
+              'mirroringEndpointGroupAssociations/'
+              '{mirroringEndpointGroupAssociationsId}',
       },
       ['name'],
       True

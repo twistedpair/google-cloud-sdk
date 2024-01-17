@@ -31,6 +31,7 @@ ASSOCIATION_RESOURCE_NAME = "FIREWALL_ENDPOINT_ASSOCIATION"
 ASSOCIATION_RESOURCE_COLLECTION = (
     "networksecurity.projects.locations.firewallEndpointAssociations"
 )
+ASSOCIATION_PARENT_RESOURCE_COLLECTION = "networksecurity.projects.locations"
 ENDPOINT_RESOURCE_NAME = "FIREWALL_ENDPOINT"
 TLS_INSPECTION_POLICY_RESOURCE_NAME = "--tls-inspection-policy"
 ENDPOINT_RESOURCE_COLLECTION = (
@@ -67,6 +68,13 @@ def AddAssociationResource(release_track, parser):
       group_help="Firewall Plus.",
   )
   return concept_parsers.ConceptParser([presentation_spec]).AddToParser(parser)
+
+
+def AddAssociationIDArg(
+    parser,
+    help_text="Name to give the association. If not specified, an auto-generated UUID will be used.",
+):
+  parser.add_argument("association_id", help=help_text, nargs="?", default=None)
 
 
 def AddEndpointResource(release_track, parser):

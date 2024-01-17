@@ -48,6 +48,7 @@ class Experiment(_messages.Message):
     createTime: Output only. Create time stamp.
     deleted: Output only. is deleted flag for experiments
     description: End user description of the experiment.
+    etag: Server specified etag
     name: Required. Identifier. The format for the name is:
       projects/{project}/locations/{location}/experiments/{experiment_name}
     runFaults: faults to run in experiment
@@ -57,8 +58,9 @@ class Experiment(_messages.Message):
   createTime = _messages.StringField(2)
   deleted = _messages.BooleanField(3)
   description = _messages.StringField(4)
-  name = _messages.StringField(5)
-  runFaults = _messages.MessageField('RunFault', 6, repeated=True)
+  etag = _messages.StringField(5)
+  name = _messages.StringField(6)
+  runFaults = _messages.MessageField('RunFault', 7, repeated=True)
 
 
 class Fault(_messages.Message):
@@ -71,6 +73,7 @@ class Fault(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     deleted: Output only. [Output only] is_deleted flag
     description: End user description of the fault.
+    etag: Server specified etag
     name: Identifier. Unique name for the fault per project, provided by the
       end user. The format for the name is:
       projects/{project}/locations/{location}/faults/{fault_name}
@@ -81,7 +84,8 @@ class Fault(_messages.Message):
   createTime = _messages.StringField(3)
   deleted = _messages.BooleanField(4)
   description = _messages.StringField(5)
-  name = _messages.StringField(6)
+  etag = _messages.StringField(6)
+  name = _messages.StringField(7)
 
 
 class FaultInjectionAction(_messages.Message):
@@ -187,6 +191,7 @@ class FaultinjectiontestingProjectsLocationsExperimentsDeleteRequest(_messages.M
   r"""A FaultinjectiontestingProjectsLocationsExperimentsDeleteRequest object.
 
   Fields:
+    etag: Optional. Etag value for the experiment to be deleted
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -201,8 +206,9 @@ class FaultinjectiontestingProjectsLocationsExperimentsDeleteRequest(_messages.M
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class FaultinjectiontestingProjectsLocationsExperimentsGetRequest(_messages.Message):
@@ -297,6 +303,7 @@ class FaultinjectiontestingProjectsLocationsFaultsDeleteRequest(_messages.Messag
   r"""A FaultinjectiontestingProjectsLocationsFaultsDeleteRequest object.
 
   Fields:
+    etag: Optional. Etag value for the fault to be deleted
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -311,8 +318,9 @@ class FaultinjectiontestingProjectsLocationsFaultsDeleteRequest(_messages.Messag
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class FaultinjectiontestingProjectsLocationsFaultsGetRequest(_messages.Message):
@@ -420,6 +428,7 @@ class FaultinjectiontestingProjectsLocationsJobsDeleteRequest(_messages.Message)
   r"""A FaultinjectiontestingProjectsLocationsJobsDeleteRequest object.
 
   Fields:
+    etag: Optional. Etag value for the job to be deleted
     name: Required. Name of the resource
     requestId: Optional. An optional request ID to identify requests. Specify
       a unique request ID so that if you must retry your request, the server
@@ -434,8 +443,9 @@ class FaultinjectiontestingProjectsLocationsJobsDeleteRequest(_messages.Message)
       not supported (00000000-0000-0000-0000-000000000000).
   """
 
-  name = _messages.StringField(1, required=True)
-  requestId = _messages.StringField(2)
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
 
 
 class FaultinjectiontestingProjectsLocationsJobsGetRequest(_messages.Message):
@@ -560,6 +570,7 @@ class Job(_messages.Message):
     createTime: Output only. [Output only] Create time stamp
     deleteTime: Output only. [Output only] delete time stamp
     description: End user description of the job.
+    etag: Server specified etag
     experiment: Required. Immutable. experiment that job will run.
     experimentSnapshot: Output only. Snapshot of the experiment configuration
       at the time of job creation.
@@ -594,15 +605,16 @@ class Job(_messages.Message):
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   description = _messages.StringField(3)
-  experiment = _messages.StringField(4)
-  experimentSnapshot = _messages.MessageField('Experiment', 5)
-  expireTime = _messages.StringField(6)
-  faultPepStatuses = _messages.MessageField('FaultPepStatus', 7, repeated=True)
-  faultTargets = _messages.MessageField('FaultInjectionTargetMatcher', 8, repeated=True)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 9)
-  name = _messages.StringField(10)
-  runStatus = _messages.MessageField('Status', 11)
-  timeWindow = _messages.MessageField('TimeWindow', 12)
+  etag = _messages.StringField(4)
+  experiment = _messages.StringField(5)
+  experimentSnapshot = _messages.MessageField('Experiment', 6)
+  expireTime = _messages.StringField(7)
+  faultPepStatuses = _messages.MessageField('FaultPepStatus', 8, repeated=True)
+  faultTargets = _messages.MessageField('FaultInjectionTargetMatcher', 9, repeated=True)
+  jobState = _messages.EnumField('JobStateValueValuesEnum', 10)
+  name = _messages.StringField(11)
+  runStatus = _messages.MessageField('Status', 12)
+  timeWindow = _messages.MessageField('TimeWindow', 13)
 
 
 class ListExperimentsResponse(_messages.Message):

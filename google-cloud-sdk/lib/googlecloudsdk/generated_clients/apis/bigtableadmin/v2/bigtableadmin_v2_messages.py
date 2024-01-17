@@ -16,6 +16,7 @@ package = 'bigtableadmin'
 
 class AppProfile(_messages.Message):
   r"""A configuration object describing how Cloud Bigtable should treat
+
   traffic from a particular end user application.
 
   Enums:
@@ -25,8 +26,8 @@ class AppProfile(_messages.Message):
       requests sent using this app profile.
 
   Fields:
-    databoostIsolationReadOnly: Specifies that this app profile is intended
-      for read-only usage via the Databoost feature.
+    dataBoostIsolationReadOnly: Specifies that this app profile is intended
+      for read-only usage via the Data Boost feature.
     description: Long form description of the use case for this AppProfile.
     etag: Strongly validated etag for optimistic concurrency control. Preserve
       the value returned from `GetAppProfile` when calling `UpdateAppProfile`
@@ -65,7 +66,9 @@ class AppProfile(_messages.Message):
     PRIORITY_MEDIUM = 2
     PRIORITY_HIGH = 3
 
-  databoostIsolationReadOnly = _messages.MessageField('DataboostIsolationReadOnly', 1)
+  dataBoostIsolationReadOnly = _messages.MessageField(
+      'DataBoostIsolationReadOnly', 1
+  )
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
   multiClusterRoutingUseAny = _messages.MessageField('MultiClusterRoutingUseAny', 4)
@@ -1064,7 +1067,7 @@ class BigtableadminProjectsInstancesTablesViewsDeleteRequest(_messages.Message):
   Fields:
     etag: Optional. The current etag of the view. If an etag is provided and
       does not match the current etag of the view, deletion will be blocked
-      and a CANCELLED error will be returned.
+      and an ABORTED error will be returned.
     name: Required. The unique name of the view to be deleted. Values are of
       the form
       `projects/{project}/instances/{instance}/tables/{table}/views/{view}`.
@@ -1310,13 +1313,14 @@ class ChangeStreamConfig(_messages.Message):
 
 class CheckConsistencyRequest(_messages.Message):
   r"""Request message for
+
   google.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency
 
   Fields:
     consistencyToken: Required. The token created using
       GenerateConsistencyToken for the Table.
-    databoostReadLocalWrites: Checks that reads using an app profile with
-      `DataboostIsolationReadOnly` can see all writes committed before the
+    dataBoostReadLocalWrites: Checks that reads using an app profile with
+      `DataBoostIsolationReadOnly` can see all writes committed before the
       token was created, but only if the read and write target the same
       cluster.
     standardReadRemoteWrites: Checks that reads using an app profile with
@@ -1325,8 +1329,12 @@ class CheckConsistencyRequest(_messages.Message):
   """
 
   consistencyToken = _messages.StringField(1)
-  databoostReadLocalWrites = _messages.MessageField('DataboostReadLocalWrites', 2)
-  standardReadRemoteWrites = _messages.MessageField('StandardReadRemoteWrites', 3)
+  dataBoostReadLocalWrites = _messages.MessageField(
+      'DataBoostReadLocalWrites', 2
+  )
+  standardReadRemoteWrites = _messages.MessageField(
+      'StandardReadRemoteWrites', 3
+  )
 
 
 class CheckConsistencyResponse(_messages.Message):
@@ -1810,16 +1818,17 @@ class CreateViewRequest(_messages.Message):
   viewId = _messages.StringField(3)
 
 
-class DataboostIsolationReadOnly(_messages.Message):
-  r"""Databoost allows a customer to bypass Bigtable nodes when it comes to
+class DataBoostIsolationReadOnly(_messages.Message):
+  r"""Data Boost allows a customer to bypass Bigtable nodes when it comes to
+
   fetching their data. The data is instead read directly from the filesystem,
-  which enables the customer to isolate specific read-only workflows.
-  Databoost reads are only guaranteed to see the results of writes that were
+  which enables the customer to isolate specific read-only workflows. Data
+  Boost reads are only guaranteed to see the results of writes that were
   written more than 30 minutes ago. This means newly written values may not
   become visible for up to 30m, and also means that old values may remain
   visible for up to 30m after being deleted or overwritten. To mitigate the
   staleness of the data, users may either wait 30m, or use CheckConsistency.
-  At the moment, Databoost only supports single-cluster requests.
+  At the moment, Data Boost only supports single-cluster requests.
 
   Enums:
     BillingOwnerValueValuesEnum: Billing owner for this app profile
@@ -1843,11 +1852,11 @@ class DataboostIsolationReadOnly(_messages.Message):
   billingOwner = _messages.EnumField('BillingOwnerValueValuesEnum', 1)
 
 
-class DataboostReadLocalWrites(_messages.Message):
+class DataBoostReadLocalWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated in the
+
   same cluster is readable by Databoost.
   """
-
 
 
 class DropRowRangeRequest(_messages.Message):
@@ -1871,7 +1880,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EncryptionConfig(_messages.Message):
@@ -2009,7 +2017,6 @@ class GenerateConsistencyTokenRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
   """
-
 
 
 class GenerateConsistencyTokenResponse(_messages.Message):
@@ -2897,7 +2904,6 @@ class RowAffinity(_messages.Message):
   """
 
 
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3039,7 +3045,6 @@ class StandardReadRemoteWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated is
   replicated in every cluster and readable.
   """
-
 
 
 class Status(_messages.Message):
@@ -3386,7 +3391,6 @@ class UndeleteTableRequest(_messages.Message):
   """
 
 
-
 class Union(_messages.Message):
   r"""A GcRule which deletes cells matching any of the given rules.
 
@@ -3491,7 +3495,7 @@ class View(_messages.Message):
       deletion. The parent Table and containing Instance cannot be deleted if
       a View has this bit set.
     etag: The etag for this View. If this is provided on update, it must match
-      the server's etag. The server returns CANCELLED error on a mismatched
+      the server's etag. The server returns ABORTED error on a mismatched
       etag.
     name: The name of the view. Values are of the form
       `projects/{project}/instances/{instance}/tables/{table}/views/{view}`
