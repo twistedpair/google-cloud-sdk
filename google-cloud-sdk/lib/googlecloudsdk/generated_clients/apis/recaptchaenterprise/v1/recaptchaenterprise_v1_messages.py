@@ -876,6 +876,22 @@ class GoogleCloudRecaptchaenterpriseV1RelatedAccountGroupMembership(_messages.Me
   name = _messages.StringField(3)
 
 
+class GoogleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest(_messages.Message):
+  r"""The reorder firewall policies request message.
+
+  Fields:
+    names: Required. A list containing all policy names, in the new order.
+      Each name is in the format
+      `projects/{project}/firewallpolicies/{firewallpolicy}`.
+  """
+
+  names = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesResponse(_messages.Message):
+  r"""The reorder firewall policies response message."""
+
+
 class GoogleCloudRecaptchaenterpriseV1RetrieveLegacySecretKeyResponse(_messages.Message):
   r"""Secret key is used only in legacy reCAPTCHA. It must be used in a 3rd
   party integration with legacy reCAPTCHA.
@@ -1736,6 +1752,21 @@ class RecaptchaenterpriseProjectsFirewallpoliciesPatchRequest(_messages.Message)
   googleCloudRecaptchaenterpriseV1FirewallPolicy = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallPolicy', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class RecaptchaenterpriseProjectsFirewallpoliciesReorderRequest(_messages.Message):
+  r"""A RecaptchaenterpriseProjectsFirewallpoliciesReorderRequest object.
+
+  Fields:
+    googleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest: A
+      GoogleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest resource
+      to be passed as the request body.
+    parent: Required. The name of the project to list the policies for, in the
+      format `projects/{project}`.
+  """
+
+  googleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest', 1)
+  parent = _messages.StringField(2, required=True)
 
 
 class RecaptchaenterpriseProjectsKeysCreateRequest(_messages.Message):

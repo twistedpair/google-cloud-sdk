@@ -126,7 +126,8 @@ class SasPortalDevice(_messages.Message):
     deviceMetadata: Device parameters that can be overridden by both SAS
       Portal and SAS registration requests.
     displayName: Device display name.
-    fccId: The FCC identifier of the device.
+    fccId: The FCC identifier of the device. Refer to
+      https://www.fcc.gov/oet/ea/fccid for FccID format.
     grantRangeAllowlists: Only ranges that are within the allowlists are
       available for new grants.
     grants: Output only. Grants held by the device.
@@ -581,10 +582,10 @@ class SasPortalListLegacyOrganizationsResponse(_messages.Message):
   [spectrum.sas.portal.v1alpha1.Provisioning.ListLegacyOrganizations].
 
   Fields:
-    organizationIds: Optional. IDs of legacy SAS organizations.
+    organizations: Optional. Legacy SAS organizations.
   """
 
-  organizationIds = _messages.IntegerField(1, repeated=True)
+  organizations = _messages.MessageField('SasPortalOrganization', 1, repeated=True)
 
 
 class SasPortalListNodesResponse(_messages.Message):
@@ -844,6 +845,18 @@ class SasPortalOperation(_messages.Message):
   metadata = _messages.MessageField('MetadataValue', 3)
   name = _messages.StringField(4)
   response = _messages.MessageField('ResponseValue', 5)
+
+
+class SasPortalOrganization(_messages.Message):
+  r"""Organization details.
+
+  Fields:
+    displayName: Name of organization
+    id: Id of organization
+  """
+
+  displayName = _messages.StringField(1)
+  id = _messages.IntegerField(2)
 
 
 class SasPortalPolicy(_messages.Message):

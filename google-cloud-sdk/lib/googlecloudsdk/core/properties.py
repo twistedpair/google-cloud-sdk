@@ -3414,7 +3414,8 @@ class _SectionStorage(_Section):
     self.sliced_object_download_max_components = self._Add(
         'sliced_object_download_max_components',
         help_text='Specifies the maximum number of slices to be used when'
-        ' performing a sliced object download. Set None for no limit.')
+        ' performing a sliced object download. Set None for automatic'
+        ' optimization based on system resources.')
 
     self.sliced_object_download_threshold = self._Add(
         'sliced_object_download_threshold',

@@ -270,7 +270,7 @@ def AddDescription(parser):
 
 
 def AddCandidateSubnets(parser):
-  """Adds candidate subnets flag to the argparse.ArgumetnParser.
+  """Adds candidate subnets flag to the argparse.ArgumentParser.
 
   Args:
     parser: The argparse parser.
@@ -415,7 +415,7 @@ def AddStackType(parser):
 
 
 def AddCandidateIpv6Subnets(parser):
-  """Adds candidate ipv6 subnets flag to the argparse.ArgumetnParser.
+  """Adds candidate ipv6 subnets flag to the argparse.ArgumentParser.
 
   Args:
     parser: The argparse parser.
@@ -429,7 +429,7 @@ def AddCandidateIpv6Subnets(parser):
 
 
 def AddCloudRouterIpv6InterfaceId(parser):
-  """Adds cloud router ipv6 interface id flag to the argparse.ArgumetnParser.
+  """Adds cloud router ipv6 interface id flag to the argparse.ArgumentParser.
 
   Args:
     parser: The argparse parser.
@@ -441,7 +441,7 @@ def AddCloudRouterIpv6InterfaceId(parser):
 
 
 def AddCustomerRouterIpv6InterfaceId(parser):
-  """Adds customer router ipv6 interface id flag to the argparse.ArgumetnParser.
+  """Adds customer router ipv6 interface id flag to the argparse.ArgumentParser.
 
   Args:
     parser: The argparse parser.
@@ -453,7 +453,7 @@ def AddCustomerRouterIpv6InterfaceId(parser):
 
 
 def AddSubnetLength(parser):
-  """Adds subnet length flag to the argparse.ArgumetnParser.
+  """Adds subnet length flag to the argparse.ArgumentParser.
 
   Args:
     parser: The argparse parser.

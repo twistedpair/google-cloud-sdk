@@ -2337,9 +2337,10 @@ class RestoreServiceRequest(_messages.Message):
       defaults to METADATA_ONLY.
 
   Fields:
-    backup: Required. The relative resource name of the metastore service
+    backup: Optional. The relative resource name of the metastore service
       backup to restore from, in the following form:projects/{project_id}/loca
-      tions/{location_id}/services/{service_id}/backups/{backup_id}.
+      tions/{location_id}/services/{service_id}/backups/{backup_id}. Mutually
+      exclusive with backup_location, and exactly one of the two must be set.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at

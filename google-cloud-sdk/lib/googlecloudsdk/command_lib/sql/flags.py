@@ -833,8 +833,11 @@ def AddSimulateMaintenanceEvent(parser):
       '--simulate-maintenance-event',
       action='store_true',
       required=False,
-      hidden=True,
-      help='Simulate a maintenance event without changing the version.',
+      help=(
+          'Simulate a maintenance event without changing the version. Only'
+          ' applicable to instances that support near-zero downtime planned'
+          ' maintenance.'
+      ),
   )
 
 

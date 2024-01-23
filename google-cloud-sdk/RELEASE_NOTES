@@ -5,6 +5,86 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 461.0.0 (2024-01-23)
+
+### Breaking Changes
+
+*   **(Cloud Domains)** Removed `gcloud domains registrations export/get-transfer-parameters/transfer/list-importable-domains/import` commands.
+*   **(Cloud Domains)** Removed `--use-google-domains-dns` flag from `gcloud domains registrations register` command. See <https://cloud.google.com/domains/docs/deprecations/feature-deprecations> for more information.
+
+
+### AlloyDB
+
+* Added flag `--assign-inbound-public-ip` to enable or disable public IP for an
+instance to the following commands in the alpha and beta track:
+   * `gcloud alloydb instances create`
+   * `gcloud alloydb instances update`
+
+* Added flag `--authorized-external-networks` to set a list of authorized
+external networks on an instance to `gcloud alloydb instances update` in the
+alpha and beta track.
+
+### Batch
+
+* Promoted Batch submit job config YAML support from alpha to beta and GA.
+
+### Binauthz
+
+*  Updated `gcloud container binauthz attestations list`, `create`, and
+   `sign-and-create` commands to support image URLs with both a tag and a
+   digest. Attestations with these URLs are supported only in Continuous
+   Validation with check-based policies for GKE.
+
+### Cloud Functions
+
+* With the general transition from Container Registry to Artifact Registry, by
+default, deploying a 1st Gen function now requires Artifact Registry to be
+enabled. Container Registry is still available via `--docker-registry` flag.
+For more information, see
+<https://cloud.google.com/functions/docs/building#image_registry_options>.
+
+### Cloud Storage
+
+* Updated `gcloud storage sign-url` to allow using impersonation specified
+  through configuration.
+
+### Cloud Workstations
+
+*   Added `--local-host-port` flag to the `workstations ssh` command.
+
+### Compute Engine
+
+* Promoted `--confidential-compute-type=TDX` flag of `gcloud compute instances create` to beta.
+* Added `IPV6_ONLY` option to `--stack-type` flag of `gcloud beta compute vpn-gateways create` command to create an IPv6-only VPN gateway.
+* Promoted `--location` flag of `gcloud compute connect-to-serial-port` to GA.
+* Updated behaviour of `gcloud instances delete`: it will throw error if
+instance.delete operation takes more than 70 minutes instead of 30 minutes
+previously.
+
+### Distributed Cloud Edge
+
+* Added IPv6 support for `--ip-address` flag of `gcloud edge-cloud networking routers add-interface` subcommand.
+
+### Kubernetes Engine
+
+* Restored original maximum argument to `--max-nodes-per-pool` flag of `gcloud
+  container clusters create` from 2000 to 1000, as this unintentionally changed
+  the default value.
+
+### Recaptcha
+
+* Add `gcloud recaptcha firewall-policies reorder` command.
+
+### Security Command Center
+
+* Promoted `gcloud scc postures` commands to GA.
+* Promoted `gcloud scc posture-templates` commands to GA.
+* Promoted `gcloud scc posture-deployments` commands to GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 460.0.0 (2024-01-17)
 
 ### Cloud Bigtable

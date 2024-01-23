@@ -2141,7 +2141,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
           }
 
     def Export(self, request, global_params=None):
-      r"""Exports the messages to a destination in the store with transformations. Only FHIR stores in the same dataset as the source store are supported as destinations. Start and/or end time relative to message generation time (MSH.7) can be specified to filter messages in a range instead of exporting all at once. This API returns an Operation that can be used to track the status of the job by calling GetOperation. Immediate fatal errors appear in the error field. Otherwise, when the operation finishes, a detailed response of type ExportMessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
+      r"""Exports the messages to a destination in the store with transformations. The start and the end time relative to message generation time (MSH.7) can be specified to filter messages in a range instead of exporting all at once. This API returns an Operation that can be used to track the status of the job by calling GetOperation. Immediate fatal errors appear in the error field. Otherwise, when the operation finishes, a detailed response of type ExportMessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesExportRequest) input message
@@ -2232,7 +2232,7 @@ class HealthcareV1alpha2(base_api.BaseApiClient):
     )
 
     def Export(self, request, global_params=None):
-      r"""Exports the messages to a destination in the store with transformations. Only FHIR stores in the same dataset as the source store are supported as destinations. Start and/or end time relative to message generation time (MSH.7) can be specified to filter messages in a range instead of exporting all at once. This API returns an Operation that can be used to track the status of the job by calling GetOperation. Immediate fatal errors appear in the error field. Otherwise, when the operation finishes, a detailed response of type ExportMessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
+      r"""Exports the messages to a destination in the store with transformations. The start and the end time relative to message generation time (MSH.7) can be specified to filter messages in a range instead of exporting all at once. This API returns an Operation that can be used to track the status of the job by calling GetOperation. Immediate fatal errors appear in the error field. Otherwise, when the operation finishes, a detailed response of type ExportMessagesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
 
       Args:
         request: (HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest) input message

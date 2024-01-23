@@ -429,7 +429,8 @@ class Instance(_messages.Message):
       latest supported version will be used. Currently, the supported values
       are: * `REDIS_3_2` for Redis 3.2 compatibility * `REDIS_4_0` for Redis
       4.0 compatibility (default) * `REDIS_5_0` for Redis 5.0 compatibility *
-      `REDIS_6_X` for Redis 6.x compatibility
+      `REDIS_6_X` for Redis 6.x compatibility * `REDIS_7_0` for Redis 7.0
+      compatibility
     replicaCount: Optional. The number of replica nodes. The valid range for
       the Standard Tier with read replicas enabled is [1-5] and defaults to 2.
       If read replicas are not enabled for a Standard Tier instance, the only
@@ -443,12 +444,8 @@ class Instance(_messages.Message):
       If not provided, the service will choose an unused /29 block, for
       example, 10.0.0.0/29 or 192.168.0.0/29. For READ_REPLICAS_ENABLED the
       default block size is /28.
-    satisfiesPzi: Optional. Output only. Reserved for future use. Zone
-      Isolation compliance state of the instance. Field name and documentation
-      is obfuscated according to go/per-resource-zi-bit-semantics.
-    satisfiesPzs: Optional. Output only. Reserved for future use. Zone
-      Separation compliance state of the instance. Field name and
-      documentation is obfuscated according to go/zs-resource-status.
+    satisfiesPzi: Optional. Output only. Reserved for future use.
+    satisfiesPzs: Optional. Output only. Reserved for future use.
     secondaryIpRange: Optional. Additional IP range for node placement.
       Required when enabling read replicas on an existing instance. For
       DIRECT_PEERING mode value must be a CIDR range of size /28, or "auto".

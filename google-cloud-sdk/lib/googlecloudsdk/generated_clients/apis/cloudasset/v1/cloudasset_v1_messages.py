@@ -15,6 +15,32 @@ from apitools.base.py import extra_types
 package = 'cloudasset'
 
 
+class AWSDetails(_messages.Message):
+  r"""Additional information for an asset fetched from AWS
+
+  Fields:
+    awsAccount: The AWS Account in [ARN format]
+      (https://docs.aws.amazon.com/service-authorization/latest/reference/list
+      _awsaccountmanagement.html#awsaccountmanagement-resources-for-iam-
+      policies)
+  """
+
+  awsAccount = _messages.StringField(1)
+
+
+class AWSInfo(_messages.Message):
+  r"""Additional information for an asset fetched from AWS
+
+  Fields:
+    awsAccount: The AWS Account in [ARN format]
+      (https://docs.aws.amazon.com/service-authorization/latest/reference/list
+      _awsaccountmanagement.html#awsaccountmanagement-resources-for-iam-
+      policies)
+  """
+
+  awsAccount = _messages.StringField(1)
+
+
 class AccessSelector(_messages.Message):
   r"""Specifies roles and/or permissions to analyze, to determine both the
   identities possessing them and the resources they control. If multiple
@@ -261,6 +287,7 @@ class Asset(_messages.Message):
     osInventory: A representation of runtime OS Inventory information. See
       [this topic](https://cloud.google.com/compute/docs/instances/os-
       inventory-management) for more information.
+    otherCloudProperties: A OtherCloudProperties attribute.
     relatedAsset: One related asset of the current asset.
     relatedAssets: DEPRECATED. This field only presents for the purpose of
       backward-compatibility. The server will never generate responses with
@@ -281,11 +308,12 @@ class Asset(_messages.Message):
   name = _messages.StringField(6)
   orgPolicy = _messages.MessageField('GoogleCloudOrgpolicyV1Policy', 7, repeated=True)
   osInventory = _messages.MessageField('Inventory', 8)
-  relatedAsset = _messages.MessageField('RelatedAsset', 9)
-  relatedAssets = _messages.MessageField('RelatedAssets', 10)
-  resource = _messages.MessageField('Resource', 11)
-  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 12)
-  updateTime = _messages.StringField(13)
+  otherCloudProperties = _messages.MessageField('OtherCloudProperties', 9)
+  relatedAsset = _messages.MessageField('RelatedAsset', 10)
+  relatedAssets = _messages.MessageField('RelatedAssets', 11)
+  resource = _messages.MessageField('Resource', 12)
+  servicePerimeter = _messages.MessageField('GoogleIdentityAccesscontextmanagerV1ServicePerimeter', 13)
+  updateTime = _messages.StringField(14)
 
 
 class AttachedResource(_messages.Message):
@@ -367,6 +395,18 @@ class AuditLogConfig(_messages.Message):
 
   exemptedMembers = _messages.StringField(1, repeated=True)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
+
+
+class AwsSetting(_messages.Message):
+  r"""AWS side settings per product. Next ID: 2
+
+  Fields:
+    collectorRoleName: Required. AWS collector role name. Collector role has
+      delegate role as trusted entity, and is used to authenticate access AWS
+      config data directly for each product.
+  """
+
+  collectorRoleName = _messages.StringField(1)
 
 
 class BatchGetAssetsHistoryResponse(_messages.Message):
@@ -1154,6 +1194,21 @@ class CloudassetFeedsPatchRequest(_messages.Message):
   updateFeedRequest = _messages.MessageField('UpdateFeedRequest', 2)
 
 
+class CloudassetIngestAssetRequest(_messages.Message):
+  r"""A CloudassetIngestAssetRequest object.
+
+  Fields:
+    closestCrmAncestor: The closest Google Cloud Resource Manager ancestor of
+      this asset. The format will be: organizations/, or folders/, or
+      projects/
+    ingestAssetRequest: A IngestAssetRequest resource to be passed as the
+      request body.
+  """
+
+  closestCrmAncestor = _messages.StringField(1, required=True)
+  ingestAssetRequest = _messages.MessageField('IngestAssetRequest', 2)
+
+
 class CloudassetOperationsGetRequest(_messages.Message):
   r"""A CloudassetOperationsGetRequest object.
 
@@ -1162,6 +1217,105 @@ class CloudassetOperationsGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class CloudassetOtherCloudConnectionsCreateRequest(_messages.Message):
+  r"""A CloudassetOtherCloudConnectionsCreateRequest object.
+
+  Fields:
+    otherCloudConnection: A OtherCloudConnection resource to be passed as the
+      request body.
+    otherCloudConnectionId: Required. The ID to use for the other-cloud
+      connection, which will become the final component of the other-cloud
+      connection's resource name. Currently only "aws" is allowed as the
+      other_cloud_connection_id.
+    parent: Required. The parent resource where this connection will be
+      created. It can only be an organization number (such as
+      "organizations/123") for now. Format:
+      organizations/{organization_number} (e.g., "organizations/123456").
+  """
+
+  otherCloudConnection = _messages.MessageField('OtherCloudConnection', 1)
+  otherCloudConnectionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudassetOtherCloudConnectionsDeleteRequest(_messages.Message):
+  r"""A CloudassetOtherCloudConnectionsDeleteRequest object.
+
+  Fields:
+    name: Required. The name of the other-cloud connection to delete. Format:
+      organizations/{organization_number}/otherCloudConnections/{other_cloud_c
+      onnection_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudassetOtherCloudConnectionsGetRequest(_messages.Message):
+  r"""A CloudassetOtherCloudConnectionsGetRequest object.
+
+  Fields:
+    name: Required. The name of the other-cloud connection to retrieve.
+      Format: organizations/{organization_number}/otherCloudConnections/{other
+      _cloud_connection_id}
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class CloudassetOtherCloudConnectionsListRequest(_messages.Message):
+  r"""A CloudassetOtherCloudConnectionsListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of other-cloud connections to
+      return. The service may return fewer than this value. If unspecified, at
+      most 50 other-cloud connections will be returned. The maximum value is
+      1000; values above 1000 will be coerced to 1000.
+    pageToken: Optional. A page token, received from a previous
+      `ListOtherCloudConnections` call. Provide this to retrieve the
+      subsequent page. When paginating, all other parameters provided to
+      `ListOtherCloudConnections` must match the call that provided the page
+      token.
+    parent: Required. The parent resource where this connection will be
+      created. It can only be an organization number (such as
+      "organizations/123") for now. Format:
+      organizations/{organization_number} (e.g., "organizations/123456").
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class CloudassetOtherCloudConnectionsPatchRequest(_messages.Message):
+  r"""A CloudassetOtherCloudConnectionsPatchRequest object.
+
+  Fields:
+    name: Output only. Immutable. The relative resource name of an other-cloud
+      connection, which is unique across Google Cloud organizations. This
+      field is used to uniquely identify other-cloud connection resource. It
+      contains organization number and other_cloud_connection_id when creating
+      other-cloud connection. This field is immutable once resource is
+      created. And currently only "aws" is allowed as the
+      other_cloud_connection_id. Format: organizations/{organization_number}/o
+      therCloudConnections/{other_cloud_connection_id} E.g. -
+      `organizations/123/otherCloudConnections/aws`.
+    otherCloudConnection: A OtherCloudConnection resource to be passed as the
+      request body.
+    updateMask: Required. The list of fields to update. A field represent
+      symbolic field path of OtherCloudConnection. E.g.: paths:
+      ["description", "collect_aws_asset_setting.qps_limit"] Note that
+      `update_mask` cannot be empty, but it supports a special wildcard value
+      `*`, meaning full replacement. The following immutable fields cannot be
+      updated: - `name`, - `service_agent_id`, -
+      `collect_aws_asset_setting.collector_role_name`, -
+      `collect_aws_asset_setting.delegate_role_name`.
+  """
+
+  name = _messages.StringField(1, required=True)
+  otherCloudConnection = _messages.MessageField('OtherCloudConnection', 2)
+  updateMask = _messages.StringField(3)
 
 
 class CloudassetQueryAssetsRequest(_messages.Message):
@@ -1498,6 +1652,80 @@ class CloudassetSearchAllResourcesRequest(_messages.Message):
   scope = _messages.StringField(7, required=True)
 
 
+class CollectAwsAssetSetting(_messages.Message):
+  r"""The connection settings to collect asset data from AWS. This needs to be
+  populated if connection type is COLLECT_AWS_ASSET.
+
+  Messages:
+    QpsLimitValue: Optional. QPS rate limit for AWS API per each AWS service.
+      For each entry, key is the name of AWS service and value is QPS rate
+      limit.
+
+  Fields:
+    collectorRoleName: Required. Immutable. AWS collector role name. Collector
+      role has delegate role as trusted entity, and is used to authenticate
+      access AWS config data directly for each product.
+    delegateAccountId: Required. AWS delegated account id, this is required to
+      set either when user has single or multiple AWS accounts for data
+      collection. This is one part of the delegate role ARN.
+    delegateRoleName: Required. Immutable. AWS delegate role name. GCP Service
+      Account will assume a delegate role to get authenticated, then assume
+      other collector roles to get authorized to collect config data. This is
+      the final part of the delegate role ARN. Delegate role ARN format -
+      arn:aws:iam::{delegate_account_id}:role/{delegate_role_name}
+    excludedAwsAccountIds: Optional. List of AWS accounts to exclude during
+      auto-discovery. This should be mutually exclusive with included aws
+      accounts.
+    includedAwsAccountIds: Optional. List of AWS accounts to collect data
+      from. If this is provided, auto-discover will not be attempted. This
+      should be mutually exclusive with excluded aws accounts.
+    qpsLimit: Optional. QPS rate limit for AWS API per each AWS service. For
+      each entry, key is the name of AWS service and value is QPS rate limit.
+    regionCodes: Optional. Region codes that this connection needs to collect
+      data from, like `us-east-2`. If it's empty, then all regions should be
+      used. Most AWS services and APIs are region specific. If region(s) is
+      not specified, the data collection process can be very time consuming as
+      all regions must be queried for all metadata.
+    stsEndpointUri: Optional. AWS security token service endpoint. If a user
+      disables the default global endpoint, user must provide regional
+      endpoint to call for authentication.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class QpsLimitValue(_messages.Message):
+    r"""Optional. QPS rate limit for AWS API per each AWS service. For each
+    entry, key is the name of AWS service and value is QPS rate limit.
+
+    Messages:
+      AdditionalProperty: An additional property for a QpsLimitValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type QpsLimitValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a QpsLimitValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A integer attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  collectorRoleName = _messages.StringField(1)
+  delegateAccountId = _messages.StringField(2)
+  delegateRoleName = _messages.StringField(3)
+  excludedAwsAccountIds = _messages.StringField(4, repeated=True)
+  includedAwsAccountIds = _messages.StringField(5, repeated=True)
+  qpsLimit = _messages.MessageField('QpsLimitValue', 6)
+  regionCodes = _messages.StringField(7, repeated=True)
+  stsEndpointUri = _messages.StringField(8)
+
+
 class ConditionContext(_messages.Message):
   r"""The IAM conditions context.
 
@@ -1539,6 +1767,49 @@ class ConditionEvaluation(_messages.Message):
   evaluationValue = _messages.EnumField('EvaluationValueValueValuesEnum', 1)
 
 
+class Content(_messages.Message):
+  r"""A Content object.
+
+  Messages:
+    ContentValue: The actual content of this asset event. The key is the
+      content type.
+
+  Fields:
+    content: The actual content of this asset event. The key is the content
+      type.
+    version: The version of this content format. We use this version to refer
+      to various formats stored in the content. For now, only one version of
+      the format exist. Therefore, we keep it empty.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ContentValue(_messages.Message):
+    r"""The actual content of this asset event. The key is the content type.
+
+    Messages:
+      AdditionalProperty: An additional property for a ContentValue object.
+
+    Fields:
+      additionalProperties: Properties of the object.
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ContentValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A extra_types.JsonValue attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('extra_types.JsonValue', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  content = _messages.MessageField('ContentValue', 1)
+  version = _messages.StringField(2)
+
+
 class CreateFeedRequest(_messages.Message):
   r"""Create asset feed request.
 
@@ -1554,6 +1825,30 @@ class CreateFeedRequest(_messages.Message):
 
   feed = _messages.MessageField('Feed', 1)
   feedId = _messages.StringField(2)
+
+
+class DataCollector(_messages.Message):
+  r"""The name of a partner other-cloud data collector party.
+
+  Enums:
+    NameValueValuesEnum: The name of partner data collector party collecting
+      the asset.
+
+  Fields:
+    name: The name of partner data collector party collecting the asset.
+  """
+
+  class NameValueValuesEnum(_messages.Enum):
+    r"""The name of partner data collector party collecting the asset.
+
+    Values:
+      DATA_COLLECTOR_UNSPECIFIED: The data collector is unspecified.
+      ATTACK_PATH_SIMULATION: <no description>
+    """
+    DATA_COLLECTOR_UNSPECIFIED = 0
+    ATTACK_PATH_SIMULATION = 1
+
+  name = _messages.EnumField('NameValueValuesEnum', 1)
 
 
 class Date(_messages.Message):
@@ -4150,6 +4445,28 @@ class IdentitySelector(_messages.Message):
   identity = _messages.StringField(1)
 
 
+class IngestAssetRequest(_messages.Message):
+  r"""Request to ingest an other-cloud asset.
+
+  Fields:
+    asset: The other-cloud asset to be ingested.
+  """
+
+  asset = _messages.MessageField('OtherCloudAssetEvent', 1)
+
+
+class IngestAssetResponse(_messages.Message):
+  r"""Response of ingesting an other-cloud asset.
+
+  Fields:
+    name: It is the original name of the resource. For AWS assets, use
+      [ARN](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-
+      arns.html)
+  """
+
+  name = _messages.StringField(1)
+
+
 class Inventory(_messages.Message):
   r"""This API resource represents the available inventory data for a Compute
   Engine virtual machine (VM) instance at a given point in time. You can use
@@ -4286,6 +4603,20 @@ class ListFeedsResponse(_messages.Message):
   """
 
   feeds = _messages.MessageField('Feed', 1, repeated=True)
+
+
+class ListOtherCloudConnectionsResponse(_messages.Message):
+  r"""Response to list other-cloud connections.
+
+  Fields:
+    nextPageToken: A token, which can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    otherCloudConnections: The other-cloud connections from the specified
+      parent or all parents.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  otherCloudConnections = _messages.MessageField('OtherCloudConnection', 2, repeated=True)
 
 
 class ListSavedQueriesResponse(_messages.Message):
@@ -4591,6 +4922,182 @@ class OsInfo(_messages.Message):
   version = _messages.StringField(8)
 
 
+class OtherCloudAssetEvent(_messages.Message):
+  r"""The asset event for other-cloud asset ingestion.
+
+  Enums:
+    StateValueValuesEnum: The state of this asset.
+
+  Fields:
+    assetUri: The URI that an end-user should be able to call GET to get data
+      directly from the publishers' API.
+    awsInfo: For an asset fetched from AWS.
+    connection: The full name of the Other-Cloud Connection resource used to
+      collect this asset in the format of
+      `//cloudasset.googleapis.com/organizations//OtherCloudConnections/`
+      E.g.:
+      cloudasset.googleapis.com/organizations/123/otherCloudConnections/aws
+    contents: A representation of other-cloud asset events.
+    createTime: A timestamp to represent the time when the asset was created.
+      For other-cloud assets, this is optional.
+    eventTime: A timestamp to represent the latest time we observe (collect)
+      this resource.
+    id: The identifier of this asset.
+    location: The location of this asset. For AWS assets: For AWS regions, it
+      is the region name listed in https://docs.aws.amazon.com/AmazonRDS/lates
+      t/UserGuide/Concepts.RegionsAndAvailabilityZones.html#Concepts.RegionsAn
+      dAvailabilityZones.Regions For AWS China, see `Learn more` section in
+      https://docs.aws.amazon.com/general/latest/gr/rande.html#learn-more For
+      AWS Gov, regions are listed here:
+      https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-
+      endpoints
+    parent: The immediate parent of this asset, and it must be other-cloud
+      asset. Otherwise, empty. Note: for AWS, we will populate this field only
+      when the parent can be extracted from this asset's ARN.
+    state: The state of this asset.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""The state of this asset.
+
+    Values:
+      STATE_UNSPECIFIED: State is not applicable for the current asset.
+      EXIST: Asset exists.
+      DELETED: Asset was deleted.
+    """
+    STATE_UNSPECIFIED = 0
+    EXIST = 1
+    DELETED = 2
+
+  assetUri = _messages.StringField(1)
+  awsInfo = _messages.MessageField('AWSInfo', 2)
+  connection = _messages.StringField(3)
+  contents = _messages.MessageField('Content', 4, repeated=True)
+  createTime = _messages.StringField(5)
+  eventTime = _messages.StringField(6)
+  id = _messages.MessageField('OtherCloudAssetId', 7)
+  location = _messages.StringField(8)
+  parent = _messages.MessageField('OtherCloudAssetId', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+
+
+class OtherCloudAssetId(_messages.Message):
+  r"""An identifier of an other-cloud asset. All fields are case sensitive,
+  unless explicitly noted.
+
+  Enums:
+    DataSourceProviderValueValuesEnum: The data source provider of this asset.
+
+  Fields:
+    assetName: The name of this asset in the data source provider. It is the
+      original name of the resource. For AWS assets, use
+      [ARN](https://docs.aws.amazon.com/IAM/latest/UserGuide/reference-
+      arns.html)
+    assetType: The type of this asset.
+    dataCollector: The data collector party collecting the asset.
+    dataSourceProvider: The data source provider of this asset.
+  """
+
+  class DataSourceProviderValueValuesEnum(_messages.Enum):
+    r"""The data source provider of this asset.
+
+    Values:
+      PROVIDER_UNSPECIFIED: The unspecified value for data source provider.
+      AMAZON_WEB_SERVICES: The value for AWS.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    AMAZON_WEB_SERVICES = 1
+
+  assetName = _messages.StringField(1)
+  assetType = _messages.StringField(2)
+  dataCollector = _messages.MessageField('DataCollector', 3)
+  dataSourceProvider = _messages.EnumField('DataSourceProviderValueValuesEnum', 4)
+
+
+class OtherCloudConnection(_messages.Message):
+  r"""An Other-Cloud Connection is a set of settings to allow Google Cloud to
+  connect to an other-cloud provider(such as AWS, Azure, etc.) to collect
+  their asset config data for Google Cloud products' use.
+
+  Enums:
+    ConnectionTypeValueValuesEnum: Required. The other-cloud connection type.
+
+  Fields:
+    collectAwsAssetSetting: A CollectAwsAssetSetting attribute.
+    connectionType: Required. The other-cloud connection type.
+    description: Optional. Connection description.
+    name: Output only. Immutable. The relative resource name of an other-cloud
+      connection, which is unique across Google Cloud organizations. This
+      field is used to uniquely identify other-cloud connection resource. It
+      contains organization number and other_cloud_connection_id when creating
+      other-cloud connection. This field is immutable once resource is
+      created. And currently only "aws" is allowed as the
+      other_cloud_connection_id. Format: organizations/{organization_number}/o
+      therCloudConnections/{other_cloud_connection_id} E.g. -
+      `organizations/123/otherCloudConnections/aws`.
+    productSettings: Required.
+    serviceAgentId: Output only. Immutable. The service agent ID that will be
+      used to connect to the provider.
+    sharedAwsSetting: A SharedAwsSetting attribute.
+    validationResults: Output only. The latest 10 validation results of the
+      other-cloud connection. It is ordered by timestamp descendingly. When
+      there is a new result generated by VerifyOtherCloudConnection API, the
+      latest result will be inserted at the beginning of this field, and the
+      last element will be removed when needed to keep its maximum size as 10.
+  """
+
+  class ConnectionTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The other-cloud connection type.
+
+    Values:
+      CONNECTION_TYPE_UNSPECIFIED: Connection type unspecified.
+      COLLECT_AWS_ASSET: Collects asset config data from AWS.
+    """
+    CONNECTION_TYPE_UNSPECIFIED = 0
+    COLLECT_AWS_ASSET = 1
+
+  collectAwsAssetSetting = _messages.MessageField('CollectAwsAssetSetting', 1)
+  connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 2)
+  description = _messages.StringField(3)
+  name = _messages.StringField(4)
+  productSettings = _messages.MessageField('ProductSetting', 5, repeated=True)
+  serviceAgentId = _messages.StringField(6)
+  sharedAwsSetting = _messages.MessageField('SharedAwsSetting', 7)
+  validationResults = _messages.MessageField('ValidationResult', 8, repeated=True)
+
+
+class OtherCloudProperties(_messages.Message):
+  r"""Properties specific to this other-cloud (or alternative) provider.
+
+  Enums:
+    DataSourceProviderValueValuesEnum: The data source provider of this asset.
+
+  Fields:
+    awsDetails: For an asset fetched from AWS.
+    connection: The full name of the OtherCloudConnection that is used to
+      collect this resource Format:
+      `//cloudasset.googleapis.com/organizations//OtherCloudConnections/`
+    dataSourceProvider: The data source provider of this asset.
+    name: The original name of the resource, such as AWS ARN. It must be able
+      to uniquely identify that resource in the data source.
+  """
+
+  class DataSourceProviderValueValuesEnum(_messages.Enum):
+    r"""The data source provider of this asset.
+
+    Values:
+      PROVIDER_UNSPECIFIED: The unspecified value for data source provider.
+      AMAZON_WEB_SERVICES: The value for AWS.
+    """
+    PROVIDER_UNSPECIFIED = 0
+    AMAZON_WEB_SERVICES = 1
+
+  awsDetails = _messages.MessageField('AWSDetails', 1)
+  connection = _messages.StringField(2)
+  dataSourceProvider = _messages.EnumField('DataSourceProviderValueValuesEnum', 3)
+  name = _messages.StringField(4)
+
+
 class OutputConfig(_messages.Message):
   r"""Output configuration for export assets destination.
 
@@ -4739,6 +5246,35 @@ class PolicyInfo(_messages.Message):
 
   attachedResource = _messages.StringField(1)
   policy = _messages.MessageField('Policy', 2)
+
+
+class ProductSetting(_messages.Message):
+  r"""A ProductSetting object.
+
+  Enums:
+    ProductValueValuesEnum: Required. Which product this connection is used.
+
+  Fields:
+    awsSetting: AWS setting per product.
+    product: Required. Which product this connection is used.
+    serviceAgentId: Output only. The service account ID used to authenticate
+      AWS API.
+  """
+
+  class ProductValueValuesEnum(_messages.Enum):
+    r"""Required. Which product this connection is used.
+
+    Values:
+      PRODUCT_UNSPECIFIED: Product unspecified.
+      CLOUD_SECURITY_POSTURE_MANAGEMENT: Cloud Security Posture Management
+        product.
+    """
+    PRODUCT_UNSPECIFIED = 0
+    CLOUD_SECURITY_POSTURE_MANAGEMENT = 1
+
+  awsSetting = _messages.MessageField('AwsSetting', 1)
+  product = _messages.EnumField('ProductValueValuesEnum', 2)
+  serviceAgentId = _messages.StringField(3)
 
 
 class PubsubDestination(_messages.Message):
@@ -5558,6 +6094,75 @@ class SearchAllResourcesResponse(_messages.Message):
   results = _messages.MessageField('ResourceSearchResult', 2, repeated=True)
 
 
+class SharedAwsSetting(_messages.Message):
+  r"""A SharedAwsSetting object.
+
+  Messages:
+    QpsLimitValue: Optional. QPS rate limit for AWS API per each AWS service.
+      For each entry, key is the name of AWS service and value is QPS rate
+      limit.
+
+  Fields:
+    delegateAccountId: Required. AWS delegated account id, this is required to
+      set either when user has single or multiple AWS accounts for data
+      collection. This is one part of the delegate role ARN.
+    delegateRoleName: Required. AWS delegate role name. GCP Service Account
+      will assume a delegate role to get authenticated, then assume other
+      collector roles to get authorized to collect config data. This is the
+      final part of the delegate role ARN. Delegate role ARN format -
+      arn:aws:iam::{delegate_account_id}:role/{delegate_role_name}
+    excludedAwsAccountIds: Optional. List of AWS accounts to exclude during
+      auto-discovery. This should be mutually exclusive with included aws
+      accounts.
+    includedAwsAccountIds: Optional. List of AWS accounts to collect data
+      from. If this is provided, auto-discover will not be attempted. This
+      should be mutually exclusive with excluded aws accounts.
+    qpsLimit: Optional. QPS rate limit for AWS API per each AWS service. For
+      each entry, key is the name of AWS service and value is QPS rate limit.
+    regionCodes: Optional. Region codes that this connection needs to collect
+      data from, like `us-east-2`. If it's empty, then all regions should be
+      used. Most AWS services and APIs are region specific. If region(s) is
+      not specified, the data collection process can be very time consuming as
+      all regions must be queried for all metadata.
+    stsEndpointUri: Optional. AWS security token service endpoint uri. If user
+      disables the default global endpoint, user must provide regional
+      endpoint to call for authentication.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class QpsLimitValue(_messages.Message):
+    r"""Optional. QPS rate limit for AWS API per each AWS service. For each
+    entry, key is the name of AWS service and value is QPS rate limit.
+
+    Messages:
+      AdditionalProperty: An additional property for a QpsLimitValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type QpsLimitValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a QpsLimitValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A integer attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  delegateAccountId = _messages.StringField(1)
+  delegateRoleName = _messages.StringField(2)
+  excludedAwsAccountIds = _messages.StringField(3, repeated=True)
+  includedAwsAccountIds = _messages.StringField(4, repeated=True)
+  qpsLimit = _messages.MessageField('QpsLimitValue', 5)
+  regionCodes = _messages.StringField(6, repeated=True)
+  stsEndpointUri = _messages.StringField(7)
+
+
 class SoftwarePackage(_messages.Message):
   r"""Software package information of the operating system.
 
@@ -5759,6 +6364,23 @@ class Tag(_messages.Message):
   tagValueId = _messages.StringField(3)
 
 
+class TargetConnection(_messages.Message):
+  r"""An other-cloud connection to verify before it gets created.
+
+  Fields:
+    otherCloudConnection: The content of the connection.
+    parent: The parent resource where this connection will be created. It can
+      only be an organization number (such as "organizations/123") for now.
+      Format: organizations/{organization_number} (e.g.,
+      "organizations/123456"). This field is needed when
+      non_existent_connection is set. Callers must have
+      cloudasset.othercloudconnections.verify permission on the [parent].
+  """
+
+  otherCloudConnection = _messages.MessageField('OtherCloudConnection', 1)
+  parent = _messages.StringField(2)
+
+
 class TemporalAsset(_messages.Message):
   r"""An asset in Google Cloud and its temporal metadata, including the time
   window when it was observed and its status during that window.
@@ -5828,6 +6450,71 @@ class UpdateFeedRequest(_messages.Message):
 
   feed = _messages.MessageField('Feed', 1)
   updateMask = _messages.StringField(2)
+
+
+class ValidationResult(_messages.Message):
+  r"""A ValidationResult object.
+
+  Enums:
+    ConnectionStateValueValuesEnum: The state of the other-cloud connection
+
+  Fields:
+    cause: Optional. The cause of the invalidity of a connection
+    connectionState: The state of the other-cloud connection
+    validationTime: The time when the connection was validated.
+  """
+
+  class ConnectionStateValueValuesEnum(_messages.Enum):
+    r"""The state of the other-cloud connection
+
+    Values:
+      UNKNOWN: Unknown.
+      VALID: The connection has been set up at AWS properly: the GCP service
+        agent has been properly assumed to an AWS delegated role.
+      FAILED_TO_ASSUME_DELEGATED_ROLE: The connection is invalid because the
+        GCP service agent has not been properly assumed to an AWS delegated
+        role.
+      INVALID_FOR_OTHER_REASON: The connection setting is invalid for other
+        reasons. The detailed cause is in the cause field.
+    """
+    UNKNOWN = 0
+    VALID = 1
+    FAILED_TO_ASSUME_DELEGATED_ROLE = 2
+    INVALID_FOR_OTHER_REASON = 3
+
+  cause = _messages.StringField(1)
+  connectionState = _messages.EnumField('ConnectionStateValueValuesEnum', 2)
+  validationTime = _messages.StringField(3)
+
+
+class VerifyOtherCloudConnectionRequest(_messages.Message):
+  r"""Request to verify an other-cloud connection.
+
+  Fields:
+    name: The relative resource name of an other-cloud connection. Format: org
+      anizations/{organization_number}/otherCloudConnections/{other_cloud_conn
+      ection_id} currently only "aws" is allowed as the
+      `other_cloud_connection_id`. E.g. -
+      `organizations/123/otherCloudConnections/aws`. This field will be used
+      to validate the connection after its being created.
+    targetConnection: An other-cloud connection to verify before its being
+      created. A connection's name will not exist until the connection gets
+      created. As a result, this field will be used to validate a connection
+      before it exists.
+  """
+
+  name = _messages.StringField(1)
+  targetConnection = _messages.MessageField('TargetConnection', 2)
+
+
+class VerifyOtherCloudConnectionResponse(_messages.Message):
+  r"""Response to verify an other-cloud connection.
+
+  Fields:
+    validationResult: The validation result of the other-cloud connection.
+  """
+
+  validationResult = _messages.MessageField('ValidationResult', 1)
 
 
 class VersionedPackage(_messages.Message):

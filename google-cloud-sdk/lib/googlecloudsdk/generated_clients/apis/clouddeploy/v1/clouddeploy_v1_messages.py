@@ -930,6 +930,33 @@ class ClouddeployProjectsLocationsCustomTargetTypesDeleteRequest(_messages.Messa
   validateOnly = _messages.BooleanField(5)
 
 
+class ClouddeployProjectsLocationsCustomTargetTypesGetIamPolicyRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsCustomTargetTypesGetIamPolicyRequest
+  object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class ClouddeployProjectsLocationsCustomTargetTypesGetRequest(_messages.Message):
   r"""A ClouddeployProjectsLocationsCustomTargetTypesGetRequest object.
 
@@ -1005,6 +1032,23 @@ class ClouddeployProjectsLocationsCustomTargetTypesPatchRequest(_messages.Messag
   requestId = _messages.StringField(4)
   updateMask = _messages.StringField(5)
   validateOnly = _messages.BooleanField(6)
+
+
+class ClouddeployProjectsLocationsCustomTargetTypesSetIamPolicyRequest(_messages.Message):
+  r"""A ClouddeployProjectsLocationsCustomTargetTypesSetIamPolicyRequest
+  object.
+
+  Fields:
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+    setIamPolicyRequest: A SetIamPolicyRequest resource to be passed as the
+      request body.
+  """
+
+  resource = _messages.StringField(1, required=True)
+  setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
 
 
 class ClouddeployProjectsLocationsDeliveryPipelinesAutomationRunsCancelRequest(_messages.Message):

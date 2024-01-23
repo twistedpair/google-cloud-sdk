@@ -185,6 +185,31 @@ def AddIpv6NetworkTierArg(parser):
   )
 
 
+def AddAddressArgs(parser):
+  """Adds --address and --no-address mutex arguments to the parser."""
+  addresses = parser.add_mutually_exclusive_group()
+  addresses.add_argument(
+      '--address',
+      type=str,
+      help="""
+        Assigns the given external address to the network interface. The
+        address might be an IP address or the name or URI of an address
+        resource. Specifying an empty string will assign an ephemeral IP.
+        Mutually exclusive with no-address. If neither key is present the
+        network interface will get an ephemeral IP.
+      """,
+  )
+  addresses.add_argument(
+      '--no-address',
+      action='store_true',
+      help="""
+        If specified the network interface will have no external IP.
+        Mutually exclusive with address. If neither key is present the network
+        interfaces will get an ephemeral IP.
+      """,
+  )
+
+
 def AddExternalIpv6AddressArg(parser):
   parser.add_argument(
       '--external-ipv6-address',

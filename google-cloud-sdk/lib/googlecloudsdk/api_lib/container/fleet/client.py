@@ -1243,6 +1243,12 @@ class FleetClient(object):
     """Resume a fleet rollout."""
     return self.client.projects_locations_rollouts.Resume(req)
 
+  def DeleteRollout(
+      self, req: messages.GkehubProjectsLocationsRolloutsDeleteRequest
+  ) -> messages.Operation:
+    """Delete a fleet rollout."""
+    return self.client.projects_locations_rollouts.Delete(req)
+
 
 class OperationClient:
   """Client for the GKE Hub API long-running operations."""

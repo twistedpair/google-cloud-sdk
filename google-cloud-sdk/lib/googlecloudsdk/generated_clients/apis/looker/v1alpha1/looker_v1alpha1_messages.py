@@ -443,6 +443,8 @@ class Instance(_messages.Message):
     ingressPublicIp: Output only. Public Ingress IP (IPv4).
     lastDenyMaintenancePeriod: Output only. Last computed maintenance denial
       period for this instance.
+    linkedLspProjectNumber: Optional. Linked Google Cloud Project Number for
+      Looker Studio Pro.
     lookerUri: Output only. Looker instance URI which can be used to access
       the Looker Instance UI.
     lookerVersion: Output only. The Looker version that the instance is using.
@@ -536,18 +538,19 @@ class Instance(_messages.Message):
   ingressPrivateIp = _messages.StringField(10)
   ingressPublicIp = _messages.StringField(11)
   lastDenyMaintenancePeriod = _messages.MessageField('DenyMaintenancePeriod', 12)
-  lookerUri = _messages.StringField(13)
-  lookerVersion = _messages.StringField(14)
-  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 15)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 16)
-  name = _messages.StringField(17)
-  oauthConfig = _messages.MessageField('OAuthConfig', 18)
-  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 19)
-  reservedRange = _messages.StringField(20)
-  state = _messages.EnumField('StateValueValuesEnum', 21)
-  tier = _messages.EnumField('TierValueValuesEnum', 22)
-  updateTime = _messages.StringField(23)
-  users = _messages.MessageField('Users', 24)
+  linkedLspProjectNumber = _messages.IntegerField(13)
+  lookerUri = _messages.StringField(14)
+  lookerVersion = _messages.StringField(15)
+  maintenanceSchedule = _messages.MessageField('MaintenanceSchedule', 16)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 17)
+  name = _messages.StringField(18)
+  oauthConfig = _messages.MessageField('OAuthConfig', 19)
+  platformEdition = _messages.EnumField('PlatformEditionValueValuesEnum', 20)
+  reservedRange = _messages.StringField(21)
+  state = _messages.EnumField('StateValueValuesEnum', 22)
+  tier = _messages.EnumField('TierValueValuesEnum', 23)
+  updateTime = _messages.StringField(24)
+  users = _messages.MessageField('Users', 25)
 
 
 class InstanceBackup(_messages.Message):

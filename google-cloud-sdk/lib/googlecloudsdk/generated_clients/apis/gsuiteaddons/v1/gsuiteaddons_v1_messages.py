@@ -505,12 +505,17 @@ class GoogleAppsScriptTypeSheetsSheetsAddOnManifest(_messages.Message):
   Fields:
     homepageTrigger: If present, this overrides the configuration from
       `addOns.common.homepageTrigger`.
+    linkPreviewTriggers: A list of extension points for previewing links in a
+      Google Sheets document. For details, see [Preview links with smart
+      chips](https://developers.google.com/workspace/add-ons/guides/preview-
+      links-smart-chips).
     onFileScopeGrantedTrigger: Endpoint to execute when file scope
       authorization is granted for this document/user pair.
   """
 
   homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 1)
-  onFileScopeGrantedTrigger = _messages.MessageField('GoogleAppsScriptTypeSheetsSheetsExtensionPoint', 2)
+  linkPreviewTriggers = _messages.MessageField('GoogleAppsScriptTypeLinkPreviewExtensionPoint', 2, repeated=True)
+  onFileScopeGrantedTrigger = _messages.MessageField('GoogleAppsScriptTypeSheetsSheetsExtensionPoint', 3)
 
 
 class GoogleAppsScriptTypeSheetsSheetsExtensionPoint(_messages.Message):
@@ -531,12 +536,17 @@ class GoogleAppsScriptTypeSlidesSlidesAddOnManifest(_messages.Message):
   Fields:
     homepageTrigger: If present, this overrides the configuration from
       `addOns.common.homepageTrigger`.
+    linkPreviewTriggers: A list of extension points for previewing links in a
+      Google Slides document. For details, see [Preview links with smart
+      chips](https://developers.google.com/workspace/add-ons/guides/preview-
+      links-smart-chips).
     onFileScopeGrantedTrigger: Endpoint to execute when file scope
       authorization is granted for this document/user pair.
   """
 
   homepageTrigger = _messages.MessageField('GoogleAppsScriptTypeHomepageExtensionPoint', 1)
-  onFileScopeGrantedTrigger = _messages.MessageField('GoogleAppsScriptTypeSlidesSlidesExtensionPoint', 2)
+  linkPreviewTriggers = _messages.MessageField('GoogleAppsScriptTypeLinkPreviewExtensionPoint', 2, repeated=True)
+  onFileScopeGrantedTrigger = _messages.MessageField('GoogleAppsScriptTypeSlidesSlidesExtensionPoint', 3)
 
 
 class GoogleAppsScriptTypeSlidesSlidesExtensionPoint(_messages.Message):

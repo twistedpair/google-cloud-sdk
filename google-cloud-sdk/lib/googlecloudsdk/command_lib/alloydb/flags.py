@@ -986,7 +986,6 @@ def AddAssignInboundPublicIp(parser, update=False):
         '--assign-inbound-public-ip',
         required=False,
         type=str,
-        hidden=True,
         help=(
             """Specify to enable or disable public IP on an instance.
             ASSIGN_INBOUND_PUBLIC_IP must be one of:
@@ -1003,7 +1002,6 @@ def AddAssignInboundPublicIp(parser, update=False):
         '--assign-inbound-public-ip',
         required=False,
         type=str,
-        hidden=True,
         choices={
             'NO_PUBLIC_IP': (
                 'This disables public IP on the instance.'
@@ -1030,7 +1028,6 @@ def AddAuthorizedExternalNetworks(parser):
       type=arg_parsers.ArgList(),
       metavar='AUTHORIZED_NETWORK',
       required=False,
-      hidden=True,
       help=(
           'Comma-separated list of authorized external networks to set on the '
           'instance. Authorized networks should use CIDR notation (e.g. '

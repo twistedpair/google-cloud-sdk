@@ -3470,6 +3470,33 @@ class HealthcareV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ExplainDataAccess(self, request, global_params=None):
+      r"""Explains all the permitted/denied actor, purpose and environment for a given resource.
+
+      Args:
+        request: (HealthcareProjectsLocationsDatasetsFhirStoresExplainDataAccessRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ExplainDataAccessResponse) The response message.
+      """
+      config = self.GetMethodConfig('ExplainDataAccess')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ExplainDataAccess.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/datasets/{datasetsId}/fhirStores/{fhirStoresId}:explainDataAccess',
+        http_method='GET',
+        method_id='healthcare.projects.locations.datasets.fhirStores.explainDataAccess',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['resourceId'],
+        relative_path='v1beta1/{+name}:explainDataAccess',
+        request_field='',
+        request_type_name='HealthcareProjectsLocationsDatasetsFhirStoresExplainDataAccessRequest',
+        response_type_name='ExplainDataAccessResponse',
+        supports_download=False,
+    )
+
     def Export(self, request, global_params=None):
       r"""Export resources from the FHIR store to the specified destination. This method returns an Operation that can be used to track the status of the export by calling GetOperation. Immediate fatal errors appear in the error field, errors are also logged to Cloud Logging (see [Viewing error logs in Cloud Logging](https://cloud.google.com/healthcare/docs/how-tos/logging)). Otherwise, when the operation finishes, a detailed response of type ExportResourcesResponse is returned in the response field. The metadata field type for this operation is OperationMetadata.
 

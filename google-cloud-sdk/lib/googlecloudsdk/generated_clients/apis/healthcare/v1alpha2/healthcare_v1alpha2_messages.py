@@ -124,9 +124,9 @@ class AnnotationStore(_messages.Message):
       128 bytes, and must conform to the following PCRE regular expression:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
-    name: Resource name of the Annotation store, of the form `projects/{projec
-      t_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/{an
-      notation_store_id}`.
+    name: Identifier. Resource name of the Annotation store, of the form `proj
+      ects/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotati
+      onStores/{annotation_store_id}`.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -1173,9 +1173,9 @@ class EvaluateAnnotationStoreRequest(_messages.Message):
     bigqueryDestination: The BigQuery table where the server writes the
       output. BigQueryDestination requires the `roles/bigquery.dataEditor` and
       `roles/bigquery.jobUser` Cloud IAM roles.
-    goldenStore: The Annotation store to use as ground truth, in the format of
-      `projects/{project_id}/locations/{location_id}/datasets/{dataset_id}/ann
-      otationStores/{annotation_store_id}`.
+    goldenStore: Required. The Annotation store to use as ground truth, in the
+      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
+      et_id}/annotationStores/{annotation_store_id}`.
   """
 
   bigqueryDestination = _messages.MessageField('GoogleCloudHealthcareV1alpha2AnnotationBigQueryDestination', 1)
@@ -2188,9 +2188,11 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresCreateRequest(_messages
   Fields:
     annotationStore: A AnnotationStore resource to be passed as the request
       body.
-    annotationStoreId: The ID of the Annotation store that is being created.
-      The string must match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
-    parent: The name of the dataset this Annotation store belongs to.
+    annotationStoreId: Required. The ID of the Annotation store that is being
+      created. The string must match the following regex:
+      `[\p{L}\p{N}_\-\.]{1,256}`.
+    parent: Required. The name of the dataset this Annotation store belongs
+      to.
   """
 
   annotationStore = _messages.MessageField('AnnotationStore', 1)
@@ -2203,7 +2205,7 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresDeleteRequest(_messages
   object.
 
   Fields:
-    name: The resource name of the Annotation store to delete.
+    name: Required. The resource name of the Annotation store to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2216,9 +2218,9 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresEvaluateRequest(_messag
   Fields:
     evaluateAnnotationStoreRequest: A EvaluateAnnotationStoreRequest resource
       to be passed as the request body.
-    name: The Annotation store to compare against `golden_store`, in the
-      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
-      et_id}/annotationStores/{annotation_store_id}`.
+    name: Required. The Annotation store to compare against `golden_store`, in
+      the format of `projects/{project_id}/locations/{location_id}/datasets/{d
+      ataset_id}/annotationStores/{annotation_store_id}`.
   """
 
   evaluateAnnotationStoreRequest = _messages.MessageField('EvaluateAnnotationStoreRequest', 1)
@@ -2232,9 +2234,9 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresExportRequest(_messages
   Fields:
     exportAnnotationsRequest: A ExportAnnotationsRequest resource to be passed
       as the request body.
-    name: The name of the Annotation store to export annotations to, in the
-      format of `projects/{project_id}/locations/{location_id}/datasets/{datas
-      et_id}/annotationStores/{annotation_store_id}`.
+    name: Required. The name of the Annotation store to export annotations to,
+      in the format of `projects/{project_id}/locations/{location_id}/datasets
+      /{dataset_id}/annotationStores/{annotation_store_id}`.
   """
 
   exportAnnotationsRequest = _messages.MessageField('ExportAnnotationsRequest', 1)
@@ -2272,7 +2274,7 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresGetRequest(_messages.Me
   r"""A HealthcareProjectsLocationsDatasetsAnnotationStoresGetRequest object.
 
   Fields:
-    name: The resource name of the Annotation store to get.
+    name: Required. The resource name of the Annotation store to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -2285,9 +2287,10 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresImportRequest(_messages
   Fields:
     importAnnotationsRequest: A ImportAnnotationsRequest resource to be passed
       as the request body.
-    name: The name of the Annotation store to which the server imports
-      annotations in the format of `projects/{project_id}/locations/{location_
-      id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}`.
+    name: Required. The name of the Annotation store to which the server
+      imports annotations in the format of `projects/{project_id}/locations/{l
+      ocation_id}/datasets/{dataset_id}/annotationStores/{annotation_store_id}
+      `.
   """
 
   importAnnotationsRequest = _messages.MessageField('ImportAnnotationsRequest', 1)
@@ -2326,7 +2329,7 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresListRequest(_messages.M
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
-    parent: The name of the dataset.
+    parent: Required. The name of the dataset.
   """
 
   filter = _messages.StringField(1)
@@ -2342,11 +2345,11 @@ class HealthcareProjectsLocationsDatasetsAnnotationStoresPatchRequest(_messages.
   Fields:
     annotationStore: A AnnotationStore resource to be passed as the request
       body.
-    name: Resource name of the Annotation store, of the form `projects/{projec
-      t_id}/locations/{location_id}/datasets/{dataset_id}/annotationStores/{an
-      notation_store_id}`.
-    updateMask: The update mask applies to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
+    name: Identifier. Resource name of the Annotation store, of the form `proj
+      ects/{project_id}/locations/{location_id}/datasets/{dataset_id}/annotati
+      onStores/{annotation_store_id}`.
+    updateMask: Required. The update mask applies to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
 
@@ -3678,9 +3681,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresCreateRequest(_messages.Mess
 
   Fields:
     hl7V2Store: A Hl7V2Store resource to be passed as the request body.
-    hl7V2StoreId: The ID of the HL7v2 store that is being created. The string
-      must match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
-    parent: The name of the dataset this HL7v2 store belongs to.
+    hl7V2StoreId: Required. The ID of the HL7v2 store that is being created.
+      The string must match the following regex: `[\p{L}\p{N}_\-\.]{1,256}`.
+    parent: Required. The name of the dataset this HL7v2 store belongs to.
   """
 
   hl7V2Store = _messages.MessageField('Hl7V2Store', 1)
@@ -3692,7 +3695,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresDeleteRequest(_messages.Mess
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresDeleteRequest object.
 
   Fields:
-    name: The resource name of the HL7v2 store to delete.
+    name: Required. The resource name of the HL7v2 store to delete.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3704,9 +3707,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresExportRequest(_messages.Mess
   Fields:
     exportMessagesRequest: A ExportMessagesRequest resource to be passed as
       the request body.
-    name: The name of the source HL7v2 store, in the format `projects/{project
-      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
-      ore_id}`
+    name: Required. The name of the source HL7v2 store, in the format `project
+      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores
+      /{hl7v2_store_id}`
   """
 
   exportMessagesRequest = _messages.MessageField('ExportMessagesRequest', 1)
@@ -3719,9 +3722,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetHL7v2StoreMetricsRequest(
   object.
 
   Fields:
-    name: The resource name of the HL7v2 store to get metrics for, in the
-      format `projects/{project_id}/locations/{location_id}/datasets/{dataset_
-      id}/hl7V2Stores/{hl7v2_store_id}`.
+    name: Required. The resource name of the HL7v2 store to get metrics for,
+      in the format `projects/{project_id}/locations/{location_id}/datasets/{d
+      ataset_id}/hl7V2Stores/{hl7v2_store_id}`.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3758,7 +3761,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest(_messages.Message
   r"""A HealthcareProjectsLocationsDatasetsHl7V2StoresGetRequest object.
 
   Fields:
-    name: The resource name of the HL7v2 store to get.
+    name: Required. The resource name of the HL7v2 store to get.
   """
 
   name = _messages.StringField(1, required=True)
@@ -3770,9 +3773,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresImportRequest(_messages.Mess
   Fields:
     importMessagesRequest: A ImportMessagesRequest resource to be passed as
       the request body.
-    name: The name of the target HL7v2 store, in the format `projects/{project
-      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
-      ore_id}`
+    name: Required. The name of the target HL7v2 store, in the format `project
+      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores
+      /{hl7v2_store_id}`
   """
 
   importMessagesRequest = _messages.MessageField('ImportMessagesRequest', 1)
@@ -3811,7 +3814,7 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresListRequest(_messages.Messag
       response. If not specified, 100 is used. May not be larger than 1000.
     pageToken: The next_page_token value returned from the previous List
       request, if any.
-    parent: Name of the dataset.
+    parent: Required. Name of the dataset.
   """
 
   filter = _messages.StringField(1)
@@ -3827,9 +3830,9 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresMessagesExportRequest(_messa
   Fields:
     exportMessagesRequest: A ExportMessagesRequest resource to be passed as
       the request body.
-    name: The name of the source HL7v2 store, in the format `projects/{project
-      _id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores/{hl7v2_st
-      ore_id}`
+    name: Required. The name of the source HL7v2 store, in the format `project
+      s/{project_id}/locations/{location_id}/datasets/{dataset_id}/hl7v2Stores
+      /{hl7v2_store_id}`
   """
 
   exportMessagesRequest = _messages.MessageField('ExportMessagesRequest', 1)
@@ -3841,11 +3844,11 @@ class HealthcareProjectsLocationsDatasetsHl7V2StoresPatchRequest(_messages.Messa
 
   Fields:
     hl7V2Store: A Hl7V2Store resource to be passed as the request body.
-    name: Resource name of the HL7v2 store, of the form `projects/{project_id}
-      /locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_
-      id}`.
-    updateMask: The update mask applies to the resource. For the `FieldMask`
-      definition, see https://developers.google.com/protocol-
+    name: Identifier. Resource name of the HL7v2 store, of the form `projects/
+      {project_id}/locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{
+      hl7v2_store_id}`.
+    updateMask: Required. The update mask applies to the resource. For the
+      `FieldMask` definition, see https://developers.google.com/protocol-
       buffers/docs/reference/google.protobuf#fieldmask
   """
 
@@ -4120,9 +4123,9 @@ class Hl7V2Store(_messages.Message):
       bytes, and must conform to the following PCRE regular expression:
       [\p{Ll}\p{Lo}\p{N}_-]{0,63} No more than 64 labels can be associated
       with a given store.
-    name: Resource name of the HL7v2 store, of the form `projects/{project_id}
-      /locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{hl7v2_store_
-      id}`.
+    name: Identifier. Resource name of the HL7v2 store, of the form `projects/
+      {project_id}/locations/{location_id}/datasets/{dataset_id}/hl7V2Stores/{
+      hl7v2_store_id}`.
     notificationConfig: The notification destination all messages (both Ingest
       & Create) are published on. Only the message name is sent as part of the
       notification. If this is unset, no notifications are sent. Supplied by

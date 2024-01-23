@@ -942,6 +942,9 @@ class DropInfo(_messages.Message):
         rule doesn't match next hop IP address.
       ROUTE_NEXT_HOP_VPN_TUNNEL_NOT_ESTABLISHED: Route's next hop VPN tunnel
         is down (does not have valid IKE SAs).
+      ROUTE_NEXT_HOP_FORWARDING_RULE_TYPE_INVALID: Route's next hop forwarding
+        rule type is invalid (it's not a forwarding rule of the internal
+        passthrough load balancer).
       NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV6_ADDRESS: Packet is sent from the
         Internet to the private IPv6 address.
       VPN_TUNNEL_LOCAL_SELECTOR_MISMATCH: The packet does not match a policy-
@@ -1062,46 +1065,47 @@ class DropInfo(_messages.Message):
     ROUTE_NEXT_HOP_INSTANCE_NON_PRIMARY_IP = 10
     ROUTE_NEXT_HOP_FORWARDING_RULE_IP_MISMATCH = 11
     ROUTE_NEXT_HOP_VPN_TUNNEL_NOT_ESTABLISHED = 12
-    NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV6_ADDRESS = 13
-    VPN_TUNNEL_LOCAL_SELECTOR_MISMATCH = 14
-    VPN_TUNNEL_REMOTE_SELECTOR_MISMATCH = 15
-    PRIVATE_TRAFFIC_TO_INTERNET = 16
-    PRIVATE_GOOGLE_ACCESS_DISALLOWED = 17
-    PRIVATE_GOOGLE_ACCESS_VIA_VPN_TUNNEL_UNSUPPORTED = 18
-    NO_EXTERNAL_ADDRESS = 19
-    UNKNOWN_INTERNAL_ADDRESS = 20
-    FORWARDING_RULE_MISMATCH = 21
-    FORWARDING_RULE_NO_INSTANCES = 22
-    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 23
-    INSTANCE_NOT_RUNNING = 24
-    GKE_CLUSTER_NOT_RUNNING = 25
-    CLOUD_SQL_INSTANCE_NOT_RUNNING = 26
-    TRAFFIC_TYPE_BLOCKED = 27
-    GKE_MASTER_UNAUTHORIZED_ACCESS = 28
-    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 29
-    DROPPED_INSIDE_GKE_SERVICE = 30
-    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 31
-    GOOGLE_MANAGED_SERVICE_NO_PEERING = 32
-    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 33
-    GKE_PSC_ENDPOINT_MISSING = 34
-    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 35
-    GKE_CONTROL_PLANE_REGION_MISMATCH = 36
-    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 37
-    GKE_CONTROL_PLANE_NO_ROUTE = 38
-    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 39
-    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 40
-    CLOUD_SQL_INSTANCE_NO_ROUTE = 41
-    CLOUD_FUNCTION_NOT_ACTIVE = 42
-    VPC_CONNECTOR_NOT_SET = 43
-    VPC_CONNECTOR_NOT_RUNNING = 44
-    FORWARDING_RULE_REGION_MISMATCH = 45
-    PSC_CONNECTION_NOT_ACCEPTED = 46
-    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 47
-    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 48
-    CLOUD_RUN_REVISION_NOT_READY = 49
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 50
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 51
-    CLOUD_NAT_NO_ADDRESSES = 52
+    ROUTE_NEXT_HOP_FORWARDING_RULE_TYPE_INVALID = 13
+    NO_ROUTE_FROM_INTERNET_TO_PRIVATE_IPV6_ADDRESS = 14
+    VPN_TUNNEL_LOCAL_SELECTOR_MISMATCH = 15
+    VPN_TUNNEL_REMOTE_SELECTOR_MISMATCH = 16
+    PRIVATE_TRAFFIC_TO_INTERNET = 17
+    PRIVATE_GOOGLE_ACCESS_DISALLOWED = 18
+    PRIVATE_GOOGLE_ACCESS_VIA_VPN_TUNNEL_UNSUPPORTED = 19
+    NO_EXTERNAL_ADDRESS = 20
+    UNKNOWN_INTERNAL_ADDRESS = 21
+    FORWARDING_RULE_MISMATCH = 22
+    FORWARDING_RULE_NO_INSTANCES = 23
+    FIREWALL_BLOCKING_LOAD_BALANCER_BACKEND_HEALTH_CHECK = 24
+    INSTANCE_NOT_RUNNING = 25
+    GKE_CLUSTER_NOT_RUNNING = 26
+    CLOUD_SQL_INSTANCE_NOT_RUNNING = 27
+    TRAFFIC_TYPE_BLOCKED = 28
+    GKE_MASTER_UNAUTHORIZED_ACCESS = 29
+    CLOUD_SQL_INSTANCE_UNAUTHORIZED_ACCESS = 30
+    DROPPED_INSIDE_GKE_SERVICE = 31
+    DROPPED_INSIDE_CLOUD_SQL_SERVICE = 32
+    GOOGLE_MANAGED_SERVICE_NO_PEERING = 33
+    GOOGLE_MANAGED_SERVICE_NO_PSC_ENDPOINT = 34
+    GKE_PSC_ENDPOINT_MISSING = 35
+    CLOUD_SQL_INSTANCE_NO_IP_ADDRESS = 36
+    GKE_CONTROL_PLANE_REGION_MISMATCH = 37
+    PUBLIC_GKE_CONTROL_PLANE_TO_PRIVATE_DESTINATION = 38
+    GKE_CONTROL_PLANE_NO_ROUTE = 39
+    CLOUD_SQL_INSTANCE_NOT_CONFIGURED_FOR_EXTERNAL_TRAFFIC = 40
+    PUBLIC_CLOUD_SQL_INSTANCE_TO_PRIVATE_DESTINATION = 41
+    CLOUD_SQL_INSTANCE_NO_ROUTE = 42
+    CLOUD_FUNCTION_NOT_ACTIVE = 43
+    VPC_CONNECTOR_NOT_SET = 44
+    VPC_CONNECTOR_NOT_RUNNING = 45
+    FORWARDING_RULE_REGION_MISMATCH = 46
+    PSC_CONNECTION_NOT_ACCEPTED = 47
+    PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 48
+    PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 49
+    CLOUD_RUN_REVISION_NOT_READY = 50
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 51
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 52
+    CLOUD_NAT_NO_ADDRESSES = 53
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -3192,6 +3196,8 @@ class Step(_messages.Message):
     proxyConnection: Display information of a ProxyConnection.
     route: Display information of a Compute Engine route.
     state: Each step is in one of the pre-defined states.
+    storageBucket: Display information of a Storage Bucket. Used only for
+      return traces.
     vpcConnector: Display information of a VPC connector.
     vpnGateway: Display information of a Compute Engine VPN gateway.
     vpnTunnel: Display information of a Compute Engine VPN tunnel.
@@ -3228,6 +3234,9 @@ class Step(_messages.Message):
       START_FROM_CLOUD_RUN_REVISION: Initial state: packet originating from a
         Cloud Run revision. A CloudRunRevisionInfo is populated with starting
         revision information.
+      START_FROM_STORAGE_BUCKET: Initial state: packet originating from a
+        Storage Bucket. Used only for return traces. The storage_bucket
+        information is populated.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -3269,25 +3278,26 @@ class Step(_messages.Message):
     START_FROM_CLOUD_FUNCTION = 7
     START_FROM_APP_ENGINE_VERSION = 8
     START_FROM_CLOUD_RUN_REVISION = 9
-    APPLY_INGRESS_FIREWALL_RULE = 10
-    APPLY_EGRESS_FIREWALL_RULE = 11
-    APPLY_ROUTE = 12
-    APPLY_FORWARDING_RULE = 13
-    ANALYZE_LOAD_BALANCER_BACKEND = 14
-    SPOOFING_APPROVED = 15
-    ARRIVE_AT_INSTANCE = 16
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 17
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 18
-    ARRIVE_AT_VPN_GATEWAY = 19
-    ARRIVE_AT_VPN_TUNNEL = 20
-    ARRIVE_AT_VPC_CONNECTOR = 21
-    NAT = 22
-    PROXY_CONNECTION = 23
-    DELIVER = 24
-    DROP = 25
-    FORWARD = 26
-    ABORT = 27
-    VIEWER_PERMISSION_MISSING = 28
+    START_FROM_STORAGE_BUCKET = 10
+    APPLY_INGRESS_FIREWALL_RULE = 11
+    APPLY_EGRESS_FIREWALL_RULE = 12
+    APPLY_ROUTE = 13
+    APPLY_FORWARDING_RULE = 14
+    ANALYZE_LOAD_BALANCER_BACKEND = 15
+    SPOOFING_APPROVED = 16
+    ARRIVE_AT_INSTANCE = 17
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 18
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 19
+    ARRIVE_AT_VPN_GATEWAY = 20
+    ARRIVE_AT_VPN_TUNNEL = 21
+    ARRIVE_AT_VPC_CONNECTOR = 22
+    NAT = 23
+    PROXY_CONNECTION = 24
+    DELIVER = 25
+    DROP = 26
+    FORWARD = 27
+    ABORT = 28
+    VIEWER_PERMISSION_MISSING = 29
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -3313,9 +3323,20 @@ class Step(_messages.Message):
   proxyConnection = _messages.MessageField('ProxyConnectionInfo', 22)
   route = _messages.MessageField('RouteInfo', 23)
   state = _messages.EnumField('StateValueValuesEnum', 24)
-  vpcConnector = _messages.MessageField('VpcConnectorInfo', 25)
-  vpnGateway = _messages.MessageField('VpnGatewayInfo', 26)
-  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 27)
+  storageBucket = _messages.MessageField('StorageBucketInfo', 25)
+  vpcConnector = _messages.MessageField('VpcConnectorInfo', 26)
+  vpnGateway = _messages.MessageField('VpnGatewayInfo', 27)
+  vpnTunnel = _messages.MessageField('VpnTunnelInfo', 28)
+
+
+class StorageBucketInfo(_messages.Message):
+  r"""For display only. Metadata associated with Storage Bucket.
+
+  Fields:
+    bucket: Cloud Storage Bucket name.
+  """
+
+  bucket = _messages.StringField(1)
 
 
 class TestIamPermissionsRequest(_messages.Message):

@@ -30,7 +30,7 @@ def AddDescriptionFlag(parser):
   parser.add_argument('--description', help=help_text, required=False)
 
 
-def AddInterfaceArgs(parser, for_update=False, is_alpha=False):
+def AddInterfaceArgs(parser, for_update=False):
   """Adds common arguments for routers add-interface or update-interface."""
 
   help_text = (
@@ -66,36 +66,20 @@ def AddInterfaceArgs(parser, for_update=False, is_alpha=False):
       ),
   )
 
-  if is_alpha:
-    northbound_interface_group.add_argument(
-        '--ip-address',
-        type=utils.IPArgument,
-        help='Link-local address of the router for this interface.',
-    )
-    northbound_interface_group.add_argument(
-        '--ip-mask-length',
-        type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=128),
-        help=(
-            'Subnet mask for the link-local IP range of the interface. The'
-            ' interface IP address and BGP peer IP address must be selected'
-            ' from the subnet defined by this link-local range.'
-        ),
-    )
-  else:
-    northbound_interface_group.add_argument(
-        '--ip-address',
-        type=utils.IPV4Argument,
-        help='Link-local address of the router for this interface.',
-    )
-    northbound_interface_group.add_argument(
-        '--ip-mask-length',
-        type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=32),
-        help=(
-            'Subnet mask for the link-local IP range of the interface. The'
-            ' interface IP address and BGP peer IP address must be selected'
-            ' from the subnet defined by this link-local range.'
-        ),
-    )
+  northbound_interface_group.add_argument(
+      '--ip-address',
+      type=utils.IPArgument,
+      help='Link-local address of the router for this interface.',
+  )
+  northbound_interface_group.add_argument(
+      '--ip-mask-length',
+      type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=128),
+      help=(
+          'Subnet mask for the link-local IP range of the interface. The'
+          ' interface IP address and BGP peer IP address must be selected'
+          ' from the subnet defined by this link-local range.'
+      ),
+  )
 
   loopback_interface_group = interface_group.add_argument_group(
       help='The argument group for adding loopback interfaces to edge router.'

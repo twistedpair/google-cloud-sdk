@@ -577,34 +577,34 @@ class Keys(object):
           log.debug('Failed to create sentinel file: [{}]'.format(e))
 
 
-def CertFileFromZone(zone):
+def CertFileFromRegion(region):
   cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
-  return os.path.join(cert_dir, '{}-cert.pub'.format(zone))
+  return os.path.join(cert_dir, '{}-cert.pub'.format(region))
 
 
-def WriteCertificate(zone, cert):
+def WriteCertificate(region, cert):
   """Writes a certificate associated with the key pair.
 
   Args:
-    zone: string, The zone where the SSH certificate may be used.
+    region: string, The region where the SSH certificate may be used.
     cert: string, The SSH certificate data.
   """
   cert_dir = os.path.realpath(files.ExpandHomeDir(CERTIFICATE_DIR))
   files.MakeDir(cert_dir, mode=0o700)
 
-  filepath = CertFileFromZone(zone)
+  filepath = CertFileFromRegion(region)
   try:
     files.WriteFileContents(filepath, cert)
   except files.Error as e:
     log.debug('Failed to update the certificate {}: [{}]'.format(filepath, e))
 
 
-def ValidateCertificate(oslogin_state, zone):
+def ValidateCertificate(oslogin_state, region):
   """Checks if the certificate is currently valid.
 
   Args:
     oslogin_state: An OsloginState object.
-    zone: string, The zone where the SSH certificate may be used.
+    region: string, The region where the SSH certificate may be used.
   """
   def IsCertValid(cert):
     time_format = '%Y-%m-%dT%H:%M:%S'
@@ -616,13 +616,13 @@ def ValidateCertificate(oslogin_state, zone):
     now = datetime.datetime.now()
     oslogin_state.signed_ssh_key = now > start and now < end
 
-  cmd = KeygenCommand(CertFileFromZone(zone), print_cert=True)
+  cmd = KeygenCommand(CertFileFromRegion(region), print_cert=True)
   try:
     cmd.Run(out_func=IsCertValid)
   except CommandError as e:
     log.debug(
         'Cert File [{0}] could not be opened: {1}'.format(
-            CertFileFromZone(zone), e
+            CertFileFromRegion(region), e
         )
     )
 
@@ -1139,15 +1139,17 @@ def GetOsloginState(
   ]:
     user_email = quote(user_email, safe=':')
     zone = instance.zone.split('/').pop()
-    ValidateCertificate(oslogin_state, zone)
+    # Inclusively trim suffix from last '-' to convert a zone into a region.
+    region = zone[:zone.rindex('-')]
+    ValidateCertificate(oslogin_state, region)
     if not oslogin_state.signed_ssh_key:
       sign_response = oslogin.SignSshPublicKey(
           user_email,
           public_key,
           project.name,
-          zone,
+          region,
       )
-      WriteCertificate(zone, sign_response.signedSshPublicKey)
+      WriteCertificate(region, sign_response.signedSshPublicKey)
     login_profile = oslogin.GetLoginProfile(
         user_email,
         project.name,

@@ -29,8 +29,8 @@ class ActiveDirectory(_messages.Message):
   Fields:
     aesEncryption: If enabled, AES encryption will be enabled for SMB
       communication.
-    backupOperators: Users to be added to the Built-in Backup Operator active
-      directory group.
+    backupOperators: Optional. Users to be added to the Built-in Backup
+      Operator active directory group.
     createTime: Output only. Create time of the active directory.
     description: Description of the active directory.
     dns: Required. Comma separated list of DNS server IP addresses for the
@@ -53,7 +53,8 @@ class ActiveDirectory(_messages.Message):
     organizationalUnit: The Organizational Unit (OU) within the Windows Active
       Directory the user belongs to.
     password: Required. Password of the Active Directory domain administrator.
-    securityOperators: Domain users to be given the SeSecurityPrivilege.
+    securityOperators: Optional. Domain users to be given the
+      SeSecurityPrivilege.
     site: The Active Directory site the service will limit Domain Controller
       discovery too.
     state: Output only. The state of the AD.

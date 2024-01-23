@@ -2410,7 +2410,7 @@ class SpannerV1(base_api.BaseApiClient):
         method_id='spanner.projects.instances.instancePartitions.list',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['pageSize', 'pageToken'],
+        query_params=['instancePartitionDeadline', 'pageSize', 'pageToken'],
         relative_path='v1/{+parent}/instancePartitions',
         request_field='',
         request_type_name='SpannerProjectsInstancesInstancePartitionsListRequest',

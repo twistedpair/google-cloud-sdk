@@ -7417,20 +7417,26 @@ class StreamingScalingReport(_messages.Message):
   r"""Contains per-user worker telemetry used in streaming autoscaling.
 
   Fields:
-    activeBundleCount: Current acive bundle count.
+    activeBundleCount: A integer attribute.
     activeThreadCount: Current acive thread count.
-    maximumBundleCount: Maximum bundle count limit.
-    maximumBytesCount: Maximum bytes count limit.
+    maximumBundleCount: Maximum bundle count.
+    maximumBytes: Maximum bytes.
+    maximumBytesCount: A integer attribute.
     maximumThreadCount: Maximum thread count limit.
-    outstandingBytesCount: Current outstanding bytes count.
+    outstandingBundleCount: Current outstanding bundle count.
+    outstandingBytes: Current outstanding bytes.
+    outstandingBytesCount: A integer attribute.
   """
 
   activeBundleCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   activeThreadCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   maximumBundleCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  maximumBytesCount = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  maximumThreadCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  outstandingBytesCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maximumBytes = _messages.IntegerField(4)
+  maximumBytesCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  maximumThreadCount = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  outstandingBundleCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  outstandingBytes = _messages.IntegerField(8)
+  outstandingBytesCount = _messages.IntegerField(9, variant=_messages.Variant.INT32)
 
 
 class StreamingSetupTask(_messages.Message):

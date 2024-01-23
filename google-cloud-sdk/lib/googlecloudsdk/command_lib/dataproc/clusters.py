@@ -579,6 +579,15 @@ If you want to enable all scopes use the 'cloud-platform' scope.
       """,
   )
 
+  parser.add_argument(
+      '--enable-node-groups',
+      hidden=True,
+      help="""\
+      Create cluster nodes using Dataproc NodeGroups. All the required VMs will be created using GCE MIG.
+      """,
+      type=bool,
+  )
+
   autoscaling_group = parser.add_argument_group()
   flags.AddAutoscalingPolicyResourceArgForCluster(
       autoscaling_group, api_version='v1'
@@ -1086,6 +1095,11 @@ def GetClusterConfig(
     # but if --num-workers is omitted, args.num_workers is None (not 0), and
     # this property will not be set
     args.properties[constants.ALLOW_ZERO_WORKERS_PROPERTY] = 'true'
+
+  if args.enable_node_groups is not None:
+    args.properties[constants.ENABLE_NODE_GROUPS_PROPERTY] = str(
+        args.enable_node_groups
+    ).lower()
 
   if args.properties:
     software_config.properties = encoding.DictToAdditionalPropertyMessage(

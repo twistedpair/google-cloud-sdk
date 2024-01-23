@@ -348,12 +348,14 @@ def DeleteVersionTags(ver_ref, ver_args, request):
     return request
   client = _GetClientForResource(ver_ref)
   messages = _GetMessagesForResource(ver_ref)
+  escaped_pkg = ver_ref.packagesId.replace("/", "%2F").replace("+", "%2B")
+  escaped_pkg = escaped_pkg.replace("^", "%5E")
   package = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages",
       projectsId=ver_ref.projectsId,
       locationsId=ver_ref.locationsId,
       repositoriesId=ver_ref.repositoriesId,
-      packagesId=ver_ref.packagesId.replace("/", "%2F").replace("+", "%2B"))
+      packagesId=escaped_pkg)
   tag_list = ar_requests.ListTags(client, messages,
                                   package.RelativeName())
   for tag in tag_list:
@@ -392,9 +394,11 @@ def SetTagUpdateMask(tag_ref, tag_args, request):
 
 def EscapePackageName(pkg_ref, unused_args, request):
   """Escapes slashes and pluses in package name for ListVersionsRequest."""
+  escaped_pkg = pkg_ref.packagesId.replace("/", "%2F").replace("+", "%2B")
+  escaped_pkg = escaped_pkg.replace("^", "%5E")
   request.parent = "{}/packages/{}".format(
       pkg_ref.Parent().RelativeName(),
-      pkg_ref.packagesId.replace("/", "%2F").replace("+", "%2B"))
+      escaped_pkg)
   return request
 
 
@@ -424,6 +428,7 @@ def UnescapePackageName(response, unused_args):
   for ver in response:
     ver.name = os.path.basename(ver.name)
     ver.name = ver.name.replace("%2F", "/").replace("%2B", "+")
+    ver.name = ver.name.replace("%5E", "^")
     ret.append(ver)
   return ret
 
@@ -571,9 +576,10 @@ def ListFiles(args):
                                                     1).split(" ")
       project, location, repo, package = [params[i] for i in range(len(params))]
 
-  # Escape slashes and pluses in package name
+  # Escape slashes, pluses and carets in package name
   if package:
     package = package.replace("/", "%2F").replace("+", "%2B")
+    package = package.replace("^", "%5E")
 
   # Retrieve version from tag name
   if version and tag:
@@ -663,24 +669,28 @@ def ConvertBytesToMB(response, unused_args):
 
 def EscapePackageNameHook(ref, unused_args, req):
   """Escapes slashes and pluses from request names."""
+  escaped_pkg = ref.packagesId.replace("/", "%2F").replace("+", "%2B")
+  escaped_pkg = escaped_pkg.replace("^", "%5E")
   package = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages",
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
-      packagesId=ref.packagesId.replace("/", "%2F").replace("+", "%2B"))
+      packagesId=escaped_pkg)
   req.name = package.RelativeName()
   return req
 
 
 def EscapeTagNameHook(ref, unused_args, req):
   """Escapes slashes and pluses from request names."""
+  escaped_pkg = ref.packagesId.replace("/", "%2F").replace("+", "%2B")
+  escaped_pkg = escaped_pkg.replace("^", "%5E")
   tag = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages.tags",
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
-      packagesId=ref.packagesId.replace("/", "%2F").replace("+", "%2B"),
+      packagesId=escaped_pkg,
       tagsId=ref.tagsId.replace("/", "%2F").replace("+", "%2B"))
   req.name = tag.RelativeName()
   return req
@@ -688,13 +698,17 @@ def EscapeTagNameHook(ref, unused_args, req):
 
 def EscapeVersionNameHook(ref, unused_args, req):
   """Escapes slashes and pluses from request names."""
+  escaped_pkg = ref.packagesId.replace("/", "%2F").replace("+", "%2B")
+  escaped_pkg = escaped_pkg.replace("^", "%5E")
+  escaped_ver = ref.versionsId.replace("/", "%2F").replace("+", "%2B")
+  escaped_ver = escaped_ver.replace("^", "%5E")
   version = resources.REGISTRY.Create(
       "artifactregistry.projects.locations.repositories.packages.versions",
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
-      packagesId=ref.packagesId.replace("/", "%2F").replace("+", "%2B"),
-      versionsId=ref.versionsId.replace("/", "%2F").replace("+", "%2B"),
+      packagesId=escaped_pkg,
+      versionsId=escaped_ver,
   )
   req.name = version.RelativeName()
   return req
@@ -731,7 +745,7 @@ def GetRedirectionEnablementReport(project):
 
   missing_repos = []
   repo_report = []
-  report_line = []
+  # report_line = []
   con = console_attr.GetConsoleAttr()
 
   # For each gcr repo in a location that our environment supports,
@@ -889,8 +903,10 @@ def EnableUpgradeRedirection(unused_ref, args):
         "repostories.\n")
 
   update = console_io.PromptContinue(
-      "\nThis action will redirect all Container Registry traffic to Artifact Registry for project {}."
-      " After enabling redirection, you can route traffic back to Container Registry if needed."
+      "\nThis action will redirect all Container Registry traffic to Artifact "
+      "Registry for project {}."
+      " After enabling redirection, you can route traffic back to Container "
+      "Registry if needed."
       .format(project),
       default=False)
   if not update:
@@ -924,7 +940,8 @@ def DisableUpgradeRedirection(unused_ref, args):
     return None
 
   update = console_io.PromptContinue(
-      "This action will disable the redirection of Container Registry traffic to Artifact Registry for project {}"
+      "This action will disable the redirection of Container Registry traffic "
+      "to Artifact Registry for project {}"
       .format(project),
       default=False)
   if not update:

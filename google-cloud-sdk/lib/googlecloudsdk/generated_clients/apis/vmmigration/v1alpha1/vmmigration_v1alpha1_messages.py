@@ -1464,10 +1464,6 @@ class DiskImageTargetDetails(_messages.Message):
   r"""The target details of the image resource that will be created by the
   import job.
 
-  Enums:
-    LicenseTypeValueValuesEnum: Optional. Choose which type of license to
-      apply to the imported image.
-
   Messages:
     LabelsValue: Optional. A map of labels to associate with the image.
 
@@ -1480,34 +1476,15 @@ class DiskImageTargetDetails(_messages.Message):
       belongs.
     imageName: Required. The name of the image to be created.
     labels: Optional. A map of labels to associate with the image.
-    licenseType: Optional. Choose which type of license to apply to the
-      imported image.
     osAdaptationParameters: Optional. Use to set the parameters relevant for
       the OS adaptation process.
     singleRegionStorage: Optional. Set to true to set the image
       storageLocations to the single region of the import job. When false, the
       closest multi-region is selected.
-    skipOsAdaptation: Optional. Set to true if OS adaptation should be
-      skipped.
     targetProject: Required. Reference to the TargetProject resource that
       represents the target project in which the imported image will be
       created.
   """
-
-  class LicenseTypeValueValuesEnum(_messages.Enum):
-    r"""Optional. Choose which type of license to apply to the imported image.
-
-    Values:
-      COMPUTE_ENGINE_LICENSE_TYPE_DEFAULT: The license type is the default for
-        the OS.
-      COMPUTE_ENGINE_LICENSE_TYPE_PAYG: The license type is Pay As You Go
-        license type.
-      COMPUTE_ENGINE_LICENSE_TYPE_BYOL: The license type is Bring Your Own
-        License type.
-    """
-    COMPUTE_ENGINE_LICENSE_TYPE_DEFAULT = 0
-    COMPUTE_ENGINE_LICENSE_TYPE_PAYG = 1
-    COMPUTE_ENGINE_LICENSE_TYPE_BYOL = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -1540,11 +1517,9 @@ class DiskImageTargetDetails(_messages.Message):
   familyName = _messages.StringField(5)
   imageName = _messages.StringField(6)
   labels = _messages.MessageField('LabelsValue', 7)
-  licenseType = _messages.EnumField('LicenseTypeValueValuesEnum', 8)
-  osAdaptationParameters = _messages.MessageField('ImageImportOsAdaptationParameters', 9)
-  singleRegionStorage = _messages.BooleanField(10)
-  skipOsAdaptation = _messages.BooleanField(11)
-  targetProject = _messages.StringField(12)
+  osAdaptationParameters = _messages.MessageField('ImageImportOsAdaptationParameters', 8)
+  singleRegionStorage = _messages.BooleanField(9)
+  targetProject = _messages.StringField(10)
 
 
 class DisksMigrationDisksTargetDefaults(_messages.Message):

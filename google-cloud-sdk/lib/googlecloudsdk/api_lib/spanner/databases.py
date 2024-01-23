@@ -207,3 +207,14 @@ def Update(database_ref, enable_drop_protection):
       updateMask=','.join(update_mask),
   )
   return client.projects_instances_databases.Patch(req)
+
+
+def ChangeQuorum(database_ref, quorum_type, etag=None):
+  """ChangeQuorum a database."""
+  client = apis.GetClientInstance('spanner', 'v1')
+  msgs = apis.GetMessagesModule('spanner', 'v1')
+
+  req = msgs.ChangeQuorumRequest(
+      etag=etag, name=database_ref.RelativeName(), quorumType=quorum_type
+  )
+  return client.projects_instances_databases.Changequorum(req)

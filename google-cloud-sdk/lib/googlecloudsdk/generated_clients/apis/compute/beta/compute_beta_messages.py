@@ -7297,7 +7297,9 @@ class ComputeAcceleratorTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -7455,7 +7457,9 @@ class ComputeAddressesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -7736,7 +7740,9 @@ class ComputeAutoscalersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -8342,7 +8348,9 @@ class ComputeBackendServicesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -8801,7 +8809,9 @@ class ComputeDiskTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -8987,7 +8997,9 @@ class ComputeDisksAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -10241,7 +10253,9 @@ class ComputeForwardingRulesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -10552,7 +10566,9 @@ class ComputeFutureReservationsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -11466,7 +11482,9 @@ class ComputeGlobalOperationsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -11896,7 +11914,9 @@ class ComputeHealthChecksAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -13022,7 +13042,9 @@ class ComputeInstanceGroupManagersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -14004,7 +14026,9 @@ class ComputeInstanceGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -14403,7 +14427,9 @@ class ComputeInstanceTemplatesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -14706,7 +14732,9 @@ class ComputeInstancesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -16157,7 +16185,9 @@ class ComputeInstantSnapshotsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -16444,7 +16474,9 @@ class ComputeInterconnectAttachmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -17455,7 +17487,9 @@ class ComputeMachineTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -17613,7 +17647,9 @@ class ComputeNetworkAttachmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -17903,7 +17939,9 @@ class ComputeNetworkEdgeSecurityServicesAggregatedListRequest(_messages.Message)
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -18081,7 +18119,9 @@ class ComputeNetworkEndpointGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -19240,7 +19280,9 @@ class ComputeNodeGroupsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -19711,7 +19753,9 @@ class ComputeNodeTemplatesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -19969,7 +20013,9 @@ class ComputeNodeTypesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -20482,7 +20528,9 @@ class ComputePacketMirroringsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -21328,7 +21376,9 @@ class ComputePublicDelegatedPrefixesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -22182,7 +22232,9 @@ class ComputeRegionCommitmentsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -27396,7 +27448,9 @@ class ComputeReservationsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -27715,7 +27769,9 @@ class ComputeResourcePoliciesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -28005,7 +28061,9 @@ class ComputeRoutersAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -28564,7 +28622,9 @@ class ComputeSecurityPoliciesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -28941,7 +29001,9 @@ class ComputeServiceAttachmentsAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -29450,7 +29512,9 @@ class ComputeSslCertificatesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -29666,7 +29730,9 @@ class ComputeSslPoliciesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -29975,7 +30041,9 @@ class ComputeSubnetworksAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -30563,7 +30631,9 @@ class ComputeTargetHttpProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -30831,7 +30901,9 @@ class ComputeTargetHttpsProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -31213,7 +31285,9 @@ class ComputeTargetInstancesAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -31524,7 +31598,9 @@ class ComputeTargetPoolsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -32162,7 +32238,9 @@ class ComputeTargetTcpProxiesAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -32434,7 +32512,9 @@ class ComputeTargetVpnGatewaysAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -32688,7 +32768,9 @@ class ComputeUrlMapsAggregatedListRequest(_messages.Message):
     project: Name of the project scoping this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -32994,7 +33076,9 @@ class ComputeVpnGatewaysAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -33261,7 +33345,9 @@ class ComputeVpnTunnelsAggregatedListRequest(_messages.Message):
     project: Project ID for this request.
     returnPartialSuccess: Opt-in for partial success behavior which provides
       partial results in case of failure. The default value is false.
-    serviceProjectNumber: A string attribute.
+    serviceProjectNumber: The Shared VPC service project id or service project
+      number for which aggregated list request is invoked for subnetworks
+      list-usable api.
   """
 
   filter = _messages.StringField(1)
@@ -62146,6 +62232,7 @@ class Quota(_messages.Message):
       COMMITTED_NVIDIA_V100_GPUS: <no description>
       COMMITTED_T2A_CPUS: <no description>
       COMMITTED_T2D_CPUS: <no description>
+      COMMITTED_Z3_CPUS: <no description>
       CPUS: Guest CPUs
       CPUS_ALL_REGIONS: <no description>
       DISKS_TOTAL_GB: <no description>
@@ -62305,131 +62392,132 @@ class Quota(_messages.Message):
     COMMITTED_NVIDIA_V100_GPUS = 30
     COMMITTED_T2A_CPUS = 31
     COMMITTED_T2D_CPUS = 32
-    CPUS = 33
-    CPUS_ALL_REGIONS = 34
-    DISKS_TOTAL_GB = 35
-    E2_CPUS = 36
-    EXTERNAL_MANAGED_FORWARDING_RULES = 37
-    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 38
-    EXTERNAL_PROTOCOL_FORWARDING_RULES = 39
-    EXTERNAL_VPN_GATEWAYS = 40
-    FIREWALLS = 41
-    FORWARDING_RULES = 42
-    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 43
-    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 44
-    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 45
-    GLOBAL_INTERNAL_ADDRESSES = 46
-    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 47
-    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 48
-    GPUS_ALL_REGIONS = 49
-    HEALTH_CHECKS = 50
-    IMAGES = 51
-    INSTANCES = 52
-    INSTANCE_GROUPS = 53
-    INSTANCE_GROUP_MANAGERS = 54
-    INSTANCE_TEMPLATES = 55
-    INTERCONNECTS = 56
-    INTERCONNECT_ATTACHMENTS_PER_REGION = 57
-    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 58
-    INTERCONNECT_TOTAL_GBPS = 59
-    INTERNAL_ADDRESSES = 60
-    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 61
-    IN_PLACE_SNAPSHOTS = 62
-    IN_USE_ADDRESSES = 63
-    IN_USE_BACKUP_SCHEDULES = 64
-    IN_USE_SNAPSHOT_SCHEDULES = 65
-    LOCAL_SSD_TOTAL_GB = 66
-    M1_CPUS = 67
-    M2_CPUS = 68
-    M3_CPUS = 69
-    MACHINE_IMAGES = 70
-    N2A_CPUS = 71
-    N2D_CPUS = 72
-    N2_CPUS = 73
-    NETWORKS = 74
-    NETWORK_ATTACHMENTS = 75
-    NETWORK_ENDPOINT_GROUPS = 76
-    NETWORK_FIREWALL_POLICIES = 77
-    NET_LB_SECURITY_POLICIES_PER_REGION = 78
-    NET_LB_SECURITY_POLICY_RULES_PER_REGION = 79
-    NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION = 80
-    NODE_GROUPS = 81
-    NODE_TEMPLATES = 82
-    NVIDIA_A100_80GB_GPUS = 83
-    NVIDIA_A100_GPUS = 84
-    NVIDIA_K80_GPUS = 85
-    NVIDIA_L4_GPUS = 86
-    NVIDIA_P100_GPUS = 87
-    NVIDIA_P100_VWS_GPUS = 88
-    NVIDIA_P4_GPUS = 89
-    NVIDIA_P4_VWS_GPUS = 90
-    NVIDIA_T4_GPUS = 91
-    NVIDIA_T4_VWS_GPUS = 92
-    NVIDIA_V100_GPUS = 93
-    PACKET_MIRRORINGS = 94
-    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 95
-    PREEMPTIBLE_CPUS = 96
-    PREEMPTIBLE_LOCAL_SSD_GB = 97
-    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 98
-    PREEMPTIBLE_NVIDIA_A100_GPUS = 99
-    PREEMPTIBLE_NVIDIA_H100_GPUS = 100
-    PREEMPTIBLE_NVIDIA_K80_GPUS = 101
-    PREEMPTIBLE_NVIDIA_L4_GPUS = 102
-    PREEMPTIBLE_NVIDIA_P100_GPUS = 103
-    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 104
-    PREEMPTIBLE_NVIDIA_P4_GPUS = 105
-    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 106
-    PREEMPTIBLE_NVIDIA_T4_GPUS = 107
-    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 108
-    PREEMPTIBLE_NVIDIA_V100_GPUS = 109
-    PREEMPTIBLE_TPU_LITE_DEVICE_V5 = 110
-    PREEMPTIBLE_TPU_LITE_PODSLICE_V5 = 111
-    PREEMPTIBLE_TPU_PODSLICE_V4 = 112
-    PRIVATE_V6_ACCESS_SUBNETWORKS = 113
-    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 114
-    PSC_INTERNAL_LB_FORWARDING_RULES = 115
-    PUBLIC_ADVERTISED_PREFIXES = 116
-    PUBLIC_DELEGATED_PREFIXES = 117
-    REGIONAL_AUTOSCALERS = 118
-    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 119
-    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 120
-    REGIONAL_INSTANCE_GROUP_MANAGERS = 121
-    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 122
-    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 123
-    RESERVATIONS = 124
-    RESOURCE_POLICIES = 125
-    ROUTERS = 126
-    ROUTES = 127
-    SECURITY_POLICIES = 128
-    SECURITY_POLICIES_PER_REGION = 129
-    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 130
-    SECURITY_POLICY_CEVAL_RULES = 131
-    SECURITY_POLICY_RULES = 132
-    SECURITY_POLICY_RULES_PER_REGION = 133
-    SERVICE_ATTACHMENTS = 134
-    SNAPSHOTS = 135
-    SSD_TOTAL_GB = 136
-    SSL_CERTIFICATES = 137
-    STATIC_ADDRESSES = 138
-    STATIC_BYOIP_ADDRESSES = 139
-    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 140
-    SUBNETWORKS = 141
-    T2A_CPUS = 142
-    T2D_CPUS = 143
-    TARGET_HTTPS_PROXIES = 144
-    TARGET_HTTP_PROXIES = 145
-    TARGET_INSTANCES = 146
-    TARGET_POOLS = 147
-    TARGET_SSL_PROXIES = 148
-    TARGET_TCP_PROXIES = 149
-    TARGET_VPN_GATEWAYS = 150
-    TPU_LITE_DEVICE_V5 = 151
-    TPU_LITE_PODSLICE_V5 = 152
-    TPU_PODSLICE_V4 = 153
-    URL_MAPS = 154
-    VPN_GATEWAYS = 155
-    VPN_TUNNELS = 156
-    XPN_SERVICE_PROJECTS = 157
+    COMMITTED_Z3_CPUS = 33
+    CPUS = 34
+    CPUS_ALL_REGIONS = 35
+    DISKS_TOTAL_GB = 36
+    E2_CPUS = 37
+    EXTERNAL_MANAGED_FORWARDING_RULES = 38
+    EXTERNAL_NETWORK_LB_FORWARDING_RULES = 39
+    EXTERNAL_PROTOCOL_FORWARDING_RULES = 40
+    EXTERNAL_VPN_GATEWAYS = 41
+    FIREWALLS = 42
+    FORWARDING_RULES = 43
+    GLOBAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 44
+    GLOBAL_EXTERNAL_MANAGED_FORWARDING_RULES = 45
+    GLOBAL_EXTERNAL_PROXY_LB_BACKEND_SERVICES = 46
+    GLOBAL_INTERNAL_ADDRESSES = 47
+    GLOBAL_INTERNAL_MANAGED_BACKEND_SERVICES = 48
+    GLOBAL_INTERNAL_TRAFFIC_DIRECTOR_BACKEND_SERVICES = 49
+    GPUS_ALL_REGIONS = 50
+    HEALTH_CHECKS = 51
+    IMAGES = 52
+    INSTANCES = 53
+    INSTANCE_GROUPS = 54
+    INSTANCE_GROUP_MANAGERS = 55
+    INSTANCE_TEMPLATES = 56
+    INTERCONNECTS = 57
+    INTERCONNECT_ATTACHMENTS_PER_REGION = 58
+    INTERCONNECT_ATTACHMENTS_TOTAL_MBPS = 59
+    INTERCONNECT_TOTAL_GBPS = 60
+    INTERNAL_ADDRESSES = 61
+    INTERNAL_TRAFFIC_DIRECTOR_FORWARDING_RULES = 62
+    IN_PLACE_SNAPSHOTS = 63
+    IN_USE_ADDRESSES = 64
+    IN_USE_BACKUP_SCHEDULES = 65
+    IN_USE_SNAPSHOT_SCHEDULES = 66
+    LOCAL_SSD_TOTAL_GB = 67
+    M1_CPUS = 68
+    M2_CPUS = 69
+    M3_CPUS = 70
+    MACHINE_IMAGES = 71
+    N2A_CPUS = 72
+    N2D_CPUS = 73
+    N2_CPUS = 74
+    NETWORKS = 75
+    NETWORK_ATTACHMENTS = 76
+    NETWORK_ENDPOINT_GROUPS = 77
+    NETWORK_FIREWALL_POLICIES = 78
+    NET_LB_SECURITY_POLICIES_PER_REGION = 79
+    NET_LB_SECURITY_POLICY_RULES_PER_REGION = 80
+    NET_LB_SECURITY_POLICY_RULE_ATTRIBUTES_PER_REGION = 81
+    NODE_GROUPS = 82
+    NODE_TEMPLATES = 83
+    NVIDIA_A100_80GB_GPUS = 84
+    NVIDIA_A100_GPUS = 85
+    NVIDIA_K80_GPUS = 86
+    NVIDIA_L4_GPUS = 87
+    NVIDIA_P100_GPUS = 88
+    NVIDIA_P100_VWS_GPUS = 89
+    NVIDIA_P4_GPUS = 90
+    NVIDIA_P4_VWS_GPUS = 91
+    NVIDIA_T4_GPUS = 92
+    NVIDIA_T4_VWS_GPUS = 93
+    NVIDIA_V100_GPUS = 94
+    PACKET_MIRRORINGS = 95
+    PD_EXTREME_TOTAL_PROVISIONED_IOPS = 96
+    PREEMPTIBLE_CPUS = 97
+    PREEMPTIBLE_LOCAL_SSD_GB = 98
+    PREEMPTIBLE_NVIDIA_A100_80GB_GPUS = 99
+    PREEMPTIBLE_NVIDIA_A100_GPUS = 100
+    PREEMPTIBLE_NVIDIA_H100_GPUS = 101
+    PREEMPTIBLE_NVIDIA_K80_GPUS = 102
+    PREEMPTIBLE_NVIDIA_L4_GPUS = 103
+    PREEMPTIBLE_NVIDIA_P100_GPUS = 104
+    PREEMPTIBLE_NVIDIA_P100_VWS_GPUS = 105
+    PREEMPTIBLE_NVIDIA_P4_GPUS = 106
+    PREEMPTIBLE_NVIDIA_P4_VWS_GPUS = 107
+    PREEMPTIBLE_NVIDIA_T4_GPUS = 108
+    PREEMPTIBLE_NVIDIA_T4_VWS_GPUS = 109
+    PREEMPTIBLE_NVIDIA_V100_GPUS = 110
+    PREEMPTIBLE_TPU_LITE_DEVICE_V5 = 111
+    PREEMPTIBLE_TPU_LITE_PODSLICE_V5 = 112
+    PREEMPTIBLE_TPU_PODSLICE_V4 = 113
+    PRIVATE_V6_ACCESS_SUBNETWORKS = 114
+    PSC_ILB_CONSUMER_FORWARDING_RULES_PER_PRODUCER_NETWORK = 115
+    PSC_INTERNAL_LB_FORWARDING_RULES = 116
+    PUBLIC_ADVERTISED_PREFIXES = 117
+    PUBLIC_DELEGATED_PREFIXES = 118
+    REGIONAL_AUTOSCALERS = 119
+    REGIONAL_EXTERNAL_MANAGED_BACKEND_SERVICES = 120
+    REGIONAL_EXTERNAL_NETWORK_LB_BACKEND_SERVICES = 121
+    REGIONAL_INSTANCE_GROUP_MANAGERS = 122
+    REGIONAL_INTERNAL_LB_BACKEND_SERVICES = 123
+    REGIONAL_INTERNAL_MANAGED_BACKEND_SERVICES = 124
+    RESERVATIONS = 125
+    RESOURCE_POLICIES = 126
+    ROUTERS = 127
+    ROUTES = 128
+    SECURITY_POLICIES = 129
+    SECURITY_POLICIES_PER_REGION = 130
+    SECURITY_POLICY_ADVANCED_RULES_PER_REGION = 131
+    SECURITY_POLICY_CEVAL_RULES = 132
+    SECURITY_POLICY_RULES = 133
+    SECURITY_POLICY_RULES_PER_REGION = 134
+    SERVICE_ATTACHMENTS = 135
+    SNAPSHOTS = 136
+    SSD_TOTAL_GB = 137
+    SSL_CERTIFICATES = 138
+    STATIC_ADDRESSES = 139
+    STATIC_BYOIP_ADDRESSES = 140
+    STATIC_EXTERNAL_IPV6_ADDRESS_RANGES = 141
+    SUBNETWORKS = 142
+    T2A_CPUS = 143
+    T2D_CPUS = 144
+    TARGET_HTTPS_PROXIES = 145
+    TARGET_HTTP_PROXIES = 146
+    TARGET_INSTANCES = 147
+    TARGET_POOLS = 148
+    TARGET_SSL_PROXIES = 149
+    TARGET_TCP_PROXIES = 150
+    TARGET_VPN_GATEWAYS = 151
+    TPU_LITE_DEVICE_V5 = 152
+    TPU_LITE_PODSLICE_V5 = 153
+    TPU_PODSLICE_V4 = 154
+    URL_MAPS = 155
+    VPN_GATEWAYS = 156
+    VPN_TUNNELS = 157
+    XPN_SERVICE_PROJECTS = 158
 
   limit = _messages.FloatField(1)
   metric = _messages.EnumField('MetricValueValuesEnum', 2)

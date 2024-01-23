@@ -186,7 +186,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
-      `run.googleapis.com/container-dependencies`: Revision. *
+      `run.googleapis.com/container-dependencies`: Revision . *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
@@ -221,7 +221,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
-      `run.googleapis.com/container-dependencies`: Revision. *
+      `run.googleapis.com/container-dependencies`: Revision . *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
@@ -284,7 +284,7 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
     `run.googleapis.com/client-name`: All resources. *
     `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
-    `run.googleapis.com/container-dependencies`: Revision. *
+    `run.googleapis.com/container-dependencies`: Revision . *
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
     `run.googleapis.com/description`: Service. *

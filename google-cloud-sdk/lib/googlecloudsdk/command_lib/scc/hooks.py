@@ -241,3 +241,13 @@ def ProcessSimulatedResourceFile(file_contents):
     raise InvalidResourceFileError(
         "Error parsing resource file [{}]".format(ype)
     )
+
+def ProcessTFPlanFile(file_contents):
+  """Process the custom configuration file for the custom module."""
+  try:
+    config = json.loads(file_contents)
+    return json.dumps(config).encode("utf-8")
+  except json.JSONDecodeError as e:
+    raise InvalidCustomConfigFileError(
+        "Error parsing terraform plan file [{}]".format(e)
+    )

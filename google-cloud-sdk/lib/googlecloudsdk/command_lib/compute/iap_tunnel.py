@@ -336,7 +336,8 @@ def _OpenLocalTcpSockets(local_host, local_port):
         # This allows us to restart quickly on the same port. See b/213858080.
         s.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
       s.bind(sock_addr)
-      s.listen(1)
+      # Keep it large enough so it can handle burst of tunnel requests.
+      s.listen(128)
       open_sockets.append(s)
     except EnvironmentError:
       try:

@@ -133,6 +133,18 @@ class ListAncestorGroupsPermissionDeniedException(Error):
   """Permission denied exception for list ancestor groups."""
 
 
+class BatchGetServicePermissionDeniedException(Error):
+  """Permission denied exception for batch get service."""
+
+  pass
+
+
+class ListCategoryServicespermissionDeniedException(Error):
+  """Permission denied exception for list category service."""
+
+  pass
+
+
 class OperationErrorException(Error):
   """Exception for operation error."""
 

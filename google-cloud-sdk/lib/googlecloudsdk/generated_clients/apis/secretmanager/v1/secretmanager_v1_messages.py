@@ -638,9 +638,8 @@ class Secret(_messages.Message):
       (`-`) and underscore ('_') characters. An alias string must start with a
       letter and cannot be the string 'latest' or 'NEW'. No more than 50
       aliases can be assigned to a given secret. Version-Alias pairs will be
-      viewable via GetSecret and modifiable via UpdateSecret. At launch Access
-      by Allias will only be supported on GetSecretVersion and
-      AccessSecretVersion.
+      viewable via GetSecret and modifiable via UpdateSecret. Access by alias
+      is only be supported on GetSecretVersion and AccessSecretVersion.
 
   Fields:
     annotations: Optional. Custom metadata about the secret. Annotations are
@@ -680,9 +679,8 @@ class Secret(_messages.Message):
       and underscore ('_') characters. An alias string must start with a
       letter and cannot be the string 'latest' or 'NEW'. No more than 50
       aliases can be assigned to a given secret. Version-Alias pairs will be
-      viewable via GetSecret and modifiable via UpdateSecret. At launch Access
-      by Allias will only be supported on GetSecretVersion and
-      AccessSecretVersion.
+      viewable via GetSecret and modifiable via UpdateSecret. Access by alias
+      is only be supported on GetSecretVersion and AccessSecretVersion.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -755,8 +753,8 @@ class Secret(_messages.Message):
     underscore ('_') characters. An alias string must start with a letter and
     cannot be the string 'latest' or 'NEW'. No more than 50 aliases can be
     assigned to a given secret. Version-Alias pairs will be viewable via
-    GetSecret and modifiable via UpdateSecret. At launch Access by Allias will
-    only be supported on GetSecretVersion and AccessSecretVersion.
+    GetSecret and modifiable via UpdateSecret. Access by alias is only be
+    supported on GetSecretVersion and AccessSecretVersion.
 
     Messages:
       AdditionalProperty: An additional property for a VersionAliasesValue

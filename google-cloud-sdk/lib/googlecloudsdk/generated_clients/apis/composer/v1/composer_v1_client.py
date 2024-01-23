@@ -39,11 +39,49 @@ class ComposerV1(base_api.BaseApiClient):
         default_global_params=default_global_params,
         additional_http_headers=additional_http_headers,
         response_encoding=response_encoding)
+    self.projects_locations_environments_workloads = self.ProjectsLocationsEnvironmentsWorkloadsService(self)
     self.projects_locations_environments = self.ProjectsLocationsEnvironmentsService(self)
     self.projects_locations_imageVersions = self.ProjectsLocationsImageVersionsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
+
+  class ProjectsLocationsEnvironmentsWorkloadsService(base_api.BaseApiService):
+    """Service class for the projects_locations_environments_workloads resource."""
+
+    _NAME = 'projects_locations_environments_workloads'
+
+    def __init__(self, client):
+      super(ComposerV1.ProjectsLocationsEnvironmentsWorkloadsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def List(self, request, global_params=None):
+      r"""Lists workloads in a Cloud Composer environment. Workload is a unit that runs a single Composer component. This method is supported for Cloud Composer environments in versions composer-3.*.*-airflow-*.*.* and newer.
+
+      Args:
+        request: (ComposerProjectsLocationsEnvironmentsWorkloadsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListWorkloadsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/environments/{environmentsId}/workloads',
+        http_method='GET',
+        method_id='composer.projects.locations.environments.workloads.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/workloads',
+        request_field='',
+        request_type_name='ComposerProjectsLocationsEnvironmentsWorkloadsListRequest',
+        response_type_name='ListWorkloadsResponse',
+        supports_download=False,
+    )
 
   class ProjectsLocationsEnvironmentsService(base_api.BaseApiService):
     """Service class for the projects_locations_environments resource."""

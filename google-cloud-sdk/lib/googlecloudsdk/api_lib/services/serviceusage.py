@@ -41,7 +41,7 @@ _REVERSE_CLOSURE = '/reverseClosure'
 _CONSUMER_SERVICE_RESOURCE = '%s/services/%s'
 _CONSUMER_POLICY_DEFAULT = '/consumerPolicies/%s'
 _EFFECTIVE_POLICY = '/effectivePolicy'
-_GOOGLE_GROUP_RESOURCE = 'groups/googleServices'
+_GOOGLE_CATEGORY_RESOURCE = 'categories/google'
 _LIMIT_OVERRIDE_RESOURCE = '%s/consumerOverrides/%s'
 _VALID_CONSUMER_PREFIX = frozenset({'projects/', 'folders/', 'organizations/'})
 _V1_VERSION = 'v1'
@@ -88,39 +88,6 @@ def GetConsumerPolicyV2Alpha(policy_name):
     The consumer policy
   """
   client = _GetClientInstance('v2alpha')
-  messages = client.MESSAGES_MODULE
-
-  request = messages.ServiceusageConsumerPoliciesGetRequest(name=policy_name)
-
-  try:
-    return client.consumerPolicies.Get(request)
-  except (
-      apitools_exceptions.HttpForbiddenError,
-      apitools_exceptions.HttpNotFoundError,
-  ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.GetConsumerPolicyPermissionDeniedException
-    )
-
-
-# TODO(b/309115642) Remove after the migration is completed.
-def GetConsumerPolicyV2(policy_name):
-  """Make API call to get a consumer policy.
-
-  Args:
-    policy_name: The name of a consumer policy. Currently supported format
-      '{resource_type}/{resource_name}/consumerPolicies/default'. For example,
-      'projects/100/consumerPolicies/default'.
-
-  Raises:
-    exceptions.GetConsumerPolicyPermissionDeniedException: when getting a
-      consumer policy fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    The consumer policy
-  """
-  client = _GetClientInstance('v2')
   messages = client.MESSAGES_MODULE
 
   request = messages.ServiceusageConsumerPoliciesGetRequest(name=policy_name)
@@ -247,117 +214,84 @@ def GetEffectivePolicyV2(name):
     )
 
 
-def FetchValueInfo(resource, values):
-  """Make API call to fetch value info for the services.
+def BatchGetService(parent, services):
+  """Make API call to get service state for multiple services .
 
   Args:
-    resource: The target resource.
-    values: The name of the value to get metadata. A single request can get a
-      maximum of 20 services at a time. If more than 20 services are specified,
-      the request will fail.
+    parent: Parent resource to get service state for. format-"projects/100",
+      "folders/101" or "organizations/102".
+    services: Services. Current supported value:(format:
+      "{resource}/{resource_Id}/services/{service}").
 
   Raises:
-    exceptions.FetchValueInfoPermissionDeniedException: when
-      fetching  value info fails.
+    exceptions.BatchGetServicePermissionDeniedException: when getting batch
+      service state for services in the resource.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-    Value Info for the specificed values.
+    Service state of the given resource.
   """
-  client = _GetClientInstance('v2')
+  client = _GetClientInstance('v2alpha')
   messages = client.MESSAGES_MODULE
 
-  request = messages.ServiceusageFetchValueInfoRequest(
-      fetchValueInfoRequest=messages.FetchValueInfoRequest(values=values),
-      name=resource,
+  request = messages.ServiceusageServicesBatchGetRequest(
+      parent=parent,
+      services=services,
+      view=messages.ServiceusageServicesBatchGetRequest.ViewValueValuesEnum.SERVICE_STATE_VIEW_FULL,
   )
 
   try:
-    return client.v2.FetchValueInfo(request)
+    return client.services.BatchGet(request)
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
     exceptions.ReraiseError(
-        e, exceptions.FetchValueInfoPermissionDeniedException
+        e, exceptions.BatchGetServicePermissionDeniedException
     )
 
 
-def FetchPublicValueInfo(values):
-  """Make API call to fetch public value info for the services.
+def ListCategoryServices(resource, category, page_size=200, limit=sys.maxsize):
+  """Make API call to list category services .
 
   Args:
-    values: The name of the value to get metadata. A single request can get a
-      maximum of 20 services at a time. If more than 20 services are specified,
-      the request will fail.
+    resource: resource to get list for. format-"projects/100", "folders/101" or
+      "organizations/102".
+    category: category to get list for. format-"catgeory/<category>".
+    page_size: The page size to list.default=200
+    limit: The max number of services to display.
 
   Raises:
-    exceptions.FetchPublicValueInfoPermissionDeniedException: when
-      fetching public value info fails.
+    exceptions.ListCategoryServicespermissionDeniedException: when listing the
+    services the parent category includes.
     apitools_exceptions.HttpError: Another miscellaneous error with the service.
 
   Returns:
-   Public Value Info for the specificed values.
+    The services the parent category includes.
   """
-  client = _GetClientInstance('v2')
+  client = _GetClientInstance('v2alpha')
   messages = client.MESSAGES_MODULE
 
-  request = messages.FetchPublicValueInfoRequest(
-      values=values,
+  request = messages.ServiceusageCategoriesCategoryServicesListRequest(
+      parent='{}/{}'.format(resource, category),
   )
 
   try:
-    return client.publicValueInfo.Fetch(request)
+    return list_pager.YieldFromList(
+        _Lister(client.categories_categoryServices),
+        request,
+        limit=limit,
+        batch_size_attribute='pageSize',
+        batch_size=page_size,
+        field='services',
+    )
   except (
       apitools_exceptions.HttpForbiddenError,
       apitools_exceptions.HttpNotFoundError,
   ) as e:
     exceptions.ReraiseError(
-        e, exceptions.FetchPublicValueInfoPermissionDeniedException
+        e, exceptions.ListCategoryServicespermissionDeniedException
     )
-
-
-# TODO(b/309115642) Remove after the migration is completed.
-def UpdateConsumerPolicyV2(consumerpolicy, name, force=False):
-  """Make API call to update a consumer policy.
-
-  Args:
-    consumerpolicy: The consumer policy to update.
-    name: The resource name of the policy. Currently supported format
-      '{resource_type}/{resource_name}/consumerPolicies/default. For example,
-      'projects/100/consumerPolicies/default'.
-    force: Disable service with usage within last 30 days or disable recently
-      enabled service.
-
-  Raises:
-    exceptions.UpdateConsumerPolicyPermissionDeniedException: when updating a
-      consumer policy fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    Updated consumer policy
-  """
-  client = _GetClientInstance('v2')
-  messages = client.MESSAGES_MODULE
-
-  request = messages.ServiceusageUpdateConsumerPolicyRequest(
-      consumerPolicy=consumerpolicy, name=name, force=force
-  )
-
-  try:
-    return client.v2.UpdateConsumerPolicy(request)
-  except (
-      apitools_exceptions.HttpForbiddenError,
-      apitools_exceptions.HttpNotFoundError,
-  ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.UpdateConsumerPolicyPermissionDeniedException
-    )
-  except apitools_exceptions.HttpBadRequestError as e:
-    log.status.Print(
-        'Provide the --force flag if you wish to force disable services.'
-    )
-    exceptions.ReraiseError(e, exceptions.Error)
 
 
 def UpdateConsumerPolicyV2Alpha(consumerpolicy, name, force=False):
@@ -402,39 +336,6 @@ def UpdateConsumerPolicyV2Alpha(consumerpolicy, name, force=False):
         'Provide the --force flag if you wish to force disable services.'
     )
     exceptions.ReraiseError(e, exceptions.Error)
-
-
-def GetReverseClosure(resource, service):
-  """Make API call to get reverse dependency of a specific service.
-
-  Args:
-    resource: The target resource.
-    service: The identifier of the service to get reversed depenedency of.
-
-  Raises:
-    exceptions.GetReverseDependencyClosurePermissionDeniedException: when
-      getting a reverse dependency closure for resource and service fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    Reverse dependency closure
-  """
-  client = _GetClientInstance('v2')
-  messages = client.MESSAGES_MODULE
-
-  request = messages.ServiceusageServicesGetReverseClosureRequest(
-      name=resource + '/' + _SERVICE_RESOURCE % service + _REVERSE_CLOSURE
-  )
-
-  try:
-    return client.services.GetReverseClosure(request)
-  except (
-      apitools_exceptions.HttpForbiddenError,
-      apitools_exceptions.HttpNotFoundError,
-  ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.GetReverseDependencyClosurePermissionDeniedException
-    )
 
 
 # TODO(b/309115642) Remove after the migration is completed.
@@ -725,21 +626,24 @@ def RemoveEnableRule(
   policy_name = resource_name + _CONSUMER_POLICY_DEFAULT % consumer_policy_name
 
   try:
-    current_policy = GetConsumerPolicyV2(policy_name)
+    current_policy = GetConsumerPolicyV2Alpha(policy_name)
 
-    reverse_closure = GetReverseClosure(resource_name, service)
+    ancestor_groups = ListAncestorGroups(
+        resource_name, _SERVICE_RESOURCE % service
+    )
 
     if not force:
       enabled = set()
 
       for enable_rule in current_policy.enableRules:
-        enabled.update(enable_rule.values)
+        enabled.update(enable_rule.services)
 
       enabled_dependents = set()
 
-      for value in reverse_closure.values:
-        if value in enabled:
-          enabled_dependents.add(value)
+      for ancestor_group in ancestor_groups:
+        service_name = '/'.join(str.split(ancestor_group.groupName, '/')[:2])
+        if service_name in enabled:
+          enabled_dependents.add(service_name)
 
       if enabled_dependents:
         enabled_dependents = ','.join(enabled_dependents)
@@ -752,21 +656,22 @@ def RemoveEnableRule(
             ' services.'
         )
 
-    to_remove = {reverse_closure.service}
-    to_remove.update(reverse_closure.values)
+    to_remove = {_SERVICE_RESOURCE % service}
+    for ancestor_group in ancestor_groups:
+      to_remove.add('/'.join(str.split(ancestor_group.groupName, '/')[:2]))
 
     updated_consumer_poicy = copy.deepcopy(current_policy)
     updated_consumer_poicy.enableRules.clear()
 
     for enable_rule in current_policy.enableRules:
       rule = copy.deepcopy(enable_rule)
-      for value in enable_rule.values:
-        if value in to_remove:
-          rule.values.remove(value)
-      if rule.values:
+      for service_name in enable_rule.services:
+        if service_name in to_remove:
+          rule.services.remove(service_name)
+      if rule.services:
         updated_consumer_poicy.enableRules.append(rule)
 
-    return UpdateConsumerPolicyV2(
+    return UpdateConsumerPolicyV2Alpha(
         updated_consumer_poicy, policy_name, force=force
     )
   except (
@@ -927,7 +832,7 @@ class _Lister:
     return self.service_usage.List(request, global_params=global_params)
 
 
-def ListServicesV2(
+def ListServicesV2Alpha(
     project,
     enabled,
     page_size,
@@ -961,43 +866,37 @@ def ListServicesV2(
     resource_name = _ORGANIZATION_RESOURCE % organization
 
   services = {}
+  parent = []
   try:
     if enabled:
       policy_name = resource_name + _EFFECTIVE_POLICY
-      consumerpolicy = GetEffectivePolicyV2(policy_name).consumerPolicy
+      effectivepolicy = GetEffectivePolicyV2Alpha(policy_name)
 
-      for rules in consumerpolicy.enableRules:
-        for value in rules.values:
+      for rules in effectivepolicy.enableRules:
+        for value in rules.services:
           if limit == 0:
             break
+          parent.append(f'{resource_name}/{value}')
           services[value] = ''
           limit -= 1
 
-      service_list = list(services.keys())
-      for value in range(0, len(service_list), 20):
-        response = FetchValueInfo(
-            resource_name, values=service_list[value : value + 20]
-        )
-        for value_info in response.valueInfos:
-          services[value_info.serviceValue.name] = value_info.title
+      for value in range(0, len(parent), 20):
+        response = BatchGetService(resource_name, parent[value : value + 20])
+        for service_state in response.services:
+          service_name = '/'.join(service_state.name.split('/')[2:])
+          services[service_name] = service_state.service.displayName
 
     else:
-      for members_info in ListGroupMembers(
-          resource_name, _GOOGLE_GROUP_RESOURCE, page_size, limit
+      for category_service in ListCategoryServices(
+          resource_name, _GOOGLE_CATEGORY_RESOURCE, page_size, limit
       ):
-        services[members_info.name] = ''
-
-      service_list = list(services.keys())
-      # TODO(b/274633761)Switch to FetchValueInfo once the IAM permission manual
-      # check issue is fixed and test it.
-      for value in range(0, len(service_list), 20):
-        response = FetchPublicValueInfo(values=service_list[value : value + 20])
-        for value_info in response.valueInfos:
-          services[value_info.serviceValue.name] = value_info.title
+        services[category_service.service.name] = (
+            category_service.service.displayName
+        )
 
     result = []
     service_info = collections.namedtuple('ServiceList', ['name', 'title'])
-    for service in service_list:
+    for service in services:
       result.append(service_info(name=service, title=services[service]))
 
     return result

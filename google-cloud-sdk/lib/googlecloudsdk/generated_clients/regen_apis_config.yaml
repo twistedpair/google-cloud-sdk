@@ -1252,6 +1252,9 @@ apis:
     v1alpha:
       discovery_doc: securityposture_v1alpha.json
       default: false
+      resources:
+        organizations.locations.reports:
+          path: organizations/{organizationsId}/locations/{locationsId}/reports
     v1:
       discovery_doc: securityposture_v1.json
       default: true

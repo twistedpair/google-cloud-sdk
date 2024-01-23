@@ -369,8 +369,8 @@ class NetworkEndpointGroupsClient(object):
         message_endpoint.port = arg_endpoint.get('port')
       if 'fqdn' in arg_endpoint:
         message_endpoint.fqdn = arg_endpoint.get('fqdn')
-      if 'client_port' in arg_endpoint:
-        message_endpoint.clientPort = arg_endpoint.get('client_port')
+      if 'client-port' in arg_endpoint:
+        message_endpoint.clientPort = arg_endpoint.get('client-port')
       output_list.append(message_endpoint)
 
     return output_list

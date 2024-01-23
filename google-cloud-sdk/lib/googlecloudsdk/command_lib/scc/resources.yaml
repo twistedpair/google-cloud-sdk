@@ -110,7 +110,7 @@ security_posture_org:
     parameter_name: organizationsId
     attribute_name: organization
     help: |
-      The organization Id.
+      ID of the organization which is the parent of the resource.
 
 security_posture_location:
   name: location
@@ -121,7 +121,7 @@ security_posture_location:
     parameter_name: locationsId
     attribute_name: location
     help: |
-      The location Id.
+      ID of the location where the resource exists (for example, global).
 
 posture:
   name: posture
@@ -131,6 +131,20 @@ posture:
   - *security_posture_org
   - *security_posture_location
   - &posture
+    parameter_name: posturesId
+    attribute_name: posture
+    help: Security Posture resource
+  disable_auto_completers: false
+
+# Posture resource spec, to be used for ExtractPostures API, which has a different request_id_field.
+posture_for_extract:
+  name: posture
+  collection: securityposture.organizations.locations.postures
+  request_id_field: extractPostureRequest.postureId
+  attributes:
+  - *security_posture_org
+  - *security_posture_location
+  - &posture_for_extract
     parameter_name: posturesId
     attribute_name: posture
     help: Security Posture resource

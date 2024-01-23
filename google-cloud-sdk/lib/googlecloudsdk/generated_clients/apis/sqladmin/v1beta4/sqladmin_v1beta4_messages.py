@@ -1087,8 +1087,10 @@ class DatabaseInstance(_messages.Message):
 
     Values:
       SQL_NETWORK_ARCHITECTURE_UNSPECIFIED: <no description>
-      NEW_NETWORK_ARCHITECTURE: Instance is a Tenancy Unit (TU) instance.
-      OLD_NETWORK_ARCHITECTURE: Instance is an Umbrella instance.
+      NEW_NETWORK_ARCHITECTURE: The instance uses the new network
+        architecture.
+      OLD_NETWORK_ARCHITECTURE: The instance uses the old network
+        architecture.
     """
     SQL_NETWORK_ARCHITECTURE_UNSPECIFIED = 0
     NEW_NETWORK_ARCHITECTURE = 1
@@ -1474,7 +1476,7 @@ class ExportContext(_messages.Message):
       tables: Tables to export, or that were exported, from the specified
         database. If you specify tables, specify one and only one database.
         For PostgreSQL instances, you can specify only one table.
-      threads: The number of threads to use for parallel export.
+      threads: Optional. The number of threads to use for parallel export.
     """
 
     class MysqlExportOptionsValue(_messages.Message):
@@ -1882,7 +1884,7 @@ class ImportContext(_messages.Message):
 
     Fields:
       parallel: Optional. Whether or not the import should be parallel.
-      threads: The number of threads to use for parallel import.
+      threads: Optional. The number of threads to use for parallel import.
     """
 
     parallel = _messages.BooleanField(1)

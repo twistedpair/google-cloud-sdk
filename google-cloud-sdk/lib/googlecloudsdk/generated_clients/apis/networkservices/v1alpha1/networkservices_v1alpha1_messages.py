@@ -3483,7 +3483,8 @@ class MetadataLabelMatcher(_messages.Message):
       label connects, the config from P2 will be selected. If a client with
       label connects, the config from P3 will be selected. If there is more
       than one best match, (for example, if a config P4 with selector exists
-      and if a client with label connects), an error will be thrown.
+      and if a client with label connects), pick up the one with older
+      creation time.
 
   Fields:
     metadataLabelMatchCriteria: Specifies how matching should be done.
@@ -3498,7 +3499,7 @@ class MetadataLabelMatcher(_messages.Message):
       the config from P2 will be selected. If a client with label connects,
       the config from P3 will be selected. If there is more than one best
       match, (for example, if a config P4 with selector exists and if a client
-      with label connects), an error will be thrown.
+      with label connects), pick up the one with older creation time.
     metadataLabels: The list of label value pairs that must match labels in
       the provided metadata based on filterMatchCriteria This list can have at
       most 64 entries. The list can be empty if the match criteria is
@@ -3517,7 +3518,8 @@ class MetadataLabelMatcher(_messages.Message):
     client with label connects, the config from P2 will be selected. If a
     client with label connects, the config from P3 will be selected. If there
     is more than one best match, (for example, if a config P4 with selector
-    exists and if a client with label connects), an error will be thrown.
+    exists and if a client with label connects), pick up the one with older
+    creation time.
 
     Values:
       METADATA_LABEL_MATCH_CRITERIA_UNSPECIFIED: Default value. Should not be

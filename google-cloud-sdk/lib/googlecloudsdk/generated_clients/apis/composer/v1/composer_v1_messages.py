@@ -374,6 +374,29 @@ class ComposerProjectsLocationsEnvironmentsStopAirflowCommandRequest(_messages.M
   stopAirflowCommandRequest = _messages.MessageField('StopAirflowCommandRequest', 2)
 
 
+class ComposerProjectsLocationsEnvironmentsWorkloadsListRequest(_messages.Message):
+  r"""A ComposerProjectsLocationsEnvironmentsWorkloadsListRequest object.
+
+  Fields:
+    filter: Optional. The list filter. Currently only supports equality on the
+      type field. The value of a field specified in the filter expression must
+      be one ComposerWorkloadType enum option. It's possible to get multiple
+      types using "OR" operator, e.g.: "type=SCHEDULER OR type=CELERY_WORKER".
+      If not specified, all items are returned.
+    pageSize: Optional. The maximum number of environments to return.
+    pageToken: Optional. The next_page_token value returned from a previous
+      List request, if any.
+    parent: Required. The environment name to get workloads for, in the form:
+      "projects/{projectId}/locations/{locationId}/environments/{environmentId
+      }"
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class ComposerProjectsLocationsImageVersionsListRequest(_messages.Message):
   r"""A ComposerProjectsLocationsImageVersionsListRequest object.
 
@@ -427,6 +450,106 @@ class ComposerProjectsLocationsOperationsListRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
   pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   pageToken = _messages.StringField(4)
+
+
+class ComposerWorkload(_messages.Message):
+  r"""Information about a single workload.
+
+  Enums:
+    TypeValueValuesEnum: Type of a workload.
+
+  Fields:
+    name: Name of a workload.
+    status: Output only. Status of a workload.
+    type: Type of a workload.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Type of a workload.
+
+    Values:
+      COMPOSER_WORKLOAD_TYPE_UNSPECIFIED: Not able to determine the type of
+        the workload.
+      CELERY_WORKER: Celery worker.
+      KUBERNETES_WORKER: Kubernetes worker.
+      KUBERNETES_OPERATOR_POD: Workload created by Kubernetes Pod Operator.
+      SCHEDULER: Airflow scheduler.
+      DAG_PROCESSOR: Airflow Dag processor.
+      TRIGGERER: Airflow triggerer.
+      WEB_SERVER: Airflow web server UI.
+      REDIS: Redis.
+    """
+    COMPOSER_WORKLOAD_TYPE_UNSPECIFIED = 0
+    CELERY_WORKER = 1
+    KUBERNETES_WORKER = 2
+    KUBERNETES_OPERATOR_POD = 3
+    SCHEDULER = 4
+    DAG_PROCESSOR = 5
+    TRIGGERER = 6
+    WEB_SERVER = 7
+    REDIS = 8
+
+  name = _messages.StringField(1)
+  status = _messages.MessageField('ComposerWorkloadStatus', 2)
+  type = _messages.EnumField('TypeValueValuesEnum', 3)
+
+
+class ComposerWorkloadStatus(_messages.Message):
+  r"""Workload status.
+
+  Enums:
+    StateValueValuesEnum: Output only. Workload state.
+
+  Fields:
+    detailedStatusMessage: Output only. Detailed message of the status.
+    state: Output only. Workload state.
+    statusMessage: Output only. Text to provide more descriptive status.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Workload state.
+
+    Values:
+      COMPOSER_WORKLOAD_STATE_UNSPECIFIED: Not able to determine the status of
+        the workload.
+      PENDING: Workload is in pending state and has not yet started.
+      OK: Workload is running fine.
+      WARNING: Workload is running but there are some non-critical problems.
+      ERROR: Workload is not running due to an error.
+      SUCCEEDED: Workload has finished execution with success.
+      FAILED: Workload has finished execution with failure.
+    """
+    COMPOSER_WORKLOAD_STATE_UNSPECIFIED = 0
+    PENDING = 1
+    OK = 2
+    WARNING = 3
+    ERROR = 4
+    SUCCEEDED = 5
+    FAILED = 6
+
+  detailedStatusMessage = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  statusMessage = _messages.StringField(3)
+
+
+class DagProcessorResource(_messages.Message):
+  r"""Configuration for resources used by Airflow DAG processors.
+
+  Fields:
+    count: Optional. The number of DAG processors. If not provided or set to
+      0, a single DAG processor instance will be created.
+    cpu: Optional. CPU request and limit for a single Airflow DAG processor
+      replica.
+    memoryGb: Optional. Memory (GB) request and limit for a single Airflow DAG
+      processor replica.
+    storageGb: Optional. Storage (GB) request and limit for a single Airflow
+      DAG processor replica.
+  """
+
+  count = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  cpu = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  memoryGb = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
+  storageGb = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
 
 
 class DataRetentionConfig(_messages.Message):
@@ -934,6 +1057,19 @@ class ListOperationsResponse(_messages.Message):
   operations = _messages.MessageField('Operation', 2, repeated=True)
 
 
+class ListWorkloadsResponse(_messages.Message):
+  r"""Response to ListWorkloadsRequest.
+
+  Fields:
+    nextPageToken: The page token used to query for the next page if one
+      exists.
+    workloads: The list of environment workloads.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  workloads = _messages.MessageField('ComposerWorkload', 2, repeated=True)
+
+
 class LoadSnapshotRequest(_messages.Message):
   r"""Request to load a snapshot into a Cloud Composer environment.
 
@@ -1043,6 +1179,24 @@ class NodeConfig(_messages.Message):
   the Apache Airflow software.
 
   Fields:
+    composerInternalIpv4CidrBlock: Optional. The IP range in CIDR notation to
+      use internally by Cloud Composer. IP addresses are not reserved - and
+      the same range can be used by multiple Cloud Composer environments. In
+      case of overlap, IPs from this range will not be accessible in the
+      user's VPC network. Cannot be updated. If not specified, the default
+      value of '100.64.128.0/20' is used. This field is supported for Cloud
+      Composer environments in versions composer-3.*.*-airflow-*.*.* and
+      newer.
+    composerNetworkAttachment: Optional. Network Attachment that Cloud
+      Composer environment is connected to, which provides connectivity with a
+      user's VPC network. Takes precedence over network and subnetwork
+      settings. If not provided, but network and subnetwork are defined during
+      environment, it will be provisioned. If not provided and network and
+      subnetwork are also empty, then connectivity to user's VPC network is
+      disabled. Network attachment must be provided in format projects/{projec
+      t}/regions/{region}/networkAttachments/{networkAttachment}. This field
+      is supported for Cloud Composer environments in versions
+      composer-3.*.*-airflow-*.*.* and newer.
     diskSizeGb: Optional. The disk size in GB used for node VMs. Minimum size
       is 30GB. If unspecified, defaults to 100GB. Cannot be updated. This
       field is supported for Cloud Composer environments in versions
@@ -1115,16 +1269,18 @@ class NodeConfig(_messages.Message):
       [RFC1035](https://www.ietf.org/rfc/rfc1035.txt). Cannot be updated.
   """
 
-  diskSizeGb = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  enableIpMasqAgent = _messages.BooleanField(2)
-  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 3)
-  location = _messages.StringField(4)
-  machineType = _messages.StringField(5)
-  network = _messages.StringField(6)
-  oauthScopes = _messages.StringField(7, repeated=True)
-  serviceAccount = _messages.StringField(8)
-  subnetwork = _messages.StringField(9)
-  tags = _messages.StringField(10, repeated=True)
+  composerInternalIpv4CidrBlock = _messages.StringField(1)
+  composerNetworkAttachment = _messages.StringField(2)
+  diskSizeGb = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  enableIpMasqAgent = _messages.BooleanField(4)
+  ipAllocationPolicy = _messages.MessageField('IPAllocationPolicy', 5)
+  location = _messages.StringField(6)
+  machineType = _messages.StringField(7)
+  network = _messages.StringField(8)
+  oauthScopes = _messages.StringField(9, repeated=True)
+  serviceAccount = _messages.StringField(10)
+  subnetwork = _messages.StringField(11)
+  tags = _messages.StringField(12, repeated=True)
 
 
 class Operation(_messages.Message):
@@ -1380,6 +1536,14 @@ class PrivateEnvironmentConfig(_messages.Message):
     cloudSqlIpv4CidrBlock: Optional. The CIDR block from which IP range in
       tenant project will be reserved for Cloud SQL. Needs to be disjoint from
       `web_server_ipv4_cidr_block`.
+    enablePrivateBuildsOnly: Optional. If `true`, builds performed during
+      operations that install Python packages have only private connectivity
+      to Google services (including Artifact Registry) and VPC network (if
+      either `NodeConfig.network` and `NodeConfig.subnetwork` fields or
+      `NodeConfig.composer_network_attachment` field are specified). If
+      `false`, the builds also have access to the internet. This field is
+      supported for Cloud Composer environments in versions
+      composer-3.*.*-airflow-*.*.* and newer.
     enablePrivateEnvironment: Optional. If `true`, a Private IP Cloud Composer
       environment is created. If this field is set to true,
       `IPAllocationPolicy.use_ip_aliases` must be set to true for Cloud
@@ -1406,12 +1570,13 @@ class PrivateEnvironmentConfig(_messages.Message):
   cloudComposerNetworkIpv4CidrBlock = _messages.StringField(2)
   cloudComposerNetworkIpv4ReservedRange = _messages.StringField(3)
   cloudSqlIpv4CidrBlock = _messages.StringField(4)
-  enablePrivateEnvironment = _messages.BooleanField(5)
-  enablePrivatelyUsedPublicIps = _messages.BooleanField(6)
-  networkingConfig = _messages.MessageField('NetworkingConfig', 7)
-  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 8)
-  webServerIpv4CidrBlock = _messages.StringField(9)
-  webServerIpv4ReservedRange = _messages.StringField(10)
+  enablePrivateBuildsOnly = _messages.BooleanField(5)
+  enablePrivateEnvironment = _messages.BooleanField(6)
+  enablePrivatelyUsedPublicIps = _messages.BooleanField(7)
+  networkingConfig = _messages.MessageField('NetworkingConfig', 8)
+  privateClusterConfig = _messages.MessageField('PrivateClusterConfig', 9)
+  webServerIpv4CidrBlock = _messages.StringField(10)
+  webServerIpv4ReservedRange = _messages.StringField(11)
 
 
 class RecoveryConfig(_messages.Message):
@@ -1491,6 +1656,12 @@ class SchedulerResource(_messages.Message):
 class SoftwareConfig(_messages.Message):
   r"""Specifies the selection and configuration of software inside the
   environment.
+
+  Enums:
+    WebServerPluginsModeValueValuesEnum: Optional. Whether or not the web
+      server uses custom plugins. If unspecified, the field defaults to
+      `PLUGINS_ENABLED`. This field is supported for Cloud Composer
+      environments in versions composer-3.*.*-airflow-*.*.* and newer.
 
   Messages:
     AirflowConfigOverridesValue: Optional. Apache Airflow configuration
@@ -1583,7 +1754,26 @@ class SoftwareConfig(_messages.Message):
     schedulerCount: Optional. The number of schedulers for Airflow. This field
       is supported for Cloud Composer environments in versions
       composer-1.*.*-airflow-2.*.*.
+    webServerPluginsMode: Optional. Whether or not the web server uses custom
+      plugins. If unspecified, the field defaults to `PLUGINS_ENABLED`. This
+      field is supported for Cloud Composer environments in versions
+      composer-3.*.*-airflow-*.*.* and newer.
   """
+
+  class WebServerPluginsModeValueValuesEnum(_messages.Enum):
+    r"""Optional. Whether or not the web server uses custom plugins. If
+    unspecified, the field defaults to `PLUGINS_ENABLED`. This field is
+    supported for Cloud Composer environments in versions
+    composer-3.*.*-airflow-*.*.* and newer.
+
+    Values:
+      WEB_SERVER_PLUGINS_MODE_UNSPECIFIED: Default mode.
+      PLUGINS_DISABLED: Web server plugins are not supported.
+      PLUGINS_ENABLED: Web server plugins are supported.
+    """
+    WEB_SERVER_PLUGINS_MODE_UNSPECIFIED = 0
+    PLUGINS_DISABLED = 1
+    PLUGINS_ENABLED = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class AirflowConfigOverridesValue(_messages.Message):
@@ -1693,6 +1883,7 @@ class SoftwareConfig(_messages.Message):
   pypiPackages = _messages.MessageField('PypiPackagesValue', 5)
   pythonVersion = _messages.StringField(6)
   schedulerCount = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  webServerPluginsMode = _messages.EnumField('WebServerPluginsModeValueValuesEnum', 8)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -1965,16 +2156,20 @@ class WorkloadsConfig(_messages.Message):
   versions composer-2.*.*-airflow-*.*.* and newer.
 
   Fields:
+    dagProcessor: Optional. Resources used by Airflow DAG processors. This
+      field is supported for Cloud Composer environments in versions
+      composer-3.*.*-airflow-*.*.* and newer.
     scheduler: Optional. Resources used by Airflow schedulers.
     triggerer: Optional. Resources used by Airflow triggerers.
     webServer: Optional. Resources used by Airflow web server.
     worker: Optional. Resources used by Airflow workers.
   """
 
-  scheduler = _messages.MessageField('SchedulerResource', 1)
-  triggerer = _messages.MessageField('TriggererResource', 2)
-  webServer = _messages.MessageField('WebServerResource', 3)
-  worker = _messages.MessageField('WorkerResource', 4)
+  dagProcessor = _messages.MessageField('DagProcessorResource', 1)
+  scheduler = _messages.MessageField('SchedulerResource', 2)
+  triggerer = _messages.MessageField('TriggererResource', 3)
+  webServer = _messages.MessageField('WebServerResource', 4)
+  worker = _messages.MessageField('WorkerResource', 5)
 
 
 encoding.AddCustomJsonFieldMapping(

@@ -2860,6 +2860,24 @@ class Pod(_messages.Message):
   ns = _messages.StringField(4)
 
 
+class PolicyDriftDetails(_messages.Message):
+  r"""The policy field that violates the deployed posture and its expected and
+  and detected values.
+
+  Fields:
+    detectedValue: The detected value that violates the deployed posture, for
+      example, `false` or `allowed_values={"projects/22831892"}`.
+    expectedValue: The value of this field that was configured in a posture,
+      for example, `true` or `allowed_values={"projects/29831892"}`.
+    field: The name of the updated field, for example
+      constraint.implementation.policy_rules[0].enforce
+  """
+
+  detectedValue = _messages.StringField(1)
+  expectedValue = _messages.StringField(2)
+  field = _messages.StringField(3)
+
+
 class Process(_messages.Message):
   r"""Represents an operating system process.
 
@@ -3243,22 +3261,29 @@ class SecurityPosture(_messages.Message):
   security rules on Google Cloud.
 
   Fields:
-    changedPolicy: The name of the policy that has been updated, for example,
+    changedPolicy: The name of the updated policy, for example,
       `projects/{project_id}/policies/{constraint_name}`.
-    name: Name of the posture, for example,
-      `organizations/{org_id}/locations/{location}/postures/{posture_name}`.
+    name: Name of the posture, for example, `CIS-Posture`.
+    policy: The ID of the updated policy, for example, `compute-policy-1`.
+    policyDriftDetails: The details about a change in an updated policy that
+      violates the deployed posture.
+    policySet: The name of the updated policyset, for example, `cis-
+      policyset`.
     postureDeployment: The name of the posture deployment, for example,
-      `projects/{project_id}/posturedeployments/{posture_deployment_id}`.
+      `organizations/{org_id}/posturedeployments/{posture_deployment_id}`.
     postureDeploymentResource: The project, folder, or organization on which
-      the posture is deployed, for example, `projects/{project_id}`.
+      the posture is deployed, for example, `projects/{project_number}`.
     revisionId: The version of the posture, for example, `c7cfa2a8`.
   """
 
   changedPolicy = _messages.StringField(1)
   name = _messages.StringField(2)
-  postureDeployment = _messages.StringField(3)
-  postureDeploymentResource = _messages.StringField(4)
-  revisionId = _messages.StringField(5)
+  policy = _messages.StringField(3)
+  policyDriftDetails = _messages.MessageField('PolicyDriftDetails', 4, repeated=True)
+  policySet = _messages.StringField(5)
+  postureDeployment = _messages.StringField(6)
+  postureDeploymentResource = _messages.StringField(7)
+  revisionId = _messages.StringField(8)
 
 
 class SecuritycenterFoldersContainerThreatDetectionSettingsCalculateRequest(_messages.Message):

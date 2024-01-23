@@ -178,6 +178,26 @@ def AddConsumerAcceptList(parser):
     """)
 
 
+def AddPropagatedConnectionLimit(parser):
+  parser.add_argument(
+      '--propagated-connection-limit',
+      type=int,
+      help="""\
+    Per-consumer limit on the number of consumer Network Connectivity Center
+    spokes that Private Service Connect connectivity can be propagated to. This
+    flag lets a producer limit how many propagated Private Service Connect
+    connections can be established by a single consumer to the producer's
+    service attachment.
+
+    If the service attachment connection preference is set to ACCEPT_AUTOMATIC
+    or the accept and reject lists are project-based, then this limit is scoped
+    per consumer project. If the service attachment accept and reject lists are
+    network-based, then this limit is scoped to the consumer network where the
+    endpoint is deployed.
+    """,
+  )
+
+
 def ServiceAttachmentArgument(required=True, plural=False):
   return compute_flags.ResourceArgument(
       resource_name='service attachment',

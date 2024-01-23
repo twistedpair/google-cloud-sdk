@@ -16,7 +16,6 @@ package = 'bigtableadmin'
 
 class AppProfile(_messages.Message):
   r"""A configuration object describing how Cloud Bigtable should treat
-
   traffic from a particular end user application.
 
   Enums:
@@ -66,9 +65,7 @@ class AppProfile(_messages.Message):
     PRIORITY_MEDIUM = 2
     PRIORITY_HIGH = 3
 
-  dataBoostIsolationReadOnly = _messages.MessageField(
-      'DataBoostIsolationReadOnly', 1
-  )
+  dataBoostIsolationReadOnly = _messages.MessageField('DataBoostIsolationReadOnly', 1)
   description = _messages.StringField(2)
   etag = _messages.StringField(3)
   multiClusterRoutingUseAny = _messages.MessageField('MultiClusterRoutingUseAny', 4)
@@ -1313,7 +1310,6 @@ class ChangeStreamConfig(_messages.Message):
 
 class CheckConsistencyRequest(_messages.Message):
   r"""Request message for
-
   google.bigtable.admin.v2.BigtableTableAdmin.CheckConsistency
 
   Fields:
@@ -1329,12 +1325,8 @@ class CheckConsistencyRequest(_messages.Message):
   """
 
   consistencyToken = _messages.StringField(1)
-  dataBoostReadLocalWrites = _messages.MessageField(
-      'DataBoostReadLocalWrites', 2
-  )
-  standardReadRemoteWrites = _messages.MessageField(
-      'StandardReadRemoteWrites', 3
-  )
+  dataBoostReadLocalWrites = _messages.MessageField('DataBoostReadLocalWrites', 2)
+  standardReadRemoteWrites = _messages.MessageField('StandardReadRemoteWrites', 3)
 
 
 class CheckConsistencyResponse(_messages.Message):
@@ -1820,7 +1812,6 @@ class CreateViewRequest(_messages.Message):
 
 class DataBoostIsolationReadOnly(_messages.Message):
   r"""Data Boost allows a customer to bypass Bigtable nodes when it comes to
-
   fetching their data. The data is instead read directly from the filesystem,
   which enables the customer to isolate specific read-only workflows. Data
   Boost reads are only guaranteed to see the results of writes that were
@@ -1854,9 +1845,9 @@ class DataBoostIsolationReadOnly(_messages.Message):
 
 class DataBoostReadLocalWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated in the
-
   same cluster is readable by Databoost.
   """
+
 
 
 class DropRowRangeRequest(_messages.Message):
@@ -1880,6 +1871,7 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
+
 
 
 class EncryptionConfig(_messages.Message):
@@ -2017,6 +2009,7 @@ class GenerateConsistencyTokenRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
   """
+
 
 
 class GenerateConsistencyTokenResponse(_messages.Message):
@@ -2467,13 +2460,16 @@ class ModifyColumnFamiliesRequest(_messages.Message):
   google.bigtable.admin.v2.BigtableTableAdmin.ModifyColumnFamilies
 
   Fields:
+    ignoreWarnings: Optional. If true, ignore safety checks when modifying the
+      column families.
     modifications: Required. Modifications to be atomically applied to the
       specified table's families. Entries are applied in order, meaning that
       earlier modifications can be masked by later ones (in the case of
       repeated updates to the same family, for example).
   """
 
-  modifications = _messages.MessageField('Modification', 1, repeated=True)
+  ignoreWarnings = _messages.BooleanField(1)
+  modifications = _messages.MessageField('Modification', 2, repeated=True)
 
 
 class MultiClusterRoutingUseAny(_messages.Message):
@@ -2904,6 +2900,7 @@ class RowAffinity(_messages.Message):
   """
 
 
+
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3045,6 +3042,7 @@ class StandardReadRemoteWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated is
   replicated in every cluster and readable.
   """
+
 
 
 class Status(_messages.Message):
@@ -3389,6 +3387,7 @@ class UndeleteTableRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable
   """
+
 
 
 class Union(_messages.Message):

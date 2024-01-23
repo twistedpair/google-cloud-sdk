@@ -945,7 +945,7 @@ class SecuritycentermanagementFoldersLocationsEffectiveSecurityHealthAnalyticsCu
     pageSize: Optional. The maximum number of results to return in a single
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
-      continuation
+      continuation.
     parent: Required. Name of parent to list effective custom modules. Its
       format is "organizations/{organization}/locations/{location}",
       "folders/{folder}/locations/{location}", or
@@ -1337,7 +1337,7 @@ class SecuritycentermanagementOrganizationsLocationsEffectiveSecurityHealthAnaly
     pageSize: Optional. The maximum number of results to return in a single
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
-      continuation
+      continuation.
     parent: Required. Name of parent to list effective custom modules. Its
       format is "organizations/{organization}/locations/{location}",
       "folders/{folder}/locations/{location}", or
@@ -1729,7 +1729,7 @@ class SecuritycentermanagementProjectsLocationsEffectiveSecurityHealthAnalyticsC
     pageSize: Optional. The maximum number of results to return in a single
       response. Default is 10, minimum is 1, maximum is 1000.
     pageToken: Optional. The value returned by the last call indicating a
-      continuation
+      continuation.
     parent: Required. Name of parent to list effective custom modules. Its
       format is "organizations/{organization}/locations/{location}",
       "folders/{folder}/locations/{location}", or

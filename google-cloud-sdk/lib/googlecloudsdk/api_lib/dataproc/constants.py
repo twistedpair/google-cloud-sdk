@@ -45,3 +45,4 @@ ADDITIONAL_DEFAULT_SCOPE_URIS = [
 DEFAULT_PAGE_SIZE = 100
 
 ALLOW_ZERO_WORKERS_PROPERTY = 'dataproc:dataproc.allow.zero.workers'
+ENABLE_NODE_GROUPS_PROPERTY = 'dataproc:dataproc.nodegroups.enabled'

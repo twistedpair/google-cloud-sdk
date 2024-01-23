@@ -294,11 +294,22 @@ def _ApplyDockerRegistryArgsToFunction(function, args):
     )
     updated_fields.append('docker_registry')
 
-    if args.docker_registry == 'artifact-registry':
-      api_enablement.PromptToEnableApiIfDisabled(
-          'artifactregistry.googleapis.com'
-      )
   return updated_fields
+
+
+def _PromptToEnableArtifactRegistryIfRequired(cli_args):
+  """Checks if the deployment needs Artifact Registry and prompts to enable it.
+
+  Args:
+    cli_args: CLI arguments passed to the deployment request.
+  """
+  if (
+      cli_args.IsSpecified('docker_registry')
+      and cli_args.docker_registry == 'container-registry'
+  ):
+    return
+
+  api_enablement.PromptToEnableApiIfDisabled('artifactregistry.googleapis.com')
 
 
 def _GetActiveKMSKey(function, args):
@@ -620,6 +631,8 @@ def Run(args, track=None):
   )
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')
+  _PromptToEnableArtifactRegistryIfRequired(args)
+
   if is_new_function:
     if (
         function.httpsTrigger

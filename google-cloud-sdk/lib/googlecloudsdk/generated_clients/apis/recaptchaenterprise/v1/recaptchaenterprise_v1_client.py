@@ -256,6 +256,33 @@ class RecaptchaenterpriseV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Reorder(self, request, global_params=None):
+      r"""Reorders all firewall policies.
+
+      Args:
+        request: (RecaptchaenterpriseProjectsFirewallpoliciesReorderRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesResponse) The response message.
+      """
+      config = self.GetMethodConfig('Reorder')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Reorder.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/firewallpolicies:reorder',
+        http_method='POST',
+        method_id='recaptchaenterprise.projects.firewallpolicies.reorder',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1/{+parent}/firewallpolicies:reorder',
+        request_field='googleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesRequest',
+        request_type_name='RecaptchaenterpriseProjectsFirewallpoliciesReorderRequest',
+        response_type_name='GoogleCloudRecaptchaenterpriseV1ReorderFirewallPoliciesResponse',
+        supports_download=False,
+    )
+
   class ProjectsKeysService(base_api.BaseApiService):
     """Service class for the projects_keys resource."""
 

@@ -86,6 +86,11 @@ class Execution(_messages.Message):
       `argument`. Example:
       `'{"argument":"{\"firstName\":\"FIRST\",\"lastName\":\"LAST\"}"}'`
     callLogLevel: The call logging level associated to this execution.
+    createTime: Output only. Marks the creation of the execution.
+    disableConcurrencyQuotaOverflowBuffering: Optional. If set to true, the
+      execution will not be backlogged when the concurrency quota is
+      exhausted. The backlog execution starts when the concurrency quota
+      becomes available.
     duration: Output only. Measures the duration of the execution.
     endTime: Output only. Marks the end of execution, successful or not.
     error: Output only. The error which caused the execution to finish
@@ -180,17 +185,19 @@ class Execution(_messages.Message):
 
   argument = _messages.StringField(1)
   callLogLevel = _messages.EnumField('CallLogLevelValueValuesEnum', 2)
-  duration = _messages.StringField(3)
-  endTime = _messages.StringField(4)
-  error = _messages.MessageField('Error', 5)
-  labels = _messages.MessageField('LabelsValue', 6)
-  name = _messages.StringField(7)
-  result = _messages.StringField(8)
-  startTime = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
-  stateError = _messages.MessageField('StateError', 11)
-  status = _messages.MessageField('Status', 12)
-  workflowRevisionId = _messages.StringField(13)
+  createTime = _messages.StringField(3)
+  disableConcurrencyQuotaOverflowBuffering = _messages.BooleanField(4)
+  duration = _messages.StringField(5)
+  endTime = _messages.StringField(6)
+  error = _messages.MessageField('Error', 7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  result = _messages.StringField(10)
+  startTime = _messages.StringField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateError = _messages.MessageField('StateError', 13)
+  status = _messages.MessageField('Status', 14)
+  workflowRevisionId = _messages.StringField(15)
 
 
 class ExportDataResponse(_messages.Message):

@@ -1545,7 +1545,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
-      `run.googleapis.com/container-dependencies`: Revision. *
+      `run.googleapis.com/container-dependencies`: Revision . *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
@@ -1580,7 +1580,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
       `run.googleapis.com/client-name`: All resources. *
       `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
-      `run.googleapis.com/container-dependencies`: Revision. *
+      `run.googleapis.com/container-dependencies`: Revision . *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
       `run.googleapis.com/description`: Service. *
@@ -1643,7 +1643,7 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/binary-authorization`: Service, Job, Execution. *
     `run.googleapis.com/client-name`: All resources. *
     `run.googleapis.com/cloudsql-instances`: Revision, Execution. *
-    `run.googleapis.com/container-dependencies`: Revision. *
+    `run.googleapis.com/container-dependencies`: Revision . *
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
     `run.googleapis.com/description`: Service. *
@@ -2039,10 +2039,10 @@ class RevisionSpec(_messages.Message):
     containerConcurrency: ContainerConcurrency specifies the maximum allowed
       in-flight (concurrent) requests per container instance of the Revision.
       If not specified, defaults to 80.
-    containers: Containers holds the single container that defines the unit of
-      execution for this Revision. In the context of a Revision, we disallow a
-      number of fields on this Container, including: name and lifecycle. In
-      Cloud Run, only a single container may be provided.
+    containers: Required. Containers holds the single container that defines
+      the unit of execution for this Revision. In the context of a Revision,
+      we disallow a number of fields on this Container, including: name and
+      lifecycle. In Cloud Run, only a single container may be provided.
     enableServiceLinks: Not supported by Cloud Run.
     imagePullSecrets: Not supported by Cloud Run.
     runtimeClassName: Runtime. Leave unset for default.

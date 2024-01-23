@@ -5267,6 +5267,9 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
       models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
       models).
     modelVariant: Optional. Which variant of the Speech model to use.
+    optOutConformerModelMigration: If `true`, the request will opt out for STT
+      conformer model migration. This field will be deprecated once force
+      migration takes place in June 2024.
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood. See [the
       Cloud Speech documentation](https://cloud.google.com/speech-to-
@@ -5357,9 +5360,10 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
   enableWordInfo = _messages.BooleanField(3)
   model = _messages.StringField(4)
   modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 5)
-  phraseHints = _messages.StringField(6, repeated=True)
-  sampleRateHertz = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  singleUtterance = _messages.BooleanField(8)
+  optOutConformerModelMigration = _messages.BooleanField(6)
+  phraseHints = _messages.StringField(7, repeated=True)
+  sampleRateHertz = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(9)
 
 
 class GoogleCloudDialogflowCxV3Intent(_messages.Message):
@@ -7830,6 +7834,9 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
       models](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
       models).
     modelVariant: Optional. Which variant of the Speech model to use.
+    optOutConformerModelMigration: If `true`, the request will opt out for STT
+      conformer model migration. This field will be deprecated once force
+      migration takes place in June 2024.
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood. See [the
       Cloud Speech documentation](https://cloud.google.com/speech-to-
@@ -7920,9 +7927,10 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
   enableWordInfo = _messages.BooleanField(3)
   model = _messages.StringField(4)
   modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 5)
-  phraseHints = _messages.StringField(6, repeated=True)
-  sampleRateHertz = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  singleUtterance = _messages.BooleanField(8)
+  optOutConformerModelMigration = _messages.BooleanField(6)
+  phraseHints = _messages.StringField(7, repeated=True)
+  sampleRateHertz = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(9)
 
 
 class GoogleCloudDialogflowCxV3beta1Intent(_messages.Message):
@@ -12408,6 +12416,9 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
       more information, see [Speech
       models](https://cloud.google.com/dialogflow/es/docs/speech-models).
     modelVariant: Which variant of the Speech model to use.
+    optOutConformerModelMigration: If `true`, the request will opt out for STT
+      conformer model migration. This field will be deprecated once force
+      migration takes place in June 2024.
     phraseHints: A list of strings containing words and phrases that the
       speech recognizer should recognize with higher likelihood. See [the
       Cloud Speech documentation](https://cloud.google.com/speech-to-
@@ -12514,10 +12525,11 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
   languageCode = _messages.StringField(5)
   model = _messages.StringField(6)
   modelVariant = _messages.EnumField('ModelVariantValueValuesEnum', 7)
-  phraseHints = _messages.StringField(8, repeated=True)
-  sampleRateHertz = _messages.IntegerField(9, variant=_messages.Variant.INT32)
-  singleUtterance = _messages.BooleanField(10)
-  speechContexts = _messages.MessageField('GoogleCloudDialogflowV2SpeechContext', 11, repeated=True)
+  optOutConformerModelMigration = _messages.BooleanField(8)
+  phraseHints = _messages.StringField(9, repeated=True)
+  sampleRateHertz = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  singleUtterance = _messages.BooleanField(11)
+  speechContexts = _messages.MessageField('GoogleCloudDialogflowV2SpeechContext', 12, repeated=True)
 
 
 class GoogleCloudDialogflowV2InputConfig(_messages.Message):

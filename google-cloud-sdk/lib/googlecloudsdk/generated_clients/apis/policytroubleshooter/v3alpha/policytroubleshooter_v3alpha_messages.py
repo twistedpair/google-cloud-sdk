@@ -1578,7 +1578,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABPolicy(_messages.Mess
     HEURISTIC_RELEVANCE_HIGH = 2
 
   explainedRules = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule', 1, repeated=True)
-  policy = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicy', 2)
+  policy = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicy', 2)
   policyAccessState = _messages.EnumField('PolicyAccessStateValueValuesEnum', 3)
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
 
@@ -1648,7 +1648,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Messag
 
   explainedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRuleExplainedResource', 1, repeated=True)
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
-  rule = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicyRule', 3)
+  rule = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicyRule', 3)
   ruleAccessState = _messages.EnumField('RuleAccessStateValueValuesEnum', 4)
 
 
@@ -1845,7 +1845,7 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPolicyBinding(_messages.
     HEURISTIC_RELEVANCE_HIGH = 2
 
   conditionExplanation = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaConditionExplanation', 1)
-  policyBinding = _messages.MessageField('GoogleIamV3betaPolicyBinding', 2)
+  policyBinding = _messages.MessageField('GoogleIamV3PolicyBinding', 2)
   policyBindingState = _messages.EnumField('PolicyBindingStateValueValuesEnum', 3)
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
 
@@ -3461,7 +3461,7 @@ class GoogleIamV2PolicyRule(_messages.Message):
   description = _messages.StringField(3)
 
 
-class GoogleIamV3betaPolicyBinding(_messages.Message):
+class GoogleIamV3PolicyBinding(_messages.Message):
   r"""IAM policy binding
 
   Enums:
@@ -3574,12 +3574,12 @@ class GoogleIamV3betaPolicyBinding(_messages.Message):
   policy = _messages.StringField(7)
   policyKind = _messages.EnumField('PolicyKindValueValuesEnum', 8)
   policyUid = _messages.StringField(9)
-  target = _messages.MessageField('GoogleIamV3betaPolicyBindingTarget', 10)
+  target = _messages.MessageField('GoogleIamV3PolicyBindingTarget', 10)
   uid = _messages.StringField(11)
   updateTime = _messages.StringField(12)
 
 
-class GoogleIamV3betaPolicyBindingTarget(_messages.Message):
+class GoogleIamV3PolicyBindingTarget(_messages.Message):
   r"""Target is the full resource name of the resource to which the policy
   will be bound. Immutable once set.
 
@@ -3600,7 +3600,7 @@ class GoogleIamV3betaPolicyBindingTarget(_messages.Message):
   principalSet = _messages.StringField(1)
 
 
-class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
+class GoogleIamV3PrincipalAccessBoundaryPolicy(_messages.Message):
   r"""An IAM principal access boundary policy resource.
 
   Messages:
@@ -3657,7 +3657,7 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
 
   annotations = _messages.MessageField('AnnotationsValue', 1)
   createTime = _messages.StringField(2)
-  details = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicyDetails', 3)
+  details = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicyDetails', 3)
   displayName = _messages.StringField(4)
   etag = _messages.StringField(5)
   name = _messages.StringField(6)
@@ -3665,7 +3665,7 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicy(_messages.Message):
   updateTime = _messages.StringField(8)
 
 
-class GoogleIamV3betaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
+class GoogleIamV3PrincipalAccessBoundaryPolicyDetails(_messages.Message):
   r"""Principal access boundary policy details
 
   Fields:
@@ -3678,12 +3678,12 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
       included in enforcemment.
   """
 
-  rules = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicyRule', 1, repeated=True)
+  rules = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicyRule', 1, repeated=True)
   staticEnforcementVersionNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   useLatestEnforcementVersion = _messages.BooleanField(3)
 
 
-class GoogleIamV3betaPrincipalAccessBoundaryPolicyRule(_messages.Message):
+class GoogleIamV3PrincipalAccessBoundaryPolicyRule(_messages.Message):
   r"""Principal access boundary policy rule that defines the resource
   boundary.
 

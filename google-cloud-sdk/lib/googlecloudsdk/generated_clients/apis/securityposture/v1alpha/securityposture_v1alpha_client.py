@@ -43,6 +43,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
     self.organizations_locations_postureDeployments = self.OrganizationsLocationsPostureDeploymentsService(self)
     self.organizations_locations_postureTemplates = self.OrganizationsLocationsPostureTemplatesService(self)
     self.organizations_locations_postures = self.OrganizationsLocationsPosturesService(self)
+    self.organizations_locations_reports = self.OrganizationsLocationsReportsService(self)
     self.organizations_locations = self.OrganizationsLocationsService(self)
     self.organizations = self.OrganizationsService(self)
 
@@ -572,6 +573,43 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsLocationsReportsService(base_api.BaseApiService):
+    """Service class for the organizations_locations_reports resource."""
+
+    _NAME = 'organizations_locations_reports'
+
+    def __init__(self, client):
+      super(SecuritypostureV1alpha.OrganizationsLocationsReportsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def CreateIaCValidationReport(self, request, global_params=None):
+      r"""========================== Reports ========================== Validates the provided IaC and creates a validation report as a result. Validation is only performed on modified assets. This API currently only supports terraform plan file as IaC source.
+
+      Args:
+        request: (SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('CreateIaCValidationReport')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CreateIaCValidationReport.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/organizations/{organizationsId}/locations/{locationsId}/reports:createIaCValidationReport',
+        http_method='POST',
+        method_id='securityposture.organizations.locations.reports.createIaCValidationReport',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=[],
+        relative_path='v1alpha/{+parent}/reports:createIaCValidationReport',
+        request_field='createIaCValidationReportRequest',
+        request_type_name='SecuritypostureOrganizationsLocationsReportsCreateIaCValidationReportRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsService(base_api.BaseApiService):
     """Service class for the organizations_locations resource."""
 
@@ -628,7 +666,7 @@ class SecuritypostureV1alpha(base_api.BaseApiClient):
         method_id='securityposture.organizations.locations.list',
         ordered_params=['name'],
         path_params=['name'],
-        query_params=['filter', 'pageSize', 'pageToken'],
+        query_params=['filter', 'includeUnrevealedLocations', 'pageSize', 'pageToken'],
         relative_path='v1alpha/{+name}/locations',
         request_field='',
         request_type_name='SecuritypostureOrganizationsLocationsListRequest',

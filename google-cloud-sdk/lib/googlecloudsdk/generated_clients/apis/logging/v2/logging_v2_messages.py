@@ -528,11 +528,16 @@ class CopyLogEntriesMetadata(_messages.Message):
   Fields:
     cancellationRequested: Identifies whether the user has requested
       cancellation of the operation.
+    destination: Destination to which to copy log entries.For example, a Cloud
+      Storage bucket:"storage.googleapis.com/my-cloud-storage-bucket"
     endTime: The end time of an operation.
     progress: Estimated progress of the operation (0 - 100%).
     request: CopyLogEntries RPC request.
+    source: Source from which to copy log entries.For example, a log
+      bucket:"projects/my-project/locations/global/buckets/my-source-bucket"
     startTime: The create time of an operation.
     state: Output only. State of an operation.
+    verb: Name of the verb executed by the operation.For example,"copy"
     writerIdentity: The IAM identity of a service account that must be granted
       access to the destination.If the service account is not granted
       permission to the destination within an hour, the operation will be
@@ -563,12 +568,15 @@ class CopyLogEntriesMetadata(_messages.Message):
     OPERATION_STATE_PENDING = 7
 
   cancellationRequested = _messages.BooleanField(1)
-  endTime = _messages.StringField(2)
-  progress = _messages.IntegerField(3, variant=_messages.Variant.INT32)
-  request = _messages.MessageField('CopyLogEntriesRequest', 4)
-  startTime = _messages.StringField(5)
-  state = _messages.EnumField('StateValueValuesEnum', 6)
-  writerIdentity = _messages.StringField(7)
+  destination = _messages.StringField(2)
+  endTime = _messages.StringField(3)
+  progress = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  request = _messages.MessageField('CopyLogEntriesRequest', 5)
+  source = _messages.StringField(6)
+  startTime = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  verb = _messages.StringField(9)
+  writerIdentity = _messages.StringField(10)
 
 
 class CopyLogEntriesRequest(_messages.Message):

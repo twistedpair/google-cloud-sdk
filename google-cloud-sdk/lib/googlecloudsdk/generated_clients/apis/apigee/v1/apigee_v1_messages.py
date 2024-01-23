@@ -954,7 +954,9 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
       EVALUATION). It controls how long Organization data will be retained
       after the initial delete operation completes. During this period, the
       Organization may be restored to its last known state. After this period,
-      the Organization will no longer be able to be restored.
+      the Organization will no longer be able to be restored. **Note: During
+      the data retention period specified using this field, the Apigee
+      organization cannot be recreated in the same GCP project.**
 
   Fields:
     hardDelete: Optional. Access to Apigee for internal purposes only. This
@@ -967,7 +969,9 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
       how long Organization data will be retained after the initial delete
       operation completes. During this period, the Organization may be
       restored to its last known state. After this period, the Organization
-      will no longer be able to be restored.
+      will no longer be able to be restored. **Note: During the data retention
+      period specified using this field, the Apigee organization cannot be
+      recreated in the same GCP project.**
   """
 
   class RetentionValueValuesEnum(_messages.Enum):
@@ -976,7 +980,9 @@ class ApigeeOrganizationsDeleteRequest(_messages.Message):
     Organization data will be retained after the initial delete operation
     completes. During this period, the Organization may be restored to its
     last known state. After this period, the Organization will no longer be
-    able to be restored.
+    able to be restored. **Note: During the data retention period specified
+    using this field, the Apigee organization cannot be recreated in the same
+    GCP project.**
 
     Values:
       DELETION_RETENTION_UNSPECIFIED: Default data retention setting of seven
@@ -1160,7 +1166,8 @@ class ApigeeOrganizationsDevelopersAppsKeysCreateCreateRequest(_messages.Message
     googleCloudApigeeV1DeveloperAppKey: A GoogleCloudApigeeV1DeveloperAppKey
       resource to be passed as the request body.
     parent: Parent of the developer app key. Use the following structure in
-      your request: `organizations/{org}/developers/{developer_email}/apps`
+      your request:
+      'organizations/{org}/developers/{developerEmail}/apps/{appName}'
   """
 
   googleCloudApigeeV1DeveloperAppKey = _messages.MessageField('GoogleCloudApigeeV1DeveloperAppKey', 1)
@@ -1174,7 +1181,8 @@ class ApigeeOrganizationsDevelopersAppsKeysCreateRequest(_messages.Message):
     googleCloudApigeeV1DeveloperAppKey: A GoogleCloudApigeeV1DeveloperAppKey
       resource to be passed as the request body.
     parent: Parent of the developer app key. Use the following structure in
-      your request: `organizations/{org}/developers/{developer_email}/apps`
+      your request:
+      'organizations/{org}/developers/{developerEmail}/apps/{appName}'
   """
 
   googleCloudApigeeV1DeveloperAppKey = _messages.MessageField('GoogleCloudApigeeV1DeveloperAppKey', 1)
@@ -10744,12 +10752,14 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
   the following: api_keys: ["key1", "key2"] and developers: ["dev1", "dev2"]
   then this is interpreted as: enforce the action if the incoming request has
   ((api_key = "key1" OR api_key="key") AND (developer="dev1" OR
-  developer="dev2"))
+  developer="dev2")).
 
   Fields:
     botReasons: Optional. A list of Bot Reasons. Current options: Flooder,
       Brute Guessor, Static Content Scraper, OAuth Abuser, Robot Abuser,
-      TorListRule, Advanced Anomaly Detection and Advanced API Scraper.
+      TorListRule, Advanced Anomaly Detection, Advanced API Scraper, Search
+      Engine Crawlers, Public Cloud, Public Cloud AWS, Public Cloud Azure, and
+      Public Cloud GCP.
     ipAddressRanges: Optional. A list of IP addresses. This could be either
       IPv4 or IPv6. Limited to 100 per action.
   """

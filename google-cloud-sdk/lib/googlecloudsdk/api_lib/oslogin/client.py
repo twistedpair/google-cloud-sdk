@@ -213,14 +213,14 @@ class OsloginClient(object):
     res = self.client.users_sshPublicKeys.Patch(message)
     return res
 
-  def SignSshPublicKey(self, user, public_key, project_id, zone):
+  def SignSshPublicKey(self, user, public_key, project_id, region):
     """Sign an SSH public key for a given user.
 
     Args:
       user: str, The email address of the OS Login user.
       public_key: str, An SSH public key.
       project_id: str, The project ID associated with the VM.
-      zone: str, The zone where the signed SSH public key may be used.
+      region: str, The region where the signed SSH public key may be used.
 
     Returns:
       A signed SSH public key.
@@ -229,8 +229,8 @@ class OsloginClient(object):
         sshPublicKey=public_key
     )
     message = self.messages.OsloginUsersProjectsZonesSignSshPublicKeyRequest(
-        parent='users/{0}/projects/{1}/zones/{2}'.format(
-            user, project_id, zone
+        parent='users/{0}/projects/{1}/locations/{2}'.format(
+            user, project_id, region
         ),
         signSshPublicKeyRequest=public_key_message,
     )

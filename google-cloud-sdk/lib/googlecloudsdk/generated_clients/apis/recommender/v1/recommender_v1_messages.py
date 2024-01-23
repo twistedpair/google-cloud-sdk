@@ -793,6 +793,8 @@ class GoogleCloudRecommenderV1Recommendation(_messages.Message):
       "google.iam.policy.Recommender", recommender_subtype can be one of
       "REMOVE_ROLE"/"REPLACE_ROLE"
     stateInfo: Information for state. Contains state and metadata.
+    targetResources: Fully qualified resource names that this recommendation
+      is targeting.
     xorGroupId: Corresponds to a mutually exclusive group ID within a
       recommender. A non-empty ID indicates that the recommendation belongs to
       a mutually exclusive group. This means that only one recommendation
@@ -826,7 +828,8 @@ class GoogleCloudRecommenderV1Recommendation(_messages.Message):
   priority = _messages.EnumField('PriorityValueValuesEnum', 9)
   recommenderSubtype = _messages.StringField(10)
   stateInfo = _messages.MessageField('GoogleCloudRecommenderV1RecommendationStateInfo', 11)
-  xorGroupId = _messages.StringField(12)
+  targetResources = _messages.StringField(12, repeated=True)
+  xorGroupId = _messages.StringField(13)
 
 
 class GoogleCloudRecommenderV1RecommendationContent(_messages.Message):

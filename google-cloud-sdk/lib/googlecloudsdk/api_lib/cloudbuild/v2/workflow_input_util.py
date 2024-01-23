@@ -64,19 +64,7 @@ def _WorkflowTransform(workflow):
   for workspace_binding in workflow.get("workspaces", []):
     _WorkspaceBindingTransform(workspace_binding)
 
-  if "options" not in workflow:
-    raise cloudbuild_exceptions.InvalidYamlError(
-        "Options is required.")
-
-  if "executionEnvironment" not in workflow["options"]:
-    raise cloudbuild_exceptions.InvalidYamlError(
-        "ExecutionEnvironment is required.")
-
-  if "workerPool" not in workflow["options"]["executionEnvironment"]:
-    raise cloudbuild_exceptions.InvalidYamlError(
-        "WorkerPool is required.")
-
-  if "status" in workflow["options"]:
+  if "options" in workflow and "status" in workflow["options"]:
     popped_status = workflow["options"].pop("status")
     workflow["options"]["statusUpdateOptions"] = popped_status
 

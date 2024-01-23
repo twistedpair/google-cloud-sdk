@@ -2928,6 +2928,24 @@ class CopyLogEntriesMetadata(proto.Message):
             destination within an hour, the operation will be cancelled.
 
             For example: ``"serviceAccount:foo@bar.com"``
+        source (str):
+            Source from which to copy log entries.
+
+            For example, a log bucket:
+
+            ``"projects/my-project/locations/global/buckets/my-source-bucket"``
+        destination (str):
+            Destination to which to copy log entries.
+
+            For example, a Cloud Storage bucket:
+
+            ``"storage.googleapis.com/my-cloud-storage-bucket"``
+        verb (str):
+            Name of the verb executed by the operation.
+
+            For example,
+
+            ``"copy"``
     """
 
     start_time: timestamp_pb2.Timestamp = proto.Field(
@@ -2961,6 +2979,18 @@ class CopyLogEntriesMetadata(proto.Message):
     writer_identity: str = proto.Field(
         proto.STRING,
         number=7,
+    )
+    source: str = proto.Field(
+        proto.STRING,
+        number=8,
+    )
+    destination: str = proto.Field(
+        proto.STRING,
+        number=9,
+    )
+    verb: str = proto.Field(
+        proto.STRING,
+        number=10,
     )
 
 

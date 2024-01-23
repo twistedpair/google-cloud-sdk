@@ -1294,6 +1294,43 @@ def CreateInstanceLifecyclePolicy(messages, args):
   return ValueOrNone(policy)
 
 
+def CreateInstanceFlexibilityPolicy(messages, args):
+  """Creates instance flexibility policy list from args."""
+  policy = messages.InstanceGroupManagerInstanceFlexibilityPolicy()
+  instance_selections = []
+  if args.IsKnownAndSpecified('instance_selection_machine_types'):
+    instance_selections.append(
+        messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+            key='instance-selection-1',
+            value=messages.InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(
+                rank=1, machineTypes=args.instance_selection_machine_types
+            ),
+        )
+    )
+    if args.IsKnownAndSpecified('instance_selection_secondary_machine_types'):
+      instance_selections.append(
+          messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue.AdditionalProperty(
+              key='instance-selection-2',
+              value=messages.InstanceGroupManagerInstanceFlexibilityPolicyInstanceSelection(
+                  rank=2,
+                  machineTypes=args.instance_selection_secondary_machine_types,
+              )
+          )
+      )
+  elif args.IsKnownAndSpecified('instance_selection_secondary_machine_types'):
+    raise InvalidArgumentError(
+        '--instance-selection-secondary-machine-types requires'
+        ' --instance-selection-machine-types to be specified.'
+    )
+  else:
+    return None
+
+  policy.instanceSelections = messages.InstanceGroupManagerInstanceFlexibilityPolicy.InstanceSelectionsValue(
+      additionalProperties=instance_selections
+  )
+  return ValueOrNone(policy)
+
+
 def CreateStandbyPolicy(
     messages, initial_delay_sec=None, standby_policy_mode=None
 ):

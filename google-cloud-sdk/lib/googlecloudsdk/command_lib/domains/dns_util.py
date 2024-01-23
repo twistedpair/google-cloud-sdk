@@ -291,19 +291,26 @@ def PromptForNameServers(api_version,
       'Provide name servers list', 'Provide Cloud DNS Managed Zone name',
       'Use free name servers provided by Google Domains'
   ]
-  if dns_settings is not None:
+  if dns_settings is not None:  # Update
     log.status.Print('Your current DNS settings are:')
     resource_printer.Print(dns_settings, print_format, out=sys.stderr)
 
+    message = (
+        'You can provide your DNS settings by specifying name servers, '
+        'a Cloud DNS Managed Zone name or by choosing '
+        'free name servers provided by Google Domains'
+    )
     cancel_option = True
     default = len(options)  # Additional 'cancel' option.
   else:
+    options = options[:2]
+    message = (
+        'You can provide your DNS settings by specifying name servers '
+        'or a Cloud DNS Managed Zone name'
+    )
     cancel_option = False
     default = 1  # Cloud DNS Zone.
 
-  message = ('You can provide your DNS settings by specifying name servers, '
-             'Cloud DNS Managed Zone name or by choosing '
-             'free name servers provided by Google Domains')
   index = console_io.PromptChoice(
       message=message,
       options=options,

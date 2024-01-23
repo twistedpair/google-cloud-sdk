@@ -233,7 +233,8 @@ def _AddDNSSettingsFlagsToParser(parser, mutation_op):
                   'The {flag_name} option is deprecated; See'
                   ' https://cloud.google.com/domains/docs/deprecations/feature-deprecations.'
               ),
-              removed=False,
+              # Removed for REGISTER, Deprecated for UPDATE.
+              removed=(mutation_op == MutationOp.REGISTER),
               action='store_true',
           ),
       )

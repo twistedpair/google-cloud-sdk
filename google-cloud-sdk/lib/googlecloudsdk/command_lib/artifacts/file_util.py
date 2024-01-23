@@ -30,7 +30,8 @@ def EscapeFileName(ref):
       projectsId=ref.projectsId,
       locationsId=ref.locationsId,
       repositoriesId=ref.repositoriesId,
-      filesId=ref.filesId.replace("/", "%2F").replace("+", "%2B"),
+      filesId=
+      ref.filesId.replace("/", "%2F").replace("+", "%2B").replace("^", "%5E"),
   )
 
 
@@ -41,7 +42,8 @@ def EscapeFileNameFromIDs(project_id, location_id, repo_id, file_id):
       projectsId=project_id,
       locationsId=location_id,
       repositoriesId=repo_id,
-      filesId=file_id.replace("/", "%2F").replace("+", "%2B"),
+      filesId=
+      file_id.replace("/", "%2F").replace("+", "%2B").replace("^", "%5E"),
   )
 
 

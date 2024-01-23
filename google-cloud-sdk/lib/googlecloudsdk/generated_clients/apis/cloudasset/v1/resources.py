@@ -44,6 +44,16 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  OTHERCLOUDCONNECTIONS = (
+      'otherCloudConnections',
+      '{+name}',
+      {
+          '':
+              '{v1Id}/{v1Id1}/otherCloudConnections/{otherCloudConnectionsId}',
+      },
+      ['name'],
+      True
+  )
   SAVEDQUERIES = (
       'savedQueries',
       '{+name}',

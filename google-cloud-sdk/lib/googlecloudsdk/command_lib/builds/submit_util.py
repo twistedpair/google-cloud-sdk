@@ -30,7 +30,6 @@ from googlecloudsdk.api_lib.cloudbuild import cloudbuild_exceptions
 from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.cloudbuild import config
 from googlecloudsdk.api_lib.cloudbuild import logs as cb_logs
-from googlecloudsdk.api_lib.cloudbuild import snapshot
 from googlecloudsdk.api_lib.compute import utils as compute_utils
 from googlecloudsdk.api_lib.storage import storage_api
 from googlecloudsdk.calliope import exceptions as c_exceptions
@@ -42,11 +41,9 @@ from googlecloudsdk.core import execution_utils
 from googlecloudsdk.core import log
 from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
-from googlecloudsdk.core.resource import resource_transform
 from googlecloudsdk.core.util import times
 import six
 
-_ALLOWED_SOURCE_EXT = ['.zip', '.tgz', '.gz']
 
 _CLUSTER_NAME_FMT = (
     'projects/{project}/locations/{location}/clusters/{cluster_name}'
@@ -397,7 +394,6 @@ def SetSource(
   if not is_specified_source and no_source:
     source = None
 
-  gcs_source_staging = None
   if source:
     if any(source.startswith(x) for x in ['http://', 'https://']):
       build_config.source = messages.Source(
@@ -474,71 +470,20 @@ def SetSource(
         object=staged_object,
     )
 
-    if source.startswith('gs://'):
-      gcs_source = resources.REGISTRY.Parse(
-          source, collection='storage.objects'
-      )
-      staged_source_obj = gcs_client.Rewrite(gcs_source, gcs_source_staging)
-      build_config.source = messages.Source(
-          storageSource=messages.StorageSource(
-              bucket=staged_source_obj.bucket,
-              object=staged_source_obj.name,
-              generation=staged_source_obj.generation,
-          )
-      )
-    else:
-      if not os.path.exists(source):
-        raise c_exceptions.BadFileException(
-            'could not find source [{src}]'.format(src=source)
+    staged_source_obj = staging_bucket_util.Upload(
+        source,
+        gcs_source_staging,
+        gcs_client,
+        ignore_file=ignore_file,
+        hide_logs=hide_logs,
+    )
+    build_config.source = messages.Source(
+        storageSource=messages.StorageSource(
+            bucket=staged_source_obj.bucket,
+            object=staged_source_obj.name,
+            generation=staged_source_obj.generation,
         )
-      if os.path.isdir(source):
-        source_snapshot = snapshot.Snapshot(source, ignore_file=ignore_file)
-        size_str = resource_transform.TransformSize(
-            source_snapshot.uncompressed_size
-        )
-        if not hide_logs:
-          log.status.Print(
-              'Creating temporary tarball archive of {num_files} file(s)'
-              ' totalling {size} before compression.'.format(
-                  num_files=len(source_snapshot.files), size=size_str
-              )
-          )
-        staged_source_obj = source_snapshot.CopyTarballToGCS(
-            gcs_client,
-            gcs_source_staging,
-            ignore_file=ignore_file,
-            hide_logs=hide_logs,
-        )
-        build_config.source = messages.Source(
-            storageSource=messages.StorageSource(
-                bucket=staged_source_obj.bucket,
-                object=staged_source_obj.name,
-                generation=staged_source_obj.generation,
-            )
-        )
-      elif os.path.isfile(source):
-        unused_root, ext = os.path.splitext(source)
-        if ext not in _ALLOWED_SOURCE_EXT:
-          raise c_exceptions.BadFileException(
-              'Local file [{src}] is none of ' + ', '.join(_ALLOWED_SOURCE_EXT)
-          )
-        if not hide_logs:
-          log.status.Print(
-              'Uploading local file [{src}] to '
-              '[gs://{bucket}/{object}].'.format(
-                  src=source,
-                  bucket=gcs_source_staging.bucket,
-                  object=gcs_source_staging.object,
-              )
-          )
-        staged_source_obj = gcs_client.CopyFileToGCS(source, gcs_source_staging)
-        build_config.source = messages.Source(
-            storageSource=messages.StorageSource(
-                bucket=staged_source_obj.bucket,
-                object=staged_source_obj.name,
-                generation=staged_source_obj.generation,
-            )
-        )
+    )
   else:
     # No source
     if not no_source:

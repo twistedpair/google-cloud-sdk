@@ -1383,18 +1383,60 @@ class ConfigManagementConfigSyncError(_messages.Message):
 class ConfigManagementConfigSyncState(_messages.Message):
   r"""State information for ConfigSync
 
+  Enums:
+    ReposyncCrdValueValuesEnum: The state of the Reposync CRD
+    RootsyncCrdValueValuesEnum: The state of the RootSync CRD
+
   Fields:
     deploymentState: Information about the deployment of ConfigSync, including
       the version of the various Pods deployed
     errors: Errors pertaining to the installation of Config Sync.
+    reposyncCrd: The state of the Reposync CRD
+    rootsyncCrd: The state of the RootSync CRD
     syncState: The state of ConfigSync's process to sync configs to a cluster
     version: The version of ConfigSync deployed
   """
 
+  class ReposyncCrdValueValuesEnum(_messages.Enum):
+    r"""The state of the Reposync CRD
+
+    Values:
+      CRD_STATE_UNSPECIFIED: CRD's state cannot be determined
+      NOT_INSTALLED: CRD is not installed
+      INSTALLED: CRD is installed
+      TERMINATING: CRD is terminating (i.e., it has been deleted and is
+        cleaning up)
+      INSTALLING: CRD is installing
+    """
+    CRD_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    TERMINATING = 3
+    INSTALLING = 4
+
+  class RootsyncCrdValueValuesEnum(_messages.Enum):
+    r"""The state of the RootSync CRD
+
+    Values:
+      CRD_STATE_UNSPECIFIED: CRD's state cannot be determined
+      NOT_INSTALLED: CRD is not installed
+      INSTALLED: CRD is installed
+      TERMINATING: CRD is terminating (i.e., it has been deleted and is
+        cleaning up)
+      INSTALLING: CRD is installing
+    """
+    CRD_STATE_UNSPECIFIED = 0
+    NOT_INSTALLED = 1
+    INSTALLED = 2
+    TERMINATING = 3
+    INSTALLING = 4
+
   deploymentState = _messages.MessageField('ConfigManagementConfigSyncDeploymentState', 1)
   errors = _messages.MessageField('ConfigManagementConfigSyncError', 2, repeated=True)
-  syncState = _messages.MessageField('ConfigManagementSyncState', 3)
-  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 4)
+  reposyncCrd = _messages.EnumField('ReposyncCrdValueValuesEnum', 3)
+  rootsyncCrd = _messages.EnumField('RootsyncCrdValueValuesEnum', 4)
+  syncState = _messages.MessageField('ConfigManagementSyncState', 5)
+  version = _messages.MessageField('ConfigManagementConfigSyncVersion', 6)
 
 
 class ConfigManagementConfigSyncVersion(_messages.Message):

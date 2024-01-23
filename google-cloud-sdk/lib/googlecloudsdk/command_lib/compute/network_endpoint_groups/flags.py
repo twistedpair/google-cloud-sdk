@@ -456,7 +456,7 @@ def _AddAddEndpoint(
   if support_port_mapping_neg:
     help_text += """\
 
-              *clientPort* - Required endpoint client port only for the port
+              *client-port* - Required endpoint client port only for the port
               mapping NEG.
                """
 
@@ -589,7 +589,7 @@ def _AddRemoveEndpoint(
   if support_port_mapping_neg:
     help_text += """\
 
-              *clientPort* - Optional client port, only for port mapping NEGs.
+              *client-port* - Optional client port, only for port mapping NEGs.
                """
 
   help_text += """\
@@ -674,7 +674,7 @@ def AddUpdateNegArgsToParser(
   if support_ipv6:
     endpoint_spec['ipv6'] = str
   if support_port_mapping_neg:
-    endpoint_spec['client_port'] = int
+    endpoint_spec['client-port'] = int
   _AddAddEndpoint(
       endpoint_group, endpoint_spec, support_ipv6, support_port_mapping_neg
   )

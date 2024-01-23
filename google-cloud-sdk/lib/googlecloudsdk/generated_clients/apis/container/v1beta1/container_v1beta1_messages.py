@@ -294,7 +294,7 @@ class Autopilot(_messages.Message):
   r"""Autopilot is the configuration for Autopilot settings on the cluster.
 
   Fields:
-    conversionStatus: ConversionStatus shows conversion status.
+    conversionStatus: Output only. ConversionStatus shows conversion status.
     enabled: Enable Autopilot
     workloadPolicyConfig: Workload policy configuration for Autopilot.
   """
@@ -353,13 +353,16 @@ class AutopilotConversionStatus(_messages.Message):
 
   Enums:
     StateValueValuesEnum: Output only. The current state of the conversion.
-    TypeValueValuesEnum: Type represents the direction of conversion.
+    TypeValueValuesEnum: Output only. Type represents the direction of
+      conversion.
 
   Fields:
-    nodesMigrated: The number of nodes that have been migrated.
-    nodesRemaining: The number of nodes waiting for migration.
+    autopilotNodeCount: Output only. The number of Autopilot nodes in the
+      cluster. This field is only updated while MIGRATING.
+    standardNodeCount: Output only. The number of Standard nodes in the
+      cluster. This field is only updated while MIGRATING.
     state: Output only. The current state of the conversion.
-    type: Type represents the direction of conversion.
+    type: Output only. Type represents the direction of conversion.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -393,7 +396,7 @@ class AutopilotConversionStatus(_messages.Message):
     DONE = 5
 
   class TypeValueValuesEnum(_messages.Enum):
-    r"""Type represents the direction of conversion.
+    r"""Output only. Type represents the direction of conversion.
 
     Values:
       TYPE_UNSPECIFIED: TYPE_UNSPECIFIED indicates the conversion type is
@@ -407,8 +410,8 @@ class AutopilotConversionStatus(_messages.Message):
     CONVERT_TO_AUTOPILOT = 1
     CONVERT_TO_STANDARD = 2
 
-  nodesMigrated = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  nodesRemaining = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  autopilotNodeCount = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  standardNodeCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   state = _messages.EnumField('StateValueValuesEnum', 3)
   type = _messages.EnumField('TypeValueValuesEnum', 4)
 
@@ -1358,9 +1361,13 @@ class ClusterUpdate(_messages.Message):
       as an empty string,`monitoring.googleapis.com/kubernetes` will be used
       for GKE 1.14+ or `monitoring.googleapis.com` for earlier versions.
     desiredNetworkPerformanceConfig: The desired network performance config.
+    desiredNodeKubeletConfig: The desired node kubelet config for the cluster.
     desiredNodeNetworkPolicy: NodeNetworkPolicy specifies the config for the
       node firewall feature. This feature is only supported with
       DatapathProvider=ADVANCED_DATAPATH.
+    desiredNodePoolAutoConfigKubeletConfig: The desired node kubelet config
+      for all auto-provisioned node pools in autopilot clusters and node auto-
+      provisioning enabled clusters.
     desiredNodePoolAutoConfigNetworkTags: The desired network tags that apply
       to all auto-provisioned node pools in autopilot clusters and node auto-
       provisioning enabled clusters.
@@ -1549,39 +1556,41 @@ class ClusterUpdate(_messages.Message):
   desiredMonitoringConfig = _messages.MessageField('MonitoringConfig', 46)
   desiredMonitoringService = _messages.StringField(47)
   desiredNetworkPerformanceConfig = _messages.MessageField('ClusterNetworkPerformanceConfig', 48)
-  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 49)
-  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 50)
-  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 51)
-  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 52)
-  desiredNodePoolId = _messages.StringField(53)
-  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 54)
-  desiredNodeVersion = _messages.StringField(55)
-  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 56)
-  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 57)
-  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 58)
-  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 59)
-  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 60)
-  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 61)
-  desiredProtectConfig = _messages.MessageField('ProtectConfig', 62)
-  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 63)
-  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 64)
-  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 65)
-  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 66)
-  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 67)
-  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 68)
-  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 69)
-  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 70)
-  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 71)
-  desiredTpuConfig = _messages.MessageField('TpuConfig', 72)
-  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 73)
-  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 74)
-  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 75)
-  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 76)
-  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 77)
-  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 78)
-  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 79)
-  etag = _messages.StringField(80)
-  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 81)
+  desiredNodeKubeletConfig = _messages.MessageField('NodeKubeletConfig', 49)
+  desiredNodeNetworkPolicy = _messages.MessageField('NodeNetworkPolicy', 50)
+  desiredNodePoolAutoConfigKubeletConfig = _messages.MessageField('NodeKubeletConfig', 51)
+  desiredNodePoolAutoConfigNetworkTags = _messages.MessageField('NetworkTags', 52)
+  desiredNodePoolAutoConfigResourceManagerTags = _messages.MessageField('ResourceManagerTags', 53)
+  desiredNodePoolAutoscaling = _messages.MessageField('NodePoolAutoscaling', 54)
+  desiredNodePoolId = _messages.StringField(55)
+  desiredNodePoolLoggingConfig = _messages.MessageField('NodePoolLoggingConfig', 56)
+  desiredNodeVersion = _messages.StringField(57)
+  desiredNotificationConfig = _messages.MessageField('NotificationConfig', 58)
+  desiredParentProductConfig = _messages.MessageField('ParentProductConfig', 59)
+  desiredPodAutoscaling = _messages.MessageField('PodAutoscaling', 60)
+  desiredPodSecurityPolicyConfig = _messages.MessageField('PodSecurityPolicyConfig', 61)
+  desiredPrivateClusterConfig = _messages.MessageField('PrivateClusterConfig', 62)
+  desiredPrivateIpv6GoogleAccess = _messages.EnumField('DesiredPrivateIpv6GoogleAccessValueValuesEnum', 63)
+  desiredProtectConfig = _messages.MessageField('ProtectConfig', 64)
+  desiredReleaseChannel = _messages.MessageField('ReleaseChannel', 65)
+  desiredResourceUsageExportConfig = _messages.MessageField('ResourceUsageExportConfig', 66)
+  desiredRuntimeVulnerabilityInsightConfig = _messages.MessageField('RuntimeVulnerabilityInsightConfig', 67)
+  desiredSecretManagerConfig = _messages.MessageField('SecretManagerConfig', 68)
+  desiredSecurityPostureConfig = _messages.MessageField('SecurityPostureConfig', 69)
+  desiredServiceExternalIpsConfig = _messages.MessageField('ServiceExternalIPsConfig', 70)
+  desiredShieldedNodes = _messages.MessageField('ShieldedNodes', 71)
+  desiredStableFleetConfig = _messages.MessageField('StableFleetConfig', 72)
+  desiredStackType = _messages.EnumField('DesiredStackTypeValueValuesEnum', 73)
+  desiredTpuConfig = _messages.MessageField('TpuConfig', 74)
+  desiredVerticalPodAutoscaling = _messages.MessageField('VerticalPodAutoscaling', 75)
+  desiredWorkloadAltsConfig = _messages.MessageField('WorkloadALTSConfig', 76)
+  desiredWorkloadCertificates = _messages.MessageField('WorkloadCertificates', 77)
+  desiredWorkloadConfig = _messages.MessageField('WorkloadConfig', 78)
+  desiredWorkloadIdentityConfig = _messages.MessageField('WorkloadIdentityConfig', 79)
+  desiredWorkloadMonitoringEapConfig = _messages.MessageField('WorkloadMonitoringEapConfig', 80)
+  enableK8sBetaApis = _messages.MessageField('K8sBetaAPIConfig', 81)
+  etag = _messages.StringField(82)
+  removedAdditionalPodRangesConfig = _messages.MessageField('AdditionalPodRangesConfig', 83)
 
 
 class CompleteConvertToAutopilotRequest(_messages.Message):

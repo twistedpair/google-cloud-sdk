@@ -2530,10 +2530,14 @@ class ListInstancePartitionsResponse(_messages.Message):
     nextPageToken: `next_page_token` can be sent in a subsequent
       ListInstancePartitions call to fetch more of the matching instance
       partitions.
+    unreachable: The list of unreachable instance partitions. It includes the
+      names of instance partitions whose metadata could not be retrieved
+      within instance_partition_deadline.
   """
 
   instancePartitions = _messages.MessageField('InstancePartition', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListInstancesResponse(_messages.Message):
@@ -3787,7 +3791,7 @@ class ReplicaInfo(_messages.Message):
       leader location where leader replicas are placed. See the [region types
       documentation](https://cloud.google.com/spanner/docs/instances#region_ty
       pes) for more details.
-    location: The location of the serving resources, e.g. "us-central1".
+    location: The location of the serving resources, e.g., "us-central1".
     type: The type of replica.
   """
 
@@ -5735,7 +5739,11 @@ class SpannerProjectsInstancesInstancePartitionsListRequest(_messages.Message):
   r"""A SpannerProjectsInstancesInstancePartitionsListRequest object.
 
   Fields:
-    pageSize: Number of instancePartitions to be returned in the response. If
+    instancePartitionDeadline: Optional. Deadline used while retrieving
+      metadata for instance partitions. Instance partitions whose metadata
+      cannot be retrieved within this deadline will be added to unreachable in
+      ListInstancePartitionsResponse.
+    pageSize: Number of instance partitions to be returned in the response. If
       0 or less, defaults to the server's maximum allowed page size.
     pageToken: If non-empty, `page_token` should contain a next_page_token
       from a previous ListInstancePartitionsResponse.
@@ -5743,9 +5751,10 @@ class SpannerProjectsInstancesInstancePartitionsListRequest(_messages.Message):
       Values are of the form `projects//instances/`.
   """
 
-  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(2)
-  parent = _messages.StringField(3, required=True)
+  instancePartitionDeadline = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
 
 
 class SpannerProjectsInstancesInstancePartitionsOperationsCancelRequest(_messages.Message):
@@ -6666,6 +6675,8 @@ class Type(_messages.Message):
       INT64: Encoded as `string`, in decimal format.
       FLOAT64: Encoded as `number`, or the strings `"NaN"`, `"Infinity"`, or
         `"-Infinity"`.
+      FLOAT32: Encoded as `number`, or the strings `"NaN"`, `"Infinity"`, or
+        `"-Infinity"`.
       TIMESTAMP: Encoded as `string` in RFC 3339 timestamp format. The time
         zone must be present, and must be `"Z"`. If the schema has the column
         option `allow_commit_timestamp=true`, the placeholder string
@@ -6700,16 +6711,17 @@ class Type(_messages.Message):
     BOOL = 1
     INT64 = 2
     FLOAT64 = 3
-    TIMESTAMP = 4
-    DATE = 5
-    STRING = 6
-    BYTES = 7
-    ARRAY = 8
-    STRUCT = 9
-    NUMERIC = 10
-    JSON = 11
-    PROTO = 12
-    ENUM = 13
+    FLOAT32 = 4
+    TIMESTAMP = 5
+    DATE = 6
+    STRING = 7
+    BYTES = 8
+    ARRAY = 9
+    STRUCT = 10
+    NUMERIC = 11
+    JSON = 12
+    PROTO = 13
+    ENUM = 14
 
   class TypeAnnotationValueValuesEnum(_messages.Enum):
     r"""The TypeAnnotationCode that disambiguates SQL type that Spanner will
