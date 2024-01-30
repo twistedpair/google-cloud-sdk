@@ -174,9 +174,7 @@ def AddAlloydbClusterFlag(parser, required=False):
     If the destination is an AlloyDB cluster, use this field to provide the
     AlloyDB cluster ID.
   """
-  parser.add_argument(
-      '--alloydb-cluster', help=help_text, required=required, hidden=True
-  )
+  parser.add_argument('--alloydb-cluster', help=help_text, required=required)
 
 
 def AddProviderFlag(parser):

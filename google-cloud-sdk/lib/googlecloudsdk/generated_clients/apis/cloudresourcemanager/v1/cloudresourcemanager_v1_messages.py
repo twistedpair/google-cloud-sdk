@@ -163,7 +163,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1597,6 +1601,10 @@ class Project(_messages.Message):
       can be associated with a given resource. Clients should store labels in
       a representation such as JSON that does not depend on specific
       characters being disallowed. Example: "environment" : "dev" Read-write.
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this project. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
 
   Fields:
     createTime: Creation time. Read-only.
@@ -1624,6 +1632,10 @@ class Project(_messages.Message):
       after creation.
     projectNumber: The number uniquely identifying the project. Example:
       `415104041262` Read-only.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this project. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
@@ -1675,6 +1687,32 @@ class Project(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this project. Each item in the map must be expressed as " : ". For
+    example: "123/environment" : "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
   lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
@@ -1682,6 +1720,7 @@ class Project(_messages.Message):
   parent = _messages.MessageField('ResourceId', 5)
   projectId = _messages.StringField(6)
   projectNumber = _messages.IntegerField(7)
+  tags = _messages.MessageField('TagsValue', 8)
 
 
 class ProjectCreationStatus(_messages.Message):

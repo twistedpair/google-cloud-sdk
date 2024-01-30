@@ -19,6 +19,7 @@ from __future__ import division
 from __future__ import unicode_literals
 
 from googlecloudsdk.api_lib.run import container_resource
+from googlecloudsdk.api_lib.run import k8s_object
 
 
 # Label names as to be stored in k8s object metadata
@@ -110,3 +111,20 @@ class Revision(container_resource.ContainerResource):
   def image_digest(self):
     """The URL of the image, by digest. Stable when tags are not."""
     return self.status.imageDigest
+
+  def _EnsureNodeSelector(self):
+    if self.spec.nodeSelector is None:
+      self.spec.nodeSelector = k8s_object.InitializedInstance(
+          self._messages.RevisionSpec.NodeSelectorValue
+      )
+
+  @property
+  def node_selector(self):
+    """The node selector as a dictionary { accelerator_type: value}."""
+    self._EnsureNodeSelector()
+    return k8s_object.KeyValueListAsDictionaryWrapper(
+        self.spec.nodeSelector.additionalProperties,
+        self._messages.RevisionSpec.NodeSelectorValue.AdditionalProperty,
+        key_field='key',
+        value_field='value',
+    )

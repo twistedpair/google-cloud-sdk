@@ -33,6 +33,11 @@ def GetDataDiskImageImportTransform(value):
   return data_disk_image_import()
 
 
+def SetLocationAsGlobal():
+  """Set default location to global."""
+  return 'global'
+
+
 # Modify Request Hook
 def FixCreateImageImportRequest(ref, args, req):
   """Fixes the Create Image Import request."""
@@ -43,10 +48,17 @@ def FixCreateImageImportRequest(ref, args, req):
     req.imageImport.diskImageTargetDefaults.imageName = ref.Name()
 
   if not args.target_project:
+    # Handle default target project being the host project.
     target = args.project or properties.VALUES.core.project.Get(required=True)
     req.imageImport.diskImageTargetDefaults.targetProject = (
         ref.Parent().Parent().RelativeName() +
         '/locations/global/targetProjects/' + target
+    )
+  elif '/' not in args.target_project:
+    # Handle prepending path to target project short-name.
+    req.imageImport.diskImageTargetDefaults.targetProject = (
+        ref.Parent().Parent().RelativeName() +
+        '/locations/global/targetProjects/' + args.target_project
     )
 
   return req

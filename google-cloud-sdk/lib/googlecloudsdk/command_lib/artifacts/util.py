@@ -714,6 +714,19 @@ def EscapeVersionNameHook(ref, unused_args, req):
   return req
 
 
+def EscapeFileNameHook(ref, unused_args, req):
+  """Escapes slashes from request names."""
+  file = resources.REGISTRY.Create(
+      "artifactregistry.projects.locations.repositories.files",
+      projectsId=ref.projectsId,
+      locationsId=ref.locationsId,
+      repositoriesId=ref.repositoriesId,
+      filesId=ref.filesId.replace("/", "%2F"),
+  )
+  req.name = file.RelativeName()
+  return req
+
+
 def GetRedirectionEnablementReport(project):
   """Prints a redirection enablement report and returns mis-configured repos.
 

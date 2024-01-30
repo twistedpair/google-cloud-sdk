@@ -346,11 +346,16 @@ class SqliteCredentialStore(CredentialStore):
           properties.VALUES.core.universe_domain.Get()
       )
       if creds.universe_domain != universe_domain_from_property:
-        log.warning(
-            'Your credentials are from "%s", but your [core/universe_domain]'
-            ' property is set to "%s".',
-            creds.universe_domain,
-            universe_domain_from_property,
+        raise InvalidCredentialsError(
+            'Your credentials are from "%(universe_from_cred)s", but your'
+            ' [core/universe_domain] property is set to'
+            ' "%(universe_from_property)s". Update your active account to an'
+            ' account from "%(universe_from_property)s" or update the'
+            ' [core/universe_domain] property to "%(universe_from_cred)s".'
+            % {
+                'universe_from_cred': creds.universe_domain,
+                'universe_from_property': universe_domain_from_property,
+            }
         )
       return creds
 

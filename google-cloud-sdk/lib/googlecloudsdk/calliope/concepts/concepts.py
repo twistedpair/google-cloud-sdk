@@ -94,6 +94,11 @@ class ConceptSpec(object, metaclass=abc.ABCMeta):
   def name(self):
     """The name of the overall concept."""
 
+  @property
+  @abc.abstractmethod
+  def anchor(self):
+    """The anchor attribute of the concept."""
+
   @abc.abstractmethod
   def IsAnchor(self, attribute):
     """Returns True if attribute is an anchor."""

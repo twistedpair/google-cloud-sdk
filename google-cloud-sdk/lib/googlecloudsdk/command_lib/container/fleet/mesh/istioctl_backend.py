@@ -65,9 +65,23 @@ class IstioctlWrapper(binary_operations.StreamingBinaryBackedOperation):
   def _ParseArgsForCommand(self, command, **kwargs):
     if command == 'bug-report':
       return self._ParseBugReportArgs(**kwargs)
+    elif command == 'proxy-config':
+      return self._ParseProxyConfigArgs(**kwargs)
 
   def _ParseBugReportArgs(self, context, **kwargs):
     del kwargs
     exec_args = ['bug-report', '--context', context]
     return exec_args
 
+  def _ParseProxyConfigArgs(
+      self, proxy_config_type, pod_name_namespace, context, **kwargs
+  ):
+    del kwargs
+    exec_args = [
+        'proxy-config',
+        proxy_config_type,
+        pod_name_namespace,
+        '--context',
+        context,
+    ]
+    return exec_args

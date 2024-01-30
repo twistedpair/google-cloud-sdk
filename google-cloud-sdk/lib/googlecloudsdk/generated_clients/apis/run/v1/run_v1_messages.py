@@ -181,7 +181,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -2035,6 +2039,10 @@ class Revision(_messages.Message):
 class RevisionSpec(_messages.Message):
   r"""RevisionSpec holds the desired state of the Revision (from the client).
 
+  Messages:
+    NodeSelectorValue: The Node Selector configuration. Map of selector key to
+      a value which matches a node.
+
   Fields:
     containerConcurrency: ContainerConcurrency specifies the maximum allowed
       in-flight (concurrent) requests per container instance of the Revision.
@@ -2045,6 +2053,8 @@ class RevisionSpec(_messages.Message):
       lifecycle. In Cloud Run, only a single container may be provided.
     enableServiceLinks: Not supported by Cloud Run.
     imagePullSecrets: Not supported by Cloud Run.
+    nodeSelector: The Node Selector configuration. Map of selector key to a
+      value which matches a node.
     runtimeClassName: Runtime. Leave unset for default.
     serviceAccountName: Email address of the IAM service account associated
       with the revision of the service. The service account represents the
@@ -2057,14 +2067,41 @@ class RevisionSpec(_messages.Message):
     volumes: A Volume attribute.
   """
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class NodeSelectorValue(_messages.Message):
+    r"""The Node Selector configuration. Map of selector key to a value which
+    matches a node.
+
+    Messages:
+      AdditionalProperty: An additional property for a NodeSelectorValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type NodeSelectorValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a NodeSelectorValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   containerConcurrency = _messages.IntegerField(1, variant=_messages.Variant.INT32)
   containers = _messages.MessageField('Container', 2, repeated=True)
   enableServiceLinks = _messages.BooleanField(3)
   imagePullSecrets = _messages.MessageField('LocalObjectReference', 4, repeated=True)
-  runtimeClassName = _messages.StringField(5)
-  serviceAccountName = _messages.StringField(6)
-  timeoutSeconds = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  volumes = _messages.MessageField('Volume', 8, repeated=True)
+  nodeSelector = _messages.MessageField('NodeSelectorValue', 5)
+  runtimeClassName = _messages.StringField(6)
+  serviceAccountName = _messages.StringField(7)
+  timeoutSeconds = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  volumes = _messages.MessageField('Volume', 9, repeated=True)
 
 
 class RevisionStatus(_messages.Message):

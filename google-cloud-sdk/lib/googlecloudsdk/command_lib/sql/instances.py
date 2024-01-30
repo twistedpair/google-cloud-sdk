@@ -422,6 +422,10 @@ class _BaseInstances(object):
         settings.replicationLagMaxSeconds = (
             args.replication_lag_max_seconds_for_recreate
         )
+
+      if args.enable_google_ml_integration is not None:
+        settings.enableGoogleMlIntegration = args.enable_google_ml_integration
+
     return settings
 
   @classmethod

@@ -65,7 +65,8 @@ def _GetAllSharedAttributes(arg_data, shared_resource_args):
   return list(ignored_attributes)
 
 
-def _GetResourceArgGenerator(arg_data, method, shared_resource_args):
+def _GetResourceArgGenerator(
+    arg_data, resource_collection, shared_resource_args):
   """Gets a function to generate a resource arg."""
   ignored_attributes = _GetAllSharedAttributes(arg_data, shared_resource_args)
   def ArgGen(name, group_help):
@@ -74,7 +75,7 @@ def _GetResourceArgGenerator(arg_data, method, shared_resource_args):
       group_help += arg_data.group_help
 
     return arg_data.GenerateResourceArg(
-        method, name, ignored_attributes, group_help=group_help)
+        resource_collection, name, ignored_attributes, group_help=group_help)
   return ArgGen
 
 
@@ -83,17 +84,16 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
 
   @classmethod
   def FromArgData(
-      cls, arg_data, method, shared_resource_args=None
+      cls, arg_data, resource_collection, is_list_method=False,
+      shared_resource_args=None
   ):
     if arg_data.repeated:
       gen_cls = UpdateListResourceArgumentGenerator
     else:
       gen_cls = UpdateDefaultResourceArgumentGenerator
 
-    arg_name = arg_data.GetAnchorArgName(method)
-    is_primary = arg_data.IsPrimaryResource(
-        method and method.resource_argument_collection
-    )
+    arg_name = arg_data.GetAnchorArgName(resource_collection, is_list_method)
+    is_primary = arg_data.IsPrimaryResource(resource_collection)
     if is_primary:
       raise util.InvalidSchemaError(
           '{} is a primary resource. Primary resources are required and '
@@ -112,13 +112,13 @@ class UpdateResourceArgumentGenerator(update_args.UpdateArgumentGenerator):
     return gen_cls(
         arg_name=arg_name,
         arg_gen=_GetResourceArgGenerator(
-            arg_data, method, shared_resource_args),
+            arg_data, resource_collection, shared_resource_args),
         api_field=api_field,
         repeated=arg_data.repeated,
         collection=arg_data.collection,
         is_primary=is_primary,
         attribute_flags=arg_utils.GetAttributeFlags(
-            arg_data, arg_name, method, shared_resource_args),
+            arg_data, arg_name, resource_collection, shared_resource_args),
     )
 
   def __init__(

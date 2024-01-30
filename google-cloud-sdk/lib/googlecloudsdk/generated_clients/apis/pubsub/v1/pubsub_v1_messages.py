@@ -244,7 +244,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -266,6 +270,8 @@ class CloudStorageConfig(_messages.Message):
       bucket must be created by the user. The bucket name must be without any
       prefix like "gs://". See the [bucket naming requirements]
       (https://cloud.google.com/storage/docs/buckets#naming).
+    filenameDatetimeFormat: Optional. User-provided format string specifying
+      how to represent datetimes in Cloud Storage filenames.
     filenamePrefix: Optional. User-provided prefix for Cloud Storage filename.
       See the [object naming
       requirements](https://cloud.google.com/storage/docs/objects#naming).
@@ -309,12 +315,13 @@ class CloudStorageConfig(_messages.Message):
 
   avroConfig = _messages.MessageField('AvroConfig', 1)
   bucket = _messages.StringField(2)
-  filenamePrefix = _messages.StringField(3)
-  filenameSuffix = _messages.StringField(4)
-  maxBytes = _messages.IntegerField(5)
-  maxDuration = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  textConfig = _messages.MessageField('TextConfig', 8)
+  filenameDatetimeFormat = _messages.StringField(3)
+  filenamePrefix = _messages.StringField(4)
+  filenameSuffix = _messages.StringField(5)
+  maxBytes = _messages.IntegerField(6)
+  maxDuration = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  textConfig = _messages.MessageField('TextConfig', 9)
 
 
 class CommitSchemaRequest(_messages.Message):

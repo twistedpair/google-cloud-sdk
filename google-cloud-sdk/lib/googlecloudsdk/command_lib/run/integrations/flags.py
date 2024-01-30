@@ -24,6 +24,7 @@ from typing import Dict
 from googlecloudsdk.api_lib.run.integrations import types_utils
 from googlecloudsdk.api_lib.run.integrations import validator
 from googlecloudsdk.calliope import arg_parsers
+from googlecloudsdk.core import properties
 
 
 def AddFileArg(parser):
@@ -40,6 +41,14 @@ def AddPositionalTypeArg(parser):
   parser.add_argument(
       'type',
       help='Type of the integration.')
+
+
+def AddServiceAccountArg(parser):
+  """Adds a service-account argument."""
+  parser.add_argument(
+      '--service-account',
+      help='Name of the service account to use when deploying the integration.',
+  )
 
 
 def AddTypeArg(parser):
@@ -139,3 +148,22 @@ def GetParameters(args) -> Dict[str, str]:
     parameters.update(args.parameters)
 
   return parameters
+
+
+def GetServiceAccount(args):
+  """Decides the service account to use.
+
+  Service account is decided in the following order:
+  - service_account flag
+  - service_account gcloud config;
+
+  Args:
+    args: Namespace, the args namespace.
+
+  Returns:
+    A str representing service account.
+  """
+  if getattr(args, 'service_account', None):
+    return args.service_account
+  if properties.VALUES.runapps.deployment_service_account.IsExplicitlySet():
+    return properties.VALUES.runapps.deployment_service_account.Get()

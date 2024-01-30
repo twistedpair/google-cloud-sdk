@@ -22,6 +22,7 @@ from __future__ import unicode_literals
 DEFAULT_REGISTRY = 'gcr.io'
 REGIONAL_GCR_REGISTRIES = ['us.gcr.io', 'eu.gcr.io', 'asia.gcr.io']
 REGIONAL_AR_REGISTRIES = [
+    'africa-south1-docker.pkg.dev',
     'asia-docker.pkg.dev',
     'asia-east1-docker.pkg.dev',
     'asia-east2-docker.pkg.dev',

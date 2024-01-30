@@ -30,12 +30,9 @@ locationDefaultGlobal:
     parameter_name: locationsId
     attribute_name: location
     help: Resource location.
-    property: compute/region
     fallthroughs:
-    - hook: googlecloudsdk.command_lib.backupdr.util:SetGlobalLocation
-      hint: |
-        use default global location
-  disable_auto_completers: false
+    - hook: googlecloudsdk.command_lib.migration.vms.hooks:SetLocationAsGlobal
+      hint: use global location
 
 imageImport:
   name: image_import

@@ -35,8 +35,6 @@ from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs
 from googlecloudsdk.core.util import text
 
-import six
-
 
 class Arguments(object):
   """Everything about cli arguments are registered in this section."""
@@ -107,7 +105,7 @@ class Labels(object):
     self.api_field = data['api_field']
 
 
-class YAMLArgument(six.with_metaclass(abc.ABCMeta, object)):
+class YAMLArgument(object, metaclass=abc.ABCMeta):
   """Root for generating all arguments from yaml data.
 
   Requires all subclasses to contain Generate and Parse methods.
@@ -134,7 +132,7 @@ class YAMLArgument(six.with_metaclass(abc.ABCMeta, object)):
     """Whether the argument with an api field is specified in the namespace."""
 
   @abc.abstractmethod
-  def Generate(self, method, message, shared_resource_flags):
+  def Generate(self, methods, shared_resource_flags):
     """Generates and returns the base argument."""
 
   @abc.abstractmethod
@@ -234,12 +232,11 @@ class ArgumentGroup(YAMLArgument):
     else:
       return False
 
-  def Generate(self, method, message, shared_resource_flags=None):
+  def Generate(self, methods, shared_resource_flags=None):
     """Generates and returns the base argument group.
 
     Args:
-      method: registry.APIMethod, used to generate other arguments
-      message: The API message, None for non-resource args.
+      methods: list[registry.APIMethod], used to generate other arguments
       shared_resource_flags: [string], list of flags being generated elsewhere
 
     Returns:
@@ -249,7 +246,7 @@ class ArgumentGroup(YAMLArgument):
         mutex=self.mutex, required=self.required, help=self.help_text,
         hidden=self.hidden)
     for arg in self.arguments:
-      group.AddArgument(arg.Generate(method, message, shared_resource_flags))
+      group.AddArgument(arg.Generate(methods, shared_resource_flags))
     return group
 
   def Parse(self, method, message, namespace, group_required=True):
@@ -299,6 +296,8 @@ class Argument(YAMLArgument):
     generate: False to not generate this argument. This can be used to create
       placeholder arg specs for defaults that don't actually need to be
       generated.
+    clearable: True to automatically generate update flags such as `clear`,
+      `update`, `remove`, and `add`
   """
 
   @classmethod
@@ -410,32 +409,51 @@ class Argument(YAMLArgument):
     """Gets apitools field associated with api_field."""
     if message and self.api_field:
       return arg_utils.GetFieldFromMessage(message, self.api_field)
-    return None
+    else:
+      return None
 
-  def _GenerateUpdateFlags(self, message):
-    """Creates update flags generator using aptiools message."""
-    return update_args.UpdateBasicArgumentGenerator.FromArgData(self, message)
+  def _GetFieldFromMethods(self, methods):
+    """Gets apitools field associated with api_field from methods."""
+    if not methods or not self.api_field:
+      return None
+
+    fields = set(
+        self._GetField(method.GetRequestType()) for method in methods)
+
+    if len(fields) != 1:
+      message_names = ', '.join(
+          method.GetRequestType().__name__ for method in methods)
+      raise util.InvalidSchemaError(
+          f'Unable to generate flag for api field {self.api_field}. '
+          f'Found non equivalent fields in messages: [{message_names}].')
+
+    return fields.pop()
+
+  def _GenerateUpdateFlags(self, field):
+    """Creates update flags generator using aptiools field."""
+    return update_args.UpdateBasicArgumentGenerator.FromArgData(self, field)
 
   def _ParseUpdateArgsFromNamespace(self, namespace, message):
     """Parses update flags and returns modified apitools message field."""
-    return self._GenerateUpdateFlags(message).Parse(namespace, message)
+    field = self._GetField(message)
+    return self._GenerateUpdateFlags(field).Parse(namespace, message)
 
-  def Generate(self, method, message, shared_resource_flags=None):
+  def Generate(self, methods, shared_resource_flags=None):
     """Generates and returns the base argument.
 
     Args:
-      method: registry.APIMethod, used to generate other arguments.
-      message: The API message, None for non-resource args.
+      methods: list[registry.APIMethod], used to generate other arguments.
       shared_resource_flags: [string], list of flags being generated elsewhere.
 
     Returns:
       The base argument.
     """
-    if self.clearable and self.api_field:
-      return self._GenerateUpdateFlags(message).Generate()
+    field = self._GetFieldFromMethods(methods)
 
-    field = self._GetField(message)
-    return arg_utils.GenerateFlag(field, self)
+    if self.clearable and field:
+      return self._GenerateUpdateFlags(field).Generate()
+    else:
+      return arg_utils.GenerateFlag(field, self)
 
   def Parse(self, method, message, namespace, group_required=True):
     """Sets the argument message value, if any, from the parsed args.
@@ -447,6 +465,7 @@ class Argument(YAMLArgument):
       group_required: bool, whether parent argument group is required.
         Unused here.
     """
+    del method, group_required  # unused params
     if self.api_field is None:
       return
 
@@ -469,7 +488,7 @@ class Argument(YAMLArgument):
     arg_utils.SetFieldInMessage(message, self.api_field, value)
 
 
-class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
+class YAMLConceptArgument(YAMLArgument, metaclass=abc.ABCMeta):
   """Encapsulate data used to generate and parse all resource args.
 
   YAMLConceptArgument is parent class that parses data and standardizes
@@ -510,7 +529,8 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
 
     if 'resources' in data['resource_spec']:
       return YAMLMultitypeResourceArgument(resource_spec, help_text, **kwargs)
-    return YAMLResourceArgument(resource_spec, help_text, **kwargs)
+    else:
+      return YAMLResourceArgument(resource_spec, help_text, **kwargs)
 
   def __init__(self, data, group_help, is_positional=None, removed_flags=None,
                is_parent_resource=False, is_primary_resource=None,
@@ -546,6 +566,12 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
 
   @property
   @abc.abstractmethod
+  def _resource_spec(self):
+    """"concepts.ConceptSpec generated from the YAML."""
+    pass
+
+  @property
+  @abc.abstractmethod
   def collection(self):
     """"Get registry.APICollection based on collection and api_version."""
     pass
@@ -555,16 +581,51 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     """Determines if this resource arg is the primary resource."""
     pass
 
-  @abc.abstractmethod
-  def ParseResourceArg(self, method, namespace):
-    """Parses the resource ref from namespace."""
-    pass
+  @property
+  def attribute_names(self):
+    """Names of resource attributes."""
+    return [attr.name for attr in self._resource_spec.attributes]
 
-  def _ParseResourceArg(self, method, namespace, group_required=True):
-    """Gets the resource ref for the resource specified as the positional arg.
+  @property
+  def api_fields(self):
+    """Where the resource arg is mapped into the request message."""
+    if self.resource_method_params:
+      return list(self.resource_method_params.keys())
+    else:
+      return []
+
+  @property
+  def _anchor_name(self):
+    """Name of the anchor attribute.
+
+    For anchor attribute foo-bar, the expected format is...
+      1. `foo-bar` if anchor is not positional
+      2. `FOO_BAR` if anchor is positional
+    """
+    if self.flag_name_override:
+      return self.flag_name_override
+    else:
+      count = 2 if self.repeated else 1
+      return text.Pluralize(count, self._resource_spec.anchor.name)
+
+  def GenerateResourceArg(
+      self, method, anchor_arg_name=None,
+      shared_resource_flags=None, group_help=None):
+    """Generates only the resource arg (no update flags)."""
+
+    return self._GenerateConceptParser(
+        self._resource_spec,
+        self.attribute_names,
+        repeated=self.repeated,
+        shared_resource_flags=shared_resource_flags,
+        anchor_arg_name=anchor_arg_name,
+        group_help=group_help,
+        is_required=self.IsRequired(method))
+
+  def ParseResourceArg(self, namespace, group_required=True):
+    """Parses the resource ref from namespace (no update flags).
 
     Args:
-      method: registry.APIMethod, method we are parsing the resource for.
       namespace: The argparse namespace.
       group_required: bool, whether parent argument group is required
 
@@ -572,8 +633,6 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
       The parsed resource ref or None if no resource arg was generated for this
       method.
     """
-    anchor = self.GetAnchorArgName(method)
-
     # If surrounding argument group is not required, only parse argument
     # if the anchor is specified. Otherwise, user will receive some unncessary
     # errors for missing attribute flags.
@@ -581,76 +640,103 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
     # argument should be parsed as required should be fixed in the
     # resource argument and take into account the other arguments specified
     # in the group.
-    if (not arg_utils.GetFromNamespace(namespace, anchor)
+    if (not arg_utils.GetFromNamespace(namespace, self._anchor_name)
         and not group_required):
       return None
 
-    result = arg_utils.GetFromNamespace(namespace.CONCEPTS, anchor)
+    result = arg_utils.GetFromNamespace(namespace.CONCEPTS, self._anchor_name)
 
     if result:
       result = result.Parse()
 
     if isinstance(result, multitype.TypedConceptResult):
-      result = result.result
-    return result
-
-  def _Plural(self, name, plural_name=None):
-    if name is None:
-      return None
-    count = 2 if self.repeated else 1
-    return text.Pluralize(count, name, plural_name)
-
-  @property
-  def api_fields(self):
-    if self.resource_method_params:
-      return list(self.resource_method_params.keys())
+      return result.result
     else:
-      return []
+      return result
 
   def IsApiFieldSpecified(self, namespace):
     if not self.api_fields:
       return False
     return _IsSpecified(
         namespace=namespace,
-        arg_dest=resource_util.NormalizeFormat(self.GetAnchorArgName()),
+        arg_dest=resource_util.NormalizeFormat(self._anchor_name),
         clearable=self.clearable)
 
-  def IsPositional(self, method=None):
+  def IsPositional(self, resource_collection=None, is_list_method=False):
+    """Determines if the resource arg is positional.
+
+    Args:
+      resource_collection: APICollection | None, collection associated with
+        the api method. None if a methodless command.
+      is_list_method: bool | None, whether command is associated with list
+        method. None if methodless command.
+
+    Returns:
+      bool, whether the resource arg anchor is positional
+    """
+    # If left unspecified, decide whether the resource is positional based on
+    # whether the resource is primary.
     if self._is_positional is not None:
       return self._is_positional
 
-    is_primary_resource = self.IsPrimaryResource(
-        method and method.resource_argument_collection)
-    is_list = method and method.IsList()
+    is_primary_resource = self.IsPrimaryResource(resource_collection)
+    return is_primary_resource and not is_list_method
 
-    return is_primary_resource and not is_list
+  def IsRequired(self, resource_collection=None):
+    """Determines if the resource arg is required.
 
-  def IsRequired(self, method=None):
+    Args:
+      resource_collection: APICollection | None, collection associated with
+        the api method. None if a methodless command.
+
+    Returns:
+      bool, whether the resource arg is required
+    """
     if self._required is not None:
       return self._required
 
-    return self.IsPrimaryResource(
-        method and method.resource_argument_collection)
+    return self.IsPrimaryResource(resource_collection)
 
-  def GetAnchorArgName(self, method=None):
-    """Get the anchor argument name for the resource spec."""
-    resource_spec = self._GenerateResourceSpec(method)
+  def GetAnchorArgName(self, resource_collection, is_list_method):
+    """Get the anchor argument name for the resource spec.
 
-    if self.flag_name_override:
-      flag_name = self.flag_name_override
-    elif hasattr(resource_spec, 'anchor'):
-      flag_name = self._Plural(resource_spec.anchor.name)
-    else:
-      flag_name = (self._Plural(self.name, self._plural_name) or
-                   self._Plural(resource_spec.name, resource_spec.plural_name))
+    Args:
+      resource_collection: APICollection | None, collection associated with
+        the api method. None if a methodless command.
+      is_list_method: bool | None, whether command is associated with list
+        method. None if methodless command.
 
+    Returns:
+      string, anchor in flag format ie `--foo-bar` or `FOO_BAR`
+    """
     # If left unspecified, decide whether the resource is positional based on
     # the method.
-    anchor_arg_is_flag = not self.IsPositional(method)
-    anchor_arg_name = (
-        '--' + flag_name if anchor_arg_is_flag
-        else flag_name)
-    return anchor_arg_name
+    anchor_arg_is_flag = not self.IsPositional(
+        resource_collection, is_list_method)
+    return (
+        '--' + self._anchor_name if anchor_arg_is_flag else self._anchor_name)
+
+  def _GetMethodCollection(self, methods):
+    for method in methods:
+      if self.IsPrimaryResource(method.resource_argument_collection):
+        return method.resource_argument_collection
+    else:
+      # Return any of the methods if none are associated with
+      # a primary collection
+      return methods[0].resource_argument_collection if methods else None
+
+  def _GetIsList(self, methods):
+    is_list = set(method.IsList() for method in methods)
+    if len(is_list) > 1:
+      raise util.InvalidSchemaError(
+          'Methods used to generate YAMLConceptArgument cannot contain both '
+          'list and non-list methods. Update the list of methods to only use '
+          'list or non-list methods.')
+
+    if is_list:
+      return is_list.pop()
+    else:
+      return False
 
   def _GetResourceMap(self, ref):
     message_resource_map = {}
@@ -674,11 +760,10 @@ class YAMLConceptArgument(six.with_metaclass(abc.ABCMeta, YAMLArgument)):
         return resource_util.PositionalFormat(fallthrough_data['arg_name'])
       return resource_util.FlagNameFormat(fallthrough_data['arg_name'])
 
-    for attribute_name, fallthroughs_data in six.iteritems(
-        command_level_fallthroughs_data):
+    for attr_name, fallthroughs_data in command_level_fallthroughs_data.items():
       fallthroughs_list = [_FallthroughStringFromData(fallthrough)
                            for fallthrough in fallthroughs_data]
-      command_level_fallthroughs[attribute_name] = fallthroughs_list
+      command_level_fallthroughs[attr_name] = fallthroughs_list
 
     return command_level_fallthroughs
 
@@ -739,7 +824,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
   """Encapsulates the spec for the resource arg of a declarative command."""
 
   @classmethod
-  def FromSpecData(cls, data):
+  def FromSpecData(cls, data, request_api_version):
     """Create a resource argument with no command-level information configured.
 
     Given just the reusable resource specification (such as attribute names
@@ -748,6 +833,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
 
     Args:
       data: the yaml resource definition.
+      request_api_version: str, api version of request collection.
 
     Returns:
       YAMLResourceArgument with no group help or flag name information.
@@ -755,7 +841,7 @@ class YAMLResourceArgument(YAMLConceptArgument):
     if not data:
       return None
 
-    return cls(data, None)
+    return cls(data, None, request_api_version=request_api_version)
 
   def __init__(self, data, group_help, request_api_version=None, **kwargs):
     super(YAMLResourceArgument, self).__init__(data, group_help, **kwargs)
@@ -780,15 +866,51 @@ class YAMLResourceArgument(YAMLConceptArgument):
                 removed, self.name, ', '.join(self.attribute_names)))
 
   @property
-  def attribute_names(self):
-    return [a['attribute_name'] for a in self.attribute_data]
-
-  @property
   def collection(self):
     return registry.GetAPICollection(
         self._full_collection_name, api_version=self._api_version)
 
-  def IsPrimaryResource(self, resource_collection=None):
+  @property
+  def _resource_spec(self):
+    """Resource spec generated from the YAML."""
+
+    # If attributes do not match resource_collection.detailed_params, will
+    # raise InvalidSchema error
+    attributes = concepts.ParseAttributesFromData(
+        self.attribute_data, self.collection.detailed_params)
+
+    return concepts.ResourceSpec(
+        self.collection.full_name,
+        resource_name=self.name,
+        api_version=self.collection.api_version,
+        disable_auto_completers=self._disable_auto_completers,
+        plural_name=self._plural_name,
+        # TODO(b/297860320): is_positional should be self.IsPositional(method)
+        # in order to automatically change underscores to hyphens
+        # and vice versa. However, some surfaces will break if we change
+        # it now.
+        is_positional=self._is_positional,
+        **{attribute.parameter_name: attribute for attribute in attributes})
+
+  def _GetParentResource(self, resource_collection):
+    parent_collection, _, _ = resource_collection.full_name.rpartition('.')
+    return registry.GetAPICollection(
+        parent_collection, api_version=self._api_version)
+
+  def IsPrimaryResource(self, resource_collection):
+    """Determines whether this resource arg is primary for a given method.
+
+    Primary indicates that this resource arg represents the resource the api
+    is fetching, updating, or creating
+
+    Args:
+      resource_collection: APICollection | None, collection associated with
+        the api method. None if a methodless command.
+
+    Returns:
+      bool, true if this resource arg corresponds with the given method
+        collection
+    """
     if not self.is_primary_resource and self.is_primary_resource is not None:
       return False
 
@@ -820,48 +942,41 @@ class YAMLResourceArgument(YAMLConceptArgument):
 
     return True
 
-  def _GenerateUpdateFlags(self, method, shared_resource_flags=None):
+  def _GenerateUpdateFlags(
+      self, resource_collection, is_list_method, shared_resource_flags=None):
     """Creates update flags generator using aptiools message."""
     return update_resource_args.UpdateResourceArgumentGenerator.FromArgData(
-        self, method, shared_resource_flags)
+        self, resource_collection, is_list_method, shared_resource_flags)
 
-  def _ParseUpdateArgsFromNamespace(self, method, namespace, message):
+  def _ParseUpdateArgsFromNamespace(
+      self, resource_collection, is_list_method, namespace, message):
     """Parses update flags and returns modified apitools message field."""
-    return self._GenerateUpdateFlags(method).Parse(namespace, message)
+    return self._GenerateUpdateFlags(
+        resource_collection, is_list_method).Parse(namespace, message)
 
-  def GenerateResourceArg(
-      self, method, anchor_arg_name=None, shared_resource_flags=None,
-      group_help=None):
-    resource_spec = self._GenerateResourceSpec(method)
-
-    return self._GenerateConceptParser(
-        resource_spec,
-        self.attribute_names,
-        repeated=self.repeated,
-        shared_resource_flags=shared_resource_flags,
-        anchor_arg_name=anchor_arg_name,
-        group_help=group_help,
-        is_required=self.IsRequired(method))
-
-  def Generate(self, method, unused_message, shared_resource_flags=None):
+  def Generate(self, methods, shared_resource_flags=None):
     """Generates and returns resource argument.
 
     Args:
-      method: registry.APIMethod, used to generate other arguments.
-      unused_message: The API message, None for non-resource args.
+      methods: list[registry.APIMethod], used to generate other arguments.
       shared_resource_flags: [string], list of flags being generated elsewhere.
 
     Returns:
       Resource argument.
     """
-    if self.clearable:
-      return self._GenerateUpdateFlags(method, shared_resource_flags).Generate()
+    resource_collection = self._GetMethodCollection(methods)
+    is_list_method = self._GetIsList(methods)
 
-    return self.GenerateResourceArg(
-        method,
-        anchor_arg_name=self.GetAnchorArgName(method),
-        shared_resource_flags=shared_resource_flags,
-        group_help=self.group_help)
+    if self.clearable:
+      return self._GenerateUpdateFlags(
+          resource_collection, is_list_method, shared_resource_flags).Generate()
+    else:
+      return self.GenerateResourceArg(
+          resource_collection,
+          anchor_arg_name=self.GetAnchorArgName(
+              resource_collection, is_list_method),
+          shared_resource_flags=shared_resource_flags,
+          group_help=self.group_help)
 
   def Parse(self, method, message, namespace, group_required=True):
     """Sets the argument message value, if any, from the parsed args.
@@ -874,9 +989,12 @@ class YAMLResourceArgument(YAMLConceptArgument):
         Unused here.
     """
     if self.clearable:
-      ref = self._ParseUpdateArgsFromNamespace(method, namespace, message)
+      ref = self._ParseUpdateArgsFromNamespace(
+          method and method.resource_argument_collection,
+          method.IsList(),
+          namespace, message)
     else:
-      ref = self.ParseResourceArg(method, namespace, group_required)
+      ref = self.ParseResourceArg(namespace, group_required)
 
     if not self.parse_resource_into_request or (not ref and not self.clearable):
       return
@@ -890,85 +1008,56 @@ class YAMLResourceArgument(YAMLConceptArgument):
         is_primary_resource=self.IsPrimaryResource(
             method and method.resource_argument_collection))
 
-  def ParseResourceArg(self, method, namespace, group_required=True):
-    return self._ParseResourceArg(method, namespace, group_required)
-
-  def _GetParentResource(self, resource_collection):
-    parent_collection, _, _ = resource_collection.full_name.rpartition('.')
-    return registry.GetAPICollection(
-        parent_collection, api_version=self._api_version)
-
-  def _GenerateResourceSpec(self, method=None):
-    """Validates if the resource matches what the method specifies.
-
-    Args:
-      method: registry.APIMethod, method we are generating the resource
-        argument for. Provides extra validation the resource argument spec
-        is specified correctly. If method is None, the resource arg will just
-        be loaded based on the collection it specifies.
-
-    Returns:
-      concepts.ResourceSpec, The generated specification that can be added to
-      a parser.
-    """
-
-    resource_collection = method and method.resource_argument_collection
-    if (not resource_collection
-        or self.override_resource_collection
-        or not self.IsPrimaryResource(resource_collection)):
-      resource_collection = self.collection
-    elif resource_collection and self.is_parent_resource:
-      resource_collection = self._GetParentResource(resource_collection)
-
-    # If attributes do not match resource_collection.detailed_params, will
-    # raise InvalidSchema error
-    attributes = concepts.ParseAttributesFromData(
-        self.attribute_data, resource_collection.detailed_params)
-
-    return concepts.ResourceSpec(
-        resource_collection.full_name,
-        resource_name=self.name,
-        api_version=resource_collection.api_version,
-        disable_auto_completers=self._disable_auto_completers,
-        plural_name=self._plural_name,
-        # TODO(b/297860320): is_positional should be self.IsPositional(method)
-        # in order to automatically change underscores to hyphens
-        # and vice versa. However, some surfaces will break if we change
-        # it now.
-        is_positional=self._is_positional,
-        **{attribute.parameter_name: attribute for attribute in attributes})
-
 
 class YAMLMultitypeResourceArgument(YAMLConceptArgument):
   """Encapsulates the spec for the resource arg of a declarative command."""
 
-  def __init__(self, data, group_help, **kwargs):
+  def __init__(self, data, group_help, request_api_version=None, **kwargs):
     super(YAMLMultitypeResourceArgument, self).__init__(
         data, group_help, **kwargs)
 
-    self._resources = data.get('resources') or []
+    self._resources = [
+        YAMLResourceArgument.FromSpecData(resource, request_api_version)
+        for resource in data.get('resources', [])]
 
   @property
   def collection(self):
     return None
 
   @property
-  def attribute_names(self):
-    attribute_names = []
+  def _resource_spec(self):
+    """Resource spec generated from the YAML."""
+
+    resource_specs = []
     for sub_resource in self._resources:
-      sub_resource_arg = YAMLResourceArgument.FromSpecData(sub_resource)
-      for attribute_name in sub_resource_arg.attribute_names:
-        if attribute_name not in attribute_names:
-          attribute_names.append(attribute_name)
-    return attribute_names
+      # pylint: disable=protected-access
+      if not sub_resource._disable_auto_completers:
+        raise ValueError('disable_auto_completers must be True for '
+                         'multitype resource argument [{}]'.format(self.name))
+      resource_specs.append(sub_resource._resource_spec)
+      # pylint: enable=protected-access
+
+    return multitype.MultitypeResourceSpec(self.name, *resource_specs)
 
   def IsPrimaryResource(self, resource_collection):
+    """Determines whether this resource arg is primary for a given method.
+
+    Primary indicates that this resource arg represents the resource the api
+    is fetching, updating, or creating
+
+    Args:
+      resource_collection: APICollection | None, collection associated with
+        the api method. None if a methodless command.
+
+    Returns:
+      bool, true if this resource arg corresponds with the given method
+        collection
+    """
     if not self.is_primary_resource and self.is_primary_resource is not None:
       return False
 
     for sub_resource in self._resources:
-      sub_resource_arg = YAMLResourceArgument.FromSpecData(sub_resource)
-      if sub_resource_arg.IsPrimaryResource(resource_collection):
+      if sub_resource.IsPrimaryResource(resource_collection):
         return True
 
     if self.is_primary_resource:
@@ -978,23 +1067,21 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
           'resources matched.'.format(
               self.name, resource_collection.full_name,
               resource_collection.api_version))
-    return True
+    return False
 
-  def Generate(self, method, message, shared_resource_flags=None):
-    del message  # unused messsage argument
-    resource_spec = self._GenerateResourceSpec(method)
+  def Generate(self, methods, shared_resource_flags=None):
+    resource_collection = self._GetMethodCollection(methods)
+    is_list_method = self._GetIsList(methods)
 
-    return self._GenerateConceptParser(
-        resource_spec,
-        self.attribute_names,
-        repeated=self.repeated,
+    return self.GenerateResourceArg(
+        resource_collection,
+        anchor_arg_name=self.GetAnchorArgName(
+            resource_collection, is_list_method),
         shared_resource_flags=shared_resource_flags,
-        anchor_arg_name=self.GetAnchorArgName(method),
-        group_help=self.group_help,
-        is_required=self.IsRequired(method))
+        group_help=self.group_help)
 
   def Parse(self, method, message, namespace, group_required=True):
-    ref = self.ParseResourceArg(method, namespace, group_required)
+    ref = self.ParseResourceArg(namespace, group_required)
     if not self.parse_resource_into_request or not ref:
       return message
 
@@ -1006,35 +1093,3 @@ class YAMLMultitypeResourceArgument(YAMLConceptArgument):
         use_relative_name=self.use_relative_name,
         is_primary_resource=self.IsPrimaryResource(
             method and method.resource_argument_collection))
-
-  def ParseResourceArg(self, method, namespace, group_required=True):
-    return self._ParseResourceArg(method, namespace, group_required)
-
-  def _GenerateResourceSpec(self, method=None):
-    """Validates if the resource matches what the method specifies.
-
-    Args:
-      method: registry.APIMethod, method we are generating the resource
-        argument for. Provides extra validation the resource argument spec
-        is specified correctly. If method is None, the resource arg will just
-        be loaded based on the collection it specifies.
-
-    Returns:
-      multitype.MultitypeResourceSpec, The generated specification that can be
-      added to a parser.
-    """
-
-    resource_specs = []
-    # Need to find a matching collection for validation, if the collection
-    # is specified.
-    for sub_resource in self._resources:
-      # pylint: disable=protected-access
-      sub_resource_arg = YAMLResourceArgument.FromSpecData(sub_resource)
-      if not sub_resource_arg._disable_auto_completers:
-        raise ValueError('disable_auto_completers must be True for '
-                         'multitype resource argument [{}]'.format(self.name))
-      sub_resource_spec = sub_resource_arg._GenerateResourceSpec(method)
-      resource_specs.append(sub_resource_spec)
-      # pylint: enable=protected-access
-
-    return multitype.MultitypeResourceSpec(self.name, *resource_specs)

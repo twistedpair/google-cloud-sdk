@@ -173,7 +173,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1173,7 +1177,6 @@ class Empty(_messages.Message):
   """
 
 
-
 class EmptyDirVolumeSource(_messages.Message):
   r"""Represents an empty Volume source."""
 
@@ -2114,6 +2117,7 @@ class PipelineRun(_messages.Message):
   Messages:
     AnnotationsValue: User annotations. See
       https://google.aip.dev/128#annotations
+    GcbParamsValue: Output only. GCB default params.
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
@@ -2128,6 +2132,7 @@ class PipelineRun(_messages.Message):
     finallyStartTime: Output only. FinallyStartTime is when all non-finally
       tasks have been completed and only finally tasks are being executed.
       +optional
+    gcbParams: Output only. GCB default params.
     name: Output only. The `PipelineRun` name with format
       `projects/{project}/locations/{location}/pipelineRuns/{pipeline_run}`
     params: Params is a list of parameter names and values.
@@ -2188,6 +2193,32 @@ class PipelineRun(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GcbParamsValue(_messages.Message):
+    r"""Output only. GCB default params.
+
+    Messages:
+      AdditionalProperty: An additional property for a GcbParamsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type GcbParamsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a GcbParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField(
+        'AdditionalProperty', 1, repeated=True
+    )
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   childReferences = _messages.MessageField('ChildStatusReference', 2, repeated=True)
   completionTime = _messages.StringField(3)
@@ -2195,21 +2226,24 @@ class PipelineRun(_messages.Message):
   createTime = _messages.StringField(5)
   etag = _messages.StringField(6)
   finallyStartTime = _messages.StringField(7)
-  name = _messages.StringField(8)
-  params = _messages.MessageField('Param', 9, repeated=True)
-  pipelineRef = _messages.MessageField('PipelineRef', 10)
-  pipelineRunStatus = _messages.EnumField('PipelineRunStatusValueValuesEnum', 11)
-  pipelineSpec = _messages.MessageField('PipelineSpec', 12)
-  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 13)
-  serviceAccount = _messages.StringField(14)
-  skippedTasks = _messages.MessageField('SkippedTask', 15, repeated=True)
-  startTime = _messages.StringField(16)
-  timeouts = _messages.MessageField('TimeoutFields', 17)
-  uid = _messages.StringField(18)
-  updateTime = _messages.StringField(19)
-  workerPool = _messages.StringField(20)
-  workflow = _messages.StringField(21)
-  workspaces = _messages.MessageField('WorkspaceBinding', 22, repeated=True)
+  gcbParams = _messages.MessageField('GcbParamsValue', 8)
+  name = _messages.StringField(9)
+  params = _messages.MessageField('Param', 10, repeated=True)
+  pipelineRef = _messages.MessageField('PipelineRef', 11)
+  pipelineRunStatus = _messages.EnumField(
+      'PipelineRunStatusValueValuesEnum', 12
+  )
+  pipelineSpec = _messages.MessageField('PipelineSpec', 13)
+  resolvedPipelineSpec = _messages.MessageField('PipelineSpec', 14)
+  serviceAccount = _messages.StringField(15)
+  skippedTasks = _messages.MessageField('SkippedTask', 16, repeated=True)
+  startTime = _messages.StringField(17)
+  timeouts = _messages.MessageField('TimeoutFields', 18)
+  uid = _messages.StringField(19)
+  updateTime = _messages.StringField(20)
+  workerPool = _messages.StringField(21)
+  workflow = _messages.StringField(22)
+  workspaces = _messages.MessageField('WorkspaceBinding', 23, repeated=True)
 
 
 class PipelineSpec(_messages.Message):
@@ -2492,7 +2526,9 @@ class RecordSummary(_messages.Message):
   """
 
   class StatusValueValuesEnum(_messages.Enum):
-    r"""Output only. Status of the underlying Run of this Record
+    r"""Output only.
+
+    Status of the underlying Run of this Record
 
     Values:
       STATUS_UNSPECIFIED: Default enum type; should not be used.
@@ -2501,6 +2537,7 @@ class RecordSummary(_messages.Message):
       TIMEOUT: Run timed out
       CANCELLED: Run got cancelled
       IN_PROGRESS: Run is in progress
+      QUEUED: Run is queued
     """
     STATUS_UNSPECIFIED = 0
     SUCCESS = 1
@@ -2508,6 +2545,7 @@ class RecordSummary(_messages.Message):
     TIMEOUT = 3
     CANCELLED = 4
     IN_PROGRESS = 5
+    QUEUED = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class RecordDataValue(_messages.Message):
@@ -3152,6 +3190,7 @@ class TaskRun(_messages.Message):
   Messages:
     AnnotationsValue: User annotations. See
       https://google.aip.dev/128#annotations
+    GcbParamsValue: Output only. GCB default params.
 
   Fields:
     annotations: User annotations. See https://google.aip.dev/128#annotations
@@ -3161,6 +3200,7 @@ class TaskRun(_messages.Message):
     createTime: Output only. Time at which the request to create the `TaskRun`
       was received.
     etag: Needed for declarative-friendly resources.
+    gcbParams: Output only. GCB default params.
     name: Output only. The 'TaskRun' name with format:
       `projects/{project}/locations/{location}/taskRuns/{task_run}`
     params: Params is a list of parameter names and values.
@@ -3227,30 +3267,57 @@ class TaskRun(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class GcbParamsValue(_messages.Message):
+    r"""Output only. GCB default params.
+
+    Messages:
+      AdditionalProperty: An additional property for a GcbParamsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type GcbParamsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a GcbParamsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField(
+        'AdditionalProperty', 1, repeated=True
+    )
+
   annotations = _messages.MessageField('AnnotationsValue', 1)
   completionTime = _messages.StringField(2)
   conditions = _messages.MessageField('GoogleDevtoolsCloudbuildV2Condition', 3, repeated=True)
   createTime = _messages.StringField(4)
   etag = _messages.StringField(5)
-  name = _messages.StringField(6)
-  params = _messages.MessageField('Param', 7, repeated=True)
-  pipelineRun = _messages.StringField(8)
-  resolvedTaskSpec = _messages.MessageField('TaskSpec', 9)
-  results = _messages.MessageField('TaskRunResult', 10, repeated=True)
-  serviceAccount = _messages.StringField(11)
-  sidecars = _messages.MessageField('SidecarState', 12, repeated=True)
-  startTime = _messages.StringField(13)
-  statusMessage = _messages.StringField(14)
-  steps = _messages.MessageField('StepState', 15, repeated=True)
-  taskRef = _messages.MessageField('TaskRef', 16)
-  taskRunResults = _messages.MessageField('TaskRunResult', 17, repeated=True)
-  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 18)
-  taskSpec = _messages.MessageField('TaskSpec', 19)
-  timeout = _messages.StringField(20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
-  workerPool = _messages.StringField(23)
-  workspaces = _messages.MessageField('WorkspaceBinding', 24, repeated=True)
+  gcbParams = _messages.MessageField('GcbParamsValue', 6)
+  name = _messages.StringField(7)
+  params = _messages.MessageField('Param', 8, repeated=True)
+  pipelineRun = _messages.StringField(9)
+  resolvedTaskSpec = _messages.MessageField('TaskSpec', 10)
+  results = _messages.MessageField('TaskRunResult', 11, repeated=True)
+  serviceAccount = _messages.StringField(12)
+  sidecars = _messages.MessageField('SidecarState', 13, repeated=True)
+  startTime = _messages.StringField(14)
+  statusMessage = _messages.StringField(15)
+  steps = _messages.MessageField('StepState', 16, repeated=True)
+  taskRef = _messages.MessageField('TaskRef', 17)
+  taskRunResults = _messages.MessageField('TaskRunResult', 18, repeated=True)
+  taskRunStatus = _messages.EnumField('TaskRunStatusValueValuesEnum', 19)
+  taskSpec = _messages.MessageField('TaskSpec', 20)
+  timeout = _messages.StringField(21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
+  workerPool = _messages.StringField(24)
+  workspaces = _messages.MessageField('WorkspaceBinding', 25, repeated=True)
 
 
 class TaskRunResult(_messages.Message):

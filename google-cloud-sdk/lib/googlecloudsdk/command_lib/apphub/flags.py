@@ -488,6 +488,10 @@ def AddFindUnregisteredServiceFlags(parser):
   GetLocationResourceArg().AddToParser(parser)
 
 
+def AddFindDiscoveredServiceFlags(parser):
+  GetLocationResourceArg().AddToParser(parser)
+
+
 def AddDescribeDiscoveredWorkloadFlags(parser):
   GetDiscoveredWorkloadResourceArg().AddToParser(parser)
 
@@ -497,6 +501,10 @@ def AddListDiscoveredWorkloadFlags(parser):
 
 
 def AddFindUnregisteredWorkloadFlags(parser):
+  GetLocationResourceArg().AddToParser(parser)
+
+
+def AddFindDiscoveredWorkloadFlags(parser):
   GetLocationResourceArg().AddToParser(parser)
 
 

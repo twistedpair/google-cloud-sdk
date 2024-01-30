@@ -79,8 +79,8 @@ _V1_STAGING_REGIONS = [
     'us-west1',
 ]
 
-_DOCKER_REGISTRY_AR = (
-    cloudfunctions_v1_messages.CloudFunction.DockerRegistryValueValuesEnum.ARTIFACT_REGISTRY
+_DOCKER_REGISTRY_GCR = (
+    cloudfunctions_v1_messages.CloudFunction.DockerRegistryValueValuesEnum.CONTAINER_REGISTRY
 )
 
 
@@ -642,13 +642,7 @@ def _GetGcrMultiregion(region_name):
 
 
 def IsGcrRepository(function):
-  # TODO(b/287538740): revisit this condition when the default changes to AR.
-  if function.dockerRepository:
-    return False
-  return (
-      not function.dockerRegistry
-      or function.dockerRegistry != _DOCKER_REGISTRY_AR
-  )
+  return function.dockerRegistry == _DOCKER_REGISTRY_GCR
 
 
 def _AddGcrDeprecationWarning():

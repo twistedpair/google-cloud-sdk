@@ -30,7 +30,6 @@ import string
 from apitools.base.py import encoding
 from apitools.base.py import exceptions as api_exceptions
 from apitools.base.py import list_pager
-from googlecloudsdk.api_lib.cloudbuild import cloudbuild_util
 from googlecloudsdk.api_lib.run import condition as run_condition
 from googlecloudsdk.api_lib.run import configuration
 from googlecloudsdk.api_lib.run import domain_mapping
@@ -45,7 +44,6 @@ from googlecloudsdk.api_lib.run import task
 from googlecloudsdk.api_lib.util import apis
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import waiter
-from googlecloudsdk.command_lib.builds import submit_util
 from googlecloudsdk.command_lib.iam import iam_util
 from googlecloudsdk.command_lib.run import artifact_registry
 from googlecloudsdk.command_lib.run import config_changes as config_changes_mod
@@ -55,6 +53,7 @@ from googlecloudsdk.command_lib.run import name_generator
 from googlecloudsdk.command_lib.run import op_pollers
 from googlecloudsdk.command_lib.run import resource_name_conversion
 from googlecloudsdk.command_lib.run import stages
+from googlecloudsdk.command_lib.run.sourcedeploys import deployer
 from googlecloudsdk.core import exceptions
 from googlecloudsdk.core import log
 from googlecloudsdk.core import metrics
@@ -141,7 +140,8 @@ def Connect(conn_context, already_activated_service=False):
 def _Nonce():
   """Return a random string with unlikely collision to use as a nonce."""
   return ''.join(
-      random.choice(string.ascii_lowercase) for _ in range(_NONCE_LENGTH))
+      random.choice(string.ascii_lowercase) for _ in range(_NONCE_LENGTH)
+  )
 
 
 @dataclasses.dataclass(frozen=True)
@@ -683,6 +683,14 @@ class ServerlessOperations(object):
     )
 
     if not asyn:
+      # no wait if there was effectively no actual change
+      if (
+          serv is not None
+          and updated_serv.operation_id is not None
+          and serv.operation_id == updated_serv.operation_id
+      ):
+        return updated_serv
+
       getter = (
           functools.partial(self.GetService, service_ref)
           if updated_serv.operation_id is None
@@ -703,42 +711,11 @@ class ServerlessOperations(object):
     )
     config_changes.insert(0, _NewRevisionForcingChange(revision_suffix))
 
-  def _BuildFromSource(
-      self, tracker, build_messages, build_config, skip_activation_prompt=False
-  ):
-    """Build an image from source if a user specifies a source when deploying."""
-    build_region = cloudbuild_util.DEFAULT_REGION
-    build, _ = submit_util.Build(
-        build_messages,
-        True,
-        build_config,
-        hide_logs=True,
-        build_region=build_region,
-        skip_activation_prompt=skip_activation_prompt,
-    )
-
-    build_op = f'projects/{build.projectId}/locations/{build_region}/operations/{build.id}'
-    build_op_ref = resources.REGISTRY.ParseRelativeName(
-        build_op, collection='cloudbuild.projects.locations.operations'
-    )
-    build_log_url = build.logUrl
-    tracker.StartStage(stages.BUILD_READY)
-    tracker.UpdateHeaderMessage('Building Container.')
-    tracker.UpdateStage(
-        stages.BUILD_READY,
-        'Logs are available at [{build_log_url}].'.format(
-            build_log_url=build_log_url
-        ),
-    )
-
-    response_dict = self._PollUntilBuildCompletes(build_op_ref)
-    return response_dict, build_log_url
-
   def ReleaseService(
       self,
       service_ref,
       config_changes,
-      release_track,  # pylint: disable=unused-argument
+      release_track,
       tracker=None,
       asyn=False,
       allow_unauthenticated=None,
@@ -798,6 +775,7 @@ class ServerlessOperations(object):
           aborted_message='aborted',
       )
 
+    # TODO(b/321837261): Use Build API to create Repository
     if repo_to_create:
       self._CreateRepository(
           tracker,
@@ -806,33 +784,24 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      build_messages, build_config = self._UploadSource(
-          tracker, build_image, build_source, build_pack
-      )
-      response_dict, build_log_url = self._BuildFromSource(
+      image_digest = deployer.CreateImage(
           tracker,
-          build_messages,
-          build_config,
-          skip_activation_prompt=already_activated_services,
+          build_image,
+          build_source,
+          build_pack,
+          release_track,
+          already_activated_services,
       )
-      if response_dict and response_dict['status'] != 'SUCCESS':
-        tracker.FailStage(
-            stages.BUILD_READY,
-            None,
-            message=(
-                'Container build failed and '
-                'logs are available at [{build_log_url}].'.format(
-                    build_log_url=build_log_url
-                )
-            ),
-        )
+      if image_digest is None:
         return
-      else:
-        tracker.CompleteStage(stages.BUILD_READY)
-        image_digest = response_dict['results']['images'][0]['digest']
-        config_changes.append(_AddDigestToImageChange(image_digest))
+      config_changes.append(_AddDigestToImageChange(image_digest))
     if prefetch is None:
       serv = None
+    elif build_source:
+      # if we're building from source, we want to force a new fetch
+      # because building takes a while which leaves a long time for
+      # potential write conflicts.
+      serv = self.GetService(service_ref)
     else:
       serv = prefetch or self.GetService(service_ref)
     if for_replace:
@@ -889,6 +858,14 @@ class ServerlessOperations(object):
         )
 
     if not asyn and not dry_run:
+      # no wait if there was effectively no actual change
+      if (
+          serv is not None
+          and serv.operation_id is not None
+          and serv.operation_id == updated_service.operation_id
+      ):
+        return updated_service
+
       getter = (
           functools.partial(self.GetService, service_ref)
           if updated_service.operation_id is None
@@ -1178,7 +1155,7 @@ class ServerlessOperations(object):
       self,
       job_ref,
       config_changes,
-      release_track,  # pylint: disable=unused-argument
+      release_track,
       tracker=None,
       asyn=False,
       build_image=None,
@@ -1221,6 +1198,7 @@ class ServerlessOperations(object):
           aborted_message='aborted',
       )
 
+    # TODO(b/321837261): Use Build API to create Repository
     if repo_to_create:
       self._CreateRepository(
           tracker,
@@ -1229,31 +1207,17 @@ class ServerlessOperations(object):
       )
 
     if build_source is not None:
-      build_messages, build_config = self._UploadSource(
-          tracker, build_image, build_source, build_pack
-      )
-      response_dict, build_log_url = self._BuildFromSource(
+      image_digest = deployer.CreateImage(
           tracker,
-          build_messages,
-          build_config,
-          skip_activation_prompt=already_activated_services,
+          build_image,
+          build_source,
+          build_pack,
+          release_track,
+          already_activated_services,
       )
-      if response_dict and response_dict['status'] != 'SUCCESS':
-        tracker.FailStage(
-            stages.BUILD_READY,
-            None,
-            message=(
-                'Container build failed and '
-                'logs are available at [{build_log_url}].'.format(
-                    build_log_url=build_log_url
-                )
-            ),
-        )
+      if image_digest is None:
         return
-      else:
-        tracker.CompleteStage(stages.BUILD_READY)
-        image_digest = response_dict['results']['images'][0]['digest']
-        config_changes.append(_AddDigestToImageChange(image_digest))
+      config_changes.append(_AddDigestToImageChange(image_digest))
 
     is_create = not prefetch
     if is_create:
@@ -1604,47 +1568,6 @@ class ServerlessOperations(object):
     tracker.UpdateHeaderMessage('Creating Container Repository.')
     artifact_registry.CreateRepository(repo_to_create, skip_activation_prompt)
     tracker.CompleteStage(stages.CREATE_REPO)
-
-  def _UploadSource(self, tracker, build_image, build_source, build_pack):
-    """Upload the provided build source and prepare build config for cloud build."""
-    tracker.StartStage(stages.UPLOAD_SOURCE)
-    tracker.UpdateHeaderMessage('Uploading sources.')
-    build_messages = cloudbuild_util.GetMessagesModule()
-    # force disable Kaniko since we don't support customizing the build here.
-    properties.VALUES.builds.use_kaniko.Set(False)
-    build_config = submit_util.CreateBuildConfig(
-        build_image,
-        no_cache=False,
-        messages=build_messages,
-        substitutions=None,
-        arg_config=None,
-        is_specified_source=True,
-        no_source=False,
-        source=build_source,
-        gcs_source_staging_dir=None,
-        ignore_file=None,
-        arg_gcs_log_dir=None,
-        arg_machine_type=None,
-        arg_disk_size=None,
-        arg_worker_pool=None,
-        arg_dir=None,
-        arg_revision=None,
-        arg_git_source_dir=None,
-        arg_git_source_revision=None,
-        buildpack=build_pack,
-        hide_logs=True,
-        client_tag='gcloudrun',
-    )
-    tracker.CompleteStage(stages.UPLOAD_SOURCE)
-    return build_messages, build_config
-
-  def _PollUntilBuildCompletes(self, build_op_ref):
-    client = cloudbuild_util.GetClientInstance()
-    poller = waiter.CloudOperationPoller(
-        client.projects_builds, client.operations
-    )
-    operation = waiter.PollUntilDone(poller, build_op_ref)
-    return encoding.MessageToPyValue(operation.response)
 
   def ValidateConfigOverrides(self, job_ref, config_overrides):
     """Apply config changes to Job resource to validate.

@@ -181,6 +181,45 @@ class StaticCredentialProviders(object):
 STATIC_CREDENTIAL_PROVIDERS = StaticCredentialProviders()
 
 
+def _HandleGceUniverseDomain(mds_universe_domain, account):
+  """Handles the universe domain from GCE metadata.
+
+  If core/universe_domain property is not explicitly set, set it with the MDS
+  universe_domain, but not persist it so it's only used in the current command
+  invocation.
+  If core/universe_domain property is explicitly set, but it's different from
+  the MDS universe_domain, prompt the user to update and persist the
+  core/universe_domain property. If the user chooses not to update, an error
+  will be raised to avoid sending GCE credentials to a wrong universe domain.
+
+  Args:
+    mds_universe_domain: string, The universe domain from metadata server.
+    account: string, The account.
+  """
+  universe_domain_property = properties.VALUES.core.universe_domain
+
+  if not universe_domain_property.IsExplicitlySet():
+    universe_domain_property.Set(mds_universe_domain)
+    return
+
+  # Handle potential universe domain conflict.
+  auth_util.HandleUniverseDomainConflict(mds_universe_domain, account)
+
+  # Error out for universe domain mismatch.
+  if universe_domain_property.Get() != mds_universe_domain:
+    raise c_creds.InvalidCredentialsError(
+        'Your credentials are from "%(universe_from_mds)s", but your'
+        ' [core/universe_domain] property is set to'
+        ' "%(universe_from_property)s". Update your active account to an'
+        ' account from "%(universe_from_property)s" or update the'
+        ' [core/universe_domain] property to "%(universe_from_mds)s".'
+        % {
+            'universe_from_mds': mds_universe_domain,
+            'universe_from_property': universe_domain_property.Get(),
+        }
+    )
+
+
 class GceCredentialProvider(object):
   """Provides account, project and credential data for gce vm env."""
 
@@ -202,6 +241,17 @@ class GceCredentialProvider(object):
   def GetAccounts(self):
     return set(c_gce.Metadata().Accounts())
 
+  def GetUniverseDomain(self):
+    """Gets the universe domain from GCE metadata.
+
+    Returns:
+      str: The universe domain from metadata server. Returns None if
+        core/check_gce_metadata property is False.
+    """
+    if properties.VALUES.core.check_gce_metadata.GetBool():
+      return c_gce.Metadata().UniverseDomain()
+    return None
+
   def GetProject(self):
     if properties.VALUES.core.check_gce_metadata.GetBool():
       return c_gce.Metadata().Project()
@@ -210,11 +260,15 @@ class GceCredentialProvider(object):
   def Register(self):
     properties.VALUES.core.account.AddCallback(self.GetAccount)
     properties.VALUES.core.project.AddCallback(self.GetProject)
+    properties.VALUES.core.universe_domain.AddCallback(self.GetUniverseDomain)
     STATIC_CREDENTIAL_PROVIDERS.AddProvider(self)
 
   def UnRegister(self):
     properties.VALUES.core.account.RemoveCallback(self.GetAccount)
     properties.VALUES.core.project.RemoveCallback(self.GetProject)
+    properties.VALUES.core.universe_domain.RemoveCallback(
+        self.GetUniverseDomain
+    )
     STATIC_CREDENTIAL_PROVIDERS.RemoveProvider(self)
 
 
@@ -864,6 +918,10 @@ def _Load(account,
         # the tokens can be written into the store automatically after refresh.
         if with_access_token_cache:
           cred = c_creds.MaybeAttachAccessTokenCacheStoreGoogleAuth(cred)
+
+        _HandleGceUniverseDomain(
+            cred.universe_domain, cred.service_account_email
+        )
       else:
         # For cred from custom credential provider, return as is.
         return cred
@@ -1541,9 +1599,6 @@ def AcquireFromGCE(account=None, use_google_auth=True, refresh=True):
     # Set _universe_domain_cached to True to avoid calling metadata server
     # universe domain endpoint again.
     credentials._universe_domain_cached = True  # pylint: disable=protected-access
-    auth_util.HandleUniverseDomainConflict(
-        universe_domain, credentials.service_account_email
-    )
   else:
     credentials = oauth2client_gce.AppAssertionCredentials(email=account)
   if refresh:

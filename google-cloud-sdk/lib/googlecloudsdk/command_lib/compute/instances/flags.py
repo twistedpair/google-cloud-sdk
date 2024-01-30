@@ -535,17 +535,17 @@ def GetDiskDeviceNameHelp(container_mount_enabled=False):
   """Helper to get documentation for "device-name" param of disk spec."""
   if container_mount_enabled:
     return (
-        'An optional name that indicates the disk name the guest operating '
-        'system will see. Must be the same as `name` if used with '
+        'An optional name to display the disk name in the guest operating '
+        'system. Must be the same as `name` if used with '
         '`--container-mount-disk`. If omitted, a device name of the form '
-        '`persistent-disk-N` will be used. If omitted and used with '
+        '`persistent-disk-N` is used. If omitted and used with '
         '`--container-mount-disk` (where the `name` of the container mount '
         'disk is the same as in this flag), a device name equal to disk `name` '
-        'will be used.')
+        'is used.')
   else:
-    return ('An optional name that indicates the disk name the guest operating '
-            'system will see. If omitted, a device name of the form '
-            '`persistent-disk-N` will be used.')
+    return ('An optional name to display the disk name in the guest '
+            'operating system. If omitted, a device name of the form '
+            '`persistent-disk-N` is used.')
 
 
 def AddDiskArgs(parser,
@@ -572,29 +572,30 @@ def AddDiskArgs(parser,
     disk_arg_spec['force-attach'] = arg_parsers.ArgBoolean()
 
   disk_help = """
-      Attaches persistent disks to the instances. The disks
-      specified must already exist.
+      Attaches an existing persistent disk to the instances.
 
-      *name*::: The disk to attach to the instances. When creating
-      more than one instance and using this property, the only valid
-      mode for attaching the disk is read-only (see *mode* below).
+      *name*::: The disk to attach to the instances. If you create more than
+      one instance, you can only attach a disk in read-only mode. By default,
+      you attach a zonal persistent disk located in the same zone of the
+      instance. If you want to attach a regional persistent disk, you must
+      specify the disk using its URI; for example,
+      ``projects/myproject/regions/us-central1/disks/my-regional-disk''.
 
-      *mode*::: Specifies the mode of the disk. Supported options
-      are ``ro'' for read-only and ``rw'' for read-write. If
-      omitted, ``rw'' is used as a default. It is an error for mode
-      to be ``rw'' when creating more than one instance because
-      read-write disks can only be attached to a single instance.
+      *mode*::: The mode of the disk. Supported options are ``ro'' for read-only
+      mode and ``rw'' for read-write mode. If omitted, ``rw'' is used as
+      a default value. If you use ``rw'' when creating more than one instance,
+      you encounter errors.
 
-      *boot*::: If ``yes'', indicates that this is a boot disk. The
-      virtual machines will use the first partition of the disk for
-      their root file systems. The default value for this is ``no''.
+      *boot*::: If set to ``yes'', you attach a boot disk. The
+      virtual machine then uses the first partition of the disk for
+      the root file systems. The default value for this is ``no''.
 
       *device-name*::: {}
 
-      *auto-delete*::: If ``yes'',  this persistent disk will be
+      *auto-delete*::: If set to ``yes'', the persistent disk is
       automatically deleted when the instance is deleted. However,
-      if the disk is later detached from the instance, this option
-      won't apply. The default value for this is ``yes''.
+      if you detach the disk from the instance, deleting the instance
+      doesn't delete the disk. The default value for this is ``yes''.
       """.format(disk_device_name_help)
   if enable_regional_disks:
     disk_help += """
@@ -2618,6 +2619,8 @@ def ValidateLocalSsdFlags(args):
 def ValidateNicFlags(args):
   """Validates flags specifying network interface cards.
 
+  Throws exceptions or print warning if incompatible nic args are specified.
+
   Args:
     args: parsed command line arguments.
 
@@ -2644,28 +2647,75 @@ def ValidateNicFlags(args):
             '--network-interface',
             'specifies both address and no-address for one interface')
 
-  conflicting_args = ['address', 'network', 'private_network_ip', 'subnet']
+  conflicting_args = [
+      'address',
+      'network',
+      'private_network_ip',
+      'subnet',
+  ]
   conflicting_args_present = [
       arg for arg in conflicting_args if getattr(args, arg, None)
   ]
-  if not conflicting_args_present:
-    return
   conflicting_args = [
       '--{0}'.format(arg.replace('_', '-')) for arg in conflicting_args_present
   ]
 
-  if network_interface is not None:
-    raise exceptions.ConflictingArgumentsException(
-        '--network-interface',
-        'all of the following: ' + ', '.join(conflicting_args))
-  elif network_interface_from_file is not None:
-    raise exceptions.ConflictingArgumentsException(
-        '--network-interface-from-file',
-        'all of the following: ' + ', '.join(conflicting_args))
-  else:
-    raise exceptions.ConflictingArgumentsException(
-        '--network-interface-from-json-string',
-        'all of the following: ' + ', '.join(conflicting_args))
+  # These args are also incompatible with --network-interface, but they were
+  # already released without validation, so print warning for them instead of
+  # throwing exception
+  warning_args = [
+      'network_tier',
+      'stack_type',
+      'ipv6_network_tier',
+      'ipv6_public_ptr_domain',
+      'internal_ipv6_address',
+      'internal_ipv6_prefix_length',
+      'ipv6_address',
+      'ipv6_prefix_length',
+      'external_ipv6_address',
+      'external_ipv6_prefix_length',
+  ]
+  warning_args_present = [
+      arg for arg in warning_args if getattr(args, arg, None)
+  ]
+  warning_args = [
+      '--{0}'.format(arg.replace('_', '-')) for arg in warning_args_present
+  ]
+
+  if not conflicting_args_present and not warning_args_present:
+    return
+
+  if conflicting_args_present:
+    if network_interface is not None:
+      raise exceptions.ConflictingArgumentsException(
+          '--network-interface',
+          'all of the following: ' + ', '.join(conflicting_args),
+      )
+    elif network_interface_from_file is not None:
+      raise exceptions.ConflictingArgumentsException(
+          '--network-interface-from-file',
+          'all of the following: ' + ', '.join(conflicting_args),
+      )
+    else:
+      raise exceptions.ConflictingArgumentsException(
+          '--network-interface-from-json-string',
+          'all of the following: ' + ', '.join(conflicting_args),
+      )
+
+  if warning_args_present:
+    if network_interface is not None:
+      nic_arg_name = '--network-interface'
+    elif network_interface_from_file is not None:
+      nic_arg_name = '--network-interface-from-file'
+    else:
+      nic_arg_name = '--network-interface-from-json-string'
+
+    log.status.write(
+        f'When {nic_arg_name} is specified, the following arguments are'
+        ' ignored: '
+        + ', '.join(warning_args)
+        + '.\n'
+    )
 
 
 def AddDiskScopeFlag(parser):

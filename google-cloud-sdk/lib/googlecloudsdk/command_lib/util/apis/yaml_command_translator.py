@@ -72,7 +72,7 @@ class DeclarativeIamRolesCompleter(completers.ListCommandCompleter):
   The Complete() method override bypasses the completion cache.
 
   Attributes:
-    _get_resource_ref: DeclarativeArgumentGenerator.GetRequestResourceRef method
+    _get_resource_ref: DeclarativeArgumentGenerator.GetPrimaryResource method
       to parse the resource ref.
   """
 
@@ -164,7 +164,7 @@ class CommandBuilder(object):
 class AsyncOperationPoller(waiter.OperationPoller):
   """An implementation of a operation poller."""
 
-  def __init__(self, spec, resource_ref, args):
+  def __init__(self, spec, resource_ref, args, operation_collection, method):
     """Creates the poller.
 
     Args:
@@ -175,15 +175,34 @@ class AsyncOperationPoller(waiter.OperationPoller):
         will just be returned when it is done instead of getting the resulting
         resource.
       args: Namespace, The args namespace.
+      operation_collection: str, collection name of operation
+      method: registry.APIMethod, method used to make original api request
     """
     self.spec = spec
-    self.resource_ref = resource_ref
+    self.args = args
+
     if not self.spec.async_.extract_resource_result:
       self.resource_ref = None
-    self.method = registry.GetMethod(
-        spec.async_.collection, spec.async_.method,
-        api_version=spec.async_.api_version or spec.request.api_version)
-    self.args = args
+    else:
+      self.resource_ref = resource_ref
+
+    self._operation_collection = operation_collection
+    self._resource_collection = method and method.collection.full_name
+
+  @property
+  def operation_method(self):
+    api_version = self.spec.async_.api_version or self.spec.request.api_version
+    return registry.GetMethod(
+        self._operation_collection,
+        self.spec.async_.method,
+        api_version=api_version)
+
+  @property
+  def resource_get_method(self):
+    return registry.GetMethod(
+        self._resource_collection,
+        'get',
+        api_version=self.spec.request.api_version)
 
   def IsDone(self, operation):
     """Overrides."""
@@ -212,7 +231,7 @@ class AsyncOperationPoller(waiter.OperationPoller):
     Returns:
       fetched operation message.
     """
-    request_type = self.method.GetRequestType()
+    request_type = self.operation_method.GetRequestType()
     relative_name = operation_ref.RelativeName()
     fields = {}
     for f in request_type.all_fields():
@@ -223,7 +242,7 @@ class AsyncOperationPoller(waiter.OperationPoller):
     request = request_type(**fields)
     for hook in self.spec.async_.modify_request_hooks:
       request = hook(operation_ref, self.args, request)
-    return self.method.Call(request)
+    return self.operation_method.Call(request)
 
   def GetResult(self, operation):
     """Overrides.
@@ -236,18 +255,12 @@ class AsyncOperationPoller(waiter.OperationPoller):
     """
     result = operation
     if self.resource_ref:
-      method = self._ResourceGetMethod()
-      request = method.GetRequestType()()
-      arg_utils.ParseResourceIntoMessage(self.resource_ref, method, request,
-                                         is_primary_resource=True)
-      result = method.Call(request)
+      get_method = self.resource_get_method
+      request = get_method.GetRequestType()()
+      arg_utils.ParseResourceIntoMessage(
+          self.resource_ref, get_method, request, is_primary_resource=True)
+      result = get_method.Call(request)
     return _GetAttribute(result, self.spec.async_.result_attribute)
-
-  def _ResourceGetMethod(self):
-    return registry.GetMethod(
-        self.spec.request.collection,
-        self.spec.async_.resource_get_method,
-        api_version=self.spec.request.api_version)
 
 
 def SerializeError(error):
@@ -303,27 +316,21 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
   def InitializeGeneratorForCommand(self):
     """Initializes the arg_generator for command."""
     if self.has_request_method:
-      self.method = registry.GetMethod(self.spec.request.collection,
-                                       self.spec.request.method,
-                                       self.spec.request.api_version)
-      self.display_resource_type = self.spec.request.display_resource_type
+      self.methods = self._GetMethods()
     else:
-      self.method = None
-      self.display_resource_type = None
+      self.methods = []
 
     self.arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
-        self.method, self.spec.arguments.params)
-    primary_resource_arg = self.arg_generator.primary_resource_arg
+        self.spec.arguments.params)
 
-    self.resource_collection = (
-        self.method.resource_argument_collection
-        if self.method else primary_resource_arg.collection)
-
-    if (not self.display_resource_type and primary_resource_arg and
-        not primary_resource_arg.is_parent_resource):
-      self.display_resource_type = (
-          primary_resource_arg.name
-          if primary_resource_arg else None)
+  def _GetMethods(self, method=None):
+    methods = []
+    for collection in self.spec.request.collections:
+      methods.append(registry.GetMethod(
+          collection,
+          method or self.spec.request.method,
+          self.spec.request.api_version))
+    return methods
 
   def _CommonArgs(self, parser):
     """Performs argument actions common to all commands.
@@ -334,7 +341,7 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Args:
       parser: The argparse parser.
     """
-    args = self.arg_generator.GenerateArgs()
+    args = self.arg_generator.GenerateArgs(self.methods)
     parser = self._Exclude(parser)
     for arg in args:
       arg.AddToParser(parser)
@@ -359,15 +366,14 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
       base.Argument('--{}'.format(arg), help='').RemoveFromParser(parser)
     return parser
 
-  def _UpdateRuntimeMethod(self, args):
+  def _GetRuntimeMethods(self, args):
     if not self.spec.request.modify_method_hook:
-      return
+      return self.methods
 
-    ref = self.arg_generator.GetRequestResourceRef(args)
-    self.spec.request.method = self.spec.request.modify_method_hook(ref, args)
-    self.method = registry.GetMethod(
-        self.spec.request.collection, self.spec.request.method,
-        self.spec.request.api_version)
+    specified = self.arg_generator.GetPrimaryResource(self.methods, args)
+    ref = specified.Parse(args)
+    new_method_name = self.spec.request.modify_method_hook(ref, args)
+    return self._GetMethods(new_method_name)
 
   def _CommonRun(self, args, existing_message=None, update_mask=None):
     """Performs run actions common to all commands.
@@ -385,15 +391,19 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
       (resources.Resource, response), A tuple of the parsed resource reference
       and the API response from the method call.
     """
-    ref = self.arg_generator.GetRequestResourceRef(args)
+    self.methods = self._GetRuntimeMethods(args)
+    resource = self.arg_generator.GetPrimaryResource(self.methods, args)
+    method = resource.method
+    ref = resource.Parse(args)
+
     if self.spec.input.confirmation_prompt:
       console_io.PromptContinue(
-          message=self._Format(self.spec.input.confirmation_prompt, ref,
-                               self._GetDisplayName(ref, args)),
+          message=self._Format(
+              self.spec.input.confirmation_prompt, ref,
+              self._GetDisplayResourceType(args),
+              self._GetDisplayName(ref, args)),
           default=self.spec.input.default_continue,
           throw_if_unattended=True, cancel_on_no=True)
-
-    self._UpdateRuntimeMethod(args)
 
     if self.spec.request.issue_request_hook:
       # Making the request is overridden, just call into the custom code.
@@ -411,28 +421,42 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
       request = self.arg_generator.CreateRequest(
           args,
+          method,
           static_fields,
           self.spec.arguments.labels,
           self.spec.command_type,
-          existing_message=existing_message,
-          override_method=self.method)
+          existing_message=existing_message)
       for hook in self.spec.request.modify_request_hooks:
         request = hook(ref, args, request)
 
-    response = self.method.Call(request,
-                                limit=self.arg_generator.Limit(args),
-                                page_size=self.arg_generator.PageSize(args))
+    response = method.Call(
+        request,
+        limit=self.arg_generator.Limit(args, method),
+        page_size=self.arg_generator.PageSize(args, method))
     return ref, response
 
-  def _Format(self, format_string, resource_ref, display_name=None):
+  def _Format(self, format_string, resource_ref, display_type,
+              display_name=None):
     return yaml_command_schema_util.FormatResourceAttrStr(
-        format_string, resource_ref, display_name, self.display_resource_type)
+        format_string, resource_ref, display_name, display_type)
 
   def _GetDisplayName(self, resource_ref, args):
-    primary_resource_arg = self.arg_generator.primary_resource_arg
+    primary_resource_arg = self.arg_generator.GetPrimaryResource(
+        self.methods, args).primary_resource
     if primary_resource_arg and primary_resource_arg.display_name_hook:
       return primary_resource_arg.display_name_hook(resource_ref, args)
     return resource_ref.Name() if resource_ref else None
+
+  def _GetDisplayResourceType(self, args):
+    if spec_display := self.spec.request.display_resource_type:
+      return spec_display
+
+    primary_resource_arg = self.arg_generator.GetPrimaryResource(
+        self.methods, args).primary_resource
+    if primary_resource_arg and not primary_resource_arg.is_parent_resource:
+      return primary_resource_arg.name
+    else:
+      return None
 
   def _HandleResponse(self, response, args=None):
     """Process the API response.
@@ -468,6 +492,19 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
       response = hook(response, args)
     return response
 
+  def _GetOperationRef(self, operation):
+    for i, collection in enumerate(self.spec.async_.collections):
+      try:
+        resource = resources.REGISTRY.Parse(
+            getattr(operation, self.spec.async_.response_name_field),
+            collection=collection,
+            api_version=(
+                self.spec.async_.api_version or self.spec.request.api_version))
+        return (resource, collection)
+      except resources.UserError as e:
+        if i == len(self.spec.async_.collections) - 1:
+          raise e
+
   def _HandleAsync(self, args, resource_ref, operation,
                    request_string, extract_resource_result=True):
     """Handles polling for operations if the async flag is provided.
@@ -487,23 +524,26 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     Returns:
       The response (either the operation or the original resource).
     """
-    operation_ref = resources.REGISTRY.Parse(
-        getattr(operation, self.spec.async_.response_name_field),
-        collection=self.spec.async_.collection,
-        api_version=(
-            self.spec.async_.api_version or self.spec.request.api_version))
+    operation_ref, operation_collection = self._GetOperationRef(operation)
     request_string = self.spec.async_.request_issued_message or request_string
     if request_string:
       log.status.Print(self._Format(request_string, resource_ref,
+                                    self._GetDisplayResourceType(args),
                                     self._GetDisplayName(resource_ref, args)))
     if args.async_:
       log.status.Print(self._Format(
           'Check operation [{{{}}}] for status.'
-          .format(yaml_command_schema_util.REL_NAME_FORMAT_KEY), operation_ref))
+          .format(yaml_command_schema_util.REL_NAME_FORMAT_KEY),
+          operation_ref, self._GetDisplayResourceType(args)))
       return operation
 
+    method = self.arg_generator.GetPrimaryResource(self.methods, args).method
     poller = AsyncOperationPoller(
-        self.spec, resource_ref if extract_resource_result else None, args)
+        self.spec,
+        resource_ref if extract_resource_result else None,
+        args,
+        operation_collection,
+        method)
     if poller.IsDone(operation):
       return poller.GetResult(operation)
 
@@ -514,12 +554,14 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     progress_string = self._Format(
         'Waiting for operation [{{{}}}] to complete'.format(
             yaml_command_schema_util.REL_NAME_FORMAT_KEY),
-        operation_ref)
+        operation_ref, self._GetDisplayResourceType(args))
     display_name = (self._GetDisplayName(poller.resource_ref, args)
                     if args else None)
     return waiter.WaitFor(
         poller, operation_ref,
-        self._Format(progress_string, poller.resource_ref, display_name))
+        self._Format(
+            progress_string, poller.resource_ref,
+            self._GetDisplayResourceType(args), display_name))
 
   def _FindPopulatedAttribute(self, obj, attributes):
     """Searches the given object for an attribute that is non-None.
@@ -552,14 +594,15 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
     return self._FindPopulatedAttribute(obj, attributes[1:])
 
   def _GetExistingResource(self, args):
-    get_method = registry.GetMethod(self.spec.request.collection, 'get',
-                                    self.spec.request.api_version)
-    primary_resource_arg = self.arg_generator.primary_resource_arg
+    get_methods = self._GetMethods('get')
+    specified = (
+        self.arg_generator.GetPrimaryResource(get_methods, args))
+    primary_resource_arg = specified.primary_resource
     params = [primary_resource_arg] if primary_resource_arg else []
-    get_arg_generator = arg_marshalling.DeclarativeArgumentGenerator(
-        get_method, params)
+    get_arg_generator = arg_marshalling.DeclarativeArgumentGenerator(params)
 
-    return get_method.Call(get_arg_generator.CreateRequest(args))
+    get_method = specified.method
+    return get_method.Call(get_arg_generator.CreateRequest(args, get_method))
 
   def _ConfigureCommand(self, command):
     """Configures top level attributes of the generated command.
@@ -590,11 +633,23 @@ class BaseCommandGenerator(six.with_metaclass(abc.ABCMeta, object)):
           key_map.get(k, k): v for k, v in self.spec.help_text.items()
       }
     if self.has_request_method:
-      command.detailed_help['API REFERENCE'] = (
-          'This command uses the *{}/{}* API. The full documentation for this '
-          'API can be found at: {}'.format(self.method.collection.api_name,
-                                           self.method.collection.api_version,
-                                           self.method.collection.docs_url))
+      api_names = set(
+          f'{method.collection.api_name}/{method.collection.api_version}'
+          for method in self.methods)
+      doc_urls = set(method.collection.docs_url for method in self.methods)
+
+      api_name_str = ', '.join(api_names)
+      doc_url_str = ', '.join(doc_urls)
+
+      if len(api_names) > 1:
+        api_info = (
+            f'This command uses *{api_name_str}* APIs. The full '
+            f'documentation for these APIs can be found at: {doc_url_str}')
+      else:
+        api_info = (
+            f'This command uses the *{api_name_str}* API. The full '
+            f'documentation for this API can be found at: {doc_url_str}')
+      command.detailed_help['API REFERENCE'] = api_info
     return command
 
   @abc.abstractmethod
@@ -701,7 +756,8 @@ class ListCommandGenerator(BaseCommandGenerator):
     def URIFunc(resource):
       id_value = getattr(
           resource, self.spec.response.id_field)
-      ref = self.arg_generator.GetResponseResourceRef(id_value, args)
+      method = self.arg_generator.GetPrimaryResource(self.methods, args).method
+      ref = self.arg_generator.GetResponseResourceRef(id_value, args, method)
       return ref.SelfLink()
     args.GetDisplayInfo().AddUriFunc(URIFunc)
 
@@ -789,7 +845,7 @@ class DeleteCommandGenerator(BaseCommandGenerator):
 
         response = self._HandleResponse(response, args)
         log.DeletedResource(self._GetDisplayName(ref, args),
-                            kind=self.display_resource_type)
+                            kind=self._GetDisplayResourceType(args))
         return response
 
     return Command
@@ -831,7 +887,8 @@ class CreateCommandGenerator(BaseCommandGenerator):
 
       def Run(self_, args):
         ref, response = self._CommonRun(args)
-        primary_resource_arg = self.arg_generator.primary_resource_arg
+        primary_resource_arg = self.arg_generator.GetPrimaryResource(
+            self.methods, args).primary_resource
         is_parent_resource = (primary_resource_arg and
                               primary_resource_arg.is_parent_resource)
         if self.spec.async_:
@@ -858,7 +915,8 @@ class CreateCommandGenerator(BaseCommandGenerator):
           resource_name = resource_transform.TransformBaseName(full_name)
         else:
           resource_name = self._GetDisplayName(ref, args)
-        log.CreatedResource(resource_name, kind=self.display_resource_type)
+        log.CreatedResource(resource_name,
+                            kind=self._GetDisplayResourceType(args))
         response = self._HandleResponse(response, args)
         return response
 
@@ -871,9 +929,11 @@ class WaitCommandGenerator(BaseCommandGenerator):
   command_type = yaml_command_schema.CommandType.WAIT
 
   def _WaitForOperation(self, operation_ref, resource_ref,
-                        extract_resource_result, args=None):
+                        extract_resource_result, method, args=None):
     poller = AsyncOperationPoller(
-        self.spec, resource_ref if extract_resource_result else None, args)
+        self.spec, resource_ref if extract_resource_result else None, args,
+        operation_ref.GetCollectionInfo().full_name,
+        method)
     return self._WaitForOperationWithPoller(poller, operation_ref, resource_ref)
 
   def _Generate(self):
@@ -902,10 +962,14 @@ class WaitCommandGenerator(BaseCommandGenerator):
         self._CommonArgs(parser)
 
       def Run(self_, args):
-        ref = self.arg_generator.GetRequestResourceRef(args)
+        specified_resource = self.arg_generator.GetPrimaryResource(
+            self.methods, args)
+        method = specified_resource.method
+        ref = specified_resource.Parse(args)
+
         response = self._WaitForOperation(
             ref, resource_ref=None, extract_resource_result=False,
-            args=args)
+            method=method, args=args)
         response = self._HandleResponse(response, args)
         return response
 
@@ -953,10 +1017,12 @@ class UpdateCommandGenerator(BaseCommandGenerator):
           if self.spec.update.read_modify_update:
             existing_message = self._GetExistingResource(args)
 
-        self._UpdateRuntimeMethod(args)
+        self.methods = self._GetRuntimeMethods(args)
         # Check if mask is required for an update request, if required, return
         # the dotted path, e.g. updateRequest.fieldMask.
-        mask_path = update.GetMaskFieldPath(self.method)
+        method = self.arg_generator.GetPrimaryResource(
+            self.methods, args).method
+        mask_path = update.GetMaskFieldPath(method)
         if mask_path:
           # If user sets to disable the auto-generated field mask, set the value
           # to the empty string instead so that custom hooks can be used.
@@ -968,7 +1034,8 @@ class UpdateCommandGenerator(BaseCommandGenerator):
         else:
           update_mask = None
 
-        ref, response = self._CommonRun(args, existing_message, update_mask)
+        ref, response = self._CommonRun(
+            args, existing_message, update_mask)
         if self.spec.async_:
           request_string = None
           if ref:
@@ -978,7 +1045,8 @@ class UpdateCommandGenerator(BaseCommandGenerator):
               args, ref, response, request_string=request_string)
 
         log.UpdatedResource(
-            self._GetDisplayName(ref, args), kind=self.display_resource_type)
+            self._GetDisplayName(ref, args),
+            kind=self._GetDisplayResourceType(args))
         return self._HandleResponse(response, args)
 
     return Command
@@ -1029,14 +1097,16 @@ class SetIamPolicyCommandGenerator(BaseCommandGenerator):
 
   command_type = yaml_command_schema.CommandType.SET_IAM_POLICY
 
-  def _SetPolicyUpdateMask(self, update_mask):
+  def _SetPolicyUpdateMask(self, update_mask, method):
     """Set Field Mask on SetIamPolicy request message.
 
     If the API supports update_masks then adds the update_mask to the
     SetIamPolicy request (via static fields).
+
     Args:
       update_mask: str, comma separated string listing the Policy fields to be
         updated.
+      method: APIMethod, used to identify update mask field.
     """
     # Standard names for SetIamPolicyRequest message and set IAM request
     # field name
@@ -1055,7 +1125,7 @@ class SetIamPolicyCommandGenerator(BaseCommandGenerator):
                              or policy_request_path)
 
     mask_field_path = '{}.updateMask'.format(policy_request_path)
-    update_request = self.method.GetMessageByName(set_iam_policy_request)
+    update_request = method.GetMessageByName(set_iam_policy_request)
     if hasattr(update_request, 'updateMask'):
       self.spec.request.static_fields[mask_field_path] = update_mask
 
@@ -1100,7 +1170,9 @@ class SetIamPolicyCommandGenerator(BaseCommandGenerator):
                                  policy_request_path)
 
         policy_field_path = policy_request_path + '.policy'
-        policy_type = self.method.GetMessageByName(policy_type_name)
+        method = self.arg_generator.GetPrimaryResource(
+            self.methods, args).method
+        policy_type = method.GetMessageByName(policy_type_name)
         if not policy_type:
           raise ValueError('Policy type [{}] not found.'.format(
               policy_type_name))
@@ -1112,7 +1184,7 @@ class SetIamPolicyCommandGenerator(BaseCommandGenerator):
           policy.version = self.spec.iam.policy_version
 
         self.spec.request.static_fields[policy_field_path] = policy
-        self._SetPolicyUpdateMask(update_mask)
+        self._SetPolicyUpdateMask(update_mask, method)
         try:
           ref, response = self._CommonRun(args)
         except HttpBadRequestError as ex:
@@ -1123,7 +1195,7 @@ class SetIamPolicyCommandGenerator(BaseCommandGenerator):
           )
           raise ex
 
-        iam_util.LogSetIamPolicy(ref.Name(), self.display_resource_type)
+        iam_util.LogSetIamPolicy(ref.Name(), self._GetDisplayResourceType(args))
         return self._HandleResponse(response, args)
 
     return Command
@@ -1140,10 +1212,14 @@ class BaseIamPolicyBindingCommandGenerator(BaseCommandGenerator):
   def _hide_special_member_types(self):
     return self.spec.iam and self.spec.iam.hide_special_member_types
 
+  def _GetResourceRef(self, args):
+    methods = self._GetRuntimeMethods(args)
+    return self.arg_generator.GetPrimaryResource(methods, args).Parse(args)
+
   def _GenerateDeclarativeIamRolesCompleter(self):
     """Generate a IAM role completer."""
 
-    get_resource_ref = self.arg_generator.GetRequestResourceRef
+    get_resource_ref = self._GetResourceRef
 
     class Completer(DeclarativeIamRolesCompleter):
 
@@ -1155,11 +1231,11 @@ class BaseIamPolicyBindingCommandGenerator(BaseCommandGenerator):
 
   def _GetIamPolicy(self, args):
     """GetIamPolicy helper function for add/remove binding."""
-    get_iam_method = registry.GetMethod(self.spec.request.collection,
-                                        'getIamPolicy',
-                                        self.spec.request.api_version)
+    get_iam_methods = self._GetMethods('getIamPolicy')
+    get_iam_method = self.arg_generator.GetPrimaryResource(
+        get_iam_methods, args).method
     get_iam_request = self.arg_generator.CreateRequest(
-        args, override_method=get_iam_method)
+        args, get_iam_method)
 
     if self.spec.iam and self.spec.iam.policy_version:
       arg_utils.SetFieldInMessage(
@@ -1186,11 +1262,12 @@ class AddIamPolicyBindingCommandGenerator(BaseIamPolicyBindingCommandGenerator):
     Returns:
       IAM policy.
     """
-    binding_message_type = self.method.GetMessageByName('Binding')
+    method = self.arg_generator.GetPrimaryResource(self.methods, args).method
+    binding_message_type = method.GetMessageByName('Binding')
     if add_condition:
       condition = iam_util.ValidateAndExtractConditionMutexRole(args)
       policy = self._GetIamPolicy(args)
-      condition_message_type = self.method.GetMessageByName('Expr')
+      condition_message_type = method.GetMessageByName('Expr')
       iam_util.AddBindingToIamPolicyWithCondition(
           binding_message_type, condition_message_type, policy, args.member,
           args.role, condition)
@@ -1258,7 +1335,7 @@ class AddIamPolicyBindingCommandGenerator(BaseIamPolicyBindingCommandGenerator):
           )
           raise ex
 
-        iam_util.LogSetIamPolicy(ref.Name(), self.display_resource_type)
+        iam_util.LogSetIamPolicy(ref.Name(), self._GetDisplayResourceType(args))
         return self._HandleResponse(response, args)
 
     return Command
@@ -1339,7 +1416,7 @@ class RemoveIamPolicyBindingCommandGenerator(
         self.spec.request.static_fields[policy_field_path] = policy
 
         ref, response = self._CommonRun(args)
-        iam_util.LogSetIamPolicy(ref.Name(), self.display_resource_type)
+        iam_util.LogSetIamPolicy(ref.Name(), self._GetDisplayResourceType(args))
         return self._HandleResponse(response, args)
 
     return Command
@@ -1391,13 +1468,15 @@ class ImportCommandGenerator(BaseCommandGenerator):
 
       def Run(self_, args):
         # Determine message to parse resource into from yaml
-        message_type = self.method.GetRequestType()
-        request_field = self.method.request_field
+        method = self.arg_generator.GetPrimaryResource(
+            self.methods, args).method
+        message_type = method.GetRequestType()
+        request_field = method.request_field
         resource_message_class = message_type.field_by_name(request_field).type
 
         # Set up information for export utility.
         data = console_io.ReadFromFileOrStdin(args.source or '-', binary=False)
-        schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
+        schema_path = export_util.GetSchemaPath(method.collection.api_name,
                                                 self.spec.request.api_version,
                                                 resource_message_class.__name__)
         # Import resource from yaml.
@@ -1448,7 +1527,8 @@ class ImportCommandGenerator(BaseCommandGenerator):
           if ref is not None:
             request_string = 'Request issued for: [{{{}}}]'.format(
                 yaml_command_schema_util.NAME_FORMAT_KEY)
-          response = self._HandleAsync(args, ref, response, request_string)
+          response = self._HandleAsync(
+              args, ref, response, request_string)
 
         return self._HandleResponse(response, args)
 
@@ -1496,7 +1576,9 @@ class ExportCommandGenerator(BaseCommandGenerator):
 
       def Run(self_, args):
         unused_ref, response = self._CommonRun(args)
-        schema_path = export_util.GetSchemaPath(self.method.collection.api_name,
+        method = self.arg_generator.GetPrimaryResource(
+            self.methods, args).method
+        schema_path = export_util.GetSchemaPath(method.collection.api_name,
                                                 self.spec.request.api_version,
                                                 type(response).__name__)
 
@@ -1539,7 +1621,7 @@ class ConfigExportCommandGenerator(BaseCommandGenerator):
       def Args(parser):
         mutex_group = parser.add_group(mutex=True, required=True)
         resource_group = mutex_group.add_group()
-        args = self.arg_generator.GenerateArgs()
+        args = self.arg_generator.GenerateArgs(self.methods)
         # Resource arg concepts have to be manually changed to not required.
         for arg in args:
           for _, value in arg.specs.items():
@@ -1551,12 +1633,16 @@ class ConfigExportCommandGenerator(BaseCommandGenerator):
 
       def Run(self_, args):  # pylint: disable=no-self-argument
         # pylint: disable=missing-docstring
-        collection = self.resource_collection.full_name
+        resource_arg = self.arg_generator.GetPrimaryResource(
+            self.methods, args).primary_resource
+        collection = resource_arg and resource_arg.collection
+
         if getattr(args, 'all', None):
           return python_command_util.RunExport(
-              args=args, collection=collection, resource_ref=None)
-        ref = self.arg_generator.GetRequestResourceRef(args).SelfLink()
-        return python_command_util.RunExport(
-            args=args, collection=collection, resource_ref=ref)
+              args=args, collection=collection.full_name, resource_ref=None)
+        else:
+          return python_command_util.RunExport(
+              args=args, collection=collection.full_name,
+              resource_ref=resource_arg.ParseResourceArg(args).SelfLink())
 
     return Command

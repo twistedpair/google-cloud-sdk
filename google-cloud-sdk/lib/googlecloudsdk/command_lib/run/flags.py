@@ -885,6 +885,30 @@ def AddCpuFlag(parser, managed_only=False):
   CpuFlag(managed_only=managed_only).AddToParser(parser)
 
 
+def AddGpuTypeFlag(parser):
+  """Add the --gpu-type flag."""
+  parser.add_argument(
+      '--gpu-type',
+      metavar='GPU_TYPE',
+      hidden=True,
+      help='The GPU type to use.',
+  )
+
+
+def GpuFlag():
+  """Add the --gpu flag."""
+  return base.Argument(
+      '--gpu',
+      metavar='GPU',
+      hidden=True,
+      help=(
+          'Cloud Run supports values 0 or 1.'
+          '  1 gpu also requires a minimum 4 `--cpu` value'
+          '  1 gpu also requires a minimum 8Gi `--memory` value.'
+      ),
+  )
+
+
 def _ConcurrencyValue(value):
   """Returns True if value is an int > 0 or 'default'."""
   try:
@@ -2155,6 +2179,8 @@ def _GetConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
     changes.append(config_changes.ResourceChanges(cpu=args.cpu))
   if 'memory' in args and args.memory:
     changes.append(config_changes.ResourceChanges(memory=args.memory))
+  if 'gpu' in args and args.gpu:
+    changes.append(config_changes.ResourceChanges(gpu=args.gpu))
   if 'service_account' in args and args.service_account:
     changes.append(
         config_changes.ServiceAccountChanges(
@@ -2464,6 +2490,9 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if FlagIsExplicitlySet(args, 'runtime'):
     changes.append(config_changes.RuntimeChange(runtime=args.runtime))
 
+  if 'gpu_type' in args and args.gpu_type:
+    changes.append(config_changes.GpuTypeChange(gpu_type=args.gpu_type))
+
   _PrependClientNameAndVersionChange(args, changes)
 
   if FlagIsExplicitlySet(args, 'depends_on'):
@@ -2507,9 +2536,9 @@ def _GetServiceContainerChanges(container_args, container_name=None):
   return changes
 
 
-def GetJobConfigurationChanges(args):
+def GetJobConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   """Returns a list of changes to the job config, based on the flags set."""
-  changes = _GetConfigurationChanges(args)
+  changes = _GetConfigurationChanges(args, release_track=release_track)
   # Deletes existing breakglass annotation first.
   changes.insert(
       0,

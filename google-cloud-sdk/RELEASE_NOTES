@@ -5,6 +5,93 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 462.0.0 (2024-01-30)
+
+### Google Cloud CLI
+
+* Updated linux bundled python for the `gcloud` CLI to 3.11.7.
+* Updated `pip` package to version 23.3.2.
+
+### Binauthz
+
+*  Updated `gcloud container binauthz attestations create` and `sign-and-create`
+   to make `--attestor` optional, allowing creation of attestations on a
+   specified `--note`. Note that `--validate` can only be used with `--attestor`.
+
+### Cloud Asset Inventory
+
+* Promoted Cloud assets analysis commands `gcloud asset analyze-org-policies`, `gcloud asset analyze-org-policy-governed-containers` and `gcloud asset analyze-org-policy-governed-assets` to GA.
+
+### Cloud DNS
+
+* Added support to allow importing RecordSets with routing policies from YAML.
+
+### Cloud Dataflow
+
+* Added dataflow yaml command `gcloud beta dataflow yaml run`.
+
+### Cloud Pub/Sub
+
+* Promoted `--message-storage-policy-enforce-in-transit` flag of
+  `gcloud pubsub topics create` and `gcloud pubsub topics update` to GA. This
+  allows users to enable enforcement for in-transit guarantees.
+
+### Cloud Run
+
+* Reverted regionalized builds for Cloud Run source deploys.
+* Add `--service-account` flag to specify deployment service account for Cloud Run integrations deployments.
+
+### Cloud SQL
+
+* Added support for parallel import and export.
+
+### Cloud Speech API
+
+* Added `telephony` and `telephony_short` options for
+  `gcloud ml speech <recognize | recognize-long-running> --model` flag.
+
+### Cloud TPU
+
+* Promoted `--queue-count` flag of `gcloud compute tpus tpu-vm create` to GA.
+
+### Cloud Workflows
+
+* Added `--disable-concurrency-quota-overflow-buffering` flag to
+`gcloud workflows execute` to avoid backlogging the execution when the
+concurrency quota is exhausted.
+
+### Compute Engine
+
+* Promoted `gcloud compute networks subnet --reserved-internal-ranges` to GA.
+* Promoted `gcloud compute networks subnet --secondary-range_with-reserved-internal-ranges` to GA.
+
+### Database Migration
+
+* Added `gcloud database-migration migration-job demote-destination` which allows
+  demoting the destination of a migration job.
+* Added `alloydb-cluster` flag to `gcloud database-migration connection-profiles` to
+  allow creating connection profiles that link to existing AlloyDB clusters.
+
+### Distributed Cloud Edge
+
+* Added `--offline-credential` flags to `gcloud edge-cloud container
+clusters get-credentials` command to retrieve the credential used under
+disconnectivity to Google.
+* Added `--release-channel` argument to `gcloud edge-cloud container clusters update` to allow updating release channel for local control plane clusters.
+
+### Kubernetes Engine
+
+* Promoted `--enable-fqdn-network-policy` flag to `gcloud container clusters create` and `gcloud container clusters update`.
+
+### Security Command Center
+
+* Renamed `gcloud alpha scc securityposture-operations` command group to `gcloud alpha scc posture-operations`.
+* Also, promoted the above renamed command group `gcloud alpha scc posture-operations` to GA as `gcloud scc posture-operations`.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 461.0.0 (2024-01-23)
 
 ### Breaking Changes

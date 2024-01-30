@@ -432,7 +432,9 @@ def AddBigQueryConfigFlags(
   )
 
 
-def AddCloudStorageConfigFlags(parser, is_update):
+def AddCloudStorageConfigFlags(
+    parser, is_update, enable_cps_gcs_file_datetime_format
+):
   """Adds Cloud Storage config flags to parser."""
   current_group = parser
   cloud_storage_config_group_help = """Cloud Storage Config Options. The Cloud
@@ -475,6 +477,15 @@ def AddCloudStorageConfigFlags(parser, is_update):
       default=None,
       help='The suffix for Cloud Storage filename.',
   )
+  if enable_cps_gcs_file_datetime_format:
+    # TODO(b/317043091): Link flag help text to docs describing allowed datetime
+    # formats once they are available.
+    cloud_storage_config_group.add_argument(
+        '--cloud-storage-file-datetime-format',
+        default=None,
+        hidden=True,
+        help='The custom datetime format string for Cloud Storage filename.',
+    )
   cloud_storage_config_group.add_argument(
       '--cloud-storage-max-bytes',
       type=arg_parsers.BinarySize(
@@ -597,6 +608,7 @@ def AddSubscriptionSettingsFlags(
     parser,
     is_update=False,
     enable_push_to_cps=False,
+    enable_cps_gcs_file_datetime_format=False,
 ):
   """Adds the flags for creating or updating a subscription.
 
@@ -605,6 +617,8 @@ def AddSubscriptionSettingsFlags(
     is_update: Whether or not this is for the update operation (vs. create).
     enable_push_to_cps: whether or not to enable Pubsub Export config flags
       support.
+    enable_cps_gcs_file_datetime_format: whether or not to enable GCS file
+      datetime format flags support.
   """
   AddAckDeadlineFlag(parser)
   AddPushConfigFlags(
@@ -614,7 +628,9 @@ def AddSubscriptionSettingsFlags(
 
   mutex_group = parser.add_mutually_exclusive_group()
   AddBigQueryConfigFlags(mutex_group, is_update)
-  AddCloudStorageConfigFlags(mutex_group, is_update)
+  AddCloudStorageConfigFlags(
+      mutex_group, is_update, enable_cps_gcs_file_datetime_format
+  )
   if enable_push_to_cps:
     AddPubsubExportConfigFlags(mutex_group, is_update)
   AddSubscriptionMessageRetentionFlags(parser, is_update)
@@ -968,21 +984,18 @@ def AddTopicMessageRetentionFlags(parser, is_update):
   )
 
 
-def AddTopicMessageStoragePolicyFlags(
-    parser, is_update, enforce_in_transit_flag_supported
-):
+def AddTopicMessageStoragePolicyFlags(parser, is_update):
   """Add flags for the Message Storage Policy.
 
   Args:
     parser: The argparse parser.
     is_update: Whether the operation is for updating message storage policy.
-    enforce_in_transit_flag_supported: Whether or not to allow the enforce
-      in-transit flag to be set.
   """
   current_group = parser
   help_message = (
-      'Options for explicitly specifying the message storage policy for a'
-      ' topic.'
+      'Options for explicitly specifying the [message storage'
+      ' policy](https://cloud.google.com/pubsub/docs/resource-location-restriction)'
+      ' for a topic.'
   )
 
   if is_update:
@@ -1015,17 +1028,15 @@ def AddTopicMessageStoragePolicyFlags(
           ' be stored at rest.'
       ),
   )
-  if enforce_in_transit_flag_supported:
-    # TODO(b/301085678): Add documentation for in-transit guarantees when
-    #                    available
-    explicit_msp_group.add_argument(
-        '--message-storage-policy-enforce-in-transit',
-        action='store_true',
-        help=(
-            'Whether or not to enforce in-transit guarantees for this topic'
-            ' using the allowed regions.'
-        ),
-    )
+  explicit_msp_group.add_argument(
+      '--message-storage-policy-enforce-in-transit',
+      action='store_true',
+      help=(
+          'Whether or not to enforce in-transit guarantees for this topic'
+          ' using the allowed regions. This ensures that publishing, pulling,'
+          ' and push delivery are only handled in allowed Cloud regions.'
+      ),
+  )
 
 
 def ParseMessageBody(args):

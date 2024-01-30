@@ -122,6 +122,7 @@ class MultitypeResourceSpec(concepts.ConceptSpec):
 
     attr_list = sorted(list(attr_map.values()), key=lambda x: x[0])
     self._attributes = [attr[1] for attr in attr_list]
+    self._anchor = self._GetAnchor()
 
   @property
   def name(self):
@@ -130,6 +131,20 @@ class MultitypeResourceSpec(concepts.ConceptSpec):
   @property
   def attributes(self):
     return self._attributes
+
+  @property
+  def anchor(self):
+    return self._anchor
+
+  def _GetAnchor(self):
+    leaf_anchors = set(
+        attr for attr in self.attributes if self.IsLeafAnchor(attr))
+    if len(leaf_anchors) != 1:
+      anchor_names = ', '.join([attr.name for attr in leaf_anchors])
+      raise ConfigurationError(
+          'Could not find single achor value for multitype resource. '
+          f'Resource {self.name} has multiple leaf anchors: [{anchor_names}].')
+    return leaf_anchors.pop()
 
   def IsAnchor(self, attribute):
     """Returns True if attribute is an anchor in at least one concept."""

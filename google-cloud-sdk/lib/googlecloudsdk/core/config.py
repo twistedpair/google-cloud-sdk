@@ -24,6 +24,7 @@ import logging
 import os
 import sqlite3
 import time
+from typing import Dict
 import uuid
 
 from google.auth import _cloud_sdk
@@ -409,6 +410,8 @@ class SqliteConfigStore(object):
       config_attr: string, the primary key of the attribute to store.
       config_value: obj, the value of the config key attribute.
     """
+    if isinstance(config_value, Dict):
+      config_value = json.dumps(config_value).encode('utf-8')
     self._StoreAttribute(
         config_attr,
         config_value,
@@ -487,6 +490,24 @@ class SqliteConfigStore(object):
     """
     value = self._GetIntAttribute(config_attr, required)
     return value
+
+  def GetJSON(self, config_attr, required=False):
+    """Gets the JSON value for this attribute.
+
+    Args:
+      config_attr: string, The attribute key to get.
+      required: bool, True to raise an exception if the attribute is not set.
+
+    Returns:
+      The JSON value for this attribute or None.
+    """
+    attr_value = self._LoadAttribute(config_attr, required)
+    if attr_value is None:
+      return None
+    try:
+      return json.loads(attr_value)
+    except ValueError:
+      return attr_value
 
   def _StoreAttribute(self, config_attr: str, config_value):
     """Stores the input config attributes to the record of config_name in the cache.

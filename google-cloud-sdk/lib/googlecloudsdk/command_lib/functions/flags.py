@@ -951,7 +951,7 @@ def AddDockerRegistryFlags(parser):
       choices=sorted(DOCKER_REGISTRY_MAPPING.values()),
       help_str="""\
         Docker Registry to use for storing the function's Docker images.
-        The option `container-registry` is used by default.
+        The option `artifact-registry` is used by default.
 
         Warning: Artifact Registry and Container Registry have different image
         storage costs. For more details, please see

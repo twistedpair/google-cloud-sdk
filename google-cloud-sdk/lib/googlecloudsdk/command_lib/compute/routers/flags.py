@@ -253,7 +253,11 @@ def AddInterfaceArgs(parser, for_update=False, enable_ipv6_bgp=False):
 
 
 def AddBgpPeerArgs(
-    parser, for_add_bgp_peer=False, is_update=False, enable_ipv6_bgp=False
+    parser,
+    for_add_bgp_peer=False,
+    is_update=False,
+    enable_ipv6_bgp=False,
+    enable_route_policies=False,
 ):
   """Adds common arguments for managing BGP peers."""
 
@@ -519,6 +523,27 @@ def AddBgpPeerArgs(
         action='store_true',
         default=None,
         help='If specified, remove MD5 authentication from the BGP peer.',
+    )
+  if enable_route_policies:
+    parser.add_argument(
+        '--export-policies',
+        metavar='EXPORT_POLICY',
+        type=arg_parsers.ArgList(),
+        help=(
+            'Comma-separated list of export policies. Passing an empty string'
+            ' removes all export policies.'
+        ),
+        hidden=True,
+    )
+    parser.add_argument(
+        '--import-policies',
+        type=arg_parsers.ArgList(),
+        metavar='IMPORT_POLICY',
+        help=(
+            'Comma-separated list of import policies. Passing an empty string'
+            ' removes all import policies.'
+        ),
+        hidden=True,
     )
 
 

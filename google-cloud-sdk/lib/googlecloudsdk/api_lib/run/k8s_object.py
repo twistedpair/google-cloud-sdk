@@ -71,6 +71,8 @@ NETWORK_INTERFACES_ANNOTATION = RUN_GROUP + '/network-interfaces'
 
 CONTAINER_DEPENDENCIES_ANNOTATION = RUN_GROUP + '/container-dependencies'
 
+GPU_TYPE_NODE_SELECTOR = RUN_GROUP + '/accelerator'
+
 
 def Meta(m):
   """Metadta class from messages module."""

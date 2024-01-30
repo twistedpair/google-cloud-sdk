@@ -43,6 +43,10 @@
 root_dir: googlecloudsdk/generated_clients/apis
 
 apis:
+  auditmanager:
+    v1alpha:
+      discovery_doc: auditmanager_v1alpha.json
+      default: true
   beyondcorp:
     v1:
       discovery_doc: beyondcorp_v1.json
@@ -1050,6 +1054,8 @@ apis:
     v1alpha:
       discovery_doc: parallelstore_v1alpha.json
       default: true
+    v1beta:
+      discovery_doc: parallelstore_v1beta.json
   policytroubleshooter:
     v1beta:
       enable_mtls: false
@@ -1625,6 +1631,9 @@ canonical_surfaces:
   assuredworkloads:
     name: assuredworkloads
     command: assured
+  auditmanager:
+    name: auditmanager
+    command: audit-manager
   authztoolkit:
     name: authztoolkit
     command: authz-toolkit

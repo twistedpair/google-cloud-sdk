@@ -120,7 +120,7 @@ integrations:
   product: Cloud SQL
   description: Configure a CloudSQL database instance and connect it to a Cloud Run Service.
   example_command: |-
-    $ gcloud {track} run integrations create --service=[SERVICE] --type=cloudsql --parameters=version=MYSQL_8_0,tier=db-f1-micro
+    $ gcloud {track} run integrations create --service=[SERVICE] --type=cloudsql --parameters=version=MYSQL_8_0
   example_yaml: |
 
     apiVersion: runapps.googleapis.com/v1alpha1
@@ -128,7 +128,6 @@ integrations:
     - id: cloudsql/cloudsql-1
       config:
         version: POSTGRES_11
-        tier: db-f1-micro
     - id: service/[SERVICE]
       bindings:
       - target: cloudsql/cloudsql-1
@@ -136,15 +135,9 @@ integrations:
   visible: false
   eta_in_min: 15
   cta: >-
-    To connect to the CloudSQL instance utilize the environment variables DB_NAME, DB_SOCKET,
+    To connect to the CloudSQL instance utilize the environment variables DB_NAME, INSTANCE_HOST,
     DB_USER, and DB_PASS. These have been added to the Cloud Run service for you.
   parameters:
-  - name: tier
-    label: Machine Type
-    description: 'The service tier of the instance. For example: db-f1-micro or db-g1-small.'
-    data_type: string
-    update_allowed: false
-    required: true
   - name: version
     label: Database Version
     description: >-
@@ -190,3 +183,30 @@ integrations:
     required: true
   required_apis:
   - firebasehosting.googleapis.com
+
+- integration_type: service
+  resource_type: service
+  label: Cloud Run Service
+  product: Cloud Run Service
+  description: Configure a Cloud Run service.
+  example_command: ""
+  example_yaml: |
+
+    apiVersion: runapps.googleapis.com/v1alpha1
+    resources:
+    - id: service/myapp
+      config:
+        containers:
+        - image: us-docker.pkg.dev/cloudrun/container/hello
+  service_type: workload
+  visible: true
+  eta_in_min: 5
+  parameters:
+  - name: image
+    label: Container Image
+    description: 'The container image to use to deploy the Cloud Run service.'
+    data_type: string
+    update_allowed: true
+    required: false
+  required_apis:
+  - run.googleapis.com

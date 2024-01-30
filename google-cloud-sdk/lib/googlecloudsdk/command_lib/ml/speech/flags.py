@@ -104,45 +104,71 @@ class RecognizeArgsToRequestMapper:
     parser.add_argument(
         '--model',
         choices={
-            'default':
+            'default': (
                 'audio that is not one of the specific audio models. '
                 'For example, long-form audio. '
                 'Ideally the audio is high-fidelity, recorded at a 16khz '
-                'or greater sampling rate.',
-            'command_and_search':
-                'short queries such as voice commands or voice search.',
-            'latest_long':
-                'Use this model for any kind of long form content such as media '
-                'or spontaneous speech and conversations. Consider using this '
-                'model in place of the video model, especially if the video '
-                'model is not available in your target language. You can also '
-                'use this in place of the default model.',
-            'latest_short':
-                'Use this model for short utterances that are a few '
-                'seconds in length. It is useful for trying to capture commands '
-                'or other single shot directed speech use cases. Consider using '
-                'this model instead of the command and search model.',
-            'medical_conversation':
+                'or greater sampling rate.'
+            ),
+            'command_and_search': (
+                'short queries such as voice commands or voice search.'
+            ),
+            'latest_long': (
+                'Use this model for any kind of long form content such as media'
+                ' or spontaneous speech and conversations. Consider using this'
+                ' model in place of the video model, especially if the video'
+                ' model is not available in your target language. You can also'
+                ' use this in place of the default model.'
+            ),
+            'latest_short': (
+                'Use this model for short utterances that are a few seconds in'
+                ' length. It is useful for trying to capture commands or other'
+                ' single shot directed speech use cases. Consider using this'
+                ' model instead of the command and search model.'
+            ),
+            'medical_conversation': (
                 'Best for audio that originated from a conversation between a '
-                'medical provider and patient.',
-            'medical_dictation':
-                'Best for audio that originated from dictation notes by a medical provider.',
-            'phone_call':
-                'audio that originated from a phone call (typically recorded at an 8khz sampling rate).',
-            'phone_call_enhanced':
-                'audio that originated from a phone call (typically recorded at an 8khz sampling rate). '
-                'This is a premium model and can produce better results but costs more than the standard rate.',
-            'video_enhanced':
-                'audio that originated from video or includes multiple speakers. '
-                'Ideally the audio is recorded at a 16khz or greater sampling rate. '
-                'This is a premium model that costs more than the standard rate.'
+                'medical provider and patient.'
+            ),
+            'medical_dictation': (
+                'Best for audio that originated from dictation notes by a'
+                ' medical provider.'
+            ),
+            'phone_call': (
+                'audio that originated from a phone call (typically recorded at'
+                ' an 8khz sampling rate).'
+            ),
+            'phone_call_enhanced': (
+                'audio that originated from a phone call (typically recorded at'
+                ' an 8khz sampling rate). This is a premium model and can'
+                ' produce better results but costs more than the standard rate.'
+            ),
+            'telephony': (
+                'Improved version of the "phone_call" model, best for audio '
+                'that originated from a phone call, typically recorded at an '
+                '8kHz sampling rate.'
+            ),
+            'telephony_short': (
+                'Dedicated version of the modern "telephony" model for short '
+                'or even single-word utterances for audio that originated from '
+                'a phone call, typically recorded at an 8kHz sampling rate.'
+            ),
+            'video_enhanced': (
+                'audio that originated from video or includes multiple'
+                ' speakers. Ideally the audio is recorded at a 16khz or greater'
+                ' sampling rate. This is a premium model that costs more than'
+                ' the standard rate.'
+            ),
         },
-        help='Select the model best suited to your domain to get best results. '
-        'If you do not explicitly specify a model, Speech-to-Text will '
-        'auto-select a model based on your other specified parameters. '
-        'Some models are premium and cost more '
-        'than standard models (although you can reduce the price by opting into '
-        'https://cloud.google.com/speech-to-text/docs/data-logging)')
+        help=(
+            'Select the model best suited to your domain to get best results.'
+            ' If you do not explicitly specify a model, Speech-to-Text will'
+            ' auto-select a model based on your other specified parameters.'
+            ' Some models are premium and cost more than standard models'
+            ' (although you can reduce the price by opting into'
+            ' https://cloud.google.com/speech-to-text/docs/data-logging)'
+        ),
+    )
 
     parser.add_argument(
         '--max-alternatives',
@@ -208,6 +234,8 @@ class RecognizeArgsToRequestMapper:
           'latest_short',
           'medical_conversation',
           'medical_dictation',
+          'telephony',
+          'telephony_short',
       ]:
         config.model = args.model
       elif args.model == 'phone_call_enhanced':

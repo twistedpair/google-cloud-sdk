@@ -425,6 +425,26 @@ class ApphubProjectsLocationsDetachServiceProjectAttachmentRequest(_messages.Mes
   name = _messages.StringField(2, required=True)
 
 
+class ApphubProjectsLocationsDiscoveredServicesFindRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDiscoveredServicesFindRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Value for parent.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
 class ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredServicesFindUnregisteredRequest
   object.
@@ -458,6 +478,26 @@ class ApphubProjectsLocationsDiscoveredServicesGetRequest(_messages.Message):
 
 class ApphubProjectsLocationsDiscoveredServicesListRequest(_messages.Message):
   r"""A ApphubProjectsLocationsDiscoveredServicesListRequest object.
+
+  Fields:
+    filter: Optional. Filtering results
+    orderBy: Optional. Hint for how to order the results
+    pageSize: Optional. Requested page size. Server may return fewer items
+      than requested. If unspecified, server will pick an appropriate default.
+    pageToken: Optional. A token identifying a page of results the server
+      should return.
+    parent: Required. Value for parent.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class ApphubProjectsLocationsDiscoveredWorkloadsFindRequest(_messages.Message):
+  r"""A ApphubProjectsLocationsDiscoveredWorkloadsFindRequest object.
 
   Fields:
     filter: Optional. Filtering results
@@ -906,7 +946,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1057,6 +1101,36 @@ class Expr(_messages.Message):
   expression = _messages.StringField(2)
   location = _messages.StringField(3)
   title = _messages.StringField(4)
+
+
+class FindDiscoveredServicesResponse(_messages.Message):
+  r"""Response for FindDiscoveredServices.
+
+  Fields:
+    discoveredServices: List of discovered services.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  discoveredServices = _messages.MessageField('DiscoveredService', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class FindDiscoveredWorkloadsResponse(_messages.Message):
+  r"""Response for FindDiscoveredWorkloads.
+
+  Fields:
+    discoveredWorkloads: List of discovered workloads.
+    nextPageToken: A token identifying a page of results the server should
+      return.
+    unreachable: Locations that could not be reached.
+  """
+
+  discoveredWorkloads = _messages.MessageField('DiscoveredWorkload', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class FindUnregisteredServicesResponse(_messages.Message):

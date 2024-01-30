@@ -121,10 +121,8 @@ properties:
     description: |-
       This field indicates whether this backend should be fully utilized before
       sending traffic to backends with default preference. The possible values
-      are: 1) DEFAULT:  If preferred backends don't have enough capacity, backends in this layer
-      would be used and traffic would be assigned based on the load balancing algorithm you use.
-      This is the default. 2) PREFERRED: Backends with this preference level will be filled up to
-      their capacity limits first, based on RTT.
+      are: - PREFERRED: Backends with this preference level will be filled up to
+      their capacity limits first, based on RTT. -
     type: string
     enum:
     - DEFAULT

@@ -4348,10 +4348,7 @@ class NodeConfig(_messages.Message):
     diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
-    enableConfidentialStorage: Optional. Enable confidential storage on
-      Hyperdisk. boot_disk_kms_key is required when
-      enable_confidential_storage is true. This is only available for private
-      preview.
+    enableConfidentialStorage: Optional. Reserved for future use.
     ephemeralStorageConfig: Parameters for the ephemeral storage filesystem.
       If unspecified, ephemeral storage is backed by the boot disk.
     ephemeralStorageLocalSsdConfig: Parameters for the node ephemeral storage
@@ -7168,6 +7165,7 @@ class UpdateNodePoolRequest(_messages.Message):
       or project number](https://cloud.google.com/resource-
       manager/docs/creating-managing-projects). This field has been deprecated
       and replaced by the name field.
+    queuedProvisioning: Specifies the configuration of queued provisioning.
     resourceLabels: The resource labels for the node pool to use to annotate
       any related Google Compute Engine resources.
     resourceManagerTags: Desired resource manager tag keys and values to be
@@ -7219,15 +7217,16 @@ class UpdateNodePoolRequest(_messages.Message):
   nodePoolId = _messages.StringField(22)
   nodeVersion = _messages.StringField(23)
   projectId = _messages.StringField(24)
-  resourceLabels = _messages.MessageField('ResourceLabels', 25)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 26)
-  storagePools = _messages.StringField(27, repeated=True)
-  tags = _messages.MessageField('NetworkTags', 28)
-  taints = _messages.MessageField('NodeTaints', 29)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 30)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 31)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 32)
-  zone = _messages.StringField(33)
+  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 25)
+  resourceLabels = _messages.MessageField('ResourceLabels', 26)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 27)
+  storagePools = _messages.StringField(28, repeated=True)
+  tags = _messages.MessageField('NetworkTags', 29)
+  taints = _messages.MessageField('NodeTaints', 30)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 31)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 32)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 33)
+  zone = _messages.StringField(34)
 
 
 class UpgradeAvailableEvent(_messages.Message):

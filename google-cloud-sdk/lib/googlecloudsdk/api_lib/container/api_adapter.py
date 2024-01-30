@@ -2353,6 +2353,12 @@ class APIAdapter(object):
           options.enable_cilium_clusterwide_network_policy
       )
 
+    if options.enable_fqdn_network_policy is not None:
+      if cluster.networkConfig is None:
+        cluster.networkConfig = self.messages.NetworkConfig()
+      cluster.networkConfig.enableFqdnNetworkPolicy = (
+          options.enable_fqdn_network_policy)
+
     return cluster
 
   def _GetClusterNetworkPerformanceConfig(self, options):
@@ -3763,6 +3769,10 @@ class APIAdapter(object):
               options.enable_cilium_clusterwide_network_policy
           )
       )
+
+    if options.enable_fqdn_network_policy is not None:
+      update = self.messages.ClusterUpdate(
+          desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy)
 
     return update
 
@@ -5471,12 +5481,6 @@ class V1Beta1Adapter(V1Adapter):
           dns_endpoint_config
       )
 
-    if options.enable_fqdn_network_policy is not None:
-      if cluster.networkConfig is None:
-        cluster.networkConfig = self.messages.NetworkConfig()
-      cluster.networkConfig.enableFqdnNetworkPolicy = (
-          options.enable_fqdn_network_policy)
-
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -5588,10 +5592,6 @@ class V1Beta1Adapter(V1Adapter):
       update = self.messages.ClusterUpdate(
           desiredCostManagementConfig=self.messages.CostManagementConfig(
               enabled=options.enable_cost_allocation))
-
-    if options.enable_fqdn_network_policy is not None:
-      update = self.messages.ClusterUpdate(
-          desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy)
 
     if options.convert_to_autopilot is not None:
       update = self.messages.ClusterUpdate(
@@ -6066,12 +6066,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
     cluster.kubernetesObjectsExportConfig = _GetKubernetesObjectsExportConfigForClusterCreate(
         options, self.messages)
 
-    if options.enable_fqdn_network_policy is not None:
-      if cluster.networkConfig is None:
-        cluster.networkConfig = self.messages.NetworkConfig()
-      cluster.networkConfig.enableFqdnNetworkPolicy = (
-          options.enable_fqdn_network_policy)
-
     req = self.messages.CreateClusterRequest(
         parent=ProjectLocation(cluster_ref.projectId, cluster_ref.zone),
         cluster=cluster)
@@ -6177,10 +6171,6 @@ class V1Alpha1Adapter(V1Beta1Adapter):
           desiredDatapathProvider=(
               self.messages.ClusterUpdate.DesiredDatapathProviderValueValuesEnum
               .ADVANCED_DATAPATH))
-
-    if options.enable_fqdn_network_policy is not None:
-      update = self.messages.ClusterUpdate(
-          desiredEnableFqdnNetworkPolicy=options.enable_fqdn_network_policy)
 
     if options.convert_to_autopilot is not None:
       update = self.messages.ClusterUpdate(

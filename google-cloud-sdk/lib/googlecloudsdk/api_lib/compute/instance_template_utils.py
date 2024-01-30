@@ -78,6 +78,7 @@ def CreateNetworkInterfaceMessage(resources,
     stack_type: identify whether IPv6 features are enabled
                * IPV4_ONLY - can only have IPv4 address
                * IPV4_IPV6 - can have both IPv4 and IPv6 address
+               * IPV6_ONLY - can only have IPv6 address
     ipv6_network_tier: specify network tier for IPv6 access config
                * PREMIUM - network tier being PREMIUM
                * STANDARD - network tier being STANDARD

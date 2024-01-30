@@ -23,11 +23,23 @@ class Abort(_messages.Message):
   """
 
   httpStatus = _messages.IntegerField(1)
-  percentage = _messages.IntegerField(2)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
+
+
+class Delay(_messages.Message):
+  r"""message for delay
+
+  Fields:
+    fixedDelay: Delay time for requests.
+    percentage: Percentage of the network traffic to be delayed.
+  """
+
+  fixedDelay = _messages.StringField(1)
+  percentage = _messages.IntegerField(2, variant=_messages.Variant.INT32)
 
 
 class Empty(_messages.Message):
@@ -43,10 +55,7 @@ class Experiment(_messages.Message):
   r"""Message describing Experiment object
 
   Fields:
-    apiVersion: The API version to be used. Default value is the latest API
-      version.
     createTime: Output only. Create time stamp.
-    deleted: Output only. is deleted flag for experiments
     description: End user description of the experiment.
     etag: Server specified etag
     name: Required. Identifier. The format for the name is:
@@ -54,13 +63,11 @@ class Experiment(_messages.Message):
     runFaults: faults to run in experiment
   """
 
-  apiVersion = _messages.StringField(1)
-  createTime = _messages.StringField(2)
-  deleted = _messages.BooleanField(3)
-  description = _messages.StringField(4)
-  etag = _messages.StringField(5)
-  name = _messages.StringField(6)
-  runFaults = _messages.MessageField('RunFault', 7, repeated=True)
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  etag = _messages.StringField(3)
+  name = _messages.StringField(4)
+  runFaults = _messages.MessageField('RunFault', 5, repeated=True)
 
 
 class Fault(_messages.Message):
@@ -68,10 +75,7 @@ class Fault(_messages.Message):
 
   Fields:
     action: Actions to perform in this fault.
-    apiVersion: The API version to be used. Default value is the latest API
-      version.
     createTime: Output only. [Output only] Create time stamp
-    deleted: Output only. [Output only] is_deleted flag
     description: End user description of the fault.
     etag: Server specified etag
     name: Identifier. Unique name for the fault per project, provided by the
@@ -80,58 +84,24 @@ class Fault(_messages.Message):
   """
 
   action = _messages.MessageField('FaultInjectionAction', 1)
-  apiVersion = _messages.StringField(2)
-  createTime = _messages.StringField(3)
-  deleted = _messages.BooleanField(4)
-  description = _messages.StringField(5)
-  etag = _messages.StringField(6)
-  name = _messages.StringField(7)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  etag = _messages.StringField(4)
+  name = _messages.StringField(5)
 
 
-class FaultInjectionAction(_messages.Message):
-  r"""An Action identifies steps to perform in the fault.
-
-  Fields:
-    faultType: The type of fault.
-  """
-
-  faultType = _messages.MessageField('FaultInjectionFaultType', 1)
-
-
-class FaultInjectionFaultType(_messages.Message):
-  r"""The Fault type.
-
-  Fields:
-    abort: Abort condtion
-    fixedDelay: fixed delay time
-  """
-
-  abort = _messages.MessageField('Abort', 1)
-  fixedDelay = _messages.MessageField('FixedDelay', 2)
-
-
-class FaultInjectionTargetMatcher(_messages.Message):
-  r"""Specifies a target which can be a service or service workload.
-
-  Fields:
-    service: name of the service we are targeting
-    workload: service workload we are targeting
-  """
-
-  service = _messages.StringField(1)
-  workload = _messages.StringField(2)
-
-
-class FaultPepStatus(_messages.Message):
-  r"""Message describing Faults and its Policy Enforcement Points(PEP)
+class FaultApplyStatus(_messages.Message):
+  r"""Message describing Faults and its apply status apphub targets.
 
   Enums:
     StateValueValuesEnum: Output only. Message describing fault status
 
   Fields:
     fault: Message describing the fault config
-    pepStatus: Message describing the PEPStatus
+    faultTarget: Message describing the fault target.
     state: Output only. Message describing fault status
+    status: Output only. Message describing status code/error when calling PO
+    targetStatuses: List of target statuses.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -157,8 +127,47 @@ class FaultPepStatus(_messages.Message):
     STOP_ERRORED = 7
 
   fault = _messages.MessageField('Fault', 1)
-  pepStatus = _messages.MessageField('PepStatus', 2)
+  faultTarget = _messages.MessageField('FaultInjectionTarget', 2)
   state = _messages.EnumField('StateValueValuesEnum', 3)
+  status = _messages.MessageField('Status', 4)
+  targetStatuses = _messages.MessageField('TargetStatus', 5, repeated=True)
+
+
+class FaultInjectionAction(_messages.Message):
+  r"""An Action identifies steps to perform in the fault.
+
+  Fields:
+    faultInjectionPolicy: FaultInectionPolicy action for fault.
+  """
+
+  faultInjectionPolicy = _messages.MessageField('FaultInjectionPolicy', 1)
+
+
+class FaultInjectionPolicy(_messages.Message):
+  r"""The specification for fault injection introduced into traffic to test
+  the resiliency of clients to destination service failure. As part of fault
+  injection, when clients send requests to a destination, delays can be
+  introduced by client proxy on a percentage of requests before sending those
+  requests to the destination service. Similarly requests can be aborted by
+  client proxy for a percentage of requests.
+
+  Fields:
+    abort: Abort condtion
+    delay: fixed delay time
+  """
+
+  abort = _messages.MessageField('Abort', 1)
+  delay = _messages.MessageField('Delay', 2)
+
+
+class FaultInjectionTarget(_messages.Message):
+  r"""Message describing apphub targets passed to Job.
+
+  Fields:
+    uri: Uri of the apphub target.
+  """
+
+  uri = _messages.StringField(1)
 
 
 class FaultinjectiontestingProjectsLocationsExperimentsCreateRequest(_messages.Message):
@@ -547,16 +556,15 @@ class FaultinjectiontestingProjectsLocationsOperationsListRequest(_messages.Mess
   pageToken = _messages.StringField(4)
 
 
-class FixedDelay(_messages.Message):
-  r"""message for fixed delay
+class ForwardingRuleTarget(_messages.Message):
+  r"""Definition of FIT Target which describes a specific forwarding rule.
 
   Fields:
-    delay: Delay time for requests.
-    percentage: Percentage of the network traffic to be delayed.
+    forwardingRule: Reference to the targeted ForwardingRule (URI) See more:
+      https://cloud.google.com/compute/docs/reference/rest/v1/forwardingRules
   """
 
-  delay = _messages.StringField(1)
-  percentage = _messages.IntegerField(2)
+  forwardingRule = _messages.StringField(1)
 
 
 class Job(_messages.Message):
@@ -564,10 +572,10 @@ class Job(_messages.Message):
 
   Enums:
     JobStateValueValuesEnum: Output only. The current state of the job.
-      Default value is UNDEFINED
+      Default value is UNSPECIFIED
 
   Fields:
-    createTime: Output only. [Output only] Create time stamp
+    createTime: Output only. [Output only] create time stamp
     deleteTime: Output only. [Output only] delete time stamp
     description: End user description of the job.
     etag: Server specified etag
@@ -575,19 +583,17 @@ class Job(_messages.Message):
     experimentSnapshot: Output only. Snapshot of the experiment configuration
       at the time of job creation.
     expireTime: Output only. [Output only] expire time stamp
-    faultPepStatuses: List of fault configurations and their PEP statuses for
-      the job.
-    faultTargets: Required. Fault targets passed to this job run
+    faultApplyStatuses: List of fault configurations and their apply statuses
+      for the job.
     jobState: Output only. The current state of the job. Default value is
-      UNDEFINED
+      UNSPECIFIED
     name: Identifier. Job name of the running job. The format for the name is:
       projects/{project}/locations/{location}/jobs/{job_name}
-    runStatus: Error codes and warnings associated with the job run.
-    timeWindow: TimeWindow specified by user for list query.
   """
 
   class JobStateValueValuesEnum(_messages.Enum):
-    r"""Output only. The current state of the job. Default value is UNDEFINED
+    r"""Output only. The current state of the job. Default value is
+    UNSPECIFIED
 
     Values:
       STATE_UNSPECIFIED: Job state is STATE_UNSPECIFIED for validate job
@@ -609,12 +615,9 @@ class Job(_messages.Message):
   experiment = _messages.StringField(5)
   experimentSnapshot = _messages.MessageField('Experiment', 6)
   expireTime = _messages.StringField(7)
-  faultPepStatuses = _messages.MessageField('FaultPepStatus', 8, repeated=True)
-  faultTargets = _messages.MessageField('FaultInjectionTargetMatcher', 9, repeated=True)
-  jobState = _messages.EnumField('JobStateValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  runStatus = _messages.MessageField('Status', 12)
-  timeWindow = _messages.MessageField('TimeWindow', 13)
+  faultApplyStatuses = _messages.MessageField('FaultApplyStatus', 8, repeated=True)
+  jobState = _messages.EnumField('JobStateValueValuesEnum', 9)
+  name = _messages.StringField(10)
 
 
 class ListExperimentsResponse(_messages.Message):
@@ -903,49 +906,6 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(7)
 
 
-class OriginResource(_messages.Message):
-  r"""Message describing OriginResource.
-
-  Fields:
-    backendServices: list of backend services from sd resource.
-    forwardingRule: forwarding_rule from sd resource.
-    pathRule: path_rule from sd resource. example: /payment-service.
-    uri: url_map from sd resource.
-  """
-
-  backendServices = _messages.StringField(1, repeated=True)
-  forwardingRule = _messages.StringField(2)
-  pathRule = _messages.StringField(3)
-  uri = _messages.StringField(4)
-
-
-class PepResourceStatus(_messages.Message):
-  r"""Message describing PepResourceStatus.
-
-  Fields:
-    errorMessage: Error message is any.
-    injectionTime: Time of fault injection for this endpoint.
-    originResource: UrlMap is the origin resource for L7 LB. HTTP route is the
-      origin resource for TD.
-    status: Status from PO.
-  """
-
-  errorMessage = _messages.StringField(1)
-  injectionTime = _messages.StringField(2)
-  originResource = _messages.MessageField('OriginResource', 3)
-  status = _messages.MessageField('Status', 4)
-
-
-class PepStatus(_messages.Message):
-  r"""Message describing Policy enforcement point status.
-
-  Fields:
-    statuses: List of all PEP endpoints and their status.
-  """
-
-  statuses = _messages.MessageField('PepResourceStatus', 1, repeated=True)
-
-
 class RunFault(_messages.Message):
   r"""message to store faults and its durations in experiment
 
@@ -1070,16 +1030,26 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class TimeWindow(_messages.Message):
-  r"""Message describing TimeWindow object
+class Target(_messages.Message):
+  r"""Message describing target that apphub target was resolved to.
 
   Fields:
-    endTime: End time for the list query
-    startTime: Start time for the list query
+    forwardingRuleTarget: Forwarding rule target.
   """
 
-  endTime = _messages.StringField(1)
-  startTime = _messages.StringField(2)
+  forwardingRuleTarget = _messages.MessageField('ForwardingRuleTarget', 1)
+
+
+class TargetStatus(_messages.Message):
+  r"""Message describing target status.
+
+  Fields:
+    status: Output only. Error message from the control plane.
+    target: target that apphub target resolved to.
+  """
+
+  status = _messages.MessageField('Status', 1)
+  target = _messages.MessageField('Target', 2)
 
 
 encoding.AddCustomJsonFieldMapping(

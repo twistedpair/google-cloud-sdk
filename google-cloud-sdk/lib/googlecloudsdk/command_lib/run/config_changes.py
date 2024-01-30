@@ -743,10 +743,12 @@ class ResourceChanges(ContainerConfigChanger):
     memory: Updated memory limit to set in the container. Specified as string
       ending in 'Mi' or 'Gi'. If None the memory limit is not changed.
     cpu: Updated cpu limit to set in the container if not None.
+    gpu: Updated gpu limit to set in the container if not None.
   """
 
   memory: str | None = None
   cpu: str | None = None
+  gpu: str | None = None
 
   def AdjustContainer(self, container, messages_mod):
     """Mutates the given config's resource limits to match what's desired."""
@@ -754,6 +756,8 @@ class ResourceChanges(ContainerConfigChanger):
       container.resource_limits['memory'] = self.memory
     if self.cpu is not None:
       container.resource_limits['cpu'] = self.cpu
+    if self.gpu is not None:
+      container.resource_limits['nvidia.com/gpu'] = self.gpu
 
 
 @dataclasses.dataclass(frozen=True)
@@ -1627,6 +1631,23 @@ class RuntimeChange(TemplateConfigChanger):
 
   def Adjust(self, resource):
     resource.template.spec.runtimeClassName = self.runtime
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
+class GpuTypeChange(TemplateConfigChanger):
+  """Sets the gpu-type annotation on the service template.
+
+  Attributes:
+    gpu_type: The gpu_type annotation value to set.
+  """
+
+  gpu_type: str
+
+  def Adjust(self, resource):
+    resource.template.node_selector[k8s_object.GPU_TYPE_NODE_SELECTOR] = (
+        self.gpu_type
+    )
     return resource
 
 

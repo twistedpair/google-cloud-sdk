@@ -262,7 +262,7 @@ def _ApplyCMEKArgsToFunction(function_ref, function, args):
 
 
 def _ApplyDockerRegistryArgsToFunction(function, args):
-  """Populates the docker_registry field of a Cloud Function message.
+  """Populates the `docker_registry` field of a Cloud Function message.
 
   Args:
     function: Cloud function message to be checked and populated.
@@ -292,7 +292,27 @@ def _ApplyDockerRegistryArgsToFunction(function, args):
     function.dockerRegistry = enum_util.ParseDockerRegistry(
         args.docker_registry
     )
-    updated_fields.append('docker_registry')
+    updated_fields.append('dockerRegistry')
+
+  return updated_fields
+
+
+def _DefaultDockerRegistryIfUnspecified(function, all_updated_fields):
+  """Sets the default for `docker_registry` field of a Cloud Function message.
+
+  Args:
+    function: Cloud function message to be checked and populated.
+    all_updated_fields: List of all fields that are being updated within the
+      deployment request.
+
+  Returns:
+    updated_fields: update mask containing the list of fields to be updated.
+  """
+  updated_fields = []
+  # Set the default only if the request is not completely empty.
+  if all_updated_fields and 'dockerRegistry' not in all_updated_fields:
+    function.dockerRegistry = enum_util.ParseDockerRegistry('artifact-registry')
+    updated_fields.append('dockerRegistry')
 
   return updated_fields
 
@@ -628,6 +648,11 @@ def Run(args, track=None):
   # Applies Buildpack stack args to the function.
   updated_fields.extend(
       _ApplyBuildpackStackArgsToFunction(function, args, track)
+  )
+
+  # TODO(b/287538740): Can be cleaned up after a full transition to the AR.
+  updated_fields.extend(
+      _DefaultDockerRegistryIfUnspecified(function, updated_fields)
   )
 
   api_enablement.PromptToEnableApiIfDisabled('cloudbuild.googleapis.com')

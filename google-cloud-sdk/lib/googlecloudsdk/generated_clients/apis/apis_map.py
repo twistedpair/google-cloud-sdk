@@ -473,6 +473,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'auditmanager': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.auditmanager.v1alpha',
+                    client_classpath='auditmanager_v1alpha_client.AuditmanagerV1alpha',
+                    base_url='https://auditmanager.googleapis.com/',
+                    messages_modulepath='auditmanager_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'authztoolkit': {
         'v1alpha':
             APIDef(
@@ -2744,6 +2756,16 @@ MAP = {
                     base_url='https://parallelstore.googleapis.com/',
                     messages_modulepath='parallelstore_v1alpha_messages'),
                 default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+        'v1beta':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.parallelstore.v1beta',
+                    client_classpath='parallelstore_v1beta_client.ParallelstoreV1beta',
+                    base_url='https://parallelstore.googleapis.com/',
+                    messages_modulepath='parallelstore_v1beta_messages'),
+                default_version=False,
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },

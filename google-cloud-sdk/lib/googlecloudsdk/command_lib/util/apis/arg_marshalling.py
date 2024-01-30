@@ -34,7 +34,10 @@ from googlecloudsdk.core.resource import resource_property
 
 class Error(Exception):
   """Base class for this module's exceptions."""
-  pass
+
+
+class ConflictingResourcesError(Error):
+  """Error for whenever api method / primary resource cannot be determined."""
 
 
 def _GetLabelsClass(message, api_field):
@@ -154,6 +157,30 @@ def _GetPrimaryResource(resource_params, resource_collection):
   return primary_resources[0]
 
 
+def _GetMethodResourceArgs(resource_args, methods):
+  """Gets list of primary resource args and methods associated with them.
+
+  Args:
+    resource_args: list[YAMLConceptArg], list of potential primary resource
+      args
+    methods: list[registry.APIMethod], The method to generate arguments for.
+
+  Returns:
+    list[YAMLMethod] (resource arg) or None.
+  """
+  args = resource_args
+  # Handle methodless commands with primary resource arg
+  if not methods and (primary := _GetPrimaryResource(args, None)):
+    return [MethodResourceArg(primary_resource=primary, method=None)]
+
+  yaml_methods = []
+  for method in methods:
+    resource_arg = _GetPrimaryResource(
+        args, method.resource_argument_collection)
+    yaml_methods.append(MethodResourceArg(resource_arg, method))
+  return yaml_methods
+
+
 def _DoesDupResourceArgHaveSameAttributes(resource, resource_params):
   """Verify if there is a duplicated resource argument with the same attributes.
 
@@ -214,6 +241,29 @@ def _GetSharedAttributes(resource_params):
   }
 
 
+def _GetCollectionName(method, is_parent=False):
+  collection_name = method.resource_argument_collection.full_name
+  if is_parent:
+    resource_collection, _, _ = collection_name.rpartition('.')
+  else:
+    resource_collection = collection_name
+  return resource_collection
+
+
+class MethodResourceArg:
+  """Method and the resource argument associated with it."""
+
+  def __init__(self, primary_resource, method):
+    self.primary_resource = primary_resource
+    self.method = method
+
+  def Parse(self, namespace):
+    if self.primary_resource:
+      return self.primary_resource.ParseResourceArg(namespace)
+    else:
+      return None
+
+
 class DeclarativeArgumentGenerator(object):
   """An argument generator that operates off a declarative configuration.
 
@@ -222,45 +272,40 @@ class DeclarativeArgumentGenerator(object):
   will only be generated for API fields for which attributes were provided.
   """
 
-  def __init__(self, method, arg_info):
+  def __init__(self, arg_info):
     """Creates a new Argument Generator.
 
     Args:
-      method: APIMethod, The method to generate arguments for.
       arg_info: [yaml_arg_schema.Argument], Information about
         request fields and how to map them into arguments.
     """
-    self.method = method
     self.arg_info = arg_info
-
     self.resource_args = _GetResources(self.arg_info)
-    self.primary_resource_arg = _GetPrimaryResource(
-        self.resource_args,
-        self.method and self.method.resource_argument_collection)
 
-  def GenerateArgs(self):
+  def GenerateArgs(self, methods):
     """Generates all the CLI arguments required to call this method.
+
+    Args:
+      methods: list[APIMethod], list of methods to generate arguments for.
 
     Returns:
       {str, calliope.base.Action}, A map of field name to the argument.
     """
-    # message used to get field types while generating flags
-    message = None
-    if self.method:
-      message = self.method.GetRequestType()
+    shared_attribute_resource_dict = _GetSharedAttributes(self.resource_args)
+    shared_resource_attributes_list = list(shared_attribute_resource_dict)
 
-    shared_atttribute_resource_dict = _GetSharedAttributes(self.resource_args)
-    shared_resource_attributes_list = list(shared_atttribute_resource_dict)
-
-    args = [arg.Generate(self.method, message, shared_resource_attributes_list)
+    args = [arg.Generate(methods, shared_resource_attributes_list)
             for arg in self.arg_info]
 
-    primary = self.primary_resource_arg and self.primary_resource_arg.name
+    primary_resource_args = _GetMethodResourceArgs(self.resource_args, methods)
+    primary_names = set(
+        arg.primary_resource and arg.primary_resource.name
+        for arg in primary_resource_args)
 
-    for attribute, resource_args in shared_atttribute_resource_dict.items():
+    for attribute, resource_args in shared_attribute_resource_dict.items():
       resource_names = list(set(resource_args))
       resource_names.sort(
-          key=lambda name: '' if primary and name == primary else name)
+          key=lambda name: '' if name in primary_names else name)
 
       args.append(base.Argument(
           '--' + attribute,
@@ -271,25 +316,93 @@ class DeclarativeArgumentGenerator(object):
 
     return args
 
+  def GetPrimaryResource(self, methods, namespace):
+    """Gets primary resource based on user input and returns single method.
+
+    This determines which api method to use to make api request. If there
+    is only one potential request method, return the one request method.
+
+    Args:
+      methods: list[APIMethod], The method to generate arguments for.
+      namespace: The argparse namespace.
+
+    Returns:
+      MethodResourceArg, gets the primary resource arg and method the
+        user specified in the namespace.
+
+    Raises:
+      ConflictingResourcesError: occurs when user specifies too many primary
+        resources.
+    """
+
+    specified_methods = []
+    primary_resources = _GetMethodResourceArgs(self.resource_args, methods)
+    # Do not need to look at user specified args if there is only one primary
+    # resource arg or method.
+    if not primary_resources:
+      return MethodResourceArg(primary_resource=None, method=None)
+    elif len(primary_resources) == 1:
+      return primary_resources.pop()
+
+    for method_info in primary_resources:
+      method = method_info.method
+      primary_resource = method_info.primary_resource
+
+      # A primary resource can be None if added to a hook. If more than one
+      # collection is specified, we require that a primary resource is added.
+      # Otherwise, we cannot evaluate which method to use.
+      if not method or not primary_resource:
+        raise util.InvalidSchemaError(
+            'If more than one request collection is specified, a resource '
+            'argument that corresponds with the collection, must be '
+            'specified in YAML command.'
+        )
+
+      method_collection = _GetCollectionName(
+          method, is_parent=primary_resource.is_parent_resource)
+
+      specified_resource = method_info.Parse(namespace)
+      primary_collection = (
+          specified_resource and
+          specified_resource.GetCollectionInfo().full_name)
+
+      if method_collection == primary_collection:
+        specified_methods.append(method_info)
+
+    if len(specified_methods) > 1:
+      uris = []
+      for method_info in specified_methods:
+        if parsed := method_info.Parse(namespace):
+          uris.append(parsed.RelativeName())
+
+      args = ', '.join(uris)
+      raise ConflictingResourcesError(
+          f'User specified multiple primary resource arguments: [{args}]. '
+          'Unable to determine api request method.')
+
+    if len(specified_methods) == 1:
+      return specified_methods.pop()
+    else:
+      return MethodResourceArg(primary_resource=None, method=None)
+
   def CreateRequest(self,
                     namespace,
+                    method,
                     static_fields=None,
                     labels=None,
                     command_type=None,
-                    override_method=None,
                     existing_message=None):
     """Generates the request object for the method call from the parsed args.
 
     Args:
       namespace: The argparse namespace.
+      method: APIMethod, api method used to make request message.
       static_fields: {str, value}, A mapping of API field name to value to
         insert into the message. This is a convenient way to insert extra data
         while the request is being constructed for fields that don't have
         corresponding arguments.
       labels: The labels section of the command spec.
       command_type: Type of the command, i.e. CREATE, UPDATE.
-      override_method: APIMethod, The method other than self.method, this is
-        used when the command has more than one API call.
       existing_message: the apitools message returned from server, which is used
         to construct the to-be-modified message when the command follows
         get-modify-update pattern.
@@ -297,14 +410,15 @@ class DeclarativeArgumentGenerator(object):
     Returns:
       The apitools message to be send to the method.
     """
-    message_type = (override_method or self.method).GetRequestType()
-    message = message_type()
+    new_message = method.GetRequestType()()
 
     # If an apitools message is provided, use the existing one by default
     # instead of creating an empty one.
     if existing_message:
       message = arg_utils.ParseExistingMessageIntoMessage(
-          message, existing_message, self.method)
+          new_message, existing_message, method)
+    else:
+      message = new_message
 
     # Add labels into message
     if labels:
@@ -314,7 +428,7 @@ class DeclarativeArgumentGenerator(object):
         need_update = _ParseLabelsIntoUpdateMessage(message, namespace,
                                                     labels.api_field)
         if need_update:
-          update_mask_path = update.GetMaskFieldPath(override_method)
+          update_mask_path = update.GetMaskFieldPath(method)
           _AddLabelsToUpdateMask(static_fields, update_mask_path)
 
     # Insert static fields into message.
@@ -322,24 +436,11 @@ class DeclarativeArgumentGenerator(object):
 
     # Parse api Fields into message.
     for arg in self.arg_info:
-      arg.Parse(self.method, message, namespace)
+      arg.Parse(method, message, namespace)
 
     return message
 
-  def GetRequestResourceRef(self, namespace):
-    """Gets a resource reference for the resource being operated on.
-
-    Args:
-      namespace: The argparse namespace.
-
-    Returns:
-      resources.Resource, The parsed resource reference.
-    """
-    if not self.primary_resource_arg:
-      return None
-    return self.primary_resource_arg.ParseResourceArg(self.method, namespace)
-
-  def GetResponseResourceRef(self, id_value, namespace):
+  def GetResponseResourceRef(self, id_value, namespace, method):
     """Gets a resource reference for a resource returned by a list call.
 
     It parses the namespace to find a reference to the parent collection and
@@ -348,24 +449,26 @@ class DeclarativeArgumentGenerator(object):
     Args:
       id_value: str, The id of the child resource that was returned.
       namespace: The argparse namespace.
+      method: APIMethod, method used to make the api request
 
     Returns:
       resources.Resource, The parsed resource reference.
     """
-    parent_ref = self.GetRequestResourceRef(namespace)
+    methods = [method] if method else []
+    parent_ref = self.GetPrimaryResource(methods, namespace).Parse(namespace)
     return resources.REGISTRY.Parse(
         id_value,
-        collection=self.method.collection.full_name,
-        api_version=self.method.collection.api_version,
+        collection=method.collection.full_name,
+        api_version=method.collection.api_version,
         params=parent_ref.AsDict())
 
-  def Limit(self, namespace):
+  def Limit(self, namespace, method):
     """Gets the value of the limit flag (if present)."""
-    return arg_utils.Limit(self.method, namespace)
+    return arg_utils.Limit(method, namespace)
 
-  def PageSize(self, namespace):
+  def PageSize(self, namespace, method):
     """Gets the value of the page size flag (if present)."""
-    return arg_utils.PageSize(self.method, namespace)
+    return arg_utils.PageSize(method, namespace)
 
 
 class AutoArgumentGenerator(object):

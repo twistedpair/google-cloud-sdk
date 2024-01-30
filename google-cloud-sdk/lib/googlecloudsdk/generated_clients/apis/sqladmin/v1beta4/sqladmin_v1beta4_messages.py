@@ -2719,8 +2719,8 @@ class PasswordValidationPolicy(_messages.Message):
 
   Fields:
     complexity: The complexity of the password.
-    disallowCompromisedCredentials: Disallow credentials that have been
-      previously compromised by a public data breach.
+    disallowCompromisedCredentials: This field is deprecated and will be
+      removed in a future version of the API.
     disallowUsernameSubstring: Disallow username as a part of the password.
     enablePasswordPolicy: Whether the password policy is enabled or not.
     minLength: Minimum number of characters allowed.
@@ -2951,6 +2951,8 @@ class Settings(_messages.Message):
       instance deletion.
     denyMaintenancePeriods: Deny maintenance periods
     edition: Optional. The edition of the instance.
+    enableGoogleMlIntegration: Optional. Configuration to enable Cloud SQL
+      Vertex AI Integration
     insightsConfig: Insights configuration, for now relevant only for
       Postgres.
     instanceVersion: The current software version the instance is running on.
@@ -3158,25 +3160,26 @@ class Settings(_messages.Message):
   deletionProtectionEnabled = _messages.BooleanField(15)
   denyMaintenancePeriods = _messages.MessageField('DenyMaintenancePeriod', 16, repeated=True)
   edition = _messages.EnumField('EditionValueValuesEnum', 17)
-  insightsConfig = _messages.MessageField('InsightsConfig', 18)
-  instanceVersion = _messages.StringField(19)
-  ipConfiguration = _messages.MessageField('IpConfiguration', 20)
-  kind = _messages.StringField(21)
-  locationPreference = _messages.MessageField('LocationPreference', 22)
-  maintenanceVersion = _messages.StringField(23)
-  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 24)
-  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 25)
-  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 26)
-  recreateReplicasOnPrimaryCrash = _messages.BooleanField(27)
-  replicationLagMaxSeconds = _messages.IntegerField(28, variant=_messages.Variant.INT32)
-  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 29)
-  settingsVersion = _messages.IntegerField(30)
-  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 31)
-  storageAutoResize = _messages.BooleanField(32)
-  storageAutoResizeLimit = _messages.IntegerField(33)
-  tier = _messages.StringField(34)
-  timeZone = _messages.StringField(35)
-  userLabels = _messages.MessageField('UserLabelsValue', 36)
+  enableGoogleMlIntegration = _messages.BooleanField(18)
+  insightsConfig = _messages.MessageField('InsightsConfig', 19)
+  instanceVersion = _messages.StringField(20)
+  ipConfiguration = _messages.MessageField('IpConfiguration', 21)
+  kind = _messages.StringField(22)
+  locationPreference = _messages.MessageField('LocationPreference', 23)
+  maintenanceVersion = _messages.StringField(24)
+  maintenanceWindow = _messages.MessageField('MaintenanceWindow', 25)
+  passwordValidationPolicy = _messages.MessageField('PasswordValidationPolicy', 26)
+  pricingPlan = _messages.EnumField('PricingPlanValueValuesEnum', 27)
+  recreateReplicasOnPrimaryCrash = _messages.BooleanField(28)
+  replicationLagMaxSeconds = _messages.IntegerField(29, variant=_messages.Variant.INT32)
+  replicationType = _messages.EnumField('ReplicationTypeValueValuesEnum', 30)
+  settingsVersion = _messages.IntegerField(31)
+  sqlServerAuditConfig = _messages.MessageField('SqlServerAuditConfig', 32)
+  storageAutoResize = _messages.BooleanField(33)
+  storageAutoResizeLimit = _messages.IntegerField(34)
+  tier = _messages.StringField(35)
+  timeZone = _messages.StringField(36)
+  userLabels = _messages.MessageField('UserLabelsValue', 37)
 
 
 class SqlActiveDirectoryConfig(_messages.Message):

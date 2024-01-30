@@ -290,17 +290,16 @@ class UpdateBasicArgumentGenerator(UpdateArgumentGenerator):
   """Update flag generator for simple flags."""
 
   @classmethod
-  def FromArgData(cls, arg_data, message):
+  def FromArgData(cls, arg_data, field):
     """Creates a flag generator from yaml arg data and request message.
 
     Args:
       arg_data: yaml_arg_schema.Argument, data about flag being generated
-      message: apitools request message object.
+      field: messages.Field, apitools field instance.
 
     Returns:
       UpdateArgumentGenerator, the correct version of flag generator
     """
-    field = arg_utils.GetFieldFromMessage(message, arg_data.api_field)
     flag_type, action = arg_utils.GenerateFlagType(field, arg_data)
 
     is_repeated = (

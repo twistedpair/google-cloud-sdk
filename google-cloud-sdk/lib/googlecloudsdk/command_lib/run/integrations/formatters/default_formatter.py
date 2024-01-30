@@ -55,7 +55,9 @@ class DefaultFormatter(base.BaseFormatter):
           name = param.label if param.label else param.config_name
           labeled.append((name, config_dict.get(param.config_name)))
       return cp.Labeled(labeled)
-    return cp.Lines([self._PrintAsYaml({'config': record.resource.config})])
+    if record.resource.config:
+      return cp.Lines([self._PrintAsYaml({'config': record.resource.config})])
+    return None
 
   def TransformComponentStatus(self, record: base.Record) -> cp._Marker:
     """Print the component status of the integration.

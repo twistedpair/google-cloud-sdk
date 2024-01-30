@@ -111,3 +111,36 @@ class DiscoveredServicesClient(object):
         limit=limit,
         batch_size_attribute='pageSize',
     )
+
+  def FindDiscovered(
+      self,
+      parent,
+      limit=None,
+      page_size=100,
+  ):
+    """Find discovered services that could be added to an application in the Projects/Location.
+
+    Args:
+      parent: str, projects/{projectId}/locations/{location}
+      limit: int or None, the total number of results to return. Default value
+        is None
+      page_size: int, the number of entries in each batch (affects requests
+        made, but not the yielded results). Default value is 100.
+
+    Returns:
+      Generator of matching discovered services.
+    """
+    find_discovered_req = (
+        self.messages.ApphubProjectsLocationsDiscoveredServicesFindRequest(
+            parent=parent
+        )
+    )
+    return list_pager.YieldFromList(
+        self._dis_services_client,
+        find_discovered_req,
+        method='Find',
+        field='discoveredServices',
+        batch_size=page_size,
+        limit=limit,
+        batch_size_attribute='pageSize',
+    )

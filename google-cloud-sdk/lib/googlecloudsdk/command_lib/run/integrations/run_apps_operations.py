@@ -73,12 +73,19 @@ def Connect(args, release_track):
   client = apis.GetClientInstance(_RUN_APPS_API_NAME, _RUN_APPS_API_VERSION)
 
   region = run_flags.GetRegion(args, prompt=True)
+  service_account = flags.GetServiceAccount(args)
   if not region:
     raise exceptions.ArgumentError(
         'You must specify a region. Either use the `--region` flag '
         'or set the run/region property.'
     )
-  yield RunAppsOperations(client, _RUN_APPS_API_VERSION, region, release_track)
+  yield RunAppsOperations(
+      client,
+      _RUN_APPS_API_VERSION,
+      region,
+      release_track,
+      service_account,
+  )
 
 
 def _HandleQueueingException(err):
@@ -104,7 +111,9 @@ def _HandleQueueingException(err):
 class RunAppsOperations(object):
   """Client used by Cloud Run Integrations to communicate with the API."""
 
-  def __init__(self, client, api_version, region, release_track):
+  def __init__(
+      self, client, api_version, region, release_track, service_account
+  ):
     """Inits RunAppsOperations with given API clients.
 
     Args:
@@ -112,12 +121,14 @@ class RunAppsOperations(object):
       api_version: Version of resources & clients (v1alpha1, v1beta1)
       region: str, The region of the control plane.
       release_track: the release track of the command.
+      service_account: the service account to use for any deployments.
     """
 
     self._client = client
     self._api_version = api_version
     self._region = region
     self._release_track = release_track
+    self._service_account = service_account
 
   @property
   def client(self):
@@ -320,6 +331,7 @@ class RunAppsOperations(object):
         name=deployment_name,
         createSelector=create_selector,
         deleteSelector=delete_selector,
+        serviceAccount=self._service_account,
     )
     deployment_ops = api_utils.CreateDeployment(
         self._client, app_ref, deployment
@@ -798,24 +810,41 @@ class RunAppsOperations(object):
     )
     tracker.CompleteStage(stages.CLEANUP_CONFIGURATION)
 
-  def ListIntegrationTypes(self):
+  def ListIntegrationTypes(self, include_workload: bool = False):
     """Returns the list of integration type definitions.
+
+    Args:
+      include_workload: whether to include workload types
 
     Returns:
       An array of integration type definitions.
     """
-    return types_utils.IntegrationTypes(self._client)
+    return [
+        integration
+        for integration in types_utils.IntegrationTypes(self._client)
+        if include_workload
+        or (integration.service_type != types_utils.ServiceType.WORKLOAD)
+    ]
 
-  def GetIntegrationTypeDefinition(self, type_name):
+  def GetIntegrationTypeDefinition(
+      self, type_name, include_workload: bool = False
+  ):
     """Returns the integration type definition of the given name.
 
     Args:
       type_name: name of the integration type
+      include_workload: whether to include workload types
 
     Returns:
       An integration type definition. None if no matching type.
     """
-    return types_utils.GetTypeMetadata(type_name)
+    type_metadata = types_utils.GetTypeMetadata(type_name)
+    if include_workload or (
+        type_metadata is not None and
+        type_metadata.service_type != types_utils.ServiceType.WORKLOAD
+    ):
+      return type_metadata
+    return None
 
   def ListIntegrations(
       self,

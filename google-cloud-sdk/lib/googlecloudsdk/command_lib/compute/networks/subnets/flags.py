@@ -114,7 +114,6 @@ def SubnetworkResolver():
 def AddUpdateArgs(
     parser,
     include_alpha_logging,
-    include_reserved_internal_range,
     include_external_ipv6_prefix,
     include_allow_cidr_routes_overlap,
     api_version,
@@ -124,7 +123,6 @@ def AddUpdateArgs(
   Args:
     parser: The argparse parser.
     include_alpha_logging: Include alpha-specific logging args.
-    include_reserved_internal_range: Include reserved internal range args.
     include_external_ipv6_prefix: Inlcude user assigned external IPv6 prefix.
     include_allow_cidr_routes_overlap: Include CIDR routes overlap args.
     api_version: The api version of the request.
@@ -155,23 +153,23 @@ def AddUpdateArgs(
       * `RANGE` - `IP range in CIDR format.`
       """)
 
-  if include_reserved_internal_range:
-    parser.add_argument(
-        '--add-secondary-ranges-with-reserved-internal-range',
-        type=arg_parsers.ArgDict(min_length=1),
-        action='append',
-        metavar='RANGE_NAME=INTERNAL_RANGE_URL',
-        help="""\
-         Adds secondary IP ranges that are associated with InternalRange
-         resources.
+  parser.add_argument(
+      '--add-secondary-ranges-with-reserved-internal-range',
+      type=arg_parsers.ArgDict(min_length=1),
+      action='append',
+      metavar='RANGE_NAME=INTERNAL_RANGE_URL',
+      help="""\
+       Adds secondary IP ranges that are associated with internal range
+       resources.
 
-         For example, `--add-secondary-ranges-with-reserved-internal-range
-         range1=//networkconnectivity.googleapis.com/projects/PROJECT/locations/global/internalRanges/RANGE`
-         adds a secondary range with the reserved internal range resource.
+       For example, `--add-secondary-ranges-with-reserved-internal-range
+       range1=//networkconnectivity.googleapis.com/projects/PROJECT/locations/global/internalRanges/RANGE`
+       adds a secondary range with the reserved internal range resource.
 
-         * `RANGE_NAME` - Name of the secondary range.
-         * `INTERNAL_RANGE_URL` - `URL of an InternalRange resource.`
-         """)
+       * `RANGE_NAME` - Name of the secondary range.
+       * `INTERNAL_RANGE_URL` - `URL of an internal range resource.`
+       """,
+  )
 
   if include_external_ipv6_prefix:
     parser.add_argument(

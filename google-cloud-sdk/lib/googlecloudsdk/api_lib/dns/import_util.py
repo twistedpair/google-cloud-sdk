@@ -21,6 +21,7 @@ from __future__ import unicode_literals
 
 import re
 
+from apitools.base.py import encoding as api_encoding
 from dns import rdatatype
 from dns import zone
 from googlecloudsdk.api_lib.dns import record_types
@@ -255,7 +256,13 @@ def RecordSetsFromYamlFile(yaml_file,
     record_set.name = yaml_record_set['name']
     record_set.ttl = yaml_record_set['ttl']
     record_set.type = yaml_record_set['type']
-    record_set.rrdatas = yaml_record_set['rrdatas']
+    if 'rrdatas' in yaml_record_set:
+      record_set.rrdatas = yaml_record_set['rrdatas']
+    elif 'routingPolicy' in yaml_record_set:
+      record_set.routingPolicy = api_encoding.PyValueToMessage(
+          messages.RRSetRoutingPolicy,
+          yaml_record_set['routingPolicy'],
+      )
 
     if rdata_type is rdatatype.SOA:
       # Make primary NS name substitutable.

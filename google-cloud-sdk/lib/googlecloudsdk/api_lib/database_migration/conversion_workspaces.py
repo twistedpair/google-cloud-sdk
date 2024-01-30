@@ -546,12 +546,12 @@ class ConversionWorkspacesClient(object):
     """
 
     entity_result = []
-    page_size = 8000
+    page_size = 4000
     page_token = str()
+    describe_req = self._GetDescribeEntitiesRequest(
+        name, page_size, page_token, args
+    )
     while True:
-      describe_req = self._GetDescribeEntitiesRequest(
-          name, page_size, page_token, args
-      )
       response = self._service.DescribeDatabaseEntities(describe_req)
       entities = response.databaseEntities
       for entity in entities:
@@ -563,10 +563,9 @@ class ConversionWorkspacesClient(object):
                 'DATABASE_ENTITY_TYPE_', ''
             ),
         })
-
-      page_token = response.nextPageToken
-      if not page_token:
+      if not response.nextPageToken:
         break
+      describe_req.pageToken = response.nextPageToken
 
     return entity_result
 
@@ -582,23 +581,18 @@ class ConversionWorkspacesClient(object):
       DDLs for the entities of the conversion worksapce.
     """
     entity_ddls = []
-    page_token = str()
-    page_size = 8000
+    page_size = 4000
+    describe_req = self._GetDescribeDDLsRequest(name, page_size, str(), args)
     while True:
-      describe_req = self._GetDescribeDDLsRequest(
-          name, page_size, page_token, args
-      )
       response = self._service.DescribeDatabaseEntities(describe_req)
       for entity in response.databaseEntities:
         for entity_ddl in entity.entityDdl:
           entity_ddls.append({
               'ddl': entity_ddl.ddl,
           })
-
       if not response.nextPageToken:
         break
-
-      page_token = response.nextPageToken
+      describe_req.pageToken = response.nextPageToken
 
     return entity_ddls
 
@@ -625,24 +619,22 @@ class ConversionWorkspacesClient(object):
 
   def DescribeIssuesHelper(self, name, page_size, args, tree_type):
     """Describe issues in a conversion worksapce."""
-    page_token = str()
     entity_issues = []
+    describe_req = self._GetDescribeIssuesRequest(
+        name,
+        page_size,
+        str(),  # page_token
+        args,
+        tree_type,
+    )
     while True:
-      describe_req = self._GetDescribeIssuesRequest(
-          name,
-          page_size,
-          page_token,
-          args,
-          tree_type,
-      )
       response = self._service.DescribeDatabaseEntities(describe_req)
-
       for entity in response.databaseEntities:
         entity_issues.extend(self.GetIssuesHelper(entity))
-
-      page_token = response.nextPageToken
-      if not page_token:
+      if not response.nextPageToken:
         break
+      describe_req.pageToken = response.nextPageToken
+
     return entity_issues
 
   def DescribeIssues(self, name, args=None):
@@ -656,7 +648,7 @@ class ConversionWorkspacesClient(object):
     Returns:
       Issues found for the database entities of the conversion worksapce.
     """
-    page_size = 8000
+    page_size = 4000
     entity_issues = self.DescribeIssuesHelper(
         name,
         page_size,

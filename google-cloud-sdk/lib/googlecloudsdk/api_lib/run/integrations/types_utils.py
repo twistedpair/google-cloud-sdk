@@ -44,6 +44,7 @@ class ServiceType:
   """Types of services supported by runapps."""
   BACKING = 'backing'
   INGRESS = 'ingress'
+  WORKLOAD = 'workload'
 
 
 def _ServiceTypeFromStr(s: str) -> ServiceType:
@@ -51,6 +52,7 @@ def _ServiceTypeFromStr(s: str) -> ServiceType:
   types = {
       'backing': ServiceType.BACKING,
       'ingress': ServiceType.INGRESS,
+      'workload': ServiceType.WORKLOAD,
   }
 
   service_type = types.get(s.lower(), None)
@@ -190,7 +192,7 @@ def _GetAllTypeMetadata() -> List[TypeMetadata]:
   return _TYPE_METADATA
 
 
-def IntegrationTypes(client: runapps_v1alpha1_client) -> List[str]:
+def IntegrationTypes(client: runapps_v1alpha1_client) -> List[TypeMetadata]:
   """Gets the type definitions for Cloud Run Integrations.
 
   Currently it's just returning some builtin defnitions because the API is

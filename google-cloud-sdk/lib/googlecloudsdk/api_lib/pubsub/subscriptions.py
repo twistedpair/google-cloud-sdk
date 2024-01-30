@@ -125,6 +125,7 @@ class SubscriptionsClient(object):
       cloud_storage_bucket=None,
       cloud_storage_file_prefix=None,
       cloud_storage_file_suffix=None,
+      cloud_storage_file_datetime_format=None,
       cloud_storage_max_bytes=None,
       cloud_storage_max_duration=None,
       cloud_storage_output_format=None,
@@ -172,6 +173,8 @@ class SubscriptionsClient(object):
       cloud_storage_bucket (str): The name for the Cloud Storage bucket.
       cloud_storage_file_prefix (str): The prefix for Cloud Storage filename.
       cloud_storage_file_suffix (str): The suffix for Cloud Storage filename.
+      cloud_storage_file_datetime_format (str): The custom datetime format
+        string for Cloud Storage filename.
       cloud_storage_max_bytes (int): The maximum bytes that can be written to a
         Cloud Storage file before a new file is created.
       cloud_storage_max_duration (str): The maximum duration that can elapse
@@ -216,6 +219,7 @@ class SubscriptionsClient(object):
             cloud_storage_bucket,
             cloud_storage_file_prefix,
             cloud_storage_file_suffix,
+            cloud_storage_file_datetime_format,
             cloud_storage_max_bytes,
             cloud_storage_max_duration,
             cloud_storage_output_format,
@@ -439,6 +443,7 @@ class SubscriptionsClient(object):
       bucket,
       file_prefix,
       file_suffix,
+      file_datetime_format,
       max_bytes,
       max_duration,
       output_format,
@@ -450,6 +455,8 @@ class SubscriptionsClient(object):
       bucket (str): The name for the Cloud Storage bucket.
       file_prefix (str): The prefix for Cloud Storage filename.
       file_suffix (str): The suffix for Cloud Storage filename.
+      file_datetime_format (str): The custom datetime format string for Cloud
+        Storage filename.
       max_bytes (int): The maximum bytes that can be written to a Cloud Storage
         file before a new file is created.
       max_duration (str): The maximum duration that can elapse before a new
@@ -466,6 +473,7 @@ class SubscriptionsClient(object):
           bucket=bucket,
           filenamePrefix=file_prefix,
           filenameSuffix=file_suffix,
+          filenameDatetimeFormat=file_datetime_format,
           maxBytes=max_bytes,
           maxDuration=max_duration,
       )
@@ -546,6 +554,7 @@ class SubscriptionsClient(object):
       cloud_storage_bucket=None,
       cloud_storage_file_prefix=None,
       cloud_storage_file_suffix=None,
+      cloud_storage_file_datetime_format=None,
       cloud_storage_max_bytes=None,
       cloud_storage_max_duration=None,
       cloud_storage_output_format=None,
@@ -597,6 +606,8 @@ class SubscriptionsClient(object):
       cloud_storage_bucket (bool): The name for the Cloud Storage bucket.
       cloud_storage_file_prefix (str): The prefix for Cloud Storage filename.
       cloud_storage_file_suffix (str): The suffix for Cloud Storage filename.
+      cloud_storage_file_datetime_format (str): The custom datetime format
+        string for Cloud Storage filename.
       cloud_storage_max_bytes (int): The maximum bytes that can be written to a
         Cloud Storage file before a new file is created.
       cloud_storage_max_duration (str): The maximum duration that can elapse
@@ -627,6 +638,7 @@ class SubscriptionsClient(object):
           cloud_storage_bucket,
           cloud_storage_file_prefix,
           cloud_storage_file_suffix,
+          cloud_storage_file_datetime_format,
           cloud_storage_max_bytes,
           cloud_storage_max_duration,
           cloud_storage_output_format,

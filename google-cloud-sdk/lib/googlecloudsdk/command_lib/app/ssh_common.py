@@ -23,6 +23,8 @@ from apitools.base.py import exceptions as apitools_exceptions
 from googlecloudsdk.api_lib.app import env
 from googlecloudsdk.api_lib.app import version_util
 from googlecloudsdk.api_lib.compute import base_classes as compute_base_classes
+from googlecloudsdk.api_lib.compute import lister
+from googlecloudsdk.calliope import base
 from googlecloudsdk.command_lib.app import exceptions as command_exceptions
 from googlecloudsdk.command_lib.projects import util as projects_util
 from googlecloudsdk.command_lib.util.ssh import ssh
@@ -81,6 +83,34 @@ def _GetComputeProject(release_track):
   return client.MakeRequests([(client.apitools_client.projects, 'Get',
                                client.messages.ComputeProjectsGetRequest(
                                    project=project_ref.projectId))])[0]
+
+
+def _ContainsPort22(allowed_ports):
+  """Checks if the given list of allowed ports contains port 22.
+
+  Args:
+    allowed_ports:
+
+  Returns:
+
+  Raises:
+    ValueError:Port value must be of type string.
+  """
+
+  for port in allowed_ports:
+    try:
+      if not isinstance(port, str):
+        raise ValueError('Port value must be of type string')
+    except ValueError as e:
+      print(e)
+    if port == '22':
+      return True
+    if '-' in port:
+      start = int(port.split('-')[0])
+      end = int(port.split('-')[1])
+      if start <= 22 <= end:
+        return True
+  return False
 
 
 def PopulatePublicKey(api_client, service_id, version_id, instance_id,
@@ -175,3 +205,45 @@ def PopulatePublicKey(api_client, service_id, version_id, instance_id,
       'HostKeyAlias': _HOST_KEY_ALIAS.format(project=api_client.project,
                                              instance_id=instance_id)}
   return ConnectionDetails(remote, options)
+
+
+def FetchFirewallRules():
+  """Fetches the firewall rules for the current project.
+
+  Returns:
+    A list of firewall rules.
+  """
+  holder = compute_base_classes.ComputeApiHolder(base.ReleaseTrack.GA)
+  client = holder.client
+  # pylint: disable=protected-access
+  request_data = lister._Frontend(
+      None,
+      None,
+      lister.GlobalScope([
+          holder.resources.Parse(
+              properties.VALUES.core.project.GetOrFail(),
+              collection='compute.projects',
+          )
+      ]),
+  )
+  list_implementation = lister.GlobalLister(
+      client, client.apitools_client.firewalls
+  )
+  result = lister.Invoke(request_data, list_implementation)
+  return result
+
+
+def FilterFirewallRules(firewall_rules):
+  """Filters firewall rules that allow ingress to port 22."""
+  filtered_firewall_rules = []
+  for firewall_rule in firewall_rules:
+    if firewall_rule.get('direction') == 'INGRESS':
+      allowed_dict = firewall_rule.get('allowed')
+      if not allowed_dict:
+        continue
+      allowed_ports = allowed_dict[0].get('ports')
+      if not allowed_ports:
+        continue
+      if _ContainsPort22(allowed_ports):
+        filtered_firewall_rules.append(firewall_rule)
+  return filtered_firewall_rules

@@ -3809,6 +3809,7 @@ class NodeConfig(_messages.Message):
     diskType: Type of the disk attached to each node (e.g. 'pd-standard', 'pd-
       ssd' or 'pd-balanced') If unspecified, the default disk type is 'pd-
       standard'
+    enableConfidentialStorage: Optional. Reserved for future use.
     ephemeralStorageLocalSsdConfig: Parameters for the node ephemeral storage
       using Local SSDs. If unspecified, ephemeral storage is backed by the
       boot disk.
@@ -4014,38 +4015,39 @@ class NodeConfig(_messages.Message):
   containerdConfig = _messages.MessageField('ContainerdConfig', 5)
   diskSizeGb = _messages.IntegerField(6, variant=_messages.Variant.INT32)
   diskType = _messages.StringField(7)
-  ephemeralStorageLocalSsdConfig = _messages.MessageField('EphemeralStorageLocalSsdConfig', 8)
-  fastSocket = _messages.MessageField('FastSocket', 9)
-  gcfsConfig = _messages.MessageField('GcfsConfig', 10)
-  gvnic = _messages.MessageField('VirtualNIC', 11)
-  imageType = _messages.StringField(12)
-  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 15)
-  localNvmeSsdBlockConfig = _messages.MessageField('LocalNvmeSsdBlockConfig', 16)
-  localSsdCount = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 18)
-  machineType = _messages.StringField(19)
-  metadata = _messages.MessageField('MetadataValue', 20)
-  minCpuPlatform = _messages.StringField(21)
-  nodeGroup = _messages.StringField(22)
-  nodeImageConfig = _messages.MessageField('CustomImageConfig', 23)
-  oauthScopes = _messages.StringField(24, repeated=True)
-  preemptible = _messages.BooleanField(25)
-  reservationAffinity = _messages.MessageField('ReservationAffinity', 26)
-  resourceLabels = _messages.MessageField('ResourceLabelsValue', 27)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 28)
-  sandboxConfig = _messages.MessageField('SandboxConfig', 29)
-  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 30, repeated=True)
-  serviceAccount = _messages.StringField(31)
-  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 32)
-  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 33)
-  spot = _messages.BooleanField(34)
-  storagePools = _messages.StringField(35, repeated=True)
-  tags = _messages.StringField(36, repeated=True)
-  taints = _messages.MessageField('NodeTaint', 37, repeated=True)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 38)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 39)
+  enableConfidentialStorage = _messages.BooleanField(8)
+  ephemeralStorageLocalSsdConfig = _messages.MessageField('EphemeralStorageLocalSsdConfig', 9)
+  fastSocket = _messages.MessageField('FastSocket', 10)
+  gcfsConfig = _messages.MessageField('GcfsConfig', 11)
+  gvnic = _messages.MessageField('VirtualNIC', 12)
+  imageType = _messages.StringField(13)
+  kubeletConfig = _messages.MessageField('NodeKubeletConfig', 14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  linuxNodeConfig = _messages.MessageField('LinuxNodeConfig', 16)
+  localNvmeSsdBlockConfig = _messages.MessageField('LocalNvmeSsdBlockConfig', 17)
+  localSsdCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
+  loggingConfig = _messages.MessageField('NodePoolLoggingConfig', 19)
+  machineType = _messages.StringField(20)
+  metadata = _messages.MessageField('MetadataValue', 21)
+  minCpuPlatform = _messages.StringField(22)
+  nodeGroup = _messages.StringField(23)
+  nodeImageConfig = _messages.MessageField('CustomImageConfig', 24)
+  oauthScopes = _messages.StringField(25, repeated=True)
+  preemptible = _messages.BooleanField(26)
+  reservationAffinity = _messages.MessageField('ReservationAffinity', 27)
+  resourceLabels = _messages.MessageField('ResourceLabelsValue', 28)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 29)
+  sandboxConfig = _messages.MessageField('SandboxConfig', 30)
+  secondaryBootDisks = _messages.MessageField('SecondaryBootDisk', 31, repeated=True)
+  serviceAccount = _messages.StringField(32)
+  shieldedInstanceConfig = _messages.MessageField('ShieldedInstanceConfig', 33)
+  soleTenantConfig = _messages.MessageField('SoleTenantConfig', 34)
+  spot = _messages.BooleanField(35)
+  storagePools = _messages.StringField(36, repeated=True)
+  tags = _messages.StringField(37, repeated=True)
+  taints = _messages.MessageField('NodeTaint', 38, repeated=True)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 39)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 40)
 
 
 class NodeConfigDefaults(_messages.Message):
@@ -6416,6 +6418,7 @@ class UpdateNodePoolRequest(_messages.Message):
       project number](https://cloud.google.com/resource-manager/docs/creating-
       managing-projects). This field has been deprecated and replaced by the
       name field.
+    queuedProvisioning: Specifies the configuration of queued provisioning.
     resourceLabels: The resource labels for the node pool to use to annotate
       any related Google Compute Engine resources.
     resourceManagerTags: Desired resource manager tag keys and values to be
@@ -6466,15 +6469,16 @@ class UpdateNodePoolRequest(_messages.Message):
   nodePoolId = _messages.StringField(21)
   nodeVersion = _messages.StringField(22)
   projectId = _messages.StringField(23)
-  resourceLabels = _messages.MessageField('ResourceLabels', 24)
-  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 25)
-  storagePools = _messages.StringField(26, repeated=True)
-  tags = _messages.MessageField('NetworkTags', 27)
-  taints = _messages.MessageField('NodeTaints', 28)
-  upgradeSettings = _messages.MessageField('UpgradeSettings', 29)
-  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 30)
-  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 31)
-  zone = _messages.StringField(32)
+  queuedProvisioning = _messages.MessageField('QueuedProvisioning', 24)
+  resourceLabels = _messages.MessageField('ResourceLabels', 25)
+  resourceManagerTags = _messages.MessageField('ResourceManagerTags', 26)
+  storagePools = _messages.StringField(27, repeated=True)
+  tags = _messages.MessageField('NetworkTags', 28)
+  taints = _messages.MessageField('NodeTaints', 29)
+  upgradeSettings = _messages.MessageField('UpgradeSettings', 30)
+  windowsNodeConfig = _messages.MessageField('WindowsNodeConfig', 31)
+  workloadMetadataConfig = _messages.MessageField('WorkloadMetadataConfig', 32)
+  zone = _messages.StringField(33)
 
 
 class UpgradeAvailableEvent(_messages.Message):

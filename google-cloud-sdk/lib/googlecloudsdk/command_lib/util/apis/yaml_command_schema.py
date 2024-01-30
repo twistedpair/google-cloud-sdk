@@ -124,7 +124,11 @@ class Request(object):
   """A holder object for api request information specified in yaml command."""
 
   def __init__(self, command_type, data):
-    self.collection = data['collection']
+    collection = data.get('collection')
+    if isinstance(collection, list):
+      self.collections = collection
+    else:
+      self.collections = [collection]
     self.disable_resource_check = data.get('disable_resource_check')
     self.display_resource_type = data.get('display_resource_type')
     self.api_version = data.get('api_version')
@@ -164,18 +168,16 @@ class Async(object):
   """A holder object for api async information specified in yaml command."""
 
   def __init__(self, data):
-    self.collection = data['collection']
+    collection = data.get('collection')
+    if isinstance(collection, list):
+      self.collections = collection
+    else:
+      self.collections = [collection]
     self.api_version = data.get('api_version')
     self.method = data.get('method', 'get')
     self.request_issued_message = data.get('request_issued_message')
     self.response_name_field = data.get('response_name_field', 'name')
     self.extract_resource_result = data.get('extract_resource_result', True)
-    resource_get_method = data.get('resource_get_method')
-    if not self.extract_resource_result and resource_get_method:
-      raise util.InvalidSchemaError(
-          'async.resource_get_method was specified but extract_resource_result '
-          'is False')
-    self.resource_get_method = resource_get_method or 'get'
     self.operation_get_method_params = data.get(
         'operation_get_method_params', {})
     self.result_attribute = data.get('result_attribute')

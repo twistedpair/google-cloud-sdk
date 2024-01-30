@@ -181,39 +181,6 @@ def GetEffectivePolicyV2Alpha(name: str, view: str = 'BASIC'):
     )
 
 
-# TODO(b/309115642) Remove after the migration is completed.
-def GetEffectivePolicyV2(name):
-  """Make API call to get a effective policy.
-
-  Args:
-    name: The name of the effective policy.Currently supported format
-      '{resource_type}/{resource_name}/effectivePolicy'. For example,
-      'projects/100/effectivePolicy'.
-
-  Raises:
-    exceptions.GetEffectiverPolicyPermissionDeniedException: when getting a
-      effective policy fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    The Effective Policy
-  """
-  client = _GetClientInstance('v2')
-  messages = client.MESSAGES_MODULE
-
-  request = messages.ServiceusageGetEffectivePolicyRequest(name=name)
-
-  try:
-    return client.v2.GetEffectivePolicy(request)
-  except (
-      apitools_exceptions.HttpForbiddenError,
-      apitools_exceptions.HttpNotFoundError,
-  ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.GetEffectiverPolicyPermissionDeniedException
-    )
-
-
 def BatchGetService(parent, services):
   """Make API call to get service state for multiple services .
 
@@ -336,50 +303,6 @@ def UpdateConsumerPolicyV2Alpha(consumerpolicy, name, force=False):
         'Provide the --force flag if you wish to force disable services.'
     )
     exceptions.ReraiseError(e, exceptions.Error)
-
-
-# TODO(b/309115642) Remove after the migration is completed.
-def ListGroupMembers(resource, service_group, page_size=50, limit=sys.maxsize):
-  """Make API call to list group members of a specific service group.
-
-  Args:
-    resource: The target resource.
-    service_group: Service group which owns a collection of group members, for
-      example, 'services/compute.googleapis.com/groups/dependencies'.
-    page_size: The page size to list.default=50
-    limit: The max number of services to display.
-
-  Raises:
-    exceptions.ListGroupMembersPermissionDeniedException: when listing
-      group members fails.
-    apitools_exceptions.HttpError: Another miscellaneous error with the service.
-
-  Returns:
-    Group members in the given service group.
-  """
-  client = _GetClientInstance('v2')
-  messages = client.MESSAGES_MODULE
-
-  request = messages.ServiceusageServicesGroupsMembersListRequest(
-      parent=resource + '/' + service_group
-  )
-
-  try:
-    return list_pager.YieldFromList(
-        _Lister(client.services_groups_members),
-        request,
-        limit=limit,
-        batch_size_attribute='pageSize',
-        batch_size=page_size,
-        field='groupMembers',
-    )
-  except (
-      apitools_exceptions.HttpForbiddenError,
-      apitools_exceptions.HttpNotFoundError,
-  ) as e:
-    exceptions.ReraiseError(
-        e, exceptions.ListGroupMembersPermissionDeniedException
-    )
 
 
 def ListGroupMembersV2Alpha(

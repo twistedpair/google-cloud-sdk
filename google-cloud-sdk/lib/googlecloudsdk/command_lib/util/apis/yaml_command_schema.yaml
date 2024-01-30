@@ -543,7 +543,9 @@ properties:
       - not: {required: [issue_request_hook]}
     properties:
       # The full collection name of the resource the command operates on.
-      collection: {type: string}
+      # A list of collections is used whenever the request is a multitype ie
+      # a resource with different parent paths.
+      collection: {type: [string, array]}
       # If true, will disable validating that a resource arg is specified if
       # the collection requires a params from a resource.
       disable_resource_check: {type: boolean}
@@ -671,7 +673,9 @@ properties:
     required: [collection]
     properties:
       # The full collection name of the operation collection for this API.
-      collection: {type: string}
+      # A list of collections is used whenever the request is a multitype ie
+      # a resource with different parent paths.
+      collection: {type: [string, array]}
       # The API version to use, defaults to API version specified in the request
       # section.
       api_version: {type: string}
@@ -687,9 +691,6 @@ properties:
       # the operation is done, or just return the operation result. This is
       # True by default (except for Delete and Wait commands).
       extract_resource_result: {type: boolean}
-      # The API method to call to get the updated state of the resource being
-      # operated on ('get' by default).
-      resource_get_method: {type: string}
       # A mapping of method parameter to operation reference field for
       # references or APIs that use non-standard naming.
       operation_get_method_params:
