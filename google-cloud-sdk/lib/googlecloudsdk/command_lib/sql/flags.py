@@ -1090,31 +1090,6 @@ def AddOffloadArgument(parser):
   )
 
 
-def AddParallelArgument(parser, operation):
-  """Add the 'parallel' argument to the parser."""
-  parser.add_argument(
-      '--parallel',
-      action='store_true',
-      help=(
-          'Perform a parallel {operation}. This flag is only applicable to'
-          ' MySQL and Postgres.'
-      ).format(operation=operation),
-  )
-
-
-def AddThreadsArgument(parser, operation):
-  """Add the 'threads' argument to the parser."""
-  parser.add_argument(
-      '--threads',
-      type=arg_parsers.BoundedInt(unlimited=True),
-      help=(
-          'Specifies the number of threads to use for the parallel {operation}.'
-          ' If `--parallel` is specified and this flag is not provided, Cloud'
-          ' SQL uses a default thread count to optimize performance.'
-      ).format(operation=operation),
-  )
-
-
 def AddQuoteArgument(parser):
   """Add the 'quote' argument to the parser."""
   parser.add_argument(

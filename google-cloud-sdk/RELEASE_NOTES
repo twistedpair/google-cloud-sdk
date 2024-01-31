@@ -5,6 +5,22 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 462.0.1 (2024-01-31)
+
+### Cloud SQL
+
+* Rolled back gcloud support for parallel import and export as it was breaking
+default behavior for the customers.
+
+### Cloud Workflows
+
+* Added `--disable-concurrency-quota-overflow-buffering` flag to
+concurrency quota is exhausted.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 462.0.0 (2024-01-30)
 
 ### Google Cloud CLI

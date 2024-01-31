@@ -29,9 +29,7 @@ def ParseBakType(sql_messages, bak_type):
   )
 
 
-def SqlImportContext(
-    sql_messages, uri, database=None, user=None, parallel=False, threads=None
-):
+def SqlImportContext(sql_messages, uri, database=None, user=None):
   """Generates the ImportContext for the given args, for importing from SQL.
 
   Args:
@@ -39,10 +37,6 @@ def SqlImportContext(
     uri: The URI of the bucket to import from; the output of the 'uri' arg.
     database: The database to import to; the output of the '--database' flag.
     user: The Postgres user to import as; the output of the '--user' flag.
-    parallel: Whether to use parallel import or not; the output of the
-      '--parallel' flag.
-    threads: The number of threads to use; the output of the '--threads' flag.
-      Only applicable for parallel import.
 
   Returns:
     ImportContext, for use in InstancesImportRequest.importContext.
@@ -52,11 +46,7 @@ def SqlImportContext(
       uri=uri,
       database=database,
       fileType=sql_messages.ImportContext.FileTypeValueValuesEnum.SQL,
-      importUser=user,
-      sqlImportOptions=sql_messages.ImportContext.SqlImportOptionsValue(
-          parallel=parallel, threads=threads
-      ),
-  )
+      importUser=user)
 
 
 def CsvImportContext(sql_messages,
