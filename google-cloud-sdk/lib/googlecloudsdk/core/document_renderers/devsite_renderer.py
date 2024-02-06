@@ -62,6 +62,12 @@ class DevSiteRenderer(html_renderer.HTMLRenderer):
       heading: The heading text.
     """
     self._heading = '</dd>\n</section>\n'
+
+    if heading == 'INFORMATION':
+      # Wrap INFORMATION section with is_tpc dynamic var to display on TPC only.
+      self._out.write('{% dynamic if request.is_tpc %}')
+      self._heading += '{% dynamic endif %}'
+
     self._out.write('\n<section id="{document_id}">\n'
                     '<dt>{heading}</dt>\n<dd class="sectionbody">\n'.format(
                         document_id=self.GetDocumentID(heading),

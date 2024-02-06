@@ -65,13 +65,36 @@ class ClustersClient(util.VmwareClientBase):
         batch_size_attribute='pageSize',
         field='clusters')
 
-  def Update(self, resource, nodes_configs):
-    node_type_configs = util.ConstructNodeParameterConfigMessage(
-        self.messages.Cluster.NodeTypeConfigsValue,
-        self.messages.NodeTypeConfig, nodes_configs)
-    cluster = self.messages.Cluster(nodeTypeConfigs=node_type_configs)
+  def Update(self, resource, nodes_configs, autoscaling_settings):
+    node_type_configs, node_type_configs_update_mask = None, []
+    if nodes_configs is not None:
+      node_type_configs = util.ConstructNodeParameterConfigMessage(
+          self.messages.Cluster.NodeTypeConfigsValue,
+          self.messages.NodeTypeConfig,
+          nodes_configs,
+      )
+      node_type_configs_update_mask = ['node_type_configs.*.node_count']
+
+    autoscaling_settings_message, autoscaling_settings_update_mask = None, []
+    if autoscaling_settings is not None:
+      autoscaling_settings_message = (
+          util.ConstructAutoscalingSettingsMessage(
+              self.messages.AutoscalingSettings,
+              self.messages.AutoscalingPolicy,
+              self.messages.Thresholds,
+              autoscaling_settings,
+          )
+      )
+      autoscaling_settings_update_mask = ['autoscaling_settings']
+
+    cluster = self.messages.Cluster(
+        nodeTypeConfigs=node_type_configs,
+        autoscalingSettings=autoscaling_settings_message,
+    )
+    update_mask = ','.join(
+        node_type_configs_update_mask + autoscaling_settings_update_mask
+    )
     request = self.messages.VmwareengineProjectsLocationsPrivateCloudsClustersPatchRequest(
-        name=resource.RelativeName(),
-        cluster=cluster,
-        updateMask='node_type_configs.*.node_count')
+        name=resource.RelativeName(), cluster=cluster, updateMask=update_mask
+    )
     return self.service.Patch(request)

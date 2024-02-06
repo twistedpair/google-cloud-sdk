@@ -46,6 +46,7 @@ class BigtableadminV2(base_api.BaseApiClient):
     self.projects_instances_clusters_backups = self.ProjectsInstancesClustersBackupsService(self)
     self.projects_instances_clusters_hotTablets = self.ProjectsInstancesClustersHotTabletsService(self)
     self.projects_instances_clusters = self.ProjectsInstancesClustersService(self)
+    self.projects_instances_tables_authorizedViews = self.ProjectsInstancesTablesAuthorizedViewsService(self)
     self.projects_instances_tables_views = self.ProjectsInstancesTablesViewsService(self)
     self.projects_instances_tables = self.ProjectsInstancesTablesService(self)
     self.projects_instances = self.ProjectsInstancesService(self)
@@ -739,6 +740,151 @@ class BigtableadminV2(base_api.BaseApiClient):
         relative_path='v2/{+name}',
         request_field='<request>',
         request_type_name='Cluster',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+  class ProjectsInstancesTablesAuthorizedViewsService(base_api.BaseApiService):
+    """Service class for the projects_instances_tables_authorizedViews resource."""
+
+    _NAME = 'projects_instances_tables_authorizedViews'
+
+    def __init__(self, client):
+      super(BigtableadminV2.ProjectsInstancesTablesAuthorizedViewsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new AuthorizedView in a table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesAuthorizedViewsCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews',
+        http_method='POST',
+        method_id='bigtableadmin.projects.instances.tables.authorizedViews.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['authorizedViewId'],
+        relative_path='v2/{+parent}/authorizedViews',
+        request_field='authorizedView',
+        request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsCreateRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Permanently deletes a specified AuthorizedView.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesAuthorizedViewsDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews/{authorizedViewsId}',
+        http_method='DELETE',
+        method_id='bigtableadmin.projects.instances.tables.authorizedViews.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['etag'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsDeleteRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets information from a specified AuthorizedView.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesAuthorizedViewsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (AuthorizedView) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews/{authorizedViewsId}',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.tables.authorizedViews.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['view'],
+        relative_path='v2/{+name}',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsGetRequest',
+        response_type_name='AuthorizedView',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all AuthorizedViews from a specific table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesAuthorizedViewsListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListAuthorizedViewsResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews',
+        http_method='GET',
+        method_id='bigtableadmin.projects.instances.tables.authorizedViews.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken', 'view'],
+        relative_path='v2/{+parent}/authorizedViews',
+        request_field='',
+        request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsListRequest',
+        response_type_name='ListAuthorizedViewsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates an AuthorizedView in a table.
+
+      Args:
+        request: (BigtableadminProjectsInstancesTablesAuthorizedViewsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v2/projects/{projectsId}/instances/{instancesId}/tables/{tablesId}/authorizedViews/{authorizedViewsId}',
+        http_method='PATCH',
+        method_id='bigtableadmin.projects.instances.tables.authorizedViews.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v2/{+name}',
+        request_field='authorizedView',
+        request_type_name='BigtableadminProjectsInstancesTablesAuthorizedViewsPatchRequest',
         response_type_name='Operation',
         supports_download=False,
     )

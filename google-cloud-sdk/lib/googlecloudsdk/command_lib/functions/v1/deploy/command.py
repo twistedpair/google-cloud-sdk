@@ -329,7 +329,9 @@ def _PromptToEnableArtifactRegistryIfRequired(cli_args):
   ):
     return
 
-  api_enablement.PromptToEnableApiIfDisabled('artifactregistry.googleapis.com')
+  api_enablement.PromptToEnableApiIfDisabled(
+      'artifactregistry.googleapis.com', enable_by_default=True
+  )
 
 
 def _GetActiveKMSKey(function, args):

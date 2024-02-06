@@ -126,7 +126,10 @@ def RunSqlExportCommand(args, client):
       args.uri,
       args.database,
       args.table,
-      offload=args.offload)
+      offload=args.offload,
+      parallel=args.parallel,
+      threads=args.threads,
+  )
   if args.offload:
     log.status.write(
         'Serverless exports cost extra. See the pricing page for more information: https://cloud.google.com/sql/pricing.\n'

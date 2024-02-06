@@ -18,8 +18,8 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
-from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope.concepts import concepts
+from googlecloudsdk.command_lib.container.binauthz import arg_parsers
 from googlecloudsdk.command_lib.kms import flags as kms_flags
 from googlecloudsdk.command_lib.util.concepts import concept_parsers
 from googlecloudsdk.command_lib.util.concepts import presentation_specs as presentation_specs_lib
@@ -232,11 +232,51 @@ def AddPlatformPolicyResourceArg(parser, verb):
   ).AddToParser(parser)
 
 
-def AddPodFileContentArg(parser):
-  """Adds a resource argument for a Pod from a JSON or YAML file."""
-  parser.add_argument(
+def AddEvaluationUnitArg(parser):
+  """Adds a resource argument from file or from one or more images."""
+  evaluation_unit_group = parser.add_group(mutex=True, required=True)
+  evaluation_unit_group.add_argument(
       '--resource',
-      required=True,
-      type=arg_parsers.YAMLFileContents(),
+      required=False,
+      type=arg_parsers.ResourceFileName,
       help='The JSON or YAML file containing the Pod to evaluate.',
+  )
+  evaluation_unit_group.add_argument(
+      '--image',
+      required=False,
+      action='append',
+      help=(
+          'The image to evaluate. Note, when using this flag the namespace and'
+          ' service account are implicitly assumed to be empty, which may'
+          ' produce unexpected results if the policy being evaluated has scoped'
+          ' checksets.'
+      ),
+  )
+
+
+def AddNoUploadArg(parser):
+  """Adds a --no-upload flag to parser."""
+  parser.add_argument(
+      '--no-upload',
+      action='store_true',
+      default=False,
+      help=(
+          'Do not upload the generated attestations to the image registry'
+          ' (using Sigstore tag conventions). Note, attestations are never'
+          ' uploaded to the transparency log.'
+      ),
+  )
+
+
+def AddOutputFileArg(
+    parser,
+):
+  """Adds the output file argument to parser."""
+  parser.add_argument(
+      '--output-file',
+      help=(
+          'If a resource is provided and deemed to be conformant, attestations'
+          ' will be added as annotations on the resource and writen back to'
+          ' this file path in the same format as the input file.'
+      ),
   )

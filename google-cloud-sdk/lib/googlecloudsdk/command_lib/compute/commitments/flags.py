@@ -322,10 +322,17 @@ def AddReservationsFromFileFlag(parser, custom_text=None):
 
 
 def AddExistingReservationFlag(parser):
+  """Add --existing-reservation argument to parser."""
   help_text = """
-  Name and Zone of a reservation to attach to the commitment on creation.
-  These reservations must be in the same region as the CUD.
-  example: --existing-reservation=name=reservation-name,zone=reservation-zone
+  Details of the existing on-demand reservation or auto-created future
+  reservation that you want to attach to your commitment. Specify a new instance
+  of this flag for every existing reservation that you want to attach. The
+  reservations must be in the same region as the commitment.
+  *name*::: The name of the reservation.
+  *zone*::: The zone of the reservation.
+  For example, to attach an existing reservation named reservation-name in the
+  zone reservation-zone, use the following text:
+  --existing-reservation=name=reservation-name,zone=reservation-zone
   """
   return parser.add_argument(
       '--existing-reservation',

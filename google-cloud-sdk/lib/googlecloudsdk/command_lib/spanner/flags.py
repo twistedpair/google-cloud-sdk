@@ -456,6 +456,16 @@ def _TransformDatabaseId(resource):
 
 def AddCommonListArgs(parser, additional_choices=None):
   """Add Common flags for the List operation group."""
+  mutex_group = parser.add_group(mutex=True, required=True)
+  mutex_group.add_argument(
+      '--instance-config',
+      completer=InstanceConfigCompleter,
+      help='The ID of the instance configuration the operation is executing on.'
+  )
+  mutex_group.add_argument(
+      '--instance',
+      completer=InstanceCompleter,
+      help='The ID of the instance the operation is executing on.')
   Database(
       positional=False,
       required=False,
@@ -492,7 +502,13 @@ def AddCommonListArgs(parser, additional_choices=None):
       'DATABASE_UPDATE_DDL':
           'Database update DDL operations are returned for all databases in '
           'the given instance (--instance only) or only those associated '
-          'with the given database (--database)'
+          'with the given database (--database)',
+      'INSTANCE_CONFIG_CREATE':
+          'Instance configuration create operations are returned for the '
+          'given instance configuration (--instance-config).',
+      'INSTANCE_CONFIG_UPDATE':
+          'Instance configuration update operations are returned for the '
+          'given instance configuration (--instance-config).'
   }
 
   if additional_choices is not None:

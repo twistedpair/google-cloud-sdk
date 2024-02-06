@@ -565,7 +565,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
 
     if self._command.IsUniverseCompatible():
       info_body = (
-          f'{code}{self._command_name}{code} is supported in universe_domain '
+          f'{code}{self._command_name}{code} is supported in universe domain '
           f'{em}{properties.GetUniverseDomain()}{em}; however, some of the '
           'values used in the help text may not be available. Command examples '
           'may not work as-is and may requires changes before execution.'
@@ -573,7 +573,7 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     else:
       info_body = (
           f'{code}{self._command_name}{code} is not available in '
-          f'universe_domain {em}{properties.GetUniverseDomain()}{em}.'
+          f'universe domain {em}{properties.GetUniverseDomain()}{em}.'
       )
 
     # print the informartion
@@ -1056,8 +1056,13 @@ class MarkdownGenerator(six.with_metaclass(abc.ABCMeta, object)):
     return doc
 
   def Generate(self):
-    """Generates markdown for the command, group or topic, into a string."""
+    """Generates markdown for the command, group or topic, into a string.
+
+    Returns:
+      An edited copy of the generated markdown.
+    """
     self._out('# {0}(1)\n'.format(self._file_name.upper()))
+    # Disclaimer info will be printed only for other universes
     self.PrintUniverseInformationSection()
     self.PrintNameSection()
     self.PrintSynopsisSection()

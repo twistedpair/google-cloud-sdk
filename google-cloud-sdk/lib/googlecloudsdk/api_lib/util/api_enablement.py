@@ -58,18 +58,19 @@ def GetApiEnablementInfo(status_message):
   return None
 
 
-def PromptToEnableApi(project, service_token):
+def PromptToEnableApi(project, service_token, enable_by_default=False):
   """Prompts to enable the API.
 
   Args:
     project (str): The project that the API is not enabled on.
     service_token (str): The service token of the API to prompt for.
+    enable_by_default (bool): The default choice for the enablement prompt.
 
   Returns:
     bool, whether or not the API was attempted to be enabled
   """
   api_enable_attempted = console_io.PromptContinue(
-      default=False,
+      default=enable_by_default,
       prompt_string=('API [{}] not enabled on project [{}]. '
                      'Would you like to enable and retry (this will take a '
                      'few minutes)?').format(service_token, project))

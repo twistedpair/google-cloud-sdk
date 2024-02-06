@@ -112,7 +112,7 @@ class DiscoveredServicesClient(object):
         batch_size_attribute='pageSize',
     )
 
-  def FindDiscovered(
+  def Find(
       self,
       parent,
       limit=None,

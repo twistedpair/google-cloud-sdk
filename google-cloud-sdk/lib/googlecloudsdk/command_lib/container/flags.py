@@ -1182,12 +1182,10 @@ def ValidateCloudRunConfigUpdateArgs(cloud_run_config_args, update_addons_args):
           'load-balancer-type must be one of EXTERNAL or '
           'INTERNAL e.g. --kuberun-config load-balancer-type=EXTERNAL',
       )
-    if any(
-        [
-            (update_addons_args.get(v) or False)
-            for v in api_adapter.CLOUDRUN_ADDONS
-        ]
-    ):
+    if any([
+        (update_addons_args.get(v) or False)
+        for v in api_adapter.CLOUDRUN_ADDONS
+    ]):
       raise exceptions.InvalidArgumentException(
           '--kuberun-config',
           '--update-addons=KubeRun=ENABLED must be specified '
@@ -1250,8 +1248,15 @@ def AddEnableWorkloadMonitoringEapFlag(parser):
 
 def AddManagedPrometheusFlags(parser, for_create=False):
   """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser."""
-  enable_help_text = """Enable managed collection for Managed Service for
-  Prometheus."""
+  enable_help_text = """
+  Enables managed collection for Managed Service for Prometheus in the cluster.
+
+  See https://cloud.google.com/stackdriver/docs/managed-prometheus/setup-managed#enable-mgdcoll-gke
+  for more info.
+
+  Enabled by default for cluster versions 1.27 or greater,
+  use --no-enable-managed-prometheus to disable.
+  """
   disable_help_text = """Disable managed collection for Managed Service for
   Prometheus."""
 
@@ -5250,8 +5255,11 @@ create boot disk with confidential mode
 """.format(target)
 
   parser.add_argument(
-      '--enable-confidential-storage', help=help_text, default=None,
-      hidden=hidden, action='store_true',
+      '--enable-confidential-storage',
+      help=help_text,
+      default=None,
+      hidden=hidden,
+      action='store_true',
   )
 
 

@@ -1464,8 +1464,25 @@ class StartupCpuBoostChange(TemplateConfigChanger):
 
 
 @dataclasses.dataclass(frozen=True)
+class HealthCheckChange(TemplateConfigChanger):
+  """Sets the health-check-disabled annotation on the revision template.
+
+  Attributes:
+    health_check: Boolean indicating whether the health check should be enabled.
+  """
+
+  health_check: bool
+
+  def Adjust(self, resource):
+    resource.template.annotations[
+        container_resource.DISABLE_HEALTH_CHECK_ANNOTATION
+    ] = str(not self.health_check)
+    return resource
+
+
+@dataclasses.dataclass(frozen=True)
 class DefaultUrlChange(TemplateConfigChanger):
-  """Sets the default-url-disabled annotation on the service template.
+  """Sets the default-url-disabled annotation on the service.
 
   Attributes:
     default_url: Boolean indicating whether the default URL should be enabled.
@@ -1482,7 +1499,7 @@ class DefaultUrlChange(TemplateConfigChanger):
 
 @dataclasses.dataclass(frozen=True)
 class InvokerIamChange(TemplateConfigChanger):
-  """Sets the invoker-iam-disabled annotation on the service template.
+  """Sets the invoker-iam-disabled annotation on the service.
 
   Attributes:
     invoker_iam_check: Boolean indicating whether invoker iam should be enabled

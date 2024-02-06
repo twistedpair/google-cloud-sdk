@@ -130,7 +130,14 @@ class GoogleOidc(_messages.Message):
     audience: Optional. Audience to be used to generate the OIDC Token. The
       audience claim identifies the recipient that the JWT is intended for. If
       unspecified, the destination URI will be used.
-    serviceAccount: Optional.
+    serviceAccount: Required. The IAM service account email used as the
+      identity of the stream resource. The service account is used to generate
+      OIDC tokens for the outbound messages. It's also used to read messages
+      from the "source". In addition to service account email, the resource
+      name of the service account can be used in the format of
+      `projects/-/serviceAccounts/{ACCOUNT}`, ACCOUNT can be email address or
+      uniqueId of the service account (see https://cloud.google.com/iam/refere
+      nce/rest/v1/projects.serviceAccounts/get).
   """
 
   audience = _messages.StringField(1)
@@ -845,15 +852,10 @@ class Stream(_messages.Message):
     name: The resource name of the stream. Must be unique within the location
       of the project and must be in
       `projects/{project}/locations/{location}/streams/{stream}` format.
-    serviceAccount: Required. The IAM service account email associated with
-      the stream. The service account represents the identity of the stream.
-      The principal who calls this API must have `iam.serviceAccounts.actAs`
-      permission in the service account. See
-      https://cloud.google.com/iam/docs/understanding-service-
-      accounts?hl=en#sa_common for more information.
     source: Optional. Source specifies where the stream reads data from.
     streamAction: Required. The specifications for routing messaging traffic
       and applying associated policies.
+    streamIdentityOverride: Optional.
     uid: Output only. Server-assigned unique identifier for the stream. The
       value is a UUID4 string and guaranteed to remain unchanged until the
       resource is deleted.
@@ -949,9 +951,9 @@ class Stream(_messages.Message):
   eventarcTransformationType = _messages.EnumField('EventarcTransformationTypeValueValuesEnum', 5)
   labels = _messages.MessageField('LabelsValue', 6)
   name = _messages.StringField(7)
-  serviceAccount = _messages.StringField(8)
-  source = _messages.MessageField('Source', 9)
-  streamAction = _messages.MessageField('StreamAction', 10)
+  source = _messages.MessageField('Source', 8)
+  streamAction = _messages.MessageField('StreamAction', 9)
+  streamIdentityOverride = _messages.StringField(10)
   uid = _messages.StringField(11)
   updateTime = _messages.StringField(12)
 

@@ -26,12 +26,13 @@ from googlecloudsdk.core import properties
 from googlecloudsdk.core.console import console_io
 
 
-def PromptToEnableApiIfDisabled(service_name):
+def PromptToEnableApiIfDisabled(service_name, enable_by_default=False):
   # type: (str) -> None
   """Prompts to enable the API if it's not enabled.
 
   Args:
     service_name: The name of the service to enable.
+    enable_by_default: default choice for the enablement prompt.
   """
   project_id = properties.VALUES.core.project.GetOrFail()
   try:
@@ -39,7 +40,9 @@ def PromptToEnableApiIfDisabled(service_name):
       return
 
     if console_io.CanPrompt():
-      api_enablement.PromptToEnableApi(project_id, service_name)
+      api_enablement.PromptToEnableApi(
+          project_id, service_name, enable_by_default=enable_by_default
+      )
     else:
       log.warning(
           "Service {} is not enabled. This operation may not succeed.".format(

@@ -165,7 +165,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -352,6 +356,7 @@ class GceInstance(_messages.Message):
       `restricted.googleapis.com` for Container Registry and Artifact
       Registry, make sure that you set up DNS records for domains `*.gcr.io`
       and `*.pkg.dev`. Defaults to false (VMs have public IP addresses).
+    disableSsh: Optional. Whether to disable SSH access to the VM.
     enableNestedVirtualization: Optional. Whether to enable nested
       virtualization on Cloud Workstations VMs created under this workstation
       configuration. Nested virtualization lets you run virtual machine (VM)
@@ -425,14 +430,15 @@ class GceInstance(_messages.Message):
   bootDiskSizeGb = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   confidentialInstanceConfig = _messages.MessageField('GceConfidentialInstanceConfig', 3)
   disablePublicIpAddresses = _messages.BooleanField(4)
-  enableNestedVirtualization = _messages.BooleanField(5)
-  machineType = _messages.StringField(6)
-  poolSize = _messages.IntegerField(7, variant=_messages.Variant.INT32)
-  pooledInstances = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-  serviceAccount = _messages.StringField(9)
-  serviceAccountScopes = _messages.StringField(10, repeated=True)
-  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 11)
-  tags = _messages.StringField(12, repeated=True)
+  disableSsh = _messages.BooleanField(5)
+  enableNestedVirtualization = _messages.BooleanField(6)
+  machineType = _messages.StringField(7)
+  poolSize = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  pooledInstances = _messages.IntegerField(9, variant=_messages.Variant.INT32)
+  serviceAccount = _messages.StringField(10)
+  serviceAccountScopes = _messages.StringField(11, repeated=True)
+  shieldedInstanceConfig = _messages.MessageField('GceShieldedInstanceConfig', 12)
+  tags = _messages.StringField(13, repeated=True)
 
 
 class GcePersistentDisk(_messages.Message):

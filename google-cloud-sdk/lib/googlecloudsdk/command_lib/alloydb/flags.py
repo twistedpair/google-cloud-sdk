@@ -335,7 +335,7 @@ def AddCPUCount(parser, required=True):
       '--cpu-count',
       required=required,
       type=int,
-      choices=[2, 4, 8, 16, 32, 64, 96],
+      choices=[2, 4, 8, 16, 32, 64, 96, 128],
       help=(
           'Whole number value indicating how many vCPUs the machine should '
           'contain. Each vCPU count corresponds to a N2 high-mem machine: '
@@ -500,7 +500,7 @@ def AddAutomatedBackupFlags(parser, alloydb_messages, update=False):
   """
   automated_backup_help = 'Automated backup policy.'
   if not update:
-    automated_backup_help += ' If unspecified, automated backups are enabled.'
+    automated_backup_help += ' If unspecified, automated backups are disabled.'
   group = parser.add_group(mutex=True, help=automated_backup_help)
 
   policy_group = group.add_group(help='Enable automated backup policy.')
@@ -640,7 +640,11 @@ def AddContinuousBackupConfigFlags(parser, update=False):
     parser: argparse.ArgumentParser: Parser object for command line inputs.
     update: Whether database flags were provided as part of an update.
   """
-  group = parser.add_group(mutex=False, help='Continuous Backup configuration.')
+  continuous_backup_help = 'Continuous Backup configuration.'
+  if not update:
+    continuous_backup_help += ' If unspecified, continuous backups are enabled.'
+  group = parser.add_group(mutex=False, help=continuous_backup_help)
+
   group.add_argument(
       '--enable-continuous-backup',
       action='store_true',

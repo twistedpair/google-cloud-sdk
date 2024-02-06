@@ -163,13 +163,16 @@ def GetKmsKeyPresentationSpec(resource,
   return presentation_spec
 
 
-def AddKmsKeyResourceArg(parser,
-                         resource,
-                         region_fallthrough=False,
-                         flag_overrides=None,
-                         permission_info=None,
-                         required=False,
-                         name='--kms-key'):
+def AddKmsKeyResourceArg(
+    parser,
+    resource,
+    region_fallthrough=False,
+    flag_overrides=None,
+    permission_info=None,
+    required=False,
+    name='--kms-key',
+    hidden=False,
+):
   """Add a resource argument for a KMS key to protect other resources.
 
   Args:
@@ -186,8 +189,10 @@ def AddKmsKeyResourceArg(parser,
       permission info group help.
     required: bool, optional. True if the flag must be parsable by the parser.
       The default value is False.
-    name: str, optional name of the arg for the KMS resource.
-      Defaults to '--kms-key'.
+    name: str, optional name of the arg for the KMS resource. Defaults to
+      '--kms-key'.
+    hidden: bool, optional to hide the field. True if the flag must be parsable
+      by the parser. The default value is False.
   """
   if not permission_info:
     permission_info = '{} must hold permission {}'.format(
@@ -199,7 +204,9 @@ def AddKmsKeyResourceArg(parser,
       'The Cloud KMS (Key Management Service) cryptokey that will be used to '
       'protect the {}. {}.'.format(resource, permission_info),
       flag_name_overrides=flag_overrides,
-      required=required).AddToParser(parser)
+      required=required,
+      hidden=hidden,
+  ).AddToParser(parser)
 
 
 def AddKmsKeyResourceArgForKMS(parser, required, name):

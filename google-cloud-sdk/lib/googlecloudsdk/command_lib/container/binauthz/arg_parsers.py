@@ -80,3 +80,11 @@ def PolicyFileName(fname):
     raise arg_parsers.ArgumentTypeError(
         'Policy file must be a .yaml or .json file.')
   return fname
+
+
+def ResourceFileName(fname):
+  if parsing.GetResourceFileType(fname) == parsing.ResourceFileType.UNKNOWN:
+    raise arg_parsers.ArgumentTypeError(
+        'Resource file must be a .yaml or .json file.'
+    )
+  return fname

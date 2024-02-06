@@ -804,7 +804,8 @@ Groups of users that can perform operations as a cluster administrator.
       type=arg_parsers.ArgList(),
       metavar='GROUP',
       required=False,
-      help=help_txt)
+      help=help_txt,
+  )
 
 
 def AddClearAdminGroups(parser):
@@ -1045,12 +1046,21 @@ def GetAzureApplicationID(args):
 
 def AddMonitoringConfig(parser, for_create=False):
   """Adds --enable-managed-prometheus and --disable-managed-prometheus flags to parser."""
+  enable_help_text = """
+  Enables managed collection for Managed Service for Prometheus in the cluster.
+
+  See https://cloud.google.com/stackdriver/docs/managed-prometheus/setup-managed#enable-mgdcoll-gke
+  for more info.
+
+  Enabled by default for cluster versions 1.27 or greater,
+  use --no-enable-managed-prometheus to disable.
+  """
   if for_create:
     parser.add_argument(
         '--enable-managed-prometheus',
         action='store_true',
         default=None,
-        help='Enable managed collection for Managed Service for Prometheus.',
+        help=enable_help_text,
     )
   else:
     group = parser.add_group('Monitoring Config', mutex=True)

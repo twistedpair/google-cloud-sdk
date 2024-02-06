@@ -226,6 +226,10 @@ apis:
     v1:
       discovery_doc: blockchainnodeengine_v1.json
       default: true
+  blockchainvalidatormanager:
+    v1alpha:
+      discovery_doc: blockchainvalidatormanager_v1alpha.json
+      default: true
   config:
     v1alpha2:
       discovery_doc: config_v1alpha2.json

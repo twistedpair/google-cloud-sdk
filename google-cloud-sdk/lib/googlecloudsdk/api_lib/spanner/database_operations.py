@@ -106,6 +106,9 @@ def BuildDatabaseOperationTypeFilter(op_type):
   if op_type == 'DATABASE_UPDATE_DDL':
     return base_string + 'UpdateDatabaseDdlMetadata'
 
+  if op_type == 'DATABASE_CHANGE_QUORUM':
+    return base_string + 'DatabaseChangeQuorumMetadata'
+
 
 def ListDatabaseOperations(instance, database=None, type_filter=None):
   """List database operations using the Cloud Spanner specific API."""

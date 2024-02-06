@@ -214,7 +214,14 @@ class WorkflowExecutionClient(object):
     self.messages = self.client.MESSAGES_MODULE
     self._service = self.client.projects_locations_workflows_executions
 
-  def Create(self, workflow_ref, data, call_log_level=None, labels=None):
+  def Create(
+      self,
+      workflow_ref,
+      data,
+      call_log_level=None,
+      labels=None,
+      overflow_buffering_disabled=False,
+  ):
     """Creates a Workflow execution.
 
     Args:
@@ -222,12 +229,17 @@ class WorkflowExecutionClient(object):
       data: Argments to use for executing the workflow.
       call_log_level: Level of call logging to apply during execution.
       labels: Labels associated to the execution.
+      overflow_buffering_disabled: If set to true, the execution will not be
+        backlogged when the concurrency quota is exhausted. Backlogged
+        executions start when the concurrency quota becomes available.
 
     Returns:
       Execution: The workflow execution.
     """
     execution = self.messages.Execution()
     execution.argument = data
+    if overflow_buffering_disabled:
+      execution.disableConcurrencyQuotaOverflowBuffering = True
     if labels is not None:
       execution.labels = labels
     if call_log_level is not None and call_log_level != 'none':

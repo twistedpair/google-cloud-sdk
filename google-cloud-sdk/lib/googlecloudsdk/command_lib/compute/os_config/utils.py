@@ -102,6 +102,13 @@ def GetProjectUriPath(project):
   return GetParentUriPath('projects', project)
 
 
+def GetProjectLocationUriPath(project, location):
+  """Returns the URI path of projects/*/locations/*."""
+  return GetParentUriPath(
+      GetParentUriPath('projects', project),
+      GetParentUriPath('locations', location))
+
+
 def GetFolderUriPath(folder):
   """Returns the URI path of a GCP folder."""
   return GetParentUriPath('folders', folder)

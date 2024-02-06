@@ -5,6 +5,63 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 463.0.0 (2024-02-06)
+
+### AlloyDB
+
+* Added option for `--cpu-count=128` in `instances create` and `instances update` commands.
+
+### Cloud Deploy
+
+* Added IAM policy commands to `gcloud deploy custom-target-types`.
+
+### Cloud Functions
+
+* Changed `gcloud alpha functions deploy` and `gcloud beta functions deploy` to
+  deploy _new_ functions via Cloud Functions (2nd gen) by default. 1st gen
+  functions can still be created by specifying `--no-gen2` or by setting the
+  `functions/gen2` property to `off`. This change will be applied in the GA
+  release track in a future release.
+
+### Cloud Run
+
+* Promoted `--container` flag of `gcloud run deploy` and `gcloud run services update` to GA to allow deploying multi-container Services.
+
+### Cloud SQL
+
+* Fixed and added back support for parallel import and export.
+
+### Cloud Workflows
+
+* `gcloud workflows run` to avoid backlogging the execution when the
+
+### Cloud Workstations
+
+* Adding a region column to the tables in `gcloud workstations list`, `gcloud workstations list-usable`, `gcloud workstations configs list`, and `gcloud workstations clusters list`.
+
+### Compute Engine
+
+* Added support of flags to `--detection-load-threshold`,
+`detection-absolute-qps`, `detection-relative-to-baseline-qps`, and
+`traffic-granularity-configs` to
+`gcloud compute security-policies add-layer7-ddos-defense-threshold-config` in
+alpha/beta.
+* Added `gcloud compute instance-groups managed resize-requests` which provides
+capability to create, describe, list, cancel, and delete resize requests in
+a zonal MIG to beta.
+* Promoted `--existing-reservation` flag of `gcloud compute commitments create` to GA.
+
+### GKE Hub
+
+* Promoted Fleet operations commands to beta and GA.
+  * Promoted `gcloud container fleet operations describe` to beta and GA.
+  * Promoted `gcloud container fleet operations list` to beta and GA.
+  * Promoted `gcloud container fleet operations wait` to beta and GA.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 462.0.1 (2024-01-31)
 
 ### Cloud SQL

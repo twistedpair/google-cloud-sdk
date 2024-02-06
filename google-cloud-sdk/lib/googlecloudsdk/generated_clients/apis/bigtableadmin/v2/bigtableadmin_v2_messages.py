@@ -138,6 +138,29 @@ class AuditLogConfig(_messages.Message):
   logType = _messages.EnumField('LogTypeValueValuesEnum', 2)
 
 
+class AuthorizedView(_messages.Message):
+  r"""Placeholder for admin API work while we work out the internals.
+
+  Fields:
+    deletionProtection: Set to true to make the AuthorizedView protected
+      against deletion. The parent Table and containing Instance cannot be
+      deleted if an AuthorizedView has this bit set.
+    etag: The etag for this AuthorizedView. If this is provided on update, it
+      must match the server's etag. The server returns ABORTED error on a
+      mismatched etag.
+    name: Identifier. The name of this AuthorizedView. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}/authorizedViews/
+      {authorized_view}`
+    subsetView: An AuthorizedView permitting access to an explicit subset of a
+      Table.
+  """
+
+  deletionProtection = _messages.BooleanField(1)
+  etag = _messages.StringField(2)
+  name = _messages.StringField(3)
+  subsetView = _messages.MessageField('GoogleBigtableAdminV2AuthorizedViewSubsetView', 4)
+
+
 class AutoscalingLimits(_messages.Message):
   r"""Limits for the number of nodes a Cluster can autoscale up/down to.
 
@@ -196,7 +219,8 @@ class Backup(_messages.Message):
     sizeBytes: Output only. Size of the backup in bytes.
     sourceBackup: Output only. Name of the backup from which this backup was
       copied. If a backup is not created by copying a backup, this field will
-      be empty. Values are of the form: projects//instances//backups/.
+      be empty. Values are of the form:
+      projects//instances//clusters//backups/
     sourceTable: Required. Immutable. Name of the table from which this backup
       was created. This needs to be in the same instance as the backup. Values
       are of the form
@@ -241,7 +265,8 @@ class BackupInfo(_messages.Message):
       the backup will be no newer than this timestamp.
     sourceBackup: Output only. Name of the backup from which this backup was
       copied. If a backup is not created by copying a backup, this field will
-      be empty. Values are of the form: projects//instances//backups/.
+      be empty. Values are of the form:
+      projects//instances//clusters//backups/
     sourceTable: Output only. Name of the table the backup was created from.
     startTime: Output only. The time that the backup was started. Row data in
       the backup will be no older than this timestamp.
@@ -748,6 +773,151 @@ class BigtableadminProjectsInstancesSetIamPolicyRequest(_messages.Message):
 
   resource = _messages.StringField(1, required=True)
   setIamPolicyRequest = _messages.MessageField('SetIamPolicyRequest', 2)
+
+
+class BigtableadminProjectsInstancesTablesAuthorizedViewsCreateRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesAuthorizedViewsCreateRequest
+  object.
+
+  Fields:
+    authorizedView: A AuthorizedView resource to be passed as the request
+      body.
+    authorizedViewId: Required. The id of the AuthorizedView to create. This
+      AuthorizedView must not already exist. The `authorized_view_id` appended
+      to `parent` forms the full AuthorizedView name of the form `projects/{pr
+      oject}/instances/{instance}/tables/{table}/authorizedView/{authorized_vi
+      ew}`.
+    parent: Required. This is the name of the table the AuthorizedView belongs
+      to. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+  """
+
+  authorizedView = _messages.MessageField('AuthorizedView', 1)
+  authorizedViewId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class BigtableadminProjectsInstancesTablesAuthorizedViewsDeleteRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesAuthorizedViewsDeleteRequest
+  object.
+
+  Fields:
+    etag: Optional. The current etag of the AuthorizedView. If an etag is
+      provided and does not match the current etag of the AuthorizedView,
+      deletion will be blocked and an ABORTED error will be returned.
+    name: Required. The unique name of the AuthorizedView to be deleted.
+      Values are of the form `projects/{project}/instances/{instance}/tables/{
+      table}/authorizedViews/{authorized_view}`.
+  """
+
+  etag = _messages.StringField(1)
+  name = _messages.StringField(2, required=True)
+
+
+class BigtableadminProjectsInstancesTablesAuthorizedViewsGetRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesAuthorizedViewsGetRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. The resource_view to be applied to the
+      returned AuthorizedView's fields. Default to BASIC.
+
+  Fields:
+    name: Required. The unique name of the requested AuthorizedView. Values
+      are of the form `projects/{project}/instances/{instance}/tables/{table}/
+      authorizedViews/{authorized_view}`.
+    view: Optional. The resource_view to be applied to the returned
+      AuthorizedView's fields. Default to BASIC.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource_view to be applied to the returned
+    AuthorizedView's fields. Default to BASIC.
+
+    Values:
+      RESPONSE_VIEW_UNSPECIFIED: Uses the default view for each method as
+        documented in the request.
+      NAME_ONLY: Only populates `name`.
+      BASIC: Only populates the AuthorizedView's basic metadata. This
+        includes: name, deletion_protection, etag.
+      FULL: Populates every fields.
+    """
+    RESPONSE_VIEW_UNSPECIFIED = 0
+    NAME_ONLY = 1
+    BASIC = 2
+    FULL = 3
+
+  name = _messages.StringField(1, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 2)
+
+
+class BigtableadminProjectsInstancesTablesAuthorizedViewsListRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesAuthorizedViewsListRequest object.
+
+  Enums:
+    ViewValueValuesEnum: Optional. The resource_view to be applied to the
+      returned views' fields. Default to NAME_ONLY.
+
+  Fields:
+    pageSize: Optional. Maximum number of results per page. A page_size of
+      zero lets the server choose the number of items to return. A page_size
+      which is strictly positive will return at most that many items. A
+      negative page_size will cause an error. Following the first request,
+      subsequent paginated calls are not required to pass a page_size. If a
+      page_size is set in subsequent calls, it must match the page_size given
+      in the first request.
+    pageToken: Optional. The value of `next_page_token` returned by a previous
+      call.
+    parent: Required. The unique name of the table for which AuthorizedViews
+      should be listed. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+    view: Optional. The resource_view to be applied to the returned views'
+      fields. Default to NAME_ONLY.
+  """
+
+  class ViewValueValuesEnum(_messages.Enum):
+    r"""Optional. The resource_view to be applied to the returned views'
+    fields. Default to NAME_ONLY.
+
+    Values:
+      RESPONSE_VIEW_UNSPECIFIED: Uses the default view for each method as
+        documented in the request.
+      NAME_ONLY: Only populates `name`.
+      BASIC: Only populates the AuthorizedView's basic metadata. This
+        includes: name, deletion_protection, etag.
+      FULL: Populates every fields.
+    """
+    RESPONSE_VIEW_UNSPECIFIED = 0
+    NAME_ONLY = 1
+    BASIC = 2
+    FULL = 3
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  view = _messages.EnumField('ViewValueValuesEnum', 4)
+
+
+class BigtableadminProjectsInstancesTablesAuthorizedViewsPatchRequest(_messages.Message):
+  r"""A BigtableadminProjectsInstancesTablesAuthorizedViewsPatchRequest
+  object.
+
+  Fields:
+    authorizedView: A AuthorizedView resource to be passed as the request
+      body.
+    name: Identifier. The name of this AuthorizedView. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}/authorizedViews/
+      {authorized_view}`
+    updateMask: Optional. The list of fields to update. A mask specifying
+      which fields in the AuthorizedView resource should be updated. This mask
+      is relative to the AuthorizedView resource, not to the request message.
+      A field will be overwritten if it is in the mask. If empty, all fields
+      set in the request will be overwritten. A special value `*` means to
+      overwrite all fields (including fields not set in the request).
+  """
+
+  authorizedView = _messages.MessageField('AuthorizedView', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
 
 
 class BigtableadminProjectsInstancesTablesCheckConsistencyRequest(_messages.Message):
@@ -1287,7 +1457,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1579,6 +1753,42 @@ class CopyBackupRequest(_messages.Message):
   backupId = _messages.StringField(1)
   expireTime = _messages.StringField(2)
   sourceBackup = _messages.StringField(3)
+
+
+class CreateAuthorizedViewMetadata(_messages.Message):
+  r"""The metadata for the Operation returned by CreateAuthorizedView.
+
+  Fields:
+    finishTime: The time at which the operation failed or was completed
+      successfully.
+    originalRequest: The request that prompted the initiation of this
+      CreateInstance operation.
+    requestTime: The time at which the original request was received.
+  """
+
+  finishTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('CreateAuthorizedViewRequest', 2)
+  requestTime = _messages.StringField(3)
+
+
+class CreateAuthorizedViewRequest(_messages.Message):
+  r"""The request for CreateAuthorizedView
+
+  Fields:
+    authorizedView: Required. The AuthorizedView to create.
+    authorizedViewId: Required. The id of the AuthorizedView to create. This
+      AuthorizedView must not already exist. The `authorized_view_id` appended
+      to `parent` forms the full AuthorizedView name of the form `projects/{pr
+      oject}/instances/{instance}/tables/{table}/authorizedView/{authorized_vi
+      ew}`.
+    parent: Required. This is the name of the table the AuthorizedView belongs
+      to. Values are of the form
+      `projects/{project}/instances/{instance}/tables/{table}`.
+  """
+
+  authorizedView = _messages.MessageField('AuthorizedView', 1)
+  authorizedViewId = _messages.StringField(2)
+  parent = _messages.StringField(3)
 
 
 class CreateBackupMetadata(_messages.Message):
@@ -1972,21 +2182,6 @@ class Expr(_messages.Message):
   title = _messages.StringField(4)
 
 
-class FamilySubsets(_messages.Message):
-  r"""Subsets of a column family that are included in this View.
-
-  Fields:
-    qualifierPrefixes: Prefixes for qualifiers to be included in the View.
-      Every qualifier starting with one of these prefixes is included in the
-      View. To provide access to all qualifiers, include the empty string as a
-      prefix ("").
-    qualifiers: Individual exact column qualifiers to be included in the View.
-  """
-
-  qualifierPrefixes = _messages.BytesField(1, repeated=True)
-  qualifiers = _messages.BytesField(2, repeated=True)
-
-
 class GcRule(_messages.Message):
   r"""Rule for determining which cells to delete during garbage collection.
 
@@ -2053,6 +2248,126 @@ class GetPolicyOptions(_messages.Message):
   """
 
   requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+
+
+class GoogleBigtableAdminV2AuthorizedViewFamilySubsets(_messages.Message):
+  r"""Subsets of a column family that are included in this AuthorizedView.
+
+  Fields:
+    qualifierPrefixes: Prefixes for qualifiers to be included in the
+      AuthorizedView. Every qualifier starting with one of these prefixes is
+      included in the AuthorizedView. To provide access to all qualifiers,
+      include the empty string as a prefix ("").
+    qualifiers: Individual exact column qualifiers to be included in the
+      AuthorizedView.
+  """
+
+  qualifierPrefixes = _messages.BytesField(1, repeated=True)
+  qualifiers = _messages.BytesField(2, repeated=True)
+
+
+class GoogleBigtableAdminV2AuthorizedViewSubsetView(_messages.Message):
+  r"""Defines a simple AuthorizedView that is a subset of the underlying
+  Table.
+
+  Messages:
+    FamilySubsetsValue: Map from column family name to the columns in this
+      family to be included in the AuthorizedView.
+
+  Fields:
+    familySubsets: Map from column family name to the columns in this family
+      to be included in the AuthorizedView.
+    rowPrefixes: Row prefixes to be included in the AuthorizedView. To provide
+      access to all rows, include the empty string as a prefix ("").
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FamilySubsetsValue(_messages.Message):
+    r"""Map from column family name to the columns in this family to be
+    included in the AuthorizedView.
+
+    Messages:
+      AdditionalProperty: An additional property for a FamilySubsetsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FamilySubsetsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FamilySubsetsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleBigtableAdminV2AuthorizedViewFamilySubsets attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleBigtableAdminV2AuthorizedViewFamilySubsets', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  familySubsets = _messages.MessageField('FamilySubsetsValue', 1)
+  rowPrefixes = _messages.BytesField(2, repeated=True)
+
+
+class GoogleBigtableAdminV2ViewFamilySubsets(_messages.Message):
+  r"""Subsets of a column family that are included in this View.
+
+  Fields:
+    qualifierPrefixes: Prefixes for qualifiers to be included in the View.
+      Every qualifier starting with one of these prefixes is included in the
+      View. To provide access to all qualifiers, include the empty string as a
+      prefix ("").
+    qualifiers: Individual exact column qualifiers to be included in the View.
+  """
+
+  qualifierPrefixes = _messages.BytesField(1, repeated=True)
+  qualifiers = _messages.BytesField(2, repeated=True)
+
+
+class GoogleBigtableAdminV2ViewSubsetView(_messages.Message):
+  r"""Defines a simple view that is a subset of the underlying Table.
+
+  Messages:
+    FamilySubsetsValue: Map from column family name to the columns in this
+      family to be included in the view.
+
+  Fields:
+    familySubsets: Map from column family name to the columns in this family
+      to be included in the view.
+    rowPrefixes: Row prefixes to be included in the View. To provide access to
+      all rows, include the empty string as a prefix ("").
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FamilySubsetsValue(_messages.Message):
+    r"""Map from column family name to the columns in this family to be
+    included in the view.
+
+    Messages:
+      AdditionalProperty: An additional property for a FamilySubsetsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type FamilySubsetsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FamilySubsetsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleBigtableAdminV2ViewFamilySubsets attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleBigtableAdminV2ViewFamilySubsets', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  familySubsets = _messages.MessageField('FamilySubsetsValue', 1)
+  rowPrefixes = _messages.BytesField(2, repeated=True)
 
 
 class HotTablet(_messages.Message):
@@ -2230,6 +2545,21 @@ class ListAppProfilesResponse(_messages.Message):
   appProfiles = _messages.MessageField('AppProfile', 1, repeated=True)
   failedLocations = _messages.StringField(2, repeated=True)
   nextPageToken = _messages.StringField(3)
+
+
+class ListAuthorizedViewsResponse(_messages.Message):
+  r"""Response message for
+  google.bigtable.admin.v2.BigtableTableAdmin.ListAuthorizedViews
+
+  Fields:
+    authorizedViews: The AuthorizedViews present in the requested table.
+    nextPageToken: Set if not all tables could be returned in a single
+      response. Pass this value to `page_token` in another request to get the
+      next page of results.
+  """
+
+  authorizedViews = _messages.MessageField('AuthorizedView', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -3096,50 +3426,6 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class SubsetView(_messages.Message):
-  r"""Defines a simple view that is a subset of the underlying Table.
-
-  Messages:
-    FamilySubsetsValue: Map from column family name to the columns in this
-      family to be included in the view.
-
-  Fields:
-    familySubsets: Map from column family name to the columns in this family
-      to be included in the view.
-    rowPrefixes: Row prefixes to be included in the View. To provide access to
-      all rows, include the empty string as a prefix ("").
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class FamilySubsetsValue(_messages.Message):
-    r"""Map from column family name to the columns in this family to be
-    included in the view.
-
-    Messages:
-      AdditionalProperty: An additional property for a FamilySubsetsValue
-        object.
-
-    Fields:
-      additionalProperties: Additional properties of type FamilySubsetsValue
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a FamilySubsetsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A FamilySubsets attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('FamilySubsets', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  familySubsets = _messages.MessageField('FamilySubsetsValue', 1)
-  rowPrefixes = _messages.BytesField(2, repeated=True)
-
-
 class Table(_messages.Message):
   r"""A collection of user data indexed by row, column, and timestamp. Each
   table is served using the resources of its parent cluster.
@@ -3404,6 +3690,42 @@ class UpdateAppProfileMetadata(_messages.Message):
   r"""The metadata for the Operation returned by UpdateAppProfile."""
 
 
+class UpdateAuthorizedViewMetadata(_messages.Message):
+  r"""Metadata for the google.longrunning.Operation returned by
+  UpdateAuthorizedView.
+
+  Fields:
+    finishTime: The time at which the operation failed or was completed
+      successfully.
+    originalRequest: The request that prompted the initiation of this
+      UpdateAuthorizedView operation.
+    requestTime: The time at which the original request was received.
+  """
+
+  finishTime = _messages.StringField(1)
+  originalRequest = _messages.MessageField('UpdateAuthorizedViewRequest', 2)
+  requestTime = _messages.StringField(3)
+
+
+class UpdateAuthorizedViewRequest(_messages.Message):
+  r"""The request for UpdateAuthorizedView.
+
+  Fields:
+    authorizedView: Required. The AuthorizedView to update. The `name` in
+      `authorized_view` is used to identify the AuthorizedView. AuthorizedView
+      name must in this format projects//instances//tables//authorizedViews/
+    updateMask: Optional. The list of fields to update. A mask specifying
+      which fields in the AuthorizedView resource should be updated. This mask
+      is relative to the AuthorizedView resource, not to the request message.
+      A field will be overwritten if it is in the mask. If empty, all fields
+      set in the request will be overwritten. A special value `*` means to
+      overwrite all fields (including fields not set in the request).
+  """
+
+  authorizedView = _messages.MessageField('AuthorizedView', 1)
+  updateMask = _messages.StringField(2)
+
+
 class UpdateClusterMetadata(_messages.Message):
   r"""The metadata for the Operation returned by UpdateCluster.
 
@@ -3504,7 +3826,7 @@ class View(_messages.Message):
   deletionProtection = _messages.BooleanField(1)
   etag = _messages.StringField(2)
   name = _messages.StringField(3)
-  subsetView = _messages.MessageField('SubsetView', 4)
+  subsetView = _messages.MessageField('GoogleBigtableAdminV2ViewSubsetView', 4)
 
 
 encoding.AddCustomJsonFieldMapping(

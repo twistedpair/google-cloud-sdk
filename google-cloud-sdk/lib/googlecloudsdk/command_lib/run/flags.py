@@ -1309,12 +1309,25 @@ def AddArgsFlag(parser, for_execution_overrides=False):
   ArgsFlag(for_execution_overrides=for_execution_overrides).AddToParser(parser)
 
 
+def AddDeployHealthCheckFlag(parser):
+  """Add flag enable and disable deploy health check."""
+  parser.add_argument(
+      '--deploy-health-check',
+      action=arg_parsers.StoreTrueFalseAction,
+      help=(
+          'Schedules a single instance of the Revision and waits for it to'
+          ' start listening on its port for the deployment to succeed. This'
+          ' check is enabled by default if unspecified.'
+      ),
+  )
+
+
 def AddDefaultUrlFlag(parser):
   """Add flag enable and disable default url."""
   parser.add_argument(
       '--default-url',
       action=arg_parsers.StoreTrueFalseAction,
-      help='enables the default url for a run service.',
+      help='toggles the default url for a run service.',
   )
 
 
@@ -2462,6 +2475,10 @@ def GetServiceConfigurationChanges(args, release_track=base.ReleaseTrack.GA):
   if FlagIsExplicitlySet(args, 'cpu_boost'):
     changes.append(
         config_changes.StartupCpuBoostChange(cpu_boost=args.cpu_boost)
+    )
+  if FlagIsExplicitlySet(args, 'deploy_health_check'):
+    changes.append(
+        config_changes.HealthCheckChange(health_check=args.deploy_health_check)
     )
   if FlagIsExplicitlySet(args, 'default_url'):
     changes.append(

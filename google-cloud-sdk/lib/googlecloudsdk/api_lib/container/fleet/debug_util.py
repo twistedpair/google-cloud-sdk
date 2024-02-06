@@ -13,7 +13,9 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 """Util package for memberships debug API."""
+import re
 from apitools.base.py import exceptions as apitools_exceptions
+from googlecloudsdk.api_lib import network_services
 from googlecloudsdk.api_lib.container import util as container_util
 from googlecloudsdk.api_lib.container.fleet import util as fleet_util
 from googlecloudsdk.command_lib.container.fleet import api_util as hubapi_util
@@ -61,12 +63,47 @@ def ContextGenerator(args):
   cluster_resourcelink = membership_resource.endpoint.gkeCluster.resourceLink
   cluster_location = cluster_resourcelink.split('/')[-3]
   cluster_name = cluster_resourcelink.split('/')[-1]
+  print('Found cluster=' + cluster_name)
+
   cluster_context = container_util.ClusterConfig.KubeContext(
       cluster_name, cluster_location, project_id
   )
-  if not cluster_context:
-    raise exceptions.Error(
-        'Failed to find context for cluster={} with location={} in project={}.'
-        .format(cluster_name, cluster_location, project_id)
-    )
   return cluster_context
+
+
+def ListMeshes():
+  client = network_services.GetClientInstance()
+  return client.projects_locations_meshes.List(
+      client.MESSAGES_MODULE.NetworkservicesProjectsLocationsMeshesListRequest(
+          parent='projects/{}/locations/global'.format(
+              properties.VALUES.core.project.Get()
+          )
+      )
+  )
+
+
+# Return meshName, projectNumber
+def MeshInfoGenerator(args):
+  """Generate meshName from membership, location and project."""
+  target_mesh_name = ''
+  target_project_number = ''
+  meshes = ListMeshes()
+  for mesh_info in meshes.meshes:
+    matcher = re.match(
+        r'.*projects/(.*)/locations/(.*)/memberships/(.*): ',
+        mesh_info.description,
+    )
+    if matcher is None:
+      continue
+    if (
+        matcher.group(2) == args.location
+        and matcher.group(3) == args.membership
+    ):
+      matcher_new = re.match(r'.+/meshes/(.*)', mesh_info.name)
+      if matcher_new is None: continue
+      target_mesh_name = matcher_new.group(1)
+      target_project_number = matcher.group(1)
+    break
+  # it's possible the targetMeshName does not exist.
+  # Return '' as meshName if meshName not exists.
+  return target_mesh_name, target_project_number

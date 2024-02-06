@@ -907,6 +907,9 @@ class AutomatedBackupPolicy(_messages.Message):
       encrypt the backups with a customer-managed encryption key (CMEK). When
       this field is not specified, the backup will then use default encryption
       scheme to protect the user data.
+    enforcedRetention: If true, backups created by this policy would have
+      `enforced_retention` set and cannot be deleted unless they expire (or as
+      part of project deletion).
     labels: Labels to apply to backups created using this configuration.
     location: The location where the backup will be stored. Currently, the
       only supported option is to store the backup in the same region as the
@@ -944,11 +947,12 @@ class AutomatedBackupPolicy(_messages.Message):
   backupWindow = _messages.StringField(1)
   enabled = _messages.BooleanField(2)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 3)
-  labels = _messages.MessageField('LabelsValue', 4)
-  location = _messages.StringField(5)
-  quantityBasedRetention = _messages.MessageField('QuantityBasedRetention', 6)
-  timeBasedRetention = _messages.MessageField('TimeBasedRetention', 7)
-  weeklySchedule = _messages.MessageField('WeeklySchedule', 8)
+  enforcedRetention = _messages.BooleanField(4)
+  labels = _messages.MessageField('LabelsValue', 5)
+  location = _messages.StringField(6)
+  quantityBasedRetention = _messages.MessageField('QuantityBasedRetention', 7)
+  timeBasedRetention = _messages.MessageField('TimeBasedRetention', 8)
+  weeklySchedule = _messages.MessageField('WeeklySchedule', 9)
 
 
 class Backup(_messages.Message):
@@ -987,6 +991,8 @@ class Backup(_messages.Message):
       this field is not specified, the backup will then use default encryption
       scheme to protect the user data.
     encryptionInfo: Output only. The encryption information for the backup.
+    enforcedRetention: If true, this backup has enforced_retention set and
+      cannot be deleted unless it expires (or as part of project deletion).
     etag: For Resource freshness validation (https://google.aip.dev/154)
     expiryQuantity: Output only. The QuantityBasedExpiry of the backup,
       specified by the backup's retention policy. Once the expiry quantity is
@@ -1126,18 +1132,19 @@ class Backup(_messages.Message):
   displayName = _messages.StringField(8)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 9)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 10)
-  etag = _messages.StringField(11)
-  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 12)
-  expiryTime = _messages.StringField(13)
-  labels = _messages.MessageField('LabelsValue', 14)
-  name = _messages.StringField(15)
-  reconciling = _messages.BooleanField(16)
-  satisfiesPzs = _messages.BooleanField(17)
-  sizeBytes = _messages.IntegerField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  type = _messages.EnumField('TypeValueValuesEnum', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  enforcedRetention = _messages.BooleanField(11)
+  etag = _messages.StringField(12)
+  expiryQuantity = _messages.MessageField('QuantityBasedExpiry', 13)
+  expiryTime = _messages.StringField(14)
+  labels = _messages.MessageField('LabelsValue', 15)
+  name = _messages.StringField(16)
+  reconciling = _messages.BooleanField(17)
+  satisfiesPzs = _messages.BooleanField(18)
+  sizeBytes = _messages.IntegerField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  type = _messages.EnumField('TypeValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class BackupSource(_messages.Message):
@@ -1481,6 +1488,9 @@ class ContinuousBackupConfig(_messages.Message):
       backups with a customer-managed encryption key (CMEK). When this field
       is not specified, the backup will then use default encryption scheme to
       protect the user data.
+    enforcedRetention: If true, backups created by this config would have
+      `enforced_retention` set and cannot be deleted unless they expire (or as
+      part of project deletion).
     recoveryWindowDays: The number of days that are eligible to restore from
       using PITR. To support the entire recovery window, backups and logs are
       retained for one day more than the recovery window. If not set, defaults
@@ -1489,7 +1499,8 @@ class ContinuousBackupConfig(_messages.Message):
 
   enabled = _messages.BooleanField(1)
   encryptionConfig = _messages.MessageField('EncryptionConfig', 2)
-  recoveryWindowDays = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  enforcedRetention = _messages.BooleanField(3)
+  recoveryWindowDays = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class ContinuousBackupInfo(_messages.Message):

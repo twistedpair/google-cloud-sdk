@@ -293,6 +293,12 @@ class Folder(_messages.Message):
       folder. Updates to the lifecycle_state must be performed via
       DeleteFolder and UndeleteFolder.
 
+  Messages:
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this folder. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
+
   Fields:
     createTime: Output only. Timestamp when the Folder was created. Assigned
       by the server.
@@ -310,6 +316,10 @@ class Folder(_messages.Message):
       `folders/{folder_id}`, for example: "folders/1234".
     parent: The Folder's parent's resource name. Updates to the folder's
       parent must be performed via MoveFolder.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this folder. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
   """
 
   class LifecycleStateValueValuesEnum(_messages.Enum):
@@ -325,11 +335,38 @@ class Folder(_messages.Message):
     ACTIVE = 1
     DELETE_REQUESTED = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this folder. Each item in the map must be expressed as " : ". For example:
+    "123/environment" : "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   displayName = _messages.StringField(2)
   lifecycleState = _messages.EnumField('LifecycleStateValueValuesEnum', 3)
   name = _messages.StringField(4)
   parent = _messages.StringField(5)
+  tags = _messages.MessageField('TagsValue', 6)
 
 
 class FolderOperation(_messages.Message):

@@ -687,6 +687,18 @@ MAP = {
                 enable_mtls=True,
                 mtls_endpoint_override=''),
     },
+    'blockchainvalidatormanager': {
+        'v1alpha':
+            APIDef(
+                apitools=ApitoolsClientDef(
+                    class_path='googlecloudsdk.generated_clients.apis.blockchainvalidatormanager.v1alpha',
+                    client_classpath='blockchainvalidatormanager_v1alpha_client.BlockchainvalidatormanagerV1alpha',
+                    base_url='https://blockchainvalidatormanager.googleapis.com/',
+                    messages_modulepath='blockchainvalidatormanager_v1alpha_messages'),
+                default_version=True,
+                enable_mtls=True,
+                mtls_endpoint_override=''),
+    },
     'certificatemanager': {
         'v1':
             APIDef(

@@ -802,7 +802,9 @@ def _ConvertUserDefinedFieldBase(base):
   )
 
 
-def CreateLayer7DdosDefenseThresholdConfig(client, args):
+def CreateLayer7DdosDefenseThresholdConfig(
+    client, args, support_granularity_config
+):
   """Returns a SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfig message."""
 
   messages = client.messages
@@ -812,17 +814,47 @@ def CreateLayer7DdosDefenseThresholdConfig(client, args):
 
   threshold_config.name = args.threshold_config_name
 
-  if getattr(args, 'auto_deploy_load_threshold', None) is not None:
+  if args.IsSpecified('auto_deploy_load_threshold'):
     threshold_config.autoDeployLoadThreshold = args.auto_deploy_load_threshold
-  if getattr(args, 'auto_deploy_confidence_threshold', None) is not None:
+  if args.IsSpecified('auto_deploy_confidence_threshold'):
     threshold_config.autoDeployConfidenceThreshold = (
         args.auto_deploy_confidence_threshold
     )
-  if getattr(args, 'auto_deploy_impacted_baseline_threshold', None) is not None:
+  if args.IsSpecified('auto_deploy_impacted_baseline_threshold'):
     threshold_config.autoDeployImpactedBaselineThreshold = (
         args.auto_deploy_impacted_baseline_threshold
     )
-  if getattr(args, 'auto_deploy_expiration_sec', None) is not None:
+  if args.IsSpecified('auto_deploy_expiration_sec'):
     threshold_config.autoDeployExpirationSec = args.auto_deploy_expiration_sec
+
+  if support_granularity_config:
+    if args.IsSpecified('detection_load_threshold'):
+      threshold_config.detectionLoadThreshold = args.detection_load_threshold
+    if args.IsSpecified('detection_absolute_qps'):
+      threshold_config.detectionAbsoluteQps = args.detection_absolute_qps
+    if args.IsSpecified('detection_relative_to_baseline_qps'):
+      threshold_config.detectionRelativeToBaselineQps = (
+          args.detection_relative_to_baseline_qps
+      )
+    if args.IsSpecified('traffic_granularity_configs'):
+      traffic_granularity_configs = []
+      for arg_traffic_granularity_config in args.traffic_granularity_configs:
+        traffic_granularity_config = (
+            messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfigTrafficGranularityConfig()
+        )
+        if 'type' in arg_traffic_granularity_config:
+          traffic_granularity_config.type = messages.SecurityPolicyAdaptiveProtectionConfigLayer7DdosDefenseConfigThresholdConfigTrafficGranularityConfig.TypeValueValuesEnum(
+              arg_traffic_granularity_config['type']
+          )
+        if 'value' in arg_traffic_granularity_config:
+          traffic_granularity_config.value = arg_traffic_granularity_config[
+              'value'
+          ]
+        if 'enableEachUniqueValue' in arg_traffic_granularity_config:
+          traffic_granularity_config.enableEachUniqueValue = (
+              arg_traffic_granularity_config['enableEachUniqueValue']
+          )
+        traffic_granularity_configs.append(traffic_granularity_config)
+      threshold_config.trafficGranularityConfigs = traffic_granularity_configs
 
   return threshold_config

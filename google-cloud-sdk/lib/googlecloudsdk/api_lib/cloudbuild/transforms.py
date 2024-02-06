@@ -153,10 +153,10 @@ def TransformResultStatus(resource, undefined=''):
   """
   messages = core_apis.GetMessagesModule('cloudbuild', 'v2')
   result = apitools_encoding.DictToMessage(resource, messages.Result)
-  record_data = hub_client.HubClient.ToPyDict(
-      result.recordSummaries[0].recordData)
-  if 'status' in record_data:
-    return record_data.get('status')
+  record_summary = result.recordSummaries[0]
+  record_data = hub_client.HubClient.ToPyDict(record_summary.recordData)
+  if record_summary.status is not None:
+    return record_summary.status
   if 'pipeline_run_status' in record_data or 'task_run_status' in record_data:
     return 'CANCELLED'
   if 'conditions[0].status' in record_data:

@@ -43,8 +43,9 @@ ENCRYPTION_KEY_SHUTDOWN_HOURS_ANNOTATION = (
 SECRETS_ANNOTATION = 'run.googleapis.com/secrets'
 CPU_THROTTLE_ANNOTATION = 'run.googleapis.com/cpu-throttling'
 COLD_START_BOOST_ANNOTATION = 'run.googleapis.com/startup-cpu-boost'
-DISABLE_URL_ANNOTATION = 'run.googleapis.com/default-url-disabled'
+DISABLE_HEALTH_CHECK_ANNOTATION = 'run.googleapis.com/health-check-disabled'
 DISABLE_IAM_ANNOTATION = 'run.googleapis.com/invoker-iam-disabled'
+DISABLE_URL_ANNOTATION = 'run.googleapis.com/default-url-disabled'
 
 EGRESS_SETTINGS_ANNOTATION = 'run.googleapis.com/vpc-access-egress'
 EGRESS_SETTINGS_ALL = 'all'

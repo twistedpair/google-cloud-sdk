@@ -500,6 +500,25 @@ class ArtifactregistryProjectsLocationsRepositoriesPackagesListRequest(_messages
   parent = _messages.StringField(3, required=True)
 
 
+class ArtifactregistryProjectsLocationsRepositoriesPackagesPatchRequest(_messages.Message):
+  r"""A ArtifactregistryProjectsLocationsRepositoriesPackagesPatchRequest
+  object.
+
+  Fields:
+    name: The name of the package, for example: `projects/p1/locations/us-
+      central1/repositories/repo1/packages/pkg1`. If the package ID part
+      contains slashes, the slashes are escaped.
+    package: A Package resource to be passed as the request body.
+    updateMask: The update mask applies to the resource. For the `FieldMask`
+      definition, see https://developers.google.com/protocol-
+      buffers/docs/reference/google.protobuf#fieldmask
+  """
+
+  name = _messages.StringField(1, required=True)
+  package = _messages.MessageField('Package', 2)
+  updateMask = _messages.StringField(3)
+
+
 class ArtifactregistryProjectsLocationsRepositoriesPackagesTagsCreateRequest(_messages.Message):
   r"""A ArtifactregistryProjectsLocationsRepositoriesPackagesTagsCreateRequest
   object.
@@ -938,7 +957,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -2252,11 +2275,19 @@ class ProjectSettings(_messages.Message):
       REDIRECTION_FROM_GCR_IO_ENABLED: Redirection is enabled.
       REDIRECTION_FROM_GCR_IO_FINALIZED: Redirection is enabled, and has been
         finalized so cannot be reverted.
+      REDIRECTION_FROM_GCR_IO_PARTIAL: Redirection is partially enabled.
+      REDIRECTION_FROM_GCR_IO_ENABLED_AND_COPYING: Redirection is enabled and
+        missing images are copied from GCR
+      REDIRECTION_FROM_GCR_IO_PARTIAL_AND_COPYING: Redirection is partially
+        enabled and missing images are copied from GCR
     """
     REDIRECTION_STATE_UNSPECIFIED = 0
     REDIRECTION_FROM_GCR_IO_DISABLED = 1
     REDIRECTION_FROM_GCR_IO_ENABLED = 2
     REDIRECTION_FROM_GCR_IO_FINALIZED = 3
+    REDIRECTION_FROM_GCR_IO_PARTIAL = 4
+    REDIRECTION_FROM_GCR_IO_ENABLED_AND_COPYING = 5
+    REDIRECTION_FROM_GCR_IO_PARTIAL_AND_COPYING = 6
 
   legacyRedirectionState = _messages.EnumField('LegacyRedirectionStateValueValuesEnum', 1)
   name = _messages.StringField(2)
@@ -2336,6 +2367,9 @@ class RemoteRepositoryConfig(_messages.Message):
       host, should they also be removed from the Artifact Registry repository
       when requested? Only supported for docker, maven, and python
     description: The description of the remote source.
+    disableUpstreamValidation: Optional. A create/update remote repo option to
+      avoid making a HEAD/GET request to validate a remote repo and any
+      supplied upstream credentials.
     dockerRepository: Specific settings for a Docker remote repository.
     goRepository: Specific settings for a Go remote repository.
     mavenRepository: Specific settings for a Maven remote repository.
@@ -2362,14 +2396,15 @@ class RemoteRepositoryConfig(_messages.Message):
   aptRepository = _messages.MessageField('AptRepository', 1)
   deleteNotFoundCacheFiles = _messages.BooleanField(2)
   description = _messages.StringField(3)
-  dockerRepository = _messages.MessageField('DockerRepository', 4)
-  goRepository = _messages.MessageField('GoRepository', 5)
-  mavenRepository = _messages.MessageField('MavenRepository', 6)
-  npmRepository = _messages.MessageField('NpmRepository', 7)
-  pythonRepository = _messages.MessageField('PythonRepository', 8)
-  remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 9)
-  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 10)
-  yumRepository = _messages.MessageField('YumRepository', 11)
+  disableUpstreamValidation = _messages.BooleanField(4)
+  dockerRepository = _messages.MessageField('DockerRepository', 5)
+  goRepository = _messages.MessageField('GoRepository', 6)
+  mavenRepository = _messages.MessageField('MavenRepository', 7)
+  npmRepository = _messages.MessageField('NpmRepository', 8)
+  pythonRepository = _messages.MessageField('PythonRepository', 9)
+  remoteType = _messages.EnumField('RemoteTypeValueValuesEnum', 10)
+  upstreamCredentials = _messages.MessageField('UpstreamCredentials', 11)
+  yumRepository = _messages.MessageField('YumRepository', 12)
 
 
 class Repository(_messages.Message):
@@ -2401,6 +2436,10 @@ class Repository(_messages.Message):
       from deleting versions in this repository.
     createTime: Output only. The time when the repository was created.
     description: The user-provided description of the repository.
+    disallowUnspecifiedMode: Optional. If this is true, aunspecified repo type
+      will be treated as error. Is used for new repo types that don't have any
+      specific fields. Right now is used by AOSS team when creating repos for
+      customers.
     dockerConfig: Docker repository config contains repository level
       configuration for the repositories of docker type.
     format: Optional. The format of packages that are stored in the
@@ -2539,20 +2578,21 @@ class Repository(_messages.Message):
   cleanupPolicyDryRun = _messages.BooleanField(2)
   createTime = _messages.StringField(3)
   description = _messages.StringField(4)
-  dockerConfig = _messages.MessageField('DockerRepositoryConfig', 5)
-  format = _messages.EnumField('FormatValueValuesEnum', 6)
-  kmsKeyName = _messages.StringField(7)
-  labels = _messages.MessageField('LabelsValue', 8)
-  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 9)
-  mode = _messages.EnumField('ModeValueValuesEnum', 10)
-  name = _messages.StringField(11)
-  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 12)
-  satisfiesPzs = _messages.BooleanField(13)
-  sbomConfig = _messages.MessageField('SbomConfig', 14)
-  sizeBytes = _messages.IntegerField(15)
-  updateTime = _messages.StringField(16)
-  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 17)
-  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 18)
+  disallowUnspecifiedMode = _messages.BooleanField(5)
+  dockerConfig = _messages.MessageField('DockerRepositoryConfig', 6)
+  format = _messages.EnumField('FormatValueValuesEnum', 7)
+  kmsKeyName = _messages.StringField(8)
+  labels = _messages.MessageField('LabelsValue', 9)
+  mavenConfig = _messages.MessageField('MavenRepositoryConfig', 10)
+  mode = _messages.EnumField('ModeValueValuesEnum', 11)
+  name = _messages.StringField(12)
+  remoteRepositoryConfig = _messages.MessageField('RemoteRepositoryConfig', 13)
+  satisfiesPzs = _messages.BooleanField(14)
+  sbomConfig = _messages.MessageField('SbomConfig', 15)
+  sizeBytes = _messages.IntegerField(16)
+  updateTime = _messages.StringField(17)
+  virtualRepositoryConfig = _messages.MessageField('VirtualRepositoryConfig', 18)
+  vulnerabilityScanningConfig = _messages.MessageField('VulnerabilityScanningConfig', 19)
 
 
 class SbomConfig(_messages.Message):

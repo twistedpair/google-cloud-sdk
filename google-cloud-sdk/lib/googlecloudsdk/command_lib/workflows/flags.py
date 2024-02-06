@@ -186,6 +186,20 @@ def AddLoggingArg(parser):
   log_level.AddToParser(parser)
 
 
+def AddDisableOverflowBufferArg(parser):
+  """Adds an argument for determining whether to backlog the execution."""
+  parser.add_argument(
+      '--disable-concurrency-quota-overflow-buffering',
+      action='store_true',
+      default=False,
+      help=(
+          'If set, the execution will not be backlogged when the concurrency '
+          'quota is exhausted. Backlogged executions start when the '
+          'concurrency quota becomes available.'
+      ),
+  )
+
+
 def AddBetaLoggingArg(parser):
   """Adds argument for specifying the logging level for an execution."""
   log_level = base.ChoiceArgument(

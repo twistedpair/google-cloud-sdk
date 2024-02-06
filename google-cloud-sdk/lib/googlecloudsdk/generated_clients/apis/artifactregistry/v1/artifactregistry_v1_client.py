@@ -1072,6 +1072,33 @@ class ArtifactregistryV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a package.
+
+      Args:
+        request: (ArtifactregistryProjectsLocationsRepositoriesPackagesPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Package) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/repositories/{repositoriesId}/packages/{packagesId}',
+        http_method='PATCH',
+        method_id='artifactregistry.projects.locations.repositories.packages.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='package',
+        request_type_name='ArtifactregistryProjectsLocationsRepositoriesPackagesPatchRequest',
+        response_type_name='Package',
+        supports_download=False,
+    )
+
   class ProjectsLocationsRepositoriesPythonPackagesService(base_api.BaseApiService):
     """Service class for the projects_locations_repositories_pythonPackages resource."""
 

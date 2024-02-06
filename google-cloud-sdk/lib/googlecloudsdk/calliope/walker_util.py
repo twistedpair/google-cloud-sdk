@@ -27,6 +27,7 @@ from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import cli_tree
 from googlecloudsdk.calliope import markdown
 from googlecloudsdk.calliope import walker
+from googlecloudsdk.core import properties
 from googlecloudsdk.core.document_renderers import render_document
 from googlecloudsdk.core.util import files
 from googlecloudsdk.core.util import pkg_resources
@@ -149,12 +150,25 @@ class DevSiteGenerator(walker.Walker):
     # Render the DevSite document.
     path = os.path.join(
         directory, 'index' if is_group else command[-1]) + '.html'
+
+    # Currently, devsite pages from GDU are automatically mirrored to all other
+    # universes. To display Universe Disclaimer Information section correctly on
+    # all universes after mirroring, temporarily override universe_domain
+    # property to force the info section generated in devsite pages.
+    universe_domain = None
+    if properties.VALUES.core.universe_domain.IsExplicitlySet():
+      universe_domain = properties.VALUES.core.universe_domain.Get()
+    properties.VALUES.core.universe_domain.Set('universe')
+
     with files.FileWriter(path) as f:
       md = markdown.Markdown(node)
       render_document.RenderDocument(style='devsite',
                                      title=' '.join(command),
                                      fin=io.StringIO(md),
                                      out=f, command_node=node)
+
+    # reset universe_domain
+    properties.VALUES.core.universe_domain.Set(universe_domain)
     _UpdateTOC()
     return parent
 

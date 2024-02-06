@@ -198,7 +198,12 @@ def RunSqlImportCommand(args, client):
     or else None.
   """
   sql_import_context = import_util.SqlImportContext(
-      client.sql_messages, args.uri, args.database, args.user
+      client.sql_messages,
+      args.uri,
+      args.database,
+      args.user,
+      parallel=args.parallel,
+      threads=args.threads,
   )
   return RunImportCommand(args, client, sql_import_context)
 

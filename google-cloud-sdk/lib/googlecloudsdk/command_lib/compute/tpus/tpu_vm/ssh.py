@@ -686,7 +686,7 @@ def PrepareNodeForSSH(
         instance_enable_oslogin=TpuHasOsLoginEnabled(node),
         messages=base_classes.ComputeApiHolder(release_track).client.messages,
     )
-    user = oslogin_state.user
+    prepped_node.user = user = oslogin_state.user
 
   # Format the key correctly.
   public_key = '{1}:{0} {1}'.format(public_key, user)
@@ -1005,7 +1005,7 @@ def PrepareNodeForSCP(
         instance_enable_oslogin=TpuHasOsLoginEnabled(node),
         messages=base_classes.ComputeApiHolder(release_track).client.messages,
     )
-    remote.user = oslogin_state.user
+    prepped_node.user = remote.user = oslogin_state.user
 
   # Format the key correctly.
   public_key = '{1}:{0} {1}'.format(public_key, remote.user)

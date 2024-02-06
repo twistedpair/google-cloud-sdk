@@ -160,7 +160,7 @@ def AddHost(parser):
   )
 
 
-def AddAvailabilityType(parser):
+def AddAvailabilityType(parser, hidden=False):
   """Add the '--availability-type' flag to the parser."""
   availabilty_type_flag = base.ChoiceArgument(
       '--availability-type',
@@ -174,6 +174,7 @@ def AddAvailabilityType(parser):
           'zonal': 'Provides no failover capability. This is the default.',
       },
       help_str='Specifies level of availability.',
+      hidden=hidden,
   )
   availabilty_type_flag.AddToParser(parser)
 
@@ -182,10 +183,13 @@ def AddPassword(parser):
   parser.add_argument('--password', help="Cloud SQL user's password.")
 
 
-def AddRootPassword(parser):
+def AddRootPassword(parser, hidden=False):
   """Add the root password field to the parser."""
   parser.add_argument(
-      '--root-password', required=False, help="Root Cloud SQL user's password."
+      '--root-password',
+      required=False,
+      help="Root Cloud SQL user's password.",
+      hidden=hidden,
   )
 
 
@@ -217,12 +221,13 @@ def AddType(parser):
 # Instance create and patch flags
 
 
-def AddActivationPolicy(parser):
+def AddActivationPolicy(parser, hidden=False):
   base.ChoiceArgument(
       '--activation-policy',
       required=False,
       choices=['always', 'never'],
       default=None,
+      hidden=hidden,
       help_str=(
           'Activation policy for this instance. This specifies when '
           'the instance should be activated and is applicable only when '
@@ -233,7 +238,7 @@ def AddActivationPolicy(parser):
   ).AddToParser(parser)
 
 
-def AddAssignIp(parser):
+def AddAssignIp(parser, hidden=False):
   parser.add_argument(
       '--assign-ip',
       help=(
@@ -241,11 +246,14 @@ def AddAssignIp(parser):
           ' externally available IPv4 address that you can use to connect to'
           ' your instance when properly authorized.'
       ),
+      hidden=hidden,
       action=arg_parsers.StoreTrueFalseAction,
   )
 
 
-def AddEnableGooglePrivatePath(parser, show_negated_in_help=False):
+def AddEnableGooglePrivatePath(
+    parser, show_negated_in_help=False, hidden=False
+):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--enable-google-private-path',
@@ -257,6 +265,7 @@ def AddEnableGooglePrivatePath(parser, show_negated_in_help=False):
           'This is only applicable to MySQL and PostgreSQL instances that '
           "don't use public IP. Currently, SQL Server isn't supported."
       ),
+      hidden=hidden,
       **kwargs
   )
 
@@ -280,7 +289,7 @@ def AddAuthorizedGAEApps(parser, update=False):
   )
 
 
-def AddAuthorizedNetworks(parser, update=False):
+def AddAuthorizedNetworks(parser, update=False, hidden=False):
   """Adds the `--authorized-networks` flag."""
   cidr_validator = arg_parsers.RegexpValidator(
       _CIDR_REGEX,
@@ -305,10 +314,11 @@ def AddAuthorizedNetworks(parser, update=False):
       required=False,
       default=[],
       help=help_,
+      hidden=hidden,
   )
 
 
-def AddBackupStartTime(parser):
+def AddBackupStartTime(parser, hidden=False):
   parser.add_argument(
       '--backup-start-time',
       required=False,
@@ -316,21 +326,38 @@ def AddBackupStartTime(parser):
           'Start time of daily backups, specified in the HH:MM format, in '
           'the UTC timezone.'
       ),
+      hidden=hidden,
   )
 
 
-def AddBackupLocation(parser, allow_empty):
+def AddBackupLocation(parser, allow_empty, hidden=False):
   help_text = (
       'Choose where to store your backups. Backups are stored in the closest '
       'multi-region location to you by default. Only customize if needed.'
   )
   if allow_empty:
     help_text += ' Specify empty string to revert to default.'
-  parser.add_argument('--backup-location', required=False, help=help_text)
+  parser.add_argument(
+      '--backup-location',
+      required=False,
+      help=help_text,
+      hidden=hidden,
+  )
+
+
+def AddBackup(parser, hidden=False):
+  parser.add_argument(
+      '--backup',
+      required=False,
+      action='store_true',
+      default=True,
+      hidden=hidden,
+      help='Enables daily backup.',
+  )
 
 
 # Currently, MAX_BACKUP_RETENTION_COUNT=365, and MIN_BACKUP_RETENTION_COUNT=1.
-def AddRetainedBackupsCount(parser):
+def AddRetainedBackupsCount(parser, hidden=False):
   help_text = (
       'How many backups to keep. The valid range is between 1 and 365. '
       'Default value is 7 for Enterprise edition instances. For '
@@ -341,12 +368,13 @@ def AddRetainedBackupsCount(parser):
       '--retained-backups-count',
       type=arg_parsers.BoundedInt(1, 365, unlimited=False),
       help=help_text,
+      hidden=hidden,
   )
 
 
 # Currently, MAX_TRANSACTION_LOG_RETENTION_DAYS=35, and
 # MIN_TRANSACTION_LOG_RETENTION_DAYS=1.
-def AddRetainedTransactionLogDays(parser):
+def AddRetainedTransactionLogDays(parser, hidden=False):
   help_text = (
       'How many days of transaction logs to keep. The valid range is between '
       '1 and 35. Only use this option when point-in-time recovery is enabled. '
@@ -360,10 +388,11 @@ def AddRetainedTransactionLogDays(parser):
       '--retained-transaction-log-days',
       type=arg_parsers.BoundedInt(1, 35, unlimited=False),
       help=help_text,
+      hidden=hidden,
   )
 
 
-def AddDatabaseFlags(parser, update=False):
+def AddDatabaseFlags(parser, update=False, hidden=False):
   """Adds the `--database-flags` flag."""
   help_ = (
       'Comma-separated list of database flags to set on the '
@@ -384,6 +413,7 @@ def AddDatabaseFlags(parser, update=False):
       metavar='FLAG=VALUE',
       required=False,
       help=help_,
+      hidden=hidden,
   )
 
 
@@ -450,7 +480,7 @@ def AddDatabaseVersion(
   )
 
 
-def AddCPU(parser):
+def AddCPU(parser, hidden=False):
   parser.add_argument(
       '--cpu',
       type=int,
@@ -461,6 +491,7 @@ def AddCPU(parser):
           'custom machine type is desired, and the --tier flag must be '
           'omitted.'
       ),
+      hidden=hidden,
   )
 
 
@@ -473,17 +504,18 @@ def _GetKwargsForBoolFlag(show_negated_in_help):
     return {'action': 'store_true', 'default': None}
 
 
-def AddInstanceCollation(parser):
+def AddInstanceCollation(parser, hidden=False):
   parser.add_argument(
       '--collation',
       help=(
           'Cloud SQL server-level collation setting, which specifies '
           'the set of rules for comparing characters in a character set.'
       ),
+      hidden=hidden,
   )
 
 
-def AddEnableBinLog(parser, show_negated_in_help=False):
+def AddEnableBinLog(parser, show_negated_in_help=False, hidden=False):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--enable-bin-log',
@@ -493,11 +525,14 @@ def AddEnableBinLog(parser, show_negated_in_help=False):
           'fraction of a second. Must have automatic backups enabled to use. '
           'Make sure storage can support at least 7 days of logs.'
       ),
+      hidden=hidden,
       **kwargs
   )
 
 
-def AddEnablePointInTimeRecovery(parser, show_negated_in_help=False):
+def AddEnablePointInTimeRecovery(
+    parser, show_negated_in_help=False, hidden=False
+):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--enable-point-in-time-recovery',
@@ -508,6 +543,7 @@ def AddEnablePointInTimeRecovery(parser, show_negated_in_help=False):
           'backups enabled to use. Make sure storage can support at least 7 '
           'days of logs.'
       ),
+      hidden=hidden,
       **kwargs
   )
 
@@ -631,6 +667,59 @@ def AddFailoverFlag(parser, show_negated_in_help=True):
   )
 
 
+def AddFailoverReplicaName(parser, hidden=False):
+  parser.add_argument(
+      '--failover-replica-name',
+      required=False,
+      hidden=hidden,
+      help='Also create a failover replica with the specified name.',
+  )
+
+
+def AddMasterInstanceName(parser, hidden=False):
+  parser.add_argument(
+      '--master-instance-name',
+      required=False,
+      hidden=hidden,
+      help=(
+          'Name of the instance which will act as master in the '
+          'replication setup. The newly created instance will be a read '
+          'replica of the specified master instance.'
+      ),
+  )
+
+
+def AddStorageType(parser, hidden=False):
+  parser.add_argument(
+      '--storage-type',
+      required=False,
+      choices=['SSD', 'HDD'],
+      default=None,
+      hidden=hidden,
+      help='The storage type for the instance. The default is SSD.',
+  )
+
+
+def AddReplicaType(parser, hidden=False):
+  parser.add_argument(
+      '--replica-type',
+      choices=['READ', 'FAILOVER'],
+      hidden=hidden,
+      help='The type of replica to create.',
+  )
+
+
+def AddRequireSsl(parser, hidden=False):
+  parser.add_argument(
+      '--require-ssl',
+      required=False,
+      action='store_true',
+      default=None,
+      hidden=hidden,
+      help='Specified if users connecting over IP must use SSL.',
+  )
+
+
 def AddFollowGAEApp(parser):
   parser.add_argument(
       '--follow-gae-app',
@@ -643,7 +732,7 @@ def AddFollowGAEApp(parser):
   )
 
 
-def AddMaintenanceReleaseChannel(parser):
+def AddMaintenanceReleaseChannel(parser, hidden=False):
   base.ChoiceArgument(
       '--maintenance-release-channel',
       choices={
@@ -670,67 +759,76 @@ def AddMaintenanceReleaseChannel(parser):
           'window. If not specified, Cloud SQL chooses the timing of '
           'updates to your instance.'
       ),
+      hidden=hidden,
   ).AddToParser(parser)
 
 
-def AddMaintenanceWindowDay(parser):
+def AddMaintenanceWindowDay(parser, hidden=False):
   parser.add_argument(
       '--maintenance-window-day',
       choices=arg_parsers.DayOfWeek.DAYS,
       type=arg_parsers.DayOfWeek.Parse,
       help='Day of week for maintenance window, in UTC time zone.',
+      hidden=hidden,
   )
 
 
-def AddMaintenanceWindowHour(parser):
+def AddMaintenanceWindowHour(parser, hidden=False):
   parser.add_argument(
       '--maintenance-window-hour',
       type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=23),
       help='Hour of day for maintenance window, in UTC time zone.',
+      hidden=hidden,
   )
 
 
-def AddDenyMaintenancePeriodStartDate(parser):
+def AddDenyMaintenancePeriodStartDate(parser, hidden=False):
   parser.add_argument(
       '--deny-maintenance-period-start-date',
       help=(
           'Date when the deny maintenance period begins, that is'
           " ``2020-11-01''."
       ),
+      hidden=hidden,
   )
 
 
-def AddDenyMaintenancePeriodEndDate(parser):
+def AddDenyMaintenancePeriodEndDate(parser, hidden=False):
   parser.add_argument(
       '--deny-maintenance-period-end-date',
       help=(
           "Date when the deny maintenance period ends, that is ``2021-01-10''."
       ),
+      hidden=hidden,
   )
 
 
-def AddDenyMaintenancePeriodTime(parser):
+def AddDenyMaintenancePeriodTime(parser, hidden=False):
   parser.add_argument(
       '--deny-maintenance-period-time',
       help=(
           'Time when the deny maintenance period starts or ends, that is'
           " ``05:00:00''."
       ),
+      hidden=hidden,
   )
 
 
-def AddInsightsConfigQueryInsightsEnabled(parser, show_negated_in_help=False):
+def AddInsightsConfigQueryInsightsEnabled(
+    parser, show_negated_in_help=False, hidden=False
+):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--insights-config-query-insights-enabled',
       required=False,
       help="""Enable query insights feature to provide query and query plan
         analytics.""",
+      hidden=hidden,
       **kwargs
   )
 
 
-def AddInsightsConfigQueryStringLength(parser):
+def AddInsightsConfigQueryStringLength(parser, hidden=False):
   parser.add_argument(
       '--insights-config-query-string-length',
       required=False,
@@ -738,42 +836,50 @@ def AddInsightsConfigQueryStringLength(parser):
       help="""Query string length in bytes to be stored by the query insights
         feature. Default length is 1024 bytes. Allowed range: 256 to 4500
         bytes.""",
+      hidden=hidden,
   )
 
 
-def AddInsightsConfigRecordApplicationTags(parser, show_negated_in_help=False):
+def AddInsightsConfigRecordApplicationTags(
+    parser, show_negated_in_help=False, hidden=False
+):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--insights-config-record-application-tags',
       required=False,
       help="""Allow application tags to be recorded by the query insights
         feature.""",
+      hidden=hidden,
       **kwargs
   )
 
 
-def AddInsightsConfigRecordClientAddress(parser, show_negated_in_help=False):
+def AddInsightsConfigRecordClientAddress(
+    parser, show_negated_in_help=False, hidden=False
+):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--insights-config-record-client-address',
       required=False,
       help="""Allow the client address to be recorded by the query insights
         feature.""",
+      hidden=hidden,
       **kwargs
   )
 
 
-def AddInsightsConfigQueryPlansPerMinute(parser):
+def AddInsightsConfigQueryPlansPerMinute(parser, hidden=False):
   parser.add_argument(
       '--insights-config-query-plans-per-minute',
       required=False,
       type=arg_parsers.BoundedInt(lower_bound=0, upper_bound=20),
       help="""Number of query plans to sample every minute.
         Default value is 5. Allowed range: 0 to 20.""",
+      hidden=hidden,
   )
 
 
-def AddMemory(parser):
+def AddMemory(parser, hidden=False):
   parser.add_argument(
       '--memory',
       type=arg_parsers.BinarySize(),
@@ -785,10 +891,11 @@ def AddMemory(parser):
           'and --memory must be specified if a custom machine type is '
           'desired, and the --tier flag must be omitted.'
       ),
+      hidden=hidden,
   )
 
 
-def AddNetwork(parser):
+def AddNetwork(parser, hidden=False):
   """Adds the `--network` flag to the parser."""
   parser.add_argument(
       '--network',
@@ -801,6 +908,7 @@ def AddNetwork(parser):
           '`--network`=`projects/testproject/global/networks/'
           'testsharednetwork`'
       ),
+      hidden=hidden,
   )
 
 
@@ -841,7 +949,7 @@ def AddSimulateMaintenanceEvent(parser):
   )
 
 
-def AddSqlServerAudit(parser):
+def AddSqlServerAudit(parser, hidden=False):
   """Adds SQL Server audit related flags to the parser."""
   parser.add_argument(
       '--audit-bucket-path',
@@ -851,6 +959,7 @@ def AddSqlServerAudit(parser):
           'uploaded. The URI is in the form gs://bucketName/folderName. Only '
           'available for SQL Server instances.'
       ),
+      hidden=hidden,
   )
 
   parser.add_argument(
@@ -862,6 +971,7 @@ def AddSqlServerAudit(parser):
           'The number of days for audit log retention on disk, for example, 3d'
           'for 3 days. Only available for SQL Server instances.'
       ),
+      hidden=hidden,
   )
 
   parser.add_argument(
@@ -873,10 +983,11 @@ def AddSqlServerAudit(parser):
           'How often to upload audit logs (audit files), for example, 30m'
           'for 30 minutes. Only available for SQL Server instances.'
       ),
+      hidden=hidden,
   )
 
 
-def AddReplication(parser):
+def AddReplication(parser, hidden=False):
   base.ChoiceArgument(
       '--replication',
       required=False,
@@ -885,10 +996,11 @@ def AddReplication(parser):
       help_str=(
           'Type of replication this instance uses. The default is synchronous.'
       ),
+      hidden=hidden,
   ).AddToParser(parser)
 
 
-def AddStorageAutoIncrease(parser, show_negated_in_help=True):
+def AddStorageAutoIncrease(parser, show_negated_in_help=True, hidden=False):
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--storage-auto-increase',
@@ -901,11 +1013,12 @@ def AddStorageAutoIncrease(parser, show_negated_in_help=True):
           'it can result in the instance going offline, dropping existing '
           'connections. This setting is enabled by default.'
       ),
+      hidden=hidden,
       **kwargs
   )
 
 
-def AddStorageSize(parser):
+def AddStorageSize(parser, hidden=False):
   parser.add_argument(
       '--storage-size',
       type=arg_parsers.BinarySize(
@@ -919,6 +1032,7 @@ def AddStorageSize(parser):
           'limits can be found here: '
           'https://cloud.google.com/sql/docs/quotas#storage_limits'
       ),
+      hidden=hidden,
   )
 
 
@@ -938,7 +1052,7 @@ def AddStorageSizeForStorageShrink(parser):
   )
 
 
-def AddTier(parser, is_patch=False):
+def AddTier(parser, is_patch=False, hidden=False):
   """Adds '--tier' flag to the parser."""
   help_text = (
       "Machine type for a shared-core instance e.g. ``db-g1-small''. "
@@ -951,10 +1065,12 @@ def AddTier(parser, is_patch=False):
   if is_patch:
     help_text += ' WARNING: Instance will be restarted.'
 
-  parser.add_argument('--tier', '-t', required=False, help=help_text)
+  parser.add_argument(
+      '--tier', '-t', required=False, help=help_text, hidden=hidden
+  )
 
 
-def AddEdition(parser):
+def AddEdition(parser, hidden=False):
   """Adds '-edition-' flag to the parser."""
   edition_flag = base.ChoiceArgument(
       '--edition',
@@ -962,11 +1078,12 @@ def AddEdition(parser):
       choices=['enterprise', 'enterprise-plus'],
       default=None,
       help_str='Specifies the edition of Cloud SQL instance.',
+      hidden=hidden,
   )
   edition_flag.AddToParser(parser)
 
 
-def AddZone(parser, help_text):
+def AddZone(parser, help_text, hidden=False):
   """Adds the mutually exclusive `--gce-zone` and `--zone` to the parser."""
   zone_group = parser.add_mutually_exclusive_group()
   zone_group.add_argument(
@@ -981,16 +1098,19 @@ def AddZone(parser, help_text):
           ),
       ),
       help=help_text,
+      hidden=hidden,
   )
 
-  AddZonesPrimarySecondary(zone_group, help_text)
+  AddZonesPrimarySecondary(zone_group, help_text, hidden=hidden)
 
 
-def AddZonesPrimarySecondary(parser, help_text):
+def AddZonesPrimarySecondary(parser, help_text, hidden=False):
   """Adds the `--zone` and `--secondary-zone` to the parser."""
 
-  zone_group = parser.add_group(required=False)
-  zone_group.add_argument('--zone', required=False, help=help_text)
+  zone_group = parser.add_group(required=False, hidden=hidden)
+  zone_group.add_argument(
+      '--zone', required=False, help=help_text, hidden=hidden
+  )
   zone_group.add_argument(
       '--secondary-zone',
       required=False,
@@ -998,33 +1118,40 @@ def AddZonesPrimarySecondary(parser, help_text):
           'Preferred secondary Compute Engine zone '
           '(e.g. us-central1-a, us-central1-b, etc.).'
       ),
+      hidden=hidden,
   )
 
 
-def AddRegion(parser):
+def AddRegion(parser, hidden=False, specify_default_region=True):
   parser.add_argument(
       '--region',
       required=False,
-      default='us-central',
+      default='us-central' if specify_default_region else None,
       help=(
           'Regional location (e.g. asia-east1, us-east1). See the full '
           'list of regions at '
           'https://cloud.google.com/sql/docs/instance-locations.'
       ),
+      hidden=hidden,
   )
 
 
 # TODO(b/31989340): add remote completion
 # TODO(b/73362371): Make specifying a location required.
-def AddLocationGroup(parser):
-  location_group = parser.add_mutually_exclusive_group()
-  AddRegion(location_group)
+def AddLocationGroup(parser, hidden=False, specify_default_region=True):
+  location_group = parser.add_mutually_exclusive_group(hidden=hidden)
+  AddRegion(
+      location_group,
+      hidden=hidden,
+      specify_default_region=specify_default_region,
+  )
   AddZone(
       location_group,
       help_text=(
           'Preferred Compute Engine zone (e.g. us-central1-a, '
           'us-central1-b, etc.).'
       ),
+      hidden=hidden,
   )
 
 
@@ -1087,6 +1214,31 @@ def AddOffloadArgument(parser):
           'on source instances and allows other operations to be performed '
           'while the export is in progress.'
       ),
+  )
+
+
+def AddParallelArgument(parser, operation):
+  """Add the 'parallel' argument to the parser."""
+  parser.add_argument(
+      '--parallel',
+      action='store_true',
+      help=(
+          'Perform a parallel {operation}. This flag is only applicable to'
+          ' MySQL and Postgres.'
+      ).format(operation=operation),
+  )
+
+
+def AddThreadsArgument(parser, operation):
+  """Add the 'threads' argument to the parser."""
+  parser.add_argument(
+      '--threads',
+      type=arg_parsers.BoundedInt(unlimited=True),
+      help=(
+          'Specifies the number of threads to use for the parallel {operation}.'
+          ' If `--parallel` is specified and this flag is not provided, Cloud'
+          ' SQL uses a default thread count to optimize performance.'
+      ).format(operation=operation),
   )
 
 
@@ -1454,18 +1606,22 @@ def AddBackupRunId(parser):
   )
 
 
-def AddBackupId(parser):
+def AddBackupId(
+    parser,
+    help_text=(
+        'The ID of the backup run. To find the ID, run the following command: '
+        '$ gcloud sql backups list -i {instance}.'
+    ),
+):
   """Add the flag for the ID of the backup run.
 
   Args:
     parser: The current argparse parser to which to add this.
+    help_text: The help text to display.
   """
   parser.add_argument(
       'id',
-      help=(
-          'The ID of the backup run. To find the ID, run the following command:'
-          ' $ gcloud sql backups list -i {instance}.'
-      ),
+      help=help_text,
   )
 
 
@@ -1477,19 +1633,24 @@ def AddProjectLevelBackupEndpoint(parser):
   """
   parser.add_argument(
       '--project-level',
-      type=bool,
       hidden=True,
       required=False,
       default=False,
-      help='Use project level backup endpoint or not.',
+      action='store_true',
+      help=(
+          "If true, then invoke project level backup endpoint. Use 'Name' as"
+          " the value for backup ID. You can find the 'Name' by running $"
+          ' gcloud sql backups list --project-level.'
+      ),
   )
 
 
-def AddPasswordPolicyMinLength(parser):
+def AddPasswordPolicyMinLength(parser, hidden=False):
   """Add the flag to specify password policy min length.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   parser.add_argument(
       '--password-policy-min-length',
@@ -1497,14 +1658,16 @@ def AddPasswordPolicyMinLength(parser):
       required=False,
       default=None,
       help='Minimum number of characters allowed in the password.',
+      hidden=hidden,
   )
 
 
-def AddPasswordPolicyComplexity(parser):
+def AddPasswordPolicyComplexity(parser, hidden=False):
   """Add the flag to specify password policy complexity.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   parser.add_argument(
       '--password-policy-complexity',
@@ -1524,14 +1687,16 @@ def AddPasswordPolicyComplexity(parser):
           'The complexity of the password. This flag is available only for'
           ' PostgreSQL.'
       ),
+      hidden=hidden,
   )
 
 
-def AddPasswordPolicyReuseInterval(parser):
+def AddPasswordPolicyReuseInterval(parser, hidden=False):
   """Add the flag to specify password policy reuse interval.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   parser.add_argument(
       '--password-policy-reuse-interval',
@@ -1542,32 +1707,36 @@ def AddPasswordPolicyReuseInterval(parser):
           'Number of previous passwords that cannot be reused. The valid range'
           ' is 0 to 100.'
       ),
+      hidden=hidden,
   )
 
 
 def AddPasswordPolicyDisallowUsernameSubstring(
-    parser, show_negated_in_help=True
+    parser, show_negated_in_help=True, hidden=False
 ):
   """Add the flag to specify password policy disallow username as substring.
 
   Args:
     parser: The current argparse parser to add this to.
     show_negated_in_help: Show nagative action in help.
+    hidden: if the field needs to be hidden.
   """
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
       '--password-policy-disallow-username-substring',
       required=False,
       help='Disallow username as a part of the password.',
+      hidden=hidden,
       **kwargs
   )
 
 
-def AddPasswordPolicyPasswordChangeInterval(parser):
+def AddPasswordPolicyPasswordChangeInterval(parser, hidden=False):
   """Add the flag to specify password policy password change interval.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   parser.add_argument(
       '--password-policy-password-change-interval',
@@ -1580,15 +1749,19 @@ def AddPasswordPolicyPasswordChangeInterval(parser):
         $ gcloud topic datetimes</a> for information on duration formats.
         This flag is available only for PostgreSQL.
       """,
+      hidden=hidden,
   )
 
 
-def AddPasswordPolicyEnablePasswordPolicy(parser, show_negated_in_help=False):
+def AddPasswordPolicyEnablePasswordPolicy(
+    parser, show_negated_in_help=False, hidden=False
+):
   """Add the flag to enable password policy.
 
   Args:
     parser: The current argparse parser to add this to.
     show_negated_in_help: Show nagative action in help.
+    hidden: if the field needs to be hidden.
   """
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
@@ -1598,6 +1771,7 @@ def AddPasswordPolicyEnablePasswordPolicy(parser, show_negated_in_help=False):
         Enable the password policy, which enforces user password management with
         the policies configured for the instance. This flag is only available for Postgres.
       """,
+      hidden=hidden,
       **kwargs
   )
 
@@ -1736,7 +1910,7 @@ def AddUserDiscardDualPassword(parser):
   )
 
 
-def AddSqlServerTimeZone(parser):
+def AddSqlServerTimeZone(parser, hidden=False):
   """Adds the `--time-zone` flag to the parser."""
   parser.add_argument(
       '--time-zone',
@@ -1745,10 +1919,11 @@ def AddSqlServerTimeZone(parser):
           'Set a non-default time zone. '
           'Only available for SQL Server instances.'
       ),
+      hidden=hidden,
   )
 
 
-def AddThreadsPerCore(parser):
+def AddThreadsPerCore(parser, hidden=False):
   """Adds the `--threads-per-core` flag to the parser."""
   parser.add_argument(
       '--threads-per-core',
@@ -1758,6 +1933,7 @@ def AddThreadsPerCore(parser):
         The number of threads per core. The value of this flag can be 1 or 2.
         To disable SMT, set this flag to 1. Only available in Cloud SQL for SQL Server instances.
       """,
+      hidden=hidden,
   )
 
 
@@ -1922,38 +2098,46 @@ def AddShowEdition(parser):
   )
 
 
-def AddActiveDirectoryDomain(parser):
+def AddActiveDirectoryDomain(parser, hidden=False):
   """Adds the '--active-directory-domain' flag to the parser.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   help_text = (
       'Managed Service for Microsoft Active Directory domain this instance is '
       'joined to. Only available for SQL Server instances.'
   )
-  parser.add_argument('--active-directory-domain', help=help_text)
+  parser.add_argument(
+      '--active-directory-domain',
+      help=help_text,
+      hidden=hidden,
+  )
 
 
-def AddDeletionProtection(parser):
+def AddDeletionProtection(parser, hidden=False):
   """Adds the '--deletion-protection' flag to the parser for instances patch action.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   help_text = 'Enable deletion protection on a Cloud SQL instance.'
   parser.add_argument(
       '--deletion-protection',
       action=arg_parsers.StoreTrueFalseAction,
       help=help_text,
+      hidden=hidden,
   )
 
 
-def AddConnectorEnforcement(parser):
+def AddConnectorEnforcement(parser, hidden=False):
   """Adds the '--connector-enforcement' flag to the parser.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   help_text = (
       'Cloud SQL Connector enforcement mode. It determines how Cloud SQL '
@@ -1977,6 +2161,7 @@ def AddConnectorEnforcement(parser):
       required=False,
       default=None,
       help=help_text,
+      hidden=hidden,
   )
 
 
@@ -1984,6 +2169,7 @@ def AddTimeout(
     parser,
     default_max_wait,
     help_text='Time to synchronously wait for the operation to complete, after which the operation continues asynchronously. Ignored if --async flag is specified. By default, set to 3600s. To wait indefinitely, set to *unlimited*.',
+    hidden=False,
 ):
   """Adds --timeout flag."""
   parser.add_argument(
@@ -1992,10 +2178,11 @@ def AddTimeout(
       default=default_max_wait,
       help=help_text,
       type=arg_parsers.BoundedInt(lower_bound=0, unlimited=True),
+      hidden=hidden,
   )
 
 
-def AddEnablePrivateServiceConnect(parser):
+def AddEnablePrivateServiceConnect(parser, hidden=False):
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
       '--enable-private-service-connect',
@@ -2004,11 +2191,12 @@ def AddEnablePrivateServiceConnect(parser):
           'When the flag is set, a Cloud SQL instance will be created with '
           'Private Service Connect enabled.'
       ),
+      hidden=hidden,
       **kwargs
   )
 
 
-def AddAllowedPscProjects(parser):
+def AddAllowedPscProjects(parser, hidden=False):
   parser.add_argument(
       '--allowed-psc-projects',
       type=arg_parsers.ArgList(min_length=1),
@@ -2020,6 +2208,7 @@ def AddAllowedPscProjects(parser):
           ' (alphanumeric). This allows Private Service Connect connections to'
           ' be established from specified consumer projects.'
       ),
+      hidden=hidden,
   )
 
 
@@ -2037,7 +2226,7 @@ def AddClearAllowedPscProjects(parser):
   )
 
 
-def AddRecreateReplicasOnPrimaryCrash(parser):
+def AddRecreateReplicasOnPrimaryCrash(parser, hidden=False):
   """Adds --recreate-replicas-on-primary-crash flag."""
   parser.add_argument(
       '--recreate-replicas-on-primary-crash',
@@ -2050,6 +2239,7 @@ def AddRecreateReplicasOnPrimaryCrash(parser):
           'and is enabled by default.'
       ),
       action=arg_parsers.StoreTrueFalseAction,
+      hidden=hidden,
   )
 
 
@@ -2068,7 +2258,7 @@ def AddUpgradeSqlNetworkArchitecture(parser):
   )
 
 
-def AddCascadableReplica(parser):
+def AddCascadableReplica(parser, hidden=False):
   """Adds --cascadable-replica flag."""
   kwargs = _GetKwargsForBoolFlag(False)
   parser.add_argument(
@@ -2081,11 +2271,12 @@ def AddCascadableReplica(parser):
           ' `--master-instance-name` flag is set, and the replica under'
           ' creation is in a different region than the primary instance.'
       ),
+      hidden=hidden,
       **kwargs
   )
 
 
-def AddEnableDataCache(parser, show_negated_in_help=False):
+def AddEnableDataCache(parser, show_negated_in_help=False, hidden=False):
   """Adds '--enable-data-cache' flag to the parser."""
   kwargs = _GetKwargsForBoolFlag(show_negated_in_help)
   parser.add_argument(
@@ -2095,6 +2286,7 @@ def AddEnableDataCache(parser, show_negated_in_help=False):
           'Enable use of data cache for accelerated read performance. This flag'
           ' is only available for Enterprise_Plus edition instances.'
       ),
+      hidden=hidden,
       **kwargs
   )
 
@@ -2118,11 +2310,12 @@ def AddReplicationLagMaxSecondsForRecreate(parser):
           'Max value=31536000 seconds.'))
 
 
-def AddSslMode(parser):
+def AddSslMode(parser, hidden=False):
   """Adds the '--ssl-mode' flag to the parser.
 
   Args:
     parser: The current argparse parser to add this to.
+    hidden: if the field needs to be hidden.
   """
   help_text = 'Set the SSL mode of the instance.'
   parser.add_argument(
@@ -2141,6 +2334,7 @@ def AddSslMode(parser):
       required=False,
       default=None,
       help=help_text,
+      hidden=hidden,
   )
 
 

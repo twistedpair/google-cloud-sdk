@@ -683,12 +683,7 @@ class ServerlessOperations(object):
     )
 
     if not asyn:
-      # no wait if there was effectively no actual change
-      if (
-          serv is not None
-          and updated_serv.operation_id is not None
-          and serv.operation_id == updated_serv.operation_id
-      ):
+      if updated_serv.conditions.IsReady():
         return updated_serv
 
       getter = (
@@ -858,12 +853,7 @@ class ServerlessOperations(object):
         )
 
     if not asyn and not dry_run:
-      # no wait if there was effectively no actual change
-      if (
-          serv is not None
-          and serv.operation_id is not None
-          and serv.operation_id == updated_service.operation_id
-      ):
+      if updated_service.conditions.IsReady():
         return updated_service
 
       getter = (

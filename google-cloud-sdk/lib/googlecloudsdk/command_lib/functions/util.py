@@ -20,14 +20,14 @@ from __future__ import unicode_literals
 
 import abc
 import re
+from typing import Any
 
 from googlecloudsdk.api_lib.functions.v1 import util as api_util_v1
 from googlecloudsdk.api_lib.functions.v2 import client as client_v2
 from googlecloudsdk.calliope import base
 from googlecloudsdk.calliope import parser_extensions
 from googlecloudsdk.command_lib.functions import flags
-
-import six  # pylint: disable=unused-import # Somehow Pylint complains :(
+import six
 
 
 class FunctionResourceCommand(six.with_metaclass(abc.ABCMeta, base.Command)):
@@ -36,7 +36,7 @@ class FunctionResourceCommand(six.with_metaclass(abc.ABCMeta, base.Command)):
   Which version of the command to run is determined by the following precedence:
   1. Explicit setting via the --gen2/--no-gen2 flags or functions/gen2 property.
   2. The generation of the function if it exists.
-  2. The v1 API by default.
+  2. The v1 API by default in GA, the v2 API in Beta/Alpha.
 
   Subclasses should add the function resource arg and --gen2 flag.
   """
@@ -46,18 +46,15 @@ class FunctionResourceCommand(six.with_metaclass(abc.ABCMeta, base.Command)):
     self._v2_function = None
 
   @abc.abstractmethod
-  def _RunV1(self, args):
-    # type: (parser_extensions.Namespace) -> Any
+  def _RunV1(self, args: parser_extensions.Namespace) -> Any:
     """Runs the command against the v1 API."""
 
   @abc.abstractmethod
-  def _RunV2(self, args):
-    # type: (parser_extensions.Namespace) -> Any
+  def _RunV2(self, args: parser_extensions.Namespace) -> Any:
     """Runs the command against the v2 API."""
 
   @api_util_v1.CatchHTTPErrorRaiseHTTPException
-  def Run(self, args):
-    # type: (parser_extensions.Namespace) -> Any
+  def Run(self, args: parser_extensions.Namespace) -> Any:
     """Runs the command.
 
     Args:
@@ -80,10 +77,17 @@ class FunctionResourceCommand(six.with_metaclass(abc.ABCMeta, base.Command)):
         args.CONCEPTS.name.Parse().RelativeName()
     )
 
-    if self._v2_function and str(self._v2_function.environment) == 'GEN_2':
-      return self._RunV2(args)
+    if self._v2_function:
+      if str(self._v2_function.environment) == 'GEN_2':
+        return self._RunV2(args)
+      else:
+        return self._RunV1(args)
 
-    return self._RunV1(args)
+    # TODO(b/286788716): Call v2 by default for functions not found in GA track
+    if self.ReleaseTrack() == base.ReleaseTrack.GA:
+      return self._RunV1(args)
+
+    return self._RunV2(args)
 
 
 def FormatTimestamp(timestamp):

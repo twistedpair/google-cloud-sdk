@@ -20,6 +20,8 @@ from __future__ import unicode_literals
 
 from googlecloudsdk.core import exceptions
 
+HTTP_ERROR_FORMAT = 'Status code: {status_code}. {status_message}.'
+
 
 class ParserError(exceptions.Error):
   """Error parsing JSON into a dictionary."""
@@ -43,8 +45,9 @@ class ReleaseInactiveError(exceptions.Error):
 
   def __init__(self):
     super(ReleaseInactiveError, self).__init__(
-        'This release is not deployed to a target in the active delivery pipeline. '
-        'Include the --to-target parameter to indicate which target to promote to.'
+        'This release is not deployed to a target in the active delivery '
+        'pipeline. Include the --to-target parameter to indicate which target '
+        'to promote to.'
     )
 
 
@@ -107,8 +110,9 @@ class RolloutIDExhaustedError(exceptions.Error):
 
   def __init__(self, release_name):
     super(RolloutIDExhaustedError, self).__init__(
-        'Rollout name space exhausted in release {}. Use --rollout-id to specify rollout ID.'
-        .format(release_name))
+        'Rollout name space exhausted in release {}. Use --rollout-id to '
+        'specify rollout ID.'.format(release_name)
+    )
 
 
 class RolloutInProgressError(exceptions.Error):
@@ -116,8 +120,9 @@ class RolloutInProgressError(exceptions.Error):
 
   def __init__(self, release_name, target_name):
     super(RolloutInProgressError, self).__init__(
-        'Unable to promote release {} to target {}. A rollout is already in progress.'
-        .format(release_name, target_name))
+        'Unable to promote release {} to target {}. '
+        'A rollout is already in progress.'.format(release_name, target_name)
+    )
 
 
 class RolloutNotInProgressError(exceptions.Error):

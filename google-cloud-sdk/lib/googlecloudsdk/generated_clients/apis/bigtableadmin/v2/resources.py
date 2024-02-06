@@ -95,6 +95,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_INSTANCES_TABLES_AUTHORIZEDVIEWS = (
+      'projects.instances.tables.authorizedViews',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/instances/{instancesId}/tables/'
+              '{tablesId}/authorizedViews/{authorizedViewsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_INSTANCES_TABLES_VIEWS = (
       'projects.instances.tables.views',
       '{+name}',

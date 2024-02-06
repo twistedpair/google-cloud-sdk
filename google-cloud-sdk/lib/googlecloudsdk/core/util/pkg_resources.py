@@ -19,6 +19,7 @@ from __future__ import absolute_import
 from __future__ import division
 from __future__ import unicode_literals
 
+import importlib.util
 import os
 import pkgutil
 import sys
@@ -94,30 +95,22 @@ def IsImportable(name, path):
   return find_method(name_path[-1]) is not None
 
 
-def GetModuleFromPathLegacy(name_to_give, module_path):
-  """Returns loaded module at given path under given name."""
-  import imp  # pylint: disable=g-import-not-at-top,deprecated-module
+def GetModuleFromPath(name_to_give, module_path):
+  """Loads module at given path under given name.
 
-  module_dir, module_name = os.path.split(module_path)
-  try:
-    result = imp.find_module(module_name, [module_dir])
-  except ImportError:
-    # imp.find_module does not respects PEP 302 import hooks, and does not work
-    # over package archives. Try pkgutil import hooks.
-    return _GetModuleFromPathViaPkgutil(module_path, name_to_give)
-  else:
-    try:
-      f, file_path, items = result
-      return imp.load_module(name_to_give, f, file_path, items)
-    finally:
-      if f:
-        f.close()
+  Note that it also updates sys.modules with name_to_give.
 
+  Args:
+    name_to_give: str, name to assign to loaded module
+    module_path: str, python path to location of the module, this is either
+      filesystem path or path into egg or zip package
 
-def GetModuleFromPathNew(name_to_give, module_path):
-  """Returns loaded module at given path under given name."""
-  import importlib.util  # pylint: disable=g-import-not-at-top
+  Returns:
+    Imported module
 
+  Raises:
+    ImportError: if module cannot be imported.
+  """
   if os.path.isfile(os.path.join(module_path, '__init__.py')):
     spec = importlib.util.spec_from_file_location(
         name_to_give, os.path.join(module_path, '__init__.py')
@@ -140,30 +133,6 @@ def GetModuleFromPathNew(name_to_give, module_path):
   sys.modules[name_to_give] = module
   spec.loader.exec_module(module)
   return module
-
-
-def GetModuleFromPath(name_to_give, module_path):
-  """Loads module at given path under given name.
-
-  Note that it also updates sys.modules with name_to_give.
-
-  Args:
-    name_to_give: str, name to assign to loaded module
-    module_path: str, python path to location of the module, this is either
-      filesystem path or path into egg or zip package
-
-  Returns:
-    Imported module
-
-  Raises:
-    ImportError: if module cannot be imported.
-  """
-  # TODO(b/277791616): Replace this with just GetModuleFromPathNew and get rid
-  # of GetModuleFromPathLegacy.
-  if sys.version_info[:2] < (3, 12):
-    return GetModuleFromPathLegacy(name_to_give, module_path)
-  else:
-    return GetModuleFromPathNew(name_to_give, module_path)
 
 
 def _GetModuleFromPathViaPkgutil(module_path, name_to_give):

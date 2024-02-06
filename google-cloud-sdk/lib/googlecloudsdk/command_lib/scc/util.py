@@ -153,6 +153,15 @@ def GetVersionFromArguments(
   """
   location_specified = IsLocationSpecified(args, resource_name)
 
+  # Non-interoperable resources such as BigQuery Export and NotificationConfigs
+  # may only be accessed through the version in which they were instantiated.
+  # This may be determined by the presence of a location.
+  if version_specific_existing_resource:
+    if location_specified:
+      return "v2"
+    else:
+      return "v1"
+
   # Args that have been deprecated in v2 may necessitate a v1 call.
   if deprecated_args:
     for argument in deprecated_args:
@@ -169,15 +178,6 @@ def GetVersionFromArguments(
       # location support.
       raise errors.InvalidAPIVersion("Location is not supported by v1.")
     return "v1"
-
-  # Non-interoperable resources such as BigQuery Export and NotificationConfigs
-  # may only be accessed through the version in which they were instantiated.
-  # This may be determined by the presence of a location.
-  if version_specific_existing_resource:
-    if location_specified:
-      return "v2"
-    else:
-      return "v1"
 
   return "v2"
 

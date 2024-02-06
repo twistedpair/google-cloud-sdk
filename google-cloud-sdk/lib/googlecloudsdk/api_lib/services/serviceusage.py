@@ -483,12 +483,21 @@ def AddEnableRule(
 
     for service in services:
       services_to_enabled.add(_SERVICE_RESOURCE % service)
-      list_descendant_services = ListDescendantServices(
-          resource_name, _SERVICE_RESOURCE % service + _DEPENDENCY_GROUP
+      request = (
+          messages.ServiceusageServicesGroupsDescendantServicesListRequest(
+              parent='{}/{}'.format(
+                  resource_name, _SERVICE_RESOURCE % service + _DEPENDENCY_GROUP
+              )
+          )
       )
-      for member in list_descendant_services:
-        services_to_enabled.add(member.serviceName)
-
+      try:
+        list_descendant_services = (
+            client.services_groups_descendantServices.List(request)
+        ).services
+        for member in list_descendant_services:
+          services_to_enabled.add(member.serviceName)
+      except apitools_exceptions.HttpNotFoundError:
+        continue
     if policy.enableRules:
       policy.enableRules[0].services.extend(list(services_to_enabled))
     else:

@@ -84,6 +84,10 @@ encoding.AddCustomJsonFieldMapping(
 encoding.AddCustomJsonFieldMapping(
     clouddeploy_message.ClouddeployProjectsLocationsTargetsGetIamPolicyRequest,
     'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
+encoding.AddCustomJsonFieldMapping(
+    clouddeploy_message
+    .ClouddeployProjectsLocationsCustomTargetTypesGetIamPolicyRequest,
+    'options_requestedPolicyVersion', 'options.requestedPolicyVersion')
 
 binaryauthorization_message_v1alpha2 = core_apis.GetMessagesModule(
     'binaryauthorization', 'v1alpha2')
