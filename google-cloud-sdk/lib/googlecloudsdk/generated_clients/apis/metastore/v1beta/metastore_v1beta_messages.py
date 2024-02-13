@@ -364,7 +364,11 @@ class Binding(_messages.Message):
       ed:principal://iam.googleapis.com/locations/global/workforcePools/my-
       pool-id/subject/my-subject-attribute-value.
     role: Role that is assigned to the list of members, or principals. For
-      example, roles/viewer, roles/editor, or roles/owner.
+      example, roles/viewer, roles/editor, or roles/owner.For an overview of
+      the IAM roles and permissions, see the IAM documentation
+      (https://cloud.google.com/iam/docs/roles-overview). For a list of the
+      available pre-defined roles, see here
+      (https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -509,7 +513,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EncryptionConfig(_messages.Message):
@@ -945,6 +948,40 @@ class Lake(_messages.Message):
   """
 
   name = _messages.StringField(1)
+
+
+class LatestBackup(_messages.Message):
+  r"""The details of the latest scheduled backup.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the backup.
+
+  Fields:
+    backupId: Output only. The ID of an in-progress scheduled backup. Empty if
+      no backup is in progress.
+    duration: Output only. The duration of the backup completion.
+    startTime: Output only. The time when the backup was started.
+    state: Output only. The current state of the backup.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the backup.
+
+    Values:
+      STATE_UNSPECIFIED: The state of the backup is unknown.
+      IN_PROGRESS: The backup is in progress.
+      SUCCEEDED: The backup completed.
+      FAILED: The backup failed.
+    """
+    STATE_UNSPECIFIED = 0
+    IN_PROGRESS = 1
+    SUCCEEDED = 2
+    FAILED = 3
+
+  backupId = _messages.StringField(1)
+  duration = _messages.StringField(2)
+  startTime = _messages.StringField(3)
+  state = _messages.EnumField('StateValueValuesEnum', 4)
 
 
 class ListBackupsResponse(_messages.Message):
@@ -2518,6 +2555,8 @@ class Restore(_messages.Message):
     backup: Output only. The relative resource name of the metastore service
       backup to restore from, in the following form:projects/{project_id}/loca
       tions/{location_id}/services/{service_id}/backups/{backup_id}.
+    backupLocation: Optional. A Cloud Storage URI specifying where the backup
+      artifacts are stored, in the format gs:///.
     details: Output only. The restore details containing the revision of the
       service to be restored to, in format of JSON.
     endTime: Output only. The time when the restore ended.
@@ -2555,11 +2594,12 @@ class Restore(_messages.Message):
     METADATA_ONLY = 2
 
   backup = _messages.StringField(1)
-  details = _messages.StringField(2)
-  endTime = _messages.StringField(3)
-  startTime = _messages.StringField(4)
-  state = _messages.EnumField('StateValueValuesEnum', 5)
-  type = _messages.EnumField('TypeValueValuesEnum', 6)
+  backupLocation = _messages.StringField(2)
+  details = _messages.StringField(3)
+  endTime = _messages.StringField(4)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+  type = _messages.EnumField('TypeValueValuesEnum', 7)
 
 
 class RestoreServiceRequest(_messages.Message):
@@ -2574,6 +2614,10 @@ class RestoreServiceRequest(_messages.Message):
       backup to restore from, in the following form:projects/{project_id}/loca
       tions/{location_id}/services/{service_id}/backups/{backup_id}. Mutually
       exclusive with backup_location, and exactly one of the two must be set.
+    backupLocation: Optional. A Cloud Storage URI specifying the location of
+      the backup artifacts, namely - backup avro files under "avro/",
+      backup_metastore.json and service.json, in the following form:gs://.
+      Mutually exclusive with backup, and exactly one of the two must be set.
     requestId: Optional. A request ID. Specify a unique request ID to allow
       the server to ignore the request if it has completed. The server will
       ignore subsequent requests that provide a duplicate request ID for at
@@ -2601,8 +2645,9 @@ class RestoreServiceRequest(_messages.Message):
     METADATA_ONLY = 2
 
   backup = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-  restoreType = _messages.EnumField('RestoreTypeValueValuesEnum', 3)
+  backupLocation = _messages.StringField(2)
+  requestId = _messages.StringField(3)
+  restoreType = _messages.EnumField('RestoreTypeValueValuesEnum', 4)
 
 
 class ScalingConfig(_messages.Message):
@@ -2642,6 +2687,35 @@ class ScalingConfig(_messages.Message):
 
   instanceSize = _messages.EnumField('InstanceSizeValueValuesEnum', 1)
   scalingFactor = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+
+
+class ScheduledBackup(_messages.Message):
+  r"""This specifies the configuration of scheduled backup.
+
+  Fields:
+    backupLocation: Optional. A Cloud Storage URI of a folder, in the format
+      gs:///. A sub-folder containing backup files will be stored below it.
+    cronSchedule: Optional. The scheduled interval in Cron format, see
+      https://en.wikipedia.org/wiki/Cron The default is empty: scheduled
+      backup is not enabled. Must be specified to enable scheduled backups.
+    enabled: Optional. Defines whether the scheduled backup is enabled. The
+      default value is false.
+    latestBackup: Output only. The details of the latest scheduled backup.
+    nextScheduledTime: Output only. The time when the next backups execution
+      is scheduled to start.
+    timeZone: Optional. Specifies the time zone to be used when interpreting
+      cron_schedule. Must be a time zone name from the time zone database
+      (https://en.wikipedia.org/wiki/List_of_tz_database_time_zones), e.g.
+      America/Los_Angeles or Africa/Abidjan. If left unspecified, the default
+      is UTC.
+  """
+
+  backupLocation = _messages.StringField(1)
+  cronSchedule = _messages.StringField(2)
+  enabled = _messages.BooleanField(3)
+  latestBackup = _messages.MessageField('LatestBackup', 4)
+  nextScheduledTime = _messages.StringField(5)
+  timeZone = _messages.StringField(6)
 
 
 class Secret(_messages.Message):
@@ -2706,6 +2780,8 @@ class Service(_messages.Message):
     releaseChannel: Immutable. The release channel of the service. If
       unspecified, defaults to STABLE.
     scalingConfig: Scaling configuration of the metastore service.
+    scheduledBackup: Optional. The configuration of scheduled backup for the
+      metastore service.
     state: Output only. The current state of the metastore service.
     stateMessage: Output only. Additional information about the current state
       of the metastore service, if available.
@@ -2830,12 +2906,13 @@ class Service(_messages.Message):
   port = _messages.IntegerField(14, variant=_messages.Variant.INT32)
   releaseChannel = _messages.EnumField('ReleaseChannelValueValuesEnum', 15)
   scalingConfig = _messages.MessageField('ScalingConfig', 16)
-  state = _messages.EnumField('StateValueValuesEnum', 17)
-  stateMessage = _messages.StringField(18)
-  telemetryConfig = _messages.MessageField('TelemetryConfig', 19)
-  tier = _messages.EnumField('TierValueValuesEnum', 20)
-  uid = _messages.StringField(21)
-  updateTime = _messages.StringField(22)
+  scheduledBackup = _messages.MessageField('ScheduledBackup', 17)
+  state = _messages.EnumField('StateValueValuesEnum', 18)
+  stateMessage = _messages.StringField(19)
+  telemetryConfig = _messages.MessageField('TelemetryConfig', 20)
+  tier = _messages.EnumField('TierValueValuesEnum', 21)
+  uid = _messages.StringField(22)
+  updateTime = _messages.StringField(23)
 
 
 class SetIamPolicyRequest(_messages.Message):

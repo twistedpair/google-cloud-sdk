@@ -2024,52 +2024,6 @@ class Query(_messages.Message):
   startCursor = _messages.BytesField(9)
 
 
-class QueryPlan(_messages.Message):
-  r"""Plan for the query.
-
-  Messages:
-    PlanInfoValue: Planning phase information for the query. It will include:
-      { "indexes_used": [ {"query_scope": "Collection", "properties": "(foo
-      ASC, __name__ ASC)"}, {"query_scope": "Collection", "properties": "(bar
-      ASC, __name__ ASC)"} ] }
-
-  Fields:
-    planInfo: Planning phase information for the query. It will include: {
-      "indexes_used": [ {"query_scope": "Collection", "properties": "(foo ASC,
-      __name__ ASC)"}, {"query_scope": "Collection", "properties": "(bar ASC,
-      __name__ ASC)"} ] }
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class PlanInfoValue(_messages.Message):
-    r"""Planning phase information for the query. It will include: {
-    "indexes_used": [ {"query_scope": "Collection", "properties": "(foo ASC,
-    __name__ ASC)"}, {"query_scope": "Collection", "properties": "(bar ASC,
-    __name__ ASC)"} ] }
-
-    Messages:
-      AdditionalProperty: An additional property for a PlanInfoValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a PlanInfoValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  planInfo = _messages.MessageField('PlanInfoValue', 1)
-
-
 class QueryResultBatch(_messages.Message):
   r"""A batch of results produced by a query.
 
@@ -2233,59 +2187,6 @@ class ReserveIdsResponse(_messages.Message):
   r"""The response for Datastore.ReserveIds."""
 
 
-class ResultSetStats(_messages.Message):
-  r"""Planning and execution statistics for the query.
-
-  Messages:
-    QueryStatsValue: Aggregated statistics from the execution of the query.
-      This will only be present when the request specifies `PROFILE` mode. For
-      example, a query will return the statistics including: {
-      "results_returned": "20", "documents_scanned": "20",
-      "indexes_entries_scanned": "10050", "total_execution_time": "100.7
-      msecs" }
-
-  Fields:
-    queryPlan: Plan for the query.
-    queryStats: Aggregated statistics from the execution of the query. This
-      will only be present when the request specifies `PROFILE` mode. For
-      example, a query will return the statistics including: {
-      "results_returned": "20", "documents_scanned": "20",
-      "indexes_entries_scanned": "10050", "total_execution_time": "100.7
-      msecs" }
-  """
-
-  @encoding.MapUnrecognizedFields('additionalProperties')
-  class QueryStatsValue(_messages.Message):
-    r"""Aggregated statistics from the execution of the query. This will only
-    be present when the request specifies `PROFILE` mode. For example, a query
-    will return the statistics including: { "results_returned": "20",
-    "documents_scanned": "20", "indexes_entries_scanned": "10050",
-    "total_execution_time": "100.7 msecs" }
-
-    Messages:
-      AdditionalProperty: An additional property for a QueryStatsValue object.
-
-    Fields:
-      additionalProperties: Properties of the object.
-    """
-
-    class AdditionalProperty(_messages.Message):
-      r"""An additional property for a QueryStatsValue object.
-
-      Fields:
-        key: Name of the additional property.
-        value: A extra_types.JsonValue attribute.
-      """
-
-      key = _messages.StringField(1)
-      value = _messages.MessageField('extra_types.JsonValue', 2)
-
-    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
-
-  queryPlan = _messages.MessageField('QueryPlan', 1)
-  queryStats = _messages.MessageField('QueryStatsValue', 2)
-
-
 class RollbackRequest(_messages.Message):
   r"""The request for Datastore.Rollback.
 
@@ -2308,49 +2209,23 @@ class RollbackResponse(_messages.Message):
 class RunAggregationQueryRequest(_messages.Message):
   r"""The request for Datastore.RunAggregationQuery.
 
-  Enums:
-    ModeValueValuesEnum: Optional. The mode in which the query request is
-      processed. This field is optional, and when not provided, it defaults to
-      `NORMAL` mode where no additional statistics will be returned with the
-      query results.
-
   Fields:
     aggregationQuery: The query to run.
     databaseId: The ID of the database against which to make the request.
       '(default)' is not allowed; please use empty string '' to refer the
       default database.
     gqlQuery: The GQL query to run. This query must be an aggregation query.
-    mode: Optional. The mode in which the query request is processed. This
-      field is optional, and when not provided, it defaults to `NORMAL` mode
-      where no additional statistics will be returned with the query results.
     partitionId: Entities are partitioned into subsets, identified by a
       partition ID. Queries are scoped to a single partition. This partition
       ID is normalized with the standard default context partition ID.
     readOptions: The options for this query.
   """
 
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The mode in which the query request is processed. This field
-    is optional, and when not provided, it defaults to `NORMAL` mode where no
-    additional statistics will be returned with the query results.
-
-    Values:
-      NORMAL: The default mode. Only the query results are returned.
-      PLAN: This mode returns only the query plan, without any results or
-        execution statistics information.
-      PROFILE: This mode returns both the query plan and the execution
-        statistics along with the results.
-    """
-    NORMAL = 0
-    PLAN = 1
-    PROFILE = 2
-
   aggregationQuery = _messages.MessageField('AggregationQuery', 1)
   databaseId = _messages.StringField(2)
   gqlQuery = _messages.MessageField('GqlQuery', 3)
-  mode = _messages.EnumField('ModeValueValuesEnum', 4)
-  partitionId = _messages.MessageField('PartitionId', 5)
-  readOptions = _messages.MessageField('ReadOptions', 6)
+  partitionId = _messages.MessageField('PartitionId', 4)
+  readOptions = _messages.MessageField('ReadOptions', 5)
 
 
 class RunAggregationQueryResponse(_messages.Message):
@@ -2359,9 +2234,6 @@ class RunAggregationQueryResponse(_messages.Message):
   Fields:
     batch: A batch of aggregation results. Always present.
     query: The parsed form of the `GqlQuery` from the request, if it was set.
-    stats: Query plan and execution statistics. Note that the returned stats
-      are subject to change as Firestore evolves. This is only present when
-      the request specifies a mode other than `NORMAL`.
     transaction: The identifier of the transaction that was started as part of
       this RunAggregationQuery request. Set only when
       ReadOptions.new_transaction was set in
@@ -2370,18 +2242,11 @@ class RunAggregationQueryResponse(_messages.Message):
 
   batch = _messages.MessageField('AggregationResultBatch', 1)
   query = _messages.MessageField('AggregationQuery', 2)
-  stats = _messages.MessageField('ResultSetStats', 3)
-  transaction = _messages.BytesField(4)
+  transaction = _messages.BytesField(3)
 
 
 class RunQueryRequest(_messages.Message):
   r"""The request for Datastore.RunQuery.
-
-  Enums:
-    ModeValueValuesEnum: Optional. The mode in which the query request is
-      processed. This field is optional, and when not provided, it defaults to
-      `NORMAL` mode where no additional statistics will be returned with the
-      query results.
 
   Fields:
     databaseId: The ID of the database against which to make the request.
@@ -2389,9 +2254,6 @@ class RunQueryRequest(_messages.Message):
       default database.
     gqlQuery: The GQL query to run. This query must be a non-aggregation
       query.
-    mode: Optional. The mode in which the query request is processed. This
-      field is optional, and when not provided, it defaults to `NORMAL` mode
-      where no additional statistics will be returned with the query results.
     partitionId: Entities are partitioned into subsets, identified by a
       partition ID. Queries are scoped to a single partition. This partition
       ID is normalized with the standard default context partition ID.
@@ -2399,28 +2261,11 @@ class RunQueryRequest(_messages.Message):
     readOptions: The options for this query.
   """
 
-  class ModeValueValuesEnum(_messages.Enum):
-    r"""Optional. The mode in which the query request is processed. This field
-    is optional, and when not provided, it defaults to `NORMAL` mode where no
-    additional statistics will be returned with the query results.
-
-    Values:
-      NORMAL: The default mode. Only the query results are returned.
-      PLAN: This mode returns only the query plan, without any results or
-        execution statistics information.
-      PROFILE: This mode returns both the query plan and the execution
-        statistics along with the results.
-    """
-    NORMAL = 0
-    PLAN = 1
-    PROFILE = 2
-
   databaseId = _messages.StringField(1)
   gqlQuery = _messages.MessageField('GqlQuery', 2)
-  mode = _messages.EnumField('ModeValueValuesEnum', 3)
-  partitionId = _messages.MessageField('PartitionId', 4)
-  query = _messages.MessageField('Query', 5)
-  readOptions = _messages.MessageField('ReadOptions', 6)
+  partitionId = _messages.MessageField('PartitionId', 3)
+  query = _messages.MessageField('Query', 4)
+  readOptions = _messages.MessageField('ReadOptions', 5)
 
 
 class RunQueryResponse(_messages.Message):
@@ -2429,9 +2274,6 @@ class RunQueryResponse(_messages.Message):
   Fields:
     batch: A batch of query results (always present).
     query: The parsed form of the `GqlQuery` from the request, if it was set.
-    stats: Query plan and execution statistics. Note that the returned stats
-      are subject to change as Firestore evolves. This is only present when
-      the request specifies a mode other than `NORMAL`.
     transaction: The identifier of the transaction that was started as part of
       this RunQuery request. Set only when ReadOptions.new_transaction was set
       in RunQueryRequest.read_options.
@@ -2439,8 +2281,7 @@ class RunQueryResponse(_messages.Message):
 
   batch = _messages.MessageField('QueryResultBatch', 1)
   query = _messages.MessageField('Query', 2)
-  stats = _messages.MessageField('ResultSetStats', 3)
-  transaction = _messages.BytesField(4)
+  transaction = _messages.BytesField(3)
 
 
 class StandardQueryParameters(_messages.Message):

@@ -89,6 +89,13 @@ class Backup(_messages.Message):
     databaseDialect: Output only. The database dialect information for the
       backup.
     encryptionInfo: Output only. The encryption information for the backup.
+    encryptionInformation: Output only. The encryption information for the
+      backup, whether it is protected by one or more KMS keys. The information
+      includes all Cloud KMS key versions used to encrypt the backup. The
+      `encryption_status' field inside of each `EncryptionInfo` is not
+      populated. At least one of the key versions must be available for the
+      backup to be restored. If a key version is revoked in the middle of a
+      restore, the restore behavior is undefined.
     expireTime: Required for the CreateBackup operation. The expiration time
       of the backup, with microseconds granularity that must be at least 6
       hours and at most 366 days from the time the CreateBackup request is
@@ -159,14 +166,15 @@ class Backup(_messages.Message):
   database = _messages.StringField(2)
   databaseDialect = _messages.EnumField('DatabaseDialectValueValuesEnum', 3)
   encryptionInfo = _messages.MessageField('EncryptionInfo', 4)
-  expireTime = _messages.StringField(5)
-  maxExpireTime = _messages.StringField(6)
-  name = _messages.StringField(7)
-  referencingBackups = _messages.StringField(8, repeated=True)
-  referencingDatabases = _messages.StringField(9, repeated=True)
-  sizeBytes = _messages.IntegerField(10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  versionTime = _messages.StringField(12)
+  encryptionInformation = _messages.MessageField('EncryptionInfo', 5, repeated=True)
+  expireTime = _messages.StringField(6)
+  maxExpireTime = _messages.StringField(7)
+  name = _messages.StringField(8)
+  referencingBackups = _messages.StringField(9, repeated=True)
+  referencingDatabases = _messages.StringField(10, repeated=True)
+  sizeBytes = _messages.IntegerField(11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  versionTime = _messages.StringField(13)
 
 
 class BackupInfo(_messages.Message):
@@ -370,7 +378,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -441,6 +453,11 @@ class CommitRequest(_messages.Message):
   r"""The request for Commit.
 
   Fields:
+    maxCommitDelay: Optional. The amount of latency this request is willing to
+      incur in order to improve throughput. If this field is not set, Spanner
+      assumes requests are relatively latency sensitive and automatically
+      determines an appropriate delay time. You can specify a batching delay
+      value between 0 and 500 ms.
     mutations: The mutations to be executed when this transaction commits. All
       mutations are applied atomically, in the order they appear in this list.
     requestOptions: Common options for this request.
@@ -456,11 +473,12 @@ class CommitRequest(_messages.Message):
     transactionId: Commit a previously-started transaction.
   """
 
-  mutations = _messages.MessageField('Mutation', 1, repeated=True)
-  requestOptions = _messages.MessageField('RequestOptions', 2)
-  returnCommitStats = _messages.BooleanField(3)
-  singleUseTransaction = _messages.MessageField('TransactionOptions', 4)
-  transactionId = _messages.BytesField(5)
+  maxCommitDelay = _messages.StringField(1)
+  mutations = _messages.MessageField('Mutation', 2, repeated=True)
+  requestOptions = _messages.MessageField('RequestOptions', 3)
+  returnCommitStats = _messages.BooleanField(4)
+  singleUseTransaction = _messages.MessageField('TransactionOptions', 5)
+  transactionId = _messages.BytesField(6)
 
 
 class CommitResponse(_messages.Message):
@@ -544,6 +562,19 @@ class CopyBackupEncryptionConfig(_messages.Message):
       backup. This field should be set only when encryption_type is
       `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`.
+    kmsKeyNames: Optional. Specifies the KMS configuration for the one or more
+      keys used to protect the backup. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`. Kms keys specified can be
+      in any order. The keys referenced by kms_key_names must fully cover all
+      regions of the backup's instance configuration. Some examples: * For
+      single region instance configs, specify a single regional location KMS
+      key. * For multi-regional instance configs of type GOOGLE_MANAGED,
+      either specify a multi-regional location KMS key or multiple regional
+      location KMS keys that cover all regions in the instance config. * For
+      an instance config of type USER_MANAGED, please specify only regional
+      location KMS keys to cover each region in the instance config. Multi-
+      regional location KMS keys are not supported for USER_MANAGED instance
+      configs.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -567,6 +598,7 @@ class CopyBackupEncryptionConfig(_messages.Message):
 
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
   kmsKeyName = _messages.StringField(2)
+  kmsKeyNames = _messages.StringField(3, repeated=True)
 
 
 class CopyBackupMetadata(_messages.Message):
@@ -637,6 +669,18 @@ class CreateBackupEncryptionConfig(_messages.Message):
       backup. This field should be set only when encryption_type is
       `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`.
+    kmsKeyNames: Optional. Specifies the KMS configuration for the one or more
+      keys used to protect the backup. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`. The keys referenced by
+      kms_key_names must fully cover all regions of the backup's instance
+      configuration. Some examples: * For single region instance configs,
+      specify a single regional location KMS key. * For multi-regional
+      instance configs of type GOOGLE_MANAGED, either specify a multi-regional
+      location KMS key or multiple regional location KMS keys that cover all
+      regions in the instance config. * For an instance config of type
+      USER_MANAGED, please specify only regional location KMS keys to cover
+      each region in the instance config. Multi-regional location KMS keys are
+      not supported for USER_MANAGED instance configs.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -659,6 +703,7 @@ class CreateBackupEncryptionConfig(_messages.Message):
 
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
   kmsKeyName = _messages.StringField(2)
+  kmsKeyNames = _messages.StringField(3, repeated=True)
 
 
 class CreateBackupMetadata(_messages.Message):
@@ -722,10 +767,10 @@ class CreateDatabaseRequest(_messages.Message):
       olbuffers/protobuf/blob/main/src/google/protobuf/descriptor.proto). To
       generate it, [install](https://grpc.io/docs/protoc-installation/) and
       run `protoc` with --include_imports and --descriptor_set_out. For
-      example, to generate for moon/shot/app.proto, run " " " $protoc
+      example, to generate for moon/shot/app.proto, run ``` $protoc
       --proto_path=/app_path --proto_path=/lib_path \ --include_imports \
-      --descriptor_set_out=descriptors.data \ moon/shot/app.proto " " " For
-      more details, see protobuffer [self
+      --descriptor_set_out=descriptors.data \ moon/shot/app.proto ``` For more
+      details, see protobuffer [self
       description](https://developers.google.com/protocol-
       buffers/docs/techniques#self-description).
   """
@@ -788,20 +833,41 @@ class CreateInstanceConfigRequest(_messages.Message):
 class CreateInstanceMetadata(_messages.Message):
   r"""Metadata type for the operation returned by CreateInstance.
 
+  Enums:
+    ExpectedFulfillmentPeriodValueValuesEnum: The expected fulfillment period
+      of this create operation.
+
   Fields:
     cancelTime: The time at which this operation was cancelled. If set, this
       operation is in the process of undoing itself (which is guaranteed to
       succeed) and cannot be cancelled again.
     endTime: The time at which this operation failed or was completed
       successfully.
+    expectedFulfillmentPeriod: The expected fulfillment period of this create
+      operation.
     instance: The instance being created.
     startTime: The time at which the CreateInstance request was received.
   """
 
+  class ExpectedFulfillmentPeriodValueValuesEnum(_messages.Enum):
+    r"""The expected fulfillment period of this create operation.
+
+    Values:
+      FULFILLMENT_PERIOD_UNSPECIFIED: Not specified.
+      FULFILLMENT_PERIOD_NORMAL: Normal fulfillment period. The operation is
+        expected to complete within minutes.
+      FULFILLMENT_PERIOD_EXTENDED: Extended fulfillment period. It can take up
+        to an hour for the operation to complete.
+    """
+    FULFILLMENT_PERIOD_UNSPECIFIED = 0
+    FULFILLMENT_PERIOD_NORMAL = 1
+    FULFILLMENT_PERIOD_EXTENDED = 2
+
   cancelTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
-  instance = _messages.MessageField('Instance', 3)
-  startTime = _messages.StringField(4)
+  expectedFulfillmentPeriod = _messages.EnumField('ExpectedFulfillmentPeriodValueValuesEnum', 3)
+  instance = _messages.MessageField('Instance', 4)
+  startTime = _messages.StringField(5)
 
 
 class CreateInstancePartitionMetadata(_messages.Message):
@@ -944,9 +1010,6 @@ class Database(_messages.Message):
       region instance configurations. Contains information about the quorum.
     reconciling: Output only. If true, the database is being updated. If
       false, there are no ongoing update operations for the database.
-    reconfigurationInfo: Output only. Applicable only for databases that use
-      dual region instance configurations. Contains information about the
-      reconfiguration state.
     restoreInfo: Output only. Applicable only for restored databases. Contains
       information about the restore source.
     state: Output only. The current database state.
@@ -999,10 +1062,9 @@ class Database(_messages.Message):
   name = _messages.StringField(8)
   quorumInfo = _messages.MessageField('QuorumInfo', 9)
   reconciling = _messages.BooleanField(10)
-  reconfigurationInfo = _messages.MessageField('ReconfigurationInfo', 11)
-  restoreInfo = _messages.MessageField('RestoreInfo', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  versionRetentionPeriod = _messages.StringField(14)
+  restoreInfo = _messages.MessageField('RestoreInfo', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  versionRetentionPeriod = _messages.StringField(13)
 
 
 class DatabaseRole(_messages.Message):
@@ -1117,9 +1179,9 @@ class DirectedReadOptions(_messages.Message):
   otherwise the API will return an `INVALID_ARGUMENT` error.
 
   Fields:
-    excludeReplicas: Exclude_replicas indicates that should be excluded from
-      serving requests. Spanner will not route requests to the replicas in
-      this list.
+    excludeReplicas: Exclude_replicas indicates that specified replicas should
+      be excluded from serving requests. Spanner will not route requests to
+      the replicas in this list.
     includeReplicas: Include_replicas indicates the order of replicas (as they
       appear in this list) to process the request. If auto_failover_disabled
       is set to true and all replicas are exhausted without finding a healthy
@@ -1129,13 +1191,6 @@ class DirectedReadOptions(_messages.Message):
 
   excludeReplicas = _messages.MessageField('ExcludeReplicas', 1)
   includeReplicas = _messages.MessageField('IncludeReplicas', 2)
-
-
-class DualRegion(_messages.Message):
-  r"""Message type for a dual-region database reconfiguration. Currently this
-  reconfiguration type has no options.
-  """
-
 
 
 class DualRegionQuorum(_messages.Message):
@@ -1161,9 +1216,23 @@ class EncryptionConfig(_messages.Message):
     kmsKeyName: The Cloud KMS key to be used for encrypting and decrypting the
       database. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`.
+    kmsKeyNames: Specifies the KMS configuration for the one or more keys used
+      to encrypt the database. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`. The keys referenced by
+      kms_key_names must fully cover all regions of the database instance
+      configuration. Some examples: * For single region database instance
+      configs, specify a single regional location KMS key. * For multi-
+      regional database instance configs of type GOOGLE_MANAGED, either
+      specify a multi-regional location KMS key or multiple regional location
+      KMS keys that cover all regions in the instance config. * For a database
+      instance config of type USER_MANAGED, please specify only regional
+      location KMS keys to cover each region in the instance config. Multi-
+      regional location KMS keys are not supported for USER_MANAGED instance
+      configs.
   """
 
   kmsKeyName = _messages.StringField(1)
+  kmsKeyNames = _messages.StringField(2, repeated=True)
 
 
 class EncryptionInfo(_messages.Message):
@@ -3730,56 +3799,6 @@ class ReadWrite(_messages.Message):
   readLockMode = _messages.EnumField('ReadLockModeValueValuesEnum', 1)
 
 
-class ReconfigurationInfo(_messages.Message):
-  r"""Information about the database reconfiguration.
-
-  Enums:
-    InitiatorValueValuesEnum: Whether this reconfiguration is a Google or User
-      initiated reconfiguration.
-
-  Fields:
-    etag: The etag is used for optimistic concurrency control as a way to help
-      prevent simultaneous reconfiguration requests that could create a race
-      condition.
-    initiator: Whether this reconfiguration is a Google or User initiated
-      reconfiguration.
-    reconfigurationType: The type of this reconfiguration. See
-      ReconfigurationType for more information about reconfiguration type
-      specifications.
-    startTime: The timestamp when the request was triggered.
-  """
-
-  class InitiatorValueValuesEnum(_messages.Enum):
-    r"""Whether this reconfiguration is a Google or User initiated
-    reconfiguration.
-
-    Values:
-      INITIATOR_UNSPECIFIED: Unspecified.
-      GOOGLE: Reconfiguration initiated by Google.
-      USER: Reconfiguration initiated by User.
-    """
-    INITIATOR_UNSPECIFIED = 0
-    GOOGLE = 1
-    USER = 2
-
-  etag = _messages.StringField(1)
-  initiator = _messages.EnumField('InitiatorValueValuesEnum', 2)
-  reconfigurationType = _messages.MessageField('ReconfigurationType', 3)
-  startTime = _messages.StringField(4)
-
-
-class ReconfigurationType(_messages.Message):
-  r"""Information about the database reconfiguration type.
-
-  Fields:
-    dualRegion: Dual region reconfiguration type.
-    singleRegion: Single region reconfiguration type.
-  """
-
-  dualRegion = _messages.MessageField('DualRegion', 1)
-  singleRegion = _messages.MessageField('SingleRegion', 2)
-
-
 class ReplicaInfo(_messages.Message):
   r"""A ReplicaInfo object.
 
@@ -3830,7 +3849,7 @@ class ReplicaSelection(_messages.Message):
   database. * `type` - The type of the replica. Some examples of using
   replica_selectors are: * `location:us-east1` --> The "us-east1" replica(s)
   of any available type will be used to process the request. *
-  `type:READ_ONLY` --> The "READ_ONLY" type replica(s) in nearest . available
+  `type:READ_ONLY` --> The "READ_ONLY" type replica(s) in nearest available
   location will be used to process the request. * `location:us-east1
   type:READ_ONLY` --> The "READ_ONLY" type replica(s) in location "us-east1"
   will be used to process the request.
@@ -3920,6 +3939,19 @@ class RestoreDatabaseEncryptionConfig(_messages.Message):
       encrypt/decrypt the restored database. This field should be set only
       when encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the
       form `projects//locations//keyRings//cryptoKeys/`.
+    kmsKeyNames: Optional. Specifies the KMS configuration for the one or more
+      keys used to encrypt the database. Values are of the form
+      `projects//locations//keyRings//cryptoKeys/`. The keys referenced by
+      kms_key_names must fully cover all regions of the database instance
+      configuration. Some examples: * For single region database instance
+      configs, specify a single regional location KMS key. * For multi-
+      regional database instance configs of type GOOGLE_MANAGED, either
+      specify a multi-regional location KMS key or multiple regional location
+      KMS keys that cover all regions in the instance config. * For a database
+      instance config of type USER_MANAGED, please specify only regional
+      location KMS keys to cover each region in the instance config. Multi-
+      regional location KMS keys are not supported for USER_MANAGED instance
+      configs.
   """
 
   class EncryptionTypeValueValuesEnum(_messages.Enum):
@@ -3940,6 +3972,7 @@ class RestoreDatabaseEncryptionConfig(_messages.Message):
 
   encryptionType = _messages.EnumField('EncryptionTypeValueValuesEnum', 1)
   kmsKeyName = _messages.StringField(2)
+  kmsKeyNames = _messages.StringField(3, repeated=True)
 
 
 class RestoreDatabaseMetadata(_messages.Message):
@@ -4364,22 +4397,6 @@ class ShortRepresentation(_messages.Message):
   subqueries = _messages.MessageField('SubqueriesValue', 2)
 
 
-class SingleRegion(_messages.Message):
-  r"""Message type for a single-region database reconfiguration.
-
-  Fields:
-    servingLocation: Required. The location of the serving region, e.g. "us-
-      central1". The location must be one of the regions within the dual
-      region instance configuration of your database. The list of valid
-      locations is available via
-      [GetInstanceConfig[InstanceAdmin.GetInstanceConfig] API. This should
-      only be used if you plan to reconfigure the database in single-region
-      reconfiguration type.
-  """
-
-  servingLocation = _messages.StringField(1)
-
-
 class SingleRegionQuorum(_messages.Message):
   r"""Message type for a single-region quorum.
 
@@ -4752,6 +4769,18 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
       to protect the backup. This field should be set only when
       encryption_type is `CUSTOMER_MANAGED_ENCRYPTION`. Values are of the form
       `projects//locations//keyRings//cryptoKeys/`.
+    encryptionConfig_kmsKeyNames: Optional. Specifies the KMS configuration
+      for the one or more keys used to protect the backup. Values are of the
+      form `projects//locations//keyRings//cryptoKeys/`. The keys referenced
+      by kms_key_names must fully cover all regions of the backup's instance
+      configuration. Some examples: * For single region instance configs,
+      specify a single regional location KMS key. * For multi-regional
+      instance configs of type GOOGLE_MANAGED, either specify a multi-regional
+      location KMS key or multiple regional location KMS keys that cover all
+      regions in the instance config. * For an instance config of type
+      USER_MANAGED, please specify only regional location KMS keys to cover
+      each region in the instance config. Multi-regional location KMS keys are
+      not supported for USER_MANAGED instance configs.
     parent: Required. The name of the instance in which the backup will be
       created. This must be the same instance that contains the database the
       backup will be created from. The backup will be stored in the
@@ -4781,7 +4810,8 @@ class SpannerProjectsInstancesBackupsCreateRequest(_messages.Message):
   backupId = _messages.StringField(2)
   encryptionConfig_encryptionType = _messages.EnumField('EncryptionConfigEncryptionTypeValueValuesEnum', 3)
   encryptionConfig_kmsKeyName = _messages.StringField(4)
-  parent = _messages.StringField(5, required=True)
+  encryptionConfig_kmsKeyNames = _messages.StringField(5, repeated=True)
+  parent = _messages.StringField(6, required=True)
 
 
 class SpannerProjectsInstancesBackupsDeleteRequest(_messages.Message):
@@ -6817,10 +6847,10 @@ class UpdateDatabaseDdlRequest(_messages.Message):
       google/protobuf/descriptor.proto). To generate it,
       [install](https://grpc.io/docs/protoc-installation/) and run `protoc`
       with --include_imports and --descriptor_set_out. For example, to
-      generate for moon/shot/app.proto, run " " " $protoc
-      --proto_path=/app_path --proto_path=/lib_path \ --include_imports \
-      --descriptor_set_out=descriptors.data \ moon/shot/app.proto " " " For
-      more details, see protobuffer [self
+      generate for moon/shot/app.proto, run ``` $protoc --proto_path=/app_path
+      --proto_path=/lib_path \ --include_imports \
+      --descriptor_set_out=descriptors.data \ moon/shot/app.proto ``` For more
+      details, see protobuffer [self
       description](https://developers.google.com/protocol-
       buffers/docs/techniques#self-description).
     statements: Required. DDL statements to be applied to the database.
@@ -6899,20 +6929,41 @@ class UpdateInstanceConfigRequest(_messages.Message):
 class UpdateInstanceMetadata(_messages.Message):
   r"""Metadata type for the operation returned by UpdateInstance.
 
+  Enums:
+    ExpectedFulfillmentPeriodValueValuesEnum: The expected fulfillment period
+      of this update operation.
+
   Fields:
     cancelTime: The time at which this operation was cancelled. If set, this
       operation is in the process of undoing itself (which is guaranteed to
       succeed) and cannot be cancelled again.
     endTime: The time at which this operation failed or was completed
       successfully.
+    expectedFulfillmentPeriod: The expected fulfillment period of this update
+      operation.
     instance: The desired end state of the update.
     startTime: The time at which UpdateInstance request was received.
   """
 
+  class ExpectedFulfillmentPeriodValueValuesEnum(_messages.Enum):
+    r"""The expected fulfillment period of this update operation.
+
+    Values:
+      FULFILLMENT_PERIOD_UNSPECIFIED: Not specified.
+      FULFILLMENT_PERIOD_NORMAL: Normal fulfillment period. The operation is
+        expected to complete within minutes.
+      FULFILLMENT_PERIOD_EXTENDED: Extended fulfillment period. It can take up
+        to an hour for the operation to complete.
+    """
+    FULFILLMENT_PERIOD_UNSPECIFIED = 0
+    FULFILLMENT_PERIOD_NORMAL = 1
+    FULFILLMENT_PERIOD_EXTENDED = 2
+
   cancelTime = _messages.StringField(1)
   endTime = _messages.StringField(2)
-  instance = _messages.MessageField('Instance', 3)
-  startTime = _messages.StringField(4)
+  expectedFulfillmentPeriod = _messages.EnumField('ExpectedFulfillmentPeriodValueValuesEnum', 3)
+  instance = _messages.MessageField('Instance', 4)
+  startTime = _messages.StringField(5)
 
 
 class UpdateInstancePartitionMetadata(_messages.Message):

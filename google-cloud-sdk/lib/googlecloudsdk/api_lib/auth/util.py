@@ -400,7 +400,6 @@ def HandleUniverseDomainConflict(new_universe_domain, account):
   should_update_universe_domain = console_io.PromptContinue(message=message)
 
   if should_update_universe_domain:
-    properties.VALUES.core.universe_domain.Set(new_universe_domain)
     properties.PersistProperty(
         properties.VALUES.core.universe_domain, new_universe_domain
     )

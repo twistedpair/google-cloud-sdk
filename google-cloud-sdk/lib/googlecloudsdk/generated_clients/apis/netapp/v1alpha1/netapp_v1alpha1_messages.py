@@ -27,6 +27,8 @@ class ActiveDirectory(_messages.Message):
     LabelsValue: Labels for the active directory.
 
   Fields:
+    administrators: Optional. Users to be added to the Built-in
+      Admininstrators group.
     aesEncryption: If enabled, AES encryption will be enabled for SMB
       communication.
     backupOperators: Optional. Users to be added to the Built-in Backup
@@ -106,27 +108,28 @@ class ActiveDirectory(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  aesEncryption = _messages.BooleanField(1)
-  backupOperators = _messages.StringField(2, repeated=True)
-  createTime = _messages.StringField(3)
-  description = _messages.StringField(4)
-  dns = _messages.StringField(5)
-  domain = _messages.StringField(6)
-  encryptDcConnections = _messages.BooleanField(7)
-  kdcHostname = _messages.StringField(8)
-  kdcIp = _messages.StringField(9)
-  labels = _messages.MessageField('LabelsValue', 10)
-  ldapSigning = _messages.BooleanField(11)
-  name = _messages.StringField(12)
-  netBiosPrefix = _messages.StringField(13)
-  nfsUsersWithLdap = _messages.BooleanField(14)
-  organizationalUnit = _messages.StringField(15)
-  password = _messages.StringField(16)
-  securityOperators = _messages.StringField(17, repeated=True)
-  site = _messages.StringField(18)
-  state = _messages.EnumField('StateValueValuesEnum', 19)
-  stateDetails = _messages.StringField(20)
-  username = _messages.StringField(21)
+  administrators = _messages.StringField(1, repeated=True)
+  aesEncryption = _messages.BooleanField(2)
+  backupOperators = _messages.StringField(3, repeated=True)
+  createTime = _messages.StringField(4)
+  description = _messages.StringField(5)
+  dns = _messages.StringField(6)
+  domain = _messages.StringField(7)
+  encryptDcConnections = _messages.BooleanField(8)
+  kdcHostname = _messages.StringField(9)
+  kdcIp = _messages.StringField(10)
+  labels = _messages.MessageField('LabelsValue', 11)
+  ldapSigning = _messages.BooleanField(12)
+  name = _messages.StringField(13)
+  netBiosPrefix = _messages.StringField(14)
+  nfsUsersWithLdap = _messages.BooleanField(15)
+  organizationalUnit = _messages.StringField(16)
+  password = _messages.StringField(17)
+  securityOperators = _messages.StringField(18, repeated=True)
+  site = _messages.StringField(19)
+  state = _messages.EnumField('StateValueValuesEnum', 20)
+  stateDetails = _messages.StringField(21)
+  username = _messages.StringField(22)
 
 
 class Backup(_messages.Message):
@@ -2564,9 +2567,14 @@ class Volume(_messages.Message):
     kmsConfig: Output only. Specifies the KMS config to be used for volume
       encryption.
     labels: Optional. Labels as key value pairs
+    largeCapacity: Optional. Flag indicating if the volume will be a large
+      capacity volume or a regular volume.
     ldapEnabled: Output only. Flag indicating if the volume is NFS LDAP
       enabled or not.
     mountOptions: Output only. Mount options of this volume
+    multipleEndpoints: Optional. Flag indicating if the volume will have an IP
+      address per node for volumes supporting multiple IP endpoints. Only the
+      volume with large_capacity will be allowed to have multiple endpoints.
     name: Identifier. Name of the volume
     network: Output only. VPC Network name. Format:
       projects/{project}/global/networks/{network}
@@ -2744,26 +2752,28 @@ class Volume(_messages.Message):
   kerberosEnabled = _messages.BooleanField(9)
   kmsConfig = _messages.StringField(10)
   labels = _messages.MessageField('LabelsValue', 11)
-  ldapEnabled = _messages.BooleanField(12)
-  mountOptions = _messages.MessageField('MountOption', 13, repeated=True)
-  name = _messages.StringField(14)
-  network = _messages.StringField(15)
-  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 16, repeated=True)
-  psaRange = _messages.StringField(17)
-  restoreParameters = _messages.MessageField('RestoreParameters', 18)
-  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 19, repeated=True)
-  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 20)
-  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 21)
-  shareName = _messages.StringField(22)
-  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 23, repeated=True)
-  snapReserve = _messages.FloatField(24)
-  snapshotDirectory = _messages.BooleanField(25)
-  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 26)
-  state = _messages.EnumField('StateValueValuesEnum', 27)
-  stateDetails = _messages.StringField(28)
-  storagePool = _messages.StringField(29)
-  unixPermissions = _messages.StringField(30)
-  usedGib = _messages.IntegerField(31)
+  largeCapacity = _messages.BooleanField(12)
+  ldapEnabled = _messages.BooleanField(13)
+  mountOptions = _messages.MessageField('MountOption', 14, repeated=True)
+  multipleEndpoints = _messages.BooleanField(15)
+  name = _messages.StringField(16)
+  network = _messages.StringField(17)
+  protocols = _messages.EnumField('ProtocolsValueListEntryValuesEnum', 18, repeated=True)
+  psaRange = _messages.StringField(19)
+  restoreParameters = _messages.MessageField('RestoreParameters', 20)
+  restrictedActions = _messages.EnumField('RestrictedActionsValueListEntryValuesEnum', 21, repeated=True)
+  securityStyle = _messages.EnumField('SecurityStyleValueValuesEnum', 22)
+  serviceLevel = _messages.EnumField('ServiceLevelValueValuesEnum', 23)
+  shareName = _messages.StringField(24)
+  smbSettings = _messages.EnumField('SmbSettingsValueListEntryValuesEnum', 25, repeated=True)
+  snapReserve = _messages.FloatField(26)
+  snapshotDirectory = _messages.BooleanField(27)
+  snapshotPolicy = _messages.MessageField('SnapshotPolicy', 28)
+  state = _messages.EnumField('StateValueValuesEnum', 29)
+  stateDetails = _messages.StringField(30)
+  storagePool = _messages.StringField(31)
+  unixPermissions = _messages.StringField(32)
+  usedGib = _messages.IntegerField(33)
 
 
 class WeeklySchedule(_messages.Message):

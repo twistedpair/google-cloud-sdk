@@ -20,15 +20,21 @@ from __future__ import unicode_literals
 
 # TODO(b/142489773) Required because of thread-safety issue with loading python
 # modules in the presence of threads.
+import collections
 import encodings.idna  # pylint: disable=unused-import
 import json
 import mimetypes
 import os
 import re
+import time
 
 from apitools.base.py import exceptions as apitools_exceptions
+from containerregistry.client import docker_name
+from containerregistry.client.v2_2 import docker_http
+from containerregistry.client.v2_2 import docker_image
 from googlecloudsdk.api_lib import artifacts
 from googlecloudsdk.api_lib.artifacts import exceptions as ar_exceptions
+from googlecloudsdk.api_lib.container.images import util
 from googlecloudsdk.api_lib.util import common_args
 from googlecloudsdk.api_lib.util import waiter
 from googlecloudsdk.calliope import base
@@ -459,14 +465,10 @@ def AppendParentInfoToListVersionsAndTagsResponse(response, args):
 
 def GetGCRRepos(buckets, project):
   """Gets a list of GCR repositories given a list of GCR bucket names."""
-  messages = ar_requests.GetMessages()
   existing_buckets = GetExistingGCRBuckets(buckets, project)
 
   def RepoMsg(bucket):
-    return messages.Repository(
-        name="projects/{}/locations/{}/repositories/{}".format(
-            project, bucket["location"], bucket["repository"]),
-        format=messages.Repository.FormatValueValuesEnum.DOCKER),
+    return bucket["repository"]
 
   return map(RepoMsg, existing_buckets)
 
@@ -479,7 +481,7 @@ def GetExistingGCRBuckets(buckets, project):
   if ":" in project:
     domain, project_id = project.split(":")
     project_id_for_bucket = "{}.{}.a".format(project_id, domain)
-  for bucket in buckets:
+  for bucket in buckets.values():
     try:
       ar_requests.TestStorageIAMPermission(
           bucket["bucket"].format(project_id_for_bucket), project)
@@ -751,6 +753,59 @@ gcr_repos = [
 ]
 
 
+def GetMultiProjectRedirectionEnablementReport(projects):
+  """Prints a redirection enablement report and returns mis-configured repos.
+
+  This checks all the GCR repositories in the supplied project and checks if
+  they each have a repository in Artifact Registry create to be the redirection
+  target. It prints a report as it validates.
+
+  Args:
+    projects: The projects to validate
+
+  Returns:
+    A list of the GCR repos that do not have a redirection repo configured in
+    Artifact Registry.
+  """
+
+  missing_repos = {}
+  if not projects:
+    return missing_repos
+  repo_report = []
+  con = console_attr.GetConsoleAttr()
+
+  # For each gcr repo in a location that our environment supports,
+  # is there an associated repo in AR?
+  for project in projects:
+    report_line = [project, 0]
+    p_repos = []
+    for gcr_repo in gcr_repos:
+      ar_repo_name = "projects/{}/locations/{}/repositories/{}".format(
+          project, gcr_repo["location"], gcr_repo["repository"]
+      )
+      try:
+        ar_requests.GetRepository(ar_repo_name)
+      except apitools_exceptions.HttpNotFoundError:
+        report_line[1] += 1
+        p_repos.append(gcr_repo)
+    repo_report.append(report_line)
+    log.status.Print(report_line)
+    if p_repos:
+      missing_repos[project] = p_repos
+
+  log.status.Print("Project Repository Report:\n")
+  printer = resource_printer.Printer("table", out=log.status)
+  printer.AddHeading([
+      con.Emphasize("Project", bold=True),
+      con.Emphasize("Missing Artifact Registry Repos to Create", bold=True),
+  ])
+  for line in repo_report:
+    printer.AddRecord(line)
+  printer.Finish()
+  log.status.Print()
+  return missing_repos
+
+
 def GetRedirectionEnablementReport(project):
   """Prints a redirection enablement report and returns mis-configured repos.
 
@@ -810,6 +865,24 @@ def GetRedirectionEnablementReport(project):
   return missing_repos
 
 
+def GetExistingRepos(project):
+  """Gets the already created repos for the given project."""
+  found_repos = []
+  location = getattr(properties.VALUES.artifacts, "location").Get()
+  for gcr_repo in gcr_repos:
+    if gcr_base != "gcr.io" and location and location != gcr_repo["location"]:
+      continue
+    ar_repo_name = "projects/{}/locations/{}/repositories/{}".format(
+        project, gcr_repo["location"], gcr_repo["repository"]
+    )
+    try:
+      ar_requests.GetRepository(ar_repo_name)
+      found_repos.append(gcr_repo)
+    except apitools_exceptions.HttpNotFoundError:
+      continue
+  return found_repos
+
+
 # TODO(b/261183749): Remove modify_request_hook when singleton resource args
 # are enabled in declarative.
 def UpdateSettingsResource(unused_ref, unused_args, req):
@@ -864,6 +937,446 @@ def DenyVPCSCConfig(unused_ref, args):
   return ar_requests.DenyVPCSCConfig(project, location)
 
 
+def GetRedirectionStates(projects):
+  """Gets the redirection states for the given projects."""
+  if not CheckRedirectionPermission(projects):
+    return None, False
+
+  env = "prod"
+  endpoint_property = getattr(
+      properties.VALUES.api_endpoint_overrides, "artifactregistry"
+  )
+  old_endpoint = endpoint_property.Get()
+  if old_endpoint and "staging" in old_endpoint:
+    env = "staging"
+    # Staging uses prod redirect endpoint
+    # gcloud-disable-gdu-domain
+    endpoint_property.Set("https://artifactregistry.googleapis.com/")
+  redirection_states = {}
+  try:
+    for project in projects:
+      redirection_states[project] = ar_requests.GetProjectSettings(
+          project
+      ).legacyRedirectionState
+  finally:
+    if env == "staging":
+      endpoint_property.Set(old_endpoint)
+  return redirection_states, True
+
+
+def SetRedirectionStatus(project, status):
+  """Sets the redirection status for the given project."""
+  endpoint_property = getattr(
+      properties.VALUES.api_endpoint_overrides, "artifactregistry"
+  )
+  old_endpoint = endpoint_property.Get()
+  env = "prod"
+  try:
+    if old_endpoint and "staging" in old_endpoint:
+      env = "staging"
+      # Staging uses prod redirect endpoint
+      # gcloud-disable-gdu-domain
+      endpoint_property.Set("https://artifactregistry.googleapis.com/")
+    ar_requests.SetUpgradeRedirectionState(project, status)
+  except apitools_exceptions.HttpForbiddenError as e:
+    con = console_attr.GetConsoleAttr()
+    match = re.search("requires (.*) to have storage.objects.", str(e))
+    if not match:
+      raise
+    log.status.Print(
+        con.Colorize("\nERROR:", "red")
+        + " The Artifact Registry service account doesn't have access to"
+        " {project} for copying images\nThe following command will grant the"
+        " necessary access (may take a few minutes):\n  gcloud projects"
+        " add-iam-policy-binding {project} --member='serviceAccount:{p4sa}'"
+        " --role='roles/storage.objectViewer'\n".format(
+            p4sa=match[1], project=project
+        ),
+    )
+    return False
+  finally:
+    if env == "staging":
+      endpoint_property.Set(old_endpoint)
+  return True
+
+
+def MigrateToArtifactRegistry(unused_ref, args):
+  """Runs the automigrate wizard for the current project."""
+  if args.projects:
+    projects = args.projects.split(",")
+  else:
+    projects = [args.project or properties.VALUES.core.project.GetOrFail()]
+  recent_images_only = args.recent_images_only
+  from_gcr = args.from_gcr
+  to_pkg_dev = args.to_pkg_dev
+  copy_only = args.copy_only
+  if recent_images_only is not None and (
+      recent_images_only < 30 or recent_images_only > 90
+  ):
+    log.status.Print("--recent-images-only must be between 30 and 90 inclusive")
+    return None
+  if args.projects and (from_gcr or to_pkg_dev):
+    log.status.Print(
+        "Projects argument may not be used when providing --from-gcr and"
+        " --to-pkg-dev"
+    )
+    return None
+
+  if bool(from_gcr) != bool(to_pkg_dev):
+    log.status.Print(
+        "--from-gcr and --to-pkg-dev-repo should be provided together"
+    )
+    return None
+
+  if to_pkg_dev:
+    gcr_host = from_gcr.split("/")[0]
+    if gcr_host not in _ALLOWED_GCR_REPO_LOCATION.keys():
+      log.status.Print(
+          "{gcr_host} is not a valid gcr host. Valid hosts: {hosts}".format(
+              gcr_host=gcr_host,
+              hosts=", ".join(_ALLOWED_GCR_REPO_LOCATION.keys()),
+          )
+      )
+      return None
+    location = _ALLOWED_GCR_REPO_LOCATION[gcr_host]
+    host = "{}{}-docker.pkg.dev".format(
+        properties.VALUES.artifacts.registry_endpoint_prefix.Get(), location
+    )
+    if not WrappedCopyImagesFromGCR(
+        [host],
+        to_pkg_dev,
+        recent_images_only,
+        copy_from=from_gcr,
+    ):
+      return None
+
+    if not copy_only:
+      log.status.Print(
+          "\nAny reference to {gcr} will "
+          "still need to be updated to reference {ar}".format(
+              gcr=from_gcr, ar=host + "/" + to_pkg_dev
+          )
+      )
+    return None
+
+  messages = ar_requests.GetMessages()
+  if copy_only:
+    copying_projects = projects
+    enabled_projects = []
+    disabled_projects = []
+    invalid_projects = []
+  else:
+    redirection_state, cont = GetRedirectionStates(projects)
+    if not cont:
+      return None
+    enabled_projects = []
+    disabled_projects = []
+    copying_projects = []
+    invalid_projects = []
+    for project, state in redirection_state.items():
+      if (
+          state
+          == messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED
+      ):
+        enabled_projects.append(project)
+      elif (
+          state
+          == messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED_AND_COPYING
+      ):
+        copying_projects.append(project)
+      elif (
+          state
+          == messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_DISABLED
+      ):
+        disabled_projects.append(project)
+      else:
+        invalid_projects.append(project)
+
+  if invalid_projects:
+    log.status.Print(
+        "Skipping migration for projects in unsppoted state: {}".format(
+            invalid_projects
+        )
+    )
+    if len(invalid_projects) == len(projects):
+      return None
+
+  # Exit early if all projects are migrated
+  if len(enabled_projects) == len(projects):
+    log.status.Print(
+        "Artifact Registry is already handling all requests for *gcr.io repos"
+        " for the provided projects"
+    )
+    return None
+
+  if enabled_projects:
+    log.status.Print(
+        "Skipping already migrated projects: {}\n".format(enabled_projects)
+    )
+
+  # Only do the initial steps for projects where we haven't started redirection
+  # yet. Otherwise, we pick up where we left off.
+  if disabled_projects:
+    if not MaybeCreateMissingRepos(
+        disabled_projects, automigrate=True, dry_run=False
+    ):
+      return None
+  # Re-check list of repos because we tried to create some
+  # Also get list for copying projects while we're at it, because we'll
+  # need them later
+  existing_repos = {}
+  for project in disabled_projects + copying_projects:
+    existing_repos[project] = GetExistingRepos(project)
+
+  projects_to_redirect = []
+  dangerous_projects = []
+  for project in disabled_projects:
+    if not existing_repos[project]:
+      log.status.Print(
+          "Skipping project {} because it has no Artifact Registry repos to"
+          " migrate to".format(project)
+      )
+    # If we're missing any repos, check if they're repos with GCR buckets
+    missing_bucket_repos = []
+    if len(existing_repos[project]) < 4:
+      repos_with_gcr_buckets = GetGCRRepos(_GCR_BUCKETS, project)
+      for g in repos_with_gcr_buckets:
+        if g not in [r["repository"] for r in existing_repos[project]]:
+          missing_bucket_repos.append(g)
+
+    if missing_bucket_repos:
+      dangerous_projects.append(project)
+    else:
+      projects_to_redirect.append(project)
+
+  if projects_to_redirect:
+    for project in dangerous_projects:
+      log.status.Print(
+          "Skipping project {} because it has a Container Registry"
+          " bucket without a corresponding Artifact Registry"
+          " repository.".format(project)
+      )
+  # If all listed projects are dangerous, this may be intentional. Allow it, but
+  # warn first
+  elif dangerous_projects:
+    c = console_attr.GetConsoleAttr()
+    cont = console_io.PromptContinue(
+        "\n{project_str} has Container Registry buckets without"
+        " corresponding Artifact Registry repositories. Existing Container"
+        " Registry data will become innacessible.".format(
+            project_str="This project"
+            if len(dangerous_projects) == 1
+            else "Each project"
+        ),
+        "Do you wish to continue " + c.Colorize("(not recommended)", "red"),
+        default=False,
+    )
+    if not cont:
+      return None
+    projects_to_redirect = dangerous_projects
+  # TODO: b/322822683 - update auth here
+  if projects_to_redirect:
+    caveat = ""
+    if recent_images_only:
+      caveat = (
+          " that have been pulled or pushed in the last"
+          f" {recent_images_only} days"
+      )
+    log.status.Print(
+        "\nIf you continue, all *gcr.io traffic will be sent to Artifact"
+        " Registry for the following projects. All Container Registry"
+        f" images{caveat} will be copied. During migration, Artifact Registry"
+        " will serve *gcr.io requests for images it doesn't have yet"
+        " by copying them from Container Registry at request time."
+        " Deleting images from *gcr.io repos in the middle of migration might"
+        " not be effective.\n"
+    )
+    update = console_io.PromptContinue(
+        "Projects to redirect: {}".format(projects_to_redirect),
+        default=False,
+    )
+    if not update:
+      return None
+
+  for project in projects_to_redirect:
+    if SetRedirectionStatus(
+        project,
+        messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED_AND_COPYING,
+    ):
+      copying_projects.append(project)
+      log.status.Print(
+          "*gcr.io traffic is now being served by Artifact Registry for"
+          " {project}. Missing images are being copied from Container Registry"
+          "\nTo send traffic back to Container Registry, run:"
+          "\n  gcloud artifacts settings disable-upgrade-redirection"
+          " --project={project}\n".format(project=project)
+      )
+
+  if not copying_projects:
+    return None
+
+  if copy_only:
+    log.status.Print("\nCopying images...\n")
+  else:
+    log.status.Print("\nCopying remaining images...\n")
+    # Redirection has 10-second eventual consistency. If we redirected any
+    # projects, wait 10 seconds to avoid race conditions
+    if projects_to_redirect:
+      time.sleep(10)
+
+  # TODO: b/322823451 - add a threadpool
+  # Note that we're already copying automatically at this point. This step
+  # just makes sure we've copied all the remaining images before we turn off
+  # copying. This could take a while for large repos.
+  failed_copies = []
+  to_enable = []
+  for project in copying_projects:
+    gcr_hosts = [r["host"] for r in existing_repos[project]]
+    if WrappedCopyImagesFromGCR(gcr_hosts, project, recent_images_only):
+      to_enable.append(project)
+    else:
+      failed_copies.append(project)
+
+  if copy_only:
+    return None
+
+  if failed_copies:
+    if to_enable:
+      log.status.Print("\nOnly completing migration for successful projects")
+    else:
+      cont = console_io.PromptContinue(
+          "\nAll projects had image copy failures. Continuing will disable"
+          " further copying and images will be missing.",
+          "Continue anyway?",
+          default=False,
+      )
+      if cont:
+        to_enable = failed_copies
+      if not cont:
+        return None
+
+  log.status.Print()
+  for project in to_enable:
+    if SetRedirectionStatus(
+        project,
+        messages.ProjectSettings.LegacyRedirectionStateValueValuesEnum.REDIRECTION_FROM_GCR_IO_ENABLED,
+    ):
+      log.status.Print(
+          "*gcr.io traffic is now being fully served by Artifact Registry for"
+          " {project}. Images will no longer be copied from Container Registry"
+          " for this project.".format(project=project)
+      )
+      enabled_projects.append(project)
+  log.status.Print(
+      "\nThe following projects are fully migrated: {}".format(enabled_projects)
+  )
+  remaining_projects = list(set(projects) - set(enabled_projects))
+  if remaining_projects:
+    log.status.Print(
+        "The following projects still need to finish being migrated: {}".format(
+            remaining_projects
+        )
+    )
+    log.status.Print(
+        "\nThis script can be re-run to migrate any projects that haven't"
+        "finished."
+    )
+
+
+def WrappedCopyImagesFromGCR(
+    hosts, project_repo, recent_only, copy_from="same"
+):
+  """Copies images from GCR for all hosts and handles auth error."""
+  try:
+    results = collections.defaultdict(int)
+    example_failures = []
+    for host in hosts:
+      host_results = CopyImagesFromGCR(
+          host + "/" + project_repo, recent_only, copy_from=copy_from
+      )
+      results["manifestsCopied"] += host_results["manifestsCopied"]
+      results["tagsCopied"] += host_results["tagsCopied"]
+      results["manifestsFailed"] += host_results["manifestsFailed"]
+      results["tagsFailed"] += host_results["tagsFailed"]
+      example_failures += host_results["exampleFailures"]
+
+    log.status.Print(
+        "\n{project}: Successfully copied {tags} additional tags and"
+        " {manifests} additional manifests. There were {failures} failures."
+        .format(
+            project=project_repo,
+            tags=results["tagsCopied"],
+            manifests=results["manifestsCopied"],
+            failures=results["tagsFailed"] + results["manifestsFailed"],
+        )
+    )
+    if results["tagsFailed"] + results["manifestsFailed"]:
+      log.status.Print("\nExample images that failed to copy:")
+      for example_failure in example_failures:
+        log.status.Print(example_failure)
+      return False
+    return True
+  except docker_http.V2DiagnosticException as e:
+    match = re.search("requires (.*) to have storage.objects.", str(e))
+    if not match:
+      raise
+    con = console_attr.GetConsoleAttr()
+    project = project_repo
+    if copy_from != "same":
+      project = copy_from.split("/")[-1]
+    log.status.Print(
+        con.Colorize("\nERROR:", "red")
+        + " The Artifact Registry service account doesn't have access to"
+        " {project} for copying images\nThe following command will grant the"
+        " necessary access (may take a few minutes):\n  gcloud projects"
+        " add-iam-policy-binding {project} --member='serviceAccount:{p4sa}'"
+        " --role='roles/storage.objectViewer'\n".format(
+            p4sa=match[1], project=project
+        ),
+    )
+    return False
+
+
+def CopyImagesFromGCR(repo_path, recent_only, copy_from="same"):
+  """Recursively copies images from GCR."""
+  if copy_from == "same":
+    log.status.Print(f"Copying images for {repo_path}...")
+  else:
+    log.status.Print(f"Copying images to {repo_path}...")
+  http_obj = util.Http()
+  repository = docker_name.Repository(repo_path)
+  with docker_image.FromRegistry(
+      basic_creds=util.CredentialProvider(),
+      name=repository,
+      transport=http_obj,
+  ) as image:
+    query = "?CopyFromGCR={}".format(copy_from)
+    if recent_only:
+      query += "&PullDays={recent_only}"
+    tags_payload = json.loads(
+        # pylint:disable-next=protected-access
+        image._content(f"tags/list{query}").decode("utf8")
+    )
+  results = {}
+  results["manifestsCopied"] = tags_payload.get("manifestsCopied", 0)
+  results["tagsCopied"] = tags_payload.get("tagsCopied", 0)
+  results["manifestsFailed"] = tags_payload.get("manifestsFailed", 0)
+  results["tagsFailed"] = tags_payload.get("tagsFailed", 0)
+  results["exampleFailures"] = tags_payload.get("exampleFailures", [])
+  for child in tags_payload["child"]:
+    child_results = CopyImagesFromGCR(
+        repo_path + "/" + child, recent_only, copy_from=copy_from
+    )
+    results["manifestsCopied"] += child_results["manifestsCopied"]
+    results["tagsCopied"] += child_results["tagsCopied"]
+    results["manifestsFailed"] += child_results["manifestsFailed"]
+    results["tagsFailed"] += child_results["tagsFailed"]
+    results["exampleFailures"] += child_results["exampleFailures"]
+  if len(results["exampleFailures"]) > 10:
+    results["exampleFailures"] = results["exampleFailures"][:10]
+  return results
+
+
 # Returns if we should continue with migration
 def MaybeCreateMissingRepos(projects, automigrate, dry_run):
   """Creates missing repos if needed and requested by the user."""
@@ -871,8 +1384,7 @@ def MaybeCreateMissingRepos(projects, automigrate, dry_run):
   if len(projects) == 1:
     missing_repos = {projects[0]: GetRedirectionEnablementReport(projects[0])}
   else:
-    log.status.Print("Migrating multiple projects not currently supported")
-    return False
+    missing_repos = GetMultiProjectRedirectionEnablementReport(projects)
 
   if dry_run:
     log.status.Print("Dry run enabled, no changes made.")

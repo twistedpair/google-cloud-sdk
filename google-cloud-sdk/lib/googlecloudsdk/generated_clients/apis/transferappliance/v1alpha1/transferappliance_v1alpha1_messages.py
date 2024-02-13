@@ -1121,6 +1121,7 @@ class Order(_messages.Message):
       SIN: Singapore datacenter location.
       UK: UK datacenter location.
       JPN: Japan datacenter location.
+      CAN: Canada(Montr\xe9al) data center.
     """
     DATACENTER_LOCATION_UNSPECIFIED = 0
     US = 1
@@ -1129,6 +1130,7 @@ class Order(_messages.Message):
     SIN = 4
     UK = 5
     JPN = 6
+    CAN = 7
 
   class StateValueValuesEnum(_messages.Enum):
     r"""Output only. The state of the order.

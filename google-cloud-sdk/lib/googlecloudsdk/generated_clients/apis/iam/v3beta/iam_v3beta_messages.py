@@ -547,6 +547,10 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
   r"""Principal access boundary policy details
 
   Fields:
+    enforcementVersion: Optional. The version number that indicates which GCP
+      services are included in the enforcement (e.g. "latest", "1", ...). If
+      empty, the PAB policy version will be set to the current latest version,
+      and this version won't get updated when new versions are released.
     rules: Required. A list of principal access boundary policy rules.
     staticEnforcementVersionNumber: A specific version number. This will need
       to be manually updated to newer versions as they become available in
@@ -556,9 +560,10 @@ class GoogleIamV3betaPrincipalAccessBoundaryPolicyDetails(_messages.Message):
       included in enforcemment.
   """
 
-  rules = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicyRule', 1, repeated=True)
-  staticEnforcementVersionNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  useLatestEnforcementVersion = _messages.BooleanField(3)
+  enforcementVersion = _messages.StringField(1)
+  rules = _messages.MessageField('GoogleIamV3betaPrincipalAccessBoundaryPolicyRule', 2, repeated=True)
+  staticEnforcementVersionNumber = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  useLatestEnforcementVersion = _messages.BooleanField(4)
 
 
 class GoogleIamV3betaPrincipalAccessBoundaryPolicyRule(_messages.Message):

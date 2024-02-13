@@ -159,7 +159,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -200,10 +204,9 @@ class CloudFunction(_messages.Message):
 
   Enums:
     DockerRegistryValueValuesEnum: Docker Registry to use for this deployment.
-      If `docker_repository` field is specified, this field will be
-      automatically set as `ARTIFACT_REGISTRY`. If unspecified, it currently
-      defaults to `CONTAINER_REGISTRY`. This field may be overridden by the
-      backend for eligible deployments.
+      If unspecified, it defaults to `ARTIFACT_REGISTRY`. If
+      `docker_repository` field is specified, this field should either be left
+      unspecified or set to `ARTIFACT_REGISTRY`.
     IngressSettingsValueValuesEnum: The ingress settings for the function,
       controlling what traffic can reach it.
     StatusValueValuesEnum: Output only. Status of the function deployment.
@@ -248,10 +251,9 @@ class CloudFunction(_messages.Message):
       The URL of a customer provided buildpack stack.
     description: User-provided description of a function.
     dockerRegistry: Docker Registry to use for this deployment. If
-      `docker_repository` field is specified, this field will be automatically
-      set as `ARTIFACT_REGISTRY`. If unspecified, it currently defaults to
-      `CONTAINER_REGISTRY`. This field may be overridden by the backend for
-      eligible deployments.
+      unspecified, it defaults to `ARTIFACT_REGISTRY`. If `docker_repository`
+      field is specified, this field should either be left unspecified or set
+      to `ARTIFACT_REGISTRY`.
     dockerRepository: User managed repository created in Artifact Registry
       optionally with a customer managed encryption key. If specified,
       deployments will use Artifact Registry. If unspecified and the
@@ -355,11 +357,10 @@ class CloudFunction(_messages.Message):
   """
 
   class DockerRegistryValueValuesEnum(_messages.Enum):
-    r"""Docker Registry to use for this deployment. If `docker_repository`
-    field is specified, this field will be automatically set as
-    `ARTIFACT_REGISTRY`. If unspecified, it currently defaults to
-    `CONTAINER_REGISTRY`. This field may be overridden by the backend for
-    eligible deployments.
+    r"""Docker Registry to use for this deployment. If unspecified, it
+    defaults to `ARTIFACT_REGISTRY`. If `docker_repository` field is
+    specified, this field should either be left unspecified or set to
+    `ARTIFACT_REGISTRY`.
 
     Values:
       DOCKER_REGISTRY_UNSPECIFIED: Unspecified.
@@ -894,16 +895,15 @@ class GenerateUploadUrlRequest(_messages.Message):
 
   Fields:
     kmsKeyName: Resource name of a KMS crypto key (managed by the user) used
-      to encrypt/decrypt function source code objects in staging Cloud Storage
-      buckets. When you generate an upload url and upload your source code, it
-      gets copied to a staging Cloud Storage bucket in an internal regional
-      project. The source code is then copied to a versioned directory in the
-      sources bucket in the consumer project during the function deployment.
-      It must match the pattern `projects/{project}/locations/{location}/keyRi
-      ngs/{key_ring}/cryptoKeys/{crypto_key}`. The Google Cloud Functions
-      service account (service-{project_number}@gcf-admin-
-      robot.iam.gserviceaccount.com) must be granted the role 'Cloud KMS
-      CryptoKey Encrypter/Decrypter
+      to encrypt/decrypt function source code objects in intermediate Cloud
+      Storage buckets. When you generate an upload url and upload your source
+      code, it gets copied to an intermediate Cloud Storage bucket. The source
+      code is then copied to a versioned directory in the sources bucket in
+      the consumer project during the function deployment. It must match the
+      pattern `projects/{project}/locations/{location}/keyRings/{key_ring}/cry
+      ptoKeys/{crypto_key}`. The Google Cloud Functions service account
+      (service-{project_number}@gcf-admin-robot.iam.gserviceaccount.com) must
+      be granted the role 'Cloud KMS CryptoKey Encrypter/Decrypter
       (roles/cloudkms.cryptoKeyEncrypterDecrypter)' on the
       Key/KeyRing/Project/Organization (least access preferred). GCF will
       delegate access to the Google Storage service account in the internal

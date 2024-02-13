@@ -5875,6 +5875,65 @@ class GoogleCloudDataplexV1ManagedEntry(_messages.Message):
   name = _messages.StringField(2)
 
 
+class GoogleCloudDataplexV1MetadataJobEvent(_messages.Message):
+  r"""These messages contain information about the execution of a metadata
+  job. The monitored resource is 'MetadataJob'.
+
+  Fields:
+    importResult: Import job results. Should only be populated on terminal
+      states.
+    message: Message describing failure or success event.
+    resource: The resource name associated with the event. Supported resources
+      included, but not limited to EntryGroup, MetadataJob, and Entry.
+  """
+
+  importResult = _messages.MessageField('GoogleCloudDataplexV1MetadataJobEventImportResult', 1)
+  message = _messages.StringField(2)
+  resource = _messages.StringField(3)
+
+
+class GoogleCloudDataplexV1MetadataJobEventImportResult(_messages.Message):
+  r"""Import job result for metadata job.
+
+  Enums:
+    StateValueValuesEnum: Output only. Terminal state of the import job.
+
+  Fields:
+    createdEntries: Total number of entries created.
+    deletedEntries: Total number of entries deleted.
+    mutatedEntryGroups: The number of entry groups modified/specified by the
+      import job.
+    recreatedEntries: Total number of entries recreated.
+    state: Output only. Terminal state of the import job.
+    unchangedEntries: Total number of entries left unchanged.
+    updatedEntries: Total number of entries updated.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. Terminal state of the import job.
+
+    Values:
+      STATE_UNSPECIFIED: State Unspecified.
+      SUCCEEDED: Import Job was successful.
+      FAILED: Import Job was failed.
+      CANCELLED: Import job was cancelled.
+      RUNNING: Import Job is running.
+    """
+    STATE_UNSPECIFIED = 0
+    SUCCEEDED = 1
+    FAILED = 2
+    CANCELLED = 3
+    RUNNING = 4
+
+  createdEntries = _messages.IntegerField(1)
+  deletedEntries = _messages.IntegerField(2)
+  mutatedEntryGroups = _messages.IntegerField(3)
+  recreatedEntries = _messages.IntegerField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  unchangedEntries = _messages.IntegerField(6)
+  updatedEntries = _messages.IntegerField(7)
+
+
 class GoogleCloudDataplexV1OperationMetadata(_messages.Message):
   r"""Represents the metadata of a long-running operation.
 
@@ -7452,7 +7511,11 @@ class GoogleIamV1Binding(_messages.Message):
       ed:principal://iam.googleapis.com/locations/global/workforcePools/my-
       pool-id/subject/my-subject-attribute-value.
     role: Role that is assigned to the list of members, or principals. For
-      example, roles/viewer, roles/editor, or roles/owner.
+      example, roles/viewer, roles/editor, or roles/owner.For an overview of
+      the IAM roles and permissions, see the IAM documentation
+      (https://cloud.google.com/iam/docs/roles-overview). For a list of the
+      available pre-defined roles, see here
+      (https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('GoogleTypeExpr', 1)

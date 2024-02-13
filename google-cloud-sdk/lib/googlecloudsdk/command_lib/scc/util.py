@@ -174,9 +174,7 @@ def GetVersionFromArguments(
 
   if args.api_version == "v1":
     if location_specified:
-      # TODO: b/282774006 - Update error message to include details about
-      # location support.
-      raise errors.InvalidAPIVersion("Location is not supported by v1.")
+      return "v2"
     return "v1"
 
   return "v2"

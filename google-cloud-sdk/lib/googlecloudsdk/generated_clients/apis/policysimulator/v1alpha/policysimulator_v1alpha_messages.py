@@ -762,6 +762,52 @@ class GoogleCloudPolicysimulatorV1alphaBindingExplanationAnnotatedMembership(_me
   relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
 
 
+class GoogleCloudPolicysimulatorV1alphaCreateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
+  r"""CreateOrgPolicyViolationsPreviewOperationMetadata is metadata about an
+  OrgPolicyViolationsPreview generations operation.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the operation.
+
+  Fields:
+    requestTime: Time when the request was received.
+    resourcesFound: Total number of resources that need scanning. Should equal
+      resource_scanned + resources_pending
+    resourcesPending: Number of resources still to scan.
+    resourcesScanned: Number of resources already scanned.
+    startTime: Time when the request started processing, i.e., when the state
+      was set to RUNNING.
+    state: Output only. The current state of the operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the operation.
+
+    Values:
+      PREVIEW_STATE_UNSPECIFIED: The state is unspecified.
+      PREVIEW_PENDING: The OrgPolicyViolationsPreview has not been created
+        yet.
+      PREVIEW_RUNNING: The OrgPolicyViolationsPreview is currently being
+        created.
+      PREVIEW_SUCCEEDED: The OrgPolicyViolationsPreview creation finished
+        successfully.
+      PREVIEW_FAILED: The OrgPolicyViolationsPreview creation failed with an
+        error.
+    """
+    PREVIEW_STATE_UNSPECIFIED = 0
+    PREVIEW_PENDING = 1
+    PREVIEW_RUNNING = 2
+    PREVIEW_SUCCEEDED = 3
+    PREVIEW_FAILED = 4
+
+  requestTime = _messages.StringField(1)
+  resourcesFound = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  resourcesPending = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  resourcesScanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
 class GoogleCloudPolicysimulatorV1alphaExplainedAccess(_messages.Message):
   r"""Details about how a set of policies, listed in ExplainedPolicy, resulted
   in a certain AccessState when replaying an access tuple.
@@ -997,18 +1043,18 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlay(_messages.Message):
   r"""The proposed changes to OrgPolicy.
 
   Fields:
-    customConstraints: The OrgPolicy CustomConstraint changes to preview
-      violations for. Any existing CustomConstraints with the same name will
-      be overridden in the simulation. That is, violations will be determined
-      as if all custom constraints in the overlay were instantiated. Only a
-      single custom_constraint is supported in the overlay at a time. For
-      evaluating multiple constraints, multiple
+    customConstraints: Optional. The OrgPolicy CustomConstraint changes to
+      preview violations for. Any existing CustomConstraints with the same
+      name will be overridden in the simulation. That is, violations will be
+      determined as if all custom constraints in the overlay were
+      instantiated. Only a single custom_constraint is supported in the
+      overlay at a time. For evaluating multiple constraints, multiple
       `GenerateOrgPolicyViolationsPreview` requests are made, where each
       request evaluates a single constraint.
-    policies: The OrgPolicy changes to preview violations for. Any existing
-      OrgPolicies with the same name will be overridden in the simulation.
-      That is, violations will be determined as if all policies in the overlay
-      were created or updated.
+    policies: Optional. The OrgPolicy changes to preview violations for. Any
+      existing OrgPolicies with the same name will be overridden in the
+      simulation. That is, violations will be determined as if all policies in
+      the overlay were created or updated.
   """
 
   customConstraints = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayCustomConstraintOverlay', 1, repeated=True)
@@ -1019,9 +1065,9 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayCustomConstraintOverlay(_
   r"""A change to an OrgPolicy custom constraint.
 
   Fields:
-    customConstraint: The new or updated custom constraint.
-    customConstraintParent: Resource the constraint is attached to. Example:
-      "organization/987654"
+    customConstraint: Optional. The new or updated custom constraint.
+    customConstraintParent: Optional. Resource the constraint is attached to.
+      Example: "organization/987654"
   """
 
   customConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraint', 1)
@@ -1032,9 +1078,9 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayPolicyOverlay(_messages.M
   r"""A change to an OrgPolicy.
 
   Fields:
-    policy: The new or updated OrgPolicy.
-    policyParent: The parent of the policy we are attaching to. Example:
-      "projects/123456"
+    policy: Optional. The new or updated OrgPolicy.
+    policyParent: Optional. The parent of the policy we are attaching to.
+      Example: "projects/123456"
   """
 
   policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
@@ -1134,13 +1180,15 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreviewResourceCounts(
   changed OrgPolicy.
 
   Fields:
-    compliant: Number of scanned resources with zero violations.
-    errors: Number of resources that returned an error when scanned.
-    noncompliant: Number of scanned resources with at least one violation.
-    scanned: Number of resources checked for compliance. Must equal:
-      unenforced + noncompliant + compliant + error
-    unenforced: Number of resources where the constraint was not enforced,
-      i.e. the Policy set `enforced: false` for that resource.
+    compliant: Output only. Number of scanned resources with zero violations.
+    errors: Output only. Number of resources that returned an error when
+      scanned.
+    noncompliant: Output only. Number of scanned resources with at least one
+      violation.
+    scanned: Output only. Number of resources checked for compliance. Must
+      equal: unenforced + noncompliant + compliant + error
+    unenforced: Output only. Number of resources where the constraint was not
+      enforced, i.e. the Policy set `enforced: false` for that resource.
   """
 
   compliant = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1374,6 +1422,52 @@ class GoogleCloudPolicysimulatorV1alphaResourceContext(_messages.Message):
   resource = _messages.StringField(3)
 
 
+class GoogleCloudPolicysimulatorV1betaCreateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
+  r"""CreateOrgPolicyViolationsPreviewOperationMetadata is metadata about an
+  OrgPolicyViolationsPreview generations operation.
+
+  Enums:
+    StateValueValuesEnum: Output only. The current state of the operation.
+
+  Fields:
+    requestTime: Time when the request was received.
+    resourcesFound: Total number of resources that need scanning. Should equal
+      resource_scanned + resources_pending
+    resourcesPending: Number of resources still to scan.
+    resourcesScanned: Number of resources already scanned.
+    startTime: Time when the request started processing, i.e., when the state
+      was set to RUNNING.
+    state: Output only. The current state of the operation.
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. The current state of the operation.
+
+    Values:
+      PREVIEW_STATE_UNSPECIFIED: The state is unspecified.
+      PREVIEW_PENDING: The OrgPolicyViolationsPreview has not been created
+        yet.
+      PREVIEW_RUNNING: The OrgPolicyViolationsPreview is currently being
+        created.
+      PREVIEW_SUCCEEDED: The OrgPolicyViolationsPreview creation finished
+        successfully.
+      PREVIEW_FAILED: The OrgPolicyViolationsPreview creation failed with an
+        error.
+    """
+    PREVIEW_STATE_UNSPECIFIED = 0
+    PREVIEW_PENDING = 1
+    PREVIEW_RUNNING = 2
+    PREVIEW_SUCCEEDED = 3
+    PREVIEW_FAILED = 4
+
+  requestTime = _messages.StringField(1)
+  resourcesFound = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  resourcesPending = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  resourcesScanned = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  startTime = _messages.StringField(5)
+  state = _messages.EnumField('StateValueValuesEnum', 6)
+
+
 class GoogleCloudPolicysimulatorV1betaGenerateOrgPolicyViolationsPreviewOperationMetadata(_messages.Message):
   r"""GenerateOrgPolicyViolationsPreviewOperationMetadata is metadata about an
   OrgPolicyViolationsPreview generations operation.
@@ -1424,18 +1518,18 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay(_messages.Message):
   r"""The proposed changes to OrgPolicy.
 
   Fields:
-    customConstraints: The OrgPolicy CustomConstraint changes to preview
-      violations for. Any existing CustomConstraints with the same name will
-      be overridden in the simulation. That is, violations will be determined
-      as if all custom constraints in the overlay were instantiated. Only a
-      single custom_constraint is supported in the overlay at a time. For
-      evaluating multiple constraints, multiple
+    customConstraints: Optional. The OrgPolicy CustomConstraint changes to
+      preview violations for. Any existing CustomConstraints with the same
+      name will be overridden in the simulation. That is, violations will be
+      determined as if all custom constraints in the overlay were
+      instantiated. Only a single custom_constraint is supported in the
+      overlay at a time. For evaluating multiple constraints, multiple
       `GenerateOrgPolicyViolationsPreview` requests are made, where each
       request evaluates a single constraint.
-    policies: The OrgPolicy changes to preview violations for. Any existing
-      OrgPolicies with the same name will be overridden in the simulation.
-      That is, violations will be determined as if all policies in the overlay
-      were created or updated.
+    policies: Optional. The OrgPolicy changes to preview violations for. Any
+      existing OrgPolicies with the same name will be overridden in the
+      simulation. That is, violations will be determined as if all policies in
+      the overlay were created or updated.
   """
 
   customConstraints = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay', 1, repeated=True)
@@ -1446,9 +1540,9 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay(_m
   r"""A change to an OrgPolicy custom constraint.
 
   Fields:
-    customConstraint: The new or updated custom constraint.
-    customConstraintParent: Resource the constraint is attached to. Example:
-      "organization/987654"
+    customConstraint: Optional. The new or updated custom constraint.
+    customConstraintParent: Optional. Resource the constraint is attached to.
+      Example: "organization/987654"
   """
 
   customConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraint', 1)
@@ -1459,9 +1553,9 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay(_messages.Me
   r"""A change to an OrgPolicy.
 
   Fields:
-    policy: The new or updated OrgPolicy.
-    policyParent: The parent of the policy we are attaching to. Example:
-      "projects/123456"
+    policy: Optional. The new or updated OrgPolicy.
+    policyParent: Optional. The parent of the policy we are attaching to.
+      Example: "projects/123456"
   """
 
   policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
@@ -1542,13 +1636,15 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts(_
   changed OrgPolicy.
 
   Fields:
-    compliant: Number of scanned resources with zero violations.
-    errors: Number of resources that returned an error when scanned.
-    noncompliant: Number of scanned resources with at least one violation.
-    scanned: Number of resources checked for compliance. Must equal:
-      unenforced + noncompliant + compliant + error
-    unenforced: Number of resources where the constraint was not enforced,
-      i.e. the Policy set `enforced: false` for that resource.
+    compliant: Output only. Number of scanned resources with zero violations.
+    errors: Output only. Number of resources that returned an error when
+      scanned.
+    noncompliant: Output only. Number of scanned resources with at least one
+      violation.
+    scanned: Output only. Number of resources checked for compliance. Must
+      equal: unenforced + noncompliant + compliant + error
+    unenforced: Output only. Number of resources where the constraint was not
+      enforced, i.e. the Policy set `enforced: false` for that resource.
   """
 
   compliant = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1699,7 +1795,11 @@ class GoogleIamV1Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   bindingId = _messages.StringField(1)
@@ -2485,6 +2585,44 @@ class PolicysimulatorOperationsListRequest(_messages.Message):
   pageToken = _messages.StringField(4)
 
 
+class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreateRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsCreate
+  Request object.
+
+  Fields:
+    googleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview: A
+      GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview resource to
+      be passed as the request body.
+    orgPolicyViolationsPreviewId: Optional. An optional user-specified ID for
+      the OrgPolicyViolationsPreview. If not provided, a random ID will be
+      generated.
+    parent: Required. The organization under which this
+      OrgPolicyViolationsPreview will be created. Example: `organizations/my-
+      example-org/locations/global`
+  """
+
+  googleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview', 1)
+  orgPolicyViolationsPreviewId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsGenerateRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsGenera
+  teRequest object.
+
+  Fields:
+    googleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview: A
+      GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview resource to
+      be passed as the request body.
+    parent: Required. The organization under which this
+      OrgPolicyViolationsPreview will be created. Example: `organizations/my-
+      example-org/locations/global`
+  """
+
+  googleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreview', 1)
+  parent = _messages.StringField(2, required=True)
+
+
 class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsGetRequest(_messages.Message):
   r"""A
   PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsGetRequest
@@ -2503,12 +2641,13 @@ class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsListReques
   object.
 
   Fields:
-    pageSize: The maximum number of items to return. The service may return
-      fewer than this value. If unspecified, at most 5 items will be returned.
-      The maximum value is 10; values above 10 will be coerced to 10.
-    pageToken: A page token, received from a previous call. Provide this to
-      retrieve the subsequent page. When paginating, all other parameters must
-      match the call that provided the page token.
+    pageSize: Optional. The maximum number of items to return. The service may
+      return fewer than this value. If unspecified, at most 5 items will be
+      returned. The maximum value is 10; values above 10 will be coerced to
+      10.
+    pageToken: Optional. A page token, received from a previous call. Provide
+      this to retrieve the subsequent page. When paginating, all other
+      parameters must match the call that provided the page token.
     parent: Required. The parent the violations are scoped to. Format:
       `organizations/{organization}/locations/{location}` Example:
       `organizations/my-example-org/locations/global`
@@ -2530,18 +2669,29 @@ class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOperations
   name = _messages.StringField(1, required=True)
 
 
+class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyViolationsGetRequest(_messages.Message):
+  r"""A PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOrgPol
+  icyViolationsGetRequest object.
+
+  Fields:
+    name: Required. The name of the OrgPolicyViolation to get.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOrgPolicyViolationsListRequest(_messages.Message):
   r"""A PolicysimulatorOrganizationsLocationsOrgPolicyViolationsPreviewsOrgPol
   icyViolationsListRequest object.
 
   Fields:
-    pageSize: The maximum number of items to return. The service may return
-      fewer than this value. If unspecified, at most 50 items will be
+    pageSize: Optional. The maximum number of items to return. The service may
+      return fewer than this value. If unspecified, at most 50 items will be
       returned. The maximum value is 1000; values above 1000 will be coerced
       to 1000.
-    pageToken: A page token, received from a previous call. Provide this to
-      retrieve the subsequent page. When paginating, all other parameters must
-      match the call that provided the page token.
+    pageToken: Optional. A page token, received from a previous call. Provide
+      this to retrieve the subsequent page. When paginating, all other
+      parameters must match the call that provided the page token.
     parent: Required. The OrgPolicyViolationsPreview to get
       OrgPolicyViolations from. Format: organizations/{organization}/locations
       /{location}/orgPolicyViolationsPreviews/{orgPolicyViolationsPreview}

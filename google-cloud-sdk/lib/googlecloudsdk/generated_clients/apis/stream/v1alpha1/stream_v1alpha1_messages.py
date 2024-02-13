@@ -954,7 +954,7 @@ class GoogleApiServicecontrolV1ResourceInfo(_messages.Message):
 
   Fields:
     permission: The resource permission required for this request. Should be
-      an IAM Permission with the format "{service}/{plural}.{verb}".
+      an IAM Permission with the format "{service}.{plural}.{verb}".
     resourceContainer: The identifier of the parent of this resource instance.
       Must be in one of the following formats: - `projects/` - `folders/` -
       `organizations/`

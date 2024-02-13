@@ -1693,8 +1693,7 @@ class OracleSourceConfig(_messages.Message):
     maxConcurrentCdcTasks: Maximum number of concurrent CDC tasks. The number
       should be non-negative. If not set (or set to 0), the system's default
       value is used.
-    streamLargeObjects: Stream large object values. NOTE: This feature is
-      currently experimental.
+    streamLargeObjects: Stream large object values.
   """
 
   dropLargeObjects = _messages.MessageField('DropLargeObjects', 1)
@@ -2054,7 +2053,7 @@ class SpecificStartPosition(_messages.Message):
 
   Fields:
     mysqlLogPosition: MySQL specific log position to start replicating from.
-    oracleScnPosition: Oracle specific log position to start replicating from.
+    oracleScnPosition: Oracle SCN to start replicating from.
   """
 
   mysqlLogPosition = _messages.MessageField('MysqlLogPosition', 1)

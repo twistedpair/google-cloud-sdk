@@ -5,6 +5,59 @@ Copyright 2014-2024 Google Inc. All rights reserved.
 Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
 
 
+## 464.0.0 (2024-02-13)
+
+### Google Cloud CLI
+
+* Introduced `ACCOUNT` as a positional parameter to `gcloud auth application-default login`. This parameter can be used to specify the account that should be used for creating application default credentials.
+
+### Bare Metal Solution
+
+* Promoted `gcloud bms os-images describe` to GA.
+
+### Cloud Run
+
+* Added `--no-default-url` to `gcloud beta run deploy` and `gcloud beta run services update` which allows disabling the default service URL. This may be useful in combination with the `internal` and `internal-and-cloud-load-balancing` ingress settings where the default http ingress point is not desired.
+
+### Cloud TPU
+
+* Promoted `--spot` flag of `gcloud compute tpus tpu-vm create` to GA.
+
+### Cloud Workstations
+
+* Adding global fallback to `gcloud workstations list`, `gcloud workstations list-usable`, `gcloud workstations configs list`, and `gcloud workstations cluster list` commands. This allows the command to be used without any resource flags to list all of the specified resources under a project. It can also be used with a subset of the previously required flags for more granular results e.g. `gcloud workstations list --cluster=cluster-1 --region=us-central1` list all workstations in 'us-central1' that use a configuration created under the 'cluster-1' cluster.
+* Adding `--disable-ssh-to-vm` flag to `gcloud workstations configs` to disallow SSH access to the workstations root VM.
+
+### Compute Engine
+
+* Promoted `--stack-type` flag of `compute interconnects attachments partner create` to beta. Flag defines the stack type of partner interconnect attachment.
+* Promoted `--stack-type` flag of `compute interconnects attachments partner update` to beta. Flag defines the stack type of interconnect attachment.
+
+### Notebooks
+
+* Added `tags` flag to notebook instances.
+* Fixed a bug where vm-image defaults are not populated when no environment flags are specified.
+
+### Pubsub Emulator
+
+* Add support for push payload unwrapping (no_wrapper).
+
+### Secure Source Manager
+
+* Added `gcloud source-manager` command group which includes `gcloud source-manager instances`, `gcloud source-manager locations`, `gcloud source-manager operations` to beta.
+
+### Security Command Center
+
+* Fixed issue that caused `gcloud scc muteconfigs update` to crash when an `--update-mask` is provided.
+
+### Workbench
+
+* Fixed boolean flags `--shielded-secure-boot`, `--shielded-vtpm`, and `--shielded-integrity-monitoring` in `gcloud workbench instances` commands always parsing as true.
+
+
+Subscribe to these release notes at [https://groups.google.com/forum/#!forum/google-cloud-sdk-announce](https://groups.google.com/forum/#!forum/google-cloud-sdk-announce).
+
+
 ## 463.0.0 (2024-02-06)
 
 ### AlloyDB

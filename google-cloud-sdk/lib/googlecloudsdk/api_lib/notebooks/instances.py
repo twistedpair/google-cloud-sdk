@@ -122,14 +122,14 @@ def CreateInstance(args, client, messages):
     """Create VmImage Message from an environment or from args."""
     if args.IsSpecified('environment'):
       return GetVmImageFromExistingEnvironment()
-    if args.IsSpecified('vm_image_project'):
-      vm_image = messages.VmImage(project=args.vm_image_project)
-      if args.IsSpecified('vm_image_family'):
-        vm_image.imageFamily = args.vm_image_family
-      else:
-        vm_image.imageName = args.vm_image_name
-      return vm_image
-    return None
+    if args.IsSpecified('container_repository'):
+      return None
+    vm_image = messages.VmImage(project=args.vm_image_project)
+    if args.IsSpecified('vm_image_name'):
+      vm_image.imageName = args.vm_image_name
+    else:
+      vm_image.imageFamily = args.vm_image_family
+    return vm_image
 
   def GetInstanceOwnersFromArgs():
     if args.IsSpecified('instance_owners'):
@@ -165,6 +165,11 @@ def CreateInstance(args, client, messages):
         enableSecureBoot=args.shielded_vm_secure_boot,
         enableVtpm=args.shielded_vm_vtpm,
     )
+
+  def GetTagsFromArgs():
+    if args.IsSpecified('tags'):
+      return args.tags
+    return []
 
   # TODO(b/194714138): Consider adding validation for specific reservation.
   def GetReservationAffinityConfigFromArgs():
@@ -231,6 +236,7 @@ def CreateInstance(args, client, messages):
       installGpuDriver=args.install_gpu_driver,
       shieldedInstanceConfig=GetShieldedInstanceConfigFromArgs(),
       reservationAffinity=GetReservationAffinityConfigFromArgs(),
+      tags=GetTagsFromArgs(),
   )
   return instance
 

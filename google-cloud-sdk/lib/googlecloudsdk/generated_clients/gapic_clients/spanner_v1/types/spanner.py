@@ -19,6 +19,7 @@ from typing import MutableMapping, MutableSequence
 
 import proto  # type: ignore
 
+from cloudsdk.google.protobuf import duration_pb2  # type: ignore
 from cloudsdk.google.protobuf import struct_pb2  # type: ignore
 from cloudsdk.google.protobuf import timestamp_pb2  # type: ignore
 from google.rpc import status_pb2  # type: ignore
@@ -407,9 +408,9 @@ class DirectedReadOptions(proto.Message):
 
             This field is a member of `oneof`_ ``replicas``.
         exclude_replicas (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.DirectedReadOptions.ExcludeReplicas):
-            Exclude_replicas indicates that should be excluded from
-            serving requests. Spanner will not route requests to the
-            replicas in this list.
+            Exclude_replicas indicates that specified replicas should be
+            excluded from serving requests. Spanner will not route
+            requests to the replicas in this list.
 
             This field is a member of `oneof`_ ``replicas``.
     """
@@ -427,7 +428,7 @@ class DirectedReadOptions(proto.Message):
         -  ``location:us-east1`` --> The "us-east1" replica(s) of any
            available type will be used to process the request.
         -  ``type:READ_ONLY`` --> The "READ_ONLY" type replica(s) in nearest
-           . available location will be used to process the request.
+           available location will be used to process the request.
         -  ``location:us-east1 type:READ_ONLY`` --> The "READ_ONLY" type
            replica(s) in location "us-east1" will be used to process the
            request.
@@ -1428,6 +1429,14 @@ class CommitRequest(proto.Message):
             be included in the
             [CommitResponse][google.spanner.v1.CommitResponse.commit_stats].
             Default value is ``false``.
+        max_commit_delay (google.protobuf.duration_pb2.Duration):
+            Optional. The amount of latency this request
+            is willing to incur in order to improve
+            throughput. If this field is not set, Spanner
+            assumes requests are relatively latency
+            sensitive and automatically determines an
+            appropriate delay time. You can specify a
+            batching delay value between 0 and 500 ms.
         request_options (googlecloudsdk.generated_clients.gapic_clients.spanner_v1.types.RequestOptions):
             Common options for this request.
     """
@@ -1455,6 +1464,11 @@ class CommitRequest(proto.Message):
     return_commit_stats: bool = proto.Field(
         proto.BOOL,
         number=5,
+    )
+    max_commit_delay: duration_pb2.Duration = proto.Field(
+        proto.MESSAGE,
+        number=8,
+        message=duration_pb2.Duration,
     )
     request_options: 'RequestOptions' = proto.Field(
         proto.MESSAGE,

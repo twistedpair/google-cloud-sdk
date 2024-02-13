@@ -69,13 +69,13 @@ __protobuf__ = proto.module(
         'ListHmacKeysRequest',
         'ListHmacKeysResponse',
         'UpdateHmacKeyRequest',
+        'HmacKeyMetadata',
         'CommonObjectRequestParams',
         'ServiceConstants',
         'Bucket',
         'BucketAccessControl',
         'ChecksummedData',
         'ObjectChecksums',
-        'HmacKeyMetadata',
         'NotificationConfig',
         'CustomerEncryption',
         'Object',
@@ -2427,6 +2427,77 @@ class UpdateHmacKeyRequest(proto.Message):
     )
 
 
+class HmacKeyMetadata(proto.Message):
+    r"""Hmac Key Metadata, which includes all information other than
+    the secret.
+
+    Attributes:
+        id (str):
+            Immutable. Resource name ID of the key in the
+            format {projectIdentifier}/{accessId}.
+            {projectIdentifier} can be the project ID or
+            project number.
+        access_id (str):
+            Immutable. Globally unique id for keys.
+        project (str):
+            Immutable. Identifies the project that owns
+            the service account of the specified HMAC key,
+            in the format "projects/{projectIdentifier}".
+            {projectIdentifier} can be the project ID or
+            project number.
+        service_account_email (str):
+            Output only. Email of the service account the
+            key authenticates as.
+        state (str):
+            Optional. State of the key. One of ACTIVE,
+            INACTIVE, or DELETED. Writable, can be updated
+            by UpdateHmacKey operation.
+        create_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The creation time of the HMAC
+            key.
+        update_time (google.protobuf.timestamp_pb2.Timestamp):
+            Output only. The last modification time of
+            the HMAC key metadata.
+        etag (str):
+            Optional. The etag of the HMAC key.
+    """
+
+    id: str = proto.Field(
+        proto.STRING,
+        number=1,
+    )
+    access_id: str = proto.Field(
+        proto.STRING,
+        number=2,
+    )
+    project: str = proto.Field(
+        proto.STRING,
+        number=3,
+    )
+    service_account_email: str = proto.Field(
+        proto.STRING,
+        number=4,
+    )
+    state: str = proto.Field(
+        proto.STRING,
+        number=5,
+    )
+    create_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=6,
+        message=timestamp_pb2.Timestamp,
+    )
+    update_time: timestamp_pb2.Timestamp = proto.Field(
+        proto.MESSAGE,
+        number=7,
+        message=timestamp_pb2.Timestamp,
+    )
+    etag: str = proto.Field(
+        proto.STRING,
+        number=8,
+    )
+
+
 class CommonObjectRequestParams(proto.Message):
     r"""Parameters that can be passed to any object request.
 
@@ -3498,77 +3569,6 @@ class ObjectChecksums(proto.Message):
     md5_hash: bytes = proto.Field(
         proto.BYTES,
         number=2,
-    )
-
-
-class HmacKeyMetadata(proto.Message):
-    r"""Hmac Key Metadata, which includes all information other than
-    the secret.
-
-    Attributes:
-        id (str):
-            Immutable. Resource name ID of the key in the
-            format {projectIdentifier}/{accessId}.
-            {projectIdentifier} can be the project ID or
-            project number.
-        access_id (str):
-            Immutable. Globally unique id for keys.
-        project (str):
-            Immutable. Identifies the project that owns
-            the service account of the specified HMAC key,
-            in the format "projects/{projectIdentifier}".
-            {projectIdentifier} can be the project ID or
-            project number.
-        service_account_email (str):
-            Output only. Email of the service account the
-            key authenticates as.
-        state (str):
-            State of the key. One of ACTIVE, INACTIVE, or
-            DELETED. Writable, can be updated by
-            UpdateHmacKey operation.
-        create_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The creation time of the HMAC
-            key.
-        update_time (google.protobuf.timestamp_pb2.Timestamp):
-            Output only. The last modification time of
-            the HMAC key metadata.
-        etag (str):
-            The etag of the HMAC key.
-    """
-
-    id: str = proto.Field(
-        proto.STRING,
-        number=1,
-    )
-    access_id: str = proto.Field(
-        proto.STRING,
-        number=2,
-    )
-    project: str = proto.Field(
-        proto.STRING,
-        number=3,
-    )
-    service_account_email: str = proto.Field(
-        proto.STRING,
-        number=4,
-    )
-    state: str = proto.Field(
-        proto.STRING,
-        number=5,
-    )
-    create_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=6,
-        message=timestamp_pb2.Timestamp,
-    )
-    update_time: timestamp_pb2.Timestamp = proto.Field(
-        proto.MESSAGE,
-        number=7,
-        message=timestamp_pb2.Timestamp,
-    )
-    etag: str = proto.Field(
-        proto.STRING,
-        number=8,
     )
 
 

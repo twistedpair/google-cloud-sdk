@@ -35,3 +35,11 @@ class ArtifactRegistryError(exceptions.Error):
 
 class InvalidGoModuleError(exceptions.Error):
   """Raised when the Go module source code cannot be packaged into a go.zip."""
+
+
+class DirectoryNotExistError(ArtifactRegistryError):
+  """Raised when a directory does not exist."""
+
+
+class PathNotDirectoryError(ArtifactRegistryError):
+  """Raised when a path is not a directory."""

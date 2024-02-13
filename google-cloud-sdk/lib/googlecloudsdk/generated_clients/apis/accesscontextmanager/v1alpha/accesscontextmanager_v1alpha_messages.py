@@ -634,7 +634,8 @@ class AccesscontextmanagerOrganizationsGcpUserAccessBindingsPatchRequest(_messag
     updateMask: Required. Only the fields specified in this mask are updated.
       Because name and group_key cannot be changed, update_mask is required
       and may only contain the following fields: `access_levels`,
-      `dry_run_access_levels`. Example: update_mask { paths: "access_levels" }
+      `dry_run_access_levels`, `restricted_client_applications`. Example:
+      update_mask { paths: "access_levels" }
   """
 
   gcpUserAccessBinding = _messages.MessageField('GcpUserAccessBinding', 1)
@@ -972,7 +973,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)

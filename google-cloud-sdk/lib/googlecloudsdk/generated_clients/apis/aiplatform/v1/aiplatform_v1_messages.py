@@ -774,6 +774,22 @@ class AiplatformProjectsLocationsEndpointsExplainRequest(_messages.Message):
   googleCloudAiplatformV1ExplainRequest = _messages.MessageField('GoogleCloudAiplatformV1ExplainRequest', 2)
 
 
+class AiplatformProjectsLocationsEndpointsGenerateContentRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsGenerateContentRequest object.
+
+  Fields:
+    googleCloudAiplatformV1GenerateContentRequest: A
+      GoogleCloudAiplatformV1GenerateContentRequest resource to be passed as
+      the request body.
+    model: Required. The name of the publisher model requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/publishers/*/models/*`
+  """
+
+  googleCloudAiplatformV1GenerateContentRequest = _messages.MessageField('GoogleCloudAiplatformV1GenerateContentRequest', 1)
+  model = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsEndpointsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsEndpointsGetRequest object.
 
@@ -915,6 +931,22 @@ class AiplatformProjectsLocationsEndpointsStreamGenerateContentRequest(_messages
 
   googleCloudAiplatformV1GenerateContentRequest = _messages.MessageField('GoogleCloudAiplatformV1GenerateContentRequest', 1)
   model = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsEndpointsStreamRawPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsEndpointsStreamRawPredictRequest object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1StreamRawPredictRequest: A
+      GoogleCloudAiplatformV1StreamRawPredictRequest resource to be passed as
+      the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1StreamRawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1StreamRawPredictRequest', 2)
 
 
 class AiplatformProjectsLocationsEndpointsUndeployModelRequest(_messages.Message):
@@ -1179,7 +1211,7 @@ class AiplatformProjectsLocationsFeatureOnlineStoresCreateRequest(_messages.Mess
       GoogleCloudAiplatformV1FeatureOnlineStore resource to be passed as the
       request body.
     parent: Required. The resource name of the Location to create
-      FeatureOnlineStores. Format: `projects/{project}/locations/{location}'`
+      FeatureOnlineStores. Format: `projects/{project}/locations/{location}`
   """
 
   featureOnlineStoreId = _messages.StringField(1)
@@ -1331,12 +1363,29 @@ class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsPatchRequest(_me
       will be overwritten if it is in the mask. If the user does not provide a
       mask then only the non-empty fields present in the request will be
       overwritten. Set the update_mask to `*` to override all fields.
-      Updatable fields: * `labels`
+      Updatable fields: * `labels` * `serviceAgentType`
   """
 
   googleCloudAiplatformV1FeatureView = _messages.MessageField('GoogleCloudAiplatformV1FeatureView', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsSearchNearestEntitiesRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsSearchNeares
+  tEntitiesRequest object.
+
+  Fields:
+    featureView: Required. FeatureView resource format `projects/{project}/loc
+      ations/{location}/featureOnlineStores/{featureOnlineStore}/featureViews/
+      {featureView}`
+    googleCloudAiplatformV1SearchNearestEntitiesRequest: A
+      GoogleCloudAiplatformV1SearchNearestEntitiesRequest resource to be
+      passed as the request body.
+  """
+
+  featureView = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1SearchNearestEntitiesRequest = _messages.MessageField('GoogleCloudAiplatformV1SearchNearestEntitiesRequest', 2)
 
 
 class AiplatformProjectsLocationsFeatureOnlineStoresGetRequest(_messages.Message):
@@ -1401,7 +1450,8 @@ class AiplatformProjectsLocationsFeatureOnlineStoresPatchRequest(_messages.Messa
       field will be overwritten if it is in the mask. If the user does not
       provide a mask then only the non-empty fields present in the request
       will be overwritten. Set the update_mask to `*` to override all fields.
-      Updatable fields: * `big_query_source` * `labels` * `sync_config`
+      Updatable fields: * `big_query_source` * `bigtable` * `labels` *
+      `sync_config`
   """
 
   googleCloudAiplatformV1FeatureOnlineStore = _messages.MessageField('GoogleCloudAiplatformV1FeatureOnlineStore', 1)
@@ -3475,6 +3525,32 @@ class AiplatformProjectsLocationsModelsExportRequest(_messages.Message):
   name = _messages.StringField(2, required=True)
 
 
+class AiplatformProjectsLocationsModelsGetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsModelsGetRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsModelsGetRequest object.
 
@@ -3586,6 +3662,40 @@ class AiplatformProjectsLocationsModelsPatchRequest(_messages.Message):
   googleCloudAiplatformV1Model = _messages.MessageField('GoogleCloudAiplatformV1Model', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
+
+
+class AiplatformProjectsLocationsModelsSetIamPolicyRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsModelsTestIamPermissionsRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsModelsTestIamPermissionsRequest object.
+
+  Fields:
+    permissions: The set of permissions to check for the `resource`.
+      Permissions with wildcards (such as `*` or `storage.*`) are not allowed.
+      For more information see [IAM
+      Overview](https://cloud.google.com/iam/docs/overview#permissions).
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  permissions = _messages.StringField(1, repeated=True)
+  resource = _messages.StringField(2, required=True)
 
 
 class AiplatformProjectsLocationsModelsUpdateExplanationDatasetRequest(_messages.Message):
@@ -4156,6 +4266,23 @@ class AiplatformProjectsLocationsPipelineJobsListRequest(_messages.Message):
   readMask = _messages.StringField(6)
 
 
+class AiplatformProjectsLocationsPublishersModelsGenerateContentRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPublishersModelsGenerateContentRequest
+  object.
+
+  Fields:
+    googleCloudAiplatformV1GenerateContentRequest: A
+      GoogleCloudAiplatformV1GenerateContentRequest resource to be passed as
+      the request body.
+    model: Required. The name of the publisher model requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/publishers/*/models/*`
+  """
+
+  googleCloudAiplatformV1GenerateContentRequest = _messages.MessageField('GoogleCloudAiplatformV1GenerateContentRequest', 1)
+  model = _messages.StringField(2, required=True)
+
+
 class AiplatformProjectsLocationsPublishersModelsPredictRequest(_messages.Message):
   r"""A AiplatformProjectsLocationsPublishersModelsPredictRequest object.
 
@@ -4222,6 +4349,23 @@ class AiplatformProjectsLocationsPublishersModelsStreamGenerateContentRequest(_m
 
   googleCloudAiplatformV1GenerateContentRequest = _messages.MessageField('GoogleCloudAiplatformV1GenerateContentRequest', 1)
   model = _messages.StringField(2, required=True)
+
+
+class AiplatformProjectsLocationsPublishersModelsStreamRawPredictRequest(_messages.Message):
+  r"""A AiplatformProjectsLocationsPublishersModelsStreamRawPredictRequest
+  object.
+
+  Fields:
+    endpoint: Required. The name of the Endpoint requested to serve the
+      prediction. Format:
+      `projects/{project}/locations/{location}/endpoints/{endpoint}`
+    googleCloudAiplatformV1StreamRawPredictRequest: A
+      GoogleCloudAiplatformV1StreamRawPredictRequest resource to be passed as
+      the request body.
+  """
+
+  endpoint = _messages.StringField(1, required=True)
+  googleCloudAiplatformV1StreamRawPredictRequest = _messages.MessageField('GoogleCloudAiplatformV1StreamRawPredictRequest', 2)
 
 
 class AiplatformProjectsLocationsSchedulesCreateRequest(_messages.Message):
@@ -5575,6 +5719,8 @@ class CloudAiNlLlmProtoServiceCandidate(_messages.Message):
     finishMessage: A string that describes the filtering behavior in more
       detail. Only filled when reason is set.
     finishReason: The reason why the model stopped generating tokens.
+    groundingMetadata: Grounding metadata. Combine with the facts list from
+      response to generate grounding citations for this choice.
     index: Index of the candidate.
     safetyRatings: Safety ratings of the generated content.
   """
@@ -5607,8 +5753,9 @@ class CloudAiNlLlmProtoServiceCandidate(_messages.Message):
   content = _messages.MessageField('CloudAiNlLlmProtoServiceContent', 2)
   finishMessage = _messages.StringField(3)
   finishReason = _messages.EnumField('FinishReasonValueValuesEnum', 4)
-  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  safetyRatings = _messages.MessageField('CloudAiNlLlmProtoServiceSafetyRating', 6, repeated=True)
+  groundingMetadata = _messages.MessageField('LearningGenaiRootGroundingMetadata', 5)
+  index = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  safetyRatings = _messages.MessageField('CloudAiNlLlmProtoServiceSafetyRating', 7, repeated=True)
 
 
 class CloudAiNlLlmProtoServiceCitation(_messages.Message):
@@ -5651,6 +5798,25 @@ class CloudAiNlLlmProtoServiceContent(_messages.Message):
 
   parts = _messages.MessageField('CloudAiNlLlmProtoServicePart', 1, repeated=True)
   role = _messages.StringField(2)
+
+
+class CloudAiNlLlmProtoServiceFact(_messages.Message):
+  r"""A condense version of WorldFact
+  (assistant/boq/lamda/factuality/proto/factuality.proto) to propagate the
+  essential information about the fact used in factuality to the upstream
+  caller.
+
+  Fields:
+    query: Query that is used to retrieve this fact.
+    summary: If present, the summary/snippet of the fact.
+    title: If present, it refers to the title of this fact.
+    url: If present, this URL links to the webpage of the fact.
+  """
+
+  query = _messages.StringField(1)
+  summary = _messages.StringField(2)
+  title = _messages.StringField(3)
+  url = _messages.StringField(4)
 
 
 class CloudAiNlLlmProtoServiceFunctionCall(_messages.Message):
@@ -5737,9 +5903,7 @@ class CloudAiNlLlmProtoServiceGenerateMultiModalResponse(_messages.Message):
   Fields:
     candidates: Possible candidate responses to the conversation up until this
       point.
-    debugMetadata: Debug information containing message metadata. Clients
-      should not consume this field, and this is only populated for Flow
-      Runner path.
+    facts: External facts retrieved for factuality/grounding.
     promptFeedback: Content filter results for a prompt sent in the request.
       Note: Sent only in the first stream chunk. Only happens when no
       candidates were generated due to content violations.
@@ -5748,25 +5912,10 @@ class CloudAiNlLlmProtoServiceGenerateMultiModalResponse(_messages.Message):
   """
 
   candidates = _messages.MessageField('CloudAiNlLlmProtoServiceCandidate', 1, repeated=True)
-  debugMetadata = _messages.MessageField('CloudAiNlLlmProtoServiceMessageMetadata', 2)
+  facts = _messages.MessageField('CloudAiNlLlmProtoServiceFact', 2, repeated=True)
   promptFeedback = _messages.MessageField('CloudAiNlLlmProtoServicePromptFeedback', 3)
   reportingMetrics = _messages.MessageField('IntelligenceCloudAutomlXpsReportingMetrics', 4)
   usageMetadata = _messages.MessageField('CloudAiNlLlmProtoServiceUsageMetadata', 5)
-
-
-class CloudAiNlLlmProtoServiceMessageMetadata(_messages.Message):
-  r"""A CloudAiNlLlmProtoServiceMessageMetadata object.
-
-  Fields:
-    inputFilterInfo: Filter metadata of the input messages.
-    modelRoutingDecision: This score is generated by the router model to
-      decide which model to use
-    outputFilterInfo: Filter metadata of the output messages.
-  """
-
-  inputFilterInfo = _messages.MessageField('LearningServingLlmMessageMetadata', 1)
-  modelRoutingDecision = _messages.MessageField('LearningGenaiRootRoutingDecision', 2)
-  outputFilterInfo = _messages.MessageField('LearningServingLlmMessageMetadata', 3, repeated=True)
 
 
 class CloudAiNlLlmProtoServicePart(_messages.Message):
@@ -5857,155 +6006,6 @@ class CloudAiNlLlmProtoServicePromptFeedback(_messages.Message):
   safetyRatings = _messages.MessageField('CloudAiNlLlmProtoServiceSafetyRating', 3, repeated=True)
 
 
-class CloudAiNlLlmProtoServiceRaiResult(_messages.Message):
-  r"""The RAI results for a given text.
-
-  Fields:
-    aidaRecitationResult: Recitation result from Aida recitation checker.
-    blocked: Use `triggered_blocklist`.
-    errorCodes: The error codes indicate which RAI filters block the response.
-    filtered: Whether the text should be filtered and not shown to the end
-      user. This is determined based on a combination of
-      `triggered_recitation`, `triggered_blocklist`, `language_filter_result`,
-      and `triggered_safety_filter`.
-    languageFilterResult: Language filter result from SAFT LangId.
-    raiSignals: The RAI signals for the text.
-    triggeredBlocklist: Whether the text triggered the blocklist.
-    triggeredRecitation: Whether the text should be blocked by the recitation
-      result from Aida recitation checker. It is determined from
-      aida_recitation_result.
-    triggeredSafetyFilter: Whether the text triggered the safety filter.
-      Currently, this is due to CSAI triggering or one of four categories
-      (derogatory, sexual, toxic, violent) having a score over the filter
-      threshold.
-  """
-
-  aidaRecitationResult = _messages.MessageField('LanguageLabsAidaTrustRecitationProtoRecitationResult', 1)
-  blocked = _messages.BooleanField(2)
-  errorCodes = _messages.IntegerField(3, repeated=True, variant=_messages.Variant.INT32)
-  filtered = _messages.BooleanField(4)
-  languageFilterResult = _messages.MessageField('LearningServingLlmLanguageFilterResult', 5)
-  raiSignals = _messages.MessageField('CloudAiNlLlmProtoServiceRaiSignal', 6, repeated=True)
-  triggeredBlocklist = _messages.BooleanField(7)
-  triggeredRecitation = _messages.BooleanField(8)
-  triggeredSafetyFilter = _messages.BooleanField(9)
-
-
-class CloudAiNlLlmProtoServiceRaiSignal(_messages.Message):
-  r"""An RAI signal for a single category.
-
-  Enums:
-    ConfidenceValueValuesEnum: The confidence level for the RAI category.
-    RaiCategoryValueValuesEnum: The RAI category.
-
-  Fields:
-    confidence: The confidence level for the RAI category.
-    flagged: Whether the category is flagged as being present. Currently, this
-      is set to true if score >= 0.5.
-    raiCategory: The RAI category.
-    score: The score for the category, in the range [0.0, 1.0].
-  """
-
-  class ConfidenceValueValuesEnum(_messages.Enum):
-    r"""The confidence level for the RAI category.
-
-    Values:
-      CONFIDENCE_UNSPECIFIED: <no description>
-      CONFIDENCE_NONE: <no description>
-      CONFIDENCE_LOW: <no description>
-      CONFIDENCE_MEDIUM: <no description>
-      CONFIDENCE_HIGH: <no description>
-    """
-    CONFIDENCE_UNSPECIFIED = 0
-    CONFIDENCE_NONE = 1
-    CONFIDENCE_LOW = 2
-    CONFIDENCE_MEDIUM = 3
-    CONFIDENCE_HIGH = 4
-
-  class RaiCategoryValueValuesEnum(_messages.Enum):
-    r"""The RAI category.
-
-    Values:
-      RAI_CATEGORY_UNSPECIFIED: <no description>
-      TOXIC: SafetyCat categories.
-      SEXUALLY_EXPLICIT: <no description>
-      HATE_SPEECH: <no description>
-      VIOLENT: <no description>
-      PROFANITY: <no description>
-      HARASSMENT: <no description>
-      DEATH_HARM_TRAGEDY: <no description>
-      FIREARMS_WEAPONS: <no description>
-      PUBLIC_SAFETY: <no description>
-      HEALTH: <no description>
-      RELIGIOUS_BELIEF: <no description>
-      ILLICIT_DRUGS: <no description>
-      WAR_CONFLICT: <no description>
-      POLITICS: <no description>
-      FINANCE: <no description>
-      LEGAL: <no description>
-      CSAI: GRAIL categories that can't be exposed to end users.
-      FRINGE: <no description>
-      THREAT: Unused categories.
-      SEVERE_TOXICITY: <no description>
-      TOXICITY: Old category names.
-      SEXUAL: <no description>
-      INSULT: <no description>
-      DEROGATORY: <no description>
-      IDENTITY_ATTACK: <no description>
-      VIOLENCE_ABUSE: <no description>
-      OBSCENE: <no description>
-      DRUGS: <no description>
-      CSAM: CSAM V2
-      SPII: SPII
-      DANGEROUS_CONTENT: New SafetyCat v3 categories
-      DANGEROUS_CONTENT_SEVERITY: <no description>
-      INSULT_SEVERITY: <no description>
-      DEROGATORY_SEVERITY: <no description>
-      SEXUAL_SEVERITY: <no description>
-    """
-    RAI_CATEGORY_UNSPECIFIED = 0
-    TOXIC = 1
-    SEXUALLY_EXPLICIT = 2
-    HATE_SPEECH = 3
-    VIOLENT = 4
-    PROFANITY = 5
-    HARASSMENT = 6
-    DEATH_HARM_TRAGEDY = 7
-    FIREARMS_WEAPONS = 8
-    PUBLIC_SAFETY = 9
-    HEALTH = 10
-    RELIGIOUS_BELIEF = 11
-    ILLICIT_DRUGS = 12
-    WAR_CONFLICT = 13
-    POLITICS = 14
-    FINANCE = 15
-    LEGAL = 16
-    CSAI = 17
-    FRINGE = 18
-    THREAT = 19
-    SEVERE_TOXICITY = 20
-    TOXICITY = 21
-    SEXUAL = 22
-    INSULT = 23
-    DEROGATORY = 24
-    IDENTITY_ATTACK = 25
-    VIOLENCE_ABUSE = 26
-    OBSCENE = 27
-    DRUGS = 28
-    CSAM = 29
-    SPII = 30
-    DANGEROUS_CONTENT = 31
-    DANGEROUS_CONTENT_SEVERITY = 32
-    INSULT_SEVERITY = 33
-    DEROGATORY_SEVERITY = 34
-    SEXUAL_SEVERITY = 35
-
-  confidence = _messages.EnumField('ConfidenceValueValuesEnum', 1)
-  flagged = _messages.BooleanField(2)
-  raiCategory = _messages.EnumField('RaiCategoryValueValuesEnum', 3)
-  score = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-
-
 class CloudAiNlLlmProtoServiceSafetyRating(_messages.Message):
   r"""Safety rating corresponding to the generated content.
 
@@ -6017,6 +6017,8 @@ class CloudAiNlLlmProtoServiceSafetyRating(_messages.Message):
     blocked: Indicates whether the content was filtered out because of this
       rating.
     category: Harm category.
+    influentialTerms: The influential terms that could potentially block the
+      response.
     probability: Harm probability levels in the content.
   """
 
@@ -6054,7 +6056,40 @@ class CloudAiNlLlmProtoServiceSafetyRating(_messages.Message):
 
   blocked = _messages.BooleanField(1)
   category = _messages.EnumField('CategoryValueValuesEnum', 2)
-  probability = _messages.EnumField('ProbabilityValueValuesEnum', 3)
+  influentialTerms = _messages.MessageField('CloudAiNlLlmProtoServiceSafetyRatingInfluentialTerm', 3, repeated=True)
+  probability = _messages.EnumField('ProbabilityValueValuesEnum', 4)
+
+
+class CloudAiNlLlmProtoServiceSafetyRatingInfluentialTerm(_messages.Message):
+  r"""The influential term that could potentially block the response.
+
+  Enums:
+    SourceValueValuesEnum: The source of the influential term, prompt or
+      response.
+
+  Fields:
+    beginOffset: The beginning offset of the influential term.
+    confidence: The confidence score of the influential term.
+    source: The source of the influential term, prompt or response.
+    term: The influential term.
+  """
+
+  class SourceValueValuesEnum(_messages.Enum):
+    r"""The source of the influential term, prompt or response.
+
+    Values:
+      SOURCE_UNSPECIFIED: Unspecified source.
+      PROMPT: The influential term comes from the prompt.
+      RESPONSE: The influential term comes from the response.
+    """
+    SOURCE_UNSPECIFIED = 0
+    PROMPT = 1
+    RESPONSE = 2
+
+  beginOffset = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  confidence = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
+  source = _messages.EnumField('SourceValueValuesEnum', 3)
+  term = _messages.StringField(4)
 
 
 class CloudAiNlLlmProtoServiceUsageMetadata(_messages.Message):
@@ -7382,6 +7417,8 @@ class GoogleCloudAiplatformV1Candidate(_messages.Message):
       `finish_reason` is set.
     finishReason: Output only. The reason why the model stopped generating
       tokens. If empty, the model has not stopped generating the tokens.
+    groundingMetadata: Output only. Metadata specifies sources used to ground
+      generated content.
     index: Output only. Index of the candidate.
     safetyRatings: Output only. List of ratings for the safety of a response
       candidate. There is at most one rating per category.
@@ -7414,8 +7451,9 @@ class GoogleCloudAiplatformV1Candidate(_messages.Message):
   content = _messages.MessageField('GoogleCloudAiplatformV1Content', 2)
   finishMessage = _messages.StringField(3)
   finishReason = _messages.EnumField('FinishReasonValueValuesEnum', 4)
-  index = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  safetyRatings = _messages.MessageField('GoogleCloudAiplatformV1SafetyRating', 6, repeated=True)
+  groundingMetadata = _messages.MessageField('GoogleCloudAiplatformV1GroundingMetadata', 5)
+  index = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  safetyRatings = _messages.MessageField('GoogleCloudAiplatformV1SafetyRating', 7, repeated=True)
 
 
 class GoogleCloudAiplatformV1CheckTrialEarlyStoppingStateMetatdata(_messages.Message):
@@ -9349,6 +9387,9 @@ class GoogleCloudAiplatformV1Endpoint(_messages.Message):
       is a project number, as in `12345`, and `{network}` is network name.
     predictRequestResponseLoggingConfig: Configures the request-response
       logging for online prediction.
+    privateServiceConnectConfig: Optional. Configuration for private service
+      connect. network and private_service_connect_config are mutually
+      exclusive.
     trafficSplit: A map from a DeployedModel's ID to the percentage of this
       Endpoint's traffic that should be forwarded to that DeployedModel. If a
       DeployedModel's ID is not listed in this map, then it receives no
@@ -9426,8 +9467,9 @@ class GoogleCloudAiplatformV1Endpoint(_messages.Message):
   name = _messages.StringField(10)
   network = _messages.StringField(11)
   predictRequestResponseLoggingConfig = _messages.MessageField('GoogleCloudAiplatformV1PredictRequestResponseLoggingConfig', 12)
-  trafficSplit = _messages.MessageField('TrafficSplitValue', 13)
-  updateTime = _messages.StringField(14)
+  privateServiceConnectConfig = _messages.MessageField('GoogleCloudAiplatformV1PrivateServiceConnectConfig', 13)
+  trafficSplit = _messages.MessageField('TrafficSplitValue', 14)
+  updateTime = _messages.StringField(15)
 
 
 class GoogleCloudAiplatformV1EntityIdSelector(_messages.Message):
@@ -10072,8 +10114,15 @@ class GoogleCloudAiplatformV1Explanation(_messages.Message):
       explains the predicted output. For Models that predict multiple outputs,
       such as multiclass Models that predict multiple classes, each element
       explains one specific item. Attribution.output_index can be used to
-      identify which output this attribution is explaining. If users set
-      ExplanationParameters.top_k, the attributions are sorted by
+      identify which output this attribution is explaining. By default, we
+      provide Shapley values for the predicted class. However, you can
+      configure the explanation request to generate Shapley values for any
+      other classes too. For example, if a model predicts a probability of
+      `0.4` for approving a loan application, the model's decision is to
+      reject the application since `p(reject) = 0.6 > p(approve) = 0.4`, and
+      the default Shapley values would be computed for rejection decision and
+      not approval, even though the latter might be the positive class. If
+      users set ExplanationParameters.top_k, the attributions are sorted by
       instance_output_value in descending order. If
       ExplanationParameters.output_indices is specified, the attributions are
       stored by Attribution.output_index in the same order as they appear in
@@ -12172,8 +12221,7 @@ class GoogleCloudAiplatformV1GenerateContentRequest(_messages.Message):
     tools: Optional. A list of `Tools` the model may use to generate the next
       response. A `Tool` is a piece of code that enables the system to
       interact with external systems to perform an action, or set of actions,
-      outside of knowledge and scope of the model. The only supported tool is
-      currently `Function`
+      outside of knowledge and scope of the model.
   """
 
   contents = _messages.MessageField('GoogleCloudAiplatformV1Content', 1, repeated=True)
@@ -12278,6 +12326,58 @@ class GoogleCloudAiplatformV1GenericOperationMetadata(_messages.Message):
   createTime = _messages.StringField(1)
   partialFailures = _messages.MessageField('GoogleRpcStatus', 2, repeated=True)
   updateTime = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1GoogleSearchRetrieval(_messages.Message):
+  r"""Tool to retrieve public web data for grounding, powered by Google.
+
+  Fields:
+    disableAttribution: Optional. Disable using the result from this tool in
+      detecting grounding attribution. This does not affect how the result is
+      given to the model for generation.
+  """
+
+  disableAttribution = _messages.BooleanField(1)
+
+
+class GoogleCloudAiplatformV1GroundingAttribution(_messages.Message):
+  r"""Grounding attribution.
+
+  Fields:
+    confidenceScore: Optional. Output only. Confidence score of the
+      attribution. Ranges from 0 to 1. 1 is the most confident.
+    segment: Output only. Segment of the content this attribution belongs to.
+    web: Optional. Attribution from the web.
+  """
+
+  confidenceScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
+  segment = _messages.MessageField('GoogleCloudAiplatformV1Segment', 2)
+  web = _messages.MessageField('GoogleCloudAiplatformV1GroundingAttributionWeb', 3)
+
+
+class GoogleCloudAiplatformV1GroundingAttributionWeb(_messages.Message):
+  r"""Attribution from the web.
+
+  Fields:
+    title: Output only. Title of the attribution.
+    uri: Output only. URI reference of the attribution.
+  """
+
+  title = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudAiplatformV1GroundingMetadata(_messages.Message):
+  r"""Metadata returned to client when grounding is enabled.
+
+  Fields:
+    groundingAttributions: Optional. List of grounding attributions.
+    webSearchQueries: Optional. Web search queries for the following-up web
+      search.
+  """
+
+  groundingAttributions = _messages.MessageField('GoogleCloudAiplatformV1GroundingAttribution', 1, repeated=True)
+  webSearchQueries = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudAiplatformV1HyperparameterTuningJob(_messages.Message):
@@ -13025,12 +13125,15 @@ class GoogleCloudAiplatformV1IndexPrivateEndpoints(_messages.Message):
   Fields:
     matchGrpcAddress: Output only. The ip address used to send match gRPC
       requests.
+    pscAutomatedEndpoints: Output only. PscAutomatedEndpoints is populated if
+      private service connect is enabled if PscAutomatedConfig is set.
     serviceAttachment: Output only. The name of the service attachment
       resource. Populated if private service connect is enabled.
   """
 
   matchGrpcAddress = _messages.StringField(1)
-  serviceAttachment = _messages.StringField(2)
+  pscAutomatedEndpoints = _messages.MessageField('GoogleCloudAiplatformV1PscAutomatedEndpoints', 2, repeated=True)
+  serviceAttachment = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1IndexStats(_messages.Message):
@@ -14245,13 +14348,12 @@ class GoogleCloudAiplatformV1Model(_messages.Message):
 
   Fields:
     artifactUri: Immutable. The path to the directory containing the Model
-      artifact and any of its supporting files. Not present for AutoML Models
-      or Large Models.
+      artifact and any of its supporting files. Not required for AutoML
+      Models.
     containerSpec: Input only. The specification of the container that is to
       be used when deploying this Model. The specification is ingested upon
       ModelService.UploadModel, and all binaries it contains are copied and
-      stored internally by Vertex AI. Not present for AutoML Models or Large
-      Models.
+      stored internally by Vertex AI. Not required for AutoML Models.
     createTime: Output only. Timestamp when this Model was uploaded into
       Vertex AI.
     deployedModels: Output only. The pointers to DeployedModels created from
@@ -14299,8 +14401,8 @@ class GoogleCloudAiplatformV1Model(_messages.Message):
       scheme, than the one given on input. The output URI will point to a
       location where the user only has a read access.
     modelSourceInfo: Output only. Source of a model. It can either be automl
-      training pipeline, custom training pipeline, BigQuery ML, or existing
-      Vertex AI Model.
+      training pipeline, custom training pipeline, BigQuery ML, or saved and
+      tuned from Genie or Model Garden.
     name: The resource name of the Model.
     originalModelInfo: Output only. If this Model is a copy of another Model,
       this contains info about the original.
@@ -14674,6 +14776,8 @@ class GoogleCloudAiplatformV1ModelDeploymentMonitoringBigQueryTable(_messages.Me
       `bq://.model_deployment_monitoring_._`
     logSource: The source of log.
     logType: The type of log.
+    requestResponseLoggingSchemaVersion: Output only. The schema version of
+      the request/response logging BigQuery table. Default to v1 if unset.
   """
 
   class LogSourceValueValuesEnum(_messages.Enum):
@@ -14703,6 +14807,7 @@ class GoogleCloudAiplatformV1ModelDeploymentMonitoringBigQueryTable(_messages.Me
   bigqueryTablePath = _messages.StringField(1)
   logSource = _messages.EnumField('LogSourceValueValuesEnum', 2)
   logType = _messages.EnumField('LogTypeValueValuesEnum', 3)
+  requestResponseLoggingSchemaVersion = _messages.StringField(4)
 
 
 class GoogleCloudAiplatformV1ModelDeploymentMonitoringJob(_messages.Message):
@@ -15249,7 +15354,7 @@ class GoogleCloudAiplatformV1ModelExportFormat(_messages.Message):
 
 
 class GoogleCloudAiplatformV1ModelMonitoringAlertConfig(_messages.Message):
-  r"""A GoogleCloudAiplatformV1ModelMonitoringAlertConfig object.
+  r"""The alert config for model monitoring.
 
   Fields:
     emailAlertConfig: Email alert config.
@@ -15639,12 +15744,14 @@ class GoogleCloudAiplatformV1ModelSourceInfo(_messages.Message):
       BQML: The Model is registered and sync'ed from BigQuery ML.
       CUSTOM_TEXT_EMBEDDING: The Model is uploaded by text embedding
         finetuning pipeline.
+      MARKETPLACE: The Model is saved or tuned from Marketplace.
     """
     MODEL_SOURCE_TYPE_UNSPECIFIED = 0
     AUTOML = 1
     CUSTOM = 2
     BQML = 3
     CUSTOM_TEXT_EMBEDDING = 4
+    MARKETPLACE = 5
 
   sourceType = _messages.EnumField('SourceTypeValueValuesEnum', 1)
 
@@ -16042,6 +16149,81 @@ class GoogleCloudAiplatformV1NasTrialDetail(_messages.Message):
   trainTrial = _messages.MessageField('GoogleCloudAiplatformV1NasTrial', 4)
 
 
+class GoogleCloudAiplatformV1NearestNeighborQuery(_messages.Message):
+  r"""A query to find a number of similar entities.
+
+  Fields:
+    embedding: Optional. The embedding vector that be used for similar search.
+    entityId: Optional. The entity id whose similar entities should be
+      searched for. If embedding is set, search will use embedding instead of
+      entity_id.
+    neighborCount: Optional. The number of similar entities to be retrieved
+      from feature view for each query.
+    parameters: Optional. Parameters that can be set to tune query on the fly.
+    perCrowdingAttributeNeighborCount: Optional. Crowding is a constraint on a
+      neighbor list produced by nearest neighbor search requiring that no more
+      than sper_crowding_attribute_neighbor_count of the k neighbors returned
+      have the same value of crowding_attribute. It's used for improving
+      result diversity.
+    stringFilters: Optional. The list of string filters.
+  """
+
+  embedding = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborQueryEmbedding', 1)
+  entityId = _messages.StringField(2)
+  neighborCount = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  parameters = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborQueryParameters', 4)
+  perCrowdingAttributeNeighborCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  stringFilters = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborQueryStringFilter', 6, repeated=True)
+
+
+class GoogleCloudAiplatformV1NearestNeighborQueryEmbedding(_messages.Message):
+  r"""The embedding vector.
+
+  Fields:
+    value: Optional. Individual value in the embedding.
+  """
+
+  value = _messages.FloatField(1, repeated=True, variant=_messages.Variant.FLOAT)
+
+
+class GoogleCloudAiplatformV1NearestNeighborQueryParameters(_messages.Message):
+  r"""Parameters that can be overrided in each query to tune query latency and
+  recall.
+
+  Fields:
+    approximateNeighborCandidates: Optional. The number of neighbors to find
+      via approximate search before exact reordering is performed; if set,
+      this value must be > neighbor_count.
+    leafNodesSearchFraction: Optional. The fraction of the number of leaves to
+      search, set at query time allows user to tune search performance. This
+      value increase result in both search accuracy and latency increase. The
+      value should be between 0.0 and 1.0.
+  """
+
+  approximateNeighborCandidates = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  leafNodesSearchFraction = _messages.FloatField(2)
+
+
+class GoogleCloudAiplatformV1NearestNeighborQueryStringFilter(_messages.Message):
+  r"""String filter is used to search a subset of the entities by using
+  boolean rules on string columns. For example: if a query specifies string
+  filter with 'name = color, allow_tokens = {red, blue}, deny_tokens =
+  {purple}',' then that query will match entities that are red or blue, but if
+  those points are also purple, then they will be excluded even if they are
+  red/blue. Only string filter is supported for now, numeric filter will be
+  supported in the near future.
+
+  Fields:
+    allowTokens: Optional. The allowed tokens.
+    denyTokens: Optional. The denied tokens.
+    name: Required. Column names in BigQuery that used as filters.
+  """
+
+  allowTokens = _messages.StringField(1, repeated=True)
+  denyTokens = _messages.StringField(2, repeated=True)
+  name = _messages.StringField(3)
+
+
 class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadata(_messages.Message):
   r"""Runtime operation metadata with regard to Matching Engine Index.
 
@@ -16112,6 +16294,15 @@ class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError(_
       EMBEDDING_SIZE_MISMATCH: The size of the embedding vectors does not
         match with the specified dimension.
       NAMESPACE_MISSING: The `namespace` field is missing.
+      PARSING_ERROR: Generic catch-all error. Only used for validation failure
+        where the root cause cannot be easily retrieved programmatically.
+      DUPLICATE_NAMESPACE: There are multiple restricts with the same
+        `namespace` value.
+      OP_IN_DATAPOINT: Numeric restrict has operator specified in datapoint.
+      MULTIPLE_VALUES: Numeric restrict has multiple values specified.
+      INVALID_NUMERIC_VALUE: Numeric restrict has invalid numeric value
+        specified.
+      INVALID_ENCODING: File is not in UTF_8 format.
     """
     ERROR_TYPE_UNSPECIFIED = 0
     EMPTY_LINE = 1
@@ -16121,12 +16312,45 @@ class GoogleCloudAiplatformV1NearestNeighborSearchOperationMetadataRecordError(_
     INVALID_EMBEDDING_ID = 5
     EMBEDDING_SIZE_MISMATCH = 6
     NAMESPACE_MISSING = 7
+    PARSING_ERROR = 8
+    DUPLICATE_NAMESPACE = 9
+    OP_IN_DATAPOINT = 10
+    MULTIPLE_VALUES = 11
+    INVALID_NUMERIC_VALUE = 12
+    INVALID_ENCODING = 13
 
   embeddingId = _messages.StringField(1)
   errorMessage = _messages.StringField(2)
   errorType = _messages.EnumField('ErrorTypeValueValuesEnum', 3)
   rawRecord = _messages.StringField(4)
   sourceGcsUri = _messages.StringField(5)
+
+
+class GoogleCloudAiplatformV1NearestNeighbors(_messages.Message):
+  r"""Nearest neighbors for one query.
+
+  Fields:
+    neighbors: All its neighbors.
+  """
+
+  neighbors = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborsNeighbor', 1, repeated=True)
+
+
+class GoogleCloudAiplatformV1NearestNeighborsNeighbor(_messages.Message):
+  r"""A neighbor of the query vector.
+
+  Fields:
+    distance: The distance between the neighbor and the query vector.
+    entityId: The id of the similar entity.
+    entityKeyValues: The attributes of the neighbor, e.g. filters, crowding
+      and metadata Note that full entities are returned only when
+      "return_full_entity" is set to true. Otherwise, only the "entity_id" and
+      "distance" fields are populated.
+  """
+
+  distance = _messages.FloatField(1)
+  entityId = _messages.StringField(2)
+  entityKeyValues = _messages.MessageField('GoogleCloudAiplatformV1FetchFeatureValuesResponse', 3)
 
 
 class GoogleCloudAiplatformV1Neighbor(_messages.Message):
@@ -17261,6 +17485,8 @@ class GoogleCloudAiplatformV1PredictResponse(_messages.Message):
   Fields:
     deployedModelId: ID of the Endpoint's DeployedModel that served this
       prediction.
+    metadata: Output only. Request-level metadata returned by the model. The
+      metadata type will be dependent upon the model implementation.
     model: Output only. The resource name of the Model which is deployed as
       the DeployedModel that this prediction hits.
     modelDisplayName: Output only. The display name of the Model which is
@@ -17273,10 +17499,11 @@ class GoogleCloudAiplatformV1PredictResponse(_messages.Message):
   """
 
   deployedModelId = _messages.StringField(1)
-  model = _messages.StringField(2)
-  modelDisplayName = _messages.StringField(3)
-  modelVersionId = _messages.StringField(4)
-  predictions = _messages.MessageField('extra_types.JsonValue', 5, repeated=True)
+  metadata = _messages.MessageField('extra_types.JsonValue', 2)
+  model = _messages.StringField(3)
+  modelDisplayName = _messages.StringField(4)
+  modelVersionId = _messages.StringField(5)
+  predictions = _messages.MessageField('extra_types.JsonValue', 6, repeated=True)
 
 
 class GoogleCloudAiplatformV1PredictSchemata(_messages.Message):
@@ -17444,6 +17671,21 @@ class GoogleCloudAiplatformV1ProbeExecAction(_messages.Message):
   """
 
   command = _messages.StringField(1, repeated=True)
+
+
+class GoogleCloudAiplatformV1PscAutomatedEndpoints(_messages.Message):
+  r"""PscAutomatedEndpoints defines the output of the forwarding rule
+  automatically created by each PscAutomationConfig.
+
+  Fields:
+    matchAddress: Ip Address created by the automated forwarding rule.
+    network: Corresponding network in pscAutomationConfigs.
+    projectId: Corresponding project_id in pscAutomationConfigs
+  """
+
+  matchAddress = _messages.StringField(1)
+  network = _messages.StringField(2)
+  projectId = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1PurgeArtifactsMetadata(_messages.Message):
@@ -17885,6 +18127,21 @@ class GoogleCloudAiplatformV1ResumeScheduleRequest(_messages.Message):
   catchUp = _messages.BooleanField(1)
 
 
+class GoogleCloudAiplatformV1Retrieval(_messages.Message):
+  r"""Defines a retrieval tool that model can call to access external
+  knowledge.
+
+  Fields:
+    disableAttribution: Optional. Disable using the result from this tool in
+      detecting grounding attribution. This does not affect how the result is
+      given to the model for generation.
+    vertexAiSearch: Set to use data source powered by Vertex AI Search.
+  """
+
+  disableAttribution = _messages.BooleanField(1)
+  vertexAiSearch = _messages.MessageField('GoogleCloudAiplatformV1VertexAISearch', 2)
+
+
 class GoogleCloudAiplatformV1SafetyRating(_messages.Message):
   r"""Safety rating corresponding to the generated content.
 
@@ -18226,8 +18483,6 @@ class GoogleCloudAiplatformV1Scheduling(_messages.Message):
     disableRetries: Optional. Indicates if the job should retry for internal
       errors after the job starts running. If true, overrides
       `Scheduling.restart_job_on_worker_restart` to false.
-    maxWaitDuration: Optional. This is the maximum time a user will wait in
-      the QRM queue for resources. Default is 1 day
     restartJobOnWorkerRestart: Restarts the entire CustomJob if a worker gets
       restarted. This feature can be used by distributed training jobs that
       are not resilient to workers leaving and joining a job.
@@ -18235,9 +18490,8 @@ class GoogleCloudAiplatformV1Scheduling(_messages.Message):
   """
 
   disableRetries = _messages.BooleanField(1)
-  maxWaitDuration = _messages.StringField(2)
-  restartJobOnWorkerRestart = _messages.BooleanField(3)
-  timeout = _messages.StringField(4)
+  restartJobOnWorkerRestart = _messages.BooleanField(2)
+  timeout = _messages.StringField(3)
 
 
 class GoogleCloudAiplatformV1Schema(_messages.Message):
@@ -21253,6 +21507,49 @@ class GoogleCloudAiplatformV1SearchModelDeploymentMonitoringStatsAnomaliesRespon
   nextPageToken = _messages.StringField(2)
 
 
+class GoogleCloudAiplatformV1SearchNearestEntitiesRequest(_messages.Message):
+  r"""The request message for FeatureOnlineStoreService.SearchNearestEntities.
+
+  Fields:
+    query: Required. The query.
+    returnFullEntity: Optional. If set to true, the full entities (including
+      all vector values and metadata) of the nearest neighbors are returned;
+      otherwise only entity id of the nearest neighbors will be returned. Note
+      that returning full entities will significantly increase the latency and
+      cost of the query.
+  """
+
+  query = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighborQuery', 1)
+  returnFullEntity = _messages.BooleanField(2)
+
+
+class GoogleCloudAiplatformV1SearchNearestEntitiesResponse(_messages.Message):
+  r"""Response message for FeatureOnlineStoreService.SearchNearestEntities
+
+  Fields:
+    nearestNeighbors: The nearest neighbors of the query entity.
+  """
+
+  nearestNeighbors = _messages.MessageField('GoogleCloudAiplatformV1NearestNeighbors', 1)
+
+
+class GoogleCloudAiplatformV1Segment(_messages.Message):
+  r"""Segment of the content.
+
+  Fields:
+    endIndex: Output only. End index in the given Part, measured in bytes.
+      Offset from the start of the Part, exclusive, starting at zero.
+    partIndex: Output only. The index of a Part object within its parent
+      Content object.
+    startIndex: Output only. Start index in the given Part, measured in bytes.
+      Offset from the start of the Part, inclusive, starting at zero.
+  """
+
+  endIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  partIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  startIndex = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+
+
 class GoogleCloudAiplatformV1SmoothGradConfig(_messages.Message):
   r"""Config for SmoothGrad approximation of gradients. When enabled, the
   gradients are approximated by averaging the gradients from noisy samples in
@@ -21370,6 +21667,17 @@ class GoogleCloudAiplatformV1StratifiedSplit(_messages.Message):
   testFraction = _messages.FloatField(2)
   trainingFraction = _messages.FloatField(3)
   validationFraction = _messages.FloatField(4)
+
+
+class GoogleCloudAiplatformV1StreamRawPredictRequest(_messages.Message):
+  r"""Request message for PredictionService.StreamRawPredict.
+
+  Fields:
+    httpBody: The prediction input. Supports HTTP headers and arbitrary data
+      payload.
+  """
+
+  httpBody = _messages.MessageField('GoogleApiHttpBody', 1)
 
 
 class GoogleCloudAiplatformV1StreamingPredictRequest(_messages.Message):
@@ -22635,7 +22943,7 @@ class GoogleCloudAiplatformV1Tool(_messages.Message):
   r"""Tool details that the model may use to generate response. A `Tool` is a
   piece of code that enables the system to interact with external systems to
   perform an action, or set of actions, outside of knowledge and scope of the
-  model.
+  model. A Tool object should contain exactly one type of Tool.
 
   Fields:
     functionDeclarations: Optional. One or more function declarations to be
@@ -22645,9 +22953,16 @@ class GoogleCloudAiplatformV1Tool(_messages.Message):
       in the next turn. Based on the function responses, Model will generate
       the final response back to the user. Maximum 64 function declarations
       can be provided.
+    googleSearchRetrieval: Optional. Specialized retrieval tool that is
+      powered by Google search.
+    retrieval: Optional. System will always execute the provided retrieval
+      tool(s) to get external knowledge to answer the prompt. Retrieval
+      results are presented to the model for generation.
   """
 
   functionDeclarations = _messages.MessageField('GoogleCloudAiplatformV1FunctionDeclaration', 1, repeated=True)
+  googleSearchRetrieval = _messages.MessageField('GoogleCloudAiplatformV1GoogleSearchRetrieval', 2)
+  retrieval = _messages.MessageField('GoogleCloudAiplatformV1Retrieval', 3)
 
 
 class GoogleCloudAiplatformV1TrainingConfig(_messages.Message):
@@ -23285,9 +23600,15 @@ class GoogleCloudAiplatformV1UpsertDatapointsRequest(_messages.Message):
 
   Fields:
     datapoints: A list of datapoints to be created/updated.
+    updateMask: Optional. Update mask is used to specify the fields to be
+      overwritten in the datapoints by the update. The fields specified in the
+      update_mask are relative to each IndexDatapoint inside datapoints, not
+      the full request. Updatable fields: * Use `all_restricts` to update both
+      restricts and numeric_restricts.
   """
 
   datapoints = _messages.MessageField('GoogleCloudAiplatformV1IndexDatapoint', 1, repeated=True)
+  updateMask = _messages.StringField(2)
 
 
 class GoogleCloudAiplatformV1UpsertDatapointsResponse(_messages.Message):
@@ -23326,6 +23647,18 @@ class GoogleCloudAiplatformV1Value(_messages.Message):
   doubleValue = _messages.FloatField(1)
   intValue = _messages.IntegerField(2)
   stringValue = _messages.StringField(3)
+
+
+class GoogleCloudAiplatformV1VertexAISearch(_messages.Message):
+  r"""Retrieve from Vertex AI Search datastore for grounding. See
+  https://cloud.google.com/vertex-ai-search-and-conversation
+
+  Fields:
+    datastore: Required. Fully-qualified Vertex AI Search's datastore resource
+      ID. projects/<>/locations/<>/collections/<>/dataStores/<>
+  """
+
+  datastore = _messages.StringField(1)
 
 
 class GoogleCloudAiplatformV1VideoMetadata(_messages.Message):
@@ -23572,7 +23905,11 @@ class GoogleIamV1Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('GoogleTypeExpr', 1)
@@ -24080,4368 +24417,39 @@ class IntelligenceCloudAutomlXpsReportingMetrics(_messages.Message):
   metricEntries = _messages.MessageField('IntelligenceCloudAutomlXpsMetricEntry', 2, repeated=True)
 
 
-class LanguageLabsAidaTrustRecitationProtoDocAttribution(_messages.Message):
-  r"""The proto defines the attribution information for a document using
-  whatever fields are most applicable for that document's datasource. For
-  example, a Wikipedia article's attribution is in the form of its article
-  title, a website is in the form of a URL, and a Github repo is in the form
-  of a repo name. Next id:28
-
-  Enums:
-    CategoryValueValuesEnum:
-    DatasetValueValuesEnum: The dataset this document comes from.
+class LearningGenaiRootGroundingMetadata(_messages.Message):
+  r"""A LearningGenaiRootGroundingMetadata object.
 
   Fields:
-    amarnaId: A string attribute.
-    arxivId: A string attribute.
-    author: A string attribute.
-    bibkey: A string attribute.
-    bookTitle: A string attribute.
-    bookVolumeId: The Oceanographers full-view books dataset uses a 'volume
-      id' as the unique ID of a book. There is a deterministic function from a
-      volume id to a URL under the books.google.com domain. Marked as
-      'optional' since a volume ID of zero is potentially possible and we want
-      to distinguish that from the volume ID not being set.
-    category: A CategoryValueValuesEnum attribute.
-    conversationId: A string attribute.
-    dataset: The dataset this document comes from.
-    filepath: A string attribute.
-    geminiId: A string attribute.
-    gnewsArticleTitle: A string attribute.
-    goodallExampleId: A string attribute.
-    isOptOut: Whether the document is opted out.
-    isPrompt: A boolean attribute.
-    lamdaExampleId: A string attribute.
-    license: A string attribute.
-    meenaConversationId: A string attribute.
-    naturalLanguageCode: Natural (not programming) language of the document.
-      Language code as defined by
-      http://www.unicode.org/reports/tr35/#Identifiers and
-      https://tools.ietf.org/html/bcp47. Currently applicable to full-view
-      books. Use docinfo-util.h to set & read language fields. See go/iii.
-    noAttribution: True if this doc has no attribution information available.
-      We use an explicit field for this instead of just implicitly leaving all
-      the DocAttribution fields blank to distinguish a case where a
-      bug/oversight has left the attribution information empty vs when we
-      really have no attribution information available.
-    podcastUtteranceId: A string attribute.
-    publicationDate: A GoogleTypeDate attribute.
-    qualityScoreExperimentOnly: This field is for opt-out experiment only,
-      MUST never be used during actual production/serving.
-    repo: Github repository
-    url: URL of a webdoc
-    volumeId: A string attribute.
-    wikipediaArticleTitle: Wikipedia article title. The Wikipedia TFDS dataset
-      includes article titles but not URLs. While a URL is to the best of our
-      knowledge a deterministic function of the title, we store the original
-      title to reflect the information in the original dataset.
+    citations: A LearningGenaiRootGroundingMetadataCitation attribute.
+    groundingCancelled: True if grounding is cancelled, for example, no facts
+      being retrieved.
+    searchQueries: A string attribute.
   """
 
-  class CategoryValueValuesEnum(_messages.Enum):
-    r"""CategoryValueValuesEnum enum type.
-
-    Values:
-      CATEGORY_UNSPECIFIED: <no description>
-      CATEGORY_NEWS: The doc has a url and the news classifier has classified
-        this doc as news.
-      CATEGORY_NON_NEWS_WEBDOC: The doc has a url and the news classifier
-        classified this doc as non-news.
-      CATEGORY_UNKNOWN_MISSING_SIGNAL: The doc has a url but the url was
-        missing from the news classifier URL table.
-    """
-    CATEGORY_UNSPECIFIED = 0
-    CATEGORY_NEWS = 1
-    CATEGORY_NON_NEWS_WEBDOC = 2
-    CATEGORY_UNKNOWN_MISSING_SIGNAL = 3
-
-  class DatasetValueValuesEnum(_messages.Enum):
-    r"""The dataset this document comes from.
-
-    Values:
-      DATASET_UNSPECIFIED: <no description>
-      WIKIPEDIA: Wikipedia article Tensorflow datasets used by Tarzan and
-        maintained by TFDS team.
-      WEBDOCS: Webdocs that have been filtered from the docjoins by the Tarzan
-        team for use in the Tarzan training set.
-      WEBDOCS_FINETUNE: <no description>
-      GITHUB_MIRROR: <no description>
-      BOOKS_FULL_VIEW: 'Full view' books dataset maintained by Oceanographers
-        team, meaning 'ok to view the book in full in all localities'. Largely
-        the same as 'public domain', but with potentially subtle distinction.
-      BOOKS_PRIVATE: Filtered private books used by ULM: http://google3/learni
-        ng/multipod/pax/lm/params/ulm/tasks.py;l=123;rcl=494241309. which
-        corresponds with /cns/mf-d/home/multipod-language-
-        data/private_books/books_filtered_en_resharded@50000
-      GNEWS: Google news dataset referenced in: http://google3/learning/brain/
-        research/conversation/meena/t5/pretrain_tasks.py;l=922;rcl=496534668
-      ULM_DOCJOINS: The docjoins data for ULM /cns/yo-d/home/multipod-
-        language-data/docjoins/rs=6.3/20220728/100B_docstructure_split/example
-        s_en.tfrecord_lattice_05_score_01_HFV13@3929
-      ULM_DOCJOINS_DEDUPED: <no description>
-      MEENA_FC: Meena full conversations. http://google3/learning/brain/resear
-        ch/conversation/meena/t5/pretrain_mixtures.py;l=675;rcl=496583228
-      PODCAST: <no description>
-      AQUA: <no description>
-      WEB_ASR: <no description>
-      BARD_GOLDEN: <no description>
-      COMMON_SENSE_REASONING: <no description>
-      MATH: <no description>
-      MATH_REASONING: <no description>
-      CLEAN_ARXIV: <no description>
-      LAMDA_FACTUALITY_E2E_QUERY_GENERATION: <no description>
-      LAMDA_FACTUALITY_E2E_RESPONSE_GENERATION: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_BARD: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_LONG_200: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_LONG_500: <no description>
-      DOCUMENT_CHUNKS: <no description>
-      MEENA_RESEARCH_PHASE_GOLDEN_MARKDOWN: <no description>
-      MEENA_RESEARCH_PHASE_GOOGLERS: <no description>
-      MEENA_RESPONSE_SAFETY_HUMAN_GEN: <no description>
-      MEENA_RESPONSE_SAFETY_SCHEMA_NO_BROADCAST: <no description>
-      MEENA_RESPONSE_SAFETY_V3_HUMAN_GEN2: <no description>
-      MEENA_RESPONSE_SAFETY_V3_SCHEMA_NO_BROADCAST: <no description>
-      LAMDA_FACTUALITY_TRIGGER: <no description>
-      LAMDA_SAFETY_V2_SCHEMA_NO_BROADCAST: <no description>
-      LAMDA_SSI_DISCRIMINATIVE: <no description>
-      ASSISTANT_PERSONALITY_SAFETY: <no description>
-      PODCAST_FINETUNE_DIALOG: <no description>
-      WORLD_QUERY_GENERATOR: <no description>
-      C4_JOINED_DOCJOINS: <no description>
-      HOL4_THEORIES: <no description>
-      HOL_LIGHT_THEORIES: <no description>
-      HOLSTEPS: <no description>
-      ISABELLE_STEP: <no description>
-      ISABELLE_THEORIES: <no description>
-      LEAN_MATHLIB_THEORIES: <no description>
-      LEAN_STEP: <no description>
-      MIZAR_THEORIES: <no description>
-      COQ_STEP: <no description>
-      COQ_THEORIES: <no description>
-      AMPS_KHAN: Academic dataset of math text. http://google3/learning/brain/
-        research/conversation/meena/seqio/mixtures/experimental/bard.py;rcl=50
-        0222380
-      AMPS_MATHEMATICA: <no description>
-      CODEY_CODE: <no description>
-      CODE_QA_SE: <no description>
-      CODE_QA_SO: <no description>
-      CODE_QA_FT_FORMAT: <no description>
-      CODE_QA_FT_KNOWLEDGE: <no description>
-      CODE_QA_GITHUB_FILTERED_CODE: <no description>
-      BARD_PERSONALITY_GOLDEN: <no description>
-      ULM_DOCJOINS_WITH_URLS_EN: <no description>
-      ULM_DOCJOINS_WITH_URLS_I18N: <no description>
-      GOODALL_MTV5_GITHUB: Datasets managed by the Goodall team: deepmind-
-        goodall@google.com
-      GOODALL_MTV5_BOOKS: <no description>
-      GOODALL_MTV5_C4: <no description>
-      GOODALL_MTV5_WIKIPEDIA: <no description>
-      GOODALL_MW_TOP_100B: <no description>
-      GOODALL_MW_STACK_EXCHANGE: <no description>
-      GOODALL_MW_TOP_0_10B: <no description>
-      GOODALL_MW_TOP_10B_20B: <no description>
-      CODEY_NOTEBOOK_LM_PRETRAINING: Datasets used by Codepoet
-      VERTEX_SAFE_FLAN: Datasets used by Vertex
-      GITHUB_MIRROR_V1_0_1: <no description>
-      GITHUB_MIRROR_V2_1_0: <no description>
-      CMS_WIKIPEDIA_LANG_FILTERED: Datasets used by Gemini Public data
-      CMS_STACKOVERFLOW_MULTILINGUAL: <no description>
-      CMS_STACKEXCHANGE: <no description>
-      PUBMED: <no description>
-      GEMINI_DOCJOINS_EN_TOP10B_GCC: Public webdocs
-      GEMINI_DOCJOINS_EN_TOP10B_TOP20B_GCC: <no description>
-      GEMINI_DOCJOINS_EN_TOP20B_TOP100B_GCC: <no description>
-      GEMINI_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP10B_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP10B_TOP20B_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP20B_TOP100B_GCC: <no description>
-      SIMPLIFIED_HTML_V1_GCC: <no description>
-      GEMINI_DOCJOINS_TOXICITY_TAGGED_GCC: <no description>
-      CMS_GITHUB_V4: Github
-      GITHUB_HTML_V4: <no description>
-      GITHUB_OTHER_V4: <no description>
-      GITHUB_LONG_TAIL_V4: <no description>
-      CMS_GITHUB_MULTIFILE_V4: <no description>
-      GITHUB_DIFFS_WITH_COMMIT_MESSAGE: <no description>
-      ULM_ARXIV: Arxiv
-      NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_ENONLY: Others
-      NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_NONENONLY: <no
-        description>
-      QUORA: <no description>
-      PODCASTS_ROBOTSTXT: <no description>
-      COMBINED_REDDIT: <no description>
-      CANARIES_SHUFFLED: <no description>
-      CLM_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX: <no description>
-      TECHDOCS_DATA_SOURCE: <no description>
-      SCIENCE_PDF_70M_DOCS_FILTERED: <no description>
-      GEMINI_V1_CMS_WIKIPEDIA_LANG_FILTERED: Gemini V1, order by precedence.
-        Wikipedia
-      GEMINI_V1_WIKIPEDIA_DIFFS: <no description>
-      GEMINI_V1_DOCJOINS_EN_TOP10B_GCC_NODEDUP_050523: Public webdocs
-      GEMINI_V1_DOCJOINS_EN_TOP10B_TOP20B_GCC_NODEDUP_050523: <no description>
-      GEMINI_V1_DOCJOINS_EN_TOP20B_TOP100B_GCC_NODEDUP_050523: <no
-        description>
-      GEMINI_V1_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC_NODEDUP_050523: <no
-        description>
-      GEMINI_V1_DOCJOINS_I18N_TOP10B_GCC_050523: <no description>
-      GEMINI_V1_DOCJOINS_I18N_TOP10B_TOP20B_GCC_050523: <no description>
-      GEMINI_V1_DOCJOINS_I18N_TOP20B_TOP100B_GCC_050523: <no description>
-      GEMINI_V1_SIMPLIFIED_HTML_V2_GCC: <no description>
-      GEMINI_V1_CMS_STACKOVERFLOW_MULTILINGUAL_V2: <no description>
-      GEMINI_V1_CMS_STACKEXCHANGE_DECONT: <no description>
-      GEMINI_V1_QUORA: <no description>
-      GEMINI_V1_COMBINED_REDDIT: <no description>
-      GEMINI_V1_DOCJOIN_100B_EN_TOXICITY_TAGGED_GCC_FIXED_TAGS: <no
-        description>
-      GEMINI_V1_PUBMED: <no description>
-      GEMINI_V1_WEB_MATH_V2: <no description>
-      GEMINI_V1_CMS_GITHUB_DECONTAMINATED_V_7: Github
-      GEMINI_V1_GITHUB_DIFF_WITH_COMMIT_MESSAGE_V2: <no description>
-      GEMINI_V1_GITHUB_HTML_CSS_XML_V4: <no description>
-      GEMINI_V1_GITHUB_OTHER_V4: <no description>
-      GEMINI_V1_GITHUB_LONG_TAIL_V4: <no description>
-      GEMINI_V1_GITHUB_JUPTYER_NOTEBOOKS_SSTABLE: <no description>
-      GEMINI_V1_ULM_ARXIV_SSTABLE: ArXiv
-      GEMINI_V1_PODCASTS_ROBOTSTXT: Citable misc
-      GEMINI_V1_SCIENCE_PDF_68M_HQ_DOCS_GCC: <no description>
-      GEMINI_V1_GITHUB_TECHDOCS_V2: <no description>
-      GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_EN: Non-public
-        books
-      GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_NONEN: <no
-        description>
-      GEMINI_V1_STEM_BOOKS_650K_TEXT: <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_M3W_V2_FILTERED: Other
-      GEMINI_V1_VQCOCA_1B_MULTIRES_WEBLI_EN_V4_350M_PREFIXED_FILTERED_IMAGE2TE
-        XT: <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_SCREENAI_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CULTURE_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_EN_PREFIXED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_I18N_PREFIXED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_EN_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_NON_EN_PREFIXED_FILTERED_IMAGE2TEXT:
-        <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_VTP_4F_VIDEO2TEXT_PREFIX: <no description>
-      GEMINI_V1_FORMAL_MATH_WITHOUT_HOLSTEPS_AND_MIZAR: <no description>
-      GEMINI_V1_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX: <no description>
-      GEMINI_V1_CANARIES_SHUFFLED_DOCJOIN_EN_NONEN_CODE_ARXIV_TRANSLATE: <no
-        description>
-      DUET_CLOUD_SECURITY_DOCS: Duet AI finetune datasets, order by
-        precedence.
-      DUET_GITHUB_CODE_SNIPPETS: <no description>
-      DUET_GITHUB_FILES: <no description>
-      DUET_GOBYEXAMPLE: <no description>
-      DUET_GOLANG_DOCS: <no description>
-      DUET_CLOUD_DOCS_TROUBLESHOOTING_TABLES: <no description>
-      DUET_DEVSITE_DOCS: <no description>
-      DUET_CLOUD_BLOG_POSTS: <no description>
-      DUET_CLOUD_PODCAST_EPISODES: <no description>
-      DUET_YOUTUBE_VIDEOS: <no description>
-      DUET_CLOUD_SKILLS_BOOST: <no description>
-      DUET_CLOUD_DOCS: <no description>
-      DUET_CLOUD_GITHUB_CODE_SNIPPETS_GENERATED: <no description>
-      DUET_CLOUD_GITHUB_CODE_SNIPPETS_HANDWRITTEN: <no description>
-      DUET_GOOGLESQL_GENERATION: <no description>
-      DUET_CLOUD_IX_PROMPTS: <no description>
-      DUET_RAD: <no description>
-      BARD_ARCADE_GITHUB: Bard ARCADE finetune dataset.
-      MOBILE_ASSISTANT_MAGI_FILTERED_0825_373K: Mobile assistant finetune
-        datasets.
-      MOBILE_ASSISTANT_PALM24B_FILTERED_400K: <no description>
-      GENESIS_NEWS_INSIGHTS: Genesis fine-tune datasets.
-      CLOUD_SECURITY_PRETRAINING: Cloud Security fine-tune datasets.
-      CLOUD_SECURITY_FINETUNING: <no description>
-      LABS_AQA_DSCOUT: LABS AQA fine-tune datasets.
-      LABS_AQA_TAILWIND: <no description>
-      LABS_AQA_DELEWARE: <no description>
-      GEMINI_MULTIMODAL_FT_URL: Gemini multimodal instruction tune(IT) and
-        fine tune(FT) datasets datasets.
-      GEMINI_MULTIMODAL_FT_YT: <no description>
-      GEMINI_MULTIMODAL_FT_SHUTTERSTOCK: <no description>
-      GEMINI_MULTIMODAL_FT_NONE: <no description>
-      GEMINI_MULTIMODAL_FT_OTHER: <no description>
-      GEMINI_MULTIMODAL_FT_INK: <no description>
-      GEMINI_MULTIMODAL_IT: <no description>
-      GEMINI_IT_SHUTTERSTOCK: Gemini IT 1.2.7 datasets
-      GEMINI_IT_M3W: <no description>
-      GEMINI_IT_HEDGING: <no description>
-      GEMINI_IT_DSCOUT_FACTUALITY: <no description>
-      GEMINI_IT_AQUAMUSE: <no description>
-      GEMINI_IT_SHOTGUN: <no description>
-      GEMINI_IT_ACI_BENCH: <no description>
-      GEMINI_IT_SPIDER_FILTERED: <no description>
-      GEMINI_IT_TAB_SUM_BQ: <no description>
-      GEMINI_IT_QA_WITH_URL: <no description>
-      GEMINI_IT_CODE_INSTRUCT: <no description>
-      GEMINI_IT_MED_PALM: <no description>
-      GEMINI_IT_TASK_ORIENTED_DIALOG: <no description>
-      GEMINI_IT_NIMBUS_GROUNDING_TO_PROMPT: <no description>
-      GEMINI_IT_EITL_GEN: <no description>
-      GEMINI_IT_HITL_GEN: <no description>
-      GEMINI_IT_MECH: <no description>
-      GEMINI_IT_TABLE_GEN: <no description>
-      GEMINI_IT_NIMBUS_DECIBEL: <no description>
-      GEMIT_BRIDGE_SUFFIX_FT: Gemit Bridge ULM FT dataset
-      GEMINI_IT_CLOUD_CODE_IF: Gemini IT Cloud Build datasets.
-      GEMINI_IT_CLOUD_EUR_LEX_JSON: <no description>
-      GEMINI_IT_CLOUD_OASST: <no description>
-      GEMINI_IT_CLOUD_SELF_INSTRUCT: <no description>
-      GEMINI_IT_CLOUD_UCS_AQUAMUSE: <no description>
-      GEMINI_V2_CMS_WIKIPEDIA_LANG_FILTERED_GCC_PII: Gemini V2 datasets
-      GEMINI_V2_WIKIPEDIA_DIFFS_COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP10B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP10B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_NONARTIC
-        LES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_ARTICLES
-        _COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP20B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP20B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_NONARTIC
-        LES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_ARTICLES
-        _COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP100B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP100B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_NONARTI
-        CLES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_ARTICLE
-        S_COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP500B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP500B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_QUORA_COMPLIANT: <no description>
-      GEMINI_V2_FORUMS_V2_COMPLIANT: <no description>
-      GEMINI_V2_CMS_STACKOVERFLOW_MULTILINGUAL_V2_COMPLIANT: <no description>
-      GEMINI_V2_SIMPLIFIED_HTML_V2_CORRECT_FORMAT_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_TOXICITY_TAGGED_FIXED_TAGS_COMPLIANT: <no
-        description>
-      GEMINI_V2_CODEWEB_V1_COMPLIANT: <no description>
-      GEMINI_V2_LEETCODE_GCC_PII: <no description>
-      GEMINI_V2_CODE_CONTESTS_COMPLIANT: <no description>
-      GEMINI_V2_CMS_GITHUB_MULTI_FILE_FOR_FIM_GEMBAGZ_FIXED_BYTES_LENGTHS: <no
-        description>
-      GEMINI_V2_GITHUB_EVALED_LANGUAGES_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_NON_EVAL_HIGH_PRI_LANGUAGES_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_LOW_PRI_LANGUAGES_AND_CONFIGS_COMPLIANT: <no
-        description>
-      GEMINI_V2_GITHUB_LONG_TAIL_AND_STRUCTURED_DATA_COMPLIANT: <no
-        description>
-      GEMINI_V2_GITHUB_PYTHON_NOTEBOOKS_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_DIFFS_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_TECHDOCS_COMPLIANT: <no description>
-      GEMINI_V2_HIGH_QUALITY_CODE_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_SCIENCE_PDF_68M_HQ_DOCS_DEDUP_COMPLIANT_CLEAN_TEX: <no
-        description>
-      GEMINI_V2_ARXIV_2023_COMPLIANT: <no description>
-      GEMINI_V2_FORMAL_COMPLIANT: <no description>
-      GEMINI_V2_CMS_STACKEXCHANGE_COMPLIANT: <no description>
-      GEMINI_V2_PUBMED_COMPLIANT: <no description>
-      GEMINI_V2_WEB_MATH_V3_COMPLIANT: <no description>
-      GEMINI_V2_SCIENCEWEB_V0_GCC_PII: <no description>
-      GEMINI_V2_WEB_POLYMATH_V1_COMPLIANT: <no description>
-      GEMINI_V2_MATH_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_BIOLOGY_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_PHYSICS_V2_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_CHEMISTRY_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_MACHINE_LEARNING_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_QA_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_ECONOMICS_V2_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_MEDICAL_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_CHESS_COMPLIANT: <no description>
-      GEMINI_V2_YOUTUBE_SCIENCE_V4_FILTERED_COMPLIANT: <no description>
-      GEMINI_V2_GOALDMINE_XL_GENERATED_PLUS_GT_NO_DM_MATH_COMPLIANT: <no
-        description>
-      GEMINI_V2_FIRSTTIMES_SCIENCE_PDF_DEDUP_HQ_LENGTH_FILTERED_COMPLIANT: <no
-        description>
-      GEMINI_V2_PODCASTS_COMPLIANT: <no description>
-      GEMINI_V2_EN_NONSCIENCE_PDF_DEDUP_46M_DOCS_COMPLIANT: <no description>
-      GEMINI_V2_NONPUB_COPYRIGHT_BOOKS_V3_70_CONF_082323_LONG_DEDUP_ENONLY_COM
-        PLIANT: <no description>
-      GEMINI_V2_STEM_COPYRIGHT_BOOKS_V3_111823_LONG_DEDUP_ENONLY_COMPLIANT:
-        <no description>
-      GEMINI_V2_STEM_BOOKS_318K_TEXT_COMPLIANT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEA
-        VED_COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEA
-        VED_COMPLIANT_PII_FILTERED_SOFT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_T2I_TEXT_TO_IMAGE_COMP
-        LIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_IMAGE_TO_TEXT_COMPLIANT_PI
-        I_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_IMAGE_TO_TEXT_COMPLIAN
-        T_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_I18N_680M_IMAGE_TO_TEXT_COMPL
-        IANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_DOC_IMAGE_TO_TEXT_COMPLIANT_PII
-        _FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_FULL_HTML_75M_IMAGE_TO_TEXT_CO
-        MPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_V1_1_IMAGE_TO_TEXT_COMPLIANT_P
-        II_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_DOC_240M_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_VIDEO_VIDEO_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M4W_INTERLEAVED_COMPLIANT_PII_FILTERED_
-        SOFT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CULTURE_IMAGE_TO_TEXT_COMPLIANT_PII_FIL
-        TERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_DETECTION_IMAGE_TO_TEXT_COMPLIANT
-        _PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_ALT_TEXT_NONEN_500M_IMAGE_TO_TEXT
-        _COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SPATIAL_AWARE_PALI_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_3D_IMAGE_TO_TEXT_COM
-        PLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_EN_IMAGE_TO_TEXT_COMPLIANT_
-        PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_NON_EN_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_3D_DOC_IMAGE_TO_TEXT_COMPLIANT_
-        PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CC3M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTER
-        ED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_INFOGRAPHICS_LARGE_WEB_IMAGE_TO_TEXT_CO
-        MPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_BIORXIV_IMAGE_TO_TEXT_COMPLIANT_PII_FIL
-        TERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_IM2SOL_PROBLEM_AND_SOLUTION_I
-        MAGE_TO_TEXT_COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PLOT2TABLE_V2_IMAGE_TO_TEXT_COMPLIANT_P
-        II_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TIKZ_DERENDERING_MERGED_IMAGE_TO_TEXT_C
-        OMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_2D_IMAGE_TO_TEXT_COM
-        PLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WIKIPEDIA_EQUATIONS_IMAGE_TO_TEXT_COMPL
-        IANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_EQ2LATEX_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_ARXIV_EQUATIONS_V2_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_SUP_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_1P5M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_4M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_SUP_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_1P5M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_4M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_ENUS_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_I18N_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_ENUS_GEMBAGZ_V2_COMPLIANT:
-        <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_I18N_GEMBAGZ_V2_COMPLIANT:
-        <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_1P5M_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_HEAD_4M_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_CLM_TRANSLATE_DATAV3_WEB_UNWMT_INCR_MIX: <no description>
-      GEMINI_V2_NTL_NTLV4A_MONOLINGUAL_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_STT_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_TRANSLIT_BILEX_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_SYN_BT_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_SYN_FT_FIXED_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_CANARIES_SHUFFLED_COMPLIANT: <no description>
-    """
-    DATASET_UNSPECIFIED = 0
-    WIKIPEDIA = 1
-    WEBDOCS = 2
-    WEBDOCS_FINETUNE = 3
-    GITHUB_MIRROR = 4
-    BOOKS_FULL_VIEW = 5
-    BOOKS_PRIVATE = 6
-    GNEWS = 7
-    ULM_DOCJOINS = 8
-    ULM_DOCJOINS_DEDUPED = 9
-    MEENA_FC = 10
-    PODCAST = 11
-    AQUA = 12
-    WEB_ASR = 13
-    BARD_GOLDEN = 14
-    COMMON_SENSE_REASONING = 15
-    MATH = 16
-    MATH_REASONING = 17
-    CLEAN_ARXIV = 18
-    LAMDA_FACTUALITY_E2E_QUERY_GENERATION = 19
-    LAMDA_FACTUALITY_E2E_RESPONSE_GENERATION = 20
-    MASSIVE_FORUM_THREAD_SCORED_BARD = 21
-    MASSIVE_FORUM_THREAD_SCORED_LONG_200 = 22
-    MASSIVE_FORUM_THREAD_SCORED_LONG_500 = 23
-    DOCUMENT_CHUNKS = 24
-    MEENA_RESEARCH_PHASE_GOLDEN_MARKDOWN = 25
-    MEENA_RESEARCH_PHASE_GOOGLERS = 26
-    MEENA_RESPONSE_SAFETY_HUMAN_GEN = 27
-    MEENA_RESPONSE_SAFETY_SCHEMA_NO_BROADCAST = 28
-    MEENA_RESPONSE_SAFETY_V3_HUMAN_GEN2 = 29
-    MEENA_RESPONSE_SAFETY_V3_SCHEMA_NO_BROADCAST = 30
-    LAMDA_FACTUALITY_TRIGGER = 31
-    LAMDA_SAFETY_V2_SCHEMA_NO_BROADCAST = 32
-    LAMDA_SSI_DISCRIMINATIVE = 33
-    ASSISTANT_PERSONALITY_SAFETY = 34
-    PODCAST_FINETUNE_DIALOG = 35
-    WORLD_QUERY_GENERATOR = 36
-    C4_JOINED_DOCJOINS = 37
-    HOL4_THEORIES = 38
-    HOL_LIGHT_THEORIES = 39
-    HOLSTEPS = 40
-    ISABELLE_STEP = 41
-    ISABELLE_THEORIES = 42
-    LEAN_MATHLIB_THEORIES = 43
-    LEAN_STEP = 44
-    MIZAR_THEORIES = 45
-    COQ_STEP = 46
-    COQ_THEORIES = 47
-    AMPS_KHAN = 48
-    AMPS_MATHEMATICA = 49
-    CODEY_CODE = 50
-    CODE_QA_SE = 51
-    CODE_QA_SO = 52
-    CODE_QA_FT_FORMAT = 53
-    CODE_QA_FT_KNOWLEDGE = 54
-    CODE_QA_GITHUB_FILTERED_CODE = 55
-    BARD_PERSONALITY_GOLDEN = 56
-    ULM_DOCJOINS_WITH_URLS_EN = 57
-    ULM_DOCJOINS_WITH_URLS_I18N = 58
-    GOODALL_MTV5_GITHUB = 59
-    GOODALL_MTV5_BOOKS = 60
-    GOODALL_MTV5_C4 = 61
-    GOODALL_MTV5_WIKIPEDIA = 62
-    GOODALL_MW_TOP_100B = 63
-    GOODALL_MW_STACK_EXCHANGE = 64
-    GOODALL_MW_TOP_0_10B = 65
-    GOODALL_MW_TOP_10B_20B = 66
-    CODEY_NOTEBOOK_LM_PRETRAINING = 67
-    VERTEX_SAFE_FLAN = 68
-    GITHUB_MIRROR_V1_0_1 = 69
-    GITHUB_MIRROR_V2_1_0 = 70
-    CMS_WIKIPEDIA_LANG_FILTERED = 71
-    CMS_STACKOVERFLOW_MULTILINGUAL = 72
-    CMS_STACKEXCHANGE = 73
-    PUBMED = 74
-    GEMINI_DOCJOINS_EN_TOP10B_GCC = 75
-    GEMINI_DOCJOINS_EN_TOP10B_TOP20B_GCC = 76
-    GEMINI_DOCJOINS_EN_TOP20B_TOP100B_GCC = 77
-    GEMINI_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC = 78
-    GEMINI_DOCJOINS_I18N_TOP10B_GCC = 79
-    GEMINI_DOCJOINS_I18N_TOP10B_TOP20B_GCC = 80
-    GEMINI_DOCJOINS_I18N_TOP20B_TOP100B_GCC = 81
-    SIMPLIFIED_HTML_V1_GCC = 82
-    GEMINI_DOCJOINS_TOXICITY_TAGGED_GCC = 83
-    CMS_GITHUB_V4 = 84
-    GITHUB_HTML_V4 = 85
-    GITHUB_OTHER_V4 = 86
-    GITHUB_LONG_TAIL_V4 = 87
-    CMS_GITHUB_MULTIFILE_V4 = 88
-    GITHUB_DIFFS_WITH_COMMIT_MESSAGE = 89
-    ULM_ARXIV = 90
-    NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_ENONLY = 91
-    NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_NONENONLY = 92
-    QUORA = 93
-    PODCASTS_ROBOTSTXT = 94
-    COMBINED_REDDIT = 95
-    CANARIES_SHUFFLED = 96
-    CLM_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX = 97
-    TECHDOCS_DATA_SOURCE = 98
-    SCIENCE_PDF_70M_DOCS_FILTERED = 99
-    GEMINI_V1_CMS_WIKIPEDIA_LANG_FILTERED = 100
-    GEMINI_V1_WIKIPEDIA_DIFFS = 101
-    GEMINI_V1_DOCJOINS_EN_TOP10B_GCC_NODEDUP_050523 = 102
-    GEMINI_V1_DOCJOINS_EN_TOP10B_TOP20B_GCC_NODEDUP_050523 = 103
-    GEMINI_V1_DOCJOINS_EN_TOP20B_TOP100B_GCC_NODEDUP_050523 = 104
-    GEMINI_V1_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC_NODEDUP_050523 = 105
-    GEMINI_V1_DOCJOINS_I18N_TOP10B_GCC_050523 = 106
-    GEMINI_V1_DOCJOINS_I18N_TOP10B_TOP20B_GCC_050523 = 107
-    GEMINI_V1_DOCJOINS_I18N_TOP20B_TOP100B_GCC_050523 = 108
-    GEMINI_V1_SIMPLIFIED_HTML_V2_GCC = 109
-    GEMINI_V1_CMS_STACKOVERFLOW_MULTILINGUAL_V2 = 110
-    GEMINI_V1_CMS_STACKEXCHANGE_DECONT = 111
-    GEMINI_V1_QUORA = 112
-    GEMINI_V1_COMBINED_REDDIT = 113
-    GEMINI_V1_DOCJOIN_100B_EN_TOXICITY_TAGGED_GCC_FIXED_TAGS = 114
-    GEMINI_V1_PUBMED = 115
-    GEMINI_V1_WEB_MATH_V2 = 116
-    GEMINI_V1_CMS_GITHUB_DECONTAMINATED_V_7 = 117
-    GEMINI_V1_GITHUB_DIFF_WITH_COMMIT_MESSAGE_V2 = 118
-    GEMINI_V1_GITHUB_HTML_CSS_XML_V4 = 119
-    GEMINI_V1_GITHUB_OTHER_V4 = 120
-    GEMINI_V1_GITHUB_LONG_TAIL_V4 = 121
-    GEMINI_V1_GITHUB_JUPTYER_NOTEBOOKS_SSTABLE = 122
-    GEMINI_V1_ULM_ARXIV_SSTABLE = 123
-    GEMINI_V1_PODCASTS_ROBOTSTXT = 124
-    GEMINI_V1_SCIENCE_PDF_68M_HQ_DOCS_GCC = 125
-    GEMINI_V1_GITHUB_TECHDOCS_V2 = 126
-    GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_EN = 127
-    GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_NONEN = 128
-    GEMINI_V1_STEM_BOOKS_650K_TEXT = 129
-    GEMINI_V1_VQCOCA_1B_MULTIRES_M3W_V2_FILTERED = 130
-    GEMINI_V1_VQCOCA_1B_MULTIRES_WEBLI_EN_V4_350M_PREFIXED_FILTERED_IMAGE2TEXT = 131
-    GEMINI_V1_VQCOCA_1B_MULTIRES_SCREENAI_PREFIXED_FILTERED_IMAGE2TEXT = 132
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CULTURE_PREFIXED_FILTERED_IMAGE2TEXT = 133
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_EN_PREFIXED_IMAGE2TEXT = 134
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_I18N_PREFIXED_IMAGE2TEXT = 135
-    GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_EN_PREFIXED_FILTERED_IMAGE2TEXT = 136
-    GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_NON_EN_PREFIXED_FILTERED_IMAGE2TEXT = 137
-    GEMINI_V1_VQCOCA_1B_MULTIRES_VTP_4F_VIDEO2TEXT_PREFIX = 138
-    GEMINI_V1_FORMAL_MATH_WITHOUT_HOLSTEPS_AND_MIZAR = 139
-    GEMINI_V1_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX = 140
-    GEMINI_V1_CANARIES_SHUFFLED_DOCJOIN_EN_NONEN_CODE_ARXIV_TRANSLATE = 141
-    DUET_CLOUD_SECURITY_DOCS = 142
-    DUET_GITHUB_CODE_SNIPPETS = 143
-    DUET_GITHUB_FILES = 144
-    DUET_GOBYEXAMPLE = 145
-    DUET_GOLANG_DOCS = 146
-    DUET_CLOUD_DOCS_TROUBLESHOOTING_TABLES = 147
-    DUET_DEVSITE_DOCS = 148
-    DUET_CLOUD_BLOG_POSTS = 149
-    DUET_CLOUD_PODCAST_EPISODES = 150
-    DUET_YOUTUBE_VIDEOS = 151
-    DUET_CLOUD_SKILLS_BOOST = 152
-    DUET_CLOUD_DOCS = 153
-    DUET_CLOUD_GITHUB_CODE_SNIPPETS_GENERATED = 154
-    DUET_CLOUD_GITHUB_CODE_SNIPPETS_HANDWRITTEN = 155
-    DUET_GOOGLESQL_GENERATION = 156
-    DUET_CLOUD_IX_PROMPTS = 157
-    DUET_RAD = 158
-    BARD_ARCADE_GITHUB = 159
-    MOBILE_ASSISTANT_MAGI_FILTERED_0825_373K = 160
-    MOBILE_ASSISTANT_PALM24B_FILTERED_400K = 161
-    GENESIS_NEWS_INSIGHTS = 162
-    CLOUD_SECURITY_PRETRAINING = 163
-    CLOUD_SECURITY_FINETUNING = 164
-    LABS_AQA_DSCOUT = 165
-    LABS_AQA_TAILWIND = 166
-    LABS_AQA_DELEWARE = 167
-    GEMINI_MULTIMODAL_FT_URL = 168
-    GEMINI_MULTIMODAL_FT_YT = 169
-    GEMINI_MULTIMODAL_FT_SHUTTERSTOCK = 170
-    GEMINI_MULTIMODAL_FT_NONE = 171
-    GEMINI_MULTIMODAL_FT_OTHER = 172
-    GEMINI_MULTIMODAL_FT_INK = 173
-    GEMINI_MULTIMODAL_IT = 174
-    GEMINI_IT_SHUTTERSTOCK = 175
-    GEMINI_IT_M3W = 176
-    GEMINI_IT_HEDGING = 177
-    GEMINI_IT_DSCOUT_FACTUALITY = 178
-    GEMINI_IT_AQUAMUSE = 179
-    GEMINI_IT_SHOTGUN = 180
-    GEMINI_IT_ACI_BENCH = 181
-    GEMINI_IT_SPIDER_FILTERED = 182
-    GEMINI_IT_TAB_SUM_BQ = 183
-    GEMINI_IT_QA_WITH_URL = 184
-    GEMINI_IT_CODE_INSTRUCT = 185
-    GEMINI_IT_MED_PALM = 186
-    GEMINI_IT_TASK_ORIENTED_DIALOG = 187
-    GEMINI_IT_NIMBUS_GROUNDING_TO_PROMPT = 188
-    GEMINI_IT_EITL_GEN = 189
-    GEMINI_IT_HITL_GEN = 190
-    GEMINI_IT_MECH = 191
-    GEMINI_IT_TABLE_GEN = 192
-    GEMINI_IT_NIMBUS_DECIBEL = 193
-    GEMIT_BRIDGE_SUFFIX_FT = 194
-    GEMINI_IT_CLOUD_CODE_IF = 195
-    GEMINI_IT_CLOUD_EUR_LEX_JSON = 196
-    GEMINI_IT_CLOUD_OASST = 197
-    GEMINI_IT_CLOUD_SELF_INSTRUCT = 198
-    GEMINI_IT_CLOUD_UCS_AQUAMUSE = 199
-    GEMINI_V2_CMS_WIKIPEDIA_LANG_FILTERED_GCC_PII = 200
-    GEMINI_V2_WIKIPEDIA_DIFFS_COMPLIANT = 201
-    GEMINI_V2_ENGLISH_ARTICLES_TOP10B_211123_PII_FILTERED = 202
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP10B_211123_PII_FILTERED = 203
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 204
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 205
-    GEMINI_V2_ENGLISH_ARTICLES_TOP20B_211123_PII_FILTERED = 206
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP20B_211123_PII_FILTERED = 207
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 208
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 209
-    GEMINI_V2_ENGLISH_ARTICLES_TOP100B_211123_PII_FILTERED = 210
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP100B_211123_PII_FILTERED = 211
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 212
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 213
-    GEMINI_V2_ENGLISH_ARTICLES_TOP500B_211123_PII_FILTERED = 214
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP500B_211123_PII_FILTERED = 215
-    GEMINI_V2_QUORA_COMPLIANT = 216
-    GEMINI_V2_FORUMS_V2_COMPLIANT = 217
-    GEMINI_V2_CMS_STACKOVERFLOW_MULTILINGUAL_V2_COMPLIANT = 218
-    GEMINI_V2_SIMPLIFIED_HTML_V2_CORRECT_FORMAT_COMPLIANT = 219
-    GEMINI_V2_GEMINI_DOCJOINS_TOXICITY_TAGGED_FIXED_TAGS_COMPLIANT = 220
-    GEMINI_V2_CODEWEB_V1_COMPLIANT = 221
-    GEMINI_V2_LEETCODE_GCC_PII = 222
-    GEMINI_V2_CODE_CONTESTS_COMPLIANT = 223
-    GEMINI_V2_CMS_GITHUB_MULTI_FILE_FOR_FIM_GEMBAGZ_FIXED_BYTES_LENGTHS = 224
-    GEMINI_V2_GITHUB_EVALED_LANGUAGES_COMPLIANT = 225
-    GEMINI_V2_GITHUB_NON_EVAL_HIGH_PRI_LANGUAGES_COMPLIANT = 226
-    GEMINI_V2_GITHUB_LOW_PRI_LANGUAGES_AND_CONFIGS_COMPLIANT = 227
-    GEMINI_V2_GITHUB_LONG_TAIL_AND_STRUCTURED_DATA_COMPLIANT = 228
-    GEMINI_V2_GITHUB_PYTHON_NOTEBOOKS_COMPLIANT = 229
-    GEMINI_V2_GITHUB_DIFFS_COMPLIANT = 230
-    GEMINI_V2_GITHUB_TECHDOCS_COMPLIANT = 231
-    GEMINI_V2_HIGH_QUALITY_CODE_TARGETED_DATA_COMPLIANT2 = 232
-    GEMINI_V2_SCIENCE_PDF_68M_HQ_DOCS_DEDUP_COMPLIANT_CLEAN_TEX = 233
-    GEMINI_V2_ARXIV_2023_COMPLIANT = 234
-    GEMINI_V2_FORMAL_COMPLIANT = 235
-    GEMINI_V2_CMS_STACKEXCHANGE_COMPLIANT = 236
-    GEMINI_V2_PUBMED_COMPLIANT = 237
-    GEMINI_V2_WEB_MATH_V3_COMPLIANT = 238
-    GEMINI_V2_SCIENCEWEB_V0_GCC_PII = 239
-    GEMINI_V2_WEB_POLYMATH_V1_COMPLIANT = 240
-    GEMINI_V2_MATH_TARGETED_DATA_COMPLIANT2 = 241
-    GEMINI_V2_BIOLOGY_TARGETED_DATA_COMPLIANT2 = 242
-    GEMINI_V2_PHYSICS_V2_TARGETED_DATA_COMPLIANT2 = 243
-    GEMINI_V2_CHEMISTRY_TARGETED_DATA_COMPLIANT2 = 244
-    GEMINI_V2_MACHINE_LEARNING_TARGETED_DATA_COMPLIANT2 = 245
-    GEMINI_V2_QA_TARGETED_DATA_COMPLIANT2 = 246
-    GEMINI_V2_ECONOMICS_V2_TARGETED_DATA_COMPLIANT2 = 247
-    GEMINI_V2_MEDICAL_TARGETED_DATA_COMPLIANT2 = 248
-    GEMINI_V2_CHESS_COMPLIANT = 249
-    GEMINI_V2_YOUTUBE_SCIENCE_V4_FILTERED_COMPLIANT = 250
-    GEMINI_V2_GOALDMINE_XL_GENERATED_PLUS_GT_NO_DM_MATH_COMPLIANT = 251
-    GEMINI_V2_FIRSTTIMES_SCIENCE_PDF_DEDUP_HQ_LENGTH_FILTERED_COMPLIANT = 252
-    GEMINI_V2_PODCASTS_COMPLIANT = 253
-    GEMINI_V2_EN_NONSCIENCE_PDF_DEDUP_46M_DOCS_COMPLIANT = 254
-    GEMINI_V2_NONPUB_COPYRIGHT_BOOKS_V3_70_CONF_082323_LONG_DEDUP_ENONLY_COMPLIANT = 255
-    GEMINI_V2_STEM_COPYRIGHT_BOOKS_V3_111823_LONG_DEDUP_ENONLY_COMPLIANT = 256
-    GEMINI_V2_STEM_BOOKS_318K_TEXT_COMPLIANT = 257
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEAVED_COMPLIANT_PII_FILTERED = 258
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEAVED_COMPLIANT_PII_FILTERED_SOFT = 259
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_T2I_TEXT_TO_IMAGE_COMPLIANT_PII_FILTERED = 260
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 261
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 262
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_I18N_680M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 263
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_DOC_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 264
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_FULL_HTML_75M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 265
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_V1_1_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 266
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_DOC_240M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 267
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_VIDEO_VIDEO_TO_TEXT_COMPLIANT_PII_FILTERED = 268
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M4W_INTERLEAVED_COMPLIANT_PII_FILTERED_SOFT = 269
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CULTURE_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 270
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_DETECTION_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 271
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_ALT_TEXT_NONEN_500M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 272
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SPATIAL_AWARE_PALI_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 273
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_3D_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 274
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_EN_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 275
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_NON_EN_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 276
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_3D_DOC_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 277
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CC3M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 278
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_INFOGRAPHICS_LARGE_WEB_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 279
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_BIORXIV_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 280
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_IM2SOL_PROBLEM_AND_SOLUTION_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 281
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PLOT2TABLE_V2_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 282
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TIKZ_DERENDERING_MERGED_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 283
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_2D_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 284
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WIKIPEDIA_EQUATIONS_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 285
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_EQ2LATEX_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 286
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_ARXIV_EQUATIONS_V2_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 287
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_SUP_GEMBAGZ_V2_COMPLIANT = 288
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_1P5M_GEMBAGZ_V2_COMPLIANT = 289
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_4M_GEMBAGZ_V2_COMPLIANT = 290
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_SUP_GEMBAGZ_V2_COMPLIANT = 291
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_1P5M_GEMBAGZ_V2_COMPLIANT = 292
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_4M_GEMBAGZ_V2_COMPLIANT = 293
-    GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_ENUS_GEMBAGZ_V2_COMPLIANT = 294
-    GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_I18N_GEMBAGZ_V2_COMPLIANT = 295
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_ENUS_GEMBAGZ_V2_COMPLIANT = 296
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_I18N_GEMBAGZ_V2_COMPLIANT = 297
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_1P5M_GEMBAGZ_V2_COMPLIANT = 298
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_HEAD_4M_GEMBAGZ_V2_COMPLIANT = 299
-    GEMINI_V2_CLM_TRANSLATE_DATAV3_WEB_UNWMT_INCR_MIX = 300
-    GEMINI_V2_NTL_NTLV4A_MONOLINGUAL_DEDUP_N5 = 301
-    GEMINI_V2_NTL_STT_TRANSLATE_DEDUP_N5 = 302
-    GEMINI_V2_NTL_TRANSLIT_BILEX_TRANSLATE_DEDUP_N5 = 303
-    GEMINI_V2_NTL_SYN_BT_TRANSLATE_DEDUP_N5 = 304
-    GEMINI_V2_NTL_SYN_FT_FIXED_TRANSLATE_DEDUP_N5 = 305
-    GEMINI_V2_CANARIES_SHUFFLED_COMPLIANT = 306
-
-  amarnaId = _messages.StringField(1)
-  arxivId = _messages.StringField(2)
-  author = _messages.StringField(3)
-  bibkey = _messages.StringField(4)
-  bookTitle = _messages.StringField(5)
-  bookVolumeId = _messages.IntegerField(6)
-  category = _messages.EnumField('CategoryValueValuesEnum', 7)
-  conversationId = _messages.StringField(8)
-  dataset = _messages.EnumField('DatasetValueValuesEnum', 9)
-  filepath = _messages.StringField(10)
-  geminiId = _messages.StringField(11)
-  gnewsArticleTitle = _messages.StringField(12)
-  goodallExampleId = _messages.StringField(13)
-  isOptOut = _messages.BooleanField(14)
-  isPrompt = _messages.BooleanField(15)
-  lamdaExampleId = _messages.StringField(16)
-  license = _messages.StringField(17)
-  meenaConversationId = _messages.StringField(18)
-  naturalLanguageCode = _messages.StringField(19)
-  noAttribution = _messages.BooleanField(20)
-  podcastUtteranceId = _messages.StringField(21)
-  publicationDate = _messages.MessageField('GoogleTypeDate', 22)
-  qualityScoreExperimentOnly = _messages.FloatField(23)
-  repo = _messages.StringField(24)
-  url = _messages.StringField(25)
-  volumeId = _messages.StringField(26)
-  wikipediaArticleTitle = _messages.StringField(27)
+  citations = _messages.MessageField('LearningGenaiRootGroundingMetadataCitation', 1, repeated=True)
+  groundingCancelled = _messages.BooleanField(2)
+  searchQueries = _messages.StringField(3, repeated=True)
 
 
-class LanguageLabsAidaTrustRecitationProtoRecitationResult(_messages.Message):
-  r"""The recitation result for one input
-
-  Enums:
-    RecitationActionValueValuesEnum: The recitation action for one given
-      input. When its segments contain different actions, the overall action
-      will be returned in the precedence of BLOCK > CITE > NO_ACTION.
+class LearningGenaiRootGroundingMetadataCitation(_messages.Message):
+  r"""A LearningGenaiRootGroundingMetadataCitation object.
 
   Fields:
-    dynamicSegmentResults: A LanguageLabsAidaTrustRecitationProtoSegmentResult
-      attribute.
-    recitationAction: The recitation action for one given input. When its
-      segments contain different actions, the overall action will be returned
-      in the precedence of BLOCK > CITE > NO_ACTION.
-    trainingSegmentResults: A
-      LanguageLabsAidaTrustRecitationProtoSegmentResult attribute.
+    endIndex: Index in the prediction output where the citation ends
+      (exclusive). Must be > start_index and < len(output).
+    factIndex: Index of the fact supporting this claim. Should be within the
+      range of the `world_facts` in the GenerateResponse.
+    score: Confidence score of this entailment. Value is [0,1] with 1 is the
+      most confidence.
+    startIndex: Index in the prediction output where the citation starts
+      (inclusive). Must be >= 0 and < end_index.
   """
 
-  class RecitationActionValueValuesEnum(_messages.Enum):
-    r"""The recitation action for one given input. When its segments contain
-    different actions, the overall action will be returned in the precedence
-    of BLOCK > CITE > NO_ACTION.
-
-    Values:
-      ACTION_UNSPECIFIED: <no description>
-      CITE: indicate that attribution must be shown for a Segment
-      BLOCK: indicate that a Segment should be blocked from being used
-      NO_ACTION: for tagging high-frequency code snippets
-      EXEMPT_FOUND_IN_PROMPT: The recitation was found in prompt and is
-        exempted from overall results
-    """
-    ACTION_UNSPECIFIED = 0
-    CITE = 1
-    BLOCK = 2
-    NO_ACTION = 3
-    EXEMPT_FOUND_IN_PROMPT = 4
-
-  dynamicSegmentResults = _messages.MessageField('LanguageLabsAidaTrustRecitationProtoSegmentResult', 1, repeated=True)
-  recitationAction = _messages.EnumField('RecitationActionValueValuesEnum', 2)
-  trainingSegmentResults = _messages.MessageField('LanguageLabsAidaTrustRecitationProtoSegmentResult', 3, repeated=True)
-
-
-class LanguageLabsAidaTrustRecitationProtoSegmentResult(_messages.Message):
-  r"""The recitation result for each segment in a given input.
-
-  Enums:
-    AttributionDatasetValueValuesEnum: The dataset the segment came from.
-    SegmentRecitationActionValueValuesEnum:
-
-  Fields:
-    attributionDataset: The dataset the segment came from.
-    displayAttributionMessage: human-friendly string that contains information
-      from doc_attribution which could be shown by clients
-    docAttribution: populated when recitation_action == CITE
-    docOccurrences: number of documents that contained this segment
-    endIndex: A integer attribute.
-    rawText: The raw text in the given input that is corresponding to the
-      segment. It will be available only when 'return_segment_raw_text' is
-      enabled in the request options.
-    segmentRecitationAction: A SegmentRecitationActionValueValuesEnum
-      attribute.
-    startIndex: The segment boundary start (inclusive) and end index
-      (exclusive) in the given text. In the streaming RPC, the indexes always
-      start from the beginning of the first text in the entire stream. The
-      indexes are measured in UTF-16 code units.
-  """
-
-  class AttributionDatasetValueValuesEnum(_messages.Enum):
-    r"""The dataset the segment came from.
-
-    Values:
-      DATASET_UNSPECIFIED: <no description>
-      WIKIPEDIA: Wikipedia article Tensorflow datasets used by Tarzan and
-        maintained by TFDS team.
-      WEBDOCS: Webdocs that have been filtered from the docjoins by the Tarzan
-        team for use in the Tarzan training set.
-      WEBDOCS_FINETUNE: <no description>
-      GITHUB_MIRROR: <no description>
-      BOOKS_FULL_VIEW: 'Full view' books dataset maintained by Oceanographers
-        team, meaning 'ok to view the book in full in all localities'. Largely
-        the same as 'public domain', but with potentially subtle distinction.
-      BOOKS_PRIVATE: Filtered private books used by ULM: http://google3/learni
-        ng/multipod/pax/lm/params/ulm/tasks.py;l=123;rcl=494241309. which
-        corresponds with /cns/mf-d/home/multipod-language-
-        data/private_books/books_filtered_en_resharded@50000
-      GNEWS: Google news dataset referenced in: http://google3/learning/brain/
-        research/conversation/meena/t5/pretrain_tasks.py;l=922;rcl=496534668
-      ULM_DOCJOINS: The docjoins data for ULM /cns/yo-d/home/multipod-
-        language-data/docjoins/rs=6.3/20220728/100B_docstructure_split/example
-        s_en.tfrecord_lattice_05_score_01_HFV13@3929
-      ULM_DOCJOINS_DEDUPED: <no description>
-      MEENA_FC: Meena full conversations. http://google3/learning/brain/resear
-        ch/conversation/meena/t5/pretrain_mixtures.py;l=675;rcl=496583228
-      PODCAST: <no description>
-      AQUA: <no description>
-      WEB_ASR: <no description>
-      BARD_GOLDEN: <no description>
-      COMMON_SENSE_REASONING: <no description>
-      MATH: <no description>
-      MATH_REASONING: <no description>
-      CLEAN_ARXIV: <no description>
-      LAMDA_FACTUALITY_E2E_QUERY_GENERATION: <no description>
-      LAMDA_FACTUALITY_E2E_RESPONSE_GENERATION: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_BARD: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_LONG_200: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_LONG_500: <no description>
-      DOCUMENT_CHUNKS: <no description>
-      MEENA_RESEARCH_PHASE_GOLDEN_MARKDOWN: <no description>
-      MEENA_RESEARCH_PHASE_GOOGLERS: <no description>
-      MEENA_RESPONSE_SAFETY_HUMAN_GEN: <no description>
-      MEENA_RESPONSE_SAFETY_SCHEMA_NO_BROADCAST: <no description>
-      MEENA_RESPONSE_SAFETY_V3_HUMAN_GEN2: <no description>
-      MEENA_RESPONSE_SAFETY_V3_SCHEMA_NO_BROADCAST: <no description>
-      LAMDA_FACTUALITY_TRIGGER: <no description>
-      LAMDA_SAFETY_V2_SCHEMA_NO_BROADCAST: <no description>
-      LAMDA_SSI_DISCRIMINATIVE: <no description>
-      ASSISTANT_PERSONALITY_SAFETY: <no description>
-      PODCAST_FINETUNE_DIALOG: <no description>
-      WORLD_QUERY_GENERATOR: <no description>
-      C4_JOINED_DOCJOINS: <no description>
-      HOL4_THEORIES: <no description>
-      HOL_LIGHT_THEORIES: <no description>
-      HOLSTEPS: <no description>
-      ISABELLE_STEP: <no description>
-      ISABELLE_THEORIES: <no description>
-      LEAN_MATHLIB_THEORIES: <no description>
-      LEAN_STEP: <no description>
-      MIZAR_THEORIES: <no description>
-      COQ_STEP: <no description>
-      COQ_THEORIES: <no description>
-      AMPS_KHAN: Academic dataset of math text. http://google3/learning/brain/
-        research/conversation/meena/seqio/mixtures/experimental/bard.py;rcl=50
-        0222380
-      AMPS_MATHEMATICA: <no description>
-      CODEY_CODE: <no description>
-      CODE_QA_SE: <no description>
-      CODE_QA_SO: <no description>
-      CODE_QA_FT_FORMAT: <no description>
-      CODE_QA_FT_KNOWLEDGE: <no description>
-      CODE_QA_GITHUB_FILTERED_CODE: <no description>
-      BARD_PERSONALITY_GOLDEN: <no description>
-      ULM_DOCJOINS_WITH_URLS_EN: <no description>
-      ULM_DOCJOINS_WITH_URLS_I18N: <no description>
-      GOODALL_MTV5_GITHUB: Datasets managed by the Goodall team: deepmind-
-        goodall@google.com
-      GOODALL_MTV5_BOOKS: <no description>
-      GOODALL_MTV5_C4: <no description>
-      GOODALL_MTV5_WIKIPEDIA: <no description>
-      GOODALL_MW_TOP_100B: <no description>
-      GOODALL_MW_STACK_EXCHANGE: <no description>
-      GOODALL_MW_TOP_0_10B: <no description>
-      GOODALL_MW_TOP_10B_20B: <no description>
-      CODEY_NOTEBOOK_LM_PRETRAINING: Datasets used by Codepoet
-      VERTEX_SAFE_FLAN: Datasets used by Vertex
-      GITHUB_MIRROR_V1_0_1: <no description>
-      GITHUB_MIRROR_V2_1_0: <no description>
-      CMS_WIKIPEDIA_LANG_FILTERED: Datasets used by Gemini Public data
-      CMS_STACKOVERFLOW_MULTILINGUAL: <no description>
-      CMS_STACKEXCHANGE: <no description>
-      PUBMED: <no description>
-      GEMINI_DOCJOINS_EN_TOP10B_GCC: Public webdocs
-      GEMINI_DOCJOINS_EN_TOP10B_TOP20B_GCC: <no description>
-      GEMINI_DOCJOINS_EN_TOP20B_TOP100B_GCC: <no description>
-      GEMINI_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP10B_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP10B_TOP20B_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP20B_TOP100B_GCC: <no description>
-      SIMPLIFIED_HTML_V1_GCC: <no description>
-      GEMINI_DOCJOINS_TOXICITY_TAGGED_GCC: <no description>
-      CMS_GITHUB_V4: Github
-      GITHUB_HTML_V4: <no description>
-      GITHUB_OTHER_V4: <no description>
-      GITHUB_LONG_TAIL_V4: <no description>
-      CMS_GITHUB_MULTIFILE_V4: <no description>
-      GITHUB_DIFFS_WITH_COMMIT_MESSAGE: <no description>
-      ULM_ARXIV: Arxiv
-      NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_ENONLY: Others
-      NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_NONENONLY: <no
-        description>
-      QUORA: <no description>
-      PODCASTS_ROBOTSTXT: <no description>
-      COMBINED_REDDIT: <no description>
-      CANARIES_SHUFFLED: <no description>
-      CLM_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX: <no description>
-      TECHDOCS_DATA_SOURCE: <no description>
-      SCIENCE_PDF_70M_DOCS_FILTERED: <no description>
-      GEMINI_V1_CMS_WIKIPEDIA_LANG_FILTERED: Gemini V1, order by precedence.
-        Wikipedia
-      GEMINI_V1_WIKIPEDIA_DIFFS: <no description>
-      GEMINI_V1_DOCJOINS_EN_TOP10B_GCC_NODEDUP_050523: Public webdocs
-      GEMINI_V1_DOCJOINS_EN_TOP10B_TOP20B_GCC_NODEDUP_050523: <no description>
-      GEMINI_V1_DOCJOINS_EN_TOP20B_TOP100B_GCC_NODEDUP_050523: <no
-        description>
-      GEMINI_V1_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC_NODEDUP_050523: <no
-        description>
-      GEMINI_V1_DOCJOINS_I18N_TOP10B_GCC_050523: <no description>
-      GEMINI_V1_DOCJOINS_I18N_TOP10B_TOP20B_GCC_050523: <no description>
-      GEMINI_V1_DOCJOINS_I18N_TOP20B_TOP100B_GCC_050523: <no description>
-      GEMINI_V1_SIMPLIFIED_HTML_V2_GCC: <no description>
-      GEMINI_V1_CMS_STACKOVERFLOW_MULTILINGUAL_V2: <no description>
-      GEMINI_V1_CMS_STACKEXCHANGE_DECONT: <no description>
-      GEMINI_V1_QUORA: <no description>
-      GEMINI_V1_COMBINED_REDDIT: <no description>
-      GEMINI_V1_DOCJOIN_100B_EN_TOXICITY_TAGGED_GCC_FIXED_TAGS: <no
-        description>
-      GEMINI_V1_PUBMED: <no description>
-      GEMINI_V1_WEB_MATH_V2: <no description>
-      GEMINI_V1_CMS_GITHUB_DECONTAMINATED_V_7: Github
-      GEMINI_V1_GITHUB_DIFF_WITH_COMMIT_MESSAGE_V2: <no description>
-      GEMINI_V1_GITHUB_HTML_CSS_XML_V4: <no description>
-      GEMINI_V1_GITHUB_OTHER_V4: <no description>
-      GEMINI_V1_GITHUB_LONG_TAIL_V4: <no description>
-      GEMINI_V1_GITHUB_JUPTYER_NOTEBOOKS_SSTABLE: <no description>
-      GEMINI_V1_ULM_ARXIV_SSTABLE: ArXiv
-      GEMINI_V1_PODCASTS_ROBOTSTXT: Citable misc
-      GEMINI_V1_SCIENCE_PDF_68M_HQ_DOCS_GCC: <no description>
-      GEMINI_V1_GITHUB_TECHDOCS_V2: <no description>
-      GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_EN: Non-public
-        books
-      GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_NONEN: <no
-        description>
-      GEMINI_V1_STEM_BOOKS_650K_TEXT: <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_M3W_V2_FILTERED: Other
-      GEMINI_V1_VQCOCA_1B_MULTIRES_WEBLI_EN_V4_350M_PREFIXED_FILTERED_IMAGE2TE
-        XT: <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_SCREENAI_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CULTURE_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_EN_PREFIXED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_I18N_PREFIXED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_EN_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_NON_EN_PREFIXED_FILTERED_IMAGE2TEXT:
-        <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_VTP_4F_VIDEO2TEXT_PREFIX: <no description>
-      GEMINI_V1_FORMAL_MATH_WITHOUT_HOLSTEPS_AND_MIZAR: <no description>
-      GEMINI_V1_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX: <no description>
-      GEMINI_V1_CANARIES_SHUFFLED_DOCJOIN_EN_NONEN_CODE_ARXIV_TRANSLATE: <no
-        description>
-      DUET_CLOUD_SECURITY_DOCS: Duet AI finetune datasets, order by
-        precedence.
-      DUET_GITHUB_CODE_SNIPPETS: <no description>
-      DUET_GITHUB_FILES: <no description>
-      DUET_GOBYEXAMPLE: <no description>
-      DUET_GOLANG_DOCS: <no description>
-      DUET_CLOUD_DOCS_TROUBLESHOOTING_TABLES: <no description>
-      DUET_DEVSITE_DOCS: <no description>
-      DUET_CLOUD_BLOG_POSTS: <no description>
-      DUET_CLOUD_PODCAST_EPISODES: <no description>
-      DUET_YOUTUBE_VIDEOS: <no description>
-      DUET_CLOUD_SKILLS_BOOST: <no description>
-      DUET_CLOUD_DOCS: <no description>
-      DUET_CLOUD_GITHUB_CODE_SNIPPETS_GENERATED: <no description>
-      DUET_CLOUD_GITHUB_CODE_SNIPPETS_HANDWRITTEN: <no description>
-      DUET_GOOGLESQL_GENERATION: <no description>
-      DUET_CLOUD_IX_PROMPTS: <no description>
-      DUET_RAD: <no description>
-      BARD_ARCADE_GITHUB: Bard ARCADE finetune dataset.
-      MOBILE_ASSISTANT_MAGI_FILTERED_0825_373K: Mobile assistant finetune
-        datasets.
-      MOBILE_ASSISTANT_PALM24B_FILTERED_400K: <no description>
-      GENESIS_NEWS_INSIGHTS: Genesis fine-tune datasets.
-      CLOUD_SECURITY_PRETRAINING: Cloud Security fine-tune datasets.
-      CLOUD_SECURITY_FINETUNING: <no description>
-      LABS_AQA_DSCOUT: LABS AQA fine-tune datasets.
-      LABS_AQA_TAILWIND: <no description>
-      LABS_AQA_DELEWARE: <no description>
-      GEMINI_MULTIMODAL_FT_URL: Gemini multimodal instruction tune(IT) and
-        fine tune(FT) datasets datasets.
-      GEMINI_MULTIMODAL_FT_YT: <no description>
-      GEMINI_MULTIMODAL_FT_SHUTTERSTOCK: <no description>
-      GEMINI_MULTIMODAL_FT_NONE: <no description>
-      GEMINI_MULTIMODAL_FT_OTHER: <no description>
-      GEMINI_MULTIMODAL_FT_INK: <no description>
-      GEMINI_MULTIMODAL_IT: <no description>
-      GEMINI_IT_SHUTTERSTOCK: Gemini IT 1.2.7 datasets
-      GEMINI_IT_M3W: <no description>
-      GEMINI_IT_HEDGING: <no description>
-      GEMINI_IT_DSCOUT_FACTUALITY: <no description>
-      GEMINI_IT_AQUAMUSE: <no description>
-      GEMINI_IT_SHOTGUN: <no description>
-      GEMINI_IT_ACI_BENCH: <no description>
-      GEMINI_IT_SPIDER_FILTERED: <no description>
-      GEMINI_IT_TAB_SUM_BQ: <no description>
-      GEMINI_IT_QA_WITH_URL: <no description>
-      GEMINI_IT_CODE_INSTRUCT: <no description>
-      GEMINI_IT_MED_PALM: <no description>
-      GEMINI_IT_TASK_ORIENTED_DIALOG: <no description>
-      GEMINI_IT_NIMBUS_GROUNDING_TO_PROMPT: <no description>
-      GEMINI_IT_EITL_GEN: <no description>
-      GEMINI_IT_HITL_GEN: <no description>
-      GEMINI_IT_MECH: <no description>
-      GEMINI_IT_TABLE_GEN: <no description>
-      GEMINI_IT_NIMBUS_DECIBEL: <no description>
-      GEMIT_BRIDGE_SUFFIX_FT: Gemit Bridge ULM FT dataset
-      GEMINI_IT_CLOUD_CODE_IF: Gemini IT Cloud Build datasets.
-      GEMINI_IT_CLOUD_EUR_LEX_JSON: <no description>
-      GEMINI_IT_CLOUD_OASST: <no description>
-      GEMINI_IT_CLOUD_SELF_INSTRUCT: <no description>
-      GEMINI_IT_CLOUD_UCS_AQUAMUSE: <no description>
-      GEMINI_V2_CMS_WIKIPEDIA_LANG_FILTERED_GCC_PII: Gemini V2 datasets
-      GEMINI_V2_WIKIPEDIA_DIFFS_COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP10B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP10B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_NONARTIC
-        LES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_ARTICLES
-        _COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP20B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP20B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_NONARTIC
-        LES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_ARTICLES
-        _COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP100B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP100B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_NONARTI
-        CLES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_ARTICLE
-        S_COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP500B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP500B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_QUORA_COMPLIANT: <no description>
-      GEMINI_V2_FORUMS_V2_COMPLIANT: <no description>
-      GEMINI_V2_CMS_STACKOVERFLOW_MULTILINGUAL_V2_COMPLIANT: <no description>
-      GEMINI_V2_SIMPLIFIED_HTML_V2_CORRECT_FORMAT_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_TOXICITY_TAGGED_FIXED_TAGS_COMPLIANT: <no
-        description>
-      GEMINI_V2_CODEWEB_V1_COMPLIANT: <no description>
-      GEMINI_V2_LEETCODE_GCC_PII: <no description>
-      GEMINI_V2_CODE_CONTESTS_COMPLIANT: <no description>
-      GEMINI_V2_CMS_GITHUB_MULTI_FILE_FOR_FIM_GEMBAGZ_FIXED_BYTES_LENGTHS: <no
-        description>
-      GEMINI_V2_GITHUB_EVALED_LANGUAGES_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_NON_EVAL_HIGH_PRI_LANGUAGES_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_LOW_PRI_LANGUAGES_AND_CONFIGS_COMPLIANT: <no
-        description>
-      GEMINI_V2_GITHUB_LONG_TAIL_AND_STRUCTURED_DATA_COMPLIANT: <no
-        description>
-      GEMINI_V2_GITHUB_PYTHON_NOTEBOOKS_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_DIFFS_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_TECHDOCS_COMPLIANT: <no description>
-      GEMINI_V2_HIGH_QUALITY_CODE_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_SCIENCE_PDF_68M_HQ_DOCS_DEDUP_COMPLIANT_CLEAN_TEX: <no
-        description>
-      GEMINI_V2_ARXIV_2023_COMPLIANT: <no description>
-      GEMINI_V2_FORMAL_COMPLIANT: <no description>
-      GEMINI_V2_CMS_STACKEXCHANGE_COMPLIANT: <no description>
-      GEMINI_V2_PUBMED_COMPLIANT: <no description>
-      GEMINI_V2_WEB_MATH_V3_COMPLIANT: <no description>
-      GEMINI_V2_SCIENCEWEB_V0_GCC_PII: <no description>
-      GEMINI_V2_WEB_POLYMATH_V1_COMPLIANT: <no description>
-      GEMINI_V2_MATH_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_BIOLOGY_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_PHYSICS_V2_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_CHEMISTRY_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_MACHINE_LEARNING_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_QA_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_ECONOMICS_V2_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_MEDICAL_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_CHESS_COMPLIANT: <no description>
-      GEMINI_V2_YOUTUBE_SCIENCE_V4_FILTERED_COMPLIANT: <no description>
-      GEMINI_V2_GOALDMINE_XL_GENERATED_PLUS_GT_NO_DM_MATH_COMPLIANT: <no
-        description>
-      GEMINI_V2_FIRSTTIMES_SCIENCE_PDF_DEDUP_HQ_LENGTH_FILTERED_COMPLIANT: <no
-        description>
-      GEMINI_V2_PODCASTS_COMPLIANT: <no description>
-      GEMINI_V2_EN_NONSCIENCE_PDF_DEDUP_46M_DOCS_COMPLIANT: <no description>
-      GEMINI_V2_NONPUB_COPYRIGHT_BOOKS_V3_70_CONF_082323_LONG_DEDUP_ENONLY_COM
-        PLIANT: <no description>
-      GEMINI_V2_STEM_COPYRIGHT_BOOKS_V3_111823_LONG_DEDUP_ENONLY_COMPLIANT:
-        <no description>
-      GEMINI_V2_STEM_BOOKS_318K_TEXT_COMPLIANT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEA
-        VED_COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEA
-        VED_COMPLIANT_PII_FILTERED_SOFT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_T2I_TEXT_TO_IMAGE_COMP
-        LIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_IMAGE_TO_TEXT_COMPLIANT_PI
-        I_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_IMAGE_TO_TEXT_COMPLIAN
-        T_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_I18N_680M_IMAGE_TO_TEXT_COMPL
-        IANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_DOC_IMAGE_TO_TEXT_COMPLIANT_PII
-        _FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_FULL_HTML_75M_IMAGE_TO_TEXT_CO
-        MPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_V1_1_IMAGE_TO_TEXT_COMPLIANT_P
-        II_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_DOC_240M_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_VIDEO_VIDEO_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M4W_INTERLEAVED_COMPLIANT_PII_FILTERED_
-        SOFT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CULTURE_IMAGE_TO_TEXT_COMPLIANT_PII_FIL
-        TERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_DETECTION_IMAGE_TO_TEXT_COMPLIANT
-        _PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_ALT_TEXT_NONEN_500M_IMAGE_TO_TEXT
-        _COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SPATIAL_AWARE_PALI_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_3D_IMAGE_TO_TEXT_COM
-        PLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_EN_IMAGE_TO_TEXT_COMPLIANT_
-        PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_NON_EN_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_3D_DOC_IMAGE_TO_TEXT_COMPLIANT_
-        PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CC3M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTER
-        ED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_INFOGRAPHICS_LARGE_WEB_IMAGE_TO_TEXT_CO
-        MPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_BIORXIV_IMAGE_TO_TEXT_COMPLIANT_PII_FIL
-        TERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_IM2SOL_PROBLEM_AND_SOLUTION_I
-        MAGE_TO_TEXT_COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PLOT2TABLE_V2_IMAGE_TO_TEXT_COMPLIANT_P
-        II_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TIKZ_DERENDERING_MERGED_IMAGE_TO_TEXT_C
-        OMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_2D_IMAGE_TO_TEXT_COM
-        PLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WIKIPEDIA_EQUATIONS_IMAGE_TO_TEXT_COMPL
-        IANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_EQ2LATEX_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_ARXIV_EQUATIONS_V2_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_SUP_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_1P5M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_4M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_SUP_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_1P5M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_4M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_ENUS_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_I18N_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_ENUS_GEMBAGZ_V2_COMPLIANT:
-        <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_I18N_GEMBAGZ_V2_COMPLIANT:
-        <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_1P5M_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_HEAD_4M_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_CLM_TRANSLATE_DATAV3_WEB_UNWMT_INCR_MIX: <no description>
-      GEMINI_V2_NTL_NTLV4A_MONOLINGUAL_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_STT_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_TRANSLIT_BILEX_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_SYN_BT_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_SYN_FT_FIXED_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_CANARIES_SHUFFLED_COMPLIANT: <no description>
-    """
-    DATASET_UNSPECIFIED = 0
-    WIKIPEDIA = 1
-    WEBDOCS = 2
-    WEBDOCS_FINETUNE = 3
-    GITHUB_MIRROR = 4
-    BOOKS_FULL_VIEW = 5
-    BOOKS_PRIVATE = 6
-    GNEWS = 7
-    ULM_DOCJOINS = 8
-    ULM_DOCJOINS_DEDUPED = 9
-    MEENA_FC = 10
-    PODCAST = 11
-    AQUA = 12
-    WEB_ASR = 13
-    BARD_GOLDEN = 14
-    COMMON_SENSE_REASONING = 15
-    MATH = 16
-    MATH_REASONING = 17
-    CLEAN_ARXIV = 18
-    LAMDA_FACTUALITY_E2E_QUERY_GENERATION = 19
-    LAMDA_FACTUALITY_E2E_RESPONSE_GENERATION = 20
-    MASSIVE_FORUM_THREAD_SCORED_BARD = 21
-    MASSIVE_FORUM_THREAD_SCORED_LONG_200 = 22
-    MASSIVE_FORUM_THREAD_SCORED_LONG_500 = 23
-    DOCUMENT_CHUNKS = 24
-    MEENA_RESEARCH_PHASE_GOLDEN_MARKDOWN = 25
-    MEENA_RESEARCH_PHASE_GOOGLERS = 26
-    MEENA_RESPONSE_SAFETY_HUMAN_GEN = 27
-    MEENA_RESPONSE_SAFETY_SCHEMA_NO_BROADCAST = 28
-    MEENA_RESPONSE_SAFETY_V3_HUMAN_GEN2 = 29
-    MEENA_RESPONSE_SAFETY_V3_SCHEMA_NO_BROADCAST = 30
-    LAMDA_FACTUALITY_TRIGGER = 31
-    LAMDA_SAFETY_V2_SCHEMA_NO_BROADCAST = 32
-    LAMDA_SSI_DISCRIMINATIVE = 33
-    ASSISTANT_PERSONALITY_SAFETY = 34
-    PODCAST_FINETUNE_DIALOG = 35
-    WORLD_QUERY_GENERATOR = 36
-    C4_JOINED_DOCJOINS = 37
-    HOL4_THEORIES = 38
-    HOL_LIGHT_THEORIES = 39
-    HOLSTEPS = 40
-    ISABELLE_STEP = 41
-    ISABELLE_THEORIES = 42
-    LEAN_MATHLIB_THEORIES = 43
-    LEAN_STEP = 44
-    MIZAR_THEORIES = 45
-    COQ_STEP = 46
-    COQ_THEORIES = 47
-    AMPS_KHAN = 48
-    AMPS_MATHEMATICA = 49
-    CODEY_CODE = 50
-    CODE_QA_SE = 51
-    CODE_QA_SO = 52
-    CODE_QA_FT_FORMAT = 53
-    CODE_QA_FT_KNOWLEDGE = 54
-    CODE_QA_GITHUB_FILTERED_CODE = 55
-    BARD_PERSONALITY_GOLDEN = 56
-    ULM_DOCJOINS_WITH_URLS_EN = 57
-    ULM_DOCJOINS_WITH_URLS_I18N = 58
-    GOODALL_MTV5_GITHUB = 59
-    GOODALL_MTV5_BOOKS = 60
-    GOODALL_MTV5_C4 = 61
-    GOODALL_MTV5_WIKIPEDIA = 62
-    GOODALL_MW_TOP_100B = 63
-    GOODALL_MW_STACK_EXCHANGE = 64
-    GOODALL_MW_TOP_0_10B = 65
-    GOODALL_MW_TOP_10B_20B = 66
-    CODEY_NOTEBOOK_LM_PRETRAINING = 67
-    VERTEX_SAFE_FLAN = 68
-    GITHUB_MIRROR_V1_0_1 = 69
-    GITHUB_MIRROR_V2_1_0 = 70
-    CMS_WIKIPEDIA_LANG_FILTERED = 71
-    CMS_STACKOVERFLOW_MULTILINGUAL = 72
-    CMS_STACKEXCHANGE = 73
-    PUBMED = 74
-    GEMINI_DOCJOINS_EN_TOP10B_GCC = 75
-    GEMINI_DOCJOINS_EN_TOP10B_TOP20B_GCC = 76
-    GEMINI_DOCJOINS_EN_TOP20B_TOP100B_GCC = 77
-    GEMINI_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC = 78
-    GEMINI_DOCJOINS_I18N_TOP10B_GCC = 79
-    GEMINI_DOCJOINS_I18N_TOP10B_TOP20B_GCC = 80
-    GEMINI_DOCJOINS_I18N_TOP20B_TOP100B_GCC = 81
-    SIMPLIFIED_HTML_V1_GCC = 82
-    GEMINI_DOCJOINS_TOXICITY_TAGGED_GCC = 83
-    CMS_GITHUB_V4 = 84
-    GITHUB_HTML_V4 = 85
-    GITHUB_OTHER_V4 = 86
-    GITHUB_LONG_TAIL_V4 = 87
-    CMS_GITHUB_MULTIFILE_V4 = 88
-    GITHUB_DIFFS_WITH_COMMIT_MESSAGE = 89
-    ULM_ARXIV = 90
-    NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_ENONLY = 91
-    NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_NONENONLY = 92
-    QUORA = 93
-    PODCASTS_ROBOTSTXT = 94
-    COMBINED_REDDIT = 95
-    CANARIES_SHUFFLED = 96
-    CLM_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX = 97
-    TECHDOCS_DATA_SOURCE = 98
-    SCIENCE_PDF_70M_DOCS_FILTERED = 99
-    GEMINI_V1_CMS_WIKIPEDIA_LANG_FILTERED = 100
-    GEMINI_V1_WIKIPEDIA_DIFFS = 101
-    GEMINI_V1_DOCJOINS_EN_TOP10B_GCC_NODEDUP_050523 = 102
-    GEMINI_V1_DOCJOINS_EN_TOP10B_TOP20B_GCC_NODEDUP_050523 = 103
-    GEMINI_V1_DOCJOINS_EN_TOP20B_TOP100B_GCC_NODEDUP_050523 = 104
-    GEMINI_V1_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC_NODEDUP_050523 = 105
-    GEMINI_V1_DOCJOINS_I18N_TOP10B_GCC_050523 = 106
-    GEMINI_V1_DOCJOINS_I18N_TOP10B_TOP20B_GCC_050523 = 107
-    GEMINI_V1_DOCJOINS_I18N_TOP20B_TOP100B_GCC_050523 = 108
-    GEMINI_V1_SIMPLIFIED_HTML_V2_GCC = 109
-    GEMINI_V1_CMS_STACKOVERFLOW_MULTILINGUAL_V2 = 110
-    GEMINI_V1_CMS_STACKEXCHANGE_DECONT = 111
-    GEMINI_V1_QUORA = 112
-    GEMINI_V1_COMBINED_REDDIT = 113
-    GEMINI_V1_DOCJOIN_100B_EN_TOXICITY_TAGGED_GCC_FIXED_TAGS = 114
-    GEMINI_V1_PUBMED = 115
-    GEMINI_V1_WEB_MATH_V2 = 116
-    GEMINI_V1_CMS_GITHUB_DECONTAMINATED_V_7 = 117
-    GEMINI_V1_GITHUB_DIFF_WITH_COMMIT_MESSAGE_V2 = 118
-    GEMINI_V1_GITHUB_HTML_CSS_XML_V4 = 119
-    GEMINI_V1_GITHUB_OTHER_V4 = 120
-    GEMINI_V1_GITHUB_LONG_TAIL_V4 = 121
-    GEMINI_V1_GITHUB_JUPTYER_NOTEBOOKS_SSTABLE = 122
-    GEMINI_V1_ULM_ARXIV_SSTABLE = 123
-    GEMINI_V1_PODCASTS_ROBOTSTXT = 124
-    GEMINI_V1_SCIENCE_PDF_68M_HQ_DOCS_GCC = 125
-    GEMINI_V1_GITHUB_TECHDOCS_V2 = 126
-    GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_EN = 127
-    GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_NONEN = 128
-    GEMINI_V1_STEM_BOOKS_650K_TEXT = 129
-    GEMINI_V1_VQCOCA_1B_MULTIRES_M3W_V2_FILTERED = 130
-    GEMINI_V1_VQCOCA_1B_MULTIRES_WEBLI_EN_V4_350M_PREFIXED_FILTERED_IMAGE2TEXT = 131
-    GEMINI_V1_VQCOCA_1B_MULTIRES_SCREENAI_PREFIXED_FILTERED_IMAGE2TEXT = 132
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CULTURE_PREFIXED_FILTERED_IMAGE2TEXT = 133
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_EN_PREFIXED_IMAGE2TEXT = 134
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_I18N_PREFIXED_IMAGE2TEXT = 135
-    GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_EN_PREFIXED_FILTERED_IMAGE2TEXT = 136
-    GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_NON_EN_PREFIXED_FILTERED_IMAGE2TEXT = 137
-    GEMINI_V1_VQCOCA_1B_MULTIRES_VTP_4F_VIDEO2TEXT_PREFIX = 138
-    GEMINI_V1_FORMAL_MATH_WITHOUT_HOLSTEPS_AND_MIZAR = 139
-    GEMINI_V1_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX = 140
-    GEMINI_V1_CANARIES_SHUFFLED_DOCJOIN_EN_NONEN_CODE_ARXIV_TRANSLATE = 141
-    DUET_CLOUD_SECURITY_DOCS = 142
-    DUET_GITHUB_CODE_SNIPPETS = 143
-    DUET_GITHUB_FILES = 144
-    DUET_GOBYEXAMPLE = 145
-    DUET_GOLANG_DOCS = 146
-    DUET_CLOUD_DOCS_TROUBLESHOOTING_TABLES = 147
-    DUET_DEVSITE_DOCS = 148
-    DUET_CLOUD_BLOG_POSTS = 149
-    DUET_CLOUD_PODCAST_EPISODES = 150
-    DUET_YOUTUBE_VIDEOS = 151
-    DUET_CLOUD_SKILLS_BOOST = 152
-    DUET_CLOUD_DOCS = 153
-    DUET_CLOUD_GITHUB_CODE_SNIPPETS_GENERATED = 154
-    DUET_CLOUD_GITHUB_CODE_SNIPPETS_HANDWRITTEN = 155
-    DUET_GOOGLESQL_GENERATION = 156
-    DUET_CLOUD_IX_PROMPTS = 157
-    DUET_RAD = 158
-    BARD_ARCADE_GITHUB = 159
-    MOBILE_ASSISTANT_MAGI_FILTERED_0825_373K = 160
-    MOBILE_ASSISTANT_PALM24B_FILTERED_400K = 161
-    GENESIS_NEWS_INSIGHTS = 162
-    CLOUD_SECURITY_PRETRAINING = 163
-    CLOUD_SECURITY_FINETUNING = 164
-    LABS_AQA_DSCOUT = 165
-    LABS_AQA_TAILWIND = 166
-    LABS_AQA_DELEWARE = 167
-    GEMINI_MULTIMODAL_FT_URL = 168
-    GEMINI_MULTIMODAL_FT_YT = 169
-    GEMINI_MULTIMODAL_FT_SHUTTERSTOCK = 170
-    GEMINI_MULTIMODAL_FT_NONE = 171
-    GEMINI_MULTIMODAL_FT_OTHER = 172
-    GEMINI_MULTIMODAL_FT_INK = 173
-    GEMINI_MULTIMODAL_IT = 174
-    GEMINI_IT_SHUTTERSTOCK = 175
-    GEMINI_IT_M3W = 176
-    GEMINI_IT_HEDGING = 177
-    GEMINI_IT_DSCOUT_FACTUALITY = 178
-    GEMINI_IT_AQUAMUSE = 179
-    GEMINI_IT_SHOTGUN = 180
-    GEMINI_IT_ACI_BENCH = 181
-    GEMINI_IT_SPIDER_FILTERED = 182
-    GEMINI_IT_TAB_SUM_BQ = 183
-    GEMINI_IT_QA_WITH_URL = 184
-    GEMINI_IT_CODE_INSTRUCT = 185
-    GEMINI_IT_MED_PALM = 186
-    GEMINI_IT_TASK_ORIENTED_DIALOG = 187
-    GEMINI_IT_NIMBUS_GROUNDING_TO_PROMPT = 188
-    GEMINI_IT_EITL_GEN = 189
-    GEMINI_IT_HITL_GEN = 190
-    GEMINI_IT_MECH = 191
-    GEMINI_IT_TABLE_GEN = 192
-    GEMINI_IT_NIMBUS_DECIBEL = 193
-    GEMIT_BRIDGE_SUFFIX_FT = 194
-    GEMINI_IT_CLOUD_CODE_IF = 195
-    GEMINI_IT_CLOUD_EUR_LEX_JSON = 196
-    GEMINI_IT_CLOUD_OASST = 197
-    GEMINI_IT_CLOUD_SELF_INSTRUCT = 198
-    GEMINI_IT_CLOUD_UCS_AQUAMUSE = 199
-    GEMINI_V2_CMS_WIKIPEDIA_LANG_FILTERED_GCC_PII = 200
-    GEMINI_V2_WIKIPEDIA_DIFFS_COMPLIANT = 201
-    GEMINI_V2_ENGLISH_ARTICLES_TOP10B_211123_PII_FILTERED = 202
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP10B_211123_PII_FILTERED = 203
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 204
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 205
-    GEMINI_V2_ENGLISH_ARTICLES_TOP20B_211123_PII_FILTERED = 206
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP20B_211123_PII_FILTERED = 207
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 208
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 209
-    GEMINI_V2_ENGLISH_ARTICLES_TOP100B_211123_PII_FILTERED = 210
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP100B_211123_PII_FILTERED = 211
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 212
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 213
-    GEMINI_V2_ENGLISH_ARTICLES_TOP500B_211123_PII_FILTERED = 214
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP500B_211123_PII_FILTERED = 215
-    GEMINI_V2_QUORA_COMPLIANT = 216
-    GEMINI_V2_FORUMS_V2_COMPLIANT = 217
-    GEMINI_V2_CMS_STACKOVERFLOW_MULTILINGUAL_V2_COMPLIANT = 218
-    GEMINI_V2_SIMPLIFIED_HTML_V2_CORRECT_FORMAT_COMPLIANT = 219
-    GEMINI_V2_GEMINI_DOCJOINS_TOXICITY_TAGGED_FIXED_TAGS_COMPLIANT = 220
-    GEMINI_V2_CODEWEB_V1_COMPLIANT = 221
-    GEMINI_V2_LEETCODE_GCC_PII = 222
-    GEMINI_V2_CODE_CONTESTS_COMPLIANT = 223
-    GEMINI_V2_CMS_GITHUB_MULTI_FILE_FOR_FIM_GEMBAGZ_FIXED_BYTES_LENGTHS = 224
-    GEMINI_V2_GITHUB_EVALED_LANGUAGES_COMPLIANT = 225
-    GEMINI_V2_GITHUB_NON_EVAL_HIGH_PRI_LANGUAGES_COMPLIANT = 226
-    GEMINI_V2_GITHUB_LOW_PRI_LANGUAGES_AND_CONFIGS_COMPLIANT = 227
-    GEMINI_V2_GITHUB_LONG_TAIL_AND_STRUCTURED_DATA_COMPLIANT = 228
-    GEMINI_V2_GITHUB_PYTHON_NOTEBOOKS_COMPLIANT = 229
-    GEMINI_V2_GITHUB_DIFFS_COMPLIANT = 230
-    GEMINI_V2_GITHUB_TECHDOCS_COMPLIANT = 231
-    GEMINI_V2_HIGH_QUALITY_CODE_TARGETED_DATA_COMPLIANT2 = 232
-    GEMINI_V2_SCIENCE_PDF_68M_HQ_DOCS_DEDUP_COMPLIANT_CLEAN_TEX = 233
-    GEMINI_V2_ARXIV_2023_COMPLIANT = 234
-    GEMINI_V2_FORMAL_COMPLIANT = 235
-    GEMINI_V2_CMS_STACKEXCHANGE_COMPLIANT = 236
-    GEMINI_V2_PUBMED_COMPLIANT = 237
-    GEMINI_V2_WEB_MATH_V3_COMPLIANT = 238
-    GEMINI_V2_SCIENCEWEB_V0_GCC_PII = 239
-    GEMINI_V2_WEB_POLYMATH_V1_COMPLIANT = 240
-    GEMINI_V2_MATH_TARGETED_DATA_COMPLIANT2 = 241
-    GEMINI_V2_BIOLOGY_TARGETED_DATA_COMPLIANT2 = 242
-    GEMINI_V2_PHYSICS_V2_TARGETED_DATA_COMPLIANT2 = 243
-    GEMINI_V2_CHEMISTRY_TARGETED_DATA_COMPLIANT2 = 244
-    GEMINI_V2_MACHINE_LEARNING_TARGETED_DATA_COMPLIANT2 = 245
-    GEMINI_V2_QA_TARGETED_DATA_COMPLIANT2 = 246
-    GEMINI_V2_ECONOMICS_V2_TARGETED_DATA_COMPLIANT2 = 247
-    GEMINI_V2_MEDICAL_TARGETED_DATA_COMPLIANT2 = 248
-    GEMINI_V2_CHESS_COMPLIANT = 249
-    GEMINI_V2_YOUTUBE_SCIENCE_V4_FILTERED_COMPLIANT = 250
-    GEMINI_V2_GOALDMINE_XL_GENERATED_PLUS_GT_NO_DM_MATH_COMPLIANT = 251
-    GEMINI_V2_FIRSTTIMES_SCIENCE_PDF_DEDUP_HQ_LENGTH_FILTERED_COMPLIANT = 252
-    GEMINI_V2_PODCASTS_COMPLIANT = 253
-    GEMINI_V2_EN_NONSCIENCE_PDF_DEDUP_46M_DOCS_COMPLIANT = 254
-    GEMINI_V2_NONPUB_COPYRIGHT_BOOKS_V3_70_CONF_082323_LONG_DEDUP_ENONLY_COMPLIANT = 255
-    GEMINI_V2_STEM_COPYRIGHT_BOOKS_V3_111823_LONG_DEDUP_ENONLY_COMPLIANT = 256
-    GEMINI_V2_STEM_BOOKS_318K_TEXT_COMPLIANT = 257
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEAVED_COMPLIANT_PII_FILTERED = 258
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEAVED_COMPLIANT_PII_FILTERED_SOFT = 259
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_T2I_TEXT_TO_IMAGE_COMPLIANT_PII_FILTERED = 260
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 261
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 262
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_I18N_680M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 263
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_DOC_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 264
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_FULL_HTML_75M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 265
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_V1_1_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 266
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_DOC_240M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 267
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_VIDEO_VIDEO_TO_TEXT_COMPLIANT_PII_FILTERED = 268
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M4W_INTERLEAVED_COMPLIANT_PII_FILTERED_SOFT = 269
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CULTURE_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 270
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_DETECTION_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 271
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_ALT_TEXT_NONEN_500M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 272
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SPATIAL_AWARE_PALI_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 273
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_3D_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 274
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_EN_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 275
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_NON_EN_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 276
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_3D_DOC_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 277
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CC3M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 278
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_INFOGRAPHICS_LARGE_WEB_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 279
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_BIORXIV_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 280
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_IM2SOL_PROBLEM_AND_SOLUTION_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 281
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PLOT2TABLE_V2_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 282
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TIKZ_DERENDERING_MERGED_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 283
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_2D_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 284
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WIKIPEDIA_EQUATIONS_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 285
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_EQ2LATEX_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 286
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_ARXIV_EQUATIONS_V2_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 287
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_SUP_GEMBAGZ_V2_COMPLIANT = 288
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_1P5M_GEMBAGZ_V2_COMPLIANT = 289
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_4M_GEMBAGZ_V2_COMPLIANT = 290
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_SUP_GEMBAGZ_V2_COMPLIANT = 291
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_1P5M_GEMBAGZ_V2_COMPLIANT = 292
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_4M_GEMBAGZ_V2_COMPLIANT = 293
-    GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_ENUS_GEMBAGZ_V2_COMPLIANT = 294
-    GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_I18N_GEMBAGZ_V2_COMPLIANT = 295
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_ENUS_GEMBAGZ_V2_COMPLIANT = 296
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_I18N_GEMBAGZ_V2_COMPLIANT = 297
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_1P5M_GEMBAGZ_V2_COMPLIANT = 298
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_HEAD_4M_GEMBAGZ_V2_COMPLIANT = 299
-    GEMINI_V2_CLM_TRANSLATE_DATAV3_WEB_UNWMT_INCR_MIX = 300
-    GEMINI_V2_NTL_NTLV4A_MONOLINGUAL_DEDUP_N5 = 301
-    GEMINI_V2_NTL_STT_TRANSLATE_DEDUP_N5 = 302
-    GEMINI_V2_NTL_TRANSLIT_BILEX_TRANSLATE_DEDUP_N5 = 303
-    GEMINI_V2_NTL_SYN_BT_TRANSLATE_DEDUP_N5 = 304
-    GEMINI_V2_NTL_SYN_FT_FIXED_TRANSLATE_DEDUP_N5 = 305
-    GEMINI_V2_CANARIES_SHUFFLED_COMPLIANT = 306
-
-  class SegmentRecitationActionValueValuesEnum(_messages.Enum):
-    r"""SegmentRecitationActionValueValuesEnum enum type.
-
-    Values:
-      ACTION_UNSPECIFIED: <no description>
-      CITE: indicate that attribution must be shown for a Segment
-      BLOCK: indicate that a Segment should be blocked from being used
-      NO_ACTION: for tagging high-frequency code snippets
-      EXEMPT_FOUND_IN_PROMPT: The recitation was found in prompt and is
-        exempted from overall results
-    """
-    ACTION_UNSPECIFIED = 0
-    CITE = 1
-    BLOCK = 2
-    NO_ACTION = 3
-    EXEMPT_FOUND_IN_PROMPT = 4
-
-  attributionDataset = _messages.EnumField('AttributionDatasetValueValuesEnum', 1)
-  displayAttributionMessage = _messages.StringField(2)
-  docAttribution = _messages.MessageField('LanguageLabsAidaTrustRecitationProtoDocAttribution', 3)
-  docOccurrences = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  endIndex = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  rawText = _messages.StringField(6)
-  segmentRecitationAction = _messages.EnumField('SegmentRecitationActionValueValuesEnum', 7)
-  startIndex = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-
-
-class LanguageLabsAidaTrustRecitationProtoStreamRecitationResult(_messages.Message):
-  r"""The recitation result for one stream input
-
-  Enums:
-    RecitationActionValueValuesEnum: The recitation action for one given
-      input. When its segments contain different actions, the overall action
-      will be returned in the precedence of BLOCK > CITE > NO_ACTION.
-
-  Fields:
-    dynamicSegmentResults: The recitation result against the given dynamic
-      data source.
-    fullyCheckedTextIndex: Last index of input text fully checked for
-      recitation in the entire streaming context. Would return `-1` if no
-      Input was checked for recitation.
-    recitationAction: The recitation action for one given input. When its
-      segments contain different actions, the overall action will be returned
-      in the precedence of BLOCK > CITE > NO_ACTION.
-    trainingSegmentResults: The recitation result against model training data.
-  """
-
-  class RecitationActionValueValuesEnum(_messages.Enum):
-    r"""The recitation action for one given input. When its segments contain
-    different actions, the overall action will be returned in the precedence
-    of BLOCK > CITE > NO_ACTION.
-
-    Values:
-      ACTION_UNSPECIFIED: <no description>
-      CITE: indicate that attribution must be shown for a Segment
-      BLOCK: indicate that a Segment should be blocked from being used
-      NO_ACTION: for tagging high-frequency code snippets
-      EXEMPT_FOUND_IN_PROMPT: The recitation was found in prompt and is
-        exempted from overall results
-    """
-    ACTION_UNSPECIFIED = 0
-    CITE = 1
-    BLOCK = 2
-    NO_ACTION = 3
-    EXEMPT_FOUND_IN_PROMPT = 4
-
-  dynamicSegmentResults = _messages.MessageField('LanguageLabsAidaTrustRecitationProtoSegmentResult', 1, repeated=True)
-  fullyCheckedTextIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  recitationAction = _messages.EnumField('RecitationActionValueValuesEnum', 3)
-  trainingSegmentResults = _messages.MessageField('LanguageLabsAidaTrustRecitationProtoSegmentResult', 4, repeated=True)
-
-
-class LearningGenaiRecitationDocAttribution(_messages.Message):
-  r"""The proto defines the attribution information for a document using
-  whatever fields are most applicable for that document's datasource. For
-  example, a Wikipedia article's attribution is in the form of its article
-  title, a website is in the form of a URL, and a Github repo is in the form
-  of a repo name. Next id: 28
-
-  Enums:
-    DatasetValueValuesEnum: The dataset this document comes from.
-
-  Fields:
-    amarnaId: A string attribute.
-    arxivId: A string attribute.
-    author: A string attribute.
-    bibkey: A string attribute.
-    bookTitle: A string attribute.
-    bookVolumeId: The Oceanographers full-view books dataset uses a 'volume
-      id' as the unique ID of a book. There is a deterministic function from a
-      volume id to a URL under the books.google.com domain. Marked as
-      'optional' since a volume ID of zero is potentially possible and we want
-      to distinguish that from the volume ID not being set.
-    conversationId: A string attribute.
-    dataset: The dataset this document comes from.
-    filepath: A string attribute.
-    geminiId: A string attribute.
-    gnewsArticleTitle: A string attribute.
-    goodallExampleId: A string attribute.
-    isOptOut: Whether the document is opted out.
-    isPrompt: When true, this attribution came from the user's prompt.
-    lamdaExampleId: A string attribute.
-    license: A string attribute.
-    meenaConversationId: A string attribute.
-    naturalLanguageCode: Natural (not programming) language of the document.
-      Language code as defined by
-      http://www.unicode.org/reports/tr35/#Identifiers and
-      https://tools.ietf.org/html/bcp47. Currently applicable to full-view
-      books. Use docinfo-util.h to set & read language fields. See go/iii.
-    noAttribution: True if this doc has no attribution information available.
-      We use an explicit field for this instead of just implicitly leaving all
-      the DocAttribution fields blank to distinguish a case where a
-      bug/oversight has left the attribution information empty vs when we
-      really have no attribution information available.
-    podcastUtteranceId: A string attribute.
-    publicationDate: A GoogleTypeDate attribute.
-    qualityScoreExperimentOnly: This field is for opt-out experiment only,
-      MUST never be used during actual production/serving.
-    repo: Github repository
-    url: URL of a webdoc
-    volumeId: A string attribute.
-    wikipediaArticleTitle: Wikipedia article title. The Wikipedia TFDS dataset
-      includes article titles but not URLs. While a URL is to the best of our
-      knowledge a deterministic function of the title, we store the original
-      title to reflect the information in the original dataset.
-  """
-
-  class DatasetValueValuesEnum(_messages.Enum):
-    r"""The dataset this document comes from.
-
-    Values:
-      DATASET_UNSPECIFIED: <no description>
-      WIKIPEDIA: Wikipedia article Tensorflow datasets used by Tarzan and
-        maintained by TFDS team.
-      WEBDOCS: Webdocs that have been filtered from the docjoins by the Tarzan
-        team for use in the Tarzan training set.
-      WEBDOCS_FINETUNE: <no description>
-      GITHUB_MIRROR: <no description>
-      BOOKS_FULL_VIEW: 'Full view' books dataset maintained by Oceanographers
-        team, meaning 'ok to view the book in full in all localities'. Largely
-        the same as 'public domain', but with potentially subtle distinction.
-      BOOKS_PRIVATE: Filtered private books used by ULM: http://google3/learni
-        ng/multipod/pax/lm/params/ulm/tasks.py;l=123;rcl=494241309. which
-        corresponds with /cns/mf-d/home/multipod-language-
-        data/private_books/books_filtered_en_resharded@50000
-      GNEWS: Google news dataset referenced in: http://google3/learning/brain/
-        research/conversation/meena/t5/pretrain_tasks.py;l=922;rcl=496534668
-      ULM_DOCJOINS: The docjoins data for ULM /cns/yo-d/home/multipod-
-        language-data/docjoins/rs=6.3/20220728/100B_docstructure_split/example
-        s_en.tfrecord_lattice_05_score_01_HFV13@3929
-      ULM_DOCJOINS_DEDUPED: <no description>
-      MEENA_FC: Meena full conversations. http://google3/learning/brain/resear
-        ch/conversation/meena/t5/pretrain_mixtures.py;l=675;rcl=496583228
-      PODCAST: <no description>
-      AQUA: <no description>
-      WEB_ASR: <no description>
-      BARD_GOLDEN: <no description>
-      COMMON_SENSE_REASONING: <no description>
-      MATH: <no description>
-      MATH_REASONING: <no description>
-      CLEAN_ARXIV: <no description>
-      LAMDA_FACTUALITY_E2E_QUERY_GENERATION: <no description>
-      LAMDA_FACTUALITY_E2E_RESPONSE_GENERATION: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_BARD: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_LONG_200: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_LONG_500: <no description>
-      DOCUMENT_CHUNKS: <no description>
-      MEENA_RESEARCH_PHASE_GOLDEN_MARKDOWN: <no description>
-      MEENA_RESEARCH_PHASE_GOOGLERS: <no description>
-      MEENA_RESPONSE_SAFETY_HUMAN_GEN: <no description>
-      MEENA_RESPONSE_SAFETY_SCHEMA_NO_BROADCAST: <no description>
-      MEENA_RESPONSE_SAFETY_V3_HUMAN_GEN2: <no description>
-      MEENA_RESPONSE_SAFETY_V3_SCHEMA_NO_BROADCAST: <no description>
-      LAMDA_FACTUALITY_TRIGGER: <no description>
-      LAMDA_SAFETY_V2_SCHEMA_NO_BROADCAST: <no description>
-      LAMDA_SSI_DISCRIMINATIVE: <no description>
-      ASSISTANT_PERSONALITY_SAFETY: <no description>
-      PODCAST_FINETUNE_DIALOG: <no description>
-      WORLD_QUERY_GENERATOR: <no description>
-      C4_JOINED_DOCJOINS: <no description>
-      HOL4_THEORIES: <no description>
-      HOL_LIGHT_THEORIES: <no description>
-      HOLSTEPS: <no description>
-      ISABELLE_STEP: <no description>
-      ISABELLE_THEORIES: <no description>
-      LEAN_MATHLIB_THEORIES: <no description>
-      LEAN_STEP: <no description>
-      MIZAR_THEORIES: <no description>
-      COQ_STEP: <no description>
-      COQ_THEORIES: <no description>
-      AMPS_KHAN: Academic dataset of math text. http://google3/learning/brain/
-        research/conversation/meena/seqio/mixtures/experimental/bard.py;rcl=50
-        0222380
-      AMPS_MATHEMATICA: <no description>
-      CODEY_CODE: <no description>
-      CODE_QA_SE: <no description>
-      CODE_QA_SO: <no description>
-      CODE_QA_FT_FORMAT: <no description>
-      CODE_QA_FT_KNOWLEDGE: <no description>
-      CODE_QA_GITHUB_FILTERED_CODE: <no description>
-      BARD_PERSONALITY_GOLDEN: <no description>
-      ULM_DOCJOINS_WITH_URLS_EN: <no description>
-      ULM_DOCJOINS_WITH_URLS_I18N: <no description>
-      GOODALL_MTV5_GITHUB: Datasets managed by the Goodall team: deepmind-
-        goodall@google.com
-      GOODALL_MTV5_BOOKS: <no description>
-      GOODALL_MTV5_C4: <no description>
-      GOODALL_MTV5_WIKIPEDIA: <no description>
-      GOODALL_MW_TOP_100B: <no description>
-      GOODALL_MW_STACK_EXCHANGE: <no description>
-      GOODALL_MW_TOP_0_10B: <no description>
-      GOODALL_MW_TOP_10B_20B: <no description>
-      CODEY_NOTEBOOK_LM_PRETRAINING: Datasets used by Codepoet
-      VERTEX_SAFE_FLAN: Datasets used by Vertex
-      GITHUB_MIRROR_V1_0_1: <no description>
-      GITHUB_MIRROR_V2_1_0: <no description>
-      CMS_WIKIPEDIA_LANG_FILTERED: Datasets used by Gemini Public data
-      CMS_STACKOVERFLOW_MULTILINGUAL: <no description>
-      CMS_STACKEXCHANGE: <no description>
-      PUBMED: <no description>
-      GEMINI_DOCJOINS_EN_TOP10B_GCC: Public webdocs
-      GEMINI_DOCJOINS_EN_TOP10B_TOP20B_GCC: <no description>
-      GEMINI_DOCJOINS_EN_TOP20B_TOP100B_GCC: <no description>
-      GEMINI_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP10B_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP10B_TOP20B_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP20B_TOP100B_GCC: <no description>
-      SIMPLIFIED_HTML_V1_GCC: <no description>
-      GEMINI_DOCJOINS_TOXICITY_TAGGED_GCC: <no description>
-      CMS_GITHUB_V4: Github
-      GITHUB_HTML_V4: <no description>
-      GITHUB_OTHER_V4: <no description>
-      GITHUB_LONG_TAIL_V4: <no description>
-      CMS_GITHUB_MULTIFILE_V4: <no description>
-      GITHUB_DIFFS_WITH_COMMIT_MESSAGE: <no description>
-      ULM_ARXIV: Arxiv
-      NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_ENONLY: Others
-      NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_NONENONLY: <no
-        description>
-      QUORA: <no description>
-      PODCASTS_ROBOTSTXT: <no description>
-      COMBINED_REDDIT: <no description>
-      CANARIES_SHUFFLED: <no description>
-      CLM_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX: <no description>
-      TECHDOCS_DATA_SOURCE: <no description>
-      SCIENCE_PDF_70M_DOCS_FILTERED: <no description>
-      GEMINI_V1_CMS_WIKIPEDIA_LANG_FILTERED: Gemini V1, order by precedence.
-        Wikipedia
-      GEMINI_V1_WIKIPEDIA_DIFFS: <no description>
-      GEMINI_V1_DOCJOINS_EN_TOP10B_GCC_NODEDUP_050523: Public webdocs
-      GEMINI_V1_DOCJOINS_EN_TOP10B_TOP20B_GCC_NODEDUP_050523: <no description>
-      GEMINI_V1_DOCJOINS_EN_TOP20B_TOP100B_GCC_NODEDUP_050523: <no
-        description>
-      GEMINI_V1_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC_NODEDUP_050523: <no
-        description>
-      GEMINI_V1_DOCJOINS_I18N_TOP10B_GCC_050523: <no description>
-      GEMINI_V1_DOCJOINS_I18N_TOP10B_TOP20B_GCC_050523: <no description>
-      GEMINI_V1_DOCJOINS_I18N_TOP20B_TOP100B_GCC_050523: <no description>
-      GEMINI_V1_SIMPLIFIED_HTML_V2_GCC: <no description>
-      GEMINI_V1_CMS_STACKOVERFLOW_MULTILINGUAL_V2: <no description>
-      GEMINI_V1_CMS_STACKEXCHANGE_DECONT: <no description>
-      GEMINI_V1_QUORA: <no description>
-      GEMINI_V1_COMBINED_REDDIT: <no description>
-      GEMINI_V1_DOCJOIN_100B_EN_TOXICITY_TAGGED_GCC_FIXED_TAGS: <no
-        description>
-      GEMINI_V1_PUBMED: <no description>
-      GEMINI_V1_WEB_MATH_V2: <no description>
-      GEMINI_V1_CMS_GITHUB_DECONTAMINATED_V_7: Github
-      GEMINI_V1_GITHUB_DIFF_WITH_COMMIT_MESSAGE_V2: <no description>
-      GEMINI_V1_GITHUB_HTML_CSS_XML_V4: <no description>
-      GEMINI_V1_GITHUB_OTHER_V4: <no description>
-      GEMINI_V1_GITHUB_LONG_TAIL_V4: <no description>
-      GEMINI_V1_GITHUB_JUPTYER_NOTEBOOKS_SSTABLE: <no description>
-      GEMINI_V1_ULM_ARXIV_SSTABLE: ArXiv
-      GEMINI_V1_PODCASTS_ROBOTSTXT: Citable misc
-      GEMINI_V1_SCIENCE_PDF_68M_HQ_DOCS_GCC: <no description>
-      GEMINI_V1_GITHUB_TECHDOCS_V2: <no description>
-      GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_EN: Non-public
-        books
-      GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_NONEN: <no
-        description>
-      GEMINI_V1_STEM_BOOKS_650K_TEXT: <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_M3W_V2_FILTERED: Other
-      GEMINI_V1_VQCOCA_1B_MULTIRES_WEBLI_EN_V4_350M_PREFIXED_FILTERED_IMAGE2TE
-        XT: <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_SCREENAI_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CULTURE_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_EN_PREFIXED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_I18N_PREFIXED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_EN_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_NON_EN_PREFIXED_FILTERED_IMAGE2TEXT:
-        <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_VTP_4F_VIDEO2TEXT_PREFIX: <no description>
-      GEMINI_V1_FORMAL_MATH_WITHOUT_HOLSTEPS_AND_MIZAR: <no description>
-      GEMINI_V1_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX: <no description>
-      GEMINI_V1_CANARIES_SHUFFLED_DOCJOIN_EN_NONEN_CODE_ARXIV_TRANSLATE: <no
-        description>
-      DUET_CLOUD_SECURITY_DOCS: Duet AI finetune datasets, order by
-        precedence.
-      DUET_GITHUB_CODE_SNIPPETS: <no description>
-      DUET_GITHUB_FILES: <no description>
-      DUET_GOBYEXAMPLE: <no description>
-      DUET_GOLANG_DOCS: <no description>
-      DUET_CLOUD_DOCS_TROUBLESHOOTING_TABLES: <no description>
-      DUET_DEVSITE_DOCS: <no description>
-      DUET_CLOUD_BLOG_POSTS: <no description>
-      DUET_CLOUD_PODCAST_EPISODES: <no description>
-      DUET_YOUTUBE_VIDEOS: <no description>
-      DUET_CLOUD_SKILLS_BOOST: <no description>
-      DUET_CLOUD_DOCS: <no description>
-      DUET_CLOUD_GITHUB_CODE_SNIPPETS_GENERATED: <no description>
-      DUET_CLOUD_GITHUB_CODE_SNIPPETS_HANDWRITTEN: <no description>
-      DUET_GOOGLESQL_GENERATION: <no description>
-      DUET_CLOUD_IX_PROMPTS: <no description>
-      DUET_RAD: <no description>
-      BARD_ARCADE_GITHUB: Bard ARCADE finetune dataset
-      MOBILE_ASSISTANT_MAGI_FILTERED_0825_373K: Mobile assistant finetune
-        datasets.
-      MOBILE_ASSISTANT_PALM24B_FILTERED_400K: <no description>
-      GENESIS_NEWS_INSIGHTS: Genesis fine tuned datasets.
-      CLOUD_SECURITY_PRETRAINING: Cloud Security fine tuned datasets.
-      CLOUD_SECURITY_FINETUNING: <no description>
-      LABS_AQA_DSCOUT: LABS AQA fine-tune datasets.
-      LABS_AQA_TAILWIND: <no description>
-      LABS_AQA_DELEWARE: <no description>
-      GEMINI_MULTIMODAL_FT_URL: Gemini multimodal instruction tune(IT) and
-        fine tune(FT) datasets datasets.
-      GEMINI_MULTIMODAL_FT_YT: <no description>
-      GEMINI_MULTIMODAL_FT_SHUTTERSTOCK: <no description>
-      GEMINI_MULTIMODAL_FT_NONE: <no description>
-      GEMINI_MULTIMODAL_FT_OTHER: <no description>
-      GEMINI_MULTIMODAL_FT_INK: <no description>
-      GEMINI_MULTIMODAL_IT: <no description>
-      GEMINI_IT_SHUTTERSTOCK: Gemini IT 1.2.7 datasets
-      GEMINI_IT_M3W: <no description>
-      GEMINI_IT_HEDGING: <no description>
-      GEMINI_IT_DSCOUT_FACTUALITY: <no description>
-      GEMINI_IT_AQUAMUSE: <no description>
-      GEMINI_IT_SHOTGUN: <no description>
-      GEMINI_IT_ACI_BENCH: <no description>
-      GEMINI_IT_SPIDER_FILTERED: <no description>
-      GEMINI_IT_TAB_SUM_BQ: <no description>
-      GEMINI_IT_QA_WITH_URL: <no description>
-      GEMINI_IT_CODE_INSTRUCT: <no description>
-      GEMINI_IT_MED_PALM: <no description>
-      GEMINI_IT_TASK_ORIENTED_DIALOG: <no description>
-      GEMINI_IT_NIMBUS_GROUNDING_TO_PROMPT: <no description>
-      GEMINI_IT_EITL_GEN: <no description>
-      GEMINI_IT_HITL_GEN: <no description>
-      GEMINI_IT_MECH: <no description>
-      GEMINI_IT_TABLE_GEN: <no description>
-      GEMINI_IT_NIMBUS_DECIBEL: <no description>
-      GEMIT_BRIDGE_SUFFIX_FT: Gemit Bridge ULM FT dataset
-      GEMINI_IT_CLOUD_CODE_IF: Gemini IT Cloud Build datasets.
-      GEMINI_IT_CLOUD_EUR_LEX_JSON: <no description>
-      GEMINI_IT_CLOUD_OASST: <no description>
-      GEMINI_IT_CLOUD_SELF_INSTRUCT: <no description>
-      GEMINI_IT_CLOUD_UCS_AQUAMUSE: <no description>
-      GEMINI_V2_CMS_WIKIPEDIA_LANG_FILTERED_GCC_PII: Gemini V2 datasets
-      GEMINI_V2_WIKIPEDIA_DIFFS_COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP10B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP10B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_NONARTIC
-        LES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_ARTICLES
-        _COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP20B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP20B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_NONARTIC
-        LES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_ARTICLES
-        _COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP100B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP100B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_NONARTI
-        CLES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_ARTICLE
-        S_COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP500B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP500B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_QUORA_COMPLIANT: <no description>
-      GEMINI_V2_FORUMS_V2_COMPLIANT: <no description>
-      GEMINI_V2_CMS_STACKOVERFLOW_MULTILINGUAL_V2_COMPLIANT: <no description>
-      GEMINI_V2_SIMPLIFIED_HTML_V2_CORRECT_FORMAT_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_TOXICITY_TAGGED_FIXED_TAGS_COMPLIANT: <no
-        description>
-      GEMINI_V2_CODEWEB_V1_COMPLIANT: <no description>
-      GEMINI_V2_LEETCODE_GCC_PII: <no description>
-      GEMINI_V2_CODE_CONTESTS_COMPLIANT: <no description>
-      GEMINI_V2_CMS_GITHUB_MULTI_FILE_FOR_FIM_GEMBAGZ_FIXED_BYTES_LENGTHS: <no
-        description>
-      GEMINI_V2_GITHUB_EVALED_LANGUAGES_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_NON_EVAL_HIGH_PRI_LANGUAGES_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_LOW_PRI_LANGUAGES_AND_CONFIGS_COMPLIANT: <no
-        description>
-      GEMINI_V2_GITHUB_LONG_TAIL_AND_STRUCTURED_DATA_COMPLIANT: <no
-        description>
-      GEMINI_V2_GITHUB_PYTHON_NOTEBOOKS_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_DIFFS_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_TECHDOCS_COMPLIANT: <no description>
-      GEMINI_V2_HIGH_QUALITY_CODE_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_SCIENCE_PDF_68M_HQ_DOCS_DEDUP_COMPLIANT_CLEAN_TEX: <no
-        description>
-      GEMINI_V2_ARXIV_2023_COMPLIANT: <no description>
-      GEMINI_V2_FORMAL_COMPLIANT: <no description>
-      GEMINI_V2_CMS_STACKEXCHANGE_COMPLIANT: <no description>
-      GEMINI_V2_PUBMED_COMPLIANT: <no description>
-      GEMINI_V2_WEB_MATH_V3_COMPLIANT: <no description>
-      GEMINI_V2_SCIENCEWEB_V0_GCC_PII: <no description>
-      GEMINI_V2_WEB_POLYMATH_V1_COMPLIANT: <no description>
-      GEMINI_V2_MATH_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_BIOLOGY_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_PHYSICS_V2_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_CHEMISTRY_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_MACHINE_LEARNING_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_QA_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_ECONOMICS_V2_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_MEDICAL_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_CHESS_COMPLIANT: <no description>
-      GEMINI_V2_YOUTUBE_SCIENCE_V4_FILTERED_COMPLIANT: <no description>
-      GEMINI_V2_GOALDMINE_XL_GENERATED_PLUS_GT_NO_DM_MATH_COMPLIANT: <no
-        description>
-      GEMINI_V2_FIRSTTIMES_SCIENCE_PDF_DEDUP_HQ_LENGTH_FILTERED_COMPLIANT: <no
-        description>
-      GEMINI_V2_PODCASTS_COMPLIANT: <no description>
-      GEMINI_V2_EN_NONSCIENCE_PDF_DEDUP_46M_DOCS_COMPLIANT: <no description>
-      GEMINI_V2_NONPUB_COPYRIGHT_BOOKS_V3_70_CONF_082323_LONG_DEDUP_ENONLY_COM
-        PLIANT: <no description>
-      GEMINI_V2_STEM_COPYRIGHT_BOOKS_V3_111823_LONG_DEDUP_ENONLY_COMPLIANT:
-        <no description>
-      GEMINI_V2_STEM_BOOKS_318K_TEXT_COMPLIANT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEA
-        VED_COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEA
-        VED_COMPLIANT_PII_FILTERED_SOFT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_T2I_TEXT_TO_IMAGE_COMP
-        LIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_IMAGE_TO_TEXT_COMPLIANT_PI
-        I_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_IMAGE_TO_TEXT_COMPLIAN
-        T_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_I18N_680M_IMAGE_TO_TEXT_COMPL
-        IANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_DOC_IMAGE_TO_TEXT_COMPLIANT_PII
-        _FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_FULL_HTML_75M_IMAGE_TO_TEXT_CO
-        MPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_V1_1_IMAGE_TO_TEXT_COMPLIANT_P
-        II_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_DOC_240M_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_VIDEO_VIDEO_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M4W_INTERLEAVED_COMPLIANT_PII_FILTERED_
-        SOFT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CULTURE_IMAGE_TO_TEXT_COMPLIANT_PII_FIL
-        TERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_DETECTION_IMAGE_TO_TEXT_COMPLIANT
-        _PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_ALT_TEXT_NONEN_500M_IMAGE_TO_TEXT
-        _COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SPATIAL_AWARE_PALI_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_3D_IMAGE_TO_TEXT_COM
-        PLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_EN_IMAGE_TO_TEXT_COMPLIANT_
-        PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_NON_EN_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_3D_DOC_IMAGE_TO_TEXT_COMPLIANT_
-        PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CC3M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTER
-        ED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_INFOGRAPHICS_LARGE_WEB_IMAGE_TO_TEXT_CO
-        MPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_BIORXIV_IMAGE_TO_TEXT_COMPLIANT_PII_FIL
-        TERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_IM2SOL_PROBLEM_AND_SOLUTION_I
-        MAGE_TO_TEXT_COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PLOT2TABLE_V2_IMAGE_TO_TEXT_COMPLIANT_P
-        II_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TIKZ_DERENDERING_MERGED_IMAGE_TO_TEXT_C
-        OMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_2D_IMAGE_TO_TEXT_COM
-        PLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WIKIPEDIA_EQUATIONS_IMAGE_TO_TEXT_COMPL
-        IANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_EQ2LATEX_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_ARXIV_EQUATIONS_V2_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_SUP_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_1P5M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_4M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_SUP_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_1P5M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_4M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_ENUS_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_I18N_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_ENUS_GEMBAGZ_V2_COMPLIANT:
-        <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_I18N_GEMBAGZ_V2_COMPLIANT:
-        <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_1P5M_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_HEAD_4M_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_CLM_TRANSLATE_DATAV3_WEB_UNWMT_INCR_MIX: <no description>
-      GEMINI_V2_NTL_NTLV4A_MONOLINGUAL_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_STT_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_TRANSLIT_BILEX_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_SYN_BT_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_SYN_FT_FIXED_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_CANARIES_SHUFFLED_COMPLIANT: <no description>
-    """
-    DATASET_UNSPECIFIED = 0
-    WIKIPEDIA = 1
-    WEBDOCS = 2
-    WEBDOCS_FINETUNE = 3
-    GITHUB_MIRROR = 4
-    BOOKS_FULL_VIEW = 5
-    BOOKS_PRIVATE = 6
-    GNEWS = 7
-    ULM_DOCJOINS = 8
-    ULM_DOCJOINS_DEDUPED = 9
-    MEENA_FC = 10
-    PODCAST = 11
-    AQUA = 12
-    WEB_ASR = 13
-    BARD_GOLDEN = 14
-    COMMON_SENSE_REASONING = 15
-    MATH = 16
-    MATH_REASONING = 17
-    CLEAN_ARXIV = 18
-    LAMDA_FACTUALITY_E2E_QUERY_GENERATION = 19
-    LAMDA_FACTUALITY_E2E_RESPONSE_GENERATION = 20
-    MASSIVE_FORUM_THREAD_SCORED_BARD = 21
-    MASSIVE_FORUM_THREAD_SCORED_LONG_200 = 22
-    MASSIVE_FORUM_THREAD_SCORED_LONG_500 = 23
-    DOCUMENT_CHUNKS = 24
-    MEENA_RESEARCH_PHASE_GOLDEN_MARKDOWN = 25
-    MEENA_RESEARCH_PHASE_GOOGLERS = 26
-    MEENA_RESPONSE_SAFETY_HUMAN_GEN = 27
-    MEENA_RESPONSE_SAFETY_SCHEMA_NO_BROADCAST = 28
-    MEENA_RESPONSE_SAFETY_V3_HUMAN_GEN2 = 29
-    MEENA_RESPONSE_SAFETY_V3_SCHEMA_NO_BROADCAST = 30
-    LAMDA_FACTUALITY_TRIGGER = 31
-    LAMDA_SAFETY_V2_SCHEMA_NO_BROADCAST = 32
-    LAMDA_SSI_DISCRIMINATIVE = 33
-    ASSISTANT_PERSONALITY_SAFETY = 34
-    PODCAST_FINETUNE_DIALOG = 35
-    WORLD_QUERY_GENERATOR = 36
-    C4_JOINED_DOCJOINS = 37
-    HOL4_THEORIES = 38
-    HOL_LIGHT_THEORIES = 39
-    HOLSTEPS = 40
-    ISABELLE_STEP = 41
-    ISABELLE_THEORIES = 42
-    LEAN_MATHLIB_THEORIES = 43
-    LEAN_STEP = 44
-    MIZAR_THEORIES = 45
-    COQ_STEP = 46
-    COQ_THEORIES = 47
-    AMPS_KHAN = 48
-    AMPS_MATHEMATICA = 49
-    CODEY_CODE = 50
-    CODE_QA_SE = 51
-    CODE_QA_SO = 52
-    CODE_QA_FT_FORMAT = 53
-    CODE_QA_FT_KNOWLEDGE = 54
-    CODE_QA_GITHUB_FILTERED_CODE = 55
-    BARD_PERSONALITY_GOLDEN = 56
-    ULM_DOCJOINS_WITH_URLS_EN = 57
-    ULM_DOCJOINS_WITH_URLS_I18N = 58
-    GOODALL_MTV5_GITHUB = 59
-    GOODALL_MTV5_BOOKS = 60
-    GOODALL_MTV5_C4 = 61
-    GOODALL_MTV5_WIKIPEDIA = 62
-    GOODALL_MW_TOP_100B = 63
-    GOODALL_MW_STACK_EXCHANGE = 64
-    GOODALL_MW_TOP_0_10B = 65
-    GOODALL_MW_TOP_10B_20B = 66
-    CODEY_NOTEBOOK_LM_PRETRAINING = 67
-    VERTEX_SAFE_FLAN = 68
-    GITHUB_MIRROR_V1_0_1 = 69
-    GITHUB_MIRROR_V2_1_0 = 70
-    CMS_WIKIPEDIA_LANG_FILTERED = 71
-    CMS_STACKOVERFLOW_MULTILINGUAL = 72
-    CMS_STACKEXCHANGE = 73
-    PUBMED = 74
-    GEMINI_DOCJOINS_EN_TOP10B_GCC = 75
-    GEMINI_DOCJOINS_EN_TOP10B_TOP20B_GCC = 76
-    GEMINI_DOCJOINS_EN_TOP20B_TOP100B_GCC = 77
-    GEMINI_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC = 78
-    GEMINI_DOCJOINS_I18N_TOP10B_GCC = 79
-    GEMINI_DOCJOINS_I18N_TOP10B_TOP20B_GCC = 80
-    GEMINI_DOCJOINS_I18N_TOP20B_TOP100B_GCC = 81
-    SIMPLIFIED_HTML_V1_GCC = 82
-    GEMINI_DOCJOINS_TOXICITY_TAGGED_GCC = 83
-    CMS_GITHUB_V4 = 84
-    GITHUB_HTML_V4 = 85
-    GITHUB_OTHER_V4 = 86
-    GITHUB_LONG_TAIL_V4 = 87
-    CMS_GITHUB_MULTIFILE_V4 = 88
-    GITHUB_DIFFS_WITH_COMMIT_MESSAGE = 89
-    ULM_ARXIV = 90
-    NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_ENONLY = 91
-    NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_NONENONLY = 92
-    QUORA = 93
-    PODCASTS_ROBOTSTXT = 94
-    COMBINED_REDDIT = 95
-    CANARIES_SHUFFLED = 96
-    CLM_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX = 97
-    TECHDOCS_DATA_SOURCE = 98
-    SCIENCE_PDF_70M_DOCS_FILTERED = 99
-    GEMINI_V1_CMS_WIKIPEDIA_LANG_FILTERED = 100
-    GEMINI_V1_WIKIPEDIA_DIFFS = 101
-    GEMINI_V1_DOCJOINS_EN_TOP10B_GCC_NODEDUP_050523 = 102
-    GEMINI_V1_DOCJOINS_EN_TOP10B_TOP20B_GCC_NODEDUP_050523 = 103
-    GEMINI_V1_DOCJOINS_EN_TOP20B_TOP100B_GCC_NODEDUP_050523 = 104
-    GEMINI_V1_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC_NODEDUP_050523 = 105
-    GEMINI_V1_DOCJOINS_I18N_TOP10B_GCC_050523 = 106
-    GEMINI_V1_DOCJOINS_I18N_TOP10B_TOP20B_GCC_050523 = 107
-    GEMINI_V1_DOCJOINS_I18N_TOP20B_TOP100B_GCC_050523 = 108
-    GEMINI_V1_SIMPLIFIED_HTML_V2_GCC = 109
-    GEMINI_V1_CMS_STACKOVERFLOW_MULTILINGUAL_V2 = 110
-    GEMINI_V1_CMS_STACKEXCHANGE_DECONT = 111
-    GEMINI_V1_QUORA = 112
-    GEMINI_V1_COMBINED_REDDIT = 113
-    GEMINI_V1_DOCJOIN_100B_EN_TOXICITY_TAGGED_GCC_FIXED_TAGS = 114
-    GEMINI_V1_PUBMED = 115
-    GEMINI_V1_WEB_MATH_V2 = 116
-    GEMINI_V1_CMS_GITHUB_DECONTAMINATED_V_7 = 117
-    GEMINI_V1_GITHUB_DIFF_WITH_COMMIT_MESSAGE_V2 = 118
-    GEMINI_V1_GITHUB_HTML_CSS_XML_V4 = 119
-    GEMINI_V1_GITHUB_OTHER_V4 = 120
-    GEMINI_V1_GITHUB_LONG_TAIL_V4 = 121
-    GEMINI_V1_GITHUB_JUPTYER_NOTEBOOKS_SSTABLE = 122
-    GEMINI_V1_ULM_ARXIV_SSTABLE = 123
-    GEMINI_V1_PODCASTS_ROBOTSTXT = 124
-    GEMINI_V1_SCIENCE_PDF_68M_HQ_DOCS_GCC = 125
-    GEMINI_V1_GITHUB_TECHDOCS_V2 = 126
-    GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_EN = 127
-    GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_NONEN = 128
-    GEMINI_V1_STEM_BOOKS_650K_TEXT = 129
-    GEMINI_V1_VQCOCA_1B_MULTIRES_M3W_V2_FILTERED = 130
-    GEMINI_V1_VQCOCA_1B_MULTIRES_WEBLI_EN_V4_350M_PREFIXED_FILTERED_IMAGE2TEXT = 131
-    GEMINI_V1_VQCOCA_1B_MULTIRES_SCREENAI_PREFIXED_FILTERED_IMAGE2TEXT = 132
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CULTURE_PREFIXED_FILTERED_IMAGE2TEXT = 133
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_EN_PREFIXED_IMAGE2TEXT = 134
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_I18N_PREFIXED_IMAGE2TEXT = 135
-    GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_EN_PREFIXED_FILTERED_IMAGE2TEXT = 136
-    GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_NON_EN_PREFIXED_FILTERED_IMAGE2TEXT = 137
-    GEMINI_V1_VQCOCA_1B_MULTIRES_VTP_4F_VIDEO2TEXT_PREFIX = 138
-    GEMINI_V1_FORMAL_MATH_WITHOUT_HOLSTEPS_AND_MIZAR = 139
-    GEMINI_V1_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX = 140
-    GEMINI_V1_CANARIES_SHUFFLED_DOCJOIN_EN_NONEN_CODE_ARXIV_TRANSLATE = 141
-    DUET_CLOUD_SECURITY_DOCS = 142
-    DUET_GITHUB_CODE_SNIPPETS = 143
-    DUET_GITHUB_FILES = 144
-    DUET_GOBYEXAMPLE = 145
-    DUET_GOLANG_DOCS = 146
-    DUET_CLOUD_DOCS_TROUBLESHOOTING_TABLES = 147
-    DUET_DEVSITE_DOCS = 148
-    DUET_CLOUD_BLOG_POSTS = 149
-    DUET_CLOUD_PODCAST_EPISODES = 150
-    DUET_YOUTUBE_VIDEOS = 151
-    DUET_CLOUD_SKILLS_BOOST = 152
-    DUET_CLOUD_DOCS = 153
-    DUET_CLOUD_GITHUB_CODE_SNIPPETS_GENERATED = 154
-    DUET_CLOUD_GITHUB_CODE_SNIPPETS_HANDWRITTEN = 155
-    DUET_GOOGLESQL_GENERATION = 156
-    DUET_CLOUD_IX_PROMPTS = 157
-    DUET_RAD = 158
-    BARD_ARCADE_GITHUB = 159
-    MOBILE_ASSISTANT_MAGI_FILTERED_0825_373K = 160
-    MOBILE_ASSISTANT_PALM24B_FILTERED_400K = 161
-    GENESIS_NEWS_INSIGHTS = 162
-    CLOUD_SECURITY_PRETRAINING = 163
-    CLOUD_SECURITY_FINETUNING = 164
-    LABS_AQA_DSCOUT = 165
-    LABS_AQA_TAILWIND = 166
-    LABS_AQA_DELEWARE = 167
-    GEMINI_MULTIMODAL_FT_URL = 168
-    GEMINI_MULTIMODAL_FT_YT = 169
-    GEMINI_MULTIMODAL_FT_SHUTTERSTOCK = 170
-    GEMINI_MULTIMODAL_FT_NONE = 171
-    GEMINI_MULTIMODAL_FT_OTHER = 172
-    GEMINI_MULTIMODAL_FT_INK = 173
-    GEMINI_MULTIMODAL_IT = 174
-    GEMINI_IT_SHUTTERSTOCK = 175
-    GEMINI_IT_M3W = 176
-    GEMINI_IT_HEDGING = 177
-    GEMINI_IT_DSCOUT_FACTUALITY = 178
-    GEMINI_IT_AQUAMUSE = 179
-    GEMINI_IT_SHOTGUN = 180
-    GEMINI_IT_ACI_BENCH = 181
-    GEMINI_IT_SPIDER_FILTERED = 182
-    GEMINI_IT_TAB_SUM_BQ = 183
-    GEMINI_IT_QA_WITH_URL = 184
-    GEMINI_IT_CODE_INSTRUCT = 185
-    GEMINI_IT_MED_PALM = 186
-    GEMINI_IT_TASK_ORIENTED_DIALOG = 187
-    GEMINI_IT_NIMBUS_GROUNDING_TO_PROMPT = 188
-    GEMINI_IT_EITL_GEN = 189
-    GEMINI_IT_HITL_GEN = 190
-    GEMINI_IT_MECH = 191
-    GEMINI_IT_TABLE_GEN = 192
-    GEMINI_IT_NIMBUS_DECIBEL = 193
-    GEMIT_BRIDGE_SUFFIX_FT = 194
-    GEMINI_IT_CLOUD_CODE_IF = 195
-    GEMINI_IT_CLOUD_EUR_LEX_JSON = 196
-    GEMINI_IT_CLOUD_OASST = 197
-    GEMINI_IT_CLOUD_SELF_INSTRUCT = 198
-    GEMINI_IT_CLOUD_UCS_AQUAMUSE = 199
-    GEMINI_V2_CMS_WIKIPEDIA_LANG_FILTERED_GCC_PII = 200
-    GEMINI_V2_WIKIPEDIA_DIFFS_COMPLIANT = 201
-    GEMINI_V2_ENGLISH_ARTICLES_TOP10B_211123_PII_FILTERED = 202
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP10B_211123_PII_FILTERED = 203
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 204
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 205
-    GEMINI_V2_ENGLISH_ARTICLES_TOP20B_211123_PII_FILTERED = 206
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP20B_211123_PII_FILTERED = 207
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 208
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 209
-    GEMINI_V2_ENGLISH_ARTICLES_TOP100B_211123_PII_FILTERED = 210
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP100B_211123_PII_FILTERED = 211
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 212
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 213
-    GEMINI_V2_ENGLISH_ARTICLES_TOP500B_211123_PII_FILTERED = 214
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP500B_211123_PII_FILTERED = 215
-    GEMINI_V2_QUORA_COMPLIANT = 216
-    GEMINI_V2_FORUMS_V2_COMPLIANT = 217
-    GEMINI_V2_CMS_STACKOVERFLOW_MULTILINGUAL_V2_COMPLIANT = 218
-    GEMINI_V2_SIMPLIFIED_HTML_V2_CORRECT_FORMAT_COMPLIANT = 219
-    GEMINI_V2_GEMINI_DOCJOINS_TOXICITY_TAGGED_FIXED_TAGS_COMPLIANT = 220
-    GEMINI_V2_CODEWEB_V1_COMPLIANT = 221
-    GEMINI_V2_LEETCODE_GCC_PII = 222
-    GEMINI_V2_CODE_CONTESTS_COMPLIANT = 223
-    GEMINI_V2_CMS_GITHUB_MULTI_FILE_FOR_FIM_GEMBAGZ_FIXED_BYTES_LENGTHS = 224
-    GEMINI_V2_GITHUB_EVALED_LANGUAGES_COMPLIANT = 225
-    GEMINI_V2_GITHUB_NON_EVAL_HIGH_PRI_LANGUAGES_COMPLIANT = 226
-    GEMINI_V2_GITHUB_LOW_PRI_LANGUAGES_AND_CONFIGS_COMPLIANT = 227
-    GEMINI_V2_GITHUB_LONG_TAIL_AND_STRUCTURED_DATA_COMPLIANT = 228
-    GEMINI_V2_GITHUB_PYTHON_NOTEBOOKS_COMPLIANT = 229
-    GEMINI_V2_GITHUB_DIFFS_COMPLIANT = 230
-    GEMINI_V2_GITHUB_TECHDOCS_COMPLIANT = 231
-    GEMINI_V2_HIGH_QUALITY_CODE_TARGETED_DATA_COMPLIANT2 = 232
-    GEMINI_V2_SCIENCE_PDF_68M_HQ_DOCS_DEDUP_COMPLIANT_CLEAN_TEX = 233
-    GEMINI_V2_ARXIV_2023_COMPLIANT = 234
-    GEMINI_V2_FORMAL_COMPLIANT = 235
-    GEMINI_V2_CMS_STACKEXCHANGE_COMPLIANT = 236
-    GEMINI_V2_PUBMED_COMPLIANT = 237
-    GEMINI_V2_WEB_MATH_V3_COMPLIANT = 238
-    GEMINI_V2_SCIENCEWEB_V0_GCC_PII = 239
-    GEMINI_V2_WEB_POLYMATH_V1_COMPLIANT = 240
-    GEMINI_V2_MATH_TARGETED_DATA_COMPLIANT2 = 241
-    GEMINI_V2_BIOLOGY_TARGETED_DATA_COMPLIANT2 = 242
-    GEMINI_V2_PHYSICS_V2_TARGETED_DATA_COMPLIANT2 = 243
-    GEMINI_V2_CHEMISTRY_TARGETED_DATA_COMPLIANT2 = 244
-    GEMINI_V2_MACHINE_LEARNING_TARGETED_DATA_COMPLIANT2 = 245
-    GEMINI_V2_QA_TARGETED_DATA_COMPLIANT2 = 246
-    GEMINI_V2_ECONOMICS_V2_TARGETED_DATA_COMPLIANT2 = 247
-    GEMINI_V2_MEDICAL_TARGETED_DATA_COMPLIANT2 = 248
-    GEMINI_V2_CHESS_COMPLIANT = 249
-    GEMINI_V2_YOUTUBE_SCIENCE_V4_FILTERED_COMPLIANT = 250
-    GEMINI_V2_GOALDMINE_XL_GENERATED_PLUS_GT_NO_DM_MATH_COMPLIANT = 251
-    GEMINI_V2_FIRSTTIMES_SCIENCE_PDF_DEDUP_HQ_LENGTH_FILTERED_COMPLIANT = 252
-    GEMINI_V2_PODCASTS_COMPLIANT = 253
-    GEMINI_V2_EN_NONSCIENCE_PDF_DEDUP_46M_DOCS_COMPLIANT = 254
-    GEMINI_V2_NONPUB_COPYRIGHT_BOOKS_V3_70_CONF_082323_LONG_DEDUP_ENONLY_COMPLIANT = 255
-    GEMINI_V2_STEM_COPYRIGHT_BOOKS_V3_111823_LONG_DEDUP_ENONLY_COMPLIANT = 256
-    GEMINI_V2_STEM_BOOKS_318K_TEXT_COMPLIANT = 257
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEAVED_COMPLIANT_PII_FILTERED = 258
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEAVED_COMPLIANT_PII_FILTERED_SOFT = 259
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_T2I_TEXT_TO_IMAGE_COMPLIANT_PII_FILTERED = 260
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 261
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 262
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_I18N_680M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 263
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_DOC_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 264
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_FULL_HTML_75M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 265
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_V1_1_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 266
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_DOC_240M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 267
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_VIDEO_VIDEO_TO_TEXT_COMPLIANT_PII_FILTERED = 268
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M4W_INTERLEAVED_COMPLIANT_PII_FILTERED_SOFT = 269
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CULTURE_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 270
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_DETECTION_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 271
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_ALT_TEXT_NONEN_500M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 272
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SPATIAL_AWARE_PALI_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 273
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_3D_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 274
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_EN_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 275
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_NON_EN_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 276
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_3D_DOC_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 277
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CC3M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 278
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_INFOGRAPHICS_LARGE_WEB_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 279
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_BIORXIV_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 280
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_IM2SOL_PROBLEM_AND_SOLUTION_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 281
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PLOT2TABLE_V2_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 282
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TIKZ_DERENDERING_MERGED_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 283
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_2D_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 284
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WIKIPEDIA_EQUATIONS_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 285
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_EQ2LATEX_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 286
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_ARXIV_EQUATIONS_V2_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 287
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_SUP_GEMBAGZ_V2_COMPLIANT = 288
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_1P5M_GEMBAGZ_V2_COMPLIANT = 289
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_4M_GEMBAGZ_V2_COMPLIANT = 290
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_SUP_GEMBAGZ_V2_COMPLIANT = 291
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_1P5M_GEMBAGZ_V2_COMPLIANT = 292
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_4M_GEMBAGZ_V2_COMPLIANT = 293
-    GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_ENUS_GEMBAGZ_V2_COMPLIANT = 294
-    GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_I18N_GEMBAGZ_V2_COMPLIANT = 295
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_ENUS_GEMBAGZ_V2_COMPLIANT = 296
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_I18N_GEMBAGZ_V2_COMPLIANT = 297
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_1P5M_GEMBAGZ_V2_COMPLIANT = 298
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_HEAD_4M_GEMBAGZ_V2_COMPLIANT = 299
-    GEMINI_V2_CLM_TRANSLATE_DATAV3_WEB_UNWMT_INCR_MIX = 300
-    GEMINI_V2_NTL_NTLV4A_MONOLINGUAL_DEDUP_N5 = 301
-    GEMINI_V2_NTL_STT_TRANSLATE_DEDUP_N5 = 302
-    GEMINI_V2_NTL_TRANSLIT_BILEX_TRANSLATE_DEDUP_N5 = 303
-    GEMINI_V2_NTL_SYN_BT_TRANSLATE_DEDUP_N5 = 304
-    GEMINI_V2_NTL_SYN_FT_FIXED_TRANSLATE_DEDUP_N5 = 305
-    GEMINI_V2_CANARIES_SHUFFLED_COMPLIANT = 306
-
-  amarnaId = _messages.StringField(1)
-  arxivId = _messages.StringField(2)
-  author = _messages.StringField(3)
-  bibkey = _messages.StringField(4)
-  bookTitle = _messages.StringField(5)
-  bookVolumeId = _messages.IntegerField(6)
-  conversationId = _messages.StringField(7)
-  dataset = _messages.EnumField('DatasetValueValuesEnum', 8)
-  filepath = _messages.StringField(9)
-  geminiId = _messages.StringField(10)
-  gnewsArticleTitle = _messages.StringField(11)
-  goodallExampleId = _messages.StringField(12)
-  isOptOut = _messages.BooleanField(13)
-  isPrompt = _messages.BooleanField(14)
-  lamdaExampleId = _messages.StringField(15)
-  license = _messages.StringField(16)
-  meenaConversationId = _messages.StringField(17)
-  naturalLanguageCode = _messages.StringField(18)
-  noAttribution = _messages.BooleanField(19)
-  podcastUtteranceId = _messages.StringField(20)
-  publicationDate = _messages.MessageField('GoogleTypeDate', 21)
-  qualityScoreExperimentOnly = _messages.FloatField(22)
-  repo = _messages.StringField(23)
-  url = _messages.StringField(24)
-  volumeId = _messages.StringField(25)
-  wikipediaArticleTitle = _messages.StringField(26)
-
-
-class LearningGenaiRecitationRecitationResult(_messages.Message):
-  r"""The recitation result for one input
-
-  Enums:
-    RecitationActionValueValuesEnum: The recitation action for one given
-      input. When its segments contain different actions, the overall action
-      will be returned in the precedence of BLOCK > CITE > NO_ACTION.
-
-  Fields:
-    dynamicSegmentResults: A LearningGenaiRecitationSegmentResult attribute.
-    recitationAction: The recitation action for one given input. When its
-      segments contain different actions, the overall action will be returned
-      in the precedence of BLOCK > CITE > NO_ACTION.
-    trainingSegmentResults: A LearningGenaiRecitationSegmentResult attribute.
-  """
-
-  class RecitationActionValueValuesEnum(_messages.Enum):
-    r"""The recitation action for one given input. When its segments contain
-    different actions, the overall action will be returned in the precedence
-    of BLOCK > CITE > NO_ACTION.
-
-    Values:
-      ACTION_UNSPECIFIED: <no description>
-      CITE: indicate that attribution must be shown for a Segment
-      BLOCK: indicate that a Segment should be blocked from being used
-      NO_ACTION: for tagging high-frequency code snippets
-      EXEMPT_FOUND_IN_PROMPT: The recitation was found in prompt and is
-        exempted from overall results
-    """
-    ACTION_UNSPECIFIED = 0
-    CITE = 1
-    BLOCK = 2
-    NO_ACTION = 3
-    EXEMPT_FOUND_IN_PROMPT = 4
-
-  dynamicSegmentResults = _messages.MessageField('LearningGenaiRecitationSegmentResult', 1, repeated=True)
-  recitationAction = _messages.EnumField('RecitationActionValueValuesEnum', 2)
-  trainingSegmentResults = _messages.MessageField('LearningGenaiRecitationSegmentResult', 3, repeated=True)
-
-
-class LearningGenaiRecitationSegmentResult(_messages.Message):
-  r"""The recitation result for each segment in a given input.
-
-  Enums:
-    AttributionDatasetValueValuesEnum: The dataset the segment came from.
-    SegmentRecitationActionValueValuesEnum:
-
-  Fields:
-    attributionDataset: The dataset the segment came from.
-    displayAttributionMessage: human-friendly string that contains information
-      from doc_attribution which could be shown by clients
-    docAttribution: populated when recitation_action == CITE
-    docOccurrences: number of documents that contained this segment
-    endIndex: A integer attribute.
-    rawText: The raw text in the given input that is corresponding to the
-      segment. It will be available only when 'return_segment_raw_text' is
-      enabled in the request options.
-    segmentRecitationAction: A SegmentRecitationActionValueValuesEnum
-      attribute.
-    startIndex: The segment boundary start (inclusive) and end index
-      (exclusive) in the given text. In the streaming RPC, the indexes always
-      start from the beginning of the first text in the entire stream. The
-      indexes are measured in UTF-16 code units.
-  """
-
-  class AttributionDatasetValueValuesEnum(_messages.Enum):
-    r"""The dataset the segment came from.
-
-    Values:
-      DATASET_UNSPECIFIED: <no description>
-      WIKIPEDIA: Wikipedia article Tensorflow datasets used by Tarzan and
-        maintained by TFDS team.
-      WEBDOCS: Webdocs that have been filtered from the docjoins by the Tarzan
-        team for use in the Tarzan training set.
-      WEBDOCS_FINETUNE: <no description>
-      GITHUB_MIRROR: <no description>
-      BOOKS_FULL_VIEW: 'Full view' books dataset maintained by Oceanographers
-        team, meaning 'ok to view the book in full in all localities'. Largely
-        the same as 'public domain', but with potentially subtle distinction.
-      BOOKS_PRIVATE: Filtered private books used by ULM: http://google3/learni
-        ng/multipod/pax/lm/params/ulm/tasks.py;l=123;rcl=494241309. which
-        corresponds with /cns/mf-d/home/multipod-language-
-        data/private_books/books_filtered_en_resharded@50000
-      GNEWS: Google news dataset referenced in: http://google3/learning/brain/
-        research/conversation/meena/t5/pretrain_tasks.py;l=922;rcl=496534668
-      ULM_DOCJOINS: The docjoins data for ULM /cns/yo-d/home/multipod-
-        language-data/docjoins/rs=6.3/20220728/100B_docstructure_split/example
-        s_en.tfrecord_lattice_05_score_01_HFV13@3929
-      ULM_DOCJOINS_DEDUPED: <no description>
-      MEENA_FC: Meena full conversations. http://google3/learning/brain/resear
-        ch/conversation/meena/t5/pretrain_mixtures.py;l=675;rcl=496583228
-      PODCAST: <no description>
-      AQUA: <no description>
-      WEB_ASR: <no description>
-      BARD_GOLDEN: <no description>
-      COMMON_SENSE_REASONING: <no description>
-      MATH: <no description>
-      MATH_REASONING: <no description>
-      CLEAN_ARXIV: <no description>
-      LAMDA_FACTUALITY_E2E_QUERY_GENERATION: <no description>
-      LAMDA_FACTUALITY_E2E_RESPONSE_GENERATION: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_BARD: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_LONG_200: <no description>
-      MASSIVE_FORUM_THREAD_SCORED_LONG_500: <no description>
-      DOCUMENT_CHUNKS: <no description>
-      MEENA_RESEARCH_PHASE_GOLDEN_MARKDOWN: <no description>
-      MEENA_RESEARCH_PHASE_GOOGLERS: <no description>
-      MEENA_RESPONSE_SAFETY_HUMAN_GEN: <no description>
-      MEENA_RESPONSE_SAFETY_SCHEMA_NO_BROADCAST: <no description>
-      MEENA_RESPONSE_SAFETY_V3_HUMAN_GEN2: <no description>
-      MEENA_RESPONSE_SAFETY_V3_SCHEMA_NO_BROADCAST: <no description>
-      LAMDA_FACTUALITY_TRIGGER: <no description>
-      LAMDA_SAFETY_V2_SCHEMA_NO_BROADCAST: <no description>
-      LAMDA_SSI_DISCRIMINATIVE: <no description>
-      ASSISTANT_PERSONALITY_SAFETY: <no description>
-      PODCAST_FINETUNE_DIALOG: <no description>
-      WORLD_QUERY_GENERATOR: <no description>
-      C4_JOINED_DOCJOINS: <no description>
-      HOL4_THEORIES: <no description>
-      HOL_LIGHT_THEORIES: <no description>
-      HOLSTEPS: <no description>
-      ISABELLE_STEP: <no description>
-      ISABELLE_THEORIES: <no description>
-      LEAN_MATHLIB_THEORIES: <no description>
-      LEAN_STEP: <no description>
-      MIZAR_THEORIES: <no description>
-      COQ_STEP: <no description>
-      COQ_THEORIES: <no description>
-      AMPS_KHAN: Academic dataset of math text. http://google3/learning/brain/
-        research/conversation/meena/seqio/mixtures/experimental/bard.py;rcl=50
-        0222380
-      AMPS_MATHEMATICA: <no description>
-      CODEY_CODE: <no description>
-      CODE_QA_SE: <no description>
-      CODE_QA_SO: <no description>
-      CODE_QA_FT_FORMAT: <no description>
-      CODE_QA_FT_KNOWLEDGE: <no description>
-      CODE_QA_GITHUB_FILTERED_CODE: <no description>
-      BARD_PERSONALITY_GOLDEN: <no description>
-      ULM_DOCJOINS_WITH_URLS_EN: <no description>
-      ULM_DOCJOINS_WITH_URLS_I18N: <no description>
-      GOODALL_MTV5_GITHUB: Datasets managed by the Goodall team: deepmind-
-        goodall@google.com
-      GOODALL_MTV5_BOOKS: <no description>
-      GOODALL_MTV5_C4: <no description>
-      GOODALL_MTV5_WIKIPEDIA: <no description>
-      GOODALL_MW_TOP_100B: <no description>
-      GOODALL_MW_STACK_EXCHANGE: <no description>
-      GOODALL_MW_TOP_0_10B: <no description>
-      GOODALL_MW_TOP_10B_20B: <no description>
-      CODEY_NOTEBOOK_LM_PRETRAINING: Datasets used by Codepoet
-      VERTEX_SAFE_FLAN: Datasets used by Vertex
-      GITHUB_MIRROR_V1_0_1: <no description>
-      GITHUB_MIRROR_V2_1_0: <no description>
-      CMS_WIKIPEDIA_LANG_FILTERED: Datasets used by Gemini Public data
-      CMS_STACKOVERFLOW_MULTILINGUAL: <no description>
-      CMS_STACKEXCHANGE: <no description>
-      PUBMED: <no description>
-      GEMINI_DOCJOINS_EN_TOP10B_GCC: Public webdocs
-      GEMINI_DOCJOINS_EN_TOP10B_TOP20B_GCC: <no description>
-      GEMINI_DOCJOINS_EN_TOP20B_TOP100B_GCC: <no description>
-      GEMINI_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP10B_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP10B_TOP20B_GCC: <no description>
-      GEMINI_DOCJOINS_I18N_TOP20B_TOP100B_GCC: <no description>
-      SIMPLIFIED_HTML_V1_GCC: <no description>
-      GEMINI_DOCJOINS_TOXICITY_TAGGED_GCC: <no description>
-      CMS_GITHUB_V4: Github
-      GITHUB_HTML_V4: <no description>
-      GITHUB_OTHER_V4: <no description>
-      GITHUB_LONG_TAIL_V4: <no description>
-      CMS_GITHUB_MULTIFILE_V4: <no description>
-      GITHUB_DIFFS_WITH_COMMIT_MESSAGE: <no description>
-      ULM_ARXIV: Arxiv
-      NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_ENONLY: Others
-      NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_NONENONLY: <no
-        description>
-      QUORA: <no description>
-      PODCASTS_ROBOTSTXT: <no description>
-      COMBINED_REDDIT: <no description>
-      CANARIES_SHUFFLED: <no description>
-      CLM_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX: <no description>
-      TECHDOCS_DATA_SOURCE: <no description>
-      SCIENCE_PDF_70M_DOCS_FILTERED: <no description>
-      GEMINI_V1_CMS_WIKIPEDIA_LANG_FILTERED: Gemini V1, order by precedence.
-        Wikipedia
-      GEMINI_V1_WIKIPEDIA_DIFFS: <no description>
-      GEMINI_V1_DOCJOINS_EN_TOP10B_GCC_NODEDUP_050523: Public webdocs
-      GEMINI_V1_DOCJOINS_EN_TOP10B_TOP20B_GCC_NODEDUP_050523: <no description>
-      GEMINI_V1_DOCJOINS_EN_TOP20B_TOP100B_GCC_NODEDUP_050523: <no
-        description>
-      GEMINI_V1_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC_NODEDUP_050523: <no
-        description>
-      GEMINI_V1_DOCJOINS_I18N_TOP10B_GCC_050523: <no description>
-      GEMINI_V1_DOCJOINS_I18N_TOP10B_TOP20B_GCC_050523: <no description>
-      GEMINI_V1_DOCJOINS_I18N_TOP20B_TOP100B_GCC_050523: <no description>
-      GEMINI_V1_SIMPLIFIED_HTML_V2_GCC: <no description>
-      GEMINI_V1_CMS_STACKOVERFLOW_MULTILINGUAL_V2: <no description>
-      GEMINI_V1_CMS_STACKEXCHANGE_DECONT: <no description>
-      GEMINI_V1_QUORA: <no description>
-      GEMINI_V1_COMBINED_REDDIT: <no description>
-      GEMINI_V1_DOCJOIN_100B_EN_TOXICITY_TAGGED_GCC_FIXED_TAGS: <no
-        description>
-      GEMINI_V1_PUBMED: <no description>
-      GEMINI_V1_WEB_MATH_V2: <no description>
-      GEMINI_V1_CMS_GITHUB_DECONTAMINATED_V_7: Github
-      GEMINI_V1_GITHUB_DIFF_WITH_COMMIT_MESSAGE_V2: <no description>
-      GEMINI_V1_GITHUB_HTML_CSS_XML_V4: <no description>
-      GEMINI_V1_GITHUB_OTHER_V4: <no description>
-      GEMINI_V1_GITHUB_LONG_TAIL_V4: <no description>
-      GEMINI_V1_GITHUB_JUPTYER_NOTEBOOKS_SSTABLE: <no description>
-      GEMINI_V1_ULM_ARXIV_SSTABLE: ArXiv
-      GEMINI_V1_PODCASTS_ROBOTSTXT: Citable misc
-      GEMINI_V1_SCIENCE_PDF_68M_HQ_DOCS_GCC: <no description>
-      GEMINI_V1_GITHUB_TECHDOCS_V2: <no description>
-      GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_EN: Non-public
-        books
-      GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_NONEN: <no
-        description>
-      GEMINI_V1_STEM_BOOKS_650K_TEXT: <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_M3W_V2_FILTERED: Other
-      GEMINI_V1_VQCOCA_1B_MULTIRES_WEBLI_EN_V4_350M_PREFIXED_FILTERED_IMAGE2TE
-        XT: <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_SCREENAI_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CULTURE_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_EN_PREFIXED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_I18N_PREFIXED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_EN_PREFIXED_FILTERED_IMAGE2TEXT: <no
-        description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_NON_EN_PREFIXED_FILTERED_IMAGE2TEXT:
-        <no description>
-      GEMINI_V1_VQCOCA_1B_MULTIRES_VTP_4F_VIDEO2TEXT_PREFIX: <no description>
-      GEMINI_V1_FORMAL_MATH_WITHOUT_HOLSTEPS_AND_MIZAR: <no description>
-      GEMINI_V1_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX: <no description>
-      GEMINI_V1_CANARIES_SHUFFLED_DOCJOIN_EN_NONEN_CODE_ARXIV_TRANSLATE: <no
-        description>
-      DUET_CLOUD_SECURITY_DOCS: Duet AI finetune datasets, order by
-        precedence.
-      DUET_GITHUB_CODE_SNIPPETS: <no description>
-      DUET_GITHUB_FILES: <no description>
-      DUET_GOBYEXAMPLE: <no description>
-      DUET_GOLANG_DOCS: <no description>
-      DUET_CLOUD_DOCS_TROUBLESHOOTING_TABLES: <no description>
-      DUET_DEVSITE_DOCS: <no description>
-      DUET_CLOUD_BLOG_POSTS: <no description>
-      DUET_CLOUD_PODCAST_EPISODES: <no description>
-      DUET_YOUTUBE_VIDEOS: <no description>
-      DUET_CLOUD_SKILLS_BOOST: <no description>
-      DUET_CLOUD_DOCS: <no description>
-      DUET_CLOUD_GITHUB_CODE_SNIPPETS_GENERATED: <no description>
-      DUET_CLOUD_GITHUB_CODE_SNIPPETS_HANDWRITTEN: <no description>
-      DUET_GOOGLESQL_GENERATION: <no description>
-      DUET_CLOUD_IX_PROMPTS: <no description>
-      DUET_RAD: <no description>
-      BARD_ARCADE_GITHUB: Bard ARCADE finetune dataset
-      MOBILE_ASSISTANT_MAGI_FILTERED_0825_373K: Mobile assistant finetune
-        datasets.
-      MOBILE_ASSISTANT_PALM24B_FILTERED_400K: <no description>
-      GENESIS_NEWS_INSIGHTS: Genesis fine tuned datasets.
-      CLOUD_SECURITY_PRETRAINING: Cloud Security fine tuned datasets.
-      CLOUD_SECURITY_FINETUNING: <no description>
-      LABS_AQA_DSCOUT: LABS AQA fine-tune datasets.
-      LABS_AQA_TAILWIND: <no description>
-      LABS_AQA_DELEWARE: <no description>
-      GEMINI_MULTIMODAL_FT_URL: Gemini multimodal instruction tune(IT) and
-        fine tune(FT) datasets datasets.
-      GEMINI_MULTIMODAL_FT_YT: <no description>
-      GEMINI_MULTIMODAL_FT_SHUTTERSTOCK: <no description>
-      GEMINI_MULTIMODAL_FT_NONE: <no description>
-      GEMINI_MULTIMODAL_FT_OTHER: <no description>
-      GEMINI_MULTIMODAL_FT_INK: <no description>
-      GEMINI_MULTIMODAL_IT: <no description>
-      GEMINI_IT_SHUTTERSTOCK: Gemini IT 1.2.7 datasets
-      GEMINI_IT_M3W: <no description>
-      GEMINI_IT_HEDGING: <no description>
-      GEMINI_IT_DSCOUT_FACTUALITY: <no description>
-      GEMINI_IT_AQUAMUSE: <no description>
-      GEMINI_IT_SHOTGUN: <no description>
-      GEMINI_IT_ACI_BENCH: <no description>
-      GEMINI_IT_SPIDER_FILTERED: <no description>
-      GEMINI_IT_TAB_SUM_BQ: <no description>
-      GEMINI_IT_QA_WITH_URL: <no description>
-      GEMINI_IT_CODE_INSTRUCT: <no description>
-      GEMINI_IT_MED_PALM: <no description>
-      GEMINI_IT_TASK_ORIENTED_DIALOG: <no description>
-      GEMINI_IT_NIMBUS_GROUNDING_TO_PROMPT: <no description>
-      GEMINI_IT_EITL_GEN: <no description>
-      GEMINI_IT_HITL_GEN: <no description>
-      GEMINI_IT_MECH: <no description>
-      GEMINI_IT_TABLE_GEN: <no description>
-      GEMINI_IT_NIMBUS_DECIBEL: <no description>
-      GEMIT_BRIDGE_SUFFIX_FT: Gemit Bridge ULM FT dataset
-      GEMINI_IT_CLOUD_CODE_IF: Gemini IT Cloud Build datasets.
-      GEMINI_IT_CLOUD_EUR_LEX_JSON: <no description>
-      GEMINI_IT_CLOUD_OASST: <no description>
-      GEMINI_IT_CLOUD_SELF_INSTRUCT: <no description>
-      GEMINI_IT_CLOUD_UCS_AQUAMUSE: <no description>
-      GEMINI_V2_CMS_WIKIPEDIA_LANG_FILTERED_GCC_PII: Gemini V2 datasets
-      GEMINI_V2_WIKIPEDIA_DIFFS_COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP10B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP10B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_NONARTIC
-        LES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_ARTICLES
-        _COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP20B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP20B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_NONARTIC
-        LES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_ARTICLES
-        _COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP100B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP100B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_NONARTI
-        CLES_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_ARTICLE
-        S_COMPLIANT: <no description>
-      GEMINI_V2_ENGLISH_ARTICLES_TOP500B_211123_PII_FILTERED: <no description>
-      GEMINI_V2_ENGLISH_NONARTICLES_TOP500B_211123_PII_FILTERED: <no
-        description>
-      GEMINI_V2_QUORA_COMPLIANT: <no description>
-      GEMINI_V2_FORUMS_V2_COMPLIANT: <no description>
-      GEMINI_V2_CMS_STACKOVERFLOW_MULTILINGUAL_V2_COMPLIANT: <no description>
-      GEMINI_V2_SIMPLIFIED_HTML_V2_CORRECT_FORMAT_COMPLIANT: <no description>
-      GEMINI_V2_GEMINI_DOCJOINS_TOXICITY_TAGGED_FIXED_TAGS_COMPLIANT: <no
-        description>
-      GEMINI_V2_CODEWEB_V1_COMPLIANT: <no description>
-      GEMINI_V2_LEETCODE_GCC_PII: <no description>
-      GEMINI_V2_CODE_CONTESTS_COMPLIANT: <no description>
-      GEMINI_V2_CMS_GITHUB_MULTI_FILE_FOR_FIM_GEMBAGZ_FIXED_BYTES_LENGTHS: <no
-        description>
-      GEMINI_V2_GITHUB_EVALED_LANGUAGES_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_NON_EVAL_HIGH_PRI_LANGUAGES_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_LOW_PRI_LANGUAGES_AND_CONFIGS_COMPLIANT: <no
-        description>
-      GEMINI_V2_GITHUB_LONG_TAIL_AND_STRUCTURED_DATA_COMPLIANT: <no
-        description>
-      GEMINI_V2_GITHUB_PYTHON_NOTEBOOKS_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_DIFFS_COMPLIANT: <no description>
-      GEMINI_V2_GITHUB_TECHDOCS_COMPLIANT: <no description>
-      GEMINI_V2_HIGH_QUALITY_CODE_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_SCIENCE_PDF_68M_HQ_DOCS_DEDUP_COMPLIANT_CLEAN_TEX: <no
-        description>
-      GEMINI_V2_ARXIV_2023_COMPLIANT: <no description>
-      GEMINI_V2_FORMAL_COMPLIANT: <no description>
-      GEMINI_V2_CMS_STACKEXCHANGE_COMPLIANT: <no description>
-      GEMINI_V2_PUBMED_COMPLIANT: <no description>
-      GEMINI_V2_WEB_MATH_V3_COMPLIANT: <no description>
-      GEMINI_V2_SCIENCEWEB_V0_GCC_PII: <no description>
-      GEMINI_V2_WEB_POLYMATH_V1_COMPLIANT: <no description>
-      GEMINI_V2_MATH_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_BIOLOGY_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_PHYSICS_V2_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_CHEMISTRY_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_MACHINE_LEARNING_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_QA_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_ECONOMICS_V2_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_MEDICAL_TARGETED_DATA_COMPLIANT2: <no description>
-      GEMINI_V2_CHESS_COMPLIANT: <no description>
-      GEMINI_V2_YOUTUBE_SCIENCE_V4_FILTERED_COMPLIANT: <no description>
-      GEMINI_V2_GOALDMINE_XL_GENERATED_PLUS_GT_NO_DM_MATH_COMPLIANT: <no
-        description>
-      GEMINI_V2_FIRSTTIMES_SCIENCE_PDF_DEDUP_HQ_LENGTH_FILTERED_COMPLIANT: <no
-        description>
-      GEMINI_V2_PODCASTS_COMPLIANT: <no description>
-      GEMINI_V2_EN_NONSCIENCE_PDF_DEDUP_46M_DOCS_COMPLIANT: <no description>
-      GEMINI_V2_NONPUB_COPYRIGHT_BOOKS_V3_70_CONF_082323_LONG_DEDUP_ENONLY_COM
-        PLIANT: <no description>
-      GEMINI_V2_STEM_COPYRIGHT_BOOKS_V3_111823_LONG_DEDUP_ENONLY_COMPLIANT:
-        <no description>
-      GEMINI_V2_STEM_BOOKS_318K_TEXT_COMPLIANT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEA
-        VED_COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEA
-        VED_COMPLIANT_PII_FILTERED_SOFT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_T2I_TEXT_TO_IMAGE_COMP
-        LIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_IMAGE_TO_TEXT_COMPLIANT_PI
-        I_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_IMAGE_TO_TEXT_COMPLIAN
-        T_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_I18N_680M_IMAGE_TO_TEXT_COMPL
-        IANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_DOC_IMAGE_TO_TEXT_COMPLIANT_PII
-        _FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_FULL_HTML_75M_IMAGE_TO_TEXT_CO
-        MPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_V1_1_IMAGE_TO_TEXT_COMPLIANT_P
-        II_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_DOC_240M_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_VIDEO_VIDEO_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M4W_INTERLEAVED_COMPLIANT_PII_FILTERED_
-        SOFT: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CULTURE_IMAGE_TO_TEXT_COMPLIANT_PII_FIL
-        TERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_DETECTION_IMAGE_TO_TEXT_COMPLIANT
-        _PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_ALT_TEXT_NONEN_500M_IMAGE_TO_TEXT
-        _COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SPATIAL_AWARE_PALI_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_3D_IMAGE_TO_TEXT_COM
-        PLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_EN_IMAGE_TO_TEXT_COMPLIANT_
-        PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_NON_EN_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_3D_DOC_IMAGE_TO_TEXT_COMPLIANT_
-        PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CC3M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTER
-        ED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_INFOGRAPHICS_LARGE_WEB_IMAGE_TO_TEXT_CO
-        MPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_BIORXIV_IMAGE_TO_TEXT_COMPLIANT_PII_FIL
-        TERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_IM2SOL_PROBLEM_AND_SOLUTION_I
-        MAGE_TO_TEXT_COMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PLOT2TABLE_V2_IMAGE_TO_TEXT_COMPLIANT_P
-        II_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TIKZ_DERENDERING_MERGED_IMAGE_TO_TEXT_C
-        OMPLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_2D_IMAGE_TO_TEXT_COM
-        PLIANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WIKIPEDIA_EQUATIONS_IMAGE_TO_TEXT_COMPL
-        IANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_EQ2LATEX_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_CACHED_VQCOCA_MMFT_17T_ARXIV_EQUATIONS_V2_IMAGE_TO_TEXT_COMPLI
-        ANT_PII_FILTERED: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_SUP_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_1P5M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_ASR_4M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_SUP_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_1P5M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_TTS_4M_GEMBAGZ_V2_COMPLIANT: <no description>
-      GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_ENUS_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_I18N_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_ENUS_GEMBAGZ_V2_COMPLIANT:
-        <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_I18N_GEMBAGZ_V2_COMPLIANT:
-        <no description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_1P5M_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_HEAD_4M_GEMBAGZ_V2_COMPLIANT: <no
-        description>
-      GEMINI_V2_CLM_TRANSLATE_DATAV3_WEB_UNWMT_INCR_MIX: <no description>
-      GEMINI_V2_NTL_NTLV4A_MONOLINGUAL_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_STT_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_TRANSLIT_BILEX_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_SYN_BT_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_NTL_SYN_FT_FIXED_TRANSLATE_DEDUP_N5: <no description>
-      GEMINI_V2_CANARIES_SHUFFLED_COMPLIANT: <no description>
-    """
-    DATASET_UNSPECIFIED = 0
-    WIKIPEDIA = 1
-    WEBDOCS = 2
-    WEBDOCS_FINETUNE = 3
-    GITHUB_MIRROR = 4
-    BOOKS_FULL_VIEW = 5
-    BOOKS_PRIVATE = 6
-    GNEWS = 7
-    ULM_DOCJOINS = 8
-    ULM_DOCJOINS_DEDUPED = 9
-    MEENA_FC = 10
-    PODCAST = 11
-    AQUA = 12
-    WEB_ASR = 13
-    BARD_GOLDEN = 14
-    COMMON_SENSE_REASONING = 15
-    MATH = 16
-    MATH_REASONING = 17
-    CLEAN_ARXIV = 18
-    LAMDA_FACTUALITY_E2E_QUERY_GENERATION = 19
-    LAMDA_FACTUALITY_E2E_RESPONSE_GENERATION = 20
-    MASSIVE_FORUM_THREAD_SCORED_BARD = 21
-    MASSIVE_FORUM_THREAD_SCORED_LONG_200 = 22
-    MASSIVE_FORUM_THREAD_SCORED_LONG_500 = 23
-    DOCUMENT_CHUNKS = 24
-    MEENA_RESEARCH_PHASE_GOLDEN_MARKDOWN = 25
-    MEENA_RESEARCH_PHASE_GOOGLERS = 26
-    MEENA_RESPONSE_SAFETY_HUMAN_GEN = 27
-    MEENA_RESPONSE_SAFETY_SCHEMA_NO_BROADCAST = 28
-    MEENA_RESPONSE_SAFETY_V3_HUMAN_GEN2 = 29
-    MEENA_RESPONSE_SAFETY_V3_SCHEMA_NO_BROADCAST = 30
-    LAMDA_FACTUALITY_TRIGGER = 31
-    LAMDA_SAFETY_V2_SCHEMA_NO_BROADCAST = 32
-    LAMDA_SSI_DISCRIMINATIVE = 33
-    ASSISTANT_PERSONALITY_SAFETY = 34
-    PODCAST_FINETUNE_DIALOG = 35
-    WORLD_QUERY_GENERATOR = 36
-    C4_JOINED_DOCJOINS = 37
-    HOL4_THEORIES = 38
-    HOL_LIGHT_THEORIES = 39
-    HOLSTEPS = 40
-    ISABELLE_STEP = 41
-    ISABELLE_THEORIES = 42
-    LEAN_MATHLIB_THEORIES = 43
-    LEAN_STEP = 44
-    MIZAR_THEORIES = 45
-    COQ_STEP = 46
-    COQ_THEORIES = 47
-    AMPS_KHAN = 48
-    AMPS_MATHEMATICA = 49
-    CODEY_CODE = 50
-    CODE_QA_SE = 51
-    CODE_QA_SO = 52
-    CODE_QA_FT_FORMAT = 53
-    CODE_QA_FT_KNOWLEDGE = 54
-    CODE_QA_GITHUB_FILTERED_CODE = 55
-    BARD_PERSONALITY_GOLDEN = 56
-    ULM_DOCJOINS_WITH_URLS_EN = 57
-    ULM_DOCJOINS_WITH_URLS_I18N = 58
-    GOODALL_MTV5_GITHUB = 59
-    GOODALL_MTV5_BOOKS = 60
-    GOODALL_MTV5_C4 = 61
-    GOODALL_MTV5_WIKIPEDIA = 62
-    GOODALL_MW_TOP_100B = 63
-    GOODALL_MW_STACK_EXCHANGE = 64
-    GOODALL_MW_TOP_0_10B = 65
-    GOODALL_MW_TOP_10B_20B = 66
-    CODEY_NOTEBOOK_LM_PRETRAINING = 67
-    VERTEX_SAFE_FLAN = 68
-    GITHUB_MIRROR_V1_0_1 = 69
-    GITHUB_MIRROR_V2_1_0 = 70
-    CMS_WIKIPEDIA_LANG_FILTERED = 71
-    CMS_STACKOVERFLOW_MULTILINGUAL = 72
-    CMS_STACKEXCHANGE = 73
-    PUBMED = 74
-    GEMINI_DOCJOINS_EN_TOP10B_GCC = 75
-    GEMINI_DOCJOINS_EN_TOP10B_TOP20B_GCC = 76
-    GEMINI_DOCJOINS_EN_TOP20B_TOP100B_GCC = 77
-    GEMINI_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC = 78
-    GEMINI_DOCJOINS_I18N_TOP10B_GCC = 79
-    GEMINI_DOCJOINS_I18N_TOP10B_TOP20B_GCC = 80
-    GEMINI_DOCJOINS_I18N_TOP20B_TOP100B_GCC = 81
-    SIMPLIFIED_HTML_V1_GCC = 82
-    GEMINI_DOCJOINS_TOXICITY_TAGGED_GCC = 83
-    CMS_GITHUB_V4 = 84
-    GITHUB_HTML_V4 = 85
-    GITHUB_OTHER_V4 = 86
-    GITHUB_LONG_TAIL_V4 = 87
-    CMS_GITHUB_MULTIFILE_V4 = 88
-    GITHUB_DIFFS_WITH_COMMIT_MESSAGE = 89
-    ULM_ARXIV = 90
-    NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_ENONLY = 91
-    NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_040623_LONG_DEDUP_NONENONLY = 92
-    QUORA = 93
-    PODCASTS_ROBOTSTXT = 94
-    COMBINED_REDDIT = 95
-    CANARIES_SHUFFLED = 96
-    CLM_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX = 97
-    TECHDOCS_DATA_SOURCE = 98
-    SCIENCE_PDF_70M_DOCS_FILTERED = 99
-    GEMINI_V1_CMS_WIKIPEDIA_LANG_FILTERED = 100
-    GEMINI_V1_WIKIPEDIA_DIFFS = 101
-    GEMINI_V1_DOCJOINS_EN_TOP10B_GCC_NODEDUP_050523 = 102
-    GEMINI_V1_DOCJOINS_EN_TOP10B_TOP20B_GCC_NODEDUP_050523 = 103
-    GEMINI_V1_DOCJOINS_EN_TOP20B_TOP100B_GCC_NODEDUP_050523 = 104
-    GEMINI_V1_DOCJOINS_EN_TOP100B_ALL_INDEXED_GCC_NODEDUP_050523 = 105
-    GEMINI_V1_DOCJOINS_I18N_TOP10B_GCC_050523 = 106
-    GEMINI_V1_DOCJOINS_I18N_TOP10B_TOP20B_GCC_050523 = 107
-    GEMINI_V1_DOCJOINS_I18N_TOP20B_TOP100B_GCC_050523 = 108
-    GEMINI_V1_SIMPLIFIED_HTML_V2_GCC = 109
-    GEMINI_V1_CMS_STACKOVERFLOW_MULTILINGUAL_V2 = 110
-    GEMINI_V1_CMS_STACKEXCHANGE_DECONT = 111
-    GEMINI_V1_QUORA = 112
-    GEMINI_V1_COMBINED_REDDIT = 113
-    GEMINI_V1_DOCJOIN_100B_EN_TOXICITY_TAGGED_GCC_FIXED_TAGS = 114
-    GEMINI_V1_PUBMED = 115
-    GEMINI_V1_WEB_MATH_V2 = 116
-    GEMINI_V1_CMS_GITHUB_DECONTAMINATED_V_7 = 117
-    GEMINI_V1_GITHUB_DIFF_WITH_COMMIT_MESSAGE_V2 = 118
-    GEMINI_V1_GITHUB_HTML_CSS_XML_V4 = 119
-    GEMINI_V1_GITHUB_OTHER_V4 = 120
-    GEMINI_V1_GITHUB_LONG_TAIL_V4 = 121
-    GEMINI_V1_GITHUB_JUPTYER_NOTEBOOKS_SSTABLE = 122
-    GEMINI_V1_ULM_ARXIV_SSTABLE = 123
-    GEMINI_V1_PODCASTS_ROBOTSTXT = 124
-    GEMINI_V1_SCIENCE_PDF_68M_HQ_DOCS_GCC = 125
-    GEMINI_V1_GITHUB_TECHDOCS_V2 = 126
-    GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_EN = 127
-    GEMINI_V1_NONPUB_COPYRIGHT_BOOKS_V2_70_CONF_LONG_DEDUP_NONEN = 128
-    GEMINI_V1_STEM_BOOKS_650K_TEXT = 129
-    GEMINI_V1_VQCOCA_1B_MULTIRES_M3W_V2_FILTERED = 130
-    GEMINI_V1_VQCOCA_1B_MULTIRES_WEBLI_EN_V4_350M_PREFIXED_FILTERED_IMAGE2TEXT = 131
-    GEMINI_V1_VQCOCA_1B_MULTIRES_SCREENAI_PREFIXED_FILTERED_IMAGE2TEXT = 132
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CULTURE_PREFIXED_FILTERED_IMAGE2TEXT = 133
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_EN_PREFIXED_IMAGE2TEXT = 134
-    GEMINI_V1_VQCOCA_1B_MULTIRES_CC3M_I18N_PREFIXED_IMAGE2TEXT = 135
-    GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_EN_PREFIXED_FILTERED_IMAGE2TEXT = 136
-    GEMINI_V1_VQCOCA_1B_MULTIRES_OCR_NON_EN_PREFIXED_FILTERED_IMAGE2TEXT = 137
-    GEMINI_V1_VQCOCA_1B_MULTIRES_VTP_4F_VIDEO2TEXT_PREFIX = 138
-    GEMINI_V1_FORMAL_MATH_WITHOUT_HOLSTEPS_AND_MIZAR = 139
-    GEMINI_V1_TRANSLATE_DATAV2_ALLTIERS_GCC_MIX = 140
-    GEMINI_V1_CANARIES_SHUFFLED_DOCJOIN_EN_NONEN_CODE_ARXIV_TRANSLATE = 141
-    DUET_CLOUD_SECURITY_DOCS = 142
-    DUET_GITHUB_CODE_SNIPPETS = 143
-    DUET_GITHUB_FILES = 144
-    DUET_GOBYEXAMPLE = 145
-    DUET_GOLANG_DOCS = 146
-    DUET_CLOUD_DOCS_TROUBLESHOOTING_TABLES = 147
-    DUET_DEVSITE_DOCS = 148
-    DUET_CLOUD_BLOG_POSTS = 149
-    DUET_CLOUD_PODCAST_EPISODES = 150
-    DUET_YOUTUBE_VIDEOS = 151
-    DUET_CLOUD_SKILLS_BOOST = 152
-    DUET_CLOUD_DOCS = 153
-    DUET_CLOUD_GITHUB_CODE_SNIPPETS_GENERATED = 154
-    DUET_CLOUD_GITHUB_CODE_SNIPPETS_HANDWRITTEN = 155
-    DUET_GOOGLESQL_GENERATION = 156
-    DUET_CLOUD_IX_PROMPTS = 157
-    DUET_RAD = 158
-    BARD_ARCADE_GITHUB = 159
-    MOBILE_ASSISTANT_MAGI_FILTERED_0825_373K = 160
-    MOBILE_ASSISTANT_PALM24B_FILTERED_400K = 161
-    GENESIS_NEWS_INSIGHTS = 162
-    CLOUD_SECURITY_PRETRAINING = 163
-    CLOUD_SECURITY_FINETUNING = 164
-    LABS_AQA_DSCOUT = 165
-    LABS_AQA_TAILWIND = 166
-    LABS_AQA_DELEWARE = 167
-    GEMINI_MULTIMODAL_FT_URL = 168
-    GEMINI_MULTIMODAL_FT_YT = 169
-    GEMINI_MULTIMODAL_FT_SHUTTERSTOCK = 170
-    GEMINI_MULTIMODAL_FT_NONE = 171
-    GEMINI_MULTIMODAL_FT_OTHER = 172
-    GEMINI_MULTIMODAL_FT_INK = 173
-    GEMINI_MULTIMODAL_IT = 174
-    GEMINI_IT_SHUTTERSTOCK = 175
-    GEMINI_IT_M3W = 176
-    GEMINI_IT_HEDGING = 177
-    GEMINI_IT_DSCOUT_FACTUALITY = 178
-    GEMINI_IT_AQUAMUSE = 179
-    GEMINI_IT_SHOTGUN = 180
-    GEMINI_IT_ACI_BENCH = 181
-    GEMINI_IT_SPIDER_FILTERED = 182
-    GEMINI_IT_TAB_SUM_BQ = 183
-    GEMINI_IT_QA_WITH_URL = 184
-    GEMINI_IT_CODE_INSTRUCT = 185
-    GEMINI_IT_MED_PALM = 186
-    GEMINI_IT_TASK_ORIENTED_DIALOG = 187
-    GEMINI_IT_NIMBUS_GROUNDING_TO_PROMPT = 188
-    GEMINI_IT_EITL_GEN = 189
-    GEMINI_IT_HITL_GEN = 190
-    GEMINI_IT_MECH = 191
-    GEMINI_IT_TABLE_GEN = 192
-    GEMINI_IT_NIMBUS_DECIBEL = 193
-    GEMIT_BRIDGE_SUFFIX_FT = 194
-    GEMINI_IT_CLOUD_CODE_IF = 195
-    GEMINI_IT_CLOUD_EUR_LEX_JSON = 196
-    GEMINI_IT_CLOUD_OASST = 197
-    GEMINI_IT_CLOUD_SELF_INSTRUCT = 198
-    GEMINI_IT_CLOUD_UCS_AQUAMUSE = 199
-    GEMINI_V2_CMS_WIKIPEDIA_LANG_FILTERED_GCC_PII = 200
-    GEMINI_V2_WIKIPEDIA_DIFFS_COMPLIANT = 201
-    GEMINI_V2_ENGLISH_ARTICLES_TOP10B_211123_PII_FILTERED = 202
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP10B_211123_PII_FILTERED = 203
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 204
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP10B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 205
-    GEMINI_V2_ENGLISH_ARTICLES_TOP20B_211123_PII_FILTERED = 206
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP20B_211123_PII_FILTERED = 207
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 208
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP20B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 209
-    GEMINI_V2_ENGLISH_ARTICLES_TOP100B_211123_PII_FILTERED = 210
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP100B_211123_PII_FILTERED = 211
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_NONARTICLES_COMPLIANT = 212
-    GEMINI_V2_GEMINI_DOCJOINS_NONEN_TOP100B_111323_WITHOUT_CJKT_STOP_ARTICLES_COMPLIANT = 213
-    GEMINI_V2_ENGLISH_ARTICLES_TOP500B_211123_PII_FILTERED = 214
-    GEMINI_V2_ENGLISH_NONARTICLES_TOP500B_211123_PII_FILTERED = 215
-    GEMINI_V2_QUORA_COMPLIANT = 216
-    GEMINI_V2_FORUMS_V2_COMPLIANT = 217
-    GEMINI_V2_CMS_STACKOVERFLOW_MULTILINGUAL_V2_COMPLIANT = 218
-    GEMINI_V2_SIMPLIFIED_HTML_V2_CORRECT_FORMAT_COMPLIANT = 219
-    GEMINI_V2_GEMINI_DOCJOINS_TOXICITY_TAGGED_FIXED_TAGS_COMPLIANT = 220
-    GEMINI_V2_CODEWEB_V1_COMPLIANT = 221
-    GEMINI_V2_LEETCODE_GCC_PII = 222
-    GEMINI_V2_CODE_CONTESTS_COMPLIANT = 223
-    GEMINI_V2_CMS_GITHUB_MULTI_FILE_FOR_FIM_GEMBAGZ_FIXED_BYTES_LENGTHS = 224
-    GEMINI_V2_GITHUB_EVALED_LANGUAGES_COMPLIANT = 225
-    GEMINI_V2_GITHUB_NON_EVAL_HIGH_PRI_LANGUAGES_COMPLIANT = 226
-    GEMINI_V2_GITHUB_LOW_PRI_LANGUAGES_AND_CONFIGS_COMPLIANT = 227
-    GEMINI_V2_GITHUB_LONG_TAIL_AND_STRUCTURED_DATA_COMPLIANT = 228
-    GEMINI_V2_GITHUB_PYTHON_NOTEBOOKS_COMPLIANT = 229
-    GEMINI_V2_GITHUB_DIFFS_COMPLIANT = 230
-    GEMINI_V2_GITHUB_TECHDOCS_COMPLIANT = 231
-    GEMINI_V2_HIGH_QUALITY_CODE_TARGETED_DATA_COMPLIANT2 = 232
-    GEMINI_V2_SCIENCE_PDF_68M_HQ_DOCS_DEDUP_COMPLIANT_CLEAN_TEX = 233
-    GEMINI_V2_ARXIV_2023_COMPLIANT = 234
-    GEMINI_V2_FORMAL_COMPLIANT = 235
-    GEMINI_V2_CMS_STACKEXCHANGE_COMPLIANT = 236
-    GEMINI_V2_PUBMED_COMPLIANT = 237
-    GEMINI_V2_WEB_MATH_V3_COMPLIANT = 238
-    GEMINI_V2_SCIENCEWEB_V0_GCC_PII = 239
-    GEMINI_V2_WEB_POLYMATH_V1_COMPLIANT = 240
-    GEMINI_V2_MATH_TARGETED_DATA_COMPLIANT2 = 241
-    GEMINI_V2_BIOLOGY_TARGETED_DATA_COMPLIANT2 = 242
-    GEMINI_V2_PHYSICS_V2_TARGETED_DATA_COMPLIANT2 = 243
-    GEMINI_V2_CHEMISTRY_TARGETED_DATA_COMPLIANT2 = 244
-    GEMINI_V2_MACHINE_LEARNING_TARGETED_DATA_COMPLIANT2 = 245
-    GEMINI_V2_QA_TARGETED_DATA_COMPLIANT2 = 246
-    GEMINI_V2_ECONOMICS_V2_TARGETED_DATA_COMPLIANT2 = 247
-    GEMINI_V2_MEDICAL_TARGETED_DATA_COMPLIANT2 = 248
-    GEMINI_V2_CHESS_COMPLIANT = 249
-    GEMINI_V2_YOUTUBE_SCIENCE_V4_FILTERED_COMPLIANT = 250
-    GEMINI_V2_GOALDMINE_XL_GENERATED_PLUS_GT_NO_DM_MATH_COMPLIANT = 251
-    GEMINI_V2_FIRSTTIMES_SCIENCE_PDF_DEDUP_HQ_LENGTH_FILTERED_COMPLIANT = 252
-    GEMINI_V2_PODCASTS_COMPLIANT = 253
-    GEMINI_V2_EN_NONSCIENCE_PDF_DEDUP_46M_DOCS_COMPLIANT = 254
-    GEMINI_V2_NONPUB_COPYRIGHT_BOOKS_V3_70_CONF_082323_LONG_DEDUP_ENONLY_COMPLIANT = 255
-    GEMINI_V2_STEM_COPYRIGHT_BOOKS_V3_111823_LONG_DEDUP_ENONLY_COMPLIANT = 256
-    GEMINI_V2_STEM_BOOKS_318K_TEXT_COMPLIANT = 257
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEAVED_COMPLIANT_PII_FILTERED = 258
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M3W_WITH_IMAGE_TOKENS_INSERTED_INTERLEAVED_COMPLIANT_PII_FILTERED_SOFT = 259
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_T2I_TEXT_TO_IMAGE_COMPLIANT_PII_FILTERED = 260
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 261
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_EN_V4_350M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 262
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_I18N_680M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 263
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_DOC_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 264
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_FULL_HTML_75M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 265
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SCREENAI_V1_1_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 266
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_OCR_DOC_240M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 267
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SHUTTERSTOCK_VIDEO_VIDEO_TO_TEXT_COMPLIANT_PII_FILTERED = 268
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_M4W_INTERLEAVED_COMPLIANT_PII_FILTERED_SOFT = 269
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CULTURE_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 270
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_DETECTION_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 271
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WEBLI_ALT_TEXT_NONEN_500M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 272
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_SPATIAL_AWARE_PALI_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 273
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_3D_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 274
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_EN_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 275
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TABLE2MD_V2_NON_EN_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 276
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_3D_DOC_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 277
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CC3M_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 278
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_INFOGRAPHICS_LARGE_WEB_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 279
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_BIORXIV_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 280
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_IM2SOL_PROBLEM_AND_SOLUTION_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 281
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PLOT2TABLE_V2_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 282
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_TIKZ_DERENDERING_MERGED_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 283
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_CLOUDAI_TABLE2HTML_2D_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 284
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_WIKIPEDIA_EQUATIONS_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 285
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_PHOTOMATH_EQ2LATEX_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 286
-    GEMINI_V2_CACHED_VQCOCA_MMFT_17T_ARXIV_EQUATIONS_V2_IMAGE_TO_TEXT_COMPLIANT_PII_FILTERED = 287
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_SUP_GEMBAGZ_V2_COMPLIANT = 288
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_1P5M_GEMBAGZ_V2_COMPLIANT = 289
-    GEMINI_V2_USM2B_MLPV5_YT_ASR_4M_GEMBAGZ_V2_COMPLIANT = 290
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_SUP_GEMBAGZ_V2_COMPLIANT = 291
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_1P5M_GEMBAGZ_V2_COMPLIANT = 292
-    GEMINI_V2_USM2B_MLPV5_YT_TTS_4M_GEMBAGZ_V2_COMPLIANT = 293
-    GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_ENUS_GEMBAGZ_V2_COMPLIANT = 294
-    GEMINI_V2_USM2B_MLPV5_PODIOSET_INTERLEAVE_I18N_GEMBAGZ_V2_COMPLIANT = 295
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_ENUS_GEMBAGZ_V2_COMPLIANT = 296
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_SCIENCE_I18N_GEMBAGZ_V2_COMPLIANT = 297
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_1P5M_GEMBAGZ_V2_COMPLIANT = 298
-    GEMINI_V2_USM2B_MLPV5_YT_INTERLEAVE_HEAD_4M_GEMBAGZ_V2_COMPLIANT = 299
-    GEMINI_V2_CLM_TRANSLATE_DATAV3_WEB_UNWMT_INCR_MIX = 300
-    GEMINI_V2_NTL_NTLV4A_MONOLINGUAL_DEDUP_N5 = 301
-    GEMINI_V2_NTL_STT_TRANSLATE_DEDUP_N5 = 302
-    GEMINI_V2_NTL_TRANSLIT_BILEX_TRANSLATE_DEDUP_N5 = 303
-    GEMINI_V2_NTL_SYN_BT_TRANSLATE_DEDUP_N5 = 304
-    GEMINI_V2_NTL_SYN_FT_FIXED_TRANSLATE_DEDUP_N5 = 305
-    GEMINI_V2_CANARIES_SHUFFLED_COMPLIANT = 306
-
-  class SegmentRecitationActionValueValuesEnum(_messages.Enum):
-    r"""SegmentRecitationActionValueValuesEnum enum type.
-
-    Values:
-      ACTION_UNSPECIFIED: <no description>
-      CITE: indicate that attribution must be shown for a Segment
-      BLOCK: indicate that a Segment should be blocked from being used
-      NO_ACTION: for tagging high-frequency code snippets
-      EXEMPT_FOUND_IN_PROMPT: The recitation was found in prompt and is
-        exempted from overall results
-    """
-    ACTION_UNSPECIFIED = 0
-    CITE = 1
-    BLOCK = 2
-    NO_ACTION = 3
-    EXEMPT_FOUND_IN_PROMPT = 4
-
-  attributionDataset = _messages.EnumField('AttributionDatasetValueValuesEnum', 1)
-  displayAttributionMessage = _messages.StringField(2)
-  docAttribution = _messages.MessageField('LearningGenaiRecitationDocAttribution', 3)
-  docOccurrences = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  endIndex = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-  rawText = _messages.StringField(6)
-  segmentRecitationAction = _messages.EnumField('SegmentRecitationActionValueValuesEnum', 7)
-  startIndex = _messages.IntegerField(8, variant=_messages.Variant.INT32)
-
-
-class LearningGenaiRootCalculationType(_messages.Message):
-  r"""The type used for final weights calculation.
-
-  Enums:
-    ScoreTypeValueValuesEnum:
-
-  Fields:
-    scoreType: A ScoreTypeValueValuesEnum attribute.
-    weights: A number attribute.
-  """
-
-  class ScoreTypeValueValuesEnum(_messages.Enum):
-    r"""ScoreTypeValueValuesEnum enum type.
-
-    Values:
-      TYPE_UNKNOWN: Unknown scorer type.
-      TYPE_SAFE: Safety scorer.
-      TYPE_POLICY: Policy scorer.
-      TYPE_GENERATION: Generation scorer.
-    """
-    TYPE_UNKNOWN = 0
-    TYPE_SAFE = 1
-    TYPE_POLICY = 2
-    TYPE_GENERATION = 3
-
-  scoreType = _messages.EnumField('ScoreTypeValueValuesEnum', 1)
-  weights = _messages.FloatField(2)
-
-
-class LearningGenaiRootClassifierOutput(_messages.Message):
-  r"""A LearningGenaiRootClassifierOutput object.
-
-  Fields:
-    ruleOutput: If set, this is the output of the first matching rule.
-    ruleOutputs: outputs of all matching rule.
-    state: The results of data_providers and metrics.
-  """
-
-  ruleOutput = _messages.MessageField('LearningGenaiRootRuleOutput', 1)
-  ruleOutputs = _messages.MessageField('LearningGenaiRootRuleOutput', 2, repeated=True)
-  state = _messages.MessageField('LearningGenaiRootClassifierState', 3)
-
-
-class LearningGenaiRootClassifierOutputSummary(_messages.Message):
-  r"""A LearningGenaiRootClassifierOutputSummary object.
-
-  Fields:
-    metrics: A LearningGenaiRootMetricOutput attribute.
-    ruleOutput: Output of the first matching rule.
-    ruleOutputs: outputs of all matching rule.
-  """
-
-  metrics = _messages.MessageField('LearningGenaiRootMetricOutput', 1, repeated=True)
-  ruleOutput = _messages.MessageField('LearningGenaiRootRuleOutput', 2)
-  ruleOutputs = _messages.MessageField('LearningGenaiRootRuleOutput', 3, repeated=True)
-
-
-class LearningGenaiRootClassifierState(_messages.Message):
-  r"""DataProviderOutput and MetricOutput can be saved between calls to the
-  Classifier framework. For instance, you can run the query classifier, get
-  outputs from those metrics, then use them in a result classifier as well.
-  Example rule based on this idea: and_rules { rule { metric_name:
-  'query_safesearch_v2' ... } rule { metric_name: 'response_safesearch_v2' ...
-  } }
-
-  Fields:
-    dataProviderOutput: A LearningGenaiRootDataProviderOutput attribute.
-    metricOutput: A LearningGenaiRootMetricOutput attribute.
-  """
-
-  dataProviderOutput = _messages.MessageField('LearningGenaiRootDataProviderOutput', 1, repeated=True)
-  metricOutput = _messages.MessageField('LearningGenaiRootMetricOutput', 2, repeated=True)
-
-
-class LearningGenaiRootDataProviderOutput(_messages.Message):
-  r"""A LearningGenaiRootDataProviderOutput object.
-
-  Fields:
-    name: A string attribute.
-    status: If set, this DataProvider failed and this is the error message.
-  """
-
-  name = _messages.StringField(1)
-  status = _messages.MessageField('UtilStatusProto', 2)
-
-
-class LearningGenaiRootFilterMetadata(_messages.Message):
-  r"""A LearningGenaiRootFilterMetadata object.
-
-  Enums:
-    ConfidenceValueValuesEnum: Filter confidence.
-    ReasonValueValuesEnum: Filter reason.
-
-  Fields:
-    confidence: Filter confidence.
-    debugInfo: Debug info for the message.
-    fallback: A fallback message chosen by the applied filter.
-    info: Additional info for the filter.
-    name: Name of the filter that triggered.
-    reason: Filter reason.
-    text: The input query or generated response that is getting filtered.
-  """
-
-  class ConfidenceValueValuesEnum(_messages.Enum):
-    r"""Filter confidence.
-
-    Values:
-      FILTER_CONFIDENCE_UNKNOWN: <no description>
-      FILTER_CONFIDENCE_VERY_LOW: <no description>
-      FILTER_CONFIDENCE_LOW: <no description>
-      FILTER_CONFIDENCE_MEDIUM: <no description>
-      FILTER_CONFIDENCE_HIGH: <no description>
-      FILTER_CONFIDENCE_VERY_HIGH: <no description>
-    """
-    FILTER_CONFIDENCE_UNKNOWN = 0
-    FILTER_CONFIDENCE_VERY_LOW = 1
-    FILTER_CONFIDENCE_LOW = 2
-    FILTER_CONFIDENCE_MEDIUM = 3
-    FILTER_CONFIDENCE_HIGH = 4
-    FILTER_CONFIDENCE_VERY_HIGH = 5
-
-  class ReasonValueValuesEnum(_messages.Enum):
-    r"""Filter reason.
-
-    Values:
-      FILTER_REASON_UNKNOWN: Unknown filter reason.
-      FILTER_REASON_NOT_FILTERED: Input not filtered.
-      FILTER_REASON_SENSITIVE: Sensitive content.
-      FILTER_REASON_RECITATION: Recited content.
-      FILTER_REASON_LANGUAGE: Language filtering
-      FILTER_REASON_TAKEDOWN: Takedown policy
-      FILTER_REASON_CLASSIFIER: Classifier Module
-      FILTER_REASON_EMPTY_RESPONSE: Empty response message.
-      FILTER_REASON_SIMILARITY_TAKEDOWN: Similarity takedown.
-      FILTER_REASON_UNSAFE: Unsafe responses from scorers.
-      FILTER_REASON_PAIRWISE_CLASSIFIER: Pairwise classifier.
-      FILTER_REASON_CODEY: Codey Filter.
-      FILTER_REASON_URL: URLs Filter.
-      FILTER_REASON_EMAIL: Emails Filter.
-      FILTER_REASON_SAFETY_CAT: SafetyCat filter.
-      FILTER_REASON_REQUEST_RESPONSE_TAKEDOWN: Request Response takedown.
-      FILTER_REASON_RAI_PQC: RAI Filter.
-      FILTER_REASON_ATLAS: Atlas specific topic filter
-      FILTER_REASON_RAI_CSAM: RAI Filter.
-      FILTER_REASON_RAI_FRINGE: RAI Filter.
-      FILTER_REASON_RAI_SPII: RAI Filter.
-      FILTER_REASON_RAI_IMAGE_VIOLENCE: RAI Filter
-      FILTER_REASON_RAI_IMAGE_PORN: RAI Filter
-      FILTER_REASON_RAI_IMAGE_CSAM: RAI Filter
-      FILTER_REASON_RAI_IMAGE_PEDO: RAI Filter
-      FILTER_REASON_RAI_VIDEO_FRAME_VIOLENCE: RAI Filter
-      FILTER_REASON_RAI_VIDEO_FRAME_PORN: RAI Filter
-      FILTER_REASON_RAI_VIDEO_FRAME_CSAM: RAI Filter
-      FILTER_REASON_RAI_VIDEO_FRAME_PEDO: RAI Filter
-      FILTER_REASON_RAI_CONTEXTUAL_DANGEROUS: RAI Filter
-      FILTER_REASON_RAI_SAFETYCAT: SafetyCat.
-      FILTER_REASON_TOXICITY: Toxic content.
-      FILTER_REASON_ATLAS_PRICING: Atlas specific topic filter for pricing
-        questions.
-      FILTER_REASON_ATLAS_BILLING: Atlas specific topic filter for billing
-        questions.
-      FILTER_REASON_ATLAS_NON_ENGLISH_QUESTION: Atlas specific topic filter
-        for non english questions.
-      FILTER_REASON_ATLAS_NOT_RELATED_TO_GCP: Atlas specific topic filter for
-        non GCP questions.
-      FILTER_REASON_ATLAS_AWS_AZURE_RELATED: Atlas specific topic filter
-        aws/azure related questions.
-    """
-    FILTER_REASON_UNKNOWN = 0
-    FILTER_REASON_NOT_FILTERED = 1
-    FILTER_REASON_SENSITIVE = 2
-    FILTER_REASON_RECITATION = 3
-    FILTER_REASON_LANGUAGE = 4
-    FILTER_REASON_TAKEDOWN = 5
-    FILTER_REASON_CLASSIFIER = 6
-    FILTER_REASON_EMPTY_RESPONSE = 7
-    FILTER_REASON_SIMILARITY_TAKEDOWN = 8
-    FILTER_REASON_UNSAFE = 9
-    FILTER_REASON_PAIRWISE_CLASSIFIER = 10
-    FILTER_REASON_CODEY = 11
-    FILTER_REASON_URL = 12
-    FILTER_REASON_EMAIL = 13
-    FILTER_REASON_SAFETY_CAT = 14
-    FILTER_REASON_REQUEST_RESPONSE_TAKEDOWN = 15
-    FILTER_REASON_RAI_PQC = 16
-    FILTER_REASON_ATLAS = 17
-    FILTER_REASON_RAI_CSAM = 18
-    FILTER_REASON_RAI_FRINGE = 19
-    FILTER_REASON_RAI_SPII = 20
-    FILTER_REASON_RAI_IMAGE_VIOLENCE = 21
-    FILTER_REASON_RAI_IMAGE_PORN = 22
-    FILTER_REASON_RAI_IMAGE_CSAM = 23
-    FILTER_REASON_RAI_IMAGE_PEDO = 24
-    FILTER_REASON_RAI_VIDEO_FRAME_VIOLENCE = 25
-    FILTER_REASON_RAI_VIDEO_FRAME_PORN = 26
-    FILTER_REASON_RAI_VIDEO_FRAME_CSAM = 27
-    FILTER_REASON_RAI_VIDEO_FRAME_PEDO = 28
-    FILTER_REASON_RAI_CONTEXTUAL_DANGEROUS = 29
-    FILTER_REASON_RAI_SAFETYCAT = 30
-    FILTER_REASON_TOXICITY = 31
-    FILTER_REASON_ATLAS_PRICING = 32
-    FILTER_REASON_ATLAS_BILLING = 33
-    FILTER_REASON_ATLAS_NON_ENGLISH_QUESTION = 34
-    FILTER_REASON_ATLAS_NOT_RELATED_TO_GCP = 35
-    FILTER_REASON_ATLAS_AWS_AZURE_RELATED = 36
-
-  confidence = _messages.EnumField('ConfidenceValueValuesEnum', 1)
-  debugInfo = _messages.MessageField('LearningGenaiRootFilterMetadataFilterDebugInfo', 2)
-  fallback = _messages.StringField(3)
-  info = _messages.StringField(4)
-  name = _messages.StringField(5)
-  reason = _messages.EnumField('ReasonValueValuesEnum', 6)
-  text = _messages.StringField(7)
-
-
-class LearningGenaiRootFilterMetadataFilterDebugInfo(_messages.Message):
-  r"""A LearningGenaiRootFilterMetadataFilterDebugInfo object.
-
-  Fields:
-    classifierOutput: A LearningGenaiRootClassifierOutput attribute.
-    defaultMetadata: A string attribute.
-    languageFilterResult: A LearningServingLlmLanguageFilterResult attribute.
-    raiOutput: Safety filter output information for LLM Root RAI harm check.
-    raiResult: A CloudAiNlLlmProtoServiceRaiResult attribute.
-    raiSignal: A CloudAiNlLlmProtoServiceRaiSignal attribute.
-    streamRecitationResult: A
-      LanguageLabsAidaTrustRecitationProtoStreamRecitationResult attribute.
-    takedownResult: A LearningGenaiRootTakedownResult attribute.
-    toxicityResult: A LearningGenaiRootToxicityResult attribute.
-  """
-
-  classifierOutput = _messages.MessageField('LearningGenaiRootClassifierOutput', 1)
-  defaultMetadata = _messages.StringField(2)
-  languageFilterResult = _messages.MessageField('LearningServingLlmLanguageFilterResult', 3)
-  raiOutput = _messages.MessageField('LearningGenaiRootRAIOutput', 4)
-  raiResult = _messages.MessageField('CloudAiNlLlmProtoServiceRaiResult', 5)
-  raiSignal = _messages.MessageField('CloudAiNlLlmProtoServiceRaiSignal', 6)
-  streamRecitationResult = _messages.MessageField('LanguageLabsAidaTrustRecitationProtoStreamRecitationResult', 7)
-  takedownResult = _messages.MessageField('LearningGenaiRootTakedownResult', 8)
-  toxicityResult = _messages.MessageField('LearningGenaiRootToxicityResult', 9)
-
-
-class LearningGenaiRootHarm(_messages.Message):
-  r"""A LearningGenaiRootHarm object.
-
-  Fields:
-    contextualDangerous: Please do not use, this is still under development.
-    csam: A boolean attribute.
-    fringe: A boolean attribute.
-    grailImageHarmType: A LearningGenaiRootHarmGrailImageHarmType attribute.
-    grailTextHarmType: A LearningGenaiRootHarmGrailTextHarmType attribute.
-    imageCsam: A boolean attribute.
-    imagePedo: A boolean attribute.
-    imagePorn: Image signals
-    imageViolence: A boolean attribute.
-    pqc: A boolean attribute.
-    safetycat: A LearningGenaiRootHarmSafetyCatCategories attribute.
-    spii: A LearningGenaiRootHarmSpiiFilter attribute.
-    threshold: A number attribute.
-    videoFrameCsam: A boolean attribute.
-    videoFramePedo: A boolean attribute.
-    videoFramePorn: Video frame signals
-    videoFrameViolence: A boolean attribute.
-  """
-
-  contextualDangerous = _messages.BooleanField(1)
-  csam = _messages.BooleanField(2)
-  fringe = _messages.BooleanField(3)
-  grailImageHarmType = _messages.MessageField('LearningGenaiRootHarmGrailImageHarmType', 4)
-  grailTextHarmType = _messages.MessageField('LearningGenaiRootHarmGrailTextHarmType', 5)
-  imageCsam = _messages.BooleanField(6)
-  imagePedo = _messages.BooleanField(7)
-  imagePorn = _messages.BooleanField(8)
-  imageViolence = _messages.BooleanField(9)
-  pqc = _messages.BooleanField(10)
-  safetycat = _messages.MessageField('LearningGenaiRootHarmSafetyCatCategories', 11)
-  spii = _messages.MessageField('LearningGenaiRootHarmSpiiFilter', 12)
-  threshold = _messages.FloatField(13)
-  videoFrameCsam = _messages.BooleanField(14)
-  videoFramePedo = _messages.BooleanField(15)
-  videoFramePorn = _messages.BooleanField(16)
-  videoFrameViolence = _messages.BooleanField(17)
-
-
-class LearningGenaiRootHarmGrailImageHarmType(_messages.Message):
-  r"""Harm type for images
-
-  Enums:
-    ImageHarmTypeValueListEntryValuesEnum:
-
-  Fields:
-    imageHarmType: A ImageHarmTypeValueListEntryValuesEnum attribute.
-  """
-
-  class ImageHarmTypeValueListEntryValuesEnum(_messages.Enum):
-    r"""ImageHarmTypeValueListEntryValuesEnum enum type.
-
-    Values:
-      IMAGE_HARM_TYPE_UNSPECIFIED: <no description>
-      IMAGE_HARM_TYPE_PORN: <no description>
-      IMAGE_HARM_TYPE_VIOLENCE: <no description>
-      IMAGE_HARM_TYPE_CSAI: <no description>
-      IMAGE_HARM_TYPE_PEDO: <no description>
-      IMAGE_HARM_TYPE_MINORS: <no description>
-      IMAGE_HARM_TYPE_DANGEROUS: <no description>
-      IMAGE_HARM_TYPE_MEDICAL: <no description>
-      IMAGE_HARM_TYPE_RACY: <no description>
-      IMAGE_HARM_TYPE_OBSCENE: <no description>
-      IMAGE_HARM_TYPE_MINOR_PRESENCE: <no description>
-      IMAGE_HARM_TYPE_GENERATIVE_MINOR_PRESENCE: <no description>
-      IMAGE_HARM_TYPE_GENERATIVE_REALISTIC_VISIBLE_FACE: <no description>
-    """
-    IMAGE_HARM_TYPE_UNSPECIFIED = 0
-    IMAGE_HARM_TYPE_PORN = 1
-    IMAGE_HARM_TYPE_VIOLENCE = 2
-    IMAGE_HARM_TYPE_CSAI = 3
-    IMAGE_HARM_TYPE_PEDO = 4
-    IMAGE_HARM_TYPE_MINORS = 5
-    IMAGE_HARM_TYPE_DANGEROUS = 6
-    IMAGE_HARM_TYPE_MEDICAL = 7
-    IMAGE_HARM_TYPE_RACY = 8
-    IMAGE_HARM_TYPE_OBSCENE = 9
-    IMAGE_HARM_TYPE_MINOR_PRESENCE = 10
-    IMAGE_HARM_TYPE_GENERATIVE_MINOR_PRESENCE = 11
-    IMAGE_HARM_TYPE_GENERATIVE_REALISTIC_VISIBLE_FACE = 12
-
-  imageHarmType = _messages.EnumField('ImageHarmTypeValueListEntryValuesEnum', 1, repeated=True)
-
-
-class LearningGenaiRootHarmGrailTextHarmType(_messages.Message):
-  r"""Harm type for text
-
-  Enums:
-    HarmTypeValueListEntryValuesEnum:
-
-  Fields:
-    harmType: A HarmTypeValueListEntryValuesEnum attribute.
-  """
-
-  class HarmTypeValueListEntryValuesEnum(_messages.Enum):
-    r"""HarmTypeValueListEntryValuesEnum enum type.
-
-    Values:
-      HARM_TYPE_UNSPECIFIED: <no description>
-      HARM_TYPE_HATE: <no description>
-      HARM_TYPE_TOXICITY: <no description>
-      HARM_TYPE_VIOLENCE: <no description>
-      HARM_TYPE_CSAI: <no description>
-      HARM_TYPE_SEXUAL: <no description>
-      HARM_TYPE_FRINGE: <no description>
-      HARM_TYPE_POLITICAL: <no description>
-      HARM_TYPE_MEMORIZATION: <no description>
-      HARM_TYPE_SPII: <no description>
-      HARM_TYPE_NEW_DANGEROUS: New definition of dangerous.
-      HARM_TYPE_MEDICAL: <no description>
-      HARM_TYPE_HARASSMENT: <no description>
-    """
-    HARM_TYPE_UNSPECIFIED = 0
-    HARM_TYPE_HATE = 1
-    HARM_TYPE_TOXICITY = 2
-    HARM_TYPE_VIOLENCE = 3
-    HARM_TYPE_CSAI = 4
-    HARM_TYPE_SEXUAL = 5
-    HARM_TYPE_FRINGE = 6
-    HARM_TYPE_POLITICAL = 7
-    HARM_TYPE_MEMORIZATION = 8
-    HARM_TYPE_SPII = 9
-    HARM_TYPE_NEW_DANGEROUS = 10
-    HARM_TYPE_MEDICAL = 11
-    HARM_TYPE_HARASSMENT = 12
-
-  harmType = _messages.EnumField('HarmTypeValueListEntryValuesEnum', 1, repeated=True)
-
-
-class LearningGenaiRootHarmSafetyCatCategories(_messages.Message):
-  r"""A LearningGenaiRootHarmSafetyCatCategories object.
-
-  Enums:
-    CategoriesValueListEntryValuesEnum:
-
-  Fields:
-    categories: A CategoriesValueListEntryValuesEnum attribute.
-  """
-
-  class CategoriesValueListEntryValuesEnum(_messages.Enum):
-    r"""CategoriesValueListEntryValuesEnum enum type.
-
-    Values:
-      SAFETYCAT_CATEGORY_UNSPECIFIED: <no description>
-      TOXICITY: SafetyCat categories.
-      OBSCENE: <no description>
-      SEXUAL: <no description>
-      INSULT: <no description>
-      IDENTITY_HATE: <no description>
-      DEATH_HARM_TRAGEDY: <no description>
-      VIOLENCE_ABUSE: <no description>
-      FIREARMS_WEAPONS: <no description>
-      PUBLIC_SAFETY: <no description>
-      HEALTH: <no description>
-      RELIGION_BELIEF: <no description>
-      DRUGS: <no description>
-      WAR_CONFLICT: <no description>
-      POLITICS: <no description>
-      FINANCE: <no description>
-      LEGAL: <no description>
-      DANGEROUS: Following categories are only supported in
-        SAFETY_CAT_TEXT_V3_PAX model
-      DANGEROUS_SEVERITY: <no description>
-      HARASSMENT_SEVERITY: <no description>
-      HATE_SEVERITY: <no description>
-      SEXUAL_SEVERITY: <no description>
-    """
-    SAFETYCAT_CATEGORY_UNSPECIFIED = 0
-    TOXICITY = 1
-    OBSCENE = 2
-    SEXUAL = 3
-    INSULT = 4
-    IDENTITY_HATE = 5
-    DEATH_HARM_TRAGEDY = 6
-    VIOLENCE_ABUSE = 7
-    FIREARMS_WEAPONS = 8
-    PUBLIC_SAFETY = 9
-    HEALTH = 10
-    RELIGION_BELIEF = 11
-    DRUGS = 12
-    WAR_CONFLICT = 13
-    POLITICS = 14
-    FINANCE = 15
-    LEGAL = 16
-    DANGEROUS = 17
-    DANGEROUS_SEVERITY = 18
-    HARASSMENT_SEVERITY = 19
-    HATE_SEVERITY = 20
-    SEXUAL_SEVERITY = 21
-
-  categories = _messages.EnumField('CategoriesValueListEntryValuesEnum', 1, repeated=True)
-
-
-class LearningGenaiRootHarmSpiiFilter(_messages.Message):
-  r"""A LearningGenaiRootHarmSpiiFilter object.
-
-  Fields:
-    usBankRoutingMicr: A boolean attribute.
-    usEmployerIdentificationNumber: A boolean attribute.
-    usSocialSecurityNumber: A boolean attribute.
-  """
-
-  usBankRoutingMicr = _messages.BooleanField(1)
-  usEmployerIdentificationNumber = _messages.BooleanField(2)
-  usSocialSecurityNumber = _messages.BooleanField(3)
-
-
-class LearningGenaiRootInternalMetadata(_messages.Message):
-  r"""A LearningGenaiRootInternalMetadata object.
-
-  Fields:
-    scoredTokens: A LearningGenaiRootScoredToken attribute.
-  """
-
-  scoredTokens = _messages.MessageField('LearningGenaiRootScoredToken', 1, repeated=True)
-
-
-class LearningGenaiRootMetricOutput(_messages.Message):
-  r"""A LearningGenaiRootMetricOutput object.
-
-  Fields:
-    debug: A string attribute.
-    name: Name of the metric.
-    numericValue: A number attribute.
-    status: A UtilStatusProto attribute.
-    stringValue: A string attribute.
-  """
-
-  debug = _messages.StringField(1)
-  name = _messages.StringField(2)
-  numericValue = _messages.FloatField(3)
-  status = _messages.MessageField('UtilStatusProto', 4)
-  stringValue = _messages.StringField(5)
-
-
-class LearningGenaiRootRAIOutput(_messages.Message):
-  r"""This is per harm.
-
-  Fields:
-    allowed: A boolean attribute.
-    harm: A LearningGenaiRootHarm attribute.
-    name: A string attribute.
-    score: A number attribute.
-  """
-
-  allowed = _messages.BooleanField(1)
-  harm = _messages.MessageField('LearningGenaiRootHarm', 2)
-  name = _messages.StringField(3)
-  score = _messages.FloatField(4)
-
-
-class LearningGenaiRootRegexTakedownResult(_messages.Message):
-  r"""A LearningGenaiRootRegexTakedownResult object.
-
-  Fields:
-    allowed: False when query or response should be taken down due to match
-      with a blocked regex, true otherwise.
-    takedownRegex: Regex used to decide that query or response should be taken
-      down. Empty when query or response is kept.
-  """
-
-  allowed = _messages.BooleanField(1)
-  takedownRegex = _messages.StringField(2)
-
-
-class LearningGenaiRootRequestResponseTakedownResult(_messages.Message):
-  r"""A LearningGenaiRootRequestResponseTakedownResult object.
-
-  Fields:
-    allowed: False when response has to be taken down per above config.
-    requestTakedownRegex: Regex used to match the request.
-    responseTakedownRegex: Regex used to decide that response should be taken
-      down. Empty when response is kept.
-  """
-
-  allowed = _messages.BooleanField(1)
-  requestTakedownRegex = _messages.StringField(2)
-  responseTakedownRegex = _messages.StringField(3)
-
-
-class LearningGenaiRootRoutingDecision(_messages.Message):
-  r"""Holds the final routing decision, by storing the model_config_id. And
-  individual scores each model got.
-
-  Fields:
-    metadata: A LearningGenaiRootRoutingDecisionMetadata attribute.
-    modelConfigId: The selected model to route traffic to.
-  """
-
-  metadata = _messages.MessageField('LearningGenaiRootRoutingDecisionMetadata', 1)
-  modelConfigId = _messages.StringField(2)
-
-
-class LearningGenaiRootRoutingDecisionMetadata(_messages.Message):
-  r"""Debug metadata about the routing decision.
-
-  Fields:
-    scoreBasedRoutingMetadata: A
-      LearningGenaiRootRoutingDecisionMetadataScoreBased attribute.
-    tokenLengthBasedRoutingMetadata: A
-      LearningGenaiRootRoutingDecisionMetadataTokenLengthBased attribute.
-  """
-
-  scoreBasedRoutingMetadata = _messages.MessageField('LearningGenaiRootRoutingDecisionMetadataScoreBased', 1)
-  tokenLengthBasedRoutingMetadata = _messages.MessageField('LearningGenaiRootRoutingDecisionMetadataTokenLengthBased', 2)
-
-
-class LearningGenaiRootRoutingDecisionMetadataScoreBased(_messages.Message):
-  r"""If we are routing using scored based configuration, then the metadata
-  about that is available in this proto.
-
-  Fields:
-    matchedRule: The rule that was matched.
-    score: The score that was generated by the router i.e. the model.
-    usedDefaultFallback: No rules were matched & therefore used the default
-      fallback.
-  """
-
-  matchedRule = _messages.MessageField('LearningGenaiRootScoreBasedRoutingConfigRule', 1)
-  score = _messages.MessageField('LearningGenaiRootScore', 2)
-  usedDefaultFallback = _messages.BooleanField(3)
-
-
-class LearningGenaiRootRoutingDecisionMetadataTokenLengthBased(_messages.Message):
-  r"""A LearningGenaiRootRoutingDecisionMetadataTokenLengthBased object.
-
-  Fields:
-    modelInputTokenMetadata: A LearningGenaiRootRoutingDecisionMetadataTokenLe
-      ngthBasedModelInputTokenMetadata attribute.
-    modelMaxTokenMetadata: A LearningGenaiRootRoutingDecisionMetadataTokenLeng
-      thBasedModelMaxTokenMetadata attribute.
-  """
-
-  modelInputTokenMetadata = _messages.MessageField('LearningGenaiRootRoutingDecisionMetadataTokenLengthBasedModelInputTokenMetadata', 1, repeated=True)
-  modelMaxTokenMetadata = _messages.MessageField('LearningGenaiRootRoutingDecisionMetadataTokenLengthBasedModelMaxTokenMetadata', 2, repeated=True)
-
-
-class LearningGenaiRootRoutingDecisionMetadataTokenLengthBasedModelInputTokenMetadata(_messages.Message):
-  r"""A LearningGenaiRootRoutingDecisionMetadataTokenLengthBasedModelInputToke
-  nMetadata object.
-
-  Fields:
-    computedInputTokenLength: The length computed by backends using the
-      formatter & tokenizer specific to the model
-    modelId: A string attribute.
-  """
-
-  computedInputTokenLength = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  modelId = _messages.StringField(2)
-
-
-class LearningGenaiRootRoutingDecisionMetadataTokenLengthBasedModelMaxTokenMetadata(_messages.Message):
-  r"""A LearningGenaiRootRoutingDecisionMetadataTokenLengthBasedModelMaxTokenM
-  etadata object.
-
-  Fields:
-    maxNumInputTokens: A integer attribute.
-    maxNumOutputTokens: A integer attribute.
-    modelId: A string attribute.
-  """
-
-  maxNumInputTokens = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  maxNumOutputTokens = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  modelId = _messages.StringField(3)
-
-
-class LearningGenaiRootRuleOutput(_messages.Message):
-  r"""A LearningGenaiRootRuleOutput object.
-
-  Enums:
-    DecisionValueValuesEnum:
-
-  Fields:
-    decision: A DecisionValueValuesEnum attribute.
-    name: A string attribute.
-  """
-
-  class DecisionValueValuesEnum(_messages.Enum):
-    r"""DecisionValueValuesEnum enum type.
-
-    Values:
-      NO_MATCH: This rule was not matched. When used in a ClassifierOutput,
-        this means that no rules were matched.
-      MATCH: This is a generic "match" message, indicating that a rule was
-        triggered. Usually you would use this for a categorization classifier.
-    """
-    NO_MATCH = 0
-    MATCH = 1
-
-  decision = _messages.EnumField('DecisionValueValuesEnum', 1)
-  name = _messages.StringField(2)
-
-
-class LearningGenaiRootScore(_messages.Message):
-  r"""A LearningGenaiRootScore object.
-
-  Fields:
-    calculationType: A LearningGenaiRootCalculationType attribute.
-    internalMetadata: The internal_metadata is intended to be used by internal
-      processors and will be cleared before returns.
-    thresholdType: A LearningGenaiRootThresholdType attribute.
-    tokensAndLogprobPerDecodingStep: Top candidate tokens and log
-      probabilities at each decoding step.
-    value: A number attribute.
-  """
-
-  calculationType = _messages.MessageField('LearningGenaiRootCalculationType', 1)
-  internalMetadata = _messages.MessageField('LearningGenaiRootInternalMetadata', 2)
-  thresholdType = _messages.MessageField('LearningGenaiRootThresholdType', 3)
-  tokensAndLogprobPerDecodingStep = _messages.MessageField('LearningGenaiRootTokensAndLogProbPerDecodingStep', 4)
-  value = _messages.FloatField(5)
-
-
-class LearningGenaiRootScoreBasedRoutingConfigRule(_messages.Message):
-  r"""A LearningGenaiRootScoreBasedRoutingConfigRule object.
-
-  Fields:
-    equalOrGreaterThan: NOTE: Hardest examples have smaller values in their
-      routing scores.
-    lessThan: A LearningGenaiRootScore attribute.
-    modelConfigId: This model_config_id points to ModelConfig::id which allows
-      us to find the ModelConfig to route to. This is part of the banks
-      specified in the ModelBankConfig.
-  """
-
-  equalOrGreaterThan = _messages.MessageField('LearningGenaiRootScore', 1)
-  lessThan = _messages.MessageField('LearningGenaiRootScore', 2)
-  modelConfigId = _messages.StringField(3)
-
-
-class LearningGenaiRootScoredSimilarityTakedownPhrase(_messages.Message):
-  r"""Proto containing the results from the Universal Sentence Encoder / Other
-  models
-
-  Fields:
-    phrase: A LearningGenaiRootSimilarityTakedownPhrase attribute.
-    similarityScore: A number attribute.
-  """
-
-  phrase = _messages.MessageField('LearningGenaiRootSimilarityTakedownPhrase', 1)
-  similarityScore = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-
-
-class LearningGenaiRootScoredToken(_messages.Message):
-  r"""A token with its own score.
-
-  Fields:
-    endTokenScore: Each end_token_score is a logprob for how well the
-      completion would end at a particular token. See http://google3/labs/lang
-      uage/aida/config/proto/model_config.proto;l=376;rcl=573039459
-    score: Each score is the logprob for the token in model response.
-    token: A string attribute.
-  """
-
-  endTokenScore = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  score = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-  token = _messages.StringField(3)
-
-
-class LearningGenaiRootSimilarityTakedownPhrase(_messages.Message):
-  r"""Each SimilarityTakedownPhrase treats a logical group of blocked and
-  allowed phrases together along with a corresponding punt If the closest
-  matching response is of the allowed type, we allow the response If the
-  closest matching response is of the blocked type, we block the response. eg:
-  Blocked phrase - "All lives matter"
-
-  Fields:
-    blockedPhrase: A string attribute.
-  """
-
-  blockedPhrase = _messages.StringField(1)
-
-
-class LearningGenaiRootSimilarityTakedownResult(_messages.Message):
-  r"""A LearningGenaiRootSimilarityTakedownResult object.
-
-  Fields:
-    allowed: False when query or response should be taken down by any of the
-      takedown rules, true otherwise.
-    scoredPhrases: List of similar phrases with score. Set only if
-      allowed=false.
-  """
-
-  allowed = _messages.BooleanField(1)
-  scoredPhrases = _messages.MessageField('LearningGenaiRootScoredSimilarityTakedownPhrase', 2, repeated=True)
-
-
-class LearningGenaiRootTakedownResult(_messages.Message):
-  r"""A LearningGenaiRootTakedownResult object.
-
-  Fields:
-    allowed: False when query or response should be taken down by any of the
-      takedown rules, true otherwise.
-    regexTakedownResult: A LearningGenaiRootRegexTakedownResult attribute.
-    requestResponseTakedownResult: A
-      LearningGenaiRootRequestResponseTakedownResult attribute.
-    similarityTakedownResult: A LearningGenaiRootSimilarityTakedownResult
-      attribute.
-  """
-
-  allowed = _messages.BooleanField(1)
-  regexTakedownResult = _messages.MessageField('LearningGenaiRootRegexTakedownResult', 2)
-  requestResponseTakedownResult = _messages.MessageField('LearningGenaiRootRequestResponseTakedownResult', 3)
-  similarityTakedownResult = _messages.MessageField('LearningGenaiRootSimilarityTakedownResult', 4)
-
-
-class LearningGenaiRootThresholdType(_messages.Message):
-  r"""The type of score that bundled with a threshold, and will not be
-  attending the final score calculation. How each score type uses the
-  threshold can be implementation details.
-
-  Enums:
-    ScoreTypeValueValuesEnum:
-
-  Fields:
-    scoreType: A ScoreTypeValueValuesEnum attribute.
-    threshold: A number attribute.
-  """
-
-  class ScoreTypeValueValuesEnum(_messages.Enum):
-    r"""ScoreTypeValueValuesEnum enum type.
-
-    Values:
-      TYPE_UNKNOWN: Unknown scorer type.
-      TYPE_SAFE: Safety scorer.
-      TYPE_POLICY: Policy scorer.
-      TYPE_GENERATION: Generation scorer.
-    """
-    TYPE_UNKNOWN = 0
-    TYPE_SAFE = 1
-    TYPE_POLICY = 2
-    TYPE_GENERATION = 3
-
-  scoreType = _messages.EnumField('ScoreTypeValueValuesEnum', 1)
-  threshold = _messages.FloatField(2)
-
-
-class LearningGenaiRootTokensAndLogProbPerDecodingStep(_messages.Message):
-  r"""Results of RandomSamplingParams::top_k_logprob_per_decoding_step.
-
-  Fields:
-    chosenCandidates: Length = total number of decoding steps. The chosen
-      candidates may or may not be in top_candidates.
-    topCandidates: Length = total number of decoding steps.
-  """
-
-  chosenCandidates = _messages.MessageField('LearningGenaiRootTokensAndLogProbPerDecodingStepCandidate', 1, repeated=True)
-  topCandidates = _messages.MessageField('LearningGenaiRootTokensAndLogProbPerDecodingStepTopCandidates', 2, repeated=True)
-
-
-class LearningGenaiRootTokensAndLogProbPerDecodingStepCandidate(_messages.Message):
-  r"""A candidate at a decoding step.
-
-  Fields:
-    logProbability: The candidate's log probability.
-    token: The candidate's token value.
-  """
-
-  logProbability = _messages.FloatField(1, variant=_messages.Variant.FLOAT)
-  token = _messages.StringField(2)
-
-
-class LearningGenaiRootTokensAndLogProbPerDecodingStepTopCandidates(_messages.Message):
-  r"""Candidates with top log probabilities at each decoding step.
-
-  Fields:
-    candidates: Sorted by log probability in descending order.
-  """
-
-  candidates = _messages.MessageField('LearningGenaiRootTokensAndLogProbPerDecodingStepCandidate', 1, repeated=True)
-
-
-class LearningGenaiRootToxicityResult(_messages.Message):
-  r"""A model can generate multiple signals and this captures all the
-  generated signals for a single message.
-
-  Fields:
-    signals: A LearningGenaiRootToxicitySignal attribute.
-  """
-
-  signals = _messages.MessageField('LearningGenaiRootToxicitySignal', 1, repeated=True)
-
-
-class LearningGenaiRootToxicitySignal(_messages.Message):
-  r"""Proto to capture a signal generated by the toxicity model.
-
-  Enums:
-    LabelValueValuesEnum:
-
-  Fields:
-    allowed: A boolean attribute.
-    label: A LabelValueValuesEnum attribute.
-    score: A number attribute.
-  """
-
-  class LabelValueValuesEnum(_messages.Enum):
-    r"""LabelValueValuesEnum enum type.
-
-    Values:
-      LABEL_UNSPECIFIED: Default label.
-      NOT_SENSITIVE: Input is not sensitive.
-      SENSITIVE: Input is sensitive.
-      ACCIDENTS_DISASTERS: Input is related to accidents or disasters.
-      ADULT: Input contains adult content.
-      COMPUTER_SECURITY: Input is related to computer security.
-      CONTROVERSIAL_SOCIAL_ISSUES: Input contains controversial social issues.
-      DEATH_TRAGEDY: Input is related to death tragedy.
-      DRUGS: Input is related to drugs.
-      IDENTITY_ETHNICITY: Input is related to identity or ethnicity.
-      FINANCIAL_HARDSHIP: Input is related to financial hardship.
-      FIREARMS_WEAPONS: Input is related to firearms or weapons.
-      HEALTH: Input contains health related information.
-      INSULT: Input may be an insult.
-      LEGAL: Input is related to legal content.
-      MENTAL_HEALTH: Input contains mental health related information.
-      POLITICS: Input is related to politics.
-      RELIGION_BELIEFS: Input is related to religions or beliefs.
-      SAFETY: Input is related to safety.
-      SELF_HARM: Input is related to self-harm.
-      SPECIAL_NEEDS: Input is related to special needs.
-      TERRORISM: Input is related to terrorism.
-      TOXIC: Input is toxic.
-      TROUBLED_RELATIONSHIP: Input is related to troubled relationships.
-      VIOLENCE_ABUSE: Input contains content about violence or abuse.
-      VULGAR: Input is vulgar.
-      WAR_CONFLICT: Input is related to war and conflict.
-    """
-    LABEL_UNSPECIFIED = 0
-    NOT_SENSITIVE = 1
-    SENSITIVE = 2
-    ACCIDENTS_DISASTERS = 3
-    ADULT = 4
-    COMPUTER_SECURITY = 5
-    CONTROVERSIAL_SOCIAL_ISSUES = 6
-    DEATH_TRAGEDY = 7
-    DRUGS = 8
-    IDENTITY_ETHNICITY = 9
-    FINANCIAL_HARDSHIP = 10
-    FIREARMS_WEAPONS = 11
-    HEALTH = 12
-    INSULT = 13
-    LEGAL = 14
-    MENTAL_HEALTH = 15
-    POLITICS = 16
-    RELIGION_BELIEFS = 17
-    SAFETY = 18
-    SELF_HARM = 19
-    SPECIAL_NEEDS = 20
-    TERRORISM = 21
-    TOXIC = 22
-    TROUBLED_RELATIONSHIP = 23
-    VIOLENCE_ABUSE = 24
-    VULGAR = 25
-    WAR_CONFLICT = 26
-
-  allowed = _messages.BooleanField(1)
-  label = _messages.EnumField('LabelValueValuesEnum', 2)
-  score = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-
-
-class LearningServingLlmLanguageFilterResult(_messages.Message):
-  r"""A LearningServingLlmLanguageFilterResult object.
-
-  Fields:
-    allowed: False when query or response should be filtered out due to
-      unsupported language.
-    detectedLanguage: Language of the query or response.
-    detectedLanguageProbability: Probability of the language predicted as
-      returned by LangID.
-  """
-
-  allowed = _messages.BooleanField(1)
-  detectedLanguage = _messages.StringField(2)
-  detectedLanguageProbability = _messages.FloatField(3, variant=_messages.Variant.FLOAT)
-
-
-class LearningServingLlmMessageMetadata(_messages.Message):
-  r"""LINT.IfChange This metadata contains additional information required for
-  debugging.
-
-  Enums:
-    FinishReasonValueValuesEnum: NOT YET IMPLEMENTED.
-
-  Fields:
-    classifierSummary: Summary of classifier output. We attach this to all
-      messages regardless of whether classification rules triggered or not.
-    currentStreamTextLength: A integer attribute.
-    deleted: Whether the corresponding message has been deleted.
-    filterMeta: Metadata for filters that triggered.
-    finalMessageScore: This score is finally used for ranking the message.
-      This will be same as the score present in `Message.score` field.
-    finishReason: NOT YET IMPLEMENTED.
-    isFallback: Applies to Response message only. Indicates whether the
-      message is a fallback and the response would have otherwise been empty.
-    langidResult: Result from nlp_saft DetectLanguage method. Currently the
-      predicted language code and language probability is used.
-    language: Detected language.
-    lmPrefix: The LM prefix used to generate this response.
-    originalText: The original text generated by LLM. This is the raw output
-      for debugging purposes.
-    perStreamDecodedTokenCount: NOT YET IMPLEMENTED. Applies to streaming
-      only. Number of tokens decoded / emitted by the model as part of this
-      stream. This may be different from token_count, which contains number of
-      tokens returned in this response after any response rewriting /
-      truncation.
-    raiOutputs: Results of running RAI on the query or this response
-      candidate. One output per rai_config. It will be populated regardless of
-      whether the threshold is exceeded or not.
-    recitationResult: Recitation Results. It will be populated as long as
-      Recitation processing is enabled, regardless of recitation outcome.
-    returnTokenCount: NOT YET IMPLEMENTED. Number of tokens returned as part
-      of this candidate.
-    scores: All the different scores for a message are logged here.
-    streamTerminated: Whether the response is terminated during streaming
-      return. Only used for streaming requests.
-    totalDecodedTokenCount: NOT YET IMPLEMENTED. Aggregated number of total
-      tokens decoded so far. For streaming, this is sum of all the tokens
-      decoded so far i.e. aggregated count.
-    translatedUserPrompts: Translated user-prompt used for RAI post
-      processing. This is for internal processing only. We will translate in
-      pre-processor and pass the translated text to the post processor using
-      this field. It will be empty if non of the signals requested need
-      translation.
-    vertexRaiResult: The metadata from Vertex SafetyCat processors
-  """
-
-  class FinishReasonValueValuesEnum(_messages.Enum):
-    r"""NOT YET IMPLEMENTED.
-
-    Values:
-      UNSPECIFIED: <no description>
-      RETURN: Return all the tokens back. This typically implies no filtering
-        or stop sequence was triggered.
-      STOP: Finished due to provided stop sequence.
-      MAX_TOKENS: Model has emitted the maximum number of tokens as specified
-        by max_decoding_steps.
-      FILTER: Finished due to triggering some post-processing filter.
-    """
-    UNSPECIFIED = 0
-    RETURN = 1
-    STOP = 2
-    MAX_TOKENS = 3
-    FILTER = 4
-
-  classifierSummary = _messages.MessageField('LearningGenaiRootClassifierOutputSummary', 1)
-  currentStreamTextLength = _messages.IntegerField(2, variant=_messages.Variant.UINT32)
-  deleted = _messages.BooleanField(3)
-  filterMeta = _messages.MessageField('LearningGenaiRootFilterMetadata', 4, repeated=True)
-  finalMessageScore = _messages.MessageField('LearningGenaiRootScore', 5)
-  finishReason = _messages.EnumField('FinishReasonValueValuesEnum', 6)
-  isFallback = _messages.BooleanField(7)
-  langidResult = _messages.MessageField('NlpSaftLangIdResult', 8)
-  language = _messages.StringField(9)
-  lmPrefix = _messages.StringField(10)
-  originalText = _messages.StringField(11)
-  perStreamDecodedTokenCount = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  raiOutputs = _messages.MessageField('LearningGenaiRootRAIOutput', 13, repeated=True)
-  recitationResult = _messages.MessageField('LearningGenaiRecitationRecitationResult', 14)
-  returnTokenCount = _messages.IntegerField(15, variant=_messages.Variant.INT32)
-  scores = _messages.MessageField('LearningGenaiRootScore', 16, repeated=True)
-  streamTerminated = _messages.BooleanField(17)
-  totalDecodedTokenCount = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  translatedUserPrompts = _messages.StringField(19, repeated=True)
-  vertexRaiResult = _messages.MessageField('CloudAiNlLlmProtoServiceRaiResult', 20)
-
-
-class NlpSaftLangIdLocalesResult(_messages.Message):
-  r"""A NlpSaftLangIdLocalesResult object.
-
-  Fields:
-    predictions: List of locales in which the text would be considered
-      acceptable. Sorted in descending order according to each locale's
-      respective likelihood. For example, if a Portuguese text is acceptable
-      in both Brazil and Portugal, but is more strongly associated with
-      Brazil, then the predictions would be ["pt-BR", "pt-PT"], in that order.
-      May be empty, indicating that the model did not predict any acceptable
-      locales.
-  """
-
-  predictions = _messages.MessageField('NlpSaftLangIdLocalesResultLocale', 1, repeated=True)
-
-
-class NlpSaftLangIdLocalesResultLocale(_messages.Message):
-  r"""A NlpSaftLangIdLocalesResultLocale object.
-
-  Fields:
-    languageCode: A BCP 47 language code that includes region information. For
-      example, "pt-BR" or "pt-PT". This field will always be populated.
-  """
-
-  languageCode = _messages.StringField(1)
-
-
-class NlpSaftLangIdResult(_messages.Message):
-  r"""A NlpSaftLangIdResult object.
-
-  Enums:
-    ModelVersionValueValuesEnum: The version of the model used to create these
-      annotations.
-
-  Fields:
-    modelVersion: The version of the model used to create these annotations.
-    predictions: This field stores the n-best list of possible BCP 47 language
-      code strings for a given input sorted in descending order according to
-      each code's respective probability.
-    spanPredictions: This field stores language predictions of subspans of the
-      input, when available. Each LanguageSpanSequence is a sequence of
-      LanguageSpans. A particular sequence of LanguageSpans has an associated
-      probability, and need not necessarily cover the entire input. If no
-      language could be predicted for any span, then this field may be empty.
-  """
-
-  class ModelVersionValueValuesEnum(_messages.Enum):
-    r"""The version of the model used to create these annotations.
-
-    Values:
-      VERSION_UNSPECIFIED: <no description>
-      INDEXING_20181017: <no description>
-      INDEXING_20191206: <no description>
-      INDEXING_20200313: <no description>
-      INDEXING_20210618: <no description>
-      STANDARD_20220516: <no description>
-    """
-    VERSION_UNSPECIFIED = 0
-    INDEXING_20181017 = 1
-    INDEXING_20191206 = 2
-    INDEXING_20200313 = 3
-    INDEXING_20210618 = 4
-    STANDARD_20220516 = 5
-
-  modelVersion = _messages.EnumField('ModelVersionValueValuesEnum', 1)
-  predictions = _messages.MessageField('NlpSaftLanguageSpan', 2, repeated=True)
-  spanPredictions = _messages.MessageField('NlpSaftLanguageSpanSequence', 3, repeated=True)
-
-
-class NlpSaftLanguageSpan(_messages.Message):
-  r"""A NlpSaftLanguageSpan object.
-
-  Fields:
-    end: A integer attribute.
-    languageCode: A BCP 47 language code for this span.
-    locales: Optional field containing any information that was predicted
-      about the specific locale(s) of the span.
-    probability: A probability associated with this prediction.
-    start: Start and end byte offsets, inclusive, within the given input
-      string. A value of -1 implies that this field is not set. Both fields
-      must either be set with a nonnegative value or both are unset. If both
-      are unset then this LanguageSpan applies to the entire input.
-  """
-
-  end = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  languageCode = _messages.StringField(2)
-  locales = _messages.MessageField('NlpSaftLangIdLocalesResult', 3)
-  probability = _messages.FloatField(4, variant=_messages.Variant.FLOAT)
-  start = _messages.IntegerField(5, variant=_messages.Variant.INT32)
-
-
-class NlpSaftLanguageSpanSequence(_messages.Message):
-  r"""A NlpSaftLanguageSpanSequence object.
-
-  Fields:
-    languageSpans: A sequence of LanguageSpan objects, each assigning a
-      language to a subspan of the input.
-    probability: The probability of this sequence of LanguageSpans.
-  """
-
-  languageSpans = _messages.MessageField('NlpSaftLanguageSpan', 1, repeated=True)
-  probability = _messages.FloatField(2, variant=_messages.Variant.FLOAT)
-
-
-class Proto2BridgeMessageSet(_messages.Message):
-  r"""This is proto2's version of MessageSet."""
+  endIndex = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  factIndex = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  score = _messages.FloatField(3)
+  startIndex = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -28505,30 +24513,6 @@ class StandardQueryParameters(_messages.Message):
   trace = _messages.StringField(10)
   uploadType = _messages.StringField(11)
   upload_protocol = _messages.StringField(12)
-
-
-class UtilStatusProto(_messages.Message):
-  r"""Wire-format for a Status object
-
-  Fields:
-    canonicalCode: The canonical error code (see codes.proto) that most
-      closely corresponds to this status. This may be missing, and in the
-      common case of the generic space, it definitely will be.
-    code: Numeric code drawn from the space specified below. Often, this is
-      the canonical error space, and code is drawn from
-      google3/util/task/codes.proto
-    message: Detail message
-    messageSet: message_set associates an arbitrary proto message with the
-      status.
-    space: The following are usually only present when code != 0 Space to
-      which this status belongs
-  """
-
-  canonicalCode = _messages.IntegerField(1, variant=_messages.Variant.INT32)
-  code = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  message = _messages.StringField(3)
-  messageSet = _messages.MessageField('Proto2BridgeMessageSet', 4)
-  space = _messages.StringField(5)
 
 
 encoding.AddCustomJsonFieldMapping(

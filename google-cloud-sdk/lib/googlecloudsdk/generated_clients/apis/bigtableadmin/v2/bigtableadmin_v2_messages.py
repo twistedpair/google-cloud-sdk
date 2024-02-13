@@ -161,6 +161,20 @@ class AuthorizedView(_messages.Message):
   subsetView = _messages.MessageField('GoogleBigtableAdminV2AuthorizedViewSubsetView', 4)
 
 
+class AutomatedBackupPolicy(_messages.Message):
+  r"""Defines an automated backup policy for a table
+
+  Fields:
+    frequency: Required. How frequently automated backups should occur. The
+      only supported value at this time is 24 hours.
+    retentionPeriod: Required. How long the automated backups should be
+      retained. The only supported value at this time is 3 days.
+  """
+
+  frequency = _messages.StringField(1)
+  retentionPeriod = _messages.StringField(2)
+
+
 class AutoscalingLimits(_messages.Message):
   r"""Limits for the number of nodes a Cluster can autoscale up/down to.
 
@@ -2022,6 +2036,7 @@ class CreateViewRequest(_messages.Message):
 
 class DataBoostIsolationReadOnly(_messages.Message):
   r"""Data Boost allows a customer to bypass Bigtable nodes when it comes to
+
   fetching their data. The data is instead read directly from the filesystem,
   which enables the customer to isolate specific read-only workflows. Data
   Boost reads are only guaranteed to see the results of writes that were
@@ -2032,32 +2047,38 @@ class DataBoostIsolationReadOnly(_messages.Message):
   At the moment, Data Boost only supports single-cluster requests.
 
   Enums:
-    BillingOwnerValueValuesEnum: Billing owner for this app profile
+    ComputeBillingOwnerValueValuesEnum: The Compute Billing Owner for this
+      Data Boost App Profile.
 
   Fields:
-    billingOwner: Billing owner for this app profile
+    computeBillingOwner: The Compute Billing Owner for this Data Boost App
+      Profile.
   """
 
-  class BillingOwnerValueValuesEnum(_messages.Enum):
-    r"""Billing owner for this app profile
+  class ComputeBillingOwnerValueValuesEnum(_messages.Enum):
+    r"""The Compute Billing Owner for this Data Boost App Profile.
 
     Values:
-      BILLING_OWNER_UNSPECIFIED: No billing owner specified
-      PRODUCER: Billing should be accounted towards the producer Cloud Project
-      CONSUMER: Billing should be accounted towards the consumer Cloud Project
+      COMPUTE_BILLING_OWNER_UNSPECIFIED: Unspecified value.
+      HOST_PAYS: The host Cloud Project containing the targeted Bigtable
+        Instance / Table pays for compute.
+      REQUESTER_PAYS: The requester Cloud Project targeting the Bigtable
+        Instance / Table with Data Boost pays for compute.
     """
-    BILLING_OWNER_UNSPECIFIED = 0
-    PRODUCER = 1
-    CONSUMER = 2
 
-  billingOwner = _messages.EnumField('BillingOwnerValueValuesEnum', 1)
+    COMPUTE_BILLING_OWNER_UNSPECIFIED = 0
+    HOST_PAYS = 1
+    REQUESTER_PAYS = 2
+
+  computeBillingOwner = _messages.EnumField(
+      'ComputeBillingOwnerValueValuesEnum', 1
+  )
 
 
 class DataBoostReadLocalWrites(_messages.Message):
   r"""Checks that all writes before the consistency token was generated in the
   same cluster is readable by Databoost.
   """
-
 
 
 class DropRowRangeRequest(_messages.Message):
@@ -2081,7 +2102,6 @@ class Empty(_messages.Message):
   or the response type of an API method. For instance: service Foo { rpc
   Bar(google.protobuf.Empty) returns (google.protobuf.Empty); }
   """
-
 
 
 class EncryptionConfig(_messages.Message):
@@ -2204,7 +2224,6 @@ class GenerateConsistencyTokenRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.GenerateConsistencyToken
   """
-
 
 
 class GenerateConsistencyTokenResponse(_messages.Message):
@@ -3230,7 +3249,6 @@ class RowAffinity(_messages.Message):
   """
 
 
-
 class SetIamPolicyRequest(_messages.Message):
   r"""Request message for `SetIamPolicy` method.
 
@@ -3374,7 +3392,6 @@ class StandardReadRemoteWrites(_messages.Message):
   """
 
 
-
 class Status(_messages.Message):
   r"""The `Status` type defines a logical error model that is suitable for
   different programming environments, including REST APIs and RPC APIs. It is
@@ -3427,8 +3444,9 @@ class Status(_messages.Message):
 
 
 class Table(_messages.Message):
-  r"""A collection of user data indexed by row, column, and timestamp. Each
-  table is served using the resources of its parent cluster.
+  r"""A collection of user data indexed by row, column, and timestamp.
+
+  Each table is served using the resources of its parent cluster.
 
   Enums:
     GranularityValueValuesEnum: Immutable. The granularity (i.e. `MILLIS`) at
@@ -3447,6 +3465,8 @@ class Table(_messages.Message):
       by column family ID. Views: `SCHEMA_VIEW`, `STATS_VIEW`, `FULL`
 
   Fields:
+    automatedBackupPolicy: If specified, automated backups are enabled for
+      this table. Otherwise, automated backups are disabled.
     changeStreamConfig: If specified, enable the change stream on this table.
       Otherwise, the change stream is disabled and the change stream is not
       retained.
@@ -3549,14 +3569,15 @@ class Table(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
-  changeStreamConfig = _messages.MessageField('ChangeStreamConfig', 1)
-  clusterStates = _messages.MessageField('ClusterStatesValue', 2)
-  columnFamilies = _messages.MessageField('ColumnFamiliesValue', 3)
-  deletionProtection = _messages.BooleanField(4)
-  granularity = _messages.EnumField('GranularityValueValuesEnum', 5)
-  name = _messages.StringField(6)
-  restoreInfo = _messages.MessageField('RestoreInfo', 7)
-  stats = _messages.MessageField('TableStats', 8)
+  automatedBackupPolicy = _messages.MessageField('AutomatedBackupPolicy', 1)
+  changeStreamConfig = _messages.MessageField('ChangeStreamConfig', 2)
+  clusterStates = _messages.MessageField('ClusterStatesValue', 3)
+  columnFamilies = _messages.MessageField('ColumnFamiliesValue', 4)
+  deletionProtection = _messages.BooleanField(5)
+  granularity = _messages.EnumField('GranularityValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  restoreInfo = _messages.MessageField('RestoreInfo', 8)
+  stats = _messages.MessageField('TableStats', 9)
 
 
 class TableProgress(_messages.Message):
@@ -3673,7 +3694,6 @@ class UndeleteTableRequest(_messages.Message):
   r"""Request message for
   google.bigtable.admin.v2.BigtableTableAdmin.UndeleteTable
   """
-
 
 
 class Union(_messages.Message):

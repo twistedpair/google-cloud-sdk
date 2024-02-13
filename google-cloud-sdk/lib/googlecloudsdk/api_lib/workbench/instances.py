@@ -215,23 +215,29 @@ def GetTagsFromArgs(args):
 def GetMetadataFromArgs(args, messages):
   if args.IsSpecified('metadata'):
     metadata_message = messages.GceSetup.MetadataValue
-    return metadata_message(additionalProperties=[
-        metadata_message.AdditionalProperty(key=key, value=value)
-        for key, value in args.metadata.items()
-    ])
+    return metadata_message(
+        additionalProperties=[
+            metadata_message.AdditionalProperty(key=key, value=value)
+            for key, value in args.metadata.items()
+        ]
+    )
   return None
 
 
 def GetShieldedInstanceConfigFromArgs(args, messages):
-  if not (args.IsSpecified('shielded_secure_boot') or
-          args.IsSpecified('shielded_vtpm') or
-          args.IsSpecified('shielded_integrity_monitoring')):
+  if not (
+      args.IsSpecified('shielded_secure_boot')
+      or args.IsSpecified('shielded_vtpm')
+      or args.IsSpecified('shielded_integrity_monitoring')
+  ):
     return None
   shielded_instance_config_message = messages.ShieldedInstanceConfig
   return shielded_instance_config_message(
-      enableIntegrityMonitoring=args.shielded_integrity_monitoring,
-      enableSecureBoot=args.shielded_secure_boot,
-      enableVtpm=args.shielded_vtpm,
+      enableIntegrityMonitoring=(
+          args.shielded_integrity_monitoring.lower() == 'true'
+      ),
+      enableSecureBoot=(args.shielded_secure_boot.lower() == 'true'),
+      enableVtpm=(args.shielded_vtpm.lower() == 'true'),
   )
 
 

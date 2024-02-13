@@ -135,6 +135,7 @@ def Create(project_ref,
            display_name=None,
            parent=None,
            labels=None,
+           tags=None,
            api_version=DEFAULT_API_VERSION):
   """Create a new project.
 
@@ -143,6 +144,7 @@ def Create(project_ref,
     display_name: Optional display name for the project
     parent: Optional for the project (ex. folders/123 or organizations/5231)
     labels: Optional labels to apply to the project
+    tags: Optional tags to bind to the project
     api_version: the version of the api
 
   Returns:
@@ -156,7 +158,8 @@ def Create(project_ref,
           projectId=project_ref.Name(),
           name=display_name if display_name else project_ref.Name(),
           parent=parent,
-          labels=labels))
+          labels=labels,
+          tags=tags))
 
 
 def Delete(project_ref, api_version=DEFAULT_API_VERSION):

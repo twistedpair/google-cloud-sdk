@@ -1328,10 +1328,16 @@ class LoggingServer(_messages.Message):
         default value.
       UDP: UDP
       TCP: TCP
+      TLS: TLS
+      SSL: SSL
+      RELP: RELP
     """
     PROTOCOL_UNSPECIFIED = 0
     UDP = 1
     TCP = 2
+    TLS = 3
+    SSL = 4
+    RELP = 5
 
   class SourceTypeValueValuesEnum(_messages.Enum):
     r"""Required. The type of component that produces logs that will be

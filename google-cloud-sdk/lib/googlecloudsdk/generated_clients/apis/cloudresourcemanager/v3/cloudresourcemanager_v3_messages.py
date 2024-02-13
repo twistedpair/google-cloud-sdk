@@ -153,7 +153,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1288,6 +1292,12 @@ class Folder(_messages.Message):
       Updates to the state must be performed using DeleteFolder and
       UndeleteFolder.
 
+  Messages:
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this folder. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
+
   Fields:
     createTime: Output only. Timestamp when the folder was created.
     deleteTime: Output only. Timestamp when the folder was requested to be
@@ -1308,6 +1318,10 @@ class Folder(_messages.Message):
       folder's parent must be performed using MoveFolder.
     state: Output only. The lifecycle state of the folder. Updates to the
       state must be performed using DeleteFolder and UndeleteFolder.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this folder. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
     updateTime: Output only. Timestamp when the folder was last modified.
   """
 
@@ -1324,6 +1338,32 @@ class Folder(_messages.Message):
     ACTIVE = 1
     DELETE_REQUESTED = 2
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this folder. Each item in the map must be expressed as " : ". For example:
+    "123/environment" : "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
@@ -1331,7 +1371,8 @@ class Folder(_messages.Message):
   name = _messages.StringField(5)
   parent = _messages.StringField(6)
   state = _messages.EnumField('StateValueValuesEnum', 7)
-  updateTime = _messages.StringField(8)
+  tags = _messages.MessageField('TagsValue', 8)
+  updateTime = _messages.StringField(9)
 
 
 class FolderOperation(_messages.Message):
@@ -1916,6 +1957,10 @@ class Project(_messages.Message):
       labels in a representation such as JSON that does not depend on specific
       characters being disallowed. Example: `"myBusinessDimension" :
       "businessValue"`
+    TagsValue: Optional. Input only. Immutable. Tag keys/values directly bound
+      to this project. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
 
   Fields:
     createTime: Output only. Creation time.
@@ -1947,6 +1992,10 @@ class Project(_messages.Message):
       with a letter. Trailing hyphens are prohibited. Example: `tokyo-
       rain-123`
     state: Output only. The project lifecycle state.
+    tags: Optional. Input only. Immutable. Tag keys/values directly bound to
+      this project. Each item in the map must be expressed as " : ". For
+      example: "123/environment" : "production", "123/costCenter" :
+      "marketing"
     updateTime: Output only. The most recent time this resource was modified.
   """
 
@@ -1996,6 +2045,32 @@ class Project(_messages.Message):
 
     additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TagsValue(_messages.Message):
+    r"""Optional. Input only. Immutable. Tag keys/values directly bound to
+    this project. Each item in the map must be expressed as " : ". For
+    example: "123/environment" : "production", "123/costCenter" : "marketing"
+
+    Messages:
+      AdditionalProperty: An additional property for a TagsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type TagsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TagsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
   createTime = _messages.StringField(1)
   deleteTime = _messages.StringField(2)
   displayName = _messages.StringField(3)
@@ -2005,7 +2080,8 @@ class Project(_messages.Message):
   parent = _messages.StringField(7)
   projectId = _messages.StringField(8)
   state = _messages.EnumField('StateValueValuesEnum', 9)
-  updateTime = _messages.StringField(10)
+  tags = _messages.MessageField('TagsValue', 10)
+  updateTime = _messages.StringField(11)
 
 
 class ProjectCreationStatus(_messages.Message):

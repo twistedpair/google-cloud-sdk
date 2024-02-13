@@ -686,7 +686,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -4879,7 +4883,6 @@ class RestrictRollout(_messages.Message):
       CANCEL: Cancel the rollout.
       CREATE: Create a rollout.
       IGNORE_JOB: Ignore a job result on the rollout.
-      REJECT: Reject a rollout.
       RETRY_JOB: Retry a job for a rollout.
       ROLLBACK: Rollback a rollout.
       TERMINATE_JOBRUN: Terminate a jobrun.
@@ -4890,10 +4893,9 @@ class RestrictRollout(_messages.Message):
     CANCEL = 3
     CREATE = 4
     IGNORE_JOB = 5
-    REJECT = 6
-    RETRY_JOB = 7
-    ROLLBACK = 8
-    TERMINATE_JOBRUN = 9
+    RETRY_JOB = 6
+    ROLLBACK = 7
+    TERMINATE_JOBRUN = 8
 
   class InvokerValueListEntryValuesEnum(_messages.Enum):
     r"""InvokerValueListEntryValuesEnum enum type.

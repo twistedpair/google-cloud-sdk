@@ -411,7 +411,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   bindingId = _messages.StringField(1)
@@ -864,6 +868,13 @@ class DeliverInfo(_messages.Message):
         connect-apis).
       SERVERLESS_NEG: Target is a serverless network endpoint group.
       STORAGE_BUCKET: Target is a Cloud Storage bucket.
+      PRIVATE_NETWORK: Target is a private network. Used only for return
+        traces.
+      CLOUD_FUNCTION: Target is a Cloud Function. Used only for return traces.
+      APP_ENGINE_VERSION: Target is a App Engine service version. Used only
+        for return traces.
+      CLOUD_RUN_REVISION: Target is a Cloud Run revision. Used only for return
+        traces.
     """
     TARGET_UNSPECIFIED = 0
     INSTANCE = 1
@@ -876,6 +887,10 @@ class DeliverInfo(_messages.Message):
     PSC_VPC_SC = 8
     SERVERLESS_NEG = 9
     STORAGE_BUCKET = 10
+    PRIVATE_NETWORK = 11
+    CLOUD_FUNCTION = 12
+    APP_ENGINE_VERSION = 13
+    CLOUD_RUN_REVISION = 14
 
   resourceUri = _messages.StringField(1)
   target = _messages.EnumField('TargetValueValuesEnum', 2)
@@ -1044,6 +1059,9 @@ class DropInfo(_messages.Message):
       PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS: The packet is sent to the
         Private Service Connect backend (network endpoint group), but the
         producer PSC forwarding rule does not have global access enabled.
+      PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS: The packet is sent to
+        the Private Service Connect backend (network endpoint group), but the
+        producer PSC forwarding rule has multiple ports specified.
       CLOUD_RUN_REVISION_NOT_READY: Packet sent from a Cloud Run revision that
         is not ready.
       DROPPED_INSIDE_PSC_SERVICE_PRODUCER: Packet was dropped inside Private
@@ -1102,10 +1120,11 @@ class DropInfo(_messages.Message):
     PSC_CONNECTION_NOT_ACCEPTED = 47
     PSC_ENDPOINT_ACCESSED_FROM_PEERED_NETWORK = 48
     PSC_NEG_PRODUCER_ENDPOINT_NO_GLOBAL_ACCESS = 49
-    CLOUD_RUN_REVISION_NOT_READY = 50
-    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 51
-    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 52
-    CLOUD_NAT_NO_ADDRESSES = 53
+    PSC_NEG_PRODUCER_FORWARDING_RULE_MULTIPLE_PORTS = 50
+    CLOUD_RUN_REVISION_NOT_READY = 51
+    DROPPED_INSIDE_PSC_SERVICE_PRODUCER = 52
+    LOAD_BALANCER_HAS_NO_PROXY_SUBNET = 53
+    CLOUD_NAT_NO_ADDRESSES = 54
 
   cause = _messages.EnumField('CauseValueValuesEnum', 1)
   destinationIp = _messages.StringField(2)
@@ -1697,6 +1716,8 @@ class LoadBalancerBackendInfo(_messages.Message):
       https://cloud.google.com/load-balancing/docs/firewall-rules
 
   Fields:
+    backendBucketUri: URI of the backend bucket this backend targets (if
+      applicable).
     backendServiceUri: URI of the backend service this backend belongs to (if
       applicable).
     healthCheckFirewallsConfigState: Output only. Health check firewalls
@@ -1717,6 +1738,10 @@ class LoadBalancerBackendInfo(_messages.Message):
       zonal network endpoint group backends.
     networkEndpointGroupUri: URI of the network endpoint group this backend
       belongs to (if applicable).
+    pscGoogleApiTarget: PSC Google API target this PSC NEG backend targets (if
+      applicable).
+    pscServiceAttachmentUri: URI of the PSC service attachment this PSC NEG
+      backend targets (if applicable).
   """
 
   class HealthCheckFirewallsConfigStateValueValuesEnum(_messages.Enum):
@@ -1751,13 +1776,16 @@ class LoadBalancerBackendInfo(_messages.Message):
     FIREWALLS_NOT_CONFIGURED = 3
     FIREWALLS_UNSUPPORTED = 4
 
-  backendServiceUri = _messages.StringField(1)
-  healthCheckFirewallsConfigState = _messages.EnumField('HealthCheckFirewallsConfigStateValueValuesEnum', 2)
-  healthCheckUri = _messages.StringField(3)
-  instanceGroupUri = _messages.StringField(4)
-  instanceUri = _messages.StringField(5)
-  name = _messages.StringField(6)
-  networkEndpointGroupUri = _messages.StringField(7)
+  backendBucketUri = _messages.StringField(1)
+  backendServiceUri = _messages.StringField(2)
+  healthCheckFirewallsConfigState = _messages.EnumField('HealthCheckFirewallsConfigStateValueValuesEnum', 3)
+  healthCheckUri = _messages.StringField(4)
+  instanceGroupUri = _messages.StringField(5)
+  instanceUri = _messages.StringField(6)
+  name = _messages.StringField(7)
+  networkEndpointGroupUri = _messages.StringField(8)
+  pscGoogleApiTarget = _messages.StringField(9)
+  pscServiceAttachmentUri = _messages.StringField(10)
 
 
 class LoadBalancerInfo(_messages.Message):
@@ -2678,7 +2706,9 @@ class ReachabilityDetails(_messages.Message):
       AMBIGUOUS: The source and destination endpoints do not uniquely identify
         the test location in the network, and the reachability result contains
         multiple traces. For some traces, a packet could be delivered, and for
-        others, it would not be.
+        others, it would not be. This result is also assigned to configuration
+        analysis of return path if on its own it should be REACHABLE, but
+        configuration analysis of forward path is AMBIGUOUS.
       UNDETERMINED: The configuration analysis did not complete. Possible
         reasons are: * A permissions error occurred--for example, the user
         might not have read permission for all of the resources named in the
@@ -3186,7 +3216,8 @@ class Step(_messages.Message):
       master.
     googleService: Display information of a Google service
     instance: Display information of a Compute Engine instance.
-    loadBalancer: Display information of the load balancers.
+    loadBalancer: Display information of the load balancers. Deprecated in
+      favor of the `load_balancer_backend_info` field, not used in new tests.
     loadBalancerBackendInfo: Display information of a specific load balancer
       backend.
     nat: Display information of a NAT.
@@ -3237,6 +3268,9 @@ class Step(_messages.Message):
       START_FROM_STORAGE_BUCKET: Initial state: packet originating from a
         Storage Bucket. Used only for return traces. The storage_bucket
         information is populated.
+      START_FROM_PSC_PUBLISHED_SERVICE: Initial state: packet originating from
+        a published service that uses Private Service Connect. Used only for
+        return traces.
       APPLY_INGRESS_FIREWALL_RULE: Config checking state: verify ingress
         firewall rule.
       APPLY_EGRESS_FIREWALL_RULE: Config checking state: verify egress
@@ -3250,9 +3284,11 @@ class Step(_messages.Message):
       ARRIVE_AT_INSTANCE: Forwarding state: arriving at a Compute Engine
         instance.
       ARRIVE_AT_INTERNAL_LOAD_BALANCER: Forwarding state: arriving at a
-        Compute Engine internal load balancer.
+        Compute Engine internal load balancer. Deprecated in favor of the
+        `ANALYZE_LOAD_BALANCER_BACKEND` state, not used in new tests.
       ARRIVE_AT_EXTERNAL_LOAD_BALANCER: Forwarding state: arriving at a
-        Compute Engine external load balancer.
+        Compute Engine external load balancer. Deprecated in favor of the
+        `ANALYZE_LOAD_BALANCER_BACKEND` state, not used in new tests.
       ARRIVE_AT_VPN_GATEWAY: Forwarding state: arriving at a Cloud VPN
         gateway.
       ARRIVE_AT_VPN_TUNNEL: Forwarding state: arriving at a Cloud VPN tunnel.
@@ -3279,25 +3315,26 @@ class Step(_messages.Message):
     START_FROM_APP_ENGINE_VERSION = 8
     START_FROM_CLOUD_RUN_REVISION = 9
     START_FROM_STORAGE_BUCKET = 10
-    APPLY_INGRESS_FIREWALL_RULE = 11
-    APPLY_EGRESS_FIREWALL_RULE = 12
-    APPLY_ROUTE = 13
-    APPLY_FORWARDING_RULE = 14
-    ANALYZE_LOAD_BALANCER_BACKEND = 15
-    SPOOFING_APPROVED = 16
-    ARRIVE_AT_INSTANCE = 17
-    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 18
-    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 19
-    ARRIVE_AT_VPN_GATEWAY = 20
-    ARRIVE_AT_VPN_TUNNEL = 21
-    ARRIVE_AT_VPC_CONNECTOR = 22
-    NAT = 23
-    PROXY_CONNECTION = 24
-    DELIVER = 25
-    DROP = 26
-    FORWARD = 27
-    ABORT = 28
-    VIEWER_PERMISSION_MISSING = 29
+    START_FROM_PSC_PUBLISHED_SERVICE = 11
+    APPLY_INGRESS_FIREWALL_RULE = 12
+    APPLY_EGRESS_FIREWALL_RULE = 13
+    APPLY_ROUTE = 14
+    APPLY_FORWARDING_RULE = 15
+    ANALYZE_LOAD_BALANCER_BACKEND = 16
+    SPOOFING_APPROVED = 17
+    ARRIVE_AT_INSTANCE = 18
+    ARRIVE_AT_INTERNAL_LOAD_BALANCER = 19
+    ARRIVE_AT_EXTERNAL_LOAD_BALANCER = 20
+    ARRIVE_AT_VPN_GATEWAY = 21
+    ARRIVE_AT_VPN_TUNNEL = 22
+    ARRIVE_AT_VPC_CONNECTOR = 23
+    NAT = 24
+    PROXY_CONNECTION = 25
+    DELIVER = 26
+    DROP = 27
+    FORWARD = 28
+    ABORT = 29
+    VIEWER_PERMISSION_MISSING = 30
 
   abort = _messages.MessageField('AbortInfo', 1)
   appEngineVersion = _messages.MessageField('AppEngineVersionInfo', 2)
@@ -3377,6 +3414,10 @@ class Trace(_messages.Message):
       specified by user request, and validated by the data plane model. If
       there are multiple traces starting from different source locations, then
       the endpoint_info may be different between traces.
+    forwardTraceId: ID of trace. For forward traces, this ID is unique for
+      each trace. For return traces, it matches ID of associated forward
+      trace. A single forward trace can be associated with none, one or more
+      than one return trace.
     steps: A trace of a test contains multiple steps from the initial state to
       the final state (delivered, dropped, forwarded, or aborted). The steps
       are ordered by the processing sequence within the simulated network
@@ -3385,7 +3426,8 @@ class Trace(_messages.Message):
   """
 
   endpointInfo = _messages.MessageField('EndpointInfo', 1)
-  steps = _messages.MessageField('Step', 2, repeated=True)
+  forwardTraceId = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  steps = _messages.MessageField('Step', 3, repeated=True)
 
 
 class VpcConnectorInfo(_messages.Message):

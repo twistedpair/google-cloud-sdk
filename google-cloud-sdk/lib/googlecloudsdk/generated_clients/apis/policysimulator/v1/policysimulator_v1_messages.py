@@ -974,18 +974,18 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlay(_messages.Message):
   r"""The proposed changes to OrgPolicy.
 
   Fields:
-    customConstraints: The OrgPolicy CustomConstraint changes to preview
-      violations for. Any existing CustomConstraints with the same name will
-      be overridden in the simulation. That is, violations will be determined
-      as if all custom constraints in the overlay were instantiated. Only a
-      single custom_constraint is supported in the overlay at a time. For
-      evaluating multiple constraints, multiple
+    customConstraints: Optional. The OrgPolicy CustomConstraint changes to
+      preview violations for. Any existing CustomConstraints with the same
+      name will be overridden in the simulation. That is, violations will be
+      determined as if all custom constraints in the overlay were
+      instantiated. Only a single custom_constraint is supported in the
+      overlay at a time. For evaluating multiple constraints, multiple
       `GenerateOrgPolicyViolationsPreview` requests are made, where each
       request evaluates a single constraint.
-    policies: The OrgPolicy changes to preview violations for. Any existing
-      OrgPolicies with the same name will be overridden in the simulation.
-      That is, violations will be determined as if all policies in the overlay
-      were created or updated.
+    policies: Optional. The OrgPolicy changes to preview violations for. Any
+      existing OrgPolicies with the same name will be overridden in the
+      simulation. That is, violations will be determined as if all policies in
+      the overlay were created or updated.
   """
 
   customConstraints = _messages.MessageField('GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayCustomConstraintOverlay', 1, repeated=True)
@@ -996,9 +996,9 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayCustomConstraintOverlay(_
   r"""A change to an OrgPolicy custom constraint.
 
   Fields:
-    customConstraint: The new or updated custom constraint.
-    customConstraintParent: Resource the constraint is attached to. Example:
-      "organization/987654"
+    customConstraint: Optional. The new or updated custom constraint.
+    customConstraintParent: Optional. Resource the constraint is attached to.
+      Example: "organization/987654"
   """
 
   customConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraint', 1)
@@ -1009,9 +1009,9 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyOverlayPolicyOverlay(_messages.M
   r"""A change to an OrgPolicy.
 
   Fields:
-    policy: The new or updated OrgPolicy.
-    policyParent: The parent of the policy we are attaching to. Example:
-      "projects/123456"
+    policy: Optional. The new or updated OrgPolicy.
+    policyParent: Optional. The parent of the policy we are attaching to.
+      Example: "projects/123456"
   """
 
   policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
@@ -1092,13 +1092,15 @@ class GoogleCloudPolicysimulatorV1alphaOrgPolicyViolationsPreviewResourceCounts(
   changed OrgPolicy.
 
   Fields:
-    compliant: Number of scanned resources with zero violations.
-    errors: Number of resources that returned an error when scanned.
-    noncompliant: Number of scanned resources with at least one violation.
-    scanned: Number of resources checked for compliance. Must equal:
-      unenforced + noncompliant + compliant + error
-    unenforced: Number of resources where the constraint was not enforced,
-      i.e. the Policy set `enforced: false` for that resource.
+    compliant: Output only. Number of scanned resources with zero violations.
+    errors: Output only. Number of resources that returned an error when
+      scanned.
+    noncompliant: Output only. Number of scanned resources with at least one
+      violation.
+    scanned: Output only. Number of resources checked for compliance. Must
+      equal: unenforced + noncompliant + compliant + error
+    unenforced: Output only. Number of resources where the constraint was not
+      enforced, i.e. the Policy set `enforced: false` for that resource.
   """
 
   compliant = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1158,18 +1160,18 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlay(_messages.Message):
   r"""The proposed changes to OrgPolicy.
 
   Fields:
-    customConstraints: The OrgPolicy CustomConstraint changes to preview
-      violations for. Any existing CustomConstraints with the same name will
-      be overridden in the simulation. That is, violations will be determined
-      as if all custom constraints in the overlay were instantiated. Only a
-      single custom_constraint is supported in the overlay at a time. For
-      evaluating multiple constraints, multiple
+    customConstraints: Optional. The OrgPolicy CustomConstraint changes to
+      preview violations for. Any existing CustomConstraints with the same
+      name will be overridden in the simulation. That is, violations will be
+      determined as if all custom constraints in the overlay were
+      instantiated. Only a single custom_constraint is supported in the
+      overlay at a time. For evaluating multiple constraints, multiple
       `GenerateOrgPolicyViolationsPreview` requests are made, where each
       request evaluates a single constraint.
-    policies: The OrgPolicy changes to preview violations for. Any existing
-      OrgPolicies with the same name will be overridden in the simulation.
-      That is, violations will be determined as if all policies in the overlay
-      were created or updated.
+    policies: Optional. The OrgPolicy changes to preview violations for. Any
+      existing OrgPolicies with the same name will be overridden in the
+      simulation. That is, violations will be determined as if all policies in
+      the overlay were created or updated.
   """
 
   customConstraints = _messages.MessageField('GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay', 1, repeated=True)
@@ -1180,9 +1182,9 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayCustomConstraintOverlay(_m
   r"""A change to an OrgPolicy custom constraint.
 
   Fields:
-    customConstraint: The new or updated custom constraint.
-    customConstraintParent: Resource the constraint is attached to. Example:
-      "organization/987654"
+    customConstraint: Optional. The new or updated custom constraint.
+    customConstraintParent: Optional. Resource the constraint is attached to.
+      Example: "organization/987654"
   """
 
   customConstraint = _messages.MessageField('GoogleCloudOrgpolicyV2CustomConstraint', 1)
@@ -1193,9 +1195,9 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyOverlayPolicyOverlay(_messages.Me
   r"""A change to an OrgPolicy.
 
   Fields:
-    policy: The new or updated OrgPolicy.
-    policyParent: The parent of the policy we are attaching to. Example:
-      "projects/123456"
+    policy: Optional. The new or updated OrgPolicy.
+    policyParent: Optional. The parent of the policy we are attaching to.
+      Example: "projects/123456"
   """
 
   policy = _messages.MessageField('GoogleCloudOrgpolicyV2Policy', 1)
@@ -1276,13 +1278,15 @@ class GoogleCloudPolicysimulatorV1betaOrgPolicyViolationsPreviewResourceCounts(_
   changed OrgPolicy.
 
   Fields:
-    compliant: Number of scanned resources with zero violations.
-    errors: Number of resources that returned an error when scanned.
-    noncompliant: Number of scanned resources with at least one violation.
-    scanned: Number of resources checked for compliance. Must equal:
-      unenforced + noncompliant + compliant + error
-    unenforced: Number of resources where the constraint was not enforced,
-      i.e. the Policy set `enforced: false` for that resource.
+    compliant: Output only. Number of scanned resources with zero violations.
+    errors: Output only. Number of resources that returned an error when
+      scanned.
+    noncompliant: Output only. Number of scanned resources with at least one
+      violation.
+    scanned: Output only. Number of resources checked for compliance. Must
+      equal: unenforced + noncompliant + compliant + error
+    unenforced: Output only. Number of resources where the constraint was not
+      enforced, i.e. the Policy set `enforced: false` for that resource.
   """
 
   compliant = _messages.IntegerField(1, variant=_messages.Variant.INT32)
@@ -1430,7 +1434,11 @@ class GoogleIamV1Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('GoogleTypeExpr', 1)

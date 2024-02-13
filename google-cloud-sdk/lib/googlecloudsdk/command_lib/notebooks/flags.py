@@ -420,7 +420,7 @@ def AddCreateInstanceFlags(api_version, parser):
       'SPECIFIC_RESERVATION',
   ]
   AddInstanceResource(api_version, parser)
-  environment_group = parser.add_group(mutex=True, required=True)
+  environment_group = parser.add_group(mutex=True)
   GetEnvironmentResourceArg(api_version, (
       'User-defined unique name of this environment. The environment name '
       'must be 1 to 63 characters long and contain only lowercase letters, '
@@ -429,7 +429,7 @@ def AddCreateInstanceFlags(api_version, parser):
                             positional=False,
                             required=False).AddToParser(environment_group)
   vm_source_group = environment_group.add_group()
-  vm_mutex_group = vm_source_group.add_group(mutex=True, required=True)
+  vm_mutex_group = vm_source_group.add_group(mutex=True)
   container_group = environment_group.add_group()
   vm_source_group.add_argument(
       '--vm-image-project',
@@ -640,6 +640,11 @@ you can use the `gcs-data-bucket` metadata tag. Format:
       '--reservation',
       help=('The name of the reservation, required when '
             '`--reservation-affinity=SPECIFIC_RESERVATION`.'))
+  parser.add_argument(
+      '--tags',
+      metavar='TAGS',
+      help=('Tags to apply to this instance.'),
+      type=arg_parsers.ArgList())
 
 
 def AddDescribeInstanceFlags(api_version, parser):

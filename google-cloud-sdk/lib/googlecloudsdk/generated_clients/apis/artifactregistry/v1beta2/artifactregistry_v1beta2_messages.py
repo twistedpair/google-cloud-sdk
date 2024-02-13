@@ -660,7 +660,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1321,11 +1325,19 @@ class ProjectSettings(_messages.Message):
       REDIRECTION_FROM_GCR_IO_ENABLED: Redirection is enabled.
       REDIRECTION_FROM_GCR_IO_FINALIZED: Redirection is enabled, and has been
         finalized so cannot be reverted.
+      REDIRECTION_FROM_GCR_IO_PARTIAL: Redirection is partially enabled.
+      REDIRECTION_FROM_GCR_IO_ENABLED_AND_COPYING: Redirection is enabled and
+        missing images are copied from GCR
+      REDIRECTION_FROM_GCR_IO_PARTIAL_AND_COPYING: Redirection is partially
+        enabled and missing images are copied from GCR
     """
     REDIRECTION_STATE_UNSPECIFIED = 0
     REDIRECTION_FROM_GCR_IO_DISABLED = 1
     REDIRECTION_FROM_GCR_IO_ENABLED = 2
     REDIRECTION_FROM_GCR_IO_FINALIZED = 3
+    REDIRECTION_FROM_GCR_IO_PARTIAL = 4
+    REDIRECTION_FROM_GCR_IO_ENABLED_AND_COPYING = 5
+    REDIRECTION_FROM_GCR_IO_PARTIAL_AND_COPYING = 6
 
   legacyRedirectionState = _messages.EnumField('LegacyRedirectionStateValueValuesEnum', 1)
   name = _messages.StringField(2)

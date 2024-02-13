@@ -574,7 +574,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1665,20 +1669,24 @@ class CollectAwsAssetSetting(_messages.Message):
     collectorRoleName: Required. Immutable. AWS collector role name. Collector
       role has delegate role as trusted entity, and is used to authenticate
       access AWS config data directly for each product.
-    delegateAccountId: Required. AWS delegated account id, this is required to
-      set either when user has single or multiple AWS accounts for data
-      collection. This is one part of the delegate role ARN.
+    delegateAccountId: Required. AWS delegated account id. If this account id
+      is in an AWS organization, we will attempt to discover all the AWS
+      accounts in that AWS organization, which is referred to as AWS Account
+      Auto Discovery feature. Note that: * This feature will be disabled when
+      included_aws_account_ids is set. * This feature requires the
+      delegate_role_name to be able to access [ListAccounts](https://docs.aws.
+      amazon.com/organizations/latest/APIReference/API_ListAccounts.html).
     delegateRoleName: Required. Immutable. AWS delegate role name. GCP Service
       Account will assume a delegate role to get authenticated, then assume
-      other collector roles to get authorized to collect config data. This is
-      the final part of the delegate role ARN. Delegate role ARN format -
+      other collector roles to get authorized to collect config data. Delegate
+      role ARN format -
       arn:aws:iam::{delegate_account_id}:role/{delegate_role_name}
-    excludedAwsAccountIds: Optional. List of AWS accounts to exclude during
-      auto-discovery. This should be mutually exclusive with included aws
-      accounts.
+    excludedAwsAccountIds: Optional. List of AWS accounts to exclude. This
+      list should be mutually exclusive with included_aws_account_ids.
     includedAwsAccountIds: Optional. List of AWS accounts to collect data
-      from. If this is provided, auto-discover will not be attempted. This
-      should be mutually exclusive with excluded aws accounts.
+      from. If this is provided, the AWS Account Auto Discovery will be
+      disabled. This list should be mutually exclusive with
+      excluded_aws_account_ids.
     qpsLimit: Optional. QPS rate limit for AWS API per each AWS service. For
       each entry, key is the name of AWS service and value is QPS rate limit.
     regionCodes: Optional. Region codes that this connection needs to collect
@@ -3670,8 +3678,8 @@ class GoogleIdentityAccesscontextmanagerV1EgressFrom(_messages.Message):
 
   Fields:
     identities: A list of identities that are allowed access through this
-      [EgressPolicy]. Should be in the format of email address. The email
-      address should represent individual user or service account only.
+      [EgressPolicy], in the format of `user:{email_id}` or
+      `serviceAccount:{email_id}`.
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
@@ -3813,8 +3821,8 @@ class GoogleIdentityAccesscontextmanagerV1IngressFrom(_messages.Message):
 
   Fields:
     identities: A list of identities that are allowed access through this
-      ingress policy. Should be in the format of email address. The email
-      address should represent individual user or service account only.
+      ingress policy, in the format of `user:{email_id}` or
+      `serviceAccount:{email_id}`.
     identityType: Specifies the type of identities that are allowed access
       from outside the perimeter. If left unspecified, then members of
       `identities` field will be allowed access.
@@ -4944,11 +4952,11 @@ class OtherCloudAssetEvent(_messages.Message):
       this resource.
     id: The identifier of this asset.
     location: The location of this asset. For AWS assets: For AWS regions, it
-      is the region name listed in https://docs.aws.amazon.com/AmazonRDS/lates
-      t/UserGuide/Concepts.RegionsAndAvailabilityZones.html#Concepts.RegionsAn
-      dAvailabilityZones.Regions For AWS China, see `Learn more` section in
+      is the region name listed in
+      https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-
+      endpoints For AWS China, see `Learn more` section in
       https://docs.aws.amazon.com/general/latest/gr/rande.html#learn-more For
-      AWS Gov, regions are listed here:
+      AWS Gov, see GovCloud regions in:
       https://docs.aws.amazon.com/general/latest/gr/rande.html#regional-
       endpoints
     parent: The immediate parent of this asset, and it must be other-cloud
@@ -6461,6 +6469,22 @@ class ValidationResult(_messages.Message):
   Fields:
     cause: Optional. The cause of the invalidity of a connection
     connectionState: The state of the other-cloud connection
+    connectionStatus: Required. The status of the other-cloud connection with
+      one of the following values VALID: The connection has been set up at AWS
+      properly: the GCP Service Agent can be properly assumed to the AWS
+      delegated role and then the AWS Collector role with required
+      permissions. FAILED_TO_ASSUME_DELEGATED_ROLE: The connection is invalid
+      because the GCP service agent can not be properly assumed to an AWS
+      delegated role. FAILED_TO_LIST_ACCOUNTS: The connection is invalid
+      because the APS auto-discovery is enabled and the permission to allow
+      the Delegated Role to list accounts in the organization has not been set
+      properly. FAILED_TO_ASSUME_COLLECTOR_ROLE: The connection is invalid
+      because the Delegated Role can not be properly assumed to the AWS
+      Collector Role. INVALID_FOR_COLLECTOR_ROLE_MISSING_REQUIRED_PERMISSION:
+      The connection is invalid because the Collector Role misses required
+      permissions needed by APS. INVALID_FOR_OTHER_REASON: The connection
+      setting is invalid for other reasons. The detailed cause is in the cause
+      field.
     validationTime: The time when the connection was validated.
   """
 
@@ -6469,10 +6493,11 @@ class ValidationResult(_messages.Message):
 
     Values:
       UNKNOWN: Unknown.
-      VALID: The connection has been set up at AWS properly: the GCP service
-        agent has been properly assumed to an AWS delegated role.
+      VALID: The connection has been set up at AWS properly: the GCP Service
+        Agent can be properly assumed to the AWS delegated role and then the
+        AWS Collector role with required permissions.
       FAILED_TO_ASSUME_DELEGATED_ROLE: The connection is invalid because the
-        GCP service agent has not been properly assumed to an AWS delegated
+        GCP service agent can not be properly assumed to an AWS delegated
         role.
       INVALID_FOR_OTHER_REASON: The connection setting is invalid for other
         reasons. The detailed cause is in the cause field.
@@ -6484,7 +6509,8 @@ class ValidationResult(_messages.Message):
 
   cause = _messages.StringField(1)
   connectionState = _messages.EnumField('ConnectionStateValueValuesEnum', 2)
-  validationTime = _messages.StringField(3)
+  connectionStatus = _messages.StringField(3)
+  validationTime = _messages.StringField(4)
 
 
 class VerifyOtherCloudConnectionRequest(_messages.Message):

@@ -3963,10 +3963,29 @@ def AddEnableKubeletReadonlyPortFlag(parser, hidden=True):
       action='store_true',
       hidden=hidden,
       help=textwrap.dedent("""\
-      Enables the Kubelet's insecure Read Only Port.
+      Enables the Kubelet's insecure read only port.
 
-      To disable in an existing cluster, explicitly set flag to
+      To disable the readonly port on a cluster or node-pool set the flag to
       `--no-enable-insecure-kubelet-readonly-port`.
+      """),
+  )
+
+
+def AddAutoprovisioningEnableKubeletReadonlyPortFlag(parser, hidden=True):
+  """Adds Kubernetes Read Only Port's enablement flag to the parser."""
+  parser.add_argument(
+      '--autoprovisioning-enable-insecure-kubelet-readonly-port',
+      default=None,
+      action='store_true',
+      hidden=hidden,
+      help=textwrap.dedent("""\
+      Enables the Kubelet's insecure read only port for Autoprovisioned
+      Node Pools.
+
+      If not set, the value from nodePoolDefaults.nodeConfigDefaults will be used.
+
+      To disable the readonly port
+      `--no-autoprovisioning-enable-insecure-kubelet-readonly-port`.
       """),
   )
 

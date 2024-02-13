@@ -19,7 +19,7 @@ import binascii
 import collections
 import copy
 import json
-from typing import Optional, Text
+from typing import Optional, Text, List
 
 from containerregistry.client import docker_name
 from containerregistry.client.v2_2 import docker_digest
@@ -125,7 +125,7 @@ class SigstoreAttestationImage(docker_image.DockerImage):
 
   def __init__(
       self,
-      additional_blobs: list[bytes],
+      additional_blobs: List[bytes],
       base: Optional[docker_image.DockerImage] = None,
   ):
     """Creates a new Sigstore style image or extends a base image.

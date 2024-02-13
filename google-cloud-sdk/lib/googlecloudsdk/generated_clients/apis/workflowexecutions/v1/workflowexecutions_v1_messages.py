@@ -314,11 +314,11 @@ class PubsubMessage(_messages.Message):
       messages on the subscription.
     data: Optional. The message data field. If this field is empty, the
       message must contain at least one attribute.
-    messageId: Optional. ID of this message, assigned by the server when the
-      message is published. Guaranteed to be unique within the topic. This
-      value may be read by a subscriber that receives a `PubsubMessage` via a
-      `Pull` call or a push delivery. It must not be populated by the
-      publisher in a `Publish` call.
+    messageId: ID of this message, assigned by the server when the message is
+      published. Guaranteed to be unique within the topic. This value may be
+      read by a subscriber that receives a `PubsubMessage` via a `Pull` call
+      or a push delivery. It must not be populated by the publisher in a
+      `Publish` call.
     orderingKey: Optional. If non-empty, identifies related messages for which
       publish order should be respected. If a `Subscription` has
       `enable_message_ordering` set to `true`, messages published with the
@@ -327,9 +327,9 @@ class PubsubMessage(_messages.Message):
       `PubsubMessage`s published in a given `PublishRequest` must specify the
       same `ordering_key` value. For more information, see [ordering
       messages](https://cloud.google.com/pubsub/docs/ordering).
-    publishTime: Optional. The time at which the message was published,
-      populated by the server when it receives the `Publish` call. It must not
-      be populated by the publisher in a `Publish` call.
+    publishTime: The time at which the message was published, populated by the
+      server when it receives the `Publish` call. It must not be populated by
+      the publisher in a `Publish` call.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -791,16 +791,16 @@ class WorkflowexecutionsProjectsLocationsWorkflowsExecutionsListRequest(_message
   Fields:
     filter: Optional. Filters applied to the `[Executions.ListExecutions]`
       results. The following fields are supported for filtering:
-      `executionId`, `state`, `startTime`, `endTime`, `duration`,
-      `workflowRevisionId`, `stepName`, and `label`. For details, see AIP-160.
-      For example, if you are using the Google APIs Explorer:
+      `executionId`, `state`, `createTime`, `startTime`, `endTime`,
+      `duration`, `workflowRevisionId`, `stepName`, and `label`. For details,
+      see AIP-160. For example, if you are using the Google APIs Explorer:
       `state="SUCCEEDED"` or `startTime>"2023-08-01" AND state="FAILED"`
     orderBy: Optional. Comma-separated list of fields that specify the
       ordering applied to the `[Executions.ListExecutions]` results. By
-      default the ordering is based on descending `startTime`. The following
-      fields are supported for ordering: `executionId`, `state`, `startTime`,
-      `endTime`, `duration`, and `workflowRevisionId`. For details, see
-      AIP-132.
+      default the ordering is based on descending `createTime`. The following
+      fields are supported for ordering: `executionId`, `state`, `createTime`,
+      `startTime`, `endTime`, `duration`, and `workflowRevisionId`. For
+      details, see AIP-132.
     pageSize: Maximum number of executions to return per call. Max supported
       value depends on the selected Execution view: it's 1000 for BASIC and
       100 for FULL. The default value used if the field is not specified is

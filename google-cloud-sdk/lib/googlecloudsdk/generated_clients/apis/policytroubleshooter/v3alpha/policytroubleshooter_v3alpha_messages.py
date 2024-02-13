@@ -1589,20 +1589,59 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Messag
   overall access state.
 
   Enums:
+    CombinedResourceInclusionStateValueValuesEnum: Output only. Indicates
+      whether any resource of the rule is the specified resource or includes
+      the specified resource.
+    EffectValueValuesEnum: Required. The effect of the rule which describes
+      the access relationship.
     RelevanceValueValuesEnum: The relevance of this rule to the overall access
       state.
     RuleAccessStateValueValuesEnum: Output only. Indicates whether the rule
       allows access to the specified resource.
 
   Fields:
+    combinedResourceInclusionState: Output only. Indicates whether any
+      resource of the rule is the specified resource or includes the specified
+      resource.
+    effect: Required. The effect of the rule which describes the access
+      relationship.
     explainedResources: List of resources that were explained to check the
       principal's access to specified resource, with annotations to indicate
       how each resource contributes to the overall access state.
     relevance: The relevance of this rule to the overall access state.
-    rule: The rule that is explained.
     ruleAccessState: Output only. Indicates whether the rule allows access to
       the specified resource.
   """
+
+  class CombinedResourceInclusionStateValueValuesEnum(_messages.Enum):
+    r"""Output only. Indicates whether any resource of the rule is the
+    specified resource or includes the specified resource.
+
+    Values:
+      RESOURCE_INCLUSION_STATE_UNSPECIFIED: An error occurred when checking
+        whether the resource includes the specified resource.
+      RESOURCE_INCLUDED: The resource includes the specified resource.
+      RESOURCE_NOT_INCLUDED: The resource doesn't include the specified
+        resource.
+      RESOURCE_INCLUSION_UNKNOWN_INFO: The sender of the request does not have
+        access to the relevant data to check whether the resource includes the
+        specified resource.
+    """
+    RESOURCE_INCLUSION_STATE_UNSPECIFIED = 0
+    RESOURCE_INCLUDED = 1
+    RESOURCE_NOT_INCLUDED = 2
+    RESOURCE_INCLUSION_UNKNOWN_INFO = 3
+
+  class EffectValueValuesEnum(_messages.Enum):
+    r"""Required. The effect of the rule which describes the access
+    relationship.
+
+    Values:
+      EFFECT_UNSPECIFIED: Effect unspecified.
+      ALLOW: Allows access to the resources in this rule.
+    """
+    EFFECT_UNSPECIFIED = 0
+    ALLOW = 1
 
   class RelevanceValueValuesEnum(_messages.Enum):
     r"""The relevance of this rule to the overall access state.
@@ -1646,10 +1685,11 @@ class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRule(_messages.Messag
     PAB_ACCESS_STATE_NOT_ENFORCED = 3
     PAB_ACCESS_STATE_UNKNOWN_INFO = 4
 
-  explainedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRuleExplainedResource', 1, repeated=True)
-  relevance = _messages.EnumField('RelevanceValueValuesEnum', 2)
-  rule = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicyRule', 3)
-  ruleAccessState = _messages.EnumField('RuleAccessStateValueValuesEnum', 4)
+  combinedResourceInclusionState = _messages.EnumField('CombinedResourceInclusionStateValueValuesEnum', 1)
+  effect = _messages.EnumField('EffectValueValuesEnum', 2)
+  explainedResources = _messages.MessageField('GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRuleExplainedResource', 3, repeated=True)
+  relevance = _messages.EnumField('RelevanceValueValuesEnum', 4)
+  ruleAccessState = _messages.EnumField('RuleAccessStateValueValuesEnum', 5)
 
 
 class GoogleCloudPolicytroubleshooterIamV3alphaExplainedPABRuleExplainedResource(_messages.Message):
@@ -2823,7 +2863,11 @@ class GoogleIamV1Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   bindingId = _messages.StringField(1)
@@ -3669,6 +3713,10 @@ class GoogleIamV3PrincipalAccessBoundaryPolicyDetails(_messages.Message):
   r"""Principal access boundary policy details
 
   Fields:
+    enforcementVersion: Optional. The version number that indicates which GCP
+      services are included in the enforcement (e.g. "latest", "1", ...). If
+      empty, the PAB policy version will be set to the current latest version,
+      and this version won't get updated when new versions are released.
     rules: Required. A list of principal access boundary policy rules.
     staticEnforcementVersionNumber: A specific version number. This will need
       to be manually updated to newer versions as they become available in
@@ -3678,9 +3726,10 @@ class GoogleIamV3PrincipalAccessBoundaryPolicyDetails(_messages.Message):
       included in enforcemment.
   """
 
-  rules = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicyRule', 1, repeated=True)
-  staticEnforcementVersionNumber = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  useLatestEnforcementVersion = _messages.BooleanField(3)
+  enforcementVersion = _messages.StringField(1)
+  rules = _messages.MessageField('GoogleIamV3PrincipalAccessBoundaryPolicyRule', 2, repeated=True)
+  staticEnforcementVersionNumber = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  useLatestEnforcementVersion = _messages.BooleanField(4)
 
 
 class GoogleIamV3PrincipalAccessBoundaryPolicyRule(_messages.Message):
@@ -3881,8 +3930,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigEgressFrom(_mess
 
   Fields:
     identities: A list of identities that are allowed access through this
-      [EgressPolicy]. Should be in the format of email address. The email
-      address should represent individual user or service account only.
+      [EgressPolicy], in the format of `user:{email_id}` or
+      `serviceAccount:{email_id}`.
     identityType: Specifies the type of identities that are allowed access to
       outside the perimeter. If left unspecified, then members of `identities`
       field will be allowed access.
@@ -4033,8 +4082,8 @@ class GoogleIdentityAccesscontextmanagerV1ServicePerimeterConfigIngressFrom(_mes
 
   Fields:
     identities: A list of identities that are allowed access through this
-      ingress policy. Should be in the format of email address. The email
-      address should represent individual user or service account only.
+      ingress policy, in the format of `user:{email_id}` or
+      `serviceAccount:{email_id}`.
     identityType: Specifies the type of identities that are allowed access
       from outside the perimeter. If left unspecified, then members of
       `identities` field will be allowed access.

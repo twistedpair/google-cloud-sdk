@@ -786,6 +786,8 @@ class ServerlessOperations(object):
           build_pack,
           release_track,
           already_activated_services,
+          self._region,
+          service_ref,
       )
       if image_digest is None:
         return
@@ -1204,6 +1206,8 @@ class ServerlessOperations(object):
           build_pack,
           release_track,
           already_activated_services,
+          self._region,
+          job_ref,
       )
       if image_digest is None:
         return

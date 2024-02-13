@@ -17,18 +17,20 @@ import os
 import uuid
 
 from googlecloudsdk.api_lib.storage import storage_api
+from googlecloudsdk.api_lib.storage import storage_util
 from googlecloudsdk.command_lib.builds import staging_bucket_util
 from googlecloudsdk.core import log
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import resources
 from googlecloudsdk.core.util import times
 
 
-def Upload(source):
+def Upload(source, region, resource_ref):
   """Uploads a source to a staging bucket."""
   gcs_client = storage_api.StorageClient()
 
-  bucket_name = _GetOrCreateBucket(gcs_client)
-  object_name = _GetObject(source)
+  bucket_name = _GetOrCreateBucket(gcs_client, region)
+  object_name = _GetObject(source, resource_ref)
   log.debug(f'Uploading source to gs://{bucket_name}/{object_name}')
 
   object_ref = resources.REGISTRY.Create(
@@ -41,24 +43,34 @@ def Upload(source):
   )
 
 
-def _GetOrCreateBucket(gcs_client):
+def _GetOrCreateBucket(gcs_client, region):
   """Gets or Creates bucket used to store sources."""
-  # TODO(b/319451996) Update bucket naming
-  bucket = staging_bucket_util.GetDefaultStagingBucket()
+  bucket = _GetBucketName(region)
 
-  # TODO(b/319451996) Set CORs config
-  # this will throw an error if the bucket found isn't in the same project
+  cors = [
+      storage_util.GetMessages().Bucket.CorsValueListEntry(
+          method=['GET'],
+          origin=[
+              'https://*.cloud.google.com',
+              'https://*.corp.' + 'google.com',  # To bypass sensitive words
+              'https://*.corp.' + 'google.com:*',  # To bypass sensitive words
+              'https://*.cloud.google',
+              'https://*.byoid.goog',
+          ],
+      )
+  ]
+
+  # This will throw an error if we're using the default bucket but it already
+  # exists in a different project, then it could belong to a malicious attacker.
   gcs_client.CreateBucketIfNotExists(
-      bucket,
-      location=None,  # TODO(b/319451996) Create regional bucket
-      check_ownership=True,
+      bucket, location=region, check_ownership=True, cors=cors
   )
   return bucket
 
 
-def _GetObject(source):
+def _GetObject(source, resource_ref):
   """Gets the object name for a source to be uploaded."""
-  # TODO(b/319452047) switch to .zip
+  # TODO(b/322274312) switch to .zip
   suffix = '.tgz'
   if source.startswith('gs://') or os.path.isfile(source):
     _, suffix = os.path.splitext(source)
@@ -70,6 +82,34 @@ def _GetObject(source):
       suffix=suffix,
   )
 
-  # TODO(b/319452047) update object path
-  object_path = 'source/' + file_name
+  object_path = (
+      f'{_GetResourceType(resource_ref)}/{resource_ref.Name()}/{file_name}'
+  )
   return object_path
+
+
+def _GetResourceType(resource_ref):
+  return resource_ref.Collection().split('.')[-1]
+
+
+def _GetBucketName(region):
+  """Returns the default regional bucket name.
+
+  Args:
+    region: Cloud Run region.
+
+  Returns:
+    GCS bucket name.
+  """
+  safe_project = (
+      properties.VALUES.core.project.Get(required=True)
+      .replace(':', '_')
+      .replace('.', '_')
+      # The string 'google' is not allowed in bucket names.
+      .replace('google', 'elgoog')
+  )
+  return (
+      f'run-sources-{safe_project}-{region}'
+      if region is not None
+      else f'run-sources-{safe_project}'
+  )

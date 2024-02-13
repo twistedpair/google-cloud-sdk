@@ -4867,6 +4867,29 @@ class GoogleCloudDialogflowCxV3ExportAgentResponse(_messages.Message):
   commitSha = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowCxV3ExportEntityTypesMetadata(_messages.Message):
+  r"""Metadata returned for the EntityTypes.ExportEntityTypes long running
+  operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3ExportEntityTypesResponse(_messages.Message):
+  r"""The response message for EntityTypes.ExportEntityTypes.
+
+  Fields:
+    entityTypesContent: Uncompressed byte content for entity types. This field
+      is populated only if `entity_types_content_inline` is set to true in
+      ExportEntityTypesRequest.
+    entityTypesUri: The URI to a file containing the exported entity types.
+      This field is populated only if `entity_types_uri` is specified in
+      ExportEntityTypesRequest.
+  """
+
+  entityTypesContent = _messages.MessageField('GoogleCloudDialogflowCxV3InlineDestination', 1)
+  entityTypesUri = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3ExportFlowResponse(_messages.Message):
   r"""The response message for Flows.ExportFlow.
 
@@ -5166,6 +5189,41 @@ class GoogleCloudDialogflowCxV3ImportDocumentsResponse(_messages.Message):
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
 
 
+class GoogleCloudDialogflowCxV3ImportEntityTypesMetadata(_messages.Message):
+  r"""Metadata returned for the EntityTypes.ImportEntityTypes long running
+  operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3ImportEntityTypesResponse(_messages.Message):
+  r"""The response message for EntityTypes.ImportEntityTypes.
+
+  Fields:
+    conflictingResources: Info which resources have conflicts when
+      REPORT_CONFLICT merge_option is set in ImportEntityTypesRequest.
+    entityTypes: The unique identifier of the imported entity types. Format:
+      `projects//locations//agents//entity_types/`.
+  """
+
+  conflictingResources = _messages.MessageField('GoogleCloudDialogflowCxV3ImportEntityTypesResponseConflictingResources', 1)
+  entityTypes = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3ImportEntityTypesResponseConflictingResources(_messages.Message):
+  r"""Conflicting resources detected during the import process. Only filled
+  when REPORT_CONFLICT is set in the request and there are conflicts in the
+  display names.
+
+  Fields:
+    entityDisplayNames: Display names of conflicting entities.
+    entityTypeDisplayNames: Display names of conflicting entity types.
+  """
+
+  entityDisplayNames = _messages.StringField(1, repeated=True)
+  entityTypeDisplayNames = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudDialogflowCxV3ImportFlowResponse(_messages.Message):
   r"""The response message for Flows.ImportFlow.
 
@@ -5269,7 +5327,10 @@ class GoogleCloudDialogflowCxV3InputAudioConfig(_messages.Message):
     modelVariant: Optional. Which variant of the Speech model to use.
     optOutConformerModelMigration: If `true`, the request will opt out for STT
       conformer model migration. This field will be deprecated once force
-      migration takes place in June 2024.
+      migration takes place in June 2024. Please refer to [Dialogflow CX
+      Speech model
+      migration](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+      model-migration).
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood. See [the
       Cloud Speech documentation](https://cloud.google.com/speech-to-
@@ -7434,6 +7495,29 @@ class GoogleCloudDialogflowCxV3beta1ExportAgentResponse(_messages.Message):
   commitSha = _messages.StringField(3)
 
 
+class GoogleCloudDialogflowCxV3beta1ExportEntityTypesMetadata(_messages.Message):
+  r"""Metadata returned for the EntityTypes.ExportEntityTypes long running
+  operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3beta1ExportEntityTypesResponse(_messages.Message):
+  r"""The response message for EntityTypes.ExportEntityTypes.
+
+  Fields:
+    entityTypesContent: Uncompressed byte content for entity types. This field
+      is populated only if `entity_types_content_inline` is set to true in
+      ExportEntityTypesRequest.
+    entityTypesUri: The URI to a file containing the exported entity types.
+      This field is populated only if `entity_types_uri` is specified in
+      ExportEntityTypesRequest.
+  """
+
+  entityTypesContent = _messages.MessageField('GoogleCloudDialogflowCxV3beta1InlineDestination', 1)
+  entityTypesUri = _messages.StringField(2)
+
+
 class GoogleCloudDialogflowCxV3beta1ExportFlowResponse(_messages.Message):
   r"""The response message for Flows.ExportFlow.
 
@@ -7733,6 +7817,41 @@ class GoogleCloudDialogflowCxV3beta1ImportDocumentsResponse(_messages.Message):
   warnings = _messages.MessageField('GoogleRpcStatus', 1, repeated=True)
 
 
+class GoogleCloudDialogflowCxV3beta1ImportEntityTypesMetadata(_messages.Message):
+  r"""Metadata returned for the EntityTypes.ImportEntityTypes long running
+  operation.
+  """
+
+
+
+class GoogleCloudDialogflowCxV3beta1ImportEntityTypesResponse(_messages.Message):
+  r"""The response message for EntityTypes.ImportEntityTypes.
+
+  Fields:
+    conflictingResources: Info which resources have conflicts when
+      REPORT_CONFLICT merge_option is set in ImportEntityTypesRequest.
+    entityTypes: The unique identifier of the imported entity types. Format:
+      `projects//locations//agents//entity_types/`.
+  """
+
+  conflictingResources = _messages.MessageField('GoogleCloudDialogflowCxV3beta1ImportEntityTypesResponseConflictingResources', 1)
+  entityTypes = _messages.StringField(2, repeated=True)
+
+
+class GoogleCloudDialogflowCxV3beta1ImportEntityTypesResponseConflictingResources(_messages.Message):
+  r"""Conflicting resources detected during the import process. Only filled
+  when REPORT_CONFLICT is set in the request and there are conflicts in the
+  display names.
+
+  Fields:
+    entityDisplayNames: Display names of conflicting entities.
+    entityTypeDisplayNames: Display names of conflicting entity types.
+  """
+
+  entityDisplayNames = _messages.StringField(1, repeated=True)
+  entityTypeDisplayNames = _messages.StringField(2, repeated=True)
+
+
 class GoogleCloudDialogflowCxV3beta1ImportFlowResponse(_messages.Message):
   r"""The response message for Flows.ImportFlow.
 
@@ -7836,7 +7955,10 @@ class GoogleCloudDialogflowCxV3beta1InputAudioConfig(_messages.Message):
     modelVariant: Optional. Which variant of the Speech model to use.
     optOutConformerModelMigration: If `true`, the request will opt out for STT
       conformer model migration. This field will be deprecated once force
-      migration takes place in June 2024.
+      migration takes place in June 2024. Please refer to [Dialogflow CX
+      Speech model
+      migration](https://cloud.google.com/dialogflow/cx/docs/concept/speech-
+      model-migration).
     phraseHints: Optional. A list of strings containing words and phrases that
       the speech recognizer should recognize with higher likelihood. See [the
       Cloud Speech documentation](https://cloud.google.com/speech-to-
@@ -9650,15 +9772,45 @@ class GoogleCloudDialogflowV2AgentAssistantFeedbackKnowledgeSearchFeedback(_mess
 class GoogleCloudDialogflowV2AgentAssistantFeedbackSummarizationFeedback(_messages.Message):
   r"""Feedback for conversation summarization.
 
+  Messages:
+    TextSectionsValue: Optional. Actual text sections of submitted summary.
+
   Fields:
     startTime: Timestamp when composing of the summary starts.
     submitTime: Timestamp when the summary was submitted.
     summaryText: Text of actual submitted summary.
+    textSections: Optional. Actual text sections of submitted summary.
   """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class TextSectionsValue(_messages.Message):
+    r"""Optional. Actual text sections of submitted summary.
+
+    Messages:
+      AdditionalProperty: An additional property for a TextSectionsValue
+        object.
+
+    Fields:
+      additionalProperties: Additional properties of type TextSectionsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a TextSectionsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
 
   startTime = _messages.StringField(1)
   submitTime = _messages.StringField(2)
   summaryText = _messages.StringField(3)
+  textSections = _messages.MessageField('TextSectionsValue', 4)
 
 
 class GoogleCloudDialogflowV2AgentAssistantRecord(_messages.Message):
@@ -12418,7 +12570,10 @@ class GoogleCloudDialogflowV2InputAudioConfig(_messages.Message):
     modelVariant: Which variant of the Speech model to use.
     optOutConformerModelMigration: If `true`, the request will opt out for STT
       conformer model migration. This field will be deprecated once force
-      migration takes place in June 2024.
+      migration takes place in June 2024. Please refer to [Dialogflow ES
+      Speech model
+      migration](https://cloud.google.com/dialogflow/es/docs/speech-model-
+      migration).
     phraseHints: A list of strings containing words and phrases that the
       speech recognizer should recognize with higher likelihood. See [the
       Cloud Speech documentation](https://cloud.google.com/speech-to-

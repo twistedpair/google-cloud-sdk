@@ -41,11 +41,12 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
         response_encoding=response_encoding)
     self.folders_locations_auditReports = self.FoldersLocationsAuditReportsService(self)
     self.folders_locations_auditScopeReports = self.FoldersLocationsAuditScopeReportsService(self)
-    self.folders_locations_operations = self.FoldersLocationsOperationsService(self)
+    self.folders_locations_operationIds = self.FoldersLocationsOperationIdsService(self)
     self.folders_locations = self.FoldersLocationsService(self)
     self.folders = self.FoldersService(self)
     self.projects_locations_auditReports = self.ProjectsLocationsAuditReportsService(self)
     self.projects_locations_auditScopeReports = self.ProjectsLocationsAuditScopeReportsService(self)
+    self.projects_locations_operationIds = self.ProjectsLocationsOperationIdsService(self)
     self.projects_locations_operations = self.ProjectsLocationsOperationsService(self)
     self.projects_locations = self.ProjectsLocationsService(self)
     self.projects = self.ProjectsService(self)
@@ -98,7 +99,7 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Generate(self, request, global_params=None):
-      r"""Generates a demo report highlighting different responsibilities (Google/Customer/ shared) required to be fulfilled for the customer's workload to be compliant with the given regime.
+      r"""Generates a demo report highlighting different responsibilities (Google/Customer/ shared) required to be fulfilled for the customer's workload to be compliant with the given standard.
 
       Args:
         request: (AuditmanagerFoldersLocationsAuditScopeReportsGenerateRequest) input message
@@ -124,21 +125,21 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
-  class FoldersLocationsOperationsService(base_api.BaseApiService):
-    """Service class for the folders_locations_operations resource."""
+  class FoldersLocationsOperationIdsService(base_api.BaseApiService):
+    """Service class for the folders_locations_operationIds resource."""
 
-    _NAME = 'folders_locations_operations'
+    _NAME = 'folders_locations_operationIds'
 
     def __init__(self, client):
-      super(AuditmanagerV1alpha.FoldersLocationsOperationsService, self).__init__(client)
+      super(AuditmanagerV1alpha.FoldersLocationsOperationIdsService, self).__init__(client)
       self._upload_configs = {
           }
 
     def Get(self, request, global_params=None):
-      r"""Get details about an operation. This is a hidden method, used only to work around CCFE lack of passthrough LRO support (b/221498758).
+      r"""Get details about generate audit report operation.
 
       Args:
-        request: (AuditmanagerFoldersLocationsOperationsGetRequest) input message
+        request: (AuditmanagerFoldersLocationsOperationIdsGetRequest) input message
         global_params: (StandardQueryParameters, default: None) global arguments
       Returns:
         (Operation) The response message.
@@ -148,15 +149,15 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
           config, request, global_params=global_params)
 
     Get.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/operations/{operationsId}',
+        flat_path='v1alpha/folders/{foldersId}/locations/{locationsId}/operationIds/{operationIdsId}',
         http_method='GET',
-        method_id='auditmanager.folders.locations.operations.get',
+        method_id='auditmanager.folders.locations.operationIds.get',
         ordered_params=['name'],
         path_params=['name'],
         query_params=[],
         relative_path='v1alpha/{+name}',
         request_field='',
-        request_type_name='AuditmanagerFoldersLocationsOperationsGetRequest',
+        request_type_name='AuditmanagerFoldersLocationsOperationIdsGetRequest',
         response_type_name='Operation',
         supports_download=False,
     )
@@ -256,7 +257,7 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
           }
 
     def Generate(self, request, global_params=None):
-      r"""Generates a demo report highlighting different responsibilities (Google/Customer/ shared) required to be fulfilled for the customer's workload to be compliant with the given regime.
+      r"""Generates a demo report highlighting different responsibilities (Google/Customer/ shared) required to be fulfilled for the customer's workload to be compliant with the given standard.
 
       Args:
         request: (AuditmanagerProjectsLocationsAuditScopeReportsGenerateRequest) input message
@@ -279,6 +280,43 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
         request_field='generateAuditScopeReportRequest',
         request_type_name='AuditmanagerProjectsLocationsAuditScopeReportsGenerateRequest',
         response_type_name='AuditScopeReport',
+        supports_download=False,
+    )
+
+  class ProjectsLocationsOperationIdsService(base_api.BaseApiService):
+    """Service class for the projects_locations_operationIds resource."""
+
+    _NAME = 'projects_locations_operationIds'
+
+    def __init__(self, client):
+      super(AuditmanagerV1alpha.ProjectsLocationsOperationIdsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Get(self, request, global_params=None):
+      r"""Get details about generate audit report operation.
+
+      Args:
+        request: (AuditmanagerProjectsLocationsOperationIdsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/operationIds/{operationIdsId}',
+        http_method='GET',
+        method_id='auditmanager.projects.locations.operationIds.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1alpha/{+name}',
+        request_field='',
+        request_type_name='AuditmanagerProjectsLocationsOperationIdsGetRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 
@@ -347,7 +385,7 @@ class AuditmanagerV1alpha(base_api.BaseApiClient):
     )
 
     def Get(self, request, global_params=None):
-      r"""Get details about an operation. This is a hidden method, used only to work around CCFE lack of passthrough LRO support (b/221498758).
+      r"""Gets the latest state of a long-running operation. Clients can use this method to poll the operation result at intervals as recommended by the API service.
 
       Args:
         request: (AuditmanagerProjectsLocationsOperationsGetRequest) input message

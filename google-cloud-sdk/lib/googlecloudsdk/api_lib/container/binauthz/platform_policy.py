@@ -122,11 +122,11 @@ class Client(object):
     return self.client.projects_platforms_policies.Delete(request)
 
   def Evaluate(self, policy_ref, resource, generate_deploy_attestations=False):
-    """Evaluate a policy against a Pod.
+    """Evaluate a policy against a Kubernetes resource.
 
     Args:
       policy_ref: the resource name of the policy.
-      resource: the Pod in JSON or YAML form.
+      resource: the Kubernetes resource in JSON or YAML form.
       generate_deploy_attestations: whether to sign results or not.
 
     Returns:

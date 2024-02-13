@@ -163,7 +163,7 @@ def Create(
     row_affinity=False,
     priority=None,
     data_boost=False,
-    data_boost_billing_owner=None,
+    data_boost_compute_billing_owner=None,
     force=False,
 ):
   """Create an app profile.
@@ -184,7 +184,8 @@ def Create(
     row_affinity: bool, Whether to use row affinity sticky routing.
     priority: string, The request priority of the new app profile.
     data_boost: bool, If the app profile should use Standard Isolation.
-    data_boost_billing_owner: string, The billing owner for Data Boost.
+    data_boost_compute_billing_owner: string, The compute billing owner for Data
+      Boost.
     force: bool, Whether to ignore API warnings and create forcibly.
 
   Raises:
@@ -237,12 +238,12 @@ def Create(
     standard_isolation = msgs.StandardIsolation(priority=priority_enum)
   elif data_boost:
     data_boost_enum = (
-        msgs.DataBoostIsolationReadOnly.BillingOwnerValueValuesEnum(
-            data_boost_billing_owner
+        msgs.DataBoostIsolationReadOnly.ComputeBillingOwnerValueValuesEnum(
+            data_boost_compute_billing_owner
         )
     )
     data_boost_isolation = msgs.DataBoostIsolationReadOnly(
-        billingOwner=data_boost_enum
+        computeBillingOwner=data_boost_enum
     )
 
   msg = msgs.BigtableadminProjectsInstancesAppProfilesCreateRequest(
@@ -271,7 +272,7 @@ def Update(
     row_affinity=None,
     priority=None,
     data_boost=False,
-    data_boost_billing_owner=None,
+    data_boost_compute_billing_owner=None,
     force=False,
 ):
   """Update an app profile.
@@ -293,7 +294,8 @@ def Update(
       then no change should be made.
     priority: string, The request priority of the new app profile.
     data_boost: bool, If the app profile should use Standard Isolation.
-    data_boost_billing_owner: string, The billing owner for Data Boost.
+    data_boost_compute_billing_owner: string, The compute billing owner for Data
+      Boost.
     force: bool, Whether to ignore API warnings and create forcibly.
 
   Raises:
@@ -368,13 +370,13 @@ def Update(
 
   elif data_boost:
     data_boost_enum = (
-        msgs.DataBoostIsolationReadOnly.BillingOwnerValueValuesEnum(
-            data_boost_billing_owner
+        msgs.DataBoostIsolationReadOnly.ComputeBillingOwnerValueValuesEnum(
+            data_boost_compute_billing_owner
         )
     )
     changed_fields.append('dataBoostIsolationReadOnly')
     app_profile.dataBoostIsolationReadOnly = msgs.DataBoostIsolationReadOnly(
-        billingOwner=data_boost_enum
+        computeBillingOwner=data_boost_enum
     )
 
   msg = msgs.BigtableadminProjectsInstancesAppProfilesPatchRequest(

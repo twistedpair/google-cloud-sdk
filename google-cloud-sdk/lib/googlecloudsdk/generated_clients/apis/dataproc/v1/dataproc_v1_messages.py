@@ -44,8 +44,8 @@ class AccessSparkApplicationEnvironmentInfoResponse(_messages.Message):
   r"""Environment details of a Saprk Application.
 
   Fields:
-    applicationEnvironmentInfo: Output only. Details about the Environment
-      that the application is running in.
+    applicationEnvironmentInfo: Details about the Environment that the
+      application is running in.
   """
 
   applicationEnvironmentInfo = _messages.MessageField('ApplicationEnvironmentInfo', 1)
@@ -76,10 +76,21 @@ class AccessSparkApplicationSqlQueryResponse(_messages.Message):
   r"""Details of a query for a Spark Application
 
   Fields:
-    executionData: Output only. SQL Execution Data
+    executionData: SQL Execution Data
   """
 
   executionData = _messages.MessageField('SqlExecutionUiData', 1)
+
+
+class AccessSparkApplicationSqlSparkPlanGraphResponse(_messages.Message):
+  r"""SparkPlanGraph for a Spark Application execution limited to maximum
+  10000 clusters.
+
+  Fields:
+    sparkPlanGraph: SparkPlanGraph for a Spark Application execution.
+  """
+
+  sparkPlanGraph = _messages.MessageField('SparkPlanGraph', 1)
 
 
 class AccessSparkApplicationStageAttemptResponse(_messages.Message):
@@ -90,6 +101,17 @@ class AccessSparkApplicationStageAttemptResponse(_messages.Message):
   """
 
   stageData = _messages.MessageField('StageData', 1)
+
+
+class AccessSparkApplicationStageRddOperationGraphResponse(_messages.Message):
+  r"""RDD operation graph for a Spark Application Stage limited to maximum
+  10000 clusters.
+
+  Fields:
+    rddOperationGraph: RDD operation graph for a Spark Application Stage.
+  """
+
+  rddOperationGraph = _messages.MessageField('RddOperationGraph', 1)
 
 
 class AccumulableInfo(_messages.Message):
@@ -461,10 +483,12 @@ class AutotuningConfig(_messages.Message):
       SCENARIO_UNSPECIFIED: Default value.
       OOM: Out-of-memory errors remediation.
       SCALING: Scaling recommendations such as initialExecutors.
+      BHJ: Adding hints for potential relation broadcasts.
     """
     SCENARIO_UNSPECIFIED = 0
     OOM = 1
     SCALING = 2
+    BHJ = 3
 
   cohort = _messages.StringField(1)
   scenarios = _messages.EnumField('ScenariosValueListEntryValuesEnum', 2, repeated=True)
@@ -810,7 +834,11 @@ class Binding(_messages.Message):
       ed:principal://iam.googleapis.com/locations/global/workforcePools/my-
       pool-id/subject/my-subject-attribute-value.
     role: Role that is assigned to the list of members, or principals. For
-      example, roles/viewer, roles/editor, or roles/owner.
+      example, roles/viewer, roles/editor, or roles/owner.For an overview of
+      the IAM roles and permissions, see the IAM documentation
+      (https://cloud.google.com/iam/docs/roles-overview). For a list of the
+      available pre-defined roles, see here
+      (https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -1315,6 +1343,48 @@ class ConfidentialInstanceConfig(_messages.Message):
   enableConfidentialCompute = _messages.BooleanField(1)
 
 
+class ConsolidatedExecutorSummary(_messages.Message):
+  r"""Consolidated summary about executors used by the application.
+
+  Fields:
+    activeTasks: A integer attribute.
+    completedTasks: A integer attribute.
+    count: A integer attribute.
+    diskUsed: A string attribute.
+    failedTasks: A integer attribute.
+    isExcluded: A integer attribute.
+    maxMemory: A string attribute.
+    memoryMetrics: A MemoryMetrics attribute.
+    memoryUsed: A string attribute.
+    rddBlocks: A integer attribute.
+    totalCores: A integer attribute.
+    totalDurationMillis: A string attribute.
+    totalGcTimeMillis: A string attribute.
+    totalInputBytes: A string attribute.
+    totalShuffleRead: A string attribute.
+    totalShuffleWrite: A string attribute.
+    totalTasks: A integer attribute.
+  """
+
+  activeTasks = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  completedTasks = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  count = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  diskUsed = _messages.IntegerField(4)
+  failedTasks = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  isExcluded = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  maxMemory = _messages.IntegerField(7)
+  memoryMetrics = _messages.MessageField('MemoryMetrics', 8)
+  memoryUsed = _messages.IntegerField(9)
+  rddBlocks = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  totalCores = _messages.IntegerField(11, variant=_messages.Variant.INT32)
+  totalDurationMillis = _messages.IntegerField(12)
+  totalGcTimeMillis = _messages.IntegerField(13)
+  totalInputBytes = _messages.IntegerField(14)
+  totalShuffleRead = _messages.IntegerField(15)
+  totalShuffleWrite = _messages.IntegerField(16)
+  totalTasks = _messages.IntegerField(17, variant=_messages.Variant.INT32)
+
+
 class DataprocMetricConfig(_messages.Message):
   r"""Dataproc metric config.
 
@@ -1575,9 +1645,25 @@ class DataprocProjectsLocationsBatchesSparkApplicationsAccessRequest(_messages.M
   parent = _messages.StringField(2)
 
 
-class DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlQueriesRequest(_messages.Message):
-  r"""A
-  DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlQueriesRequest
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlPlanRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlPlanRequest
+  object.
+
+  Fields:
+    executionId: Required. Execution ID
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  executionId = _messages.IntegerField(1)
+  name = _messages.StringField(2, required=True)
+  parent = _messages.StringField(3)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlQueryRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsAccessSqlQueryRequest
   object.
 
   Fields:
@@ -1617,6 +1703,51 @@ class DataprocProjectsLocationsBatchesSparkApplicationsAccessStageAttemptRequest
   parent = _messages.StringField(2)
   stageAttemptId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
   stageId = _messages.IntegerField(4)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsAccessStageRddGraphRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsAccessStageRddGraphRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+    stageId: Required. Stage ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+  stageId = _messages.IntegerField(3)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorStageSummaryRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorStageSu
+  mmaryRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    pageSize: Optional. Maximum number of executors to return in each
+      response. The service may return fewer than this. The default page size
+      is 10; the maximum page size is 100.
+    pageToken: Optional. A page token received from a previous
+      AccessSparkApplicationExecutorsList call. Provide this token to retrieve
+      the subsequent page.
+    parent: Required. Parent (Batch) resource reference.
+    stageAttemptId: Required. Stage Attempt ID
+    stageId: Required. Stage ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4)
+  stageAttemptId = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(6)
 
 
 class DataprocProjectsLocationsBatchesSparkApplicationsSearchExecutorsRequest(_messages.Message):
@@ -1905,6 +2036,72 @@ class DataprocProjectsLocationsBatchesSparkApplicationsSearchStagesRequest(_mess
   pageToken = _messages.StringField(3)
   parent = _messages.StringField(4)
   stageStatus = _messages.EnumField('StageStatusValueValuesEnum', 5)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSummarizeExecutorsRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsSummarizeExecutorsRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSummarizeJobsRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsSummarizeJobsRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSummarizeStageAttemptTasksRequest(_messages.Message):
+  r"""A DataprocProjectsLocationsBatchesSparkApplicationsSummarizeStageAttempt
+  TasksRequest object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+    stageAttemptId: Required. Stage Attempt ID
+    stageId: Required. Stage ID
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
+  stageAttemptId = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(4)
+
+
+class DataprocProjectsLocationsBatchesSparkApplicationsSummarizeStagesRequest(_messages.Message):
+  r"""A
+  DataprocProjectsLocationsBatchesSparkApplicationsSummarizeStagesRequest
+  object.
+
+  Fields:
+    name: Required. The fully qualified name of the batch to retrieve in the
+      format "projects/PROJECT_ID/locations/DATAPROC_REGION/batches/BATCH_ID/s
+      parkApplications/APPLICATION_ID"
+    parent: Required. Parent (Batch) resource reference.
+  """
+
+  name = _messages.StringField(1, required=True)
+  parent = _messages.StringField(2)
 
 
 class DataprocProjectsLocationsBatchesSparkApplicationsWriteRequest(_messages.Message):
@@ -2609,13 +2806,13 @@ class DataprocProjectsRegionsClustersListRequest(_messages.Message):
       value ...where field is one of status.state, clusterName, or
       labels.[KEY], and [KEY] is a label key. value can be * to match all
       values. status.state can be one of the following: ACTIVE, INACTIVE,
-      CREATING, RUNNING, ERROR, DELETING, or UPDATING. ACTIVE contains the
-      CREATING, UPDATING, and RUNNING states. INACTIVE contains the DELETING
-      and ERROR states. clusterName is the name of the cluster provided at
-      creation time. Only the logical AND operator is supported; space-
-      separated items are treated as having an implicit AND operator.Example
-      filter:status.state = ACTIVE AND clusterName = mycluster AND labels.env
-      = staging AND labels.starred = *
+      CREATING, RUNNING, ERROR, DELETING, UPDATING, STOPPING, or STOPPED.
+      ACTIVE contains the CREATING, UPDATING, and RUNNING states. INACTIVE
+      contains the DELETING, ERROR, STOPPING, and STOPPED states. clusterName
+      is the name of the cluster provided at creation time. Only the logical
+      AND operator is supported; space-separated items are treated as having
+      an implicit AND operator.Example filter:status.state = ACTIVE AND
+      clusterName = mycluster AND labels.env = staging AND labels.starred = *
     pageSize: Optional. The standard List page size.
     pageToken: Optional. The standard List page token.
     projectId: Required. The ID of the Google Cloud Platform project that the
@@ -2646,7 +2843,7 @@ class DataprocProjectsRegionsClustersNodeGroupsCreateRequest(_messages.Message):
     requestId: Optional. A unique ID used to identify the request. If the
       server receives two CreateNodeGroupRequest (https://cloud.google.com/dat
       aproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dataproc.
-      v1.CreateNodeGroupRequests) with the same ID, the second request is
+      v1.CreateNodeGroupRequest) with the same ID, the second request is
       ignored and the first google.longrunning.Operation created and stored in
       the backend is returned.Recommendation: Set this value to a UUID
       (https://en.wikipedia.org/wiki/Universally_unique_identifier).The ID
@@ -2740,6 +2937,21 @@ class DataprocProjectsRegionsClustersNodeGroupsResizeRequest(_messages.Message):
 
   name = _messages.StringField(1, required=True)
   resizeNodeGroupRequest = _messages.MessageField('ResizeNodeGroupRequest', 2)
+
+
+class DataprocProjectsRegionsClustersNodeGroupsUpdateLabelsRequest(_messages.Message):
+  r"""A DataprocProjectsRegionsClustersNodeGroupsUpdateLabelsRequest object.
+
+  Fields:
+    name: Required. The name of the node group for updating the labels.
+      Format: projects/{project}/regions/{region}/clusters/{cluster}/nodeGroup
+      s/{nodeGroup}
+    updateLabelsNodeGroupRequest: A UpdateLabelsNodeGroupRequest resource to
+      be passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  updateLabelsNodeGroupRequest = _messages.MessageField('UpdateLabelsNodeGroupRequest', 2)
 
 
 class DataprocProjectsRegionsClustersPatchRequest(_messages.Message):
@@ -5442,6 +5654,26 @@ class JobStatus(_messages.Message):
   substate = _messages.EnumField('SubstateValueValuesEnum', 4)
 
 
+class JobsSummary(_messages.Message):
+  r"""Data related to Jobs page summary
+
+  Fields:
+    activeJobs: Number of active jobs
+    applicationId: Spark Application Id
+    attempts: Attempts info
+    completedJobs: Number of completed jobs
+    failedJobs: Number of failed jobs
+    schedulingMode: Spark Scheduling mode
+  """
+
+  activeJobs = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  applicationId = _messages.StringField(2)
+  attempts = _messages.MessageField('ApplicationAttemptInfo', 3, repeated=True)
+  completedJobs = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  failedJobs = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  schedulingMode = _messages.StringField(6)
+
+
 class JupyterConfig(_messages.Message):
   r"""Jupyter configuration for an interactive session.
 
@@ -6229,6 +6461,7 @@ class NodeGroupOperationMetadata(_messages.Message):
       DELETE: Delete node group operation type.
       RESIZE: Resize node group operation type.
       REPAIR: Repair node group operation type.
+      UPDATE_LABELS: Update node group label operation type.
     """
     NODE_GROUP_OPERATION_TYPE_UNSPECIFIED = 0
     CREATE = 1
@@ -6236,6 +6469,7 @@ class NodeGroupOperationMetadata(_messages.Message):
     DELETE = 3
     RESIZE = 4
     REPAIR = 5
+    UPDATE_LABELS = 6
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -7639,6 +7873,21 @@ class RuntimeInfo(_messages.Message):
   publicKeys = _messages.MessageField('PublicKeys', 7)
 
 
+class SearchSparkApplicationExecutorStageSummaryResponse(_messages.Message):
+  r"""List of Executors associated with a Spark Application Stage.
+
+  Fields:
+    nextPageToken: This token is included in the response if there are more
+      results to fetch. To fetch additional results, provide this value as the
+      page_token in a subsequent SearchSparkApplicationExecutorsListRequest.
+    sparkApplicationStageExecutors: Details about executors used by the
+      application stage.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  sparkApplicationStageExecutors = _messages.MessageField('ExecutorStageSummary', 2, repeated=True)
+
+
 class SearchSparkApplicationExecutorsResponse(_messages.Message):
   r"""List of Executors associated with a Spark Application.
 
@@ -7646,8 +7895,8 @@ class SearchSparkApplicationExecutorsResponse(_messages.Message):
     nextPageToken: This token is included in the response if there are more
       results to fetch. To fetch additional results, provide this value as the
       page_token in a subsequent SearchSparkApplicationExecutorsListRequest.
-    sparkApplicationExecutors: Output only. Details about executors used by
-      the application.
+    sparkApplicationExecutors: Details about executors used by the
+      application.
   """
 
   nextPageToken = _messages.StringField(1)
@@ -9147,6 +9396,32 @@ class SqlPlanMetric(_messages.Message):
   name = _messages.StringField(3)
 
 
+class StageAttemptTasksSummary(_messages.Message):
+  r"""Data related to tasks summary for a Spark Stage Attempt
+
+  Fields:
+    applicationId: A string attribute.
+    numFailedTasks: A integer attribute.
+    numKilledTasks: A integer attribute.
+    numPendingTasks: A integer attribute.
+    numRunningTasks: A integer attribute.
+    numSuccessTasks: A integer attribute.
+    numTasks: A integer attribute.
+    stageAttemptId: A integer attribute.
+    stageId: A string attribute.
+  """
+
+  applicationId = _messages.StringField(1)
+  numFailedTasks = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  numKilledTasks = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numPendingTasks = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  numRunningTasks = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  numSuccessTasks = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  numTasks = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  stageAttemptId = _messages.IntegerField(8, variant=_messages.Variant.INT32)
+  stageId = _messages.IntegerField(9)
+
+
 class StageData(_messages.Message):
   r"""Data corresponding to a stage.
 
@@ -9471,6 +9746,26 @@ class StageShuffleWriteMetrics(_messages.Message):
   bytesWritten = _messages.IntegerField(1)
   recordsWritten = _messages.IntegerField(2)
   writeTimeNanos = _messages.IntegerField(3)
+
+
+class StagesSummary(_messages.Message):
+  r"""Data related to Stages page summary
+
+  Fields:
+    applicationId: A string attribute.
+    numActiveStages: A integer attribute.
+    numCompletedStages: A integer attribute.
+    numFailedStages: A integer attribute.
+    numPendingStages: A integer attribute.
+    numSkippedStages: A integer attribute.
+  """
+
+  applicationId = _messages.StringField(1)
+  numActiveStages = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  numCompletedStages = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  numFailedStages = _messages.IntegerField(4, variant=_messages.Variant.INT32)
+  numPendingStages = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  numSkippedStages = _messages.IntegerField(6, variant=_messages.Variant.INT32)
 
 
 class StandardQueryParameters(_messages.Message):
@@ -9927,6 +10222,53 @@ class SubmitJobRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
+class SummarizeSparkApplicationExecutorsResponse(_messages.Message):
+  r"""Consolidated summary of executors for a Spark Application.
+
+  Fields:
+    activeExecutorSummary: Consolidated summary for active executors.
+    applicationId: Spark Application Id
+    deadExecutorSummary: Consolidated summary for dead executors.
+    totalExecutorSummary: Overall consolidated summary for all executors.
+  """
+
+  activeExecutorSummary = _messages.MessageField('ConsolidatedExecutorSummary', 1)
+  applicationId = _messages.StringField(2)
+  deadExecutorSummary = _messages.MessageField('ConsolidatedExecutorSummary', 3)
+  totalExecutorSummary = _messages.MessageField('ConsolidatedExecutorSummary', 4)
+
+
+class SummarizeSparkApplicationJobsResponse(_messages.Message):
+  r"""Summary of a Spark Application jobs.
+
+  Fields:
+    jobsSummary: Summary of a Spark Application Jobs
+  """
+
+  jobsSummary = _messages.MessageField('JobsSummary', 1)
+
+
+class SummarizeSparkApplicationStageAttemptTasksResponse(_messages.Message):
+  r"""Summary of tasks for a Spark Application stage attempt.
+
+  Fields:
+    stageAttemptTasksSummary: Summary of tasks for a Spark Application Stage
+      Attempt
+  """
+
+  stageAttemptTasksSummary = _messages.MessageField('StageAttemptTasksSummary', 1)
+
+
+class SummarizeSparkApplicationStagesResponse(_messages.Message):
+  r"""Summary of a Spark Application stages.
+
+  Fields:
+    stagesSummary: Summary of a Spark Application Stages
+  """
+
+  stagesSummary = _messages.MessageField('StagesSummary', 1)
+
+
 class TaskData(_messages.Message):
   r"""Data corresponding to tasks created by spark.
 
@@ -10246,6 +10588,71 @@ class TrinoJob(_messages.Message):
   properties = _messages.MessageField('PropertiesValue', 5)
   queryFileUri = _messages.StringField(6)
   queryList = _messages.MessageField('QueryList', 7)
+
+
+class UpdateLabelsNodeGroupRequest(_messages.Message):
+  r"""A request to update the labels of a node group.
+
+  Messages:
+    LabelsValue: Required. The labels to associate with this Node Group. Label
+      keys must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a cluster.
+
+  Fields:
+    labels: Required. The labels to associate with this Node Group. Label keys
+      must contain 1 to 63 characters, and must conform to RFC 1035
+      (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but,
+      if present, must contain 1 to 63 characters, and must conform to RFC
+      1035 (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can
+      be associated with a cluster.
+    parentOperationId: Optional. Operation id of the parent operation sending
+      the update labels request.
+    requestId: Optional. A unique ID used to identify the request. If the
+      server receives two UpdateLabelsNodeGroupRequest (https://cloud.google.c
+      om/dataproc/docs/reference/rpc/google.cloud.dataproc.v1#google.cloud.dat
+      aproc.v1.UpdateLabelsNodeGroupRequests) with the same ID, the second
+      request is ignored and the first google.longrunning.Operation created
+      and stored in the backend is returned.Recommendation: Set this value to
+      a UUID (https://en.wikipedia.org/wiki/Universally_unique_identifier).The
+      ID must contain only letters (a-z, A-Z), numbers (0-9), underscores (_),
+      and hyphens (-). The maximum length is 40 characters.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Required. The labels to associate with this Node Group. Label keys
+    must contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). Label values may be empty, but, if
+    present, must contain 1 to 63 characters, and must conform to RFC 1035
+    (https://www.ietf.org/rfc/rfc1035.txt). No more than 32 labels can be
+    associated with a cluster.
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  labels = _messages.MessageField('LabelsValue', 1)
+  parentOperationId = _messages.StringField(2)
+  requestId = _messages.StringField(3)
 
 
 class UsageMetrics(_messages.Message):

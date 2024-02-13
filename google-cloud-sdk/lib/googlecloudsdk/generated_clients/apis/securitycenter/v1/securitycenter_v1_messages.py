@@ -243,7 +243,7 @@ class AttackExposure(_messages.Message):
   Fields:
     attackExposureResult: The resource name of the attack path simulation
       result that contains the details regarding this attack exposure score.
-      Example: organizations/123/attackExposureResults/456
+      Example: organizations/123/simulations/456/attackExposureResults/789
     exposedHighValueResourcesCount: The number of high value resources that
       are exposed as a result of this finding.
     exposedLowValueResourcesCount: The number of high value resources that are
@@ -620,7 +620,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -876,8 +880,9 @@ class CustomModuleValidationErrors(_messages.Message):
 
 
 class Cve(_messages.Message):
-  r"""CVE stands for Common Vulnerabilities and Exposures. More information:
-  https://cve.mitre.org
+  r"""CVE stands for Common Vulnerabilities and Exposures. Information from
+  the [CVE record](https://www.cve.org/ResourcesSupport/Glossary) that
+  describes this vulnerability.
 
   Fields:
     cvssv3: Describe Common Vulnerability Scoring System specified at
@@ -2273,6 +2278,10 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
     scope: Project or folder to scope this config to. For example,
       "project/456" would apply this config only to resources in "project/456"
       scope will be checked with "AND" of other resources.
+    sensitiveDataProtectionMapping: A mapping of the sensitivity on Sensitive
+      Data Protection finding to resource values. This mapping can only be
+      used in combination with a resource_type that is related to BigQuery,
+      e.g. "bigquery.googleapis.com/Dataset".
     tagValues: Required. Tag values combined with AND to check against. Values
       in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
       "tagValues/789" ] https://cloud.google.com/resource-
@@ -2333,8 +2342,9 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
   resourceType = _messages.StringField(5)
   resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
   scope = _messages.StringField(7)
-  tagValues = _messages.StringField(8, repeated=True)
-  updateTime = _messages.StringField(9)
+  sensitiveDataProtectionMapping = _messages.MessageField('GoogleCloudSecuritycenterV1SensitiveDataProtectionMapping', 8)
+  tagValues = _messages.StringField(9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -2425,6 +2435,62 @@ class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.M
   lastEditor = _messages.StringField(5)
   name = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class GoogleCloudSecuritycenterV1SensitiveDataProtectionMapping(_messages.Message):
+  r"""Resource value mapping for Sensitive Data Protection findings. If any of
+  these mappings have a resource value that is not unspecified, the
+  resource_value field will be ignored when reading this configuration.
+
+  Enums:
+    HighSensitivityMappingValueValuesEnum: Resource value mapping for high-
+      sensitivity Sensitive Data Protection findings
+    MediumSensitivityMappingValueValuesEnum: Resource value mapping for
+      medium-sensitivity Sensitive Data Protection findings
+
+  Fields:
+    highSensitivityMapping: Resource value mapping for high-sensitivity
+      Sensitive Data Protection findings
+    mediumSensitivityMapping: Resource value mapping for medium-sensitivity
+      Sensitive Data Protection findings
+  """
+
+  class HighSensitivityMappingValueValuesEnum(_messages.Enum):
+    r"""Resource value mapping for high-sensitivity Sensitive Data Protection
+    findings
+
+    Values:
+      RESOURCE_VALUE_UNSPECIFIED: Unspecific value
+      HIGH: High resource value
+      MEDIUM: Medium resource value
+      LOW: Low resource value
+      NONE: No resource value, e.g. ignore these resources
+    """
+    RESOURCE_VALUE_UNSPECIFIED = 0
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
+    NONE = 4
+
+  class MediumSensitivityMappingValueValuesEnum(_messages.Enum):
+    r"""Resource value mapping for medium-sensitivity Sensitive Data
+    Protection findings
+
+    Values:
+      RESOURCE_VALUE_UNSPECIFIED: Unspecific value
+      HIGH: High resource value
+      MEDIUM: Medium resource value
+      LOW: Low resource value
+      NONE: No resource value, e.g. ignore these resources
+    """
+    RESOURCE_VALUE_UNSPECIFIED = 0
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
+    NONE = 4
+
+  highSensitivityMapping = _messages.EnumField('HighSensitivityMappingValueValuesEnum', 1)
+  mediumSensitivityMapping = _messages.EnumField('MediumSensitivityMappingValueValuesEnum', 2)
 
 
 class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):
@@ -6576,6 +6642,13 @@ class SecuritycenterOrganizationsSimulationsAttackExposureResultsValuedResources
     filter: The filter expression that filters the valued resources in the
       response. Supported fields: * `resource_value` supports = *
       `resource_type` supports =
+    orderBy: Optional. The fields by which to order the valued resources
+      response. Supported fields: * `exposed_score` * `resource_value` *
+      `resource_type` * `resource` * `display_name` Values should be a comma
+      separated list of fields. For example: `exposed_score,resource_value`.
+      The default sorting order is descending. To specify ascending or
+      descending order for a field, append a " ASC" or a " DESC" suffix,
+      respectively; for example: `exposed_score DESC`.
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.
     pageToken: The value returned by the last `ListValuedResourcesResponse`;
@@ -6589,9 +6662,10 @@ class SecuritycenterOrganizationsSimulationsAttackExposureResultsValuedResources
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SecuritycenterOrganizationsSimulationsAttackPathsListRequest(_messages.Message):
@@ -6680,6 +6754,13 @@ class SecuritycenterOrganizationsSimulationsValuedResourcesListRequest(_messages
     filter: The filter expression that filters the valued resources in the
       response. Supported fields: * `resource_value` supports = *
       `resource_type` supports =
+    orderBy: Optional. The fields by which to order the valued resources
+      response. Supported fields: * `exposed_score` * `resource_value` *
+      `resource_type` * `resource` * `display_name` Values should be a comma
+      separated list of fields. For example: `exposed_score,resource_value`.
+      The default sorting order is descending. To specify ascending or
+      descending order for a field, append a " ASC" or a " DESC" suffix,
+      respectively; for example: `exposed_score DESC`.
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.
     pageToken: The value returned by the last `ListValuedResourcesResponse`;
@@ -6693,9 +6774,10 @@ class SecuritycenterOrganizationsSimulationsValuedResourcesListRequest(_messages
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SecuritycenterOrganizationsSourcesCreateRequest(_messages.Message):

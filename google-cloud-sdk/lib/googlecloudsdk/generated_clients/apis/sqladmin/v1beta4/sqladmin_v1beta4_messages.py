@@ -814,11 +814,11 @@ class DatabaseInstance(_messages.Message):
       The Google apps domain is prefixed if applicable.
     pscServiceAttachmentLink: Output only. The link to service attachment of
       PSC instance.
-    region: The geographical region. Can be: * `us-central` (`FIRST_GEN`
-      instances only) * `us-central1` (`SECOND_GEN` instances only) * `asia-
-      east1` or `europe-west1`. Defaults to `us-central` or `us-central1`
-      depending on the instance type. The region cannot be changed after
-      instance creation.
+    region: The geographical region of the Cloud SQL instance. It can be one
+      of the
+      [regions](https://cloud.google.com/sql/docs/mysql/locations#location-r)
+      where Cloud SQL operates: For example, `asia-east1`, `europe-west1`, and
+      `us-central1`. The default value is `us-central1`.
     replicaConfiguration: Configuration specific to failover replicas and read
       replicas.
     replicaNames: The replicas of the instance.
@@ -2207,7 +2207,13 @@ class IpConfiguration(_messages.Message):
       TRUSTED_CLIENT_CERTIFICATE_REQUIRED: Only allow connections encrypted
         with SSL/TLS and with valid client certificates. When this value is
         used, the legacy `require_ssl` flag must be true or cleared to avoid
-        the conflict between values of two flags.
+        the conflict between values of two flags. PostgreSQL clients or users
+        that connect using IAM database authentication must use either the
+        [Cloud SQL Auth
+        Proxy](https://cloud.google.com/sql/docs/postgres/connect-auth-proxy)
+        or [Cloud SQL
+        Connectors](https://cloud.google.com/sql/docs/postgres/connect-
+        connectors) to enforce client identity verification.
     """
     SSL_MODE_UNSPECIFIED = 0
     ALLOW_UNENCRYPTED_AND_ENCRYPTED = 1
@@ -3531,6 +3537,10 @@ class SqlExternalSyncSettingError(_messages.Message):
       SUBSCRIPTION_CALCULATION_STATUS: If a time out occurs while the
         subscription counts are calculated, then this value is set to 1.
         Otherwise, this value is set to 2.
+      PG_SUBSCRIPTION_COUNT: Count of subscriptions needed to sync source data
+        for PostgreSQL database.
+      PG_SYNC_PARALLEL_LEVEL: Final parallel level that is used to do
+        migration.
     """
     SQL_EXTERNAL_SYNC_SETTING_ERROR_TYPE_UNSPECIFIED = 0
     CONNECTION_FAILURE = 1
@@ -3573,6 +3583,8 @@ class SqlExternalSyncSettingError(_messages.Message):
     SOURCE_MAX_SUBSCRIPTIONS = 38
     UNABLE_TO_VERIFY_DEFINERS = 39
     SUBSCRIPTION_CALCULATION_STATUS = 40
+    PG_SUBSCRIPTION_COUNT = 41
+    PG_SYNC_PARALLEL_LEVEL = 42
 
   detail = _messages.StringField(1)
   kind = _messages.StringField(2)

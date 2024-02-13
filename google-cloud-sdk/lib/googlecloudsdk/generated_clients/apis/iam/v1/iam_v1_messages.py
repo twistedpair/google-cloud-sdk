@@ -283,7 +283,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -3365,6 +3369,18 @@ class IdentityAssignment(_messages.Message):
   singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 2, repeated=True)
 
 
+class IntermediateCA(_messages.Message):
+  r"""Intermediate CA certificates used for building the trust chain to trust
+  anchor
+
+  Fields:
+    pemCertificate: PEM certificate of the PKI used for validation. Must only
+      contain one ca certificate.
+  """
+
+  pemCertificate = _messages.StringField(1)
+
+
 class KeyData(_messages.Message):
   r"""Represents a public key data along with its format.
 
@@ -4834,6 +4850,33 @@ class TestIamPermissionsResponse(_messages.Message):
   permissions = _messages.StringField(1, repeated=True)
 
 
+class TrustAnchor(_messages.Message):
+  r"""TrustAnchor is the root of trust of x509 federation.
+
+  Fields:
+    pemCertificate: PEM certificate of the PKI used for validation. Must only
+      contain one ca certificate, and must be self-signed.
+  """
+
+  pemCertificate = _messages.StringField(1)
+
+
+class TrustStore(_messages.Message):
+  r"""Trust store that contains trust anchors and optional intermediate CAs
+  used in PKI to build trust chain and verify client's identity.
+
+  Fields:
+    intermediateCas: Optional. Set of intermediate CA certificates used for
+      building the trust chain to trust anchor.
+    trustAnchors: Required. List of Trust Anchors to be used while performing
+      validation against a given TrustStore. The incoming end entity's
+      certificate must be chained up to one of the trust anchors here.
+  """
+
+  intermediateCas = _messages.MessageField('IntermediateCA', 1, repeated=True)
+  trustAnchors = _messages.MessageField('TrustAnchor', 2, repeated=True)
+
+
 class UndeleteOauthClientRequest(_messages.Message):
   r"""Request message for UndeleteOauthClient.
 
@@ -5626,6 +5669,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
     oidc: An OpenId Connect 1.0 identity provider.
     saml: An SAML 2.0 identity provider.
     state: Output only. The state of the provider.
+    x509: An X.509-type identity provider.
   """
 
   class StateValueValuesEnum(_messages.Enum):
@@ -5722,6 +5766,7 @@ class WorkloadIdentityPoolProvider(_messages.Message):
   oidc = _messages.MessageField('Oidc', 9)
   saml = _messages.MessageField('Saml', 10)
   state = _messages.EnumField('StateValueValuesEnum', 11)
+  x509 = _messages.MessageField('X509', 12)
 
 
 class WorkloadIdentityPoolProviderKey(_messages.Message):
@@ -5801,6 +5846,21 @@ class WorkloadSource(_messages.Message):
   identityAssignments = _messages.MessageField('IdentityAssignment', 2, repeated=True)
   name = _messages.StringField(3)
   singleAttributeSelectors = _messages.MessageField('SingleAttributeSelector', 4, repeated=True)
+
+
+class X509(_messages.Message):
+  r"""An X.509-type identity provider represents a CA. It is trusted to assert
+  a client identity if the client has a certificate that chains up to this CA.
+
+  Fields:
+    trustStore: Required. A Trust store, use this trust store as a wrapper to
+      config the trust anchor and optional intermediate cas to help build the
+      trust chain for the incoming end entity certificate. Follow the x509
+      guidelines to define those PEM encoded certs. Only 1 trust store is
+      currently supported.
+  """
+
+  trustStore = _messages.MessageField('TrustStore', 1)
 
 
 encoding.AddCustomJsonFieldMapping(

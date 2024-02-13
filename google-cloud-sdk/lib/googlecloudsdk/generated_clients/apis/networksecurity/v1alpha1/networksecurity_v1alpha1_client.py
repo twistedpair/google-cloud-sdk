@@ -587,6 +587,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a single MirroringEndpointGroup.
+
+      Args:
+        request: (NetworksecurityOrganizationsLocationsMirroringEndpointGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/organizations/{organizationsId}/locations/{locationsId}/mirroringEndpointGroups/{mirroringEndpointGroupsId}',
+        http_method='PATCH',
+        method_id='networksecurity.organizations.locations.mirroringEndpointGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='mirroringEndpointGroup',
+        request_type_name='NetworksecurityOrganizationsLocationsMirroringEndpointGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class OrganizationsLocationsOperationsService(base_api.BaseApiService):
     """Service class for the organizations_locations_operations resource."""
 
@@ -2499,6 +2526,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a single MirroringDeploymentGroup.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentGroupsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/mirroringDeploymentGroups/{mirroringDeploymentGroupsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.mirroringDeploymentGroups.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='mirroringDeploymentGroup',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentGroupsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMirroringDeploymentsService(base_api.BaseApiService):
     """Service class for the projects_locations_mirroringDeployments resource."""
 
@@ -2617,6 +2671,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def Patch(self, request, global_params=None):
+      r"""Updates a single MirroringDeployment.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringDeploymentsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/mirroringDeployments/{mirroringDeploymentsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.mirroringDeployments.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='mirroringDeployment',
+        request_type_name='NetworksecurityProjectsLocationsMirroringDeploymentsPatchRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
   class ProjectsLocationsMirroringEndpointGroupAssociationsService(base_api.BaseApiService):
     """Service class for the projects_locations_mirroringEndpointGroupAssociations resource."""
 
@@ -2732,6 +2813,33 @@ class NetworksecurityV1alpha1(base_api.BaseApiClient):
         request_field='',
         request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsListRequest',
         response_type_name='ListMirroringEndpointGroupAssociationsResponse',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Updates a single MirroringEndpointGroupAssociation.
+
+      Args:
+        request: (NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsPatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}/locations/{locationsId}/mirroringEndpointGroupAssociations/{mirroringEndpointGroupAssociationsId}',
+        http_method='PATCH',
+        method_id='networksecurity.projects.locations.mirroringEndpointGroupAssociations.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['requestId', 'updateMask'],
+        relative_path='v1alpha1/{+name}',
+        request_field='mirroringEndpointGroupAssociation',
+        request_type_name='NetworksecurityProjectsLocationsMirroringEndpointGroupAssociationsPatchRequest',
+        response_type_name='Operation',
         supports_download=False,
     )
 

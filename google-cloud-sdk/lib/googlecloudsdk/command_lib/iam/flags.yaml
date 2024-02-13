@@ -370,6 +370,25 @@ workload_identity_pool_provider:
       XML file with configuration metadata for the SAML identity provider. The metadata file must
       follow the
       [SAML 2.0 metadata specification](https://www.oasis-open.org/committees/download.php/35391/sstc-saml-metadata-errata-2.0-wd-04-diff.pdf).
+  trust_store_config_path:
+    api_field: workloadIdentityPoolProvider.x509.trustStore
+    type: "googlecloudsdk.calliope.arg_parsers:YAMLFileContents:"
+    processor: googlecloudsdk.command_lib.iam.iam_util:ParseYamlToTrustStore
+    arg_name: trust-store-config-path
+    help_text: |-
+      YAML file with configuration metadata for the X.509 identity provider.
+      Example file format:
+      ```
+      trustStore:
+        trustAnchors:
+        - pemCertificate: "-----BEGIN CERTIFICATE-----
+        <certificate>
+        -----END CERTIFICATE-----"
+        intermediateCas:
+        - pemCertificate: "-----BEGIN CERTIFICATE-----
+        <certificate>
+        -----END CERTIFICATE-----"
+      ```
 
 workload_identity_pool_provider_key:
   use:

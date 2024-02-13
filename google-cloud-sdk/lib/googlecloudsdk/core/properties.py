@@ -1487,6 +1487,16 @@ class _SectionArtifacts(_Section):
         help_text='Default domain endpoint to use while interacting with '
         'Artifact Registry Docker resources.')
 
+    self.gcr_host = self._Add(
+        'gcr_host',
+        default='gcr.io',
+        hidden=True,
+        help_text=(
+            'Default host to use while interacting with Container Registry '
+            'Docker resources.'
+        ),
+    )
+
 
 class _SectionAuth(_Section):
   """Contains the properties for the 'auth' section."""

@@ -339,6 +339,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_ENVIRONMENTS_DEPLOYMENTS = (
+      'organizations.environments.deployments',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/environments/{environmentsId}/'
+              'deployments/{deploymentsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_ENVIRONMENTS_FLOWHOOKS = (
       'organizations.environments.flowhooks',
       '{+name}',
@@ -624,6 +635,17 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_SECURITYFEEDBACK = (
+      'organizations.securityFeedback',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/securityFeedback/'
+              '{securityFeedbackId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_SECURITYPROFILES = (
       'organizations.securityProfiles',
       '{+name}',
@@ -631,6 +653,17 @@ class Collections(enum.Enum):
           '':
               'organizations/{organizationsId}/securityProfiles/'
               '{securityProfilesId}',
+      },
+      ['name'],
+      True
+  )
+  ORGANIZATIONS_SECURITYPROFILESV2 = (
+      'organizations.securityProfilesV2',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/securityProfilesV2/'
+              '{securityProfilesV2Id}',
       },
       ['name'],
       True

@@ -424,7 +424,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -433,7 +437,7 @@ class Binding(_messages.Message):
 
 
 class BufferTaskRequest(_messages.Message):
-  r"""LINT.IfChange Request message for BufferTask.
+  r"""Request message for BufferTask.
 
   Fields:
     body: Optional. Body of the HTTP request. The body can take any generic

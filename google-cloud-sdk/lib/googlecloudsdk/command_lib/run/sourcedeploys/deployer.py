@@ -32,10 +32,18 @@ def CreateImage(
     build_pack,
     release_track,
     already_activated_services,
+    region: str,
+    resource_ref,
 ):
   """Creates an image from Source."""
   build_messages, build_config = _UploadSource(
-      tracker, build_image, build_source, build_pack, release_track
+      tracker,
+      build_image,
+      build_source,
+      build_pack,
+      release_track,
+      region,
+      resource_ref,
   )
   response_dict, build_log_url = _BuildFromSource(
       tracker,
@@ -62,7 +70,13 @@ def CreateImage(
 
 
 def _UploadSource(
-    tracker, build_image, build_source, build_pack, release_track
+    tracker,
+    build_image,
+    build_source,
+    build_pack,
+    release_track,
+    region,
+    resource_ref,
 ):
   """Upload the provided build source and prepare build config for cloud build."""
   tracker.StartStage(stages.UPLOAD_SOURCE)
@@ -71,7 +85,7 @@ def _UploadSource(
 
   # Make this the default after CRF is out of Alpha
   if release_track is base.ReleaseTrack.ALPHA:
-    source = sources.Upload(build_source)
+    source = sources.Upload(build_source, region, resource_ref)
 
     # add the source uri as a label to the image
     # https://github.com/GoogleCloudPlatform/buildpacks/blob/main/cmd/utils/label/README.md
@@ -107,6 +121,14 @@ def _UploadSource(
         skip_set_source=True,
         client_tag='gcloudrun',
     )
+
+    # is docker build
+    if build_pack is None:
+      assert build_config.steps[0].name == 'gcr.io/cloud-builders/docker'
+      # https://docs.docker.com/engine/reference/commandline/image_build/
+      build_config.steps[0].args.extend(
+          ['--label', f'google.source={uri}']
+      )
 
     build_config.source = build_messages.Source(
         storageSource=build_messages.StorageSource(

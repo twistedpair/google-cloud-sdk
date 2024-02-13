@@ -38,13 +38,13 @@ class Collections(enum.Enum):
       ['foldersId', 'locationsId'],
       True
   )
-  FOLDERS_LOCATIONS_OPERATIONS = (
-      'folders.locations.operations',
+  FOLDERS_LOCATIONS_OPERATIONIDS = (
+      'folders.locations.operationIds',
       '{+name}',
       {
           '':
-              'folders/{foldersId}/locations/{locationsId}/operations/'
-              '{operationsId}',
+              'folders/{foldersId}/locations/{locationsId}/operationIds/'
+              '{operationIdsId}',
       },
       ['name'],
       True
@@ -62,6 +62,17 @@ class Collections(enum.Enum):
       {
           '':
               'projects/{projectsId}/locations/{locationsId}',
+      },
+      ['name'],
+      True
+  )
+  PROJECTS_LOCATIONS_OPERATIONIDS = (
+      'projects.locations.operationIds',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/operationIds/'
+              '{operationIdsId}',
       },
       ['name'],
       True

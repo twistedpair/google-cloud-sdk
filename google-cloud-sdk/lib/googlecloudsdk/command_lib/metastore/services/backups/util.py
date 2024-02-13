@@ -34,7 +34,7 @@ def UpdateBackupV1(ref, args, request):
 
 
 def _UpdateBackup(ref, args, request, api_version):
-  """Returns a modified create request with the `backup` field updated.
+  """Returns a modified create request with the `backup` field updated if the `backup` is passed.
 
   If the user passes in a single resource like `my-backup`, convert it to a
   relative resource name. If the user passes in a relative resource name, parse
@@ -47,6 +47,8 @@ def _UpdateBackup(ref, args, request, api_version):
     request: The framework generated request to modify.
     api_version: The API version of the backup.
   """
+  if args.backup is None:
+    return request
   request.restoreServiceRequest.backup = resources.REGISTRY.Parse(
       args.backup,
       params={

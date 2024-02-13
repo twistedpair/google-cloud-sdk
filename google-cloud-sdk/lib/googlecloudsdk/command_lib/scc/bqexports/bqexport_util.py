@@ -25,33 +25,6 @@ from googlecloudsdk.command_lib.scc import errors
 from googlecloudsdk.command_lib.scc import util
 
 
-def ValidateAndGetBigQueryExportFullResourceName(args):
-  """Validates BigQuery export full resource name."""
-  bq_export_name = args.BIG_QUERY_EXPORT
-  resource_pattern = re.compile(
-      "(organizations|projects|folders)/.*/bigQueryExports/[a-z]([a-z0-9-]{0,61}[a-z0-9])?$"
-  )
-  if not resource_pattern.match(bq_export_name):
-    raise errors.InvalidSCCInputError(
-        "BigQuery export must match the full resource name, or "
-        "`--organization=`, `--folder=` or `--project=` must be provided."
-    )
-  return bq_export_name
-
-
-def ValidateAndGetBigQueryExportId(args):
-  """Validate BigQueryExport ID."""
-  bq_export_id = args.BIG_QUERY_EXPORT
-  pattern = re.compile("^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$")
-  if not pattern.match(bq_export_id):
-    raise errors.InvalidSCCInputError(
-        "BigQuery export id does not match the pattern "
-        "'^[a-z]([a-z0-9-]{0,61}[a-z0-9])?$'."
-    )
-  else:
-    return bq_export_id
-
-
 def ValidateAndGetBigQueryExportV1Name(args):
   """Returns relative resource name for a v1 B2igQuery export.
 
@@ -147,7 +120,13 @@ def ValidateAndGetBigQueryExportV2Name(args):
 
   # id-only pattern (short name): compose the full name
   if id_pattern.match(bq_export_id):
-    return f"{util.GetParentFromNamedArguments(args)}/locations/{location}/bigQueryExports/{bq_export_id}"
+    parent = util.GetParentFromNamedArguments(args)
+    if parent is None:
+      raise errors.InvalidSCCInputError(
+          "BigQuery export must match the full resource name, or "
+          "`--organization=`, `--folder=` or `--project=` must be provided."
+      )
+    return f"{parent}/locations/{location}/bigQueryExports/{bq_export_id}"
 
   # v2=style regionalized patterns
   if regionalized_resource_pattern.match(bq_export_id):

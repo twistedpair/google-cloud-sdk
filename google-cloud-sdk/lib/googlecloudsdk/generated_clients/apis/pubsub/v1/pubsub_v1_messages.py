@@ -41,6 +41,13 @@ class AvroConfig(_messages.Message):
   writeMetadata = _messages.BooleanField(1)
 
 
+class AvroFormat(_messages.Message):
+  r"""Configuration for reading Cloud Storage data in Avro binary format. The
+  bytes of each object will be set to the `data` field of a Pub/Sub message.
+  """
+
+
+
 class AwsKinesis(_messages.Message):
   r"""Ingestion settings for Amazon Kinesis Data Streams.
 
@@ -57,9 +64,9 @@ class AwsKinesis(_messages.Message):
       be used.
     gcpServiceAccount: Required. The GCP service account to be used for
       Federated Identity authentication with Kinesis (via a
-      `AssumeRoleWithWebIdentity` call for the provided role using the
-      gcp_service_account for this project). The `aws_role_arn` must be set up
-      with `accounts.google.com:sub` equals to this account number.
+      `AssumeRoleWithWebIdentity` call for the provided role). The
+      `aws_role_arn` must be set up with `accounts.google.com:sub` equals to
+      this service account number.
     state: Output only. An output-only field that indicates the state of the
       Kinesis ingestion source.
     streamArn: Required. The Kinesis stream ARN to ingest data from.
@@ -80,7 +87,7 @@ class AwsKinesis(_messages.Message):
         granted the `iam.serviceAccounts.getOpenIdToken` permission on
         `gcp_service_account`.
       PUBLISH_PERMISSION_DENIED: Permission denied encountered while
-        publishing to the topic. This can happen due to Pub/Sub SA has not
+        publishing to the topic. This can happen if the Pub/Sub SA has not
         been granted the [appropriate publish
         permissions](https://cloud.google.com/pubsub/docs/access-
         control#pubsub.publisher)
@@ -114,6 +121,12 @@ class BigQueryConfig(_messages.Message):
       BigQuery table schema are dropped when writing to BigQuery. Otherwise,
       the schemas must be kept in sync and any messages with extra fields are
       not written and remain in the subscription's backlog.
+    serviceAccountEmail: Optional. The service account to use to write to
+      BigQuery. The subscription creator or updater that specifies this field
+      must have `iam.serviceAccounts.actAs` permission on the service account.
+      If not specified, the Pub/Sub [service
+      agent](https://cloud.google.com/iam/docs/service-agents),
+      service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com, is used.
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
     table: Optional. The name of the table to which to write data, of the form
@@ -162,11 +175,12 @@ class BigQueryConfig(_messages.Message):
     IN_TRANSIT_LOCATION_RESTRICTION = 5
 
   dropUnknownFields = _messages.BooleanField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  table = _messages.StringField(3)
-  useTableSchema = _messages.BooleanField(4)
-  useTopicSchema = _messages.BooleanField(5)
-  writeMetadata = _messages.BooleanField(6)
+  serviceAccountEmail = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  table = _messages.StringField(4)
+  useTableSchema = _messages.BooleanField(5)
+  useTopicSchema = _messages.BooleanField(6)
+  writeMetadata = _messages.BooleanField(7)
 
 
 class Binding(_messages.Message):
@@ -256,6 +270,92 @@ class Binding(_messages.Message):
   role = _messages.StringField(3)
 
 
+class CloudStorage(_messages.Message):
+  r"""Ingestion settings for Cloud Storage.
+
+  Enums:
+    StateValueValuesEnum: Output only. An output-only field that indicates the
+      state of the Cloud Storage ingestion source.
+    UnprocessableDataActionValueValuesEnum: Optional. Defines the behavior
+      when encountering unprocessable data.
+
+  Fields:
+    avroFormat: Optional. Data from Cloud Storage will be interpreted in Avro
+      format.
+    bucket: Optional. Cloud Storage bucket. The bucket name must be without
+      any prefix like "gs://". See the [bucket naming requirements]
+      (https://cloud.google.com/storage/docs/buckets#naming).
+    minimumObjectCreateTime: Optional. Only objects with a larger creation
+      timestamp will be ingested.
+    pubsubAvroFormat: Optional. It will be assumed data from Cloud Storage was
+      written via [Cloud Storage
+      subscriptions](https://cloud.google.com/pubsub/docs/cloudstorage).
+    state: Output only. An output-only field that indicates the state of the
+      Cloud Storage ingestion source.
+    textFormat: Optional. Data from Cloud Storage will be interpreted as text.
+    unprocessableDataAction: Optional. Defines the behavior when encountering
+      unprocessable data.
+    uriWildcard: Optional. URI wildcard used to match objects that will be
+      ingested. If unset, all objects will be ingested. See the [supported
+      patterns](https://cloud.google.com/storage/docs/wildcards).
+  """
+
+  class StateValueValuesEnum(_messages.Enum):
+    r"""Output only. An output-only field that indicates the state of the
+    Cloud Storage ingestion source.
+
+    Values:
+      STATE_UNSPECIFIED: Default value. This value is unused.
+      ACTIVE: Ingestion is active.
+      CLOUD_STORAGE_PERMISSION_DENIED: Permission denied encountered while
+        calling the Cloud Storage API. This can happen if the Pub/Sub SA has
+        not been granted the [appropriate
+        permissions](https://cloud.google.com/storage/docs/access-control/iam-
+        permissions): - storage.objects.list: to list the objects in a bucket.
+        - storage.objects.get: to read the objects in a bucket. -
+        storage.buckets.get: to verify the bucket exists.
+      PUBLISH_PERMISSION_DENIED: Permission denied encountered while
+        publishing to the topic. This can happen if the Pub/Sub SA has not
+        been granted the [appropriate publish
+        permissions](https://cloud.google.com/pubsub/docs/access-
+        control#pubsub.publisher)
+      BUCKET_NOT_FOUND: The provided Cloud Storage bucket doesn't exist.
+      TOO_MANY_OBJECTS: The Cloud Storage bucket has too many objects,
+        ingestion will be paused.
+      UNPROCESSABLE_DATA: An error was encountered while parsing the data,
+        ingestion will be paused.
+    """
+    STATE_UNSPECIFIED = 0
+    ACTIVE = 1
+    CLOUD_STORAGE_PERMISSION_DENIED = 2
+    PUBLISH_PERMISSION_DENIED = 3
+    BUCKET_NOT_FOUND = 4
+    TOO_MANY_OBJECTS = 5
+    UNPROCESSABLE_DATA = 6
+
+  class UnprocessableDataActionValueValuesEnum(_messages.Enum):
+    r"""Optional. Defines the behavior when encountering unprocessable data.
+
+    Values:
+      UNPROCESSABLE_DATA_ACTION_UNSPECIFIED: Default value. This value is
+        unused.
+      IGNORE: Ignore the error and continue ingestion.
+      PAUSE_INGESTION: Pause ingestion until further action is taken.
+    """
+    UNPROCESSABLE_DATA_ACTION_UNSPECIFIED = 0
+    IGNORE = 1
+    PAUSE_INGESTION = 2
+
+  avroFormat = _messages.MessageField('AvroFormat', 1)
+  bucket = _messages.StringField(2)
+  minimumObjectCreateTime = _messages.StringField(3)
+  pubsubAvroFormat = _messages.MessageField('PubSubAvroFormat', 4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
+  textFormat = _messages.MessageField('TextFormat', 6)
+  unprocessableDataAction = _messages.EnumField('UnprocessableDataActionValueValuesEnum', 7)
+  uriWildcard = _messages.StringField(8)
+
+
 class CloudStorageConfig(_messages.Message):
   r"""Configuration for a Cloud Storage subscription.
 
@@ -286,6 +386,14 @@ class CloudStorageConfig(_messages.Message):
     maxDuration: Optional. The maximum duration that can elapse before a new
       Cloud Storage file is created. Min 1 minute, max 10 minutes, default 5
       minutes. May not exceed the subscription's acknowledgement deadline.
+    maxMessages: Optional. The maximum number of messages that can be written
+      to a Cloud Storage file before a new file is created. Min 1000 messages.
+    serviceAccountEmail: Optional. The service account to use to write to
+      Cloud Storage. The subscription creator or updater that specifies this
+      field must have `iam.serviceAccounts.actAs` permission on the service
+      account. If not specified, the Pub/Sub [service
+      agent](https://cloud.google.com/iam/docs/service-agents),
+      service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com, is used.
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
     textConfig: Optional. If set, message data will be written to Cloud
@@ -320,8 +428,10 @@ class CloudStorageConfig(_messages.Message):
   filenameSuffix = _messages.StringField(5)
   maxBytes = _messages.IntegerField(6)
   maxDuration = _messages.StringField(7)
-  state = _messages.EnumField('StateValueValuesEnum', 8)
-  textConfig = _messages.MessageField('TextConfig', 9)
+  maxMessages = _messages.IntegerField(8)
+  serviceAccountEmail = _messages.StringField(9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  textConfig = _messages.MessageField('TextConfig', 11)
 
 
 class CommitSchemaRequest(_messages.Message):
@@ -483,9 +593,11 @@ class IngestionDataSourceSettings(_messages.Message):
 
   Fields:
     awsKinesis: Optional. Amazon Kinesis Data Streams.
+    cloudStorage: Optional. Cloud Storage.
   """
 
   awsKinesis = _messages.MessageField('AwsKinesis', 1)
+  cloudStorage = _messages.MessageField('CloudStorage', 2)
 
 
 class ListSchemaRevisionsResponse(_messages.Message):
@@ -618,8 +730,8 @@ class ModifyAckDeadlineRequest(_messages.Message):
       make the message available for delivery to another subscriber client.
       This typically results in an increase in the rate of message
       redeliveries (that is, duplicates). The minimum deadline you can specify
-      is 0 seconds. The maximum deadline you can specify is 600 seconds (10
-      minutes).
+      is 0 seconds. The maximum deadline you can specify in a single request
+      is 600 seconds (10 minutes).
     ackIds: Required. List of acknowledgment IDs.
   """
 
@@ -752,6 +864,15 @@ class Policy(_messages.Message):
   version = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
+class PubSubAvroFormat(_messages.Message):
+  r"""Configuration for reading Cloud Storage data written via [Cloud Storage
+  subscriptions](https://cloud.google.com/pubsub/docs/cloudstorage). The data
+  and attributes fields of the originally exported Pub/Sub message will be
+  restored when publishing.
+  """
+
+
+
 class PubSubExportConfig(_messages.Message):
   r"""Configuration for a Pub/Sub export subscription.
 
@@ -765,6 +886,12 @@ class PubSubExportConfig(_messages.Message):
       fees will be incurred. If the region is not specified, Pub/Sub will use
       the region to which the messages were originally published on a best-
       effort basis.
+    serviceAccountEmail: Optional. The service account to use to publish to
+      Pub/Sub. The subscription creator or updater that specifies this field
+      must have `iam.serviceAccounts.actAs` permission on the service account.
+      If not specified, the Pub/Sub [service
+      agent](https://cloud.google.com/iam/docs/service-agents),
+      service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com, is used.
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
     topic: Optional. The name of the topic to which to write data, of the form
@@ -795,8 +922,9 @@ class PubSubExportConfig(_messages.Message):
     IN_TRANSIT_LOCATION_RESTRICTION = 5
 
   region = _messages.StringField(1)
-  state = _messages.EnumField('StateValueValuesEnum', 2)
-  topic = _messages.StringField(3)
+  serviceAccountEmail = _messages.StringField(2)
+  state = _messages.EnumField('StateValueValuesEnum', 3)
+  topic = _messages.StringField(4)
 
 
 class PubSubLiteExportConfig(_messages.Message):
@@ -807,6 +935,12 @@ class PubSubLiteExportConfig(_messages.Message):
       whether or not the subscription can receive messages.
 
   Fields:
+    serviceAccountEmail: Optional. The service account to use to publish to
+      Pub/Sub Lite. The subscription creator or updater that specifies this
+      field must have `iam.serviceAccounts.actAs` permission on the service
+      account. If not specified, the Pub/Sub [service
+      agent](https://cloud.google.com/iam/docs/service-agents),
+      service-{project_number}@gcp-sa-pubsub.iam.gserviceaccount.com, is used.
     state: Output only. An output-only field that indicates whether or not the
       subscription can receive messages.
     topic: Optional. The name of the topic to which to write data, of the form
@@ -836,8 +970,9 @@ class PubSubLiteExportConfig(_messages.Message):
     NOT_FOUND = 3
     IN_TRANSIT_LOCATION_RESTRICTION = 4
 
-  state = _messages.EnumField('StateValueValuesEnum', 1)
-  topic = _messages.StringField(2)
+  serviceAccountEmail = _messages.StringField(1)
+  state = _messages.EnumField('StateValueValuesEnum', 2)
+  topic = _messages.StringField(3)
 
 
 class PublishRequest(_messages.Message):
@@ -883,11 +1018,11 @@ class PubsubMessage(_messages.Message):
       messages on the subscription.
     data: Optional. The message data field. If this field is empty, the
       message must contain at least one attribute.
-    messageId: Optional. ID of this message, assigned by the server when the
-      message is published. Guaranteed to be unique within the topic. This
-      value may be read by a subscriber that receives a `PubsubMessage` via a
-      `Pull` call or a push delivery. It must not be populated by the
-      publisher in a `Publish` call.
+    messageId: ID of this message, assigned by the server when the message is
+      published. Guaranteed to be unique within the topic. This value may be
+      read by a subscriber that receives a `PubsubMessage` via a `Pull` call
+      or a push delivery. It must not be populated by the publisher in a
+      `Publish` call.
     orderingKey: Optional. If non-empty, identifies related messages for which
       publish order should be respected. If a `Subscription` has
       `enable_message_ordering` set to `true`, messages published with the
@@ -896,9 +1031,9 @@ class PubsubMessage(_messages.Message):
       `PubsubMessage`s published in a given `PublishRequest` must specify the
       same `ordering_key` value. For more information, see [ordering
       messages](https://cloud.google.com/pubsub/docs/ordering).
-    publishTime: Optional. The time at which the message was published,
-      populated by the server when it receives the `Publish` call. It must not
-      be populated by the publisher in a `Publish` call.
+    publishTime: The time at which the message was published, populated by the
+      server when it receives the `Publish` call. It must not be populated by
+      the publisher in a `Publish` call.
   """
 
   @encoding.MapUnrecognizedFields('additionalProperties')
@@ -2338,6 +2473,18 @@ class TextConfig(_messages.Message):
   will be written to files as raw text, separated by a newline.
   """
 
+
+
+class TextFormat(_messages.Message):
+  r"""Configuration for reading Cloud Storage data in text format. Each line
+  of text as specified by the delimiter will be set to the `data` field of a
+  Pub/Sub message.
+
+  Fields:
+    delimiter: Optional. When unset, '\n' is used.
+  """
+
+  delimiter = _messages.StringField(1)
 
 
 class Topic(_messages.Message):

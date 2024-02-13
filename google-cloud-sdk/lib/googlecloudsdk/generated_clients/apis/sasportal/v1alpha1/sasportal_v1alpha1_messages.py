@@ -41,18 +41,6 @@ class SasPortalChannelWithScore(_messages.Message):
   score = _messages.FloatField(2)
 
 
-class SasPortalCheckHasProvisionedDeploymentResponse(_messages.Message):
-  r"""Response for [CheckHasProvisionedDeployment].
-  [spectrum.sas.portal.v1alpha1.Provisioning.CheckHasProvisionedDeployment].
-
-  Fields:
-    hasProvisionedDeployment: Whether a SAS deployment for the authentication
-      context exists.
-  """
-
-  hasProvisionedDeployment = _messages.BooleanField(1)
-
-
 class SasPortalCreateSignedDeviceRequest(_messages.Message):
   r"""Request for CreateSignedDevice.
 
@@ -427,6 +415,19 @@ class SasPortalFrequencyRange(_messages.Message):
   lowFrequencyMhz = _messages.FloatField(2)
 
 
+class SasPortalGcpProjectDeployment(_messages.Message):
+  r"""Deployment associated with the GCP project. Includes whether SAS
+  analytics has been enabled or not.
+
+  Fields:
+    deployment: Deployment associated with the GCP project.
+    hasEnabledAnalytics: Whether SAS analytics has been enabled.
+  """
+
+  deployment = _messages.MessageField('SasPortalDeployment', 1)
+  hasEnabledAnalytics = _messages.BooleanField(2)
+
+
 class SasPortalGenerateSecretRequest(_messages.Message):
   r"""Request for GenerateSecret."""
 
@@ -575,6 +576,16 @@ class SasPortalListDevicesResponse(_messages.Message):
 
   devices = _messages.MessageField('SasPortalDevice', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class SasPortalListGcpProjectDeploymentsResponse(_messages.Message):
+  r"""Response for [ListGcpProjectDeployments].
+
+  Fields:
+    deployments: Optional. Deployments associated with the GCP project
+  """
+
+  deployments = _messages.MessageField('SasPortalGcpProjectDeployment', 1, repeated=True)
 
 
 class SasPortalListLegacyOrganizationsResponse(_messages.Message):
@@ -1075,10 +1086,6 @@ class SasPortalValidateInstallerResponse(_messages.Message):
   r"""Response for ValidateInstaller."""
 
 
-class SasportalCustomersCheckHasProvisionedDeploymentRequest(_messages.Message):
-  r"""A SasportalCustomersCheckHasProvisionedDeploymentRequest object."""
-
-
 class SasportalCustomersDeploymentsCreateRequest(_messages.Message):
   r"""A SasportalCustomersDeploymentsCreateRequest object.
 
@@ -1337,6 +1344,10 @@ class SasportalCustomersGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
+
+
+class SasportalCustomersListGcpProjectDeploymentsRequest(_messages.Message):
+  r"""A SasportalCustomersListGcpProjectDeploymentsRequest object."""
 
 
 class SasportalCustomersListLegacyOrganizationsRequest(_messages.Message):

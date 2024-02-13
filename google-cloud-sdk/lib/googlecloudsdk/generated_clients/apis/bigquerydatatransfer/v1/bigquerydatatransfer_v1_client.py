@@ -650,6 +650,33 @@ class BigquerydatatransferV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def UnenrollDataSources(self, request, global_params=None):
+      r"""Unenroll data sources in a user project. This allows users to remove transfer configurations for these data sources. They will no longer appear in the ListDataSources RPC and will also no longer appear in the [BigQuery UI](https://console.cloud.google.com/bigquery). Data transfers configurations of unenrolled data sources will not be scheduled.
+
+      Args:
+        request: (BigquerydatatransferProjectsLocationsUnenrollDataSourcesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Empty) The response message.
+      """
+      config = self.GetMethodConfig('UnenrollDataSources')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    UnenrollDataSources.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}:unenrollDataSources',
+        http_method='POST',
+        method_id='bigquerydatatransfer.projects.locations.unenrollDataSources',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:unenrollDataSources',
+        request_field='unenrollDataSourcesRequest',
+        request_type_name='BigquerydatatransferProjectsLocationsUnenrollDataSourcesRequest',
+        response_type_name='Empty',
+        supports_download=False,
+    )
+
   class ProjectsTransferConfigsRunsTransferLogsService(base_api.BaseApiService):
     """Service class for the projects_transferConfigs_runs_transferLogs resource."""
 

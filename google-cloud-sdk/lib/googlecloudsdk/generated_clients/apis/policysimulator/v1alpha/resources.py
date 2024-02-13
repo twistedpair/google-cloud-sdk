@@ -127,6 +127,18 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  ORGANIZATIONS_LOCATIONS_ORGPOLICYVIOLATIONSPREVIEWS_ORGPOLICYVIOLATIONS = (
+      'organizations.locations.orgPolicyViolationsPreviews.orgPolicyViolations',
+      '{+name}',
+      {
+          '':
+              'organizations/{organizationsId}/locations/{locationsId}/'
+              'orgPolicyViolationsPreviews/{orgPolicyViolationsPreviewsId}/'
+              'orgPolicyViolations/{orgPolicyViolationsId}',
+      },
+      ['name'],
+      True
+  )
   ORGANIZATIONS_LOCATIONS_REPLAYS = (
       'organizations.locations.replays',
       '{+name}',

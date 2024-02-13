@@ -26,6 +26,8 @@ from apitools.base.py import encoding
 from googlecloudsdk.api_lib.storage import gcs_iam_util
 from googlecloudsdk.api_lib.storage import metadata_util
 from googlecloudsdk.api_lib.util import apis
+from googlecloudsdk.api_lib.util import messages as messages_util
+from googlecloudsdk.command_lib.storage import errors
 from googlecloudsdk.command_lib.storage import storage_url
 from googlecloudsdk.command_lib.storage import user_request_args_factory
 from googlecloudsdk.core import properties
@@ -176,8 +178,15 @@ def process_lifecycle(file_path):
     lifecycle_rules_dict = lifecycle_dict['lifecycle']
   else:
     lifecycle_rules_dict = lifecycle_dict
-  return encoding.DictToMessage(lifecycle_rules_dict,
-                                messages.Bucket.LifecycleValue)
+
+  try:
+    return messages_util.DictToMessageWithErrorCheck(
+        lifecycle_rules_dict, messages.Bucket.LifecycleValue
+    )
+  except messages_util.DecodeError:
+    raise errors.InvalidUrlError(
+        'Found invalid JSON/YAML for the lifecycle rule'
+    )
 
 
 def process_log_config(target_bucket, log_bucket, log_object_prefix):

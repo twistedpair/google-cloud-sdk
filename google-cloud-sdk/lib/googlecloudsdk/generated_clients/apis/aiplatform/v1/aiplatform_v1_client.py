@@ -1334,6 +1334,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GenerateContent(self, request, global_params=None):
+      r"""Generate content with multimodal inputs.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsGenerateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1GenerateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:generateContent',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.generateContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1/{+model}:generateContent',
+        request_field='googleCloudAiplatformV1GenerateContentRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsGenerateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1GenerateContentResponse',
+        supports_download=False,
+    )
+
     def Get(self, request, global_params=None):
       r"""Gets an Endpoint.
 
@@ -1547,6 +1574,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1GenerateContentRequest',
         request_type_name='AiplatformProjectsLocationsEndpointsStreamGenerateContentRequest',
         response_type_name='GoogleCloudAiplatformV1GenerateContentResponse',
+        supports_download=False,
+    )
+
+    def StreamRawPredict(self, request, global_params=None):
+      r"""Perform a streaming online prediction with an arbitrary HTTP payload.
+
+      Args:
+        request: (AiplatformProjectsLocationsEndpointsStreamRawPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('StreamRawPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamRawPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/endpoints/{endpointsId}:streamRawPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.endpoints.streamRawPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:streamRawPredict',
+        request_field='googleCloudAiplatformV1StreamRawPredictRequest',
+        request_type_name='AiplatformProjectsLocationsEndpointsStreamRawPredictRequest',
+        response_type_name='GoogleApiHttpBody',
         supports_download=False,
     )
 
@@ -2036,6 +2090,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1FeatureView',
         request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsPatchRequest',
         response_type_name='GoogleLongrunningOperation',
+        supports_download=False,
+    )
+
+    def SearchNearestEntities(self, request, global_params=None):
+      r"""Search the nearest entities under a FeatureView. Search only works for indexable feature view; if a feature view isn't indexable, returns Invalid argument response.
+
+      Args:
+        request: (AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsSearchNearestEntitiesRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1SearchNearestEntitiesResponse) The response message.
+      """
+      config = self.GetMethodConfig('SearchNearestEntities')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SearchNearestEntities.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/featureOnlineStores/{featureOnlineStoresId}/featureViews/{featureViewsId}:searchNearestEntities',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.featureOnlineStores.featureViews.searchNearestEntities',
+        ordered_params=['featureView'],
+        path_params=['featureView'],
+        query_params=[],
+        relative_path='v1/{+featureView}:searchNearestEntities',
+        request_field='googleCloudAiplatformV1SearchNearestEntitiesRequest',
+        request_type_name='AiplatformProjectsLocationsFeatureOnlineStoresFeatureViewsSearchNearestEntitiesRequest',
+        response_type_name='GoogleCloudAiplatformV1SearchNearestEntitiesResponse',
         supports_download=False,
     )
 
@@ -5125,6 +5206,33 @@ class AiplatformV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the access control policy for a resource. Returns an empty policy if the resource exists and does not have a policy set.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:getIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsModelsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists Models in a Location.
 
@@ -5230,6 +5338,60 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1Model',
         request_type_name='AiplatformProjectsLocationsModelsPatchRequest',
         response_type_name='GoogleCloudAiplatformV1Model',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the access control policy on the specified resource. Replaces any existing policy. Can return `NOT_FOUND`, `INVALID_ARGUMENT`, and `PERMISSION_DENIED` errors.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:setIamPolicy',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='AiplatformProjectsLocationsModelsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Returns permissions that a caller has on the specified resource. If the resource does not exist, this will return an empty set of permissions, not a `NOT_FOUND` error. Note: This operation is designed to be used for building permission-aware UIs and command-line tools, not for authorization checking. This operation may "fail open" without warning.
+
+      Args:
+        request: (AiplatformProjectsLocationsModelsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/models/{modelsId}:testIamPermissions',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.models.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['permissions'],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='',
+        request_type_name='AiplatformProjectsLocationsModelsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -6140,6 +6302,33 @@ class AiplatformV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def GenerateContent(self, request, global_params=None):
+      r"""Generate content with multimodal inputs.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsGenerateContentRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudAiplatformV1GenerateContentResponse) The response message.
+      """
+      config = self.GetMethodConfig('GenerateContent')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GenerateContent.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:generateContent',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.generateContent',
+        ordered_params=['model'],
+        path_params=['model'],
+        query_params=[],
+        relative_path='v1/{+model}:generateContent',
+        request_field='googleCloudAiplatformV1GenerateContentRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsGenerateContentRequest',
+        response_type_name='GoogleCloudAiplatformV1GenerateContentResponse',
+        supports_download=False,
+    )
+
     def Predict(self, request, global_params=None):
       r"""Perform an online prediction.
 
@@ -6245,6 +6434,33 @@ class AiplatformV1(base_api.BaseApiClient):
         request_field='googleCloudAiplatformV1GenerateContentRequest',
         request_type_name='AiplatformProjectsLocationsPublishersModelsStreamGenerateContentRequest',
         response_type_name='GoogleCloudAiplatformV1GenerateContentResponse',
+        supports_download=False,
+    )
+
+    def StreamRawPredict(self, request, global_params=None):
+      r"""Perform a streaming online prediction with an arbitrary HTTP payload.
+
+      Args:
+        request: (AiplatformProjectsLocationsPublishersModelsStreamRawPredictRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleApiHttpBody) The response message.
+      """
+      config = self.GetMethodConfig('StreamRawPredict')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    StreamRawPredict.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/projects/{projectsId}/locations/{locationsId}/publishers/{publishersId}/models/{modelsId}:streamRawPredict',
+        http_method='POST',
+        method_id='aiplatform.projects.locations.publishers.models.streamRawPredict',
+        ordered_params=['endpoint'],
+        path_params=['endpoint'],
+        query_params=[],
+        relative_path='v1/{+endpoint}:streamRawPredict',
+        request_field='googleCloudAiplatformV1StreamRawPredictRequest',
+        request_type_name='AiplatformProjectsLocationsPublishersModelsStreamRawPredictRequest',
+        response_type_name='GoogleApiHttpBody',
         supports_download=False,
     )
 

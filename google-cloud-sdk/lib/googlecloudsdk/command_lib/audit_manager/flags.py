@@ -22,6 +22,35 @@ from googlecloudsdk.command_lib.util.concepts import presentation_specs
 
 
 _AUDIT_REPORT_FORMATS = ['odf']
+_AUDIT_SCOPE_REPORT_FORMATS = ['odf']
+
+
+def GetProjectParam(args):
+  return f'--project {args.project}'
+
+
+def GetFolderParam(args):
+  return f'--folder {args.folder}'
+
+
+def GetProjectOrFolderParam(args):
+  if args.folder is None:
+    return GetProjectParam(args)
+
+  return GetFolderParam(args)
+
+
+def GetLocationParam(args):
+  return f'--location {args.location}'
+
+
+def GetEligibleGcsBucketParam(args):
+  return f'--eligible-gcs-buckets "{args.gcs_uri}"'
+
+
+def GetCommandPrefix(command_path):
+  idx = command_path.index('audit-manager') + 1
+  return ' '.join(command_path[:idx])
 
 
 def AddDescribeOperationFlags(parser):
@@ -72,6 +101,31 @@ def AddReportFormatFlag(parser, required=True):
       required=required,
       choices=_AUDIT_REPORT_FORMATS,
       help='The format in which the audit report should be created.',
+  )
+
+
+def AddScopeReportFormatFlag(parser, required=True):
+  parser.add_argument(
+      '--report-format',
+      required=required,
+      choices=_AUDIT_SCOPE_REPORT_FORMATS,
+      help='The format in which the audit scope report should be created.',
+  )
+
+
+def AddOutputDirectoryFormatFlag(parser, required=False):
+  parser.add_argument(
+      '--output-directory',
+      required=required,
+      help='The directory path where the scope report should be created .',
+  )
+
+
+def AddOutputFileNameFormatFlag(parser, required=True):
+  parser.add_argument(
+      '--output-file-name',
+      required=required,
+      help='The name by while scope report should be created .',
   )
 
 

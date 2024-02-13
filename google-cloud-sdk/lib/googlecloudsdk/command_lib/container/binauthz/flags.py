@@ -239,7 +239,10 @@ def AddEvaluationUnitArg(parser):
       '--resource',
       required=False,
       type=arg_parsers.ResourceFileName,
-      help='The JSON or YAML file containing the Pod to evaluate.',
+      help=(
+          'The JSON or YAML file containing the Kubernetes resource to'
+          ' evaluate.'
+      ),
   )
   evaluation_unit_group.add_argument(
       '--image',

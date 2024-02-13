@@ -89,6 +89,7 @@ def GetFullSourceName(args, version):
 
   Returns:
     Relative resource name
+    if args.source is not provided an exception will be raised
     if no location is specified in argument: sources/{source_id}
     if a location is specified: sources/{source_id}/locations/{location_id}
   """
@@ -99,6 +100,12 @@ def GetFullSourceName(args, version):
       "(organizations|projects|folders)/.*/sources/[0-9-]+/locations/[a-zA-Z0-9-]+$"
   )
   id_pattern = re.compile("[0-9-]+")
+
+  if not args.source:
+    raise errors.InvalidSCCInputError(
+        "Finding source must be provided in --source flag or full resource"
+        " name."
+    )
 
   if region_resource_pattern.match(args.source):
     return args.source
@@ -339,6 +346,4 @@ def GetApiVersionUsingDeprecatedArgs(args, deprecated_args):
     parent = scc_util.GetParentFromPositionalArguments(args)
   else:
     parent = args.parent
-  return scc_util.GetVersionFromArguments(
-      args, parent, deprecated_args
-  )
+  return scc_util.GetVersionFromArguments(args, parent, deprecated_args)

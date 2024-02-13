@@ -23,15 +23,15 @@ import datetime
 
 from apitools.base.py import exceptions as apitools_exceptions
 from google.auth import exceptions as google_auth_exceptions
-
+from google.auth import impersonated_credentials as google_auth_impersonated_credentials
 from googlecloudsdk.api_lib.util import apis_internal
 from googlecloudsdk.api_lib.util import exceptions
 from googlecloudsdk.core import exceptions as core_exceptions
+from googlecloudsdk.core import properties
 from googlecloudsdk.core import requests as core_requests
 from googlecloudsdk.core import resources
 from googlecloudsdk.core import transport
 from googlecloudsdk.core.credentials import transports
-
 from oauth2client import client
 
 
@@ -139,16 +139,13 @@ class ImpersonationAccessTokenProvider(object):
     # is lost. Here, before passing to google-auth, we refresh
     # source_credentials.
     source_credentials.refresh(request_client)
-    # Import only when necessary to decrease the startup time. Move it to
-    # global once google-auth is ready to replace oauth2client.
-    # pylint: disable=g-import-not-at-top
-    from google.auth import impersonated_credentials as google_auth_impersonated_creds
-    # pylint: enable=g-import-not-at-top
-    cred = google_auth_impersonated_creds.Credentials(
+    cred = google_auth_impersonated_credentials.Credentials(
         source_credentials=source_credentials,
         target_principal=target_principal,
         target_scopes=scopes,
-        delegates=delegates)
+        delegates=delegates,
+    )
+    self.PerformIamEndpointsOverride()
     try:
       cred.refresh(request_client)
     except google_auth_exceptions.RefreshError:
@@ -162,28 +159,75 @@ class ImpersonationAccessTokenProvider(object):
   def GetElevationIdTokenGoogleAuth(self, google_auth_impersonation_credentials,
                                     audience, include_email):
     """Creates an ID token credentials for impersonated credentials."""
-    # Import only when necessary to decrease the startup time. Move it to
-    # global once google-auth is ready to replace oauth2client.
-    # pylint: disable=g-import-not-at-top
-    from google.auth import impersonated_credentials as google_auth_impersonated_creds
-    # pylint: enable=g-import-not-at-top
-    cred = google_auth_impersonated_creds.IDTokenCredentials(
+    cred = google_auth_impersonated_credentials.IDTokenCredentials(
         google_auth_impersonation_credentials,
         target_audience=audience,
-        include_email=include_email)
+        include_email=include_email,
+    )
     request_client = core_requests.GoogleAuthRequest()
+    self.PerformIamEndpointsOverride()
     cred.refresh(request_client)
     return cred
 
   @classmethod
   def IsImpersonationCredential(cls, cred):
-    # Import only when necessary to decrease the startup time. Move it to
-    # global once google-auth is ready to replace oauth2client.
-    # pylint: disable=g-import-not-at-top
-    from google.auth import impersonated_credentials as google_auth_impersonated_creds
-    # pylint: enable=g-import-not-at-top
     return isinstance(cred, ImpersonationCredentials) or isinstance(
-        cred, google_auth_impersonated_creds.Credentials)
+        cred, google_auth_impersonated_credentials.Credentials
+    )
+
+  @classmethod
+  def PerformIamEndpointsOverride(cls):
+    """Perform IAM endpoint override if needed.
+
+    We will override IAM generateAccessToken, signBlob, and generateIdToken
+    endpoint under the following conditions.
+    (1) If the [api_endpoint_overrides/iamcredentials] property is explicitly
+    set, we replace "https://iamcredentials.googleapis.com/" with the given
+    property value in these endpoints.
+    (2) If the property above is not set, and the [core/universe_domain] value
+    is not default, we replace "googleapis.com" with the [core/universe_domain]
+    property value in these endpoints.
+    """
+    iamcredentials_property = (
+        properties.VALUES.api_endpoint_overrides.iamcredentials
+    )
+    universe_domain_property = properties.VALUES.core.universe_domain
+
+    if iamcredentials_property.IsExplicitlySet():
+      google_auth_impersonated_credentials._IAM_ENDPOINT = (  # pylint: disable=protected-access
+          google_auth_impersonated_credentials._IAM_ENDPOINT.replace(  # pylint: disable=protected-access
+              'https://iamcredentials.googleapis.com/',
+              iamcredentials_property.Get(),
+          )
+      )
+      google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT = (  # pylint: disable=protected-access
+          google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT.replace(  # pylint: disable=protected-access
+              'https://iamcredentials.googleapis.com/',
+              iamcredentials_property.Get(),
+          )
+      )
+      google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
+          google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
+              'https://iamcredentials.googleapis.com/',
+              iamcredentials_property.Get(),
+          )
+      )
+    elif universe_domain_property.Get() != universe_domain_property.default:
+      google_auth_impersonated_credentials._IAM_ENDPOINT = (  # pylint: disable=protected-access
+          google_auth_impersonated_credentials._IAM_ENDPOINT.replace(  # pylint: disable=protected-access
+              'googleapis.com', universe_domain_property.Get()
+          )
+      )
+      google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT = (  # pylint: disable=protected-access
+          google_auth_impersonated_credentials._IAM_SIGN_ENDPOINT.replace(  # pylint: disable=protected-access
+              'googleapis.com', universe_domain_property.Get()
+          )
+      )
+      google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT = (  # pylint: disable=protected-access
+          google_auth_impersonated_credentials._IAM_IDTOKEN_ENDPOINT.replace(  # pylint: disable=protected-access
+              'googleapis.com', universe_domain_property.Get()
+          )
+      )
 
 
 class ImpersonationCredentials(client.OAuth2Credentials):

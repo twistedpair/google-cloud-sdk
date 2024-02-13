@@ -270,6 +270,10 @@ HOST_MAINTENANCE_INTERVAL_TYPE_NOT_SUPPORTED = """\
 Provided host maintenance interval type '{type}' is not supported.
 """
 
+NODECONFIGDEFAULTS_READONLY_PORT_NOT_SUPPORTED = """\
+nodePoolDefaults.nodeKubeletConfig is not supported on GKE Autopilot clusters.
+"""
+
 MAX_NODES_PER_POOL = 1000
 
 MAX_AUTHORIZED_NETWORKS_CIDRS_PRIVATE = 100
@@ -699,6 +703,7 @@ class CreateClusterOptions(object):
       performance_monitoring_unit=None,
       network_performance_config=None,
       enable_insecure_kubelet_readonly_port=None,
+      autoprovisioning_enable_insecure_kubelet_readonly_port=None,
       enable_k8s_beta_apis=None,
       security_posture=None,
       workload_vulnerability_scanning=None,
@@ -912,6 +917,10 @@ class CreateClusterOptions(object):
     self.enable_insecure_kubelet_readonly_port = (
         enable_insecure_kubelet_readonly_port
     )
+    self.autoprovisioning_enable_insecure_kubelet_readonly_port = (
+        autoprovisioning_enable_insecure_kubelet_readonly_port
+    )
+
     self.enable_k8s_beta_apis = enable_k8s_beta_apis
     self.security_posture = security_posture
     self.workload_vulnerability_scanning = workload_vulnerability_scanning
@@ -1077,6 +1086,8 @@ class UpdateClusterOptions(object):
       convert_to_standard=None,
       enable_secret_manager=None,
       enable_cilium_clusterwide_network_policy=None,
+      enable_insecure_kubelet_readonly_port=None,
+      autoprovisioning_enable_insecure_kubelet_readonly_port=None,
   ):
     self.version = version
     self.update_master = bool(update_master)
@@ -1226,6 +1237,12 @@ class UpdateClusterOptions(object):
     self.enable_secret_manager = enable_secret_manager
     self.enable_cilium_clusterwide_network_policy = (
         enable_cilium_clusterwide_network_policy
+    )
+    self.enable_insecure_kubelet_readonly_port = (
+        enable_insecure_kubelet_readonly_port
+    )
+    self.autoprovisioning_enable_insecure_kubelet_readonly_port = (
+        autoprovisioning_enable_insecure_kubelet_readonly_port
     )
 
 
@@ -1471,7 +1488,8 @@ class UpdateNodePoolOptions(object):
                secondary_boot_disks=None,
                machine_type=None,
                disk_type=None,
-               disk_size_gb=None):
+               disk_size_gb=None,
+               enable_queued_provisioning=None):
     self.enable_autorepair = enable_autorepair
     self.enable_autoupgrade = enable_autoupgrade
     self.enable_autoscaling = enable_autoscaling
@@ -1514,6 +1532,10 @@ class UpdateNodePoolOptions(object):
     self.machine_type = machine_type
     self.disk_type = disk_type
     self.disk_size_gb = disk_size_gb
+    self.enable_queued_provisioning = enable_queued_provisioning
+    self.enable_insecure_kubelet_readonly_port = (
+        enable_insecure_kubelet_readonly_port
+    )
 
   def IsAutoscalingUpdate(self):
     return (self.enable_autoscaling is not None or self.max_nodes is not None or
@@ -1552,7 +1574,8 @@ class UpdateNodePoolOptions(object):
             self.containerd_config_from_file is not None or
             self.machine_type is not None or
             self.disk_type is not None or
-            self.disk_size_gb is not None)
+            self.disk_size_gb is not None or
+            self.enable_queued_provisioning is not None)
 
 
 class APIAdapter(object):
@@ -2051,16 +2074,6 @@ class APIAdapter(object):
           cluster.secretManagerConfig = self.messages.SecretManagerConfig(
               enabled=False
           )
-
-      if options.enable_insecure_kubelet_readonly_port is not None:
-        if cluster.autoscaling is None:
-          cluster.autoscaling = self.messages.ClusterAutoscaling()
-        if cluster.autoscaling.autoprovisioningNodePoolDefaults is None:
-          # pylint: disable=line-too-long
-          cluster.autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults()
-        # pylint: disable=line-too-long
-        cluster.autoscaling.autoprovisioningNodePoolDefaults.insecureKubeletReadonlyPortEnabled = options.enable_insecure_kubelet_readonly_port
-
       if options.boot_disk_kms_key:
         if cluster.autoscaling is None:
           cluster.autoscaling = self.messages.ClusterAutoscaling()
@@ -2079,6 +2092,46 @@ class APIAdapter(object):
       cluster.networkConfig.privateIpv6GoogleAccess = util.GetPrivateIpv6GoogleAccessTypeMapper(
           self.messages, hidden=False).GetEnumForChoice(
               options.private_ipv6_google_access_type)
+
+    # Apply node kubelet config on non-autopilot clusters.
+    if options.enable_insecure_kubelet_readonly_port is not None:
+      if options.autopilot:
+        raise util.Error(NODECONFIGDEFAULTS_READONLY_PORT_NOT_SUPPORTED)
+
+      if cluster.nodePoolDefaults is None:
+        cluster.nodePoolDefaults = self.messages.NodePoolDefaults()
+
+      if cluster.nodePoolDefaults.nodeConfigDefaults is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults = (
+            self.messages.NodeConfigDefaults()
+        )
+
+      if cluster.nodePoolDefaults.nodeConfigDefaults.nodeKubeletConfig is None:
+        cluster.nodePoolDefaults.nodeConfigDefaults.nodeKubeletConfig = (
+            self.messages.NodeKubeletConfig()
+        )
+
+      cluster.nodePoolDefaults.nodeConfigDefaults.nodeKubeletConfig.insecureKubeletReadonlyPortEnabled = (
+          options.enable_insecure_kubelet_readonly_port
+      )
+
+    # Apply nodePoolAutoconfig on both autopilot and standard clusters.
+    # pylint: disable=line-too-long
+    if (
+        options.autoprovisioning_enable_insecure_kubelet_readonly_port
+        is not None
+    ):
+      if cluster.nodePoolAutoConfig is None:
+        cluster.nodePoolAutoConfig = self.messages.NodePoolAutoConfig()
+
+      if cluster.nodePoolAutoConfig.nodeKubeletConfig is None:
+        cluster.nodePoolAutoConfig.nodeKubeletConfig = (
+            self.messages.NodeKubeletConfig()
+        )
+
+      cluster.nodePoolAutoConfig.nodeKubeletConfig.insecureKubeletReadonlyPortEnabled = (
+          options.autoprovisioning_enable_insecure_kubelet_readonly_port
+      )
 
     if options.enable_gcfs:
       if cluster.nodePoolDefaults is None:
@@ -2250,13 +2303,6 @@ class APIAdapter(object):
         cluster.securityPostureConfig.mode = (
             self.messages.SecurityPostureConfig.ModeValueValuesEnum.DISABLED
         )
-
-    if options.enable_insecure_kubelet_readonly_port is not None:
-      if not options.autopilot:
-        if node_config.kubeletConfig is None:
-          node_config.kubeletConfig = self.messages.NodeKubeletConfig()
-        node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
-            options.enable_insecure_kubelet_readonly_port)
 
     if options.security_posture is not None:
       if cluster.securityPostureConfig is None:
@@ -2432,12 +2478,12 @@ class APIAdapter(object):
     _AddReservationAffinityToNodeConfig(node_config, options, self.messages)
 
     if options.system_config_from_file is not None:
-      util.LoadSystemConfigFromYAML(node_config,
-                                    options.system_config_from_file,
-                                    self.messages)
-      if options.enable_insecure_kubelet_readonly_port is not None:
-        node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
-            options.enable_insecure_kubelet_readonly_port)
+      util.LoadSystemConfigFromYAML(
+          node_config,
+          options.system_config_from_file,
+          options.enable_insecure_kubelet_readonly_port,
+          self.messages,
+      )
 
     self.ParseAdvancedMachineFeatures(options, node_config)
 
@@ -2542,9 +2588,9 @@ class APIAdapter(object):
         )
       if options.placement_policy is not None:
         pool.placementPolicy.policyName = options.placement_policy
-      if options.enable_queued_provisioning:
-        pool.queuedProvisioning = self.messages.QueuedPolicy()
-        pool.queuedProvisioning.enabled = True
+      if options.enable_queued_provisioning is not None:
+        pool.queuedProvisioning = self.messages.QueuedProvisioning()
+        pool.queuedProvisioning.enabled = options.enable_queued_provisioning
       pools.append(pool)
       to_add -= nodes
     return pools
@@ -3042,18 +3088,19 @@ class APIAdapter(object):
             )
         )
       else:
-        autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
-            serviceAccount=service_account,
-            oauthScopes=scopes,
-            upgradeSettings=upgrade_settings,
-            management=management,
-            minCpuPlatform=min_cpu_platform,
-            bootDiskKmsKey=boot_disk_kms_key,
-            diskSizeGb=disk_size_gb,
-            diskType=disk_type,
-            imageType=autoprovisioning_image_type,
-            shieldedInstanceConfig=shielded_instance_config,
-            insecureKubeletReadonlyPortEnabled=options.enable_insecure_kubelet_readonly_port,
+        autoscaling.autoprovisioningNodePoolDefaults = (
+            self.messages.AutoprovisioningNodePoolDefaults(
+                serviceAccount=service_account,
+                oauthScopes=scopes,
+                upgradeSettings=upgrade_settings,
+                management=management,
+                minCpuPlatform=min_cpu_platform,
+                bootDiskKmsKey=boot_disk_kms_key,
+                diskSizeGb=disk_size_gb,
+                diskType=disk_type,
+                imageType=autoprovisioning_image_type,
+                shieldedInstanceConfig=shielded_instance_config,
+            )
         )
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
@@ -4355,11 +4402,18 @@ class APIAdapter(object):
 
     if options.system_config_from_file is not None:
       util.LoadSystemConfigFromYAML(
-          node_config, options.system_config_from_file, self.messages
+          node_config,
+          options.system_config_from_file,
+          options.enable_insecure_kubelet_readonly_port,
+          self.messages,
       )
-      if options.enable_insecure_kubelet_readonly_port is not None:
-        node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
-            options.enable_insecure_kubelet_readonly_port)
+
+    if options.enable_insecure_kubelet_readonly_port is not None:
+      if node_config.kubeletConfig is None:
+        node_config.kubeletConfig = self.messages.NodeKubeletConfig()
+      node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
+          options.enable_insecure_kubelet_readonly_port
+      )
 
     pool.networkConfig = self._GetNetworkConfig(options)
 
@@ -4385,9 +4439,9 @@ class APIAdapter(object):
         pool.placementPolicy = self.messages.PlacementPolicy()
       pool.placementPolicy.tpuTopology = options.tpu_topology
 
-    if options.enable_queued_provisioning:
+    if options.enable_queued_provisioning is not None:
       pool.queuedProvisioning = self.messages.QueuedProvisioning()
-      pool.queuedProvisioning.enabled = True
+      pool.queuedProvisioning.enabled = options.enable_queued_provisioning
 
     # Explicitly check None for empty list
     if options.sole_tenant_node_affinity_file is not None:
@@ -4609,16 +4663,29 @@ class APIAdapter(object):
           or options.autoscaled_rollout_policy):
       update_request.upgradeSettings = self.UpdateUpgradeSettings(
           node_pool_ref, options)
-    elif options.system_config_from_file is not None:
+    elif (
+        options.system_config_from_file is not None
+        or options.enable_insecure_kubelet_readonly_port is not None
+    ):
       node_config = self.messages.NodeConfig()
-      util.LoadSystemConfigFromYAML(node_config,
-                                    options.system_config_from_file,
-                                    self.messages)
+      if options.system_config_from_file is not None:
+        util.LoadSystemConfigFromYAML(
+            node_config,
+            options.system_config_from_file,
+            options.enable_insecure_kubelet_readonly_port,
+            self.messages,
+        )
       if options.enable_insecure_kubelet_readonly_port is not None:
+        if node_config.kubeletConfig is None:
+          node_config.kubeletConfig = self.messages.NodeKubeletConfig()
         node_config.kubeletConfig.insecureKubeletReadonlyPortEnabled = (
-            options.enable_insecure_kubelet_readonly_port)
+            options.enable_insecure_kubelet_readonly_port
+        )
+
+      # set the update request
       update_request.linuxNodeConfig = node_config.linuxNodeConfig
       update_request.kubeletConfig = node_config.kubeletConfig
+
     elif options.containerd_config_from_file is not None:
       containerd_config = self.messages.ContainerdConfig()
       util.LoadContainerdConfigFromYAML(containerd_config,
@@ -4720,6 +4787,10 @@ class APIAdapter(object):
       update_request.machineType = options.machine_type
       update_request.diskType = options.disk_type
       update_request.diskSizeGb = options.disk_size_gb
+    elif options.enable_queued_provisioning is not None:
+      update_request.queuedProvisioning = self.messages.QueuedProvisioning()
+      update_request.queuedProvisioning.enabled = (
+          options.enable_queued_provisioning)
     return update_request
 
   def UpdateNodePool(self, node_pool_ref, options):
@@ -5246,6 +5317,45 @@ class APIAdapter(object):
             name=ProjectLocationCluster(cluster_ref.projectId, cluster_ref.zone,
                                         cluster_ref.clusterId),
             update=update))
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyInsecureKubeletReadonlyPortEnabled(
+      self, cluster_ref, readonly_port_enabled
+  ):
+    """Updates default for Kubelet Readonly Port on new node-pools."""
+    nkc = self.messages.NodeKubeletConfig(
+        insecureKubeletReadonlyPortEnabled=readonly_port_enabled,
+    )
+    update = self.messages.ClusterUpdate()
+    update.desiredNodeKubeletConfig = nkc
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
+    return self.ParseOperation(op.name, cluster_ref.zone)
+
+  def ModifyAutoprovisioningInsecureKubeletReadonlyPortEnabled(
+      self, cluster_ref, request_roport_enabled
+  ):
+    """Updates the kubelet readonly port on autoprovsioned node-pools or on autopilot clusters."""
+    nkc = self.messages.NodeKubeletConfig(
+        insecureKubeletReadonlyPortEnabled=request_roport_enabled,
+    )
+    update = self.messages.ClusterUpdate(
+        desiredNodePoolAutoConfigKubeletConfig=nkc,
+    )
+    op = self.client.projects_locations_clusters.Update(
+        self.messages.UpdateClusterRequest(
+            name=ProjectLocationCluster(
+                cluster_ref.projectId, cluster_ref.zone, cluster_ref.clusterId
+            ),
+            update=update,
+        )
+    )
     return self.ParseOperation(op.name, cluster_ref.zone)
 
   def ModifyBinaryAuthorization(
@@ -5786,18 +5896,19 @@ class V1Beta1Adapter(V1Adapter):
             )
         )
       else:
-        autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
-            serviceAccount=service_account,
-            oauthScopes=scopes,
-            upgradeSettings=upgrade_settings,
-            management=management,
-            minCpuPlatform=min_cpu_platform,
-            bootDiskKmsKey=boot_disk_kms_key,
-            diskSizeGb=disk_size_gb,
-            diskType=disk_type,
-            imageType=autoprovisioning_image_type,
-            shieldedInstanceConfig=shielded_instance_config,
-            insecureKubeletReadonlyPortEnabled=options.enable_insecure_kubelet_readonly_port,
+        autoscaling.autoprovisioningNodePoolDefaults = (
+            self.messages.AutoprovisioningNodePoolDefaults(
+                serviceAccount=service_account,
+                oauthScopes=scopes,
+                upgradeSettings=upgrade_settings,
+                management=management,
+                minCpuPlatform=min_cpu_platform,
+                bootDiskKmsKey=boot_disk_kms_key,
+                diskSizeGb=disk_size_gb,
+                diskType=disk_type,
+                imageType=autoprovisioning_image_type,
+                shieldedInstanceConfig=shielded_instance_config,
+            )
         )
       if autoprovisioning_locations:
         autoscaling.autoprovisioningLocations = \
@@ -6352,18 +6463,19 @@ class V1Alpha1Adapter(V1Beta1Adapter):
             )
         )
       else:
-        autoscaling.autoprovisioningNodePoolDefaults = self.messages.AutoprovisioningNodePoolDefaults(
-            serviceAccount=service_account,
-            oauthScopes=scopes,
-            upgradeSettings=upgrade_settings,
-            management=management,
-            minCpuPlatform=min_cpu_platform,
-            bootDiskKmsKey=boot_disk_kms_key,
-            diskSizeGb=disk_size_gb,
-            diskType=disk_type,
-            imageType=autoprovisioning_image_type,
-            shieldedInstanceConfig=shielded_instance_config,
-            insecureKubeletReadonlyPortEnabled=options.enable_insecure_kubelet_readonly_port,
+        autoscaling.autoprovisioningNodePoolDefaults = (
+            self.messages.AutoprovisioningNodePoolDefaults(
+                serviceAccount=service_account,
+                oauthScopes=scopes,
+                upgradeSettings=upgrade_settings,
+                management=management,
+                minCpuPlatform=min_cpu_platform,
+                bootDiskKmsKey=boot_disk_kms_key,
+                diskSizeGb=disk_size_gb,
+                diskType=disk_type,
+                imageType=autoprovisioning_image_type,
+                shieldedInstanceConfig=shielded_instance_config,
+            )
         )
 
       if autoprovisioning_locations:
@@ -6442,9 +6554,9 @@ class V1Alpha1Adapter(V1Beta1Adapter):
         pool.placementPolicy.type = self.messages.PlacementPolicy.TypeValueValuesEnum.COMPACT
       if options.placement_policy is not None:
         pool.placementPolicy.policyName = options.placement_policy
-      if options.enable_queued_provisioning:
-        pool.queuedProvisioning = self.messages.QueuedPolicy()
-        pool.queuedProvisioning.enabled = True
+      if options.enable_queued_provisioning is not None:
+        pool.queuedProvisioning = self.messages.QueuedProvisioning()
+        pool.queuedProvisioning.enabled = options.enable_queued_provisioning
       pools.append(pool)
       to_add -= nodes
     return pools

@@ -455,3 +455,13 @@ def GetVerboseErrorsFlag():
       help=('Log internal errors.'))
 
 
+def GetSkipExistingFlag():
+  return base.Argument(
+      '--skip-existing',
+      action='store_true',
+      default=False,
+      help=(
+          'If specified, skip uploading files that already exist in the'
+          ' repository, and continue to upload the remaining files.'
+      ),
+  )

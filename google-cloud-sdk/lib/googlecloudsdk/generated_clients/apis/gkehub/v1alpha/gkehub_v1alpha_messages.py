@@ -308,7 +308,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   bindingId = _messages.StringField(1)
@@ -430,6 +434,8 @@ class ClusterStatus(_messages.Message):
     membership: Output only. The name of the fleet Membership resource
       associated to the updated cluster. Membership names are formatted as
       projects//locations//memberships/.
+    operation: Optional. Output only. The operation resource name performing
+      the mutation.
     reason: Optional. Output only. A human-readable description of the current
       status.
     state: Optional. Output only. The high-level, machine-readable status of
@@ -455,8 +461,9 @@ class ClusterStatus(_messages.Message):
 
   lastUpdateTime = _messages.StringField(1)
   membership = _messages.StringField(2)
-  reason = _messages.StringField(3)
-  state = _messages.EnumField('StateValueValuesEnum', 4)
+  operation = _messages.StringField(3)
+  reason = _messages.StringField(4)
+  state = _messages.EnumField('StateValueValuesEnum', 5)
 
 
 class ClusterUpgradeFleetSpec(_messages.Message):
@@ -4037,6 +4044,30 @@ class GkehubProjectsLocationsScopesGetRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class GkehubProjectsLocationsScopesListMembershipsRequest(_messages.Message):
+  r"""A GkehubProjectsLocationsScopesListMembershipsRequest object.
+
+  Fields:
+    filter: Optional. Lists Memberships that match the filter expression,
+      following the syntax outlined in https://google.aip.dev/160.
+    pageSize: Optional. When requesting a 'page' of resources, `page_size`
+      specifies number of resources to return. If unspecified or set to 0, all
+      resources will be returned. Pagination is currently not supported;
+      therefore, setting this field does not have any impact for now.
+    pageToken: Optional. Token returned by previous call to
+      `ListBoundMemberships` which specifies the position in the list from
+      where to continue listing the resources.
+    scopeName: Required. Name of the Scope, in the format
+      `projects/*/locations/global/scopes/*`, to which the Memberships are
+      bound.
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  scopeName = _messages.StringField(4, required=True)
+
+
 class GkehubProjectsLocationsScopesListPermittedRequest(_messages.Message):
   r"""A GkehubProjectsLocationsScopesListPermittedRequest object.
 
@@ -5011,6 +5042,23 @@ class ListAdminClusterMembershipsResponse(_messages.Message):
   """
 
   adminClusterMemberships = _messages.MessageField('Membership', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
+
+
+class ListBoundMembershipsResponse(_messages.Message):
+  r"""List of Memberships bound to a Scope.
+
+  Fields:
+    memberships: The list of Memberships bound to the given Scope.
+    nextPageToken: A token to request the next page of resources from the
+      `ListBoundMemberships` method. The value of an empty string means that
+      there are no more resources to return.
+    unreachable: List of locations that could not be reached while fetching
+      this list.
+  """
+
+  memberships = _messages.MessageField('Membership', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
   unreachable = _messages.StringField(3, repeated=True)
 

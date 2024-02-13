@@ -39,6 +39,8 @@ class Error(core_exceptions.Error):
 class MissingEnvVarError(Error):
   """An exception raised when required environment variables are missing."""
 
+GKE_GCLOUD_AUTH_PLUGIN_CACHE_FILE_NAME = 'gke_gcloud_auth_plugin_cache'
+
 
 class Kubeconfig(object):
   """Interface for interacting with a kubeconfig file."""
@@ -82,6 +84,16 @@ class Kubeconfig(object):
     self._data['contexts'] = list(self.contexts.values())
     with file_utils.FileWriter(self._filename, private=True) as fp:
       yaml.dump(self._data, fp)
+
+    # GKE_GCLOUD_AUTH_PLUGIN_CACHE_FILE_NAME is used by GKE_GCLOUD_AUTH_PLUGIN
+    # Erase cache file everytime kubeconfig is updated. This allows for a reset
+    # of the cache. Previously, credentials were cached in the kubeconfig file
+    # and updating the kubeconfig allowed for a "reset" of the cache.
+    dirname = os.path.dirname(self._filename)
+    gke_gcloud_auth_plugin_file_path = os.path.join(
+        dirname, GKE_GCLOUD_AUTH_PLUGIN_CACHE_FILE_NAME)
+    if os.path.exists(gke_gcloud_auth_plugin_file_path):
+      file_utils.WriteFileAtomically(gke_gcloud_auth_plugin_file_path, '')
 
   def SetCurrentContext(self, context):
     self._data['current-context'] = context

@@ -417,6 +417,8 @@ class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
       access to the requested resource.
     block: This action will deny access to a given page. The user will get an
       HTTP error code.
+    includeRecaptchaScript: This action will inject reCAPTCHA JavaScript code
+      into the HTML page returned by the site backend.
     redirect: This action will redirect the request to a ReCaptcha
       interstitial to attach a token.
     setHeader: This action will set a custom header but allow the request to
@@ -427,9 +429,10 @@ class GoogleCloudRecaptchaenterpriseV1FirewallAction(_messages.Message):
 
   allow = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionAllowAction', 1)
   block = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionBlockAction', 2)
-  redirect = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionRedirectAction', 3)
-  setHeader = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionSetHeaderAction', 4)
-  substitute = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionSubstituteAction', 5)
+  includeRecaptchaScript = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction', 3)
+  redirect = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionRedirectAction', 4)
+  setHeader = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionSetHeaderAction', 5)
+  substitute = _messages.MessageField('GoogleCloudRecaptchaenterpriseV1FirewallActionSubstituteAction', 6)
 
 
 class GoogleCloudRecaptchaenterpriseV1FirewallActionAllowAction(_messages.Message):
@@ -439,6 +442,16 @@ class GoogleCloudRecaptchaenterpriseV1FirewallActionAllowAction(_messages.Messag
 class GoogleCloudRecaptchaenterpriseV1FirewallActionBlockAction(_messages.Message):
   r"""A block action serves an HTTP error code a prevents the request from
   hitting the backend.
+  """
+
+
+
+class GoogleCloudRecaptchaenterpriseV1FirewallActionIncludeRecaptchaScriptAction(_messages.Message):
+  r"""An include reCAPTCHA script action involves injecting reCAPTCHA
+  JavaScript code into the HTML returned by the site backend. This reCAPTCHA
+  script is tasked with collecting user signals on the requested web page,
+  issuing tokens as a cookie within the site domain, and enabling their
+  utilization in subsequent page requests.
   """
 
 

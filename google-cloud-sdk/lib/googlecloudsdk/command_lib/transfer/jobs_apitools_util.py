@@ -229,6 +229,7 @@ def _create_or_modify_transfer_spec(job, args, messages):
     job.transferSpec.awsS3CompatibleDataSource = None
     job.transferSpec.awsS3DataSource = None
     job.transferSpec.azureBlobStorageDataSource = None
+    job.transferSpec.hdfsDataSource = None
 
     try:
       source_url = storage_url.storage_url_from_string(args.source)
@@ -241,7 +242,9 @@ def _create_or_modify_transfer_spec(job, args, messages):
     else:
       if source_url.scheme is storage_url.ProviderPrefix.FILE:
         source_url = _prompt_and_add_valid_scheme(source_url)
-
+      if source_url.scheme is storage_url.ProviderPrefix.HDFS:
+        job.transferSpec.hdfsDataSource = messages.HdfsData(
+            path=source_url.object_name)
       if source_url.scheme is storage_url.ProviderPrefix.POSIX:
         job.transferSpec.posixDataSource = messages.PosixFilesystem(
             rootDirectory=source_url.object_name)
@@ -457,6 +460,8 @@ def _create_or_modify_notification_config(job, args, messages, is_update=False):
 
 def _create_or_modify_logging_config(job, args, messages):
   """Creates or modifies transfer LoggingConfig object based on args."""
+  # TODO(b/322289474): enable-posix-transfer-logs logic can be cleaned up once
+  #                    POSIX logs are deprecated.
   enable_posix_transfer_logs = getattr(args, 'enable_posix_transfer_logs', None)
   if not job.loggingConfig:
     if enable_posix_transfer_logs is None:
@@ -469,6 +474,10 @@ def _create_or_modify_logging_config(job, args, messages):
   if enable_posix_transfer_logs is not None:
     # Update new and existing jobs with user setting.
     job.loggingConfig.enableOnpremGcsTransferLogs = enable_posix_transfer_logs
+
+  if job.transferSpec.hdfsDataSource is not None:
+    # HDFS supports only the newer logging.
+    job.loggingConfig.enableOnpremGcsTransferLogs = False
 
   log_actions = getattr(args, 'log_actions', None)
   log_action_states = getattr(args, 'log_action_states', None)

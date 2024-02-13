@@ -132,7 +132,7 @@ class AttackExposure(_messages.Message):
   Fields:
     attackExposureResult: The resource name of the attack path simulation
       result that contains the details regarding this attack exposure score.
-      Example: organizations/123/attackExposureResults/456
+      Example: organizations/123/simulations/456/attackExposureResults/789
     exposedHighValueResourcesCount: The number of high value resources that
       are exposed as a result of this finding.
     exposedLowValueResourcesCount: The number of high value resources that are
@@ -509,12 +509,33 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
   members = _messages.StringField(2, repeated=True)
   role = _messages.StringField(3)
+
+
+class Bucket(_messages.Message):
+  r"""One bucket in the histogram
+
+  Fields:
+    max: maximum value for the bucket, inclusive for all except the first
+      bucket
+    min: minimum value for the bucket, exclusive
+    mutedFindings: number of muted findings in this bucket
+    unmutedFindings: number of unmuted findings in this bucket
+  """
+
+  max = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  min = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  mutedFindings = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  unmutedFindings = _messages.IntegerField(4, variant=_messages.Variant.INT32)
 
 
 class BulkMuteFindingsRequest(_messages.Message):
@@ -800,8 +821,9 @@ class CreateResourceValueConfigRequest(_messages.Message):
 
 
 class Cve(_messages.Message):
-  r"""CVE stands for Common Vulnerabilities and Exposures. More information:
-  https://cve.mitre.org
+  r"""CVE stands for Common Vulnerabilities and Exposures. Information from
+  the [CVE record](https://www.cve.org/ResourcesSupport/Glossary) that
+  describes this vulnerability.
 
   Fields:
     cvssv3: Describe Common Vulnerability Scoring System specified at
@@ -2084,6 +2106,10 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
     scope: Project or folder to scope this config to. For example,
       "project/456" would apply this config only to resources in "project/456"
       scope will be checked with "AND" of other resources.
+    sensitiveDataProtectionMapping: A mapping of the sensitivity on Sensitive
+      Data Protection finding to resource values. This mapping can only be
+      used in combination with a resource_type that is related to BigQuery,
+      e.g. "bigquery.googleapis.com/Dataset".
     tagValues: Required. Tag values combined with AND to check against. Values
       in the form "tagValues/123" E.g. [ "tagValues/123", "tagValues/456",
       "tagValues/789" ] https://cloud.google.com/resource-
@@ -2144,8 +2170,9 @@ class GoogleCloudSecuritycenterV1ResourceValueConfig(_messages.Message):
   resourceType = _messages.StringField(5)
   resourceValue = _messages.EnumField('ResourceValueValueValuesEnum', 6)
   scope = _messages.StringField(7)
-  tagValues = _messages.StringField(8, repeated=True)
-  updateTime = _messages.StringField(9)
+  sensitiveDataProtectionMapping = _messages.MessageField('GoogleCloudSecuritycenterV1SensitiveDataProtectionMapping', 8)
+  tagValues = _messages.StringField(9, repeated=True)
+  updateTime = _messages.StringField(10)
 
 
 class GoogleCloudSecuritycenterV1RunAssetDiscoveryResponse(_messages.Message):
@@ -2236,6 +2263,62 @@ class GoogleCloudSecuritycenterV1SecurityHealthAnalyticsCustomModule(_messages.M
   lastEditor = _messages.StringField(5)
   name = _messages.StringField(6)
   updateTime = _messages.StringField(7)
+
+
+class GoogleCloudSecuritycenterV1SensitiveDataProtectionMapping(_messages.Message):
+  r"""Resource value mapping for Sensitive Data Protection findings. If any of
+  these mappings have a resource value that is not unspecified, the
+  resource_value field will be ignored when reading this configuration.
+
+  Enums:
+    HighSensitivityMappingValueValuesEnum: Resource value mapping for high-
+      sensitivity Sensitive Data Protection findings
+    MediumSensitivityMappingValueValuesEnum: Resource value mapping for
+      medium-sensitivity Sensitive Data Protection findings
+
+  Fields:
+    highSensitivityMapping: Resource value mapping for high-sensitivity
+      Sensitive Data Protection findings
+    mediumSensitivityMapping: Resource value mapping for medium-sensitivity
+      Sensitive Data Protection findings
+  """
+
+  class HighSensitivityMappingValueValuesEnum(_messages.Enum):
+    r"""Resource value mapping for high-sensitivity Sensitive Data Protection
+    findings
+
+    Values:
+      RESOURCE_VALUE_UNSPECIFIED: Unspecific value
+      HIGH: High resource value
+      MEDIUM: Medium resource value
+      LOW: Low resource value
+      NONE: No resource value, e.g. ignore these resources
+    """
+    RESOURCE_VALUE_UNSPECIFIED = 0
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
+    NONE = 4
+
+  class MediumSensitivityMappingValueValuesEnum(_messages.Enum):
+    r"""Resource value mapping for medium-sensitivity Sensitive Data
+    Protection findings
+
+    Values:
+      RESOURCE_VALUE_UNSPECIFIED: Unspecific value
+      HIGH: High resource value
+      MEDIUM: Medium resource value
+      LOW: Low resource value
+      NONE: No resource value, e.g. ignore these resources
+    """
+    RESOURCE_VALUE_UNSPECIFIED = 0
+    HIGH = 1
+    MEDIUM = 2
+    LOW = 3
+    NONE = 4
+
+  highSensitivityMapping = _messages.EnumField('HighSensitivityMappingValueValuesEnum', 1)
+  mediumSensitivityMapping = _messages.EnumField('MediumSensitivityMappingValueValuesEnum', 2)
 
 
 class GoogleCloudSecuritycenterV1beta1RunAssetDiscoveryResponse(_messages.Message):
@@ -2748,7 +2831,7 @@ class GoogleCloudSecuritycenterV2AttackExposure(_messages.Message):
   Fields:
     attackExposureResult: The resource name of the attack path simulation
       result that contains the details regarding this attack exposure score.
-      Example: organizations/123/attackExposureResults/456
+      Example: organizations/123/simulations/456/attackExposureResults/789
     exposedHighValueResourcesCount: The number of high value resources that
       are exposed as a result of this finding.
     exposedLowValueResourcesCount: The number of high value resources that are
@@ -3236,14 +3319,15 @@ class GoogleCloudSecuritycenterV2Container(_messages.Message):
 
 
 class GoogleCloudSecuritycenterV2Cve(_messages.Message):
-  r"""CVE stands for Common Vulnerabilities and Exposures. More information:
-  https://cve.mitre.org
+  r"""CVE stands for Common Vulnerabilities and Exposures. Information from
+  the [CVE record](https://www.cve.org/ResourcesSupport/Glossary) that
+  describes this vulnerability.
 
   Enums:
     ExploitationActivityValueValuesEnum: The exploitation activity of the
       vulnerability in the wild.
     ImpactValueValuesEnum: The potential impact of the vulnerability if it was
-      to be exploited, as assessed by Mandiant Threat Intelligence.
+      to be exploited.
 
   Fields:
     cvssv3: Describe Common Vulnerability Scoring System specified at
@@ -3252,7 +3336,7 @@ class GoogleCloudSecuritycenterV2Cve(_messages.Message):
       the wild.
     id: The unique identifier for the vulnerability. e.g. CVE-2021-34527
     impact: The potential impact of the vulnerability if it was to be
-      exploited, as assessed by Mandiant Threat Intelligence.
+      exploited.
     observedInTheWild: Whether or not the vulnerability has been observed in
       the wild.
     references: Additional information about the CVE. e.g.
@@ -3266,7 +3350,7 @@ class GoogleCloudSecuritycenterV2Cve(_messages.Message):
     r"""The exploitation activity of the vulnerability in the wild.
 
     Values:
-      EXPLOITATION_ACTIVITY_UNSPECIFIED: Invalid value.
+      EXPLOITATION_ACTIVITY_UNSPECIFIED: Invalid or empty value.
       WIDE: Exploitation has been reported or confirmed to widely occur.
       CONFIRMED: Limited reported or confirmed exploitation activities.
       AVAILABLE: Exploit is publicly available.
@@ -3282,11 +3366,10 @@ class GoogleCloudSecuritycenterV2Cve(_messages.Message):
     NO_KNOWN = 5
 
   class ImpactValueValuesEnum(_messages.Enum):
-    r"""The potential impact of the vulnerability if it was to be exploited,
-    as assessed by Mandiant Threat Intelligence.
+    r"""The potential impact of the vulnerability if it was to be exploited.
 
     Values:
-      RISK_RATING_UNSPECIFIED: Invalid value.
+      RISK_RATING_UNSPECIFIED: Invalid or empty value.
       LOW: Exploitation would have little to no security impact.
       MEDIUM: Exploitation would enable attackers to perform activities, or
         could allow attackers to have a direct impact, but would require
@@ -3948,6 +4031,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       jects/{project_id}/sources/{source_id}/locations/{location_id}/findings/
       {finding_id}`
     nextSteps: Steps to address the finding.
+    notebook: Notebook associated with the finding.
     orgPolicies: Contains information about the org policies associated with
       the finding.
     originalProviderId: Internal field that contains information on what
@@ -3989,6 +4073,10 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       start with a letter and contain alphanumeric characters or underscores
       only.
     state: Output only. The state of the finding.
+    toxicCombination: Contains details about a group of security issues that,
+      when the issues occur together, represent a greater risk than when the
+      issues occur independently. A group of such issues is referred to as a
+      toxic combination.
     vulnerability: Represents vulnerability-specific fields like CVE and CVSS
       scores. CVE stands for Common Vulnerabilities and Exposures
       (https://cve.mitre.org/about/)
@@ -4023,6 +4111,8 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
       SCC_ERROR: Describes an error that prevents some SCC functionality.
       POSTURE_VIOLATION: Describes a potential security risk due to a change
         in the security posture.
+      TOXIC_COMBINATION: Describes a combination of security issues that
+        represent a more severe security problem when taken together.
     """
     FINDING_CLASS_UNSPECIFIED = 0
     THREAT = 1
@@ -4031,6 +4121,7 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
     OBSERVATION = 4
     SCC_ERROR = 5
     POSTURE_VIOLATION = 6
+    TOXIC_COMBINATION = 7
 
   class MuteValueValuesEnum(_messages.Enum):
     r"""Indicates the mute state of a finding (either muted, unmuted or
@@ -4262,19 +4353,21 @@ class GoogleCloudSecuritycenterV2Finding(_messages.Message):
   muteUpdateTime = _messages.StringField(39)
   name = _messages.StringField(40)
   nextSteps = _messages.StringField(41)
-  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 42, repeated=True)
-  originalProviderId = _messages.StringField(43)
-  parent = _messages.StringField(44)
-  parentDisplayName = _messages.StringField(45)
-  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 46, repeated=True)
-  propertyDataTypes = _messages.MessageField('PropertyDataTypesValue', 47)
-  resourceName = _messages.StringField(48)
-  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 49)
-  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 50)
-  severity = _messages.EnumField('SeverityValueValuesEnum', 51)
-  sourceProperties = _messages.MessageField('SourcePropertiesValue', 52)
-  state = _messages.EnumField('StateValueValuesEnum', 53)
-  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 54)
+  notebook = _messages.MessageField('GoogleCloudSecuritycenterV2Notebook', 42)
+  orgPolicies = _messages.MessageField('GoogleCloudSecuritycenterV2OrgPolicy', 43, repeated=True)
+  originalProviderId = _messages.StringField(44)
+  parent = _messages.StringField(45)
+  parentDisplayName = _messages.StringField(46)
+  processes = _messages.MessageField('GoogleCloudSecuritycenterV2Process', 47, repeated=True)
+  propertyDataTypes = _messages.MessageField('PropertyDataTypesValue', 48)
+  resourceName = _messages.StringField(49)
+  securityMarks = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityMarks', 50)
+  securityPosture = _messages.MessageField('GoogleCloudSecuritycenterV2SecurityPosture', 51)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 52)
+  sourceProperties = _messages.MessageField('SourcePropertiesValue', 53)
+  state = _messages.EnumField('StateValueValuesEnum', 54)
+  toxicCombination = _messages.MessageField('GoogleCloudSecuritycenterV2ToxicCombination', 55)
+  vulnerability = _messages.MessageField('GoogleCloudSecuritycenterV2Vulnerability', 56)
 
 
 class GoogleCloudSecuritycenterV2Folder(_messages.Message):
@@ -4961,6 +5054,24 @@ class GoogleCloudSecuritycenterV2NodePool(_messages.Message):
   nodes = _messages.MessageField('GoogleCloudSecuritycenterV2Node', 2, repeated=True)
 
 
+class GoogleCloudSecuritycenterV2Notebook(_messages.Message):
+  r"""Represents a Jupyter notebook IPYNB file, such as a [Colab Enterprise
+  notebook](https://cloud.google.com/colab/docs/introduction) file, that is
+  associated with a finding.
+
+  Fields:
+    lastAuthor: The user ID of the latest author to modify the notebook.
+    name: The name of the notebook.
+    notebookUpdateTime: The most recent time the notebook was updated.
+    service: The source notebook service, for example, "Colab Enterprise".
+  """
+
+  lastAuthor = _messages.StringField(1)
+  name = _messages.StringField(2)
+  notebookUpdateTime = _messages.StringField(3)
+  service = _messages.StringField(4)
+
+
 class GoogleCloudSecuritycenterV2NotificationMessage(_messages.Message):
   r"""Cloud SCC's Notification
 
@@ -5385,8 +5496,8 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
 
   Enums:
     CloudProviderValueValuesEnum: Cloud provider this configuration applies to
-    ResourceValueValueValuesEnum: Required. Resource value level this
-      expression represents
+    ResourceValueValueValuesEnum: Resource value level this expression
+      represents Only required when there is no SDP mapping in the request
 
   Messages:
     ResourceLabelsSelectorValue: List of resource labels to search for,
@@ -5412,7 +5523,8 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
       resources. E.g. "storage.googleapis.com/Bucket" with resource_value
       "HIGH" will apply "HIGH" value only to "storage.googleapis.com/Bucket"
       resources.
-    resourceValue: Required. Resource value level this expression represents
+    resourceValue: Resource value level this expression represents Only
+      required when there is no SDP mapping in the request
     scope: Project or folder to scope this config to. For example,
       "project/456" would apply this config only to resources in "project/456"
       scope will be checked with "AND" of other resources.
@@ -5443,7 +5555,8 @@ class GoogleCloudSecuritycenterV2ResourceValueConfig(_messages.Message):
     MICROSOFT_AZURE = 3
 
   class ResourceValueValueValuesEnum(_messages.Enum):
-    r"""Required. Resource value level this expression represents
+    r"""Resource value level this expression represents Only required when
+    there is no SDP mapping in the request
 
     Values:
       RESOURCE_VALUE_UNSPECIFIED: Unspecific value
@@ -5952,6 +6065,26 @@ class GoogleCloudSecuritycenterV2TicketInfo(_messages.Message):
   status = _messages.StringField(4)
   updateTime = _messages.StringField(5)
   uri = _messages.StringField(6)
+
+
+class GoogleCloudSecuritycenterV2ToxicCombination(_messages.Message):
+  r"""Contains details about a group of security issues that, when the issues
+  occur together, represent a greater risk than when the issues occur
+  independently. A group of such issues is referred to as a toxic combination.
+
+  Fields:
+    attackExposureScore: The [Attack exposure
+      score](https://cloud.google.com/security-command-center/docs/attack-
+      exposure-learn#attack_exposure_scores) of this toxic combination. The
+      score is a measure of how much this toxic combination exposes one or
+      more high-value resources to potential attack.
+    relatedFindings: List of resource names of findings associated with this
+      toxic combination. For example,
+      organizations/123/sources/456/findings/789.
+  """
+
+  attackExposureScore = _messages.FloatField(1)
+  relatedFindings = _messages.StringField(2, repeated=True)
 
 
 class GoogleCloudSecuritycenterV2Vulnerability(_messages.Message):
@@ -9082,6 +9215,13 @@ class SecuritycenterOrganizationsSimulationsAttackExposureResultsValuedResources
     filter: The filter expression that filters the valued resources in the
       response. Supported fields: * `resource_value` supports = *
       `resource_type` supports =
+    orderBy: Optional. The fields by which to order the valued resources
+      response. Supported fields: * `exposed_score` * `resource_value` *
+      `resource_type` Values should be a comma separated list of fields. For
+      example: `exposed_score,resource_value`. The default sorting order is
+      descending. To specify ascending or descending order for a field, append
+      a " ASC" or a " DESC" suffix, respectively; for example: `exposed_score
+      DESC`.
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.
     pageToken: The value returned by the last `ListValuedResourcesResponse`;
@@ -9095,9 +9235,10 @@ class SecuritycenterOrganizationsSimulationsAttackExposureResultsValuedResources
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SecuritycenterOrganizationsSimulationsAttackPathsListRequest(_messages.Message):
@@ -9186,6 +9327,13 @@ class SecuritycenterOrganizationsSimulationsValuedResourcesListRequest(_messages
     filter: The filter expression that filters the valued resources in the
       response. Supported fields: * `resource_value` supports = *
       `resource_type` supports =
+    orderBy: Optional. The fields by which to order the valued resources
+      response. Supported fields: * `exposed_score` * `resource_value` *
+      `resource_type` Values should be a comma separated list of fields. For
+      example: `exposed_score,resource_value`. The default sorting order is
+      descending. To specify ascending or descending order for a field, append
+      a " ASC" or a " DESC" suffix, respectively; for example: `exposed_score
+      DESC`.
     pageSize: The maximum number of results to return in a single response.
       Default is 10, minimum is 1, maximum is 1000.
     pageToken: The value returned by the last `ListValuedResourcesResponse`;
@@ -9199,9 +9347,10 @@ class SecuritycenterOrganizationsSimulationsValuedResourcesListRequest(_messages
   """
 
   filter = _messages.StringField(1)
-  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
-  pageToken = _messages.StringField(3)
-  parent = _messages.StringField(4, required=True)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
 
 
 class SecuritycenterOrganizationsSourcesCreateRequest(_messages.Message):
@@ -11077,6 +11226,7 @@ class Simulation(_messages.Message):
       organizations/123/simulations/456
     resourceValueConfigsMetadata: Resource value configurations' metadata used
       in this simulation. Maximum of 100.
+    stats: Output only. Statistics about the simulation.
   """
 
   class CloudProviderValueValuesEnum(_messages.Enum):
@@ -11097,6 +11247,22 @@ class Simulation(_messages.Message):
   createTime = _messages.StringField(2)
   name = _messages.StringField(3)
   resourceValueConfigsMetadata = _messages.MessageField('ResourceValueConfigMetadata', 4, repeated=True)
+  stats = _messages.MessageField('SimulationStats', 5)
+
+
+class SimulationStats(_messages.Message):
+  r"""Statistics about the simulation.
+
+  Fields:
+    aeZeroFindings: Number of findings with AE = 0
+    buckets: Buckets in the histogram
+    threshold: Threshold for a finding to be considered CRITICAL Measured in
+      normalized criticality score
+  """
+
+  aeZeroFindings = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  buckets = _messages.MessageField('Bucket', 2, repeated=True)
+  threshold = _messages.IntegerField(3, variant=_messages.Variant.INT32)
 
 
 class Source(_messages.Message):

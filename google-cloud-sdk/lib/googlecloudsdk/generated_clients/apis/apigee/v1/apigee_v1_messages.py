@@ -2218,6 +2218,44 @@ class ApigeeOrganizationsEnvironmentsDeleteRequest(_messages.Message):
   name = _messages.StringField(1, required=True)
 
 
+class ApigeeOrganizationsEnvironmentsDeploymentsGetIamPolicyRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsDeploymentsGetIamPolicyRequest object.
+
+  Fields:
+    options_requestedPolicyVersion: Optional. The maximum policy version that
+      will be used to format the policy. Valid values are 0, 1, and 3.
+      Requests specifying an invalid value will be rejected. Requests for
+      policies with any conditional role bindings must specify version 3.
+      Policies with no conditional role bindings may specify any valid value
+      or leave the field unset. The policy in the response might use the
+      policy version that you specified, or it might use a lower policy
+      version. For example, if you specify version 3, but the policy has no
+      conditional role bindings, the response uses version 1. To learn which
+      resources support conditions in their IAM policies, see the [IAM
+      documentation](https://cloud.google.com/iam/help/conditions/resource-
+      policies).
+    resource: REQUIRED: The resource for which the policy is being requested.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  options_requestedPolicyVersion = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  resource = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsDeploymentsGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsDeploymentsGetRequest object.
+
+  Fields:
+    name: Required. Name of the api proxy or the shared flow deployment. Use
+      the following structure in your request:
+      `organizations/{org}/environments/{env}/deployments/{deployment}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
 class ApigeeOrganizationsEnvironmentsDeploymentsListRequest(_messages.Message):
   r"""A ApigeeOrganizationsEnvironmentsDeploymentsListRequest object.
 
@@ -2233,6 +2271,40 @@ class ApigeeOrganizationsEnvironmentsDeploymentsListRequest(_messages.Message):
 
   parent = _messages.StringField(1, required=True)
   sharedFlows = _messages.BooleanField(2)
+
+
+class ApigeeOrganizationsEnvironmentsDeploymentsSetIamPolicyRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsDeploymentsSetIamPolicyRequest object.
+
+  Fields:
+    googleIamV1SetIamPolicyRequest: A GoogleIamV1SetIamPolicyRequest resource
+      to be passed as the request body.
+    resource: REQUIRED: The resource for which the policy is being specified.
+      See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1SetIamPolicyRequest = _messages.MessageField('GoogleIamV1SetIamPolicyRequest', 1)
+  resource = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsEnvironmentsDeploymentsTestIamPermissionsRequest(_messages.Message):
+  r"""A ApigeeOrganizationsEnvironmentsDeploymentsTestIamPermissionsRequest
+  object.
+
+  Fields:
+    googleIamV1TestIamPermissionsRequest: A
+      GoogleIamV1TestIamPermissionsRequest resource to be passed as the
+      request body.
+    resource: REQUIRED: The resource for which the policy detail is being
+      requested. See [Resource
+      names](https://cloud.google.com/apis/design/resource_names) for the
+      appropriate value for this field.
+  """
+
+  googleIamV1TestIamPermissionsRequest = _messages.MessageField('GoogleIamV1TestIamPermissionsRequest', 1)
+  resource = _messages.StringField(2, required=True)
 
 
 class ApigeeOrganizationsEnvironmentsFlowhooksAttachSharedFlowToFlowHookRequest(_messages.Message):
@@ -4381,6 +4453,89 @@ class ApigeeOrganizationsReportsListRequest(_messages.Message):
   parent = _messages.StringField(2, required=True)
 
 
+class ApigeeOrganizationsSecurityAssessmentResultsBatchComputeRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityAssessmentResultsBatchComputeRequest
+  object.
+
+  Fields:
+    googleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest: A
+      GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest resource
+      to be passed as the request body.
+    name: Required. Name of the organization for which the score needs to be
+      computed in the following format: `organizations/{org}`
+  """
+
+  googleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest', 1)
+  name = _messages.StringField(2, required=True)
+
+
+class ApigeeOrganizationsSecurityFeedbackCreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackCreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityFeedback: A GoogleCloudApigeeV1SecurityFeedback
+      resource to be passed as the request body.
+    parent: Required. Name of the organization. Use the following structure in
+      your request: `organizations/{org}`.
+    securityFeedbackId: Optional. The id for this feedback report. If not
+      provided, it will be set to a system-generated UUID.
+  """
+
+  googleCloudApigeeV1SecurityFeedback = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedback', 1)
+  parent = _messages.StringField(2, required=True)
+  securityFeedbackId = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSecurityFeedbackDeleteRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackDeleteRequest object.
+
+  Fields:
+    name: Required. Name of the SecurityFeedback to delete. Use the following
+      structure in your request:
+      `organizations/{org}/securityFeedback/{feedback_id}`
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityFeedbackGetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackGetRequest object.
+
+  Fields:
+    name: Required. Name of the SecurityFeedback. Format:
+      `organizations/{org}/securityFeedback/{feedback_id}` Example:
+      organizations/apigee-organization-name/securityFeedback/feedback-id
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityFeedbackListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityFeedbackListRequest object.
+
+  Fields:
+    filter: Optional. Allow filtering.
+    pageSize: Optional. The maximum number of feedback reports to return. The
+      service may return fewer than this value.
+      LINT.IfChange(documented_page_size_limits) If unspecified, at most 100
+      feedback reports will be returned. The maximum value is 1000; values
+      above 1000 will be coerced to 1000. LINT.ThenChange(//depot/google3/edge
+      /sense/boq/service/v1/securityfeedback/securityfeedback_rpc.go:page_size
+      _limits)
+    pageToken: Optional. A page token, received from a previous
+      `ListSecurityFeedback` call. Provide this to retrieve the subsequent
+      page. When paginating, all other parameters provided to
+      `ListSecurityFeedback` must match the call that provided the page token.
+    parent: Required. Name of the organization. Format: `organizations/{org}`.
+      Example: organizations/apigee-organization-name/securityFeedback
+  """
+
+  filter = _messages.StringField(1)
+  pageSize = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(3)
+  parent = _messages.StringField(4, required=True)
+
+
 class ApigeeOrganizationsSecurityProfilesCreateRequest(_messages.Message):
   r"""A ApigeeOrganizationsSecurityProfilesCreateRequest object.
 
@@ -4516,6 +4671,66 @@ class ApigeeOrganizationsSecurityProfilesPatchRequest(_messages.Message):
   """
 
   googleCloudApigeeV1SecurityProfile = _messages.MessageField('GoogleCloudApigeeV1SecurityProfile', 1)
+  name = _messages.StringField(2, required=True)
+  updateMask = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSecurityProfilesV2CreateRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesV2CreateRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityProfileV2: A
+      GoogleCloudApigeeV1SecurityProfileV2 resource to be passed as the
+      request body.
+    parent: Required. The parent resource name.
+    securityProfileV2Id: Required. The security profile id.
+  """
+
+  googleCloudApigeeV1SecurityProfileV2 = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileV2', 1)
+  parent = _messages.StringField(2, required=True)
+  securityProfileV2Id = _messages.StringField(3)
+
+
+class ApigeeOrganizationsSecurityProfilesV2GetRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesV2GetRequest object.
+
+  Fields:
+    name: Required. The security profile id.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class ApigeeOrganizationsSecurityProfilesV2ListRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesV2ListRequest object.
+
+  Fields:
+    pageSize: Optional. The maximum number of profiles to return
+    pageToken: Optional. A page token, received from a previous
+      `ListSecurityProfilesV2` call. Provide this to retrieve the subsequent
+      page.
+    parent: Required. For a specific organization, list of all the security
+      profiles. Format: `organizations/{org}`
+  """
+
+  pageSize = _messages.IntegerField(1, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+
+
+class ApigeeOrganizationsSecurityProfilesV2PatchRequest(_messages.Message):
+  r"""A ApigeeOrganizationsSecurityProfilesV2PatchRequest object.
+
+  Fields:
+    googleCloudApigeeV1SecurityProfileV2: A
+      GoogleCloudApigeeV1SecurityProfileV2 resource to be passed as the
+      request body.
+    name: Identifier. Name of the security profile v2 resource. Format:
+      organizations/{org}/securityProfilesV2/{profile}
+    updateMask: Required. The list of fields to update.
+  """
+
+  googleCloudApigeeV1SecurityProfileV2 = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileV2', 1)
   name = _messages.StringField(2, required=True)
   updateMask = _messages.StringField(3)
 
@@ -5962,6 +6177,88 @@ class GoogleCloudApigeeV1Attributes(_messages.Message):
   """
 
   attribute = _messages.MessageField('GoogleCloudApigeeV1Attribute', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest(_messages.Message):
+  r"""Request for BatchComputeSecurityAssessmentResults.
+
+  Fields:
+    include: Include only these resources.
+    includeAllResources: Include all resources under the scope.
+    pageSize: Optional. The maximum number of results to return. The service
+      may return fewer than this value. If unspecified, at most 50 results
+      will be returned.
+    pageToken: Optional. A page token, received from a previous
+      `BatchComputeSecurityAssessmentResults` call. Provide this to retrieve
+      the subsequent page.
+    profile: Required. Name of the profile that is used for computation.
+    scope: Required. Scope of the resources for the computation. For Apigee,
+      the environment is the scope of the resources.
+  """
+
+  include = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArray', 1)
+  includeAllResources = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestIncludeAll', 2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  profile = _messages.StringField(5)
+  scope = _messages.StringField(6)
+
+
+class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestIncludeAll(_messages.Message):
+  r"""Message for include_all option."""
+
+
+class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArray(_messages.Message):
+  r"""An array of resource messages.
+
+  Fields:
+    resources: Required. The array of resources. For Apigee, the proxies are
+      resources.
+  """
+
+  resources = _messages.MessageField('GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArrayResource', 1, repeated=True)
+
+
+class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequestResourceArrayResource(_messages.Message):
+  r"""LINT.IfChange(resource_definition_1) Resource for which we are computing
+  security assessment.
+
+  Enums:
+    TypeValueValuesEnum: Required. Type of this resource.
+
+  Fields:
+    name: Required. Name of this resource.
+    type: Required. Type of this resource.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of this resource.
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: ResourceType not specified.
+      API_PROXY: Resource is an Apigee Proxy.
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    API_PROXY = 1
+
+  name = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsResponse(_messages.Message):
+  r"""Response for BatchComputeSecurityAssessmentResults.
+
+  Fields:
+    assessmentTime: The time of the assessment api call.
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is blank, there are no subsequent pages.
+    securityAssessmentResults: Default sort order is by resource name in
+      alphabetic order.
+  """
+
+  assessmentTime = _messages.StringField(1)
+  nextPageToken = _messages.StringField(2)
+  securityAssessmentResults = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResult', 3, repeated=True)
 
 
 class GoogleCloudApigeeV1BatchUpdateSecurityIncidentsRequest(_messages.Message):
@@ -8632,6 +8929,20 @@ class GoogleCloudApigeeV1ListSecurityActionsResponse(_messages.Message):
   securityActions = _messages.MessageField('GoogleCloudApigeeV1SecurityAction', 2, repeated=True)
 
 
+class GoogleCloudApigeeV1ListSecurityFeedbackResponse(_messages.Message):
+  r"""Response for ListSecurityFeedback
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` in
+      `ListSecurityFeedbackRequest` to retrieve the next page. If this field
+      is omitted, there are no subsequent pages.
+    securityFeedback: List of SecurityFeedback reports.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityFeedback = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedback', 2, repeated=True)
+
+
 class GoogleCloudApigeeV1ListSecurityIncidentEnvironmentsResponse(_messages.Message):
   r"""Response for ListEnvironmentSecurityIncident.
 
@@ -8687,6 +8998,19 @@ class GoogleCloudApigeeV1ListSecurityProfilesResponse(_messages.Message):
 
   nextPageToken = _messages.StringField(1)
   securityProfiles = _messages.MessageField('GoogleCloudApigeeV1SecurityProfile', 2, repeated=True)
+
+
+class GoogleCloudApigeeV1ListSecurityProfilesV2Response(_messages.Message):
+  r"""Response for ListSecurityProfilesV2.
+
+  Fields:
+    nextPageToken: A token that can be sent as `page_token` to retrieve the
+      next page. If this field is omitted, there are no subsequent pages.
+    securityProfilesV2: List of security profiles in the organization.
+  """
+
+  nextPageToken = _messages.StringField(1)
+  securityProfilesV2 = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileV2', 2, repeated=True)
 
 
 class GoogleCloudApigeeV1ListSecurityReportsResponse(_messages.Message):
@@ -10758,8 +11082,8 @@ class GoogleCloudApigeeV1SecurityActionConditionConfig(_messages.Message):
     botReasons: Optional. A list of Bot Reasons. Current options: Flooder,
       Brute Guessor, Static Content Scraper, OAuth Abuser, Robot Abuser,
       TorListRule, Advanced Anomaly Detection, Advanced API Scraper, Search
-      Engine Crawlers, Public Cloud, Public Cloud AWS, Public Cloud Azure, and
-      Public Cloud GCP.
+      Engine Crawlers, Public Clouds, Public Cloud AWS, Public Cloud Azure,
+      and Public Cloud Google.
     ipAddressRanges: Optional. A list of IP addresses. This could be either
       IPv4 or IPv6. Limited to 100 per action.
   """
@@ -10819,6 +11143,410 @@ class GoogleCloudApigeeV1SecurityActionsConfig(_messages.Message):
   enabled = _messages.BooleanField(1)
   name = _messages.StringField(2)
   updateTime = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResult(_messages.Message):
+  r"""The security assessment result for one resource.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of the assessment.
+
+  Messages:
+    AssessmentRecommendationsValue: The recommendations of the assessment. The
+      key is the "name" of the assessment (not display_name), and the value
+      are the recommendations.
+    FailedAssessmentPerWeightValue: The number of failed assessments grouped
+      by its weight. Keys are one of the following: "MAJOR", "MODERATE",
+      "MINOR".
+
+  Fields:
+    assessmentRecommendations: The recommendations of the assessment. The key
+      is the "name" of the assessment (not display_name), and the value are
+      the recommendations.
+    createTime: The time of the assessment of this resource. This could lag
+      behind `assessment_time` due to caching within the backend.
+    error: The error status if scoring fails.
+    failedAssessmentPerWeight: The number of failed assessments grouped by its
+      weight. Keys are one of the following: "MAJOR", "MODERATE", "MINOR".
+    resource: The assessed resource.
+    score: The security score of the assessment.
+    scoringResult: The result of the assessment.
+    severity: The severity of the assessment.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the assessment.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Severity is not defined.
+      LOW: Severity is low.
+      MEDIUM: Severity is medium.
+      HIGH: Severity is high.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AssessmentRecommendationsValue(_messages.Message):
+    r"""The recommendations of the assessment. The key is the "name" of the
+    assessment (not display_name), and the value are the recommendations.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AssessmentRecommendationsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AssessmentRecommendationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AssessmentRecommendationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A
+          GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendation
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendation', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FailedAssessmentPerWeightValue(_messages.Message):
+    r"""The number of failed assessments grouped by its weight. Keys are one
+    of the following: "MAJOR", "MODERATE", "MINOR".
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        FailedAssessmentPerWeightValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        FailedAssessmentPerWeightValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FailedAssessmentPerWeightValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A integer attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assessmentRecommendations = _messages.MessageField('AssessmentRecommendationsValue', 1)
+  createTime = _messages.StringField(2)
+  error = _messages.MessageField('GoogleRpcStatus', 3)
+  failedAssessmentPerWeight = _messages.MessageField('FailedAssessmentPerWeightValue', 4)
+  resource = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultResource', 5)
+  score = _messages.IntegerField(6, variant=_messages.Variant.INT32)
+  scoringResult = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultScoringResult', 7)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 8)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendation(_messages.Message):
+  r"""The message format of a recommendation from the assessment.
+
+  Enums:
+    WeightValueValuesEnum: The weight of the assessment which was set in the
+      profile.
+
+  Fields:
+    displayName: The display name of the assessment.
+    recommendations: The recommended steps of the assessment.
+    weight: The weight of the assessment which was set in the profile.
+  """
+
+  class WeightValueValuesEnum(_messages.Enum):
+    r"""The weight of the assessment which was set in the profile.
+
+    Values:
+      WEIGHT_UNSPECIFIED: The weight is unspecified.
+      MINOR: The weight is minor.
+      MODERATE: The weight is moderate.
+      MAJOR: The weight is major.
+    """
+    WEIGHT_UNSPECIFIED = 0
+    MINOR = 1
+    MODERATE = 2
+    MAJOR = 3
+
+  displayName = _messages.StringField(1)
+  recommendations = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendationRecommendation', 2, repeated=True)
+  weight = _messages.EnumField('WeightValueValuesEnum', 3)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendationRecommendation(_messages.Message):
+  r"""The format of the assessment recommendation.
+
+  Fields:
+    description: The description of the recommendation.
+    link: The link for the recommendation.
+  """
+
+  description = _messages.StringField(1)
+  link = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendationRecommendationLink', 2)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultAssessmentRecommendationRecommendationLink(_messages.Message):
+  r"""The format for a link in the recommendation.
+
+  Fields:
+    text: The text of the url. (ie: "Learn more")
+    uri: The link itself.
+  """
+
+  text = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultResource(_messages.Message):
+  r"""LINT.IfChange(resource_definition_2) Resource for which we are computing
+  security assessment.
+
+  Enums:
+    TypeValueValuesEnum: Required. Type of this resource.
+
+  Fields:
+    name: Required. Name of this resource.
+    type: Required. Type of this resource.
+  """
+
+  class TypeValueValuesEnum(_messages.Enum):
+    r"""Required. Type of this resource.
+
+    Values:
+      RESOURCE_TYPE_UNSPECIFIED: ResourceType not specified.
+      API_PROXY: Resource is an Apigee Proxy.
+    """
+    RESOURCE_TYPE_UNSPECIFIED = 0
+    API_PROXY = 1
+
+  name = _messages.StringField(1)
+  type = _messages.EnumField('TypeValueValuesEnum', 2)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultScoringResult(_messages.Message):
+  r"""The result of the assessment.
+
+  Enums:
+    SeverityValueValuesEnum: The severity of the assessment.
+
+  Messages:
+    AssessmentRecommendationsValue: The recommendations of the assessment. The
+      key is the "name" of the assessment (not display_name), and the value
+      are the recommendations.
+    FailedAssessmentPerWeightValue: The number of failed assessments grouped
+      by its weight. Keys are one of the following: "MAJOR", "MODERATE",
+      "MINOR".
+
+  Fields:
+    assessmentRecommendations: The recommendations of the assessment. The key
+      is the "name" of the assessment (not display_name), and the value are
+      the recommendations.
+    failedAssessmentPerWeight: The number of failed assessments grouped by its
+      weight. Keys are one of the following: "MAJOR", "MODERATE", "MINOR".
+    score: The security score of the assessment.
+    severity: The severity of the assessment.
+  """
+
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""The severity of the assessment.
+
+    Values:
+      SEVERITY_UNSPECIFIED: Severity is not defined.
+      LOW: Severity is low.
+      MEDIUM: Severity is medium.
+      HIGH: Severity is high.
+    """
+    SEVERITY_UNSPECIFIED = 0
+    LOW = 1
+    MEDIUM = 2
+    HIGH = 3
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class AssessmentRecommendationsValue(_messages.Message):
+    r"""The recommendations of the assessment. The key is the "name" of the
+    assessment (not display_name), and the value are the recommendations.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        AssessmentRecommendationsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        AssessmentRecommendationsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a AssessmentRecommendationsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAsses
+          smentRecommendation attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendation', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class FailedAssessmentPerWeightValue(_messages.Message):
+    r"""The number of failed assessments grouped by its weight. Keys are one
+    of the following: "MAJOR", "MODERATE", "MINOR".
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        FailedAssessmentPerWeightValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        FailedAssessmentPerWeightValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a FailedAssessmentPerWeightValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A integer attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.IntegerField(2, variant=_messages.Variant.INT32)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  assessmentRecommendations = _messages.MessageField('AssessmentRecommendationsValue', 1)
+  failedAssessmentPerWeight = _messages.MessageField('FailedAssessmentPerWeightValue', 2)
+  score = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendation(_messages.Message):
+  r"""The message format of a recommendation from the assessment.
+
+  Enums:
+    WeightValueValuesEnum: The weight of the assessment which was set in the
+      profile.
+
+  Fields:
+    displayName: The display name of the assessment.
+    recommendations: The recommended steps of the assessment.
+    weight: The weight of the assessment which was set in the profile.
+  """
+
+  class WeightValueValuesEnum(_messages.Enum):
+    r"""The weight of the assessment which was set in the profile.
+
+    Values:
+      WEIGHT_UNSPECIFIED: The weight is unspecified.
+      MINOR: The weight is minor.
+      MODERATE: The weight is moderate.
+      MAJOR: The weight is major.
+    """
+    WEIGHT_UNSPECIFIED = 0
+    MINOR = 1
+    MODERATE = 2
+    MAJOR = 3
+
+  displayName = _messages.StringField(1)
+  recommendations = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendationRecommendation', 2, repeated=True)
+  weight = _messages.EnumField('WeightValueValuesEnum', 3)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendationRecommendation(_messages.Message):
+  r"""The format of the assessment recommendation.
+
+  Fields:
+    description: The description of the recommendation.
+    link: The link for the recommendation.
+  """
+
+  description = _messages.StringField(1)
+  link = _messages.MessageField('GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendationRecommendationLink', 2)
+
+
+class GoogleCloudApigeeV1SecurityAssessmentResultScoringResultAssessmentRecommendationRecommendationLink(_messages.Message):
+  r"""The format for a link in the recommendation.
+
+  Fields:
+    text: The text of the url. (ie: "Learn more")
+    uri: The link itself.
+  """
+
+  text = _messages.StringField(1)
+  uri = _messages.StringField(2)
+
+
+class GoogleCloudApigeeV1SecurityFeedback(_messages.Message):
+  r"""Represents a feedback report from an Advanced API Security customer.
+
+  Fields:
+    comment: Optional. Optional text the user can provide for additional,
+      unstructured context.
+    createTime: Output only. The time when this specific feedback id was
+      created.
+    feedbackContext: Required. One or more attribute/value pairs for
+      constraining the feedback.
+    name: Output only. Identifier. The feedback name is intended to be a
+      system-generated uuid.
+  """
+
+  comment = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  feedbackContext = _messages.MessageField('GoogleCloudApigeeV1SecurityFeedbackFeedbackContext', 3, repeated=True)
+  name = _messages.StringField(4)
+
+
+class GoogleCloudApigeeV1SecurityFeedbackFeedbackContext(_messages.Message):
+  r"""FeedbackContext captures the intent of the submitted feedback.
+
+  Enums:
+    FeedbackTypeValueValuesEnum: Required. The type of feedback being
+      submitted.
+
+  Fields:
+    attribute: Required. The API attribute the user is providing feedback
+      about. Supported values: - useragent - client_received_start_timestamp -
+      apiproxy - client_id - organization - environment - request_uri -
+      proxy_basepath - ax_resolved_client_ip - request_size - response_size -
+      is_error - ax_geo_country - access_token - developer_app - incident_id -
+      incident_name
+    feedbackType: Required. The type of feedback being submitted.
+    value: Required. The value of the attribute the user is providing feedback
+      about.
+  """
+
+  class FeedbackTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of feedback being submitted.
+
+    Values:
+      FEEDBACK_TYPE_UNSPECIFIED: Unspecified feedback type.
+      DETECTION_FALSE_POSITIVE: Feedback identifying an incorrect
+        classification by an ML model.
+      DETECTION_FALSE_NEGATIVE: Feedback identifying a classification by an ML
+        model that was missed.
+    """
+    FEEDBACK_TYPE_UNSPECIFIED = 0
+    DETECTION_FALSE_POSITIVE = 1
+    DETECTION_FALSE_NEGATIVE = 2
+
+  attribute = _messages.StringField(1)
+  feedbackType = _messages.EnumField('FeedbackTypeValueValuesEnum', 2)
+  value = _messages.StringField(3)
 
 
 class GoogleCloudApigeeV1SecurityIncident(_messages.Message):
@@ -10988,6 +11716,88 @@ class GoogleCloudApigeeV1SecurityProfileScoringConfig(_messages.Message):
   description = _messages.StringField(1)
   scorePath = _messages.StringField(2)
   title = _messages.StringField(3)
+
+
+class GoogleCloudApigeeV1SecurityProfileV2(_messages.Message):
+  r"""Security profile for risk assessment version 2.
+
+  Messages:
+    ProfileAssessmentConfigsValue: Required. The configuration for each
+      assessment in this profile. Key is the name/id of the assessment.
+
+  Fields:
+    createTime: Output only. The time of the security profile creation.
+    description: Optional. The description of the security profile.
+    googleDefined: Output only. Whether the security profile is google
+      defined.
+    name: Identifier. Name of the security profile v2 resource. Format:
+      organizations/{org}/securityProfilesV2/{profile}
+    profileAssessmentConfigs: Required. The configuration for each assessment
+      in this profile. Key is the name/id of the assessment.
+    updateTime: Output only. The time of the security profile update.
+  """
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class ProfileAssessmentConfigsValue(_messages.Message):
+    r"""Required. The configuration for each assessment in this profile. Key
+    is the name/id of the assessment.
+
+    Messages:
+      AdditionalProperty: An additional property for a
+        ProfileAssessmentConfigsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type
+        ProfileAssessmentConfigsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a ProfileAssessmentConfigsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A GoogleCloudApigeeV1SecurityProfileV2ProfileAssessmentConfig
+          attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.MessageField('GoogleCloudApigeeV1SecurityProfileV2ProfileAssessmentConfig', 2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  createTime = _messages.StringField(1)
+  description = _messages.StringField(2)
+  googleDefined = _messages.BooleanField(3)
+  name = _messages.StringField(4)
+  profileAssessmentConfigs = _messages.MessageField('ProfileAssessmentConfigsValue', 5)
+  updateTime = _messages.StringField(6)
+
+
+class GoogleCloudApigeeV1SecurityProfileV2ProfileAssessmentConfig(_messages.Message):
+  r"""The configuration definition for a specific assessment.
+
+  Enums:
+    WeightValueValuesEnum: The weight of the assessment.
+
+  Fields:
+    weight: The weight of the assessment.
+  """
+
+  class WeightValueValuesEnum(_messages.Enum):
+    r"""The weight of the assessment.
+
+    Values:
+      WEIGHT_UNSPECIFIED: The weight is unspecified.
+      MINOR: The weight is minor.
+      MODERATE: The weight is moderate.
+      MAJOR: The weight is major.
+    """
+    WEIGHT_UNSPECIFIED = 0
+    MINOR = 1
+    MODERATE = 2
+    MAJOR = 3
+
+  weight = _messages.EnumField('WeightValueValuesEnum', 1)
 
 
 class GoogleCloudApigeeV1SecurityReport(_messages.Message):
@@ -12029,7 +12839,11 @@ class GoogleIamV1Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('GoogleTypeExpr', 1)

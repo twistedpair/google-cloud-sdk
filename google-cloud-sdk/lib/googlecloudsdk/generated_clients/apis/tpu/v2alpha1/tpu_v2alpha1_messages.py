@@ -1133,7 +1133,8 @@ class QueuedResourceState(_messages.Message):
   Enums:
     StateValueValuesEnum: State of the QueuedResource request.
     StateInitiatorValueValuesEnum: Output only. The initiator of the
-      QueuedResources's current state.
+      QueuedResources's current state. Used to indicate whether the
+      SUSPENDING/SUSPENDED state was initiated by the user or the service.
 
   Fields:
     acceptedData: Further data for the accepted state.
@@ -1144,13 +1145,16 @@ class QueuedResourceState(_messages.Message):
     provisioningData: Further data for the provisioning state.
     state: State of the QueuedResource request.
     stateInitiator: Output only. The initiator of the QueuedResources's
-      current state.
+      current state. Used to indicate whether the SUSPENDING/SUSPENDED state
+      was initiated by the user or the service.
     suspendedData: Further data for the suspended state.
     suspendingData: Further data for the suspending state.
   """
 
   class StateInitiatorValueValuesEnum(_messages.Enum):
     r"""Output only. The initiator of the QueuedResources's current state.
+    Used to indicate whether the SUSPENDING/SUSPENDED state was initiated by
+    the user or the service.
 
     Values:
       STATE_INITIATOR_UNSPECIFIED: The state initiator is unspecified.
@@ -1335,7 +1339,7 @@ class SchedulingConfig(_messages.Message):
   Fields:
     preemptible: Defines whether the node is preemptible.
     reserved: Whether the node is created under a reservation.
-    spot: Defines whether the node is Spot VM.
+    spot: Optional. Defines whether the node is Spot VM.
   """
 
   preemptible = _messages.BooleanField(1)

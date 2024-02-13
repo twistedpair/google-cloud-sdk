@@ -8088,7 +8088,14 @@ class Settings(_messages.Message):
   r"""Describes the settings associated with a project, folder, organization,
   or billing account.
 
+  Enums:
+    AnalyticsModeValueValuesEnum: Optional. The default analytics mode of an
+      org or folder which is inherited by all newly created child project
+      buckets.
+
   Fields:
+    analyticsMode: Optional. The default analytics mode of an org or folder
+      which is inherited by all newly created child project buckets.
     defaultSinkConfig: Optional. Overrides the built-in configuration for
       _Default sink.
     disableDefaultSink: Optional. If set to true, the _Default sink in newly
@@ -8128,13 +8135,34 @@ class Settings(_messages.Message):
       buckets.
   """
 
-  defaultSinkConfig = _messages.MessageField('DefaultSinkConfig', 1)
-  disableDefaultSink = _messages.BooleanField(2)
-  kmsKeyName = _messages.StringField(3)
-  kmsServiceAccountId = _messages.StringField(4)
-  loggingServiceAccountId = _messages.StringField(5)
-  name = _messages.StringField(6)
-  storageLocation = _messages.StringField(7)
+  class AnalyticsModeValueValuesEnum(_messages.Enum):
+    r"""Optional. The default analytics mode of an org or folder which is
+    inherited by all newly created child project buckets.
+
+    Values:
+      ANALYTICS_MODE_UNSPECIFIED: No default analytics mode defined at this
+        resource level, it will inherit from the closest ancester which has a
+        defined analytics mode. If there is no specified analytics mode across
+        the resource hierarchy, analytics will be disabled by default.
+      ANALYTICS_ENABLED: By default, analytics will be enabled for all new
+        project-level buckets unless explicitly specified otherwise at bucket
+        creation time.
+      ANALYTICS_DISABLED: By default, analytics will be disabled for new
+        project-level buckets unless explicitly specified otherwise at bucket
+        creation time.
+    """
+    ANALYTICS_MODE_UNSPECIFIED = 0
+    ANALYTICS_ENABLED = 1
+    ANALYTICS_DISABLED = 2
+
+  analyticsMode = _messages.EnumField('AnalyticsModeValueValuesEnum', 1)
+  defaultSinkConfig = _messages.MessageField('DefaultSinkConfig', 2)
+  disableDefaultSink = _messages.BooleanField(3)
+  kmsKeyName = _messages.StringField(4)
+  kmsServiceAccountId = _messages.StringField(5)
+  loggingServiceAccountId = _messages.StringField(6)
+  name = _messages.StringField(7)
+  storageLocation = _messages.StringField(8)
 
 
 class Sorting(_messages.Message):

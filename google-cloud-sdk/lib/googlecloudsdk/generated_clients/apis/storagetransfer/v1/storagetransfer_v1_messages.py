@@ -417,6 +417,11 @@ class GcsData(_messages.Message):
   Fields:
     bucketName: Required. Cloud Storage bucket name. Must meet [Bucket Name
       Requirements](/storage/docs/naming#requirements).
+    managedFolderTransferEnabled: Transfer managed folders is in public
+      preview. This option is only applicable to the Cloud Storage source
+      bucket. If set to true: - The source managed folder will be transferred
+      to the destination bucket - The destination managed folder will always
+      be overwritten, other OVERWRITE options will not be supported
     path: Root path to transfer objects. Must be an empty string or full path
       name that ends with a '/'. This field is treated as an object prefix. As
       such, it should generally not begin with a '/'. The root path value must
@@ -424,7 +429,8 @@ class GcsData(_messages.Message):
   """
 
   bucketName = _messages.StringField(1)
-  path = _messages.StringField(2)
+  managedFolderTransferEnabled = _messages.BooleanField(2)
+  path = _messages.StringField(3)
 
 
 class GoogleServiceAccount(_messages.Message):
@@ -437,6 +443,19 @@ class GoogleServiceAccount(_messages.Message):
 
   accountEmail = _messages.StringField(1)
   subjectId = _messages.StringField(2)
+
+
+class HdfsData(_messages.Message):
+  r"""An HdfsData resource specifies a path within an HDFS entity (e.g. a
+  cluster). All cluster-specific settings, such as namenodes and ports, are
+  configured on the transfer agents servicing requests, so HdfsData only
+  contains the root path to the data in our transfer.
+
+  Fields:
+    path: Root path to transfer files.
+  """
+
+  path = _messages.StringField(1)
 
 
 class HttpData(_messages.Message):
@@ -1910,6 +1929,7 @@ class TransferSpec(_messages.Message):
       which to transfer data. See [Transfer data between file
       systems](https://cloud.google.com/storage-transfer/docs/file-to-file)
       for more information.
+    hdfsDataSource: An HDFS cluster data source.
     httpDataSource: An HTTP URL data source.
     objectConditions: Only objects that satisfy these object conditions are
       included in the set of data source and data sink objects. Object
@@ -1936,14 +1956,15 @@ class TransferSpec(_messages.Message):
   gcsDataSink = _messages.MessageField('GcsData', 4)
   gcsDataSource = _messages.MessageField('GcsData', 5)
   gcsIntermediateDataLocation = _messages.MessageField('GcsData', 6)
-  httpDataSource = _messages.MessageField('HttpData', 7)
-  objectConditions = _messages.MessageField('ObjectConditions', 8)
-  posixDataSink = _messages.MessageField('PosixFilesystem', 9)
-  posixDataSource = _messages.MessageField('PosixFilesystem', 10)
-  sinkAgentPoolName = _messages.StringField(11)
-  sourceAgentPoolName = _messages.StringField(12)
-  transferManifest = _messages.MessageField('TransferManifest', 13)
-  transferOptions = _messages.MessageField('TransferOptions', 14)
+  hdfsDataSource = _messages.MessageField('HdfsData', 7)
+  httpDataSource = _messages.MessageField('HttpData', 8)
+  objectConditions = _messages.MessageField('ObjectConditions', 9)
+  posixDataSink = _messages.MessageField('PosixFilesystem', 10)
+  posixDataSource = _messages.MessageField('PosixFilesystem', 11)
+  sinkAgentPoolName = _messages.StringField(12)
+  sourceAgentPoolName = _messages.StringField(13)
+  transferManifest = _messages.MessageField('TransferManifest', 14)
+  transferOptions = _messages.MessageField('TransferOptions', 15)
 
 
 class UpdateTransferJobRequest(_messages.Message):

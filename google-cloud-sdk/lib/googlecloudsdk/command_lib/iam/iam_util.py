@@ -26,6 +26,7 @@ from apitools.base.protorpclite import messages as apitools_messages
 from apitools.base.py import encoding
 
 from googlecloudsdk.api_lib.util import apis as core_apis
+from googlecloudsdk.api_lib.util import messages as messages_util
 from googlecloudsdk.calliope import arg_parsers
 from googlecloudsdk.calliope import exceptions as gcloud_exceptions
 from googlecloudsdk.command_lib.iam import completers
@@ -982,6 +983,21 @@ def ParseYamlToRole(file_path, role_message_type):
         'The etag of role file {0} is not properly formatted. {1}'.format(
             file_path, six.text_type(e)))
   return role
+
+
+def ParseYamlToTrustStore(yaml_dict):
+  """Construct a TrustStore protorpc.Message from the content of a Yaml file.
+
+  Args:
+    file_content: YAML file content to parse.
+
+  Returns:
+    a TrustStore from the parsed YAML file.
+  Raises:
+    DecodeError if the Yaml file content could not be parsed.
+  """
+  config = messages_util.DictToMessageWithErrorCheck(yaml_dict, msgs.X509)
+  return config.trustStore
 
 
 def GetDetailedHelpForSetIamPolicy(collection,

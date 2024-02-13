@@ -122,12 +122,17 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
   configurations can be generated.
 
   Enums:
+    BlockchainTypeValueValuesEnum: Immutable. The blockchain type of the
+      validator.
     KeySourceTypeValueValuesEnum: Immutable. The source of the voting key for
       the blockchain validator.
 
   Fields:
+    blockchainType: Immutable. The blockchain type of the validator.
     eip2334SeedPhraseReference: Location in Secret Manager to read/write seed
       phrase, encryption passphrase, etc.
+    ethereumProtocolDetails: Ethereum-specific configuration for a blockchain
+      validator.
     keySourceType: Immutable. The source of the voting key for the blockchain
       validator.
     remoteWeb3Signer: Connection details of a remote Web3Signer service to use
@@ -138,6 +143,17 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
       whether the blockchain node specified above is carrying out validation
       tasks.
   """
+
+  class BlockchainTypeValueValuesEnum(_messages.Enum):
+    r"""Immutable. The blockchain type of the validator.
+
+    Values:
+      BLOCKCHAIN_TYPE_UNSPECIFIED: Blockchain type has not been specified, but
+        should be.
+      ETHEREUM: The blockchain type is Ethereum.
+    """
+    BLOCKCHAIN_TYPE_UNSPECIFIED = 0
+    ETHEREUM = 1
 
   class KeySourceTypeValueValuesEnum(_messages.Enum):
     r"""Immutable. The source of the voting key for the blockchain validator.
@@ -154,10 +170,12 @@ class BlockchainValidatorConfigTemplate(_messages.Message):
     REMOTE_WEB3_SIGNER = 1
     EIP2334_SEED_PHRASE_REFERENCE = 2
 
-  eip2334SeedPhraseReference = _messages.MessageField('Eip2334SeedPhraseTemplate', 1)
-  keySourceType = _messages.EnumField('KeySourceTypeValueValuesEnum', 2)
-  remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 3)
-  validationWorkEnabled = _messages.BooleanField(4)
+  blockchainType = _messages.EnumField('BlockchainTypeValueValuesEnum', 1)
+  eip2334SeedPhraseReference = _messages.MessageField('Eip2334SeedPhraseTemplate', 2)
+  ethereumProtocolDetails = _messages.MessageField('EthereumDetailsTemplate', 3)
+  keySourceType = _messages.EnumField('KeySourceTypeValueValuesEnum', 4)
+  remoteWeb3Signer = _messages.MessageField('RemoteWeb3SignerTemplate', 5)
+  validationWorkEnabled = _messages.BooleanField(6)
 
 
 class BlockchainvalidatormanagerProjectsLocationsBlockchainValidatorConfigsCreateRequest(_messages.Message):
@@ -410,7 +428,7 @@ class Eip2334SeedPhraseTemplate(_messages.Message):
   voting key.
 
   Enums:
-    SeedPhraseSourceTypeValueValuesEnum: Immutable. Origin of the seed phrase.
+    SeedPhraseSourceValueValuesEnum: Immutable. Origin of the seed phrase.
 
   Fields:
     derivationBase: Immutable. The index of the first voting key, used as part
@@ -424,22 +442,21 @@ class Eip2334SeedPhraseTemplate(_messages.Message):
       where the passphrase is stored.
     seedPhraseSecret: Required. Immutable. Reference into Secret Manager for
       where the seed phrase is stored.
-    seedPhraseSourceType: Immutable. Origin of the seed phrase.
+    seedPhraseSource: Immutable. Origin of the seed phrase.
   """
 
-  class SeedPhraseSourceTypeValueValuesEnum(_messages.Enum):
+  class SeedPhraseSourceValueValuesEnum(_messages.Enum):
     r"""Immutable. Origin of the seed phrase.
 
     Values:
-      SEED_PHRASE_SOURCE_TYPE_UNSPECIFIED: Seed phrase source is not
-        specified.
+      SEED_PHRASE_SOURCE_UNSPECIFIED: Seed phrase source is not specified.
       CREATE_NO_EXPORT: The seed phrase was generated inside GCP and never
         exported.
       CREATE_AND_EXPORT: The seed phrase was generated inside GCP and
         exported.
       IMPORTED: The seed phrase was imported from outside GCP.
     """
-    SEED_PHRASE_SOURCE_TYPE_UNSPECIFIED = 0
+    SEED_PHRASE_SOURCE_UNSPECIFIED = 0
     CREATE_NO_EXPORT = 1
     CREATE_AND_EXPORT = 2
     IMPORTED = 3
@@ -448,7 +465,7 @@ class Eip2334SeedPhraseTemplate(_messages.Message):
   keyCount = _messages.IntegerField(2, variant=_messages.Variant.INT32)
   passwordSecret = _messages.StringField(3)
   seedPhraseSecret = _messages.StringField(4)
-  seedPhraseSourceType = _messages.EnumField('SeedPhraseSourceTypeValueValuesEnum', 5)
+  seedPhraseSource = _messages.EnumField('SeedPhraseSourceValueValuesEnum', 5)
 
 
 class Empty(_messages.Message):
@@ -461,6 +478,29 @@ class Empty(_messages.Message):
 
 
 class EthereumDetails(_messages.Message):
+  r"""Blockchain validator configuration unique to Ethereum blockchains.
+
+  Fields:
+    graffiti: Input only. Graffiti is a custom string published in blocks
+      proposed by the validator. This can only be written, as the current
+      value cannot be read back from the validator client API. See
+      https://lighthouse-book.sigmaprime.io/graffiti.html for an example of
+      how this is used. If not set, the validator client's default is used. If
+      no blockchain node is specified, this has no effect as no validator
+      client is run.
+    suggestedFeeRecipient: Immutable. The Ethereum address to which fee
+      rewards should be sent. This can only be set when creating the
+      validator. If no blockchain node is specified for the validator, this
+      has no effect as no validator client is run. See also
+      https://lighthouse-book.sigmaprime.io/suggested-fee-recipient.html for
+      more context.
+  """
+
+  graffiti = _messages.StringField(1)
+  suggestedFeeRecipient = _messages.StringField(2)
+
+
+class EthereumDetailsTemplate(_messages.Message):
   r"""Blockchain validator configuration unique to Ethereum blockchains.
 
   Fields:

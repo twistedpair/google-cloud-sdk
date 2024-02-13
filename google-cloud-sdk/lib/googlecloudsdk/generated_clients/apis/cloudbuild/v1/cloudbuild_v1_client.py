@@ -2460,33 +2460,6 @@ class CloudbuildV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
-    def GetDefaultServiceAccount(self, request, global_params=None):
-      r"""Returns the `DefaultServiceAccount` used by the project.
-
-      Args:
-        request: (CloudbuildProjectsLocationsGetDefaultServiceAccountRequest) input message
-        global_params: (StandardQueryParameters, default: None) global arguments
-      Returns:
-        (DefaultServiceAccount) The response message.
-      """
-      config = self.GetMethodConfig('GetDefaultServiceAccount')
-      return self._RunMethod(
-          config, request, global_params=global_params)
-
-    GetDefaultServiceAccount.method_config = lambda: base_api.ApiMethodInfo(
-        flat_path='v1/projects/{projectsId}/locations/{locationsId}/defaultServiceAccount',
-        http_method='GET',
-        method_id='cloudbuild.projects.locations.getDefaultServiceAccount',
-        ordered_params=['name'],
-        path_params=['name'],
-        query_params=[],
-        relative_path='v1/{+name}',
-        request_field='',
-        request_type_name='CloudbuildProjectsLocationsGetDefaultServiceAccountRequest',
-        response_type_name='DefaultServiceAccount',
-        supports_download=False,
-    )
-
   class ProjectsTriggersService(base_api.BaseApiService):
     """Service class for the projects_triggers resource."""
 

@@ -13,6 +13,20 @@ from apitools.base.py import extra_types
 package = 'securityposture'
 
 
+class AssetDetails(_messages.Message):
+  r"""A AssetDetails object.
+
+  Fields:
+    asset: JSON string representing CAI asset. Format/representation may
+      change, thus clients should not depend.
+    assetType: Type of asset. See CAI asset type for GCP assets:
+      https://cloud.google.com/asset-inventory/docs/supported-asset-types.
+  """
+
+  asset = _messages.StringField(1)
+  assetType = _messages.StringField(2)
+
+
 class CancelOperationRequest(_messages.Message):
   r"""The request message for Operations.CancelOperation."""
 
@@ -35,22 +49,16 @@ class Constraint(_messages.Message):
   r"""Representation of a Constraint.
 
   Fields:
-    orgPolicyCannedConstraint: Optional. Org Policy canned constraint.
-      Deprecated, use org_policy_constraint instead.
     orgPolicyConstraint: Optional. Org Policy builtin constraint.
     orgPolicyConstraintCustom: Optional. Org Policy custom constraint.
-    orgPolicyCustomConstraint: Optional. Org Policy custom constraint.
-      Deprecated, use org_policy_constraint_custom instead.
     securityHealthAnalyticsCustomModule: Optional. SHA custom detector.
     securityHealthAnalyticsModule: Optional. SHA built-in detector.
   """
 
-  orgPolicyCannedConstraint = _messages.MessageField('OrgPolicyCannedConstraint', 1)
-  orgPolicyConstraint = _messages.MessageField('OrgPolicyConstraint', 2)
-  orgPolicyConstraintCustom = _messages.MessageField('OrgPolicyConstraintCustom', 3)
-  orgPolicyCustomConstraint = _messages.MessageField('OrgPolicyCustomConstraint', 4)
-  securityHealthAnalyticsCustomModule = _messages.MessageField('SecurityHealthAnalyticsCustomModule', 5)
-  securityHealthAnalyticsModule = _messages.MessageField('SecurityHealthAnalyticsModule', 6)
+  orgPolicyConstraint = _messages.MessageField('OrgPolicyConstraint', 1)
+  orgPolicyConstraintCustom = _messages.MessageField('OrgPolicyConstraintCustom', 2)
+  securityHealthAnalyticsCustomModule = _messages.MessageField('SecurityHealthAnalyticsCustomModule', 3)
+  securityHealthAnalyticsModule = _messages.MessageField('SecurityHealthAnalyticsModule', 4)
 
 
 class CreateIaCValidationReportRequest(_messages.Message):
@@ -65,10 +73,9 @@ class CreateIaCValidationReportRequest(_messages.Message):
 
 
 class CustomConfig(_messages.Message):
-  r"""LINT.IfChange Defines the properties in a custom module configuration
-  for Security Health Analytics. Use the custom module configuration to create
-  custom detectors that generate custom findings for resources that you
-  specify.
+  r"""Defines the properties in a custom module configuration for Security
+  Health Analytics. Use the custom module configuration to create custom
+  detectors that generate custom findings for resources that you specify.
 
   Enums:
     SeverityValueValuesEnum: Required. The severity to assign to findings
@@ -115,79 +122,6 @@ class CustomConfig(_messages.Message):
   recommendation = _messages.StringField(4)
   resourceSelector = _messages.MessageField('ResourceSelector', 5)
   severity = _messages.EnumField('SeverityValueValuesEnum', 6)
-
-
-class CustomConstraint(_messages.Message):
-  r"""A custom constraint defined by customers which can *only* be applied to
-  the given resource types and organization. By creating a custom constraint,
-  customers can apply policies of this custom constraint. *Creating a custom
-  constraint itself does NOT apply any policy enforcement*.
-
-  Enums:
-    ActionTypeValueValuesEnum: Allow or deny type.
-    MethodTypesValueListEntryValuesEnum:
-
-  Fields:
-    actionType: Allow or deny type.
-    condition: Org policy condition/expression. For example:
-      `resource.instanceName.matches("[production|test]_.*_(\d)+")` or,
-      `resource.management.auto_upgrade == true` The max length of the
-      condition is 1000 characters.
-    description: Detailed information about this custom policy constraint. The
-      max length of the description is 2000 characters.
-    displayName: One line display name for the UI. The max length of the
-      display_name is 200 characters.
-    methodTypes: All the operations being applied for this constraint.
-    name: Immutable. Name of the constraint. This is unique within the
-      organization. Format of the name should be * `organizations/{organizatio
-      n_id}/customConstraints/{custom_constraint_id}` Example:
-      `organizations/123/customConstraints/custom.createOnlyE2TypeVms` The max
-      length is 70 characters and the minimum length is 1. Note that the
-      prefix `organizations/{organization_id}/customConstraints/` is not
-      counted.
-    resourceTypes: Immutable. The resource instance type on which this policy
-      applies. Format will be of the form : `/` Example: *
-      `compute.googleapis.com/Instance`.
-    updateTime: Output only. The last time this custom constraint was updated.
-      This represents the last time that the `CreateCustomConstraint` or
-      `UpdateCustomConstraint` RPC was called
-  """
-
-  class ActionTypeValueValuesEnum(_messages.Enum):
-    r"""Allow or deny type.
-
-    Values:
-      ACTION_TYPE_UNSPECIFIED: Unspecified. Results in an error.
-      ALLOW: Allowed action type.
-      DENY: Deny action type.
-    """
-    ACTION_TYPE_UNSPECIFIED = 0
-    ALLOW = 1
-    DENY = 2
-
-  class MethodTypesValueListEntryValuesEnum(_messages.Enum):
-    r"""MethodTypesValueListEntryValuesEnum enum type.
-
-    Values:
-      METHOD_TYPE_UNSPECIFIED: Unspecified. Results in an error.
-      CREATE: Constraint applied when creating the resource.
-      UPDATE: Constraint applied when updating the resource.
-      DELETE: Constraint applied when deleting the resource. Not supported
-        yet.
-    """
-    METHOD_TYPE_UNSPECIFIED = 0
-    CREATE = 1
-    UPDATE = 2
-    DELETE = 3
-
-  actionType = _messages.EnumField('ActionTypeValueValuesEnum', 1)
-  condition = _messages.StringField(2)
-  description = _messages.StringField(3)
-  displayName = _messages.StringField(4)
-  methodTypes = _messages.EnumField('MethodTypesValueListEntryValuesEnum', 5, repeated=True)
-  name = _messages.StringField(6)
-  resourceTypes = _messages.StringField(7, repeated=True)
-  updateTime = _messages.StringField(8)
 
 
 class CustomOutputSpec(_messages.Message):
@@ -394,6 +328,24 @@ class GoogleCloudSecuritypostureV1alphaPolicyRuleStringValues(_messages.Message)
   deniedValues = _messages.StringField(2, repeated=True)
 
 
+class GoogleCloudSecuritypostureV1alphaReport(_messages.Message):
+  r"""========================== Reports ========================== Definition
+  of the resource 'Report'.
+
+  Fields:
+    createTime: Output only. The timestamp when the report was created.
+    iacValidationReport: A IaCValidationReport attribute.
+    name: Required. The name of this Report resource, in the format of
+      organizations/{organization}/locations/{location}/reports/{reportID}.
+    updateTime: Output only. The timestamp when the report was updated.
+  """
+
+  createTime = _messages.StringField(1)
+  iacValidationReport = _messages.MessageField('IaCValidationReport', 2)
+  name = _messages.StringField(3)
+  updateTime = _messages.StringField(4)
+
+
 class IaC(_messages.Message):
   r"""Infrastrucutre as code representations.
 
@@ -404,6 +356,16 @@ class IaC(_messages.Message):
   """
 
   tfPlan = _messages.BytesField(1)
+
+
+class IaCValidationReport(_messages.Message):
+  r"""Details of an IaC Validation report.
+
+  Fields:
+    violations: List of violations found in the provided IaC.
+  """
+
+  violations = _messages.MessageField('Violation', 1, repeated=True)
 
 
 class ListLocationsResponse(_messages.Message):
@@ -707,19 +669,6 @@ class OperationMetadata(_messages.Message):
   verb = _messages.StringField(8)
 
 
-class OrgPolicyCannedConstraint(_messages.Message):
-  r"""Message for Org Policy Canned Constraint. Deprecated, use
-  OrgPolicyConstraint instead
-
-  Fields:
-    cannedConstraintId: Required. Org Policy Canned Constraint id.
-    policyRules: Required. Org Policyspec rules.
-  """
-
-  cannedConstraintId = _messages.StringField(1)
-  policyRules = _messages.MessageField('PolicyRule', 2, repeated=True)
-
-
 class OrgPolicyConstraint(_messages.Message):
   r"""Message for Org Policy Canned Constraint.
 
@@ -744,19 +693,6 @@ class OrgPolicyConstraintCustom(_messages.Message):
   policyRules = _messages.MessageField('GoogleCloudSecuritypostureV1alphaPolicyRule', 2, repeated=True)
 
 
-class OrgPolicyCustomConstraint(_messages.Message):
-  r"""Message for Org Policy Custom Constraint. Deprecated, use
-  OrgPolicyConstraintCustom instead
-
-  Fields:
-    customConstraint: Required. Org Policy Custom Constraint.
-    policyRules: Required. Org Policyspec rules.
-  """
-
-  customConstraint = _messages.MessageField('CustomConstraint', 1)
-  policyRules = _messages.MessageField('PolicyRule', 2, repeated=True)
-
-
 class Policy(_messages.Message):
   r"""Policy representation.
 
@@ -775,36 +711,37 @@ class Policy(_messages.Message):
   policyId = _messages.StringField(4)
 
 
-class PolicyRule(_messages.Message):
-  r"""A rule used to express this policy.
+class PolicyDetails(_messages.Message):
+  r"""A PolicyDetails object.
+
+  Enums:
+    ConstraintTypeValueValuesEnum: Type of policy constraint.
 
   Fields:
-    allowAll: Setting this to true means that all values are allowed. This
-      field can be set only in policies for list constraints.
-    condition: A condition which determines whether this rule is used in the
-      evaluation of the policy. When set, the `expression` field in the `Expr'
-      must include from 1 to 10 subexpressions, joined by the "||" or "&&"
-      operators. Each subexpression must be of the form
-      "resource.matchTag('/tag_key_short_name, 'tag_value_short_name')". or
-      "resource.matchTagId('tagKeys/key_id', 'tagValues/value_id')". where
-      key_name and value_name are the resource names for Label Keys and
-      Values. These names are available from the Tag Manager Service. An
-      example expression is: "resource.matchTag('123456789/environment,
-      'prod')". or "resource.matchTagId('tagKeys/123', 'tagValues/456')".
-    denyAll: Setting this to true means that all values are denied. This field
-      can be set only in policies for list constraints.
-    enforce: If `true`, then the policy is enforced. If `false`, then any
-      configuration is acceptable. This field can be set only in policies for
-      boolean constraints.
-    values: List of values to be used for this policy rule. This field can be
-      set only in policies for list constraints.
+    complianceStandards: Compliance standards that the policy maps to. E.g.
+      CIS-2.0 1.15
+    constraint: JSON string representing policy constraint.
+      Format/representation may change, thus clients should not depend.
+    constraintType: Type of policy constraint.
+    description: Description of the policy.
   """
 
-  allowAll = _messages.BooleanField(1)
-  condition = _messages.MessageField('Expr', 2)
-  denyAll = _messages.BooleanField(3)
-  enforce = _messages.BooleanField(4)
-  values = _messages.MessageField('StringValues', 5)
+  class ConstraintTypeValueValuesEnum(_messages.Enum):
+    r"""Type of policy constraint.
+
+    Values:
+      CONSTRAINT_TYPE_UNSPECIFIED: <no description>
+      SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE: <no description>
+      ORG_POLICY_CUSTOM: <no description>
+    """
+    CONSTRAINT_TYPE_UNSPECIFIED = 0
+    SECURITY_HEALTH_ANALYTICS_CUSTOM_MODULE = 1
+    ORG_POLICY_CUSTOM = 2
+
+  complianceStandards = _messages.StringField(1, repeated=True)
+  constraint = _messages.StringField(2)
+  constraintType = _messages.EnumField('ConstraintTypeValueValuesEnum', 3)
+  description = _messages.StringField(4)
 
 
 class PolicySet(_messages.Message):
@@ -1029,6 +966,30 @@ class PostureDeployment(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 12)
   targetResource = _messages.StringField(13)
   updateTime = _messages.StringField(14)
+
+
+class PostureDetails(_messages.Message):
+  r"""Details of a posture deployment.
+
+  Fields:
+    policySet: ID of the above posture's policy set to which this policy
+      belongs.
+    posture: Posture name in the format of organizations/{organization_id}/loc
+      ations/{location_id}/postures/{postureID}.
+    postureDeployment: Posture deployment name in one of the following formats
+      organizations/{organization_id}/locations/{location_id}/postureDeploymen
+      ts/{postureDeploymentID}
+    postureDeploymentTargetResource: Target resource where the Posture is
+      deployed. Can be one of: projects/projectNumber, folders/folderNumber,
+      organizations/organizationNumber.
+    postureRevisionId: Posture revision ID.
+  """
+
+  policySet = _messages.StringField(1)
+  posture = _messages.StringField(2)
+  postureDeployment = _messages.StringField(3)
+  postureDeploymentTargetResource = _messages.StringField(4)
+  postureRevisionId = _messages.StringField(5)
 
 
 class PostureTemplate(_messages.Message):
@@ -1601,27 +1562,47 @@ class Status(_messages.Message):
   message = _messages.StringField(3)
 
 
-class StringValues(_messages.Message):
-  r"""A message that holds specific allowed and denied values. This message
-  can define specific values and subtrees of the Resource Manager resource
-  hierarchy (`Organizations`, `Folders`, `Projects`) that are allowed or
-  denied. This is achieved by using the `under:` and optional `is:` prefixes.
-  The `under:` prefix is used to denote resource subtree values. The `is:`
-  prefix is used to denote specific values, and is required only if the value
-  contains a ":". Values prefixed with "is:" are treated the same as values
-  with no prefix. Ancestry subtrees must be in one of the following formats: -
-  `projects/` (for example, `projects/tokyo-rain-123`) - `folders/` (for
-  example, `folders/1234`) - `organizations/` (for example,
-  `organizations/1234`) The `supports_under` field of the associated
-  `Constraint` defines whether ancestry prefixes can be used.
+class Violation(_messages.Message):
+  r"""Details of violation.
+
+  Enums:
+    SeverityValueValuesEnum: Severity of the violation.
 
   Fields:
-    allowedValues: List of values allowed at this resource.
-    deniedValues: List of values denied at this resource.
+    assetId: Asset which violated some policy.
+    nextSteps: Next steps or recommendations to act upon this violation.
+    policyId: Policy which was violated by the asset.
+    severity: Severity of the violation.
+    violatedAsset: Details of the asset which got violated.
+    violatedPolicy: Details of the policy which got violated.
+    violatedPosture: Posture details if the violated policy belongs to a
+      posture deployment.
   """
 
-  allowedValues = _messages.StringField(1, repeated=True)
-  deniedValues = _messages.StringField(2, repeated=True)
+  class SeverityValueValuesEnum(_messages.Enum):
+    r"""Severity of the violation.
+
+    Values:
+      SEVERITY_UNSPECIFIED: This is the default severity if the severity is
+        unknown.
+      CRITICAL: <no description>
+      HIGH: <no description>
+      MEDIUM: <no description>
+      LOW: <no description>
+    """
+    SEVERITY_UNSPECIFIED = 0
+    CRITICAL = 1
+    HIGH = 2
+    MEDIUM = 3
+    LOW = 4
+
+  assetId = _messages.StringField(1)
+  nextSteps = _messages.StringField(2)
+  policyId = _messages.StringField(3)
+  severity = _messages.EnumField('SeverityValueValuesEnum', 4)
+  violatedAsset = _messages.MessageField('AssetDetails', 5)
+  violatedPolicy = _messages.MessageField('PolicyDetails', 6)
+  violatedPosture = _messages.MessageField('PostureDetails', 7)
 
 
 encoding.AddCustomJsonFieldMapping(

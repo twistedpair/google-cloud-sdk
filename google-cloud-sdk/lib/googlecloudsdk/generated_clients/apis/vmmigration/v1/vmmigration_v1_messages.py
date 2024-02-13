@@ -537,7 +537,7 @@ class AzureSourceVmDetails(_messages.Message):
 
 
 class AzureVmDetails(_messages.Message):
-  r"""AwsVmDetails describes a VM in AWS.
+  r"""AzureVmDetails describes a VM in Azure.
 
   Enums:
     BootOptionValueValuesEnum: The VM Boot Option.
@@ -1708,10 +1708,10 @@ class ImageImport(_messages.Message):
     cloudStorageUri: Immutable. The path to the Cloud Storage file from which
       the image should be imported.
     createTime: Output only. The time the image import was created.
-    diskImageTargetDefaults: Target details for importing a disk image, will
-      be used by ImageImportJob.
-    encryption: Optional. Immutable. The encryption details used by the image
-      import process during the image adaptation for Compute Engine.
+    diskImageTargetDefaults: Immutable. Target details for importing a disk
+      image, will be used by ImageImportJob.
+    encryption: Immutable. The encryption details used by the image import
+      process during the image adaptation for Compute Engine.
     name: Output only. The resource path of the ImageImport.
     recentImageImportJobs: Output only. The result of the most recent runs for
       this ImageImport. All jobs for this ImageImport can be listed via
@@ -1733,6 +1733,8 @@ class ImageImportJob(_messages.Message):
     StateValueValuesEnum: Output only. The state of the image import.
 
   Fields:
+    cloudStorageUri: Output only. The path to the Cloud Storage file from
+      which the image should be imported.
     createTime: Output only. The time the image import was created (as an API
       call, not when it was actually created in the target).
     createdResources: Output only. The resource paths of the resources created
@@ -1768,15 +1770,16 @@ class ImageImportJob(_messages.Message):
     CANCELLING = 5
     CANCELLED = 6
 
-  createTime = _messages.StringField(1)
-  createdResources = _messages.StringField(2, repeated=True)
-  diskImageTargetDetails = _messages.MessageField('DiskImageTargetDetails', 3)
-  endTime = _messages.StringField(4)
-  errors = _messages.MessageField('Status', 5, repeated=True)
-  name = _messages.StringField(6)
-  state = _messages.EnumField('StateValueValuesEnum', 7)
-  steps = _messages.MessageField('ImageImportStep', 8, repeated=True)
-  warnings = _messages.MessageField('MigrationWarning', 9, repeated=True)
+  cloudStorageUri = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  createdResources = _messages.StringField(3, repeated=True)
+  diskImageTargetDetails = _messages.MessageField('DiskImageTargetDetails', 4)
+  endTime = _messages.StringField(5)
+  errors = _messages.MessageField('Status', 6, repeated=True)
+  name = _messages.StringField(7)
+  state = _messages.EnumField('StateValueValuesEnum', 8)
+  steps = _messages.MessageField('ImageImportStep', 9, repeated=True)
+  warnings = _messages.MessageField('MigrationWarning', 10, repeated=True)
 
 
 class ImageImportOsAdaptationParameters(_messages.Message):

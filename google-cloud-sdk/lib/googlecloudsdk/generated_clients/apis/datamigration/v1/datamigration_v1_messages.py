@@ -377,7 +377,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -859,6 +863,7 @@ class ConnectionProfile(_messages.Message):
     postgresql: A PostgreSQL database connection profile.
     provider: The database provider.
     spanner: A Spanner database connection profile.
+    sqlserver: An SQL Server database connection profile.
     state: The current connection profile state (e.g. DRAFT, READY, or
       FAILED).
     updateTime: Output only. The timestamp when the resource was last updated.
@@ -943,8 +948,9 @@ class ConnectionProfile(_messages.Message):
   postgresql = _messages.MessageField('PostgreSqlConnectionProfile', 10)
   provider = _messages.EnumField('ProviderValueValuesEnum', 11)
   spanner = _messages.MessageField('SpannerConnectionProfile', 12)
-  state = _messages.EnumField('StateValueValuesEnum', 13)
-  updateTime = _messages.StringField(14)
+  sqlserver = _messages.MessageField('SqlServerConnectionProfile', 13)
+  state = _messages.EnumField('StateValueValuesEnum', 14)
+  updateTime = _messages.StringField(15)
 
 
 class ConstraintEntity(_messages.Message):
@@ -1176,12 +1182,14 @@ class DatabaseEngineInfo(_messages.Message):
         job is unknown.
       MYSQL: The source engine is MySQL.
       POSTGRESQL: The source engine is PostgreSQL.
+      SQLSERVER: The source engine is SQL Server.
       ORACLE: The source engine is Oracle.
     """
     DATABASE_ENGINE_UNSPECIFIED = 0
     MYSQL = 1
     POSTGRESQL = 2
-    ORACLE = 3
+    SQLSERVER = 3
+    ORACLE = 4
 
   engine = _messages.EnumField('EngineValueValuesEnum', 1)
   version = _messages.StringField(2)
@@ -1355,12 +1363,14 @@ class DatabaseType(_messages.Message):
         job is unknown.
       MYSQL: The source engine is MySQL.
       POSTGRESQL: The source engine is PostgreSQL.
+      SQLSERVER: The source engine is SQL Server.
       ORACLE: The source engine is Oracle.
     """
     DATABASE_ENGINE_UNSPECIFIED = 0
     MYSQL = 1
     POSTGRESQL = 2
-    ORACLE = 3
+    SQLSERVER = 3
+    ORACLE = 4
 
   class ProviderValueValuesEnum(_messages.Enum):
     r"""The database provider.
@@ -3723,6 +3733,8 @@ class MigrationJob(_messages.Message):
     source: Required. The resource name (URI) of the source connection
       profile.
     sourceDatabase: The database engine type and provider of the source.
+    sqlserverHomogeneousMigrationJobConfig: Optional. Configuration for SQL
+      Server homogeneous migration.
     state: The current migration job state.
     staticIpConnectivity: static ip connectivity data (default, no additional
       details needed).
@@ -3850,11 +3862,12 @@ class MigrationJob(_messages.Message):
   reverseSshConnectivity = _messages.MessageField('ReverseSshConnectivity', 17)
   source = _messages.StringField(18)
   sourceDatabase = _messages.MessageField('DatabaseType', 19)
-  state = _messages.EnumField('StateValueValuesEnum', 20)
-  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 21)
-  type = _messages.EnumField('TypeValueValuesEnum', 22)
-  updateTime = _messages.StringField(23)
-  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 24)
+  sqlserverHomogeneousMigrationJobConfig = _messages.MessageField('SqlServerHomogeneousMigrationJobConfig', 20)
+  state = _messages.EnumField('StateValueValuesEnum', 21)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 22)
+  type = _messages.EnumField('TypeValueValuesEnum', 23)
+  updateTime = _messages.StringField(24)
+  vpcPeeringConnectivity = _messages.MessageField('VpcPeeringConnectivity', 25)
 
 
 class MigrationJobVerificationError(_messages.Message):
@@ -5166,6 +5179,118 @@ class SqlIpConfig(_messages.Message):
   enableIpv4 = _messages.BooleanField(3)
   privateNetwork = _messages.StringField(4)
   requireSsl = _messages.BooleanField(5)
+
+
+class SqlServerBackups(_messages.Message):
+  r"""Specifies the backup details in Cloud Storage for homogeneous migration
+  to Cloud SQL for SQL Server.
+
+  Fields:
+    gcsBucket: Required. The Cloud Storage bucket that stores backups for all
+      replicated databases.
+    gcsPrefix: Required. Cloud Storage path inside the bucket that stores
+      backups.
+  """
+
+  gcsBucket = _messages.StringField(1)
+  gcsPrefix = _messages.StringField(2)
+
+
+class SqlServerConnectionProfile(_messages.Message):
+  r"""Specifies connection parameters required specifically for SQL Server
+  databases.
+
+  Fields:
+    backups: The backup details in Cloud Storage for homogeneous migration to
+      Cloud SQL for SQL Server.
+    cloudSqlId: If the source is a Cloud SQL database, use this field to
+      provide the Cloud SQL instance ID of the source.
+    forwardSshConnectivity: Forward SSH tunnel connectivity.
+    host: Required. The IP or hostname of the source SQL Server database.
+    password: Required. Input only. The password for the user that Database
+      Migration Service will be using to connect to the database. This field
+      is not returned on request, and the value is encrypted when stored in
+      Database Migration Service.
+    passwordSet: Output only. Indicates whether a new password is included in
+      the request.
+    port: Required. The network port of the source SQL Server database.
+    privateConnectivity: Private connectivity.
+    privateServiceConnectConnectivity: Private Service Connect connectivity.
+    ssl: SSL configuration for the destination to connect to the source
+      database.
+    staticIpConnectivity: Static IP connectivity data (default, no additional
+      details needed).
+    username: Required. The username that Database Migration Service will use
+      to connect to the database. The value is encrypted when stored in
+      Database Migration Service.
+  """
+
+  backups = _messages.MessageField('SqlServerBackups', 1)
+  cloudSqlId = _messages.StringField(2)
+  forwardSshConnectivity = _messages.MessageField('ForwardSshTunnelConnectivity', 3)
+  host = _messages.StringField(4)
+  password = _messages.StringField(5)
+  passwordSet = _messages.BooleanField(6)
+  port = _messages.IntegerField(7, variant=_messages.Variant.INT32)
+  privateConnectivity = _messages.MessageField('PrivateConnectivity', 8)
+  privateServiceConnectConnectivity = _messages.MessageField('PrivateServiceConnectConnectivity', 9)
+  ssl = _messages.MessageField('SslConfig', 10)
+  staticIpConnectivity = _messages.MessageField('StaticIpConnectivity', 11)
+  username = _messages.StringField(12)
+
+
+class SqlServerDatabaseBackup(_messages.Message):
+  r"""Specifies the backup details for a single database in Cloud Storage for
+  homogeneous migration to Cloud SQL for SQL Server.
+
+  Fields:
+    database: Required. Name of a SQL Server database for which to define
+      backup configuration.
+    encryptionOptionsOverride: Optional. Encryption settings for the database.
+      Required if provided database backups are encrypted. Encryption settings
+      include path to certificate, path to certificate private key, and key
+      password.
+  """
+
+  database = _messages.StringField(1)
+  encryptionOptionsOverride = _messages.MessageField('SqlServerEncryptionOptions', 2)
+
+
+class SqlServerEncryptionOptions(_messages.Message):
+  r"""Encryption settings for the SQL Server database.
+
+  Fields:
+    certPath: Required. Path to certificate.
+    pkvPassword: Required. Input only. Private key password.
+    pkvPath: Required. Path to certificate private key.
+  """
+
+  certPath = _messages.StringField(1)
+  pkvPassword = _messages.StringField(2)
+  pkvPath = _messages.StringField(3)
+
+
+class SqlServerHomogeneousMigrationJobConfig(_messages.Message):
+  r"""Configuration for homogeneous migration to Cloud SQL for SQL Server.
+
+  Fields:
+    backupFilePattern: Required. Pattern that describes the default backup
+      naming strategy. The specified pattern should ensure lexicographical
+      order of backups. The pattern must define one of the following capture
+      group sets: Capture group set #1 yy/yyyy - year, 2 or 4 digits mm -
+      month number, 1-12 dd - day of month, 1-31 hh - hour of day, 00-23 mi -
+      minutes, 00-59 ss - seconds, 00-59 Example: For backup file
+      TestDB_backup_20230802_155400.trn, use pattern:
+      (?.*)_backup_(?\d{4})(?\d{2})(?\d{2})_(?\d{2})(?\d{2})(?\d{2}).trn
+      Capture group set #2 timestamp - unix timestamp Example: For backup file
+      TestDB_backup_1691448254.trn, use pattern: (?.*)_backup_(?.*).trn
+    databaseBackups: Backup details per database in Cloud Storage. If the
+      details are not provided for a database, the backup details provided in
+      the connection profile are used by default.
+  """
+
+  backupFilePattern = _messages.StringField(1)
+  databaseBackups = _messages.MessageField('SqlServerDatabaseBackup', 2, repeated=True)
 
 
 class SshScript(_messages.Message):

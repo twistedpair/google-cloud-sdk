@@ -2270,6 +2270,33 @@ class GkehubV1alpha(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def ListMemberships(self, request, global_params=None):
+      r"""Lists Memberships bound to a Scope. The response includes relevant Memberships from all regions.
+
+      Args:
+        request: (GkehubProjectsLocationsScopesListMembershipsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (ListBoundMembershipsResponse) The response message.
+      """
+      config = self.GetMethodConfig('ListMemberships')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    ListMemberships.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha/projects/{projectsId}/locations/{locationsId}/scopes/{scopesId}:listMemberships',
+        http_method='GET',
+        method_id='gkehub.projects.locations.scopes.listMemberships',
+        ordered_params=['scopeName'],
+        path_params=['scopeName'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1alpha/{+scopeName}:listMemberships',
+        request_field='',
+        request_type_name='GkehubProjectsLocationsScopesListMembershipsRequest',
+        response_type_name='ListBoundMembershipsResponse',
+        supports_download=False,
+    )
+
     def ListPermitted(self, request, global_params=None):
       r"""Lists permitted Scopes.
 

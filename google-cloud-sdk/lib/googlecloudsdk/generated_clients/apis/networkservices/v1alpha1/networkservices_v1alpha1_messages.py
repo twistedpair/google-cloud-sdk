@@ -170,7 +170,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -656,9 +660,11 @@ class Connection(_messages.Message):
       CONNECTION_TYPE_UNSPECIFIED: Unspecified connection type.
       NCC: Connected by [NCC](https://cloud.google.com/network-connectivity-
         center).
+      SAME_VPC: Producer and consumers must be in the same VPC network.
     """
     CONNECTION_TYPE_UNSPECIFIED = 0
     NCC = 1
+    SAME_VPC = 2
 
   connectionType = _messages.EnumField('ConnectionTypeValueValuesEnum', 1)
   nccHub = _messages.StringField(2)
@@ -1208,7 +1214,7 @@ class ExtensionChainExtension(_messages.Message):
     SupportedEventsValueListEntryValuesEnum:
 
   Fields:
-    authority: Required. The `:authority` header in the gRPC request sent from
+    authority: Optional. The `:authority` header in the gRPC request sent from
       Envoy to the extension service.
     failOpen: Optional. Determines how the proxy behaves if the call to the
       extension fails or times out. When set to `TRUE`, request or response
@@ -1291,7 +1297,7 @@ class Gateway(_messages.Message):
   balancer. It captures the ip:port over which the services are exposed by the
   proxy, along with any policy configurations. Routes have reference to to
   Gateways to dictate how requests should be routed by this Gateway. Next id:
-  29
+  31
 
   Enums:
     EnvoyHeadersValueValuesEnum: Optional. Determines if envoy will insert
@@ -2641,6 +2647,131 @@ class InvalidateCacheResponse(_messages.Message):
   r"""The response used by the `InvalidateCache` method."""
 
 
+class LbObservabilityExtension(_messages.Message):
+  r"""`LbObservabilityExtension` is a resource that allows to forward traffic
+  to a callout backend designed to scan the traffic for security purposes.
+
+  Enums:
+    LoadBalancingSchemeValueValuesEnum: Required. All backend services and
+      forwarding rules referenced by this extension must share the same load
+      balancing scheme. Supported values: `INTERNAL_MANAGED`,
+      `EXTERNAL_MANAGED`. For more information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    SupportedEventsValueListEntryValuesEnum:
+
+  Messages:
+    LabelsValue: Optional. Set of labels associated with the
+      `LbObservabilityExtension` resource. The format must comply with [the
+      following requirements](/compute/docs/labeling-resources#requirements).
+
+  Fields:
+    authority: Optional. The `:authority` header in the gRPC request sent from
+      Envoy to the extension service.
+    createTime: Output only. The timestamp when the resource was created.
+    description: Optional. A human-readable description of the resource.
+    forwardingRules: Required. A list of references to the forwarding rules to
+      which this service extension is attached to. At least one forwarding
+      rule is required.
+    labels: Optional. Set of labels associated with the
+      `LbObservabilityExtension` resource. The format must comply with [the
+      following requirements](/compute/docs/labeling-resources#requirements).
+    loadBalancingScheme: Required. All backend services and forwarding rules
+      referenced by this extension must share the same load balancing scheme.
+      Supported values: `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more
+      information, refer to [Choosing a load
+      balancer](https://cloud.google.com/load-balancing/docs/backend-service).
+    name: Required. Identifier. Name of the `LbObservabilityExtension`
+      resource in the following format: `projects/{project}/locations/{locatio
+      n}/lbObservabilityExtensions/{lb_observability_extension}`.
+    service: Required. The reference to the service that runs the extension.
+      Must be a reference to a backend service. To configure a Callout
+      extension, `service` must be a fully-qualified reference to a [backend s
+      ervice](https://cloud.google.com/compute/docs/reference/rest/v1/backendS
+      ervices) in the format: `https://www.googleapis.com/compute/v1/projects/
+      {project}/regions/{region}/backendServices/{backendService}` or `https:/
+      /www.googleapis.com/compute/v1/projects/{project}/global/backendServices
+      /{backendService}`.
+    supportedEvents: Optional. A set of events during request or response
+      processing for which this extension is called.
+    updateTime: Output only. The timestamp when the resource was updated.
+  """
+
+  class LoadBalancingSchemeValueValuesEnum(_messages.Enum):
+    r"""Required. All backend services and forwarding rules referenced by this
+    extension must share the same load balancing scheme. Supported values:
+    `INTERNAL_MANAGED`, `EXTERNAL_MANAGED`. For more information, refer to
+    [Choosing a load balancer](https://cloud.google.com/load-
+    balancing/docs/backend-service).
+
+    Values:
+      LOAD_BALANCING_SCHEME_UNSPECIFIED: Default value. Do not use.
+      INTERNAL_MANAGED: Signifies that this is used for Internal HTTP(S) Load
+        Balancing.
+      EXTERNAL_MANAGED: Signifies that this is used for External Managed
+        HTTP(S) Load Balancing.
+    """
+    LOAD_BALANCING_SCHEME_UNSPECIFIED = 0
+    INTERNAL_MANAGED = 1
+    EXTERNAL_MANAGED = 2
+
+  class SupportedEventsValueListEntryValuesEnum(_messages.Enum):
+    r"""SupportedEventsValueListEntryValuesEnum enum type.
+
+    Values:
+      EVENT_TYPE_UNSPECIFIED: Unspecified value. Do not use.
+      REQUEST_HEADERS: If included in `supported_events`, the extension is
+        called when the HTTP request headers arrive.
+      REQUEST_BODY: If included in `supported_events`, the extension is called
+        when the HTTP request body arrives.
+      RESPONSE_HEADERS: If included in `supported_events`, the extension is
+        called when the HTTP response headers arrive.
+      RESPONSE_BODY: If included in `supported_events`, the extension is
+        called when the HTTP response body arrives.
+    """
+    EVENT_TYPE_UNSPECIFIED = 0
+    REQUEST_HEADERS = 1
+    REQUEST_BODY = 2
+    RESPONSE_HEADERS = 3
+    RESPONSE_BODY = 4
+
+  @encoding.MapUnrecognizedFields('additionalProperties')
+  class LabelsValue(_messages.Message):
+    r"""Optional. Set of labels associated with the `LbObservabilityExtension`
+    resource. The format must comply with [the following
+    requirements](/compute/docs/labeling-resources#requirements).
+
+    Messages:
+      AdditionalProperty: An additional property for a LabelsValue object.
+
+    Fields:
+      additionalProperties: Additional properties of type LabelsValue
+    """
+
+    class AdditionalProperty(_messages.Message):
+      r"""An additional property for a LabelsValue object.
+
+      Fields:
+        key: Name of the additional property.
+        value: A string attribute.
+      """
+
+      key = _messages.StringField(1)
+      value = _messages.StringField(2)
+
+    additionalProperties = _messages.MessageField('AdditionalProperty', 1, repeated=True)
+
+  authority = _messages.StringField(1)
+  createTime = _messages.StringField(2)
+  description = _messages.StringField(3)
+  forwardingRules = _messages.StringField(4, repeated=True)
+  labels = _messages.MessageField('LabelsValue', 5)
+  loadBalancingScheme = _messages.EnumField('LoadBalancingSchemeValueValuesEnum', 6)
+  name = _messages.StringField(7)
+  service = _messages.StringField(8)
+  supportedEvents = _messages.EnumField('SupportedEventsValueListEntryValuesEnum', 9, repeated=True)
+  updateTime = _messages.StringField(10)
+
+
 class LbRouteExtension(_messages.Message):
   r"""`LbRouteExtension` is a resource that lets you control where traffic is
   routed to for a given request.
@@ -2957,6 +3088,22 @@ class ListHttpRoutesResponse(_messages.Message):
 
   httpRoutes = _messages.MessageField('HttpRoute', 1, repeated=True)
   nextPageToken = _messages.StringField(2)
+
+
+class ListLbObservabilityExtensionsResponse(_messages.Message):
+  r"""Message for response to listing `LbObservabilityExtension` resources.
+
+  Fields:
+    lbObservabilityExtensions: The list of `LbObservabilityExtension`
+      resources.
+    nextPageToken: A token identifying a page of results that the server
+      returns.
+    unreachable: Locations that could not be reached.
+  """
+
+  lbObservabilityExtensions = _messages.MessageField('LbObservabilityExtension', 1, repeated=True)
+  nextPageToken = _messages.StringField(2)
+  unreachable = _messages.StringField(3, repeated=True)
 
 
 class ListLbRouteExtensionsResponse(_messages.Message):
@@ -5069,6 +5216,133 @@ class NetworkservicesProjectsLocationsHttpRoutesTestIamPermissionsRequest(_messa
 
   resource = _messages.StringField(1, required=True)
   testIamPermissionsRequest = _messages.MessageField('TestIamPermissionsRequest', 2)
+
+
+class NetworkservicesProjectsLocationsLbObservabilityExtensionsCreateRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbObservabilityExtensionsCreateRequest
+  object.
+
+  Fields:
+    lbObservabilityExtension: A LbObservabilityExtension resource to be passed
+      as the request body.
+    lbObservabilityExtensionId: Required. User-provided ID of the
+      `LbObservabilityExtension` resource to be created.
+    parent: Required. The parent resource of the `LbObservabilityExtension`
+      resource. Must be in the format
+      `projects/{project}/locations/{location}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  lbObservabilityExtension = _messages.MessageField('LbObservabilityExtension', 1)
+  lbObservabilityExtensionId = _messages.StringField(2)
+  parent = _messages.StringField(3, required=True)
+  requestId = _messages.StringField(4)
+
+
+class NetworkservicesProjectsLocationsLbObservabilityExtensionsDeleteRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbObservabilityExtensionsDeleteRequest
+  object.
+
+  Fields:
+    name: Required. The name of the `LbObservabilityExtension` resource to
+      delete. Must be in the format `projects/{project}/locations/{location}/l
+      bObservabilityExtensions/{lb_observability_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes after the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+  """
+
+  name = _messages.StringField(1, required=True)
+  requestId = _messages.StringField(2)
+
+
+class NetworkservicesProjectsLocationsLbObservabilityExtensionsGetRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbObservabilityExtensionsGetRequest
+  object.
+
+  Fields:
+    name: Required. A name of the `LbObservabilityExtension` resource to get.
+      Must be in the format `projects/{project}/locations/{location}/lbObserva
+      bilityExtensions/{lb_observability_extension}`.
+  """
+
+  name = _messages.StringField(1, required=True)
+
+
+class NetworkservicesProjectsLocationsLbObservabilityExtensionsListRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbObservabilityExtensionsListRequest
+  object.
+
+  Fields:
+    filter: Optional. Filtering results.
+    orderBy: Optional. Hint for how to order the results.
+    pageSize: Optional. Requested page size. The server might return fewer
+      items than requested. If unspecified, the server picks an appropriate
+      default.
+    pageToken: Optional. A token identifying a page of results that the server
+      returns.
+    parent: Required. The project and location from which the
+      `LbObservabilityExtension` resources are listed, specified in the
+      following format: `projects/{project}/locations/{location}`.
+  """
+
+  filter = _messages.StringField(1)
+  orderBy = _messages.StringField(2)
+  pageSize = _messages.IntegerField(3, variant=_messages.Variant.INT32)
+  pageToken = _messages.StringField(4)
+  parent = _messages.StringField(5, required=True)
+
+
+class NetworkservicesProjectsLocationsLbObservabilityExtensionsPatchRequest(_messages.Message):
+  r"""A NetworkservicesProjectsLocationsLbObservabilityExtensionsPatchRequest
+  object.
+
+  Fields:
+    lbObservabilityExtension: A LbObservabilityExtension resource to be passed
+      as the request body.
+    name: Required. Identifier. Name of the `LbObservabilityExtension`
+      resource in the following format: `projects/{project}/locations/{locatio
+      n}/lbObservabilityExtensions/{lb_observability_extension}`.
+    requestId: Optional. An optional request ID to identify requests. Specify
+      a unique request ID so that if you must retry your request, the server
+      can ignore the request if it has already been completed. The server
+      guarantees that for at least 60 minutes since the first request. For
+      example, consider a situation where you make an initial request and the
+      request times out. If you make the request again with the same request
+      ID, the server can check if original operation with the same request ID
+      was received, and if so, ignores the second request. This prevents
+      clients from accidentally creating duplicate commitments. The request ID
+      must be a valid UUID with the exception that zero UUID is not supported
+      (00000000-0000-0000-0000-000000000000).
+    updateMask: Required. Used to specify the fields to be overwritten in the
+      `LbObservabilityExtension` resource by the update. The fields specified
+      in the update_mask are relative to the resource, not the full request. A
+      field is overwritten if it is in the mask. If the user does not specify
+      a mask, then all fields are overwritten.
+  """
+
+  lbObservabilityExtension = _messages.MessageField('LbObservabilityExtension', 1)
+  name = _messages.StringField(2, required=True)
+  requestId = _messages.StringField(3)
+  updateMask = _messages.StringField(4)
 
 
 class NetworkservicesProjectsLocationsLbRouteExtensionsCreateRequest(_messages.Message):

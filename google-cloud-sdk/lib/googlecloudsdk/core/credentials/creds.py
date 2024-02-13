@@ -231,6 +231,26 @@ def EnableSelfSignedJwtIfApplicable(creds):
     creds._create_self_signed_jwt(None)  # pylint: disable=protected-access
 
 
+def WithAccount(creds, account):
+  """Add user account to credential.
+
+  The user account field is used to determine ADC caching.
+  Only User Account credential types will be modified.
+
+  Args:
+    creds: google.auth.credentials.Credentials, The credentials to add the
+      account field
+    account: str, the authorized user email
+
+  Returns:
+    google_auth_creds.Credential
+  """
+  cred_type = CredentialTypeGoogleAuth.FromCredentials(creds)
+  if cred_type == CredentialTypeGoogleAuth.USER_ACCOUNT:
+    creds = creds.with_account(account)
+  return creds
+
+
 @six.add_metaclass(abc.ABCMeta)
 class CredentialStore(object):
   """Abstract definition of credential store."""

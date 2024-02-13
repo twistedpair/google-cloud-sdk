@@ -487,6 +487,7 @@ class H264CodecSettings(_messages.Message):
       calculates the width per the horizontal ASR. The API detects any
       rotation metadata and swaps the requested height and width for the
       output.
+    hlg: Optional. HLG color format setting for H264.
     pixelFormat: Pixel format to use. The default is `yuv420p`. Supported
       pixel formats: - `yuv420p` pixel format - `yuv422p` pixel format -
       `yuv444p` pixel format - `yuv420p10` 10-bit HDR pixel format -
@@ -506,6 +507,7 @@ class H264CodecSettings(_messages.Message):
       fields you set in the `H264CodecSettings` message.
     rateControlMode: Specify the mode. The default is `vbr`. Supported rate
       control modes: - `vbr` - variable bitrate - `crf` - constant rate factor
+    sdr: Optional. SDR color format setting for H264.
     tune: Enforces the specified codec tune. The available options are
       [FFmpeg-compatible](https://trac.ffmpeg.org/wiki/Encode/H.264#Tune).
       Note that certain values for this field may cause the transcoder to
@@ -537,14 +539,24 @@ class H264CodecSettings(_messages.Message):
   gopDuration = _messages.StringField(10)
   gopFrameCount = _messages.IntegerField(11, variant=_messages.Variant.INT32)
   heightPixels = _messages.IntegerField(12, variant=_messages.Variant.INT32)
-  pixelFormat = _messages.StringField(13)
-  preset = _messages.StringField(14)
-  profile = _messages.StringField(15)
-  rateControlMode = _messages.StringField(16)
-  tune = _messages.StringField(17)
-  vbvFullnessBits = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  vbvSizeBits = _messages.IntegerField(19, variant=_messages.Variant.INT32)
-  widthPixels = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  hlg = _messages.MessageField('H264ColorFormatHLG', 13)
+  pixelFormat = _messages.StringField(14)
+  preset = _messages.StringField(15)
+  profile = _messages.StringField(16)
+  rateControlMode = _messages.StringField(17)
+  sdr = _messages.MessageField('H264ColorFormatSDR', 18)
+  tune = _messages.StringField(19)
+  vbvFullnessBits = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  vbvSizeBits = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  widthPixels = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+
+
+class H264ColorFormatHLG(_messages.Message):
+  r"""Convert the input video to a Hybrid Log Gamma (HLG) video."""
+
+
+class H264ColorFormatSDR(_messages.Message):
+  r"""Convert the input video to a Standard Dynamic Range (SDR) video."""
 
 
 class H265CodecSettings(_messages.Message):
@@ -584,6 +596,7 @@ class H265CodecSettings(_messages.Message):
       `gopDuration`.
     gopFrameCount: Select the GOP size based on the specified frame count.
       Must be greater than zero.
+    hdr10: Optional. HDR10 color format setting for H265.
     heightPixels: The height of the video in pixels. Must be an even integer.
       When not specified, the height is adjusted to match the specified width
       and input aspect ratio. If both are omitted, the input height is used.
@@ -592,6 +605,7 @@ class H265CodecSettings(_messages.Message):
       calculates the width per the horizontal ASR. The API detects any
       rotation metadata and swaps the requested height and width for the
       output.
+    hlg: Optional. HLG color format setting for H265.
     pixelFormat: Pixel format to use. The default is `yuv420p`. Supported
       pixel formats: - `yuv420p` pixel format - `yuv422p` pixel format -
       `yuv444p` pixel format - `yuv420p10` 10-bit HDR pixel format -
@@ -615,6 +629,7 @@ class H265CodecSettings(_messages.Message):
       the `H265CodecSettings` message.
     rateControlMode: Specify the mode. The default is `vbr`. Supported rate
       control modes: - `vbr` - variable bitrate - `crf` - constant rate factor
+    sdr: Optional. SDR color format setting for H265.
     tune: Enforces the specified codec tune. The available options are
       [FFmpeg-compatible](https://trac.ffmpeg.org/wiki/Encode/H.265). Note
       that certain values for this field may cause the transcoder to override
@@ -644,15 +659,30 @@ class H265CodecSettings(_messages.Message):
   frameRate = _messages.FloatField(8)
   gopDuration = _messages.StringField(9)
   gopFrameCount = _messages.IntegerField(10, variant=_messages.Variant.INT32)
-  heightPixels = _messages.IntegerField(11, variant=_messages.Variant.INT32)
-  pixelFormat = _messages.StringField(12)
-  preset = _messages.StringField(13)
-  profile = _messages.StringField(14)
-  rateControlMode = _messages.StringField(15)
-  tune = _messages.StringField(16)
-  vbvFullnessBits = _messages.IntegerField(17, variant=_messages.Variant.INT32)
-  vbvSizeBits = _messages.IntegerField(18, variant=_messages.Variant.INT32)
-  widthPixels = _messages.IntegerField(19, variant=_messages.Variant.INT32)
+  hdr10 = _messages.MessageField('H265ColorFormatHDR10', 11)
+  heightPixels = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+  hlg = _messages.MessageField('H265ColorFormatHLG', 13)
+  pixelFormat = _messages.StringField(14)
+  preset = _messages.StringField(15)
+  profile = _messages.StringField(16)
+  rateControlMode = _messages.StringField(17)
+  sdr = _messages.MessageField('H265ColorFormatSDR', 18)
+  tune = _messages.StringField(19)
+  vbvFullnessBits = _messages.IntegerField(20, variant=_messages.Variant.INT32)
+  vbvSizeBits = _messages.IntegerField(21, variant=_messages.Variant.INT32)
+  widthPixels = _messages.IntegerField(22, variant=_messages.Variant.INT32)
+
+
+class H265ColorFormatHDR10(_messages.Message):
+  r"""Convert the input video to a High Dynamic Range 10 (HDR10) video."""
+
+
+class H265ColorFormatHLG(_messages.Message):
+  r"""Convert the input video to a Hybrid Log Gamma (HLG) video."""
+
+
+class H265ColorFormatSDR(_messages.Message):
+  r"""Convert the input video to a Standard Dynamic Range (SDR) video."""
 
 
 class Image(_messages.Message):
@@ -1537,6 +1567,7 @@ class Vp9CodecSettings(_messages.Message):
       calculates the width per the horizontal ASR. The API detects any
       rotation metadata and swaps the requested height and width for the
       output.
+    hlg: Optional. HLG color format setting for VP9.
     pixelFormat: Pixel format to use. The default is `yuv420p`. Supported
       pixel formats: - `yuv420p` pixel format - `yuv422p` pixel format -
       `yuv444p` pixel format - `yuv420p10` 10-bit HDR pixel format -
@@ -1551,6 +1582,7 @@ class Vp9CodecSettings(_messages.Message):
       fields you set in the `Vp9CodecSettings` message.
     rateControlMode: Specify the mode. The default is `vbr`. Supported rate
       control modes: - `vbr` - variable bitrate
+    sdr: Optional. SDR color format setting for VP9.
     widthPixels: The width of the video in pixels. Must be an even integer.
       When not specified, the width is adjusted to match the specified height
       and input aspect ratio. If both are omitted, the input width is used.
@@ -1566,10 +1598,20 @@ class Vp9CodecSettings(_messages.Message):
   gopDuration = _messages.StringField(4)
   gopFrameCount = _messages.IntegerField(5, variant=_messages.Variant.INT32)
   heightPixels = _messages.IntegerField(6, variant=_messages.Variant.INT32)
-  pixelFormat = _messages.StringField(7)
-  profile = _messages.StringField(8)
-  rateControlMode = _messages.StringField(9)
-  widthPixels = _messages.IntegerField(10, variant=_messages.Variant.INT32)
+  hlg = _messages.MessageField('Vp9ColorFormatHLG', 7)
+  pixelFormat = _messages.StringField(8)
+  profile = _messages.StringField(9)
+  rateControlMode = _messages.StringField(10)
+  sdr = _messages.MessageField('Vp9ColorFormatSDR', 11)
+  widthPixels = _messages.IntegerField(12, variant=_messages.Variant.INT32)
+
+
+class Vp9ColorFormatHLG(_messages.Message):
+  r"""Convert the input video to a Hybrid Log Gamma (HLG) video."""
+
+
+class Vp9ColorFormatSDR(_messages.Message):
+  r"""Convert the input video to a Standard Dynamic Range (SDR) video."""
 
 
 class Widevine(_messages.Message):

@@ -37,21 +37,22 @@ class AccessDeterminationLogConfig(_messages.Message):
     Values:
       LOG_LEVEL_UNSPECIFIED: No log level specified. This value is unused.
       DISABLED: No additional consent-related logging is added to audit logs.
-      MINIMUM: The following information is included: - One of the following
+      MINIMUM: The following information is included: * One of the following
         [`consentMode`](https://cloud.google.com/healthcare-api/docs/fhir-
         consent#audit_logs) fields:
-        (`off`|`emptyScope`|`enforced`|`btg`|`bypass`). - The accessor's
-        request headers - The `log_level` of the [AccessDeterminationLogConfig
-        ](google.cloud.healthcare.v1beta1.fhir.FhirStore.ConsentConfig.AccessD
-        eterminationLogConfig) - The final consent evaluation (`PERMIT`,
-        `DENY`, or `NO_CONSENT`) - A human-readable summary of the evaluation
-      VERBOSE: Includes `MINIMUM` and, for each resource owner, returns: - The
-        resource owner's name - Most specific part of the `X-Consent-Scope`
-        resulting in consensual determination - Timestamp of the applied
-        enforcement leading to the decision - Enforcement version at the time
-        the applicable consents were applied - The Consent resource name - The
-        timestamp of the Consent resource used for enforcement - Policy type
-        (PATIENT or ADMIN) Note that this mode adds some overhead to CRUD
+        (`off`|`emptyScope`|`enforced`|`btg`|`bypass`). * The accessor's
+        request headers * The `log_level` of the
+        [AccessDeterminationLogConfig](https://cloud.google.com/healthcare-api
+        /docs/reference/rest/v1beta1/projects.locations.datasets.fhirStores#Ac
+        cessDeterminationLogConfig) * The final consent evaluation (`PERMIT`,
+        `DENY`, or `NO_CONSENT`) * A human-readable summary of the evaluation
+      VERBOSE: Includes `MINIMUM` and, for each resource owner, returns: * The
+        resource owner's name * Most specific part of the `X-Consent-Scope`
+        resulting in consensual determination * Timestamp of the applied
+        enforcement leading to the decision * Enforcement version at the time
+        the applicable consents were applied * The Consent resource name * The
+        timestamp of the Consent resource used for enforcement * Policy type
+        (`PATIENT` or `ADMIN`) Note that this mode adds some overhead to CRUD
         operations.
     """
     LOG_LEVEL_UNSPECIFIED = 0
@@ -686,7 +687,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -8417,7 +8422,7 @@ class RollbackFhirResourcesRequest(_messages.Message):
 
 
 class RollbackFhirResourcesResponse(_messages.Message):
-  r"""Final response of rollback FIHR resources request.
+  r"""Final response of rollback FHIR resources request.
 
   Fields:
     fhirStore: The name of the FHIR store to rollback, in the format of

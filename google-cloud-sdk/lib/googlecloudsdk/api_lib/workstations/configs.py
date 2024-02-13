@@ -110,6 +110,7 @@ class Configs:
         args.enable_nested_virtualization
     )
     config.host.gceInstance.bootDiskSizeGb = args.boot_disk_size
+    config.host.gceInstance.disableSsh = args.disable_ssh_to_vm
 
     if (
         self.api_version != VERSION_MAP.get(base.ReleaseTrack.GA)
@@ -280,6 +281,14 @@ class Configs:
       config.host.gceInstance.bootDiskSizeGb = args.boot_disk_size
       update_mask.append('host.gce_instance.boot_disk_size_gb')
 
+    if args.IsSpecified('disable_ssh_to_vm'):
+      config.host.gceInstance.disableSsh = args.disable_ssh_to_vm
+      update_mask.append('host.gce_instance.disable_ssh')
+
+    if args.IsSpecified('enable_ssh_to_vm'):
+      config.host.gceInstance.disableSsh = not args.enable_ssh_to_vm
+      update_mask.append('host.gce_instance.disable_ssh')
+
     if args.IsSpecified('enable_confidential_compute'):
       config.host.gceInstance.confidentialInstanceConfig = (
           self.messages.GceConfidentialInstanceConfig(
@@ -299,7 +308,7 @@ class Configs:
       update_mask.append('disable_tcp_connections')
 
     if args.IsSpecified('enable_tcp_connections'):
-      config.disableTcpConnections = args.enable_tcp_connections
+      config.disableTcpConnections = not args.enable_tcp_connections
       update_mask.append('disable_tcp_connections')
 
     if args.IsSpecified('enable_nested_virtualization'):

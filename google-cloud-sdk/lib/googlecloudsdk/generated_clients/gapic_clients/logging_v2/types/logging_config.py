@@ -981,7 +981,39 @@ class Settings(proto.Message):
             service account as their ``writer_identity`` if no custom
             service account is provided in the request when calling the
             create sink method.
+        analytics_mode (googlecloudsdk.generated_clients.gapic_clients.logging_v2.types.Settings.AnalyticsMode):
+            Optional. The default analytics mode of an
+            org or folder which is inherited by all newly
+            created child project buckets.
     """
+    class AnalyticsMode(proto.Enum):
+        r"""Describes the default analytics mode for buckets created
+        under the configured folder or organization.
+        Note: since analytics is only supported for projects buckets,
+        the configuration will be applied only to buckets directly owned
+        by projects. Buckets owned by folders or organizations will not
+        inherit this configuration.
+
+        Values:
+            ANALYTICS_MODE_UNSPECIFIED (0):
+                No default analytics mode defined at this
+                resource level, it will inherit from the closest
+                ancester which has a defined analytics mode. If
+                there is no specified analytics mode across the
+                resource hierarchy, analytics will be disabled
+                by default.
+            ANALYTICS_ENABLED (1):
+                By default, analytics will be enabled for all
+                new project-level buckets unless explicitly
+                specified otherwise at bucket creation time.
+            ANALYTICS_DISABLED (2):
+                By default, analytics will be disabled for
+                new project-level buckets unless explicitly
+                specified otherwise at bucket creation time.
+        """
+        ANALYTICS_MODE_UNSPECIFIED = 0
+        ANALYTICS_ENABLED = 1
+        ANALYTICS_DISABLED = 2
 
     class DefaultSinkConfig(proto.Message):
         r"""Describes the custom ``_Default`` sink configuration that is used to
@@ -1079,6 +1111,11 @@ class Settings(proto.Message):
     logging_service_account_id: str = proto.Field(
         proto.STRING,
         number=7,
+    )
+    analytics_mode: AnalyticsMode = proto.Field(
+        proto.ENUM,
+        number=8,
+        enum=AnalyticsMode,
     )
 
 

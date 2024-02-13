@@ -348,7 +348,9 @@ class StorageClient(object):
       project=None,
       location=None,
       check_ownership=True,
-      enable_uniform_level_access=None):
+      enable_uniform_level_access=None,
+      cors=None,
+  ):
     """Create a bucket if it does not already exist.
 
     If it already exists and is accessible by the current user, this method
@@ -357,15 +359,19 @@ class StorageClient(object):
     Args:
       bucket: str, The storage bucket to be created.
       project: str, The project to use for the API request. If None, current
-          Cloud SDK project is used.
+        Cloud SDK project is used.
       location: str, The bucket location/region.
       check_ownership: bool, Whether to check that the resulting bucket belongs
-          to the given project. DO NOT SET THIS TO FALSE if the bucket name can
-          be guessed and claimed ahead of time by another user as it enables a
-          name squatting exploit.
+        to the given project. DO NOT SET THIS TO FALSE if the bucket name can be
+        guessed and claimed ahead of time by another user as it enables a name
+        squatting exploit.
       enable_uniform_level_access: bool, to enable uniform bucket level access.
-          If None, the iamConfiguration object will not be created in the bucket
-          creation request, which means that it will use the default values.
+        If None, the iamConfiguration object will not be created in the bucket
+        creation request, which means that it will use the default values.
+      cors: list, A list of CorsValueListEntry objects. The bucket's
+        Cross-Origin Resource Sharing (CORS) configuration. If None, no CORS
+        configuration will be set.
+
     Raises:
       api_exceptions.HttpError: If the bucket is not able to be created or is
         not accessible due to permissions.
@@ -398,6 +404,8 @@ class StorageClient(object):
                 uniformBucketLevelAccess=(
                     self.messages.Bucket.IamConfigurationValue.UniformBucketLevelAccessValue(
                         enabled=enable_uniform_level_access))))
+      if cors is not None:
+        storage_buckets_insert_request.bucket.cors = cors
       try:
         self.client.buckets.Insert(storage_buckets_insert_request)
       except api_exceptions.HttpConflictError:

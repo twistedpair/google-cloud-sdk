@@ -408,8 +408,8 @@ class GoogleAppsScriptTypeLayoutProperties(_messages.Message):
 
 class GoogleAppsScriptTypeLinkPreviewExtensionPoint(_messages.Message):
   r"""The configuration for a trigger that fires when a user types or pastes a
-  link from a third-party or non-Google service into a Google Docs document.
-  [Developer Preview](https://developers.google.com/workspace/preview).
+  link from a third-party or non-Google service into a Google Docs, Sheets, or
+  Slides file.
 
   Messages:
     LocalizedLabelTextValue: Optional. A map of `labelText` to localize into

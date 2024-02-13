@@ -781,7 +781,7 @@ class SpannerV1(base_api.BaseApiClient):
         method_id='spanner.projects.instances.backups.create',
         ordered_params=['parent'],
         path_params=['parent'],
-        query_params=['backupId', 'encryptionConfig_encryptionType', 'encryptionConfig_kmsKeyName'],
+        query_params=['backupId', 'encryptionConfig_encryptionType', 'encryptionConfig_kmsKeyName', 'encryptionConfig_kmsKeyNames'],
         relative_path='v1/{+parent}/backups',
         request_field='backup',
         request_type_name='SpannerProjectsInstancesBackupsCreateRequest',

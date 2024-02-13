@@ -379,17 +379,17 @@ def AddCreateInstanceFlags(parser):
   shielded_vm_group.add_argument(
       '--shielded-secure-boot',
       help='Boot instance with secure boot enabled',
-      type=bool,
+      type=str,
   )
   shielded_vm_group.add_argument(
       '--shielded-vtpm',
       help='Boot instance with TPM (Trusted Platform Module) enabled',
-      type=bool,
+      type=str,
   )
   shielded_vm_group.add_argument(
       '--shielded-integrity-monitoring',
       help='Enable monitoring of the boot integrity of the instance',
-      type=bool,
+      type=str,
   )
 
   gpu_group = gce_setup_group.add_group(help='GPU driver configurations.')
@@ -568,15 +568,15 @@ def AddUpdateInstanceFlags(parser):
   shielded_vm_group.add_argument(
       '--shielded-secure-boot',
       help='Boot instance with secure boot enabled',
-      type=bool)
+      type=str)
   shielded_vm_group.add_argument(
       '--shielded-vtpm',
       help='Boot instance with TPM (Trusted Platform Module) enabled',
-      type=bool)
+      type=str)
   shielded_vm_group.add_argument(
       '--shielded-integrity-monitoring',
       help='Enable monitoring of the boot integrity of the instance',
-      type=bool)
+      type=str)
   parser.add_argument(
       '--labels',
       help=('Labels to apply to this instance. These can be later modified '

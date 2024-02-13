@@ -927,3 +927,30 @@ class CloudcommerceconsumerprocurementV1alpha1(base_api.BaseApiClient):
       super(CloudcommerceconsumerprocurementV1alpha1.ProjectsService, self).__init__(client)
       self._upload_configs = {
           }
+
+    def CheckEntitlements(self, request, global_params=None):
+      r"""Returns all active entitlements based on project and service type in its request.
+
+      Args:
+        request: (CloudcommerceconsumerprocurementProjectsCheckEntitlementsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudCommerceConsumerProcurementV1alpha1CheckEntitlementsResponse) The response message.
+      """
+      config = self.GetMethodConfig('CheckEntitlements')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    CheckEntitlements.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1alpha1/projects/{projectsId}:checkEntitlements',
+        http_method='GET',
+        method_id='cloudcommerceconsumerprocurement.projects.checkEntitlements',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['service'],
+        relative_path='v1alpha1/{+parent}:checkEntitlements',
+        request_field='',
+        request_type_name='CloudcommerceconsumerprocurementProjectsCheckEntitlementsRequest',
+        response_type_name='GoogleCloudCommerceConsumerProcurementV1alpha1CheckEntitlementsResponse',
+        supports_download=False,
+    )

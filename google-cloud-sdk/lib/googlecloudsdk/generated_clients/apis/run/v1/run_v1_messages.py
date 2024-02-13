@@ -1552,6 +1552,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/container-dependencies`: Revision . *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
+      `run.googleapis.com/default-url-disabled`: Service. *
       `run.googleapis.com/description`: Service. *
       `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
       `run.googleapis.com/encryption-key`: Revision, Execution. *
@@ -1587,6 +1588,7 @@ class ObjectMeta(_messages.Message):
       `run.googleapis.com/container-dependencies`: Revision . *
       `run.googleapis.com/cpu-throttling`: Revision. *
       `run.googleapis.com/custom-audiences`: Service. *
+      `run.googleapis.com/default-url-disabled`: Service. *
       `run.googleapis.com/description`: Service. *
       `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
       `run.googleapis.com/encryption-key`: Revision, Execution. *
@@ -1650,6 +1652,7 @@ class ObjectMeta(_messages.Message):
     `run.googleapis.com/container-dependencies`: Revision . *
     `run.googleapis.com/cpu-throttling`: Revision. *
     `run.googleapis.com/custom-audiences`: Service. *
+    `run.googleapis.com/default-url-disabled`: Service. *
     `run.googleapis.com/description`: Service. *
     `run.googleapis.com/encryption-key-shutdown-hours`: Revision *
     `run.googleapis.com/encryption-key`: Revision, Execution. *
@@ -3767,9 +3770,10 @@ class Service(_messages.Message):
       Service.metadata.annotations. * `run.googleapis.com/binary-
       authorization-breakglass` * `run.googleapis.com/binary-authorization` *
       `run.googleapis.com/client-name` * `run.googleapis.com/custom-audiences`
-      * `run.googleapis.com/description` * `run.googleapis.com/gc-traffic-
-      tags` * `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets
-      the ingress settings for the Service. See [the ingress settings
+      * `run.googleapis.com/default-url-disabled`: Service. *
+      `run.googleapis.com/description` * `run.googleapis.com/gc-traffic-tags`
+      * `run.googleapis.com/ingress` * `run.googleapis.com/ingress` sets the
+      ingress settings for the Service. See [the ingress settings
       documentation](/run/docs/securing/ingress) for details on configuring
       ingress settings. * `run.googleapis.com/ingress-status` is output-only
       and contains the currently active ingress settings for the Service.

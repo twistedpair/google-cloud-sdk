@@ -210,6 +210,31 @@ def GeneratePodSpecFromImages(images):
   return spec
 
 
+def AddInlineAttestationsToPodSpec(pod_spec, attestations):
+  """Inlines attestations into a Kubernetes PodSpec.
+
+  Args:
+    pod_spec: The PodSpec provided by the user.
+    attestations: List of attestations returned by the policy evaluator in comma
+      separated DSSE form.
+
+  Returns:
+    Modified PodSpec with attestations inlined.
+  """
+  annotations = pod_spec['metadata'].get('annotations', {})
+  existing_attestations = annotations.get(
+      _BINAUTHZ_ATTESTATION_ANNOTATION_KEY, None
+  )
+  if existing_attestations:
+    annotations[_BINAUTHZ_ATTESTATION_ANNOTATION_KEY] = ','.join(
+        [existing_attestations] + attestations
+    )
+  else:
+    annotations[_BINAUTHZ_ATTESTATION_ANNOTATION_KEY] = ','.join(attestations)
+  pod_spec['metadata']['annotations'] = annotations
+  return pod_spec
+
+
 def AddInlineAttestationsToResource(resource, attestations):
   """Inlines attestations into a Kubernetes resource.
 
@@ -221,22 +246,9 @@ def AddInlineAttestationsToResource(resource, attestations):
   Returns:
     Modified Kubernetes resource with attestations inlined.
   """
-  # TODO(b/310721968): Make this work with Pod controllers.
-  if 'metadata' not in resource:
-    raise ValueError(
-        'Cannot add inline attestations to resources without an existing'
-        ' metadata field.'
+  if resource['kind'] != 'Pod':
+    resource['spec']['template'] = AddInlineAttestationsToPodSpec(
+        resource['spec']['template'], attestations
     )
-
-  annotations = resource['metadata'].get('annotations', {})
-  existing_attestations = annotations.get(
-      _BINAUTHZ_ATTESTATION_ANNOTATION_KEY, None
-  )
-  if existing_attestations:
-    annotations[_BINAUTHZ_ATTESTATION_ANNOTATION_KEY] = ','.join(
-        [existing_attestations] + attestations
-    )
-  else:
-    annotations[_BINAUTHZ_ATTESTATION_ANNOTATION_KEY] = ','.join(attestations)
-  resource['metadata']['annotations'] = annotations
-  return resource
+    return resource
+  return AddInlineAttestationsToPodSpec(resource, attestations)

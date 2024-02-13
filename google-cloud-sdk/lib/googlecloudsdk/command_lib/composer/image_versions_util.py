@@ -138,8 +138,8 @@ def IsDefaultImageVersion(image_version):
 def BuildDefaultComposerVersionWarning(image_version, airflow_version):
   """Builds warning message about using default Composer version."""
   message = (
-      '{} resolves to Cloud Composer current default version, which changed'
-      ' from 1 to 2 in a recent release and is subject to'
+      '{} resolves to Cloud Composer current default version, which is'
+      ' presently Composer 2 and is subject to'
       ' further changes in the future. Consider using'
       ' --image-version=composer-A-airflow-X[.Y[.Z]]. More info at'
       ' https://cloud.google.com/composer/docs/concepts/versioning/composer-versioning-overview#version-aliases'

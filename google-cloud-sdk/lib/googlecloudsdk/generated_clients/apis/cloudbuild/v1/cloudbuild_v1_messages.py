@@ -1898,17 +1898,6 @@ class CloudbuildProjectsLocationsBuildsListRequest(_messages.Message):
   projectId = _messages.StringField(5)
 
 
-class CloudbuildProjectsLocationsGetDefaultServiceAccountRequest(_messages.Message):
-  r"""A CloudbuildProjectsLocationsGetDefaultServiceAccountRequest object.
-
-  Fields:
-    name: Required. The name of the `DefaultServiceAccount` to retrieve.
-      Format: `projects/{project}/locations/{location}/defaultServiceAccount`
-  """
-
-  name = _messages.StringField(1, required=True)
-
-
 class CloudbuildProjectsLocationsGitLabConfigsConnectedRepositoriesBatchCreateRequest(_messages.Message):
   r"""A CloudbuildProjectsLocationsGitLabConfigsConnectedRepositoriesBatchCrea
   teRequest object.
@@ -2792,25 +2781,6 @@ class CronConfig(_messages.Message):
   enterpriseConfigResource = _messages.StringField(1)
   schedule = _messages.StringField(2)
   timeZone = _messages.StringField(3)
-
-
-class DefaultServiceAccount(_messages.Message):
-  r"""The default service account used for `Builds`.
-
-  Fields:
-    name: Identifier. Format:
-      `projects/{project}/locations/{location}/defaultServiceAccount
-    serviceAccountEmail: Output only. The email address of the service account
-      identity that will be used for a build by default. This is returned in
-      the format `projects/{project}/serviceAccounts/{service_account}` where
-      `{service_account}` could be the legacy Cloud Build SA, in the format
-      [PROJECT_NUMBER]@cloudbuild.gserviceaccount.com or the Compute SA, in
-      the format [PROJECT_NUMBER]-compute@developer.gserviceaccount.com. If no
-      service account will be used by default, this will be empty.
-  """
-
-  name = _messages.StringField(1)
-  serviceAccountEmail = _messages.StringField(2)
 
 
 class DeleteBitbucketServerConfigOperationMetadata(_messages.Message):

@@ -1157,6 +1157,9 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
         running.
       DOCKER_START_RUNTIME_FILE_FORMAT_ERROR: Docker failed to start OCI
         runtime because of file format error.
+      DOCKER_START_RUNTIME_PERMISSION_DENIED: Docker failed to start OCI
+        runtime because of permission denied.
+      DOCKER_PERMISSION_DENIED: Docker failed because of permission denied.
     """
     OK = 0
     INVALID_ARGUMENT = 1
@@ -1209,6 +1212,8 @@ class GoogleDevtoolsRemotebuildbotCommandStatus(_messages.Message):
     INCOMPATIBLE_CUDA_VERSION = 48
     LOCAL_WORKER_MANAGER_NOT_RUNNING = 49
     DOCKER_START_RUNTIME_FILE_FORMAT_ERROR = 50
+    DOCKER_START_RUNTIME_PERMISSION_DENIED = 51
+    DOCKER_PERMISSION_DENIED = 52
 
   code = _messages.EnumField('CodeValueValuesEnum', 1)
   message = _messages.StringField(2)
@@ -1224,6 +1229,8 @@ class GoogleDevtoolsRemotebuildbotResourceUsage(_messages.Message):
     botState: A BotStateValueValuesEnum attribute.
     cpuUsedPercent: A number attribute.
     diskUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat attribute.
+    dockerRootDiskUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat
+      attribute.
     memoryUsage: A GoogleDevtoolsRemotebuildbotResourceUsageStat attribute.
     totalDiskIoStats: A GoogleDevtoolsRemotebuildbotResourceUsageIOStats
       attribute.
@@ -1244,8 +1251,9 @@ class GoogleDevtoolsRemotebuildbotResourceUsage(_messages.Message):
   botState = _messages.EnumField('BotStateValueValuesEnum', 1)
   cpuUsedPercent = _messages.FloatField(2)
   diskUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 3)
-  memoryUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 4)
-  totalDiskIoStats = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageIOStats', 5)
+  dockerRootDiskUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 4)
+  memoryUsage = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageStat', 5)
+  totalDiskIoStats = _messages.MessageField('GoogleDevtoolsRemotebuildbotResourceUsageIOStats', 6)
 
 
 class GoogleDevtoolsRemotebuildbotResourceUsageIOStats(_messages.Message):

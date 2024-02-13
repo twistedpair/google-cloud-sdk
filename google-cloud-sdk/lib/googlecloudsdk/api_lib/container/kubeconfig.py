@@ -215,7 +215,7 @@ def Cluster(name, server, ca_path=None, ca_data=None, has_dns_endpoint=False):
     cluster['certificate-authority'] = ca_path
   elif ca_data is not None and not has_dns_endpoint:
     cluster['certificate-authority-data'] = ca_data
-  else:
+  elif not has_dns_endpoint:
     cluster['insecure-skip-tls-verify'] = True
   return {
       'name': name,

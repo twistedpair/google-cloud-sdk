@@ -492,6 +492,21 @@ class BigquerydatatransferProjectsLocationsTransferConfigsStartManualRunsRequest
   startManualTransferRunsRequest = _messages.MessageField('StartManualTransferRunsRequest', 2)
 
 
+class BigquerydatatransferProjectsLocationsUnenrollDataSourcesRequest(_messages.Message):
+  r"""A BigquerydatatransferProjectsLocationsUnenrollDataSourcesRequest
+  object.
+
+  Fields:
+    name: The name of the project resource in the form:
+      `projects/{project_id}`
+    unenrollDataSourcesRequest: A UnenrollDataSourcesRequest resource to be
+      passed as the request body.
+  """
+
+  name = _messages.StringField(1, required=True)
+  unenrollDataSourcesRequest = _messages.MessageField('UnenrollDataSourcesRequest', 2)
+
+
 class BigquerydatatransferProjectsTransferConfigsCreateRequest(_messages.Message):
   r"""A BigquerydatatransferProjectsTransferConfigsCreateRequest object.
 
@@ -1221,12 +1236,12 @@ class ScheduleOptions(_messages.Message):
       is disabled, the TransferConfig.schedule field will be ignored.
     endTime: Defines time to stop scheduling transfer runs. A transfer run
       cannot be scheduled at or after the end time. The end time can be
-      changed at any moment. The time when a data transfer can be trigerred
+      changed at any moment. The time when a data transfer can be triggered
       manually is not limited by this option.
     startTime: Specifies time to start scheduling transfer runs. The first run
       will be scheduled at or after the start time according to a recurrence
       pattern defined in the schedule string. The start time can be changed at
-      any moment. The time when a data transfer can be trigerred manually is
+      any moment. The time when a data transfer can be triggered manually is
       not limited by this option.
   """
 
@@ -1451,8 +1466,8 @@ class TransferConfig(_messages.Message):
       erence/datatransfer/rest/v1/projects.locations.dataSources/list
     datasetRegion: Output only. Region in which BigQuery dataset is located.
     destinationDatasetId: The BigQuery target dataset id.
-    disabled: Is this config disabled. When set to true, no runs are scheduled
-      for a given transfer.
+    disabled: Is this config disabled. When set to true, no runs will be
+      scheduled for this transfer config.
     displayName: User specified display name for the data transfer.
     emailPreferences: Email notifications will be sent according to these
       preferences to the email address of the user who owns this transfer
@@ -1473,7 +1488,7 @@ class TransferConfig(_messages.Message):
     notificationPubsubTopic: Pub/Sub topic where notifications will be sent
       after transfer runs associated with this transfer config finish. The
       format for specifying a pubsub topic is:
-      `projects/{project}/topics/{topic}`
+      `projects/{project_id}/topics/{topic_id}`
     ownerInfo: Output only. Information about the user whose credentials are
       used to transfer data. Populated only for `transferConfigs.get`
       requests. In case the user information is not available, this field will
@@ -1625,7 +1640,7 @@ class TransferRun(_messages.Message):
       _id}/runs/{run_id}`. The name is ignored when creating a transfer run.
     notificationPubsubTopic: Output only. Pub/Sub topic where a notification
       will be sent after this transfer run finishes. The format for specifying
-      a pubsub topic is: `projects/{project}/topics/{topic}`
+      a pubsub topic is: `projects/{project_id}/topics/{topic_id}`
     params: Output only. Parameters specific to each data source. For more
       information see the bq tab in the 'Setting up a data transfer' section
       for each data source. For example the parameters for Cloud Storage
@@ -1710,6 +1725,18 @@ class TransferRun(_messages.Message):
   state = _messages.EnumField('StateValueValuesEnum', 13)
   updateTime = _messages.StringField(14)
   userId = _messages.IntegerField(15)
+
+
+class UnenrollDataSourcesRequest(_messages.Message):
+  r"""A request to unenroll a set of data sources so they are no longer
+  visible in the BigQuery UI's `Transfer` tab.
+
+  Fields:
+    dataSourceIds: Data sources that are unenrolled. It is required to provide
+      at least one data source id.
+  """
+
+  dataSourceIds = _messages.StringField(1, repeated=True)
 
 
 class UserInfo(_messages.Message):

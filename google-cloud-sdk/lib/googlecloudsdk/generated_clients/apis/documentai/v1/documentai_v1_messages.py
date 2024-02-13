@@ -1353,8 +1353,8 @@ class GoogleCloudDocumentaiV1BatchProcessRequest(_messages.Message):
   Messages:
     LabelsValue: Optional. The labels with user-defined metadata for the
       request. Label keys and values can be no longer than 63 characters
-      (Unicode codepoints), can only contain lowercase letters, numeric
-      characters, underscores and dashes. International characters are
+      (Unicode codepoints) and can only contain lowercase letters, numeric
+      characters, underscores, and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter.
 
   Fields:
@@ -1363,8 +1363,8 @@ class GoogleCloudDocumentaiV1BatchProcessRequest(_messages.Message):
     inputDocuments: The input documents for the BatchProcessDocuments method.
     labels: Optional. The labels with user-defined metadata for the request.
       Label keys and values can be no longer than 63 characters (Unicode
-      codepoints), can only contain lowercase letters, numeric characters,
-      underscores and dashes. International characters are allowed. Label
+      codepoints) and can only contain lowercase letters, numeric characters,
+      underscores, and dashes. International characters are allowed. Label
       values are optional. Label keys must start with a letter.
     processOptions: Inference-time options for the process API
     skipHumanReview: Whether human review should be skipped for this request.
@@ -1374,10 +1374,10 @@ class GoogleCloudDocumentaiV1BatchProcessRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels with user-defined metadata for the request. Label
-    keys and values can be no longer than 63 characters (Unicode codepoints),
-    can only contain lowercase letters, numeric characters, underscores and
-    dashes. International characters are allowed. Label values are optional.
-    Label keys must start with a letter.
+    keys and values can be no longer than 63 characters (Unicode codepoints)
+    and can only contain lowercase letters, numeric characters, underscores,
+    and dashes. International characters are allowed. Label values are
+    optional. Label keys must start with a letter.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3027,8 +3027,8 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
   Messages:
     LabelsValue: Optional. The labels with user-defined metadata for the
       request. Label keys and values can be no longer than 63 characters
-      (Unicode codepoints), can only contain lowercase letters, numeric
-      characters, underscores and dashes. International characters are
+      (Unicode codepoints) and can only contain lowercase letters, numeric
+      characters, underscores, and dashes. International characters are
       allowed. Label values are optional. Label keys must start with a letter.
 
   Fields:
@@ -3040,8 +3040,8 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
     inlineDocument: An inline document proto.
     labels: Optional. The labels with user-defined metadata for the request.
       Label keys and values can be no longer than 63 characters (Unicode
-      codepoints), can only contain lowercase letters, numeric characters,
-      underscores and dashes. International characters are allowed. Label
+      codepoints) and can only contain lowercase letters, numeric characters,
+      underscores, and dashes. International characters are allowed. Label
       values are optional. Label keys must start with a letter.
     processOptions: Inference-time options for the process API
     rawDocument: A raw document content (bytes).
@@ -3052,10 +3052,10 @@ class GoogleCloudDocumentaiV1ProcessRequest(_messages.Message):
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
     r"""Optional. The labels with user-defined metadata for the request. Label
-    keys and values can be no longer than 63 characters (Unicode codepoints),
-    can only contain lowercase letters, numeric characters, underscores and
-    dashes. International characters are allowed. Label values are optional.
-    Label keys must start with a letter.
+    keys and values can be no longer than 63 characters (Unicode codepoints)
+    and can only contain lowercase letters, numeric characters, underscores,
+    and dashes. International characters are allowed. Label values are
+    optional. Label keys must start with a letter.
 
     Messages:
       AdditionalProperty: An additional property for a LabelsValue object.
@@ -3257,6 +3257,8 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
   document-processing behavior is defined by that version.
 
   Enums:
+    ModelTypeValueValuesEnum: Output only. The model type of this processor
+      version.
     StateValueValuesEnum: The state of the processor version.
 
   Fields:
@@ -3271,11 +3273,25 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
     kmsKeyVersionName: The KMS key version with which data is encrypted.
     latestEvaluation: The most recently invoked evaluation for the processor
       version.
+    modelType: Output only. The model type of this processor version.
     name: The resource name of the processor version. Format: `projects/{proje
       ct}/locations/{location}/processors/{processor}/processorVersions/{proce
       ssor_version}`
     state: The state of the processor version.
   """
+
+  class ModelTypeValueValuesEnum(_messages.Enum):
+    r"""Output only. The model type of this processor version.
+
+    Values:
+      MODEL_TYPE_UNSPECIFIED: The processor version has unspecified model
+        type.
+      MODEL_TYPE_GENERATIVE: The processor version has generative model type.
+      MODEL_TYPE_CUSTOM: The processor version has custom model type.
+    """
+    MODEL_TYPE_UNSPECIFIED = 0
+    MODEL_TYPE_GENERATIVE = 1
+    MODEL_TYPE_CUSTOM = 2
 
   class StateValueValuesEnum(_messages.Enum):
     r"""The state of the processor version.
@@ -3311,8 +3327,9 @@ class GoogleCloudDocumentaiV1ProcessorVersion(_messages.Message):
   kmsKeyName = _messages.StringField(6)
   kmsKeyVersionName = _messages.StringField(7)
   latestEvaluation = _messages.MessageField('GoogleCloudDocumentaiV1EvaluationReference', 8)
-  name = _messages.StringField(9)
-  state = _messages.EnumField('StateValueValuesEnum', 10)
+  modelType = _messages.EnumField('ModelTypeValueValuesEnum', 9)
+  name = _messages.StringField(10)
+  state = _messages.EnumField('StateValueValuesEnum', 11)
 
 
 class GoogleCloudDocumentaiV1ProcessorVersionAlias(_messages.Message):

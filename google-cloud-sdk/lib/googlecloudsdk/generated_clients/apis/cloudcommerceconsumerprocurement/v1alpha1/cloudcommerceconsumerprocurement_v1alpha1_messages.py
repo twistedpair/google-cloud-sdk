@@ -317,6 +317,21 @@ class CloudcommerceconsumerprocurementBillingAccountsOrdersPlaceRequest(_message
   parent = _messages.StringField(2, required=True)
 
 
+class CloudcommerceconsumerprocurementProjectsCheckEntitlementsRequest(_messages.Message):
+  r"""A CloudcommerceconsumerprocurementProjectsCheckEntitlementsRequest
+  object.
+
+  Fields:
+    parent: Required. The consumer project Format: `projects/{project_number}`
+      Required.
+    service: Required. The one platform service name. Format:
+      `services/{service_name}`. Required.
+  """
+
+  parent = _messages.StringField(1, required=True)
+  service = _messages.StringField(2)
+
+
 class CloudcommerceconsumerprocurementProjectsConsentsCheckRequest(_messages.Message):
   r"""A CloudcommerceconsumerprocurementProjectsConsentsCheckRequest object.
 
@@ -754,6 +769,22 @@ class GoogleCloudCommerceConsumerProcurementV1alpha1CheckConsentResponse(_messag
   """
 
   consent = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Consent', 1)
+
+
+class GoogleCloudCommerceConsumerProcurementV1alpha1CheckEntitlementsResponse(_messages.Message):
+  r"""Response message for ConsumerProcurementService.CheckEntitlements.
+
+  Fields:
+    entitlementCandidates: Output only. Can-be-used Entitlement Candidates.
+      Expected to contain at most one entitlement unless the product is opted
+      in go/ccm-purchasing:flat-fee-multi-sub-design
+    entitlements: Output only. Available Entitlements. Expected to contain at
+      most one entitlement unless the product is opted in go/ccm-
+      purchasing:flat-fee-multi-sub-design
+  """
+
+  entitlementCandidates = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement', 1, repeated=True)
+  entitlements = _messages.MessageField('GoogleCloudCommerceConsumerProcurementV1alpha1Entitlement', 2, repeated=True)
 
 
 class GoogleCloudCommerceConsumerProcurementV1alpha1Consent(_messages.Message):

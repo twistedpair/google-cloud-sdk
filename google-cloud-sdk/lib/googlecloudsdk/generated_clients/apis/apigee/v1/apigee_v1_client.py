@@ -117,8 +117,11 @@ class ApigeeV1(base_api.BaseApiClient):
     self.organizations_operations = self.OrganizationsOperationsService(self)
     self.organizations_optimizedHostStats = self.OrganizationsOptimizedHostStatsService(self)
     self.organizations_reports = self.OrganizationsReportsService(self)
+    self.organizations_securityAssessmentResults = self.OrganizationsSecurityAssessmentResultsService(self)
+    self.organizations_securityFeedback = self.OrganizationsSecurityFeedbackService(self)
     self.organizations_securityProfiles_environments = self.OrganizationsSecurityProfilesEnvironmentsService(self)
     self.organizations_securityProfiles = self.OrganizationsSecurityProfilesService(self)
+    self.organizations_securityProfilesV2 = self.OrganizationsSecurityProfilesV2Service(self)
     self.organizations_securityincidentenvironments = self.OrganizationsSecurityincidentenvironmentsService(self)
     self.organizations_sharedflows_deployments = self.OrganizationsSharedflowsDeploymentsService(self)
     self.organizations_sharedflows_revisions_deployments = self.OrganizationsSharedflowsRevisionsDeploymentsService(self)
@@ -4359,6 +4362,60 @@ class ApigeeV1(base_api.BaseApiClient):
       self._upload_configs = {
           }
 
+    def Get(self, request, global_params=None):
+      r"""Gets a particular deployment of Api proxy or a shared flow in an environment.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsDeploymentsGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1Deployment) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/deployments/{deploymentsId}',
+        http_method='GET',
+        method_id='apigee.organizations.environments.deployments.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsDeploymentsGetRequest',
+        response_type_name='GoogleCloudApigeeV1Deployment',
+        supports_download=False,
+    )
+
+    def GetIamPolicy(self, request, global_params=None):
+      r"""Gets the IAM policy on a deployment. For more information, see [Manage users, roles, and permissions using the API](https://cloud.google.com/apigee/docs/api-platform/system-administration/manage-users-roles). You must have the `apigee.deployments.getIamPolicy` permission to call this API.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsDeploymentsGetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('GetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    GetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/deployments/{deploymentsId}:getIamPolicy',
+        http_method='GET',
+        method_id='apigee.organizations.environments.deployments.getIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=['options_requestedPolicyVersion'],
+        relative_path='v1/{+resource}:getIamPolicy',
+        request_field='',
+        request_type_name='ApigeeOrganizationsEnvironmentsDeploymentsGetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
     def List(self, request, global_params=None):
       r"""Lists all deployments of API proxies or shared flows in an environment.
 
@@ -4383,6 +4440,60 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='',
         request_type_name='ApigeeOrganizationsEnvironmentsDeploymentsListRequest',
         response_type_name='GoogleCloudApigeeV1ListDeploymentsResponse',
+        supports_download=False,
+    )
+
+    def SetIamPolicy(self, request, global_params=None):
+      r"""Sets the IAM policy on a deployment, if the policy already exists it will be replaced. For more information, see [Manage users, roles, and permissions using the API](https://cloud.google.com/apigee/docs/api-platform/system-administration/manage-users-roles). You must have the `apigee.deployments.setIamPolicy` permission to call this API.
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsDeploymentsSetIamPolicyRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1Policy) The response message.
+      """
+      config = self.GetMethodConfig('SetIamPolicy')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    SetIamPolicy.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/deployments/{deploymentsId}:setIamPolicy',
+        http_method='POST',
+        method_id='apigee.organizations.environments.deployments.setIamPolicy',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:setIamPolicy',
+        request_field='googleIamV1SetIamPolicyRequest',
+        request_type_name='ApigeeOrganizationsEnvironmentsDeploymentsSetIamPolicyRequest',
+        response_type_name='GoogleIamV1Policy',
+        supports_download=False,
+    )
+
+    def TestIamPermissions(self, request, global_params=None):
+      r"""Tests the permissions of a user on an environment, and returns a subset of permissions that the user has on the environment. If the environment does not exist, an empty permission set is returned (a NOT_FOUND error is not returned).
+
+      Args:
+        request: (ApigeeOrganizationsEnvironmentsDeploymentsTestIamPermissionsRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleIamV1TestIamPermissionsResponse) The response message.
+      """
+      config = self.GetMethodConfig('TestIamPermissions')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    TestIamPermissions.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/environments/{environmentsId}/deployments/{deploymentsId}:testIamPermissions',
+        http_method='POST',
+        method_id='apigee.organizations.environments.deployments.testIamPermissions',
+        ordered_params=['resource'],
+        path_params=['resource'],
+        query_params=[],
+        relative_path='v1/{+resource}:testIamPermissions',
+        request_field='googleIamV1TestIamPermissionsRequest',
+        request_type_name='ApigeeOrganizationsEnvironmentsDeploymentsTestIamPermissionsRequest',
+        response_type_name='GoogleIamV1TestIamPermissionsResponse',
         supports_download=False,
     )
 
@@ -8172,6 +8283,161 @@ class ApigeeV1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+  class OrganizationsSecurityAssessmentResultsService(base_api.BaseApiService):
+    """Service class for the organizations_securityAssessmentResults resource."""
+
+    _NAME = 'organizations_securityAssessmentResults'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSecurityAssessmentResultsService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def BatchCompute(self, request, global_params=None):
+      r"""Compute RAV2 security scores for a set of resources.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityAssessmentResultsBatchComputeRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsResponse) The response message.
+      """
+      config = self.GetMethodConfig('BatchCompute')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    BatchCompute.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityAssessmentResults:batchCompute',
+        http_method='POST',
+        method_id='apigee.organizations.securityAssessmentResults.batchCompute',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}:batchCompute',
+        request_field='googleCloudApigeeV1BatchComputeSecurityAssessmentResultsRequest',
+        request_type_name='ApigeeOrganizationsSecurityAssessmentResultsBatchComputeRequest',
+        response_type_name='GoogleCloudApigeeV1BatchComputeSecurityAssessmentResultsResponse',
+        supports_download=False,
+    )
+
+  class OrganizationsSecurityFeedbackService(base_api.BaseApiService):
+    """Service class for the organizations_securityFeedback resource."""
+
+    _NAME = 'organizations_securityFeedback'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSecurityFeedbackService, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Creates a new report containing customer feedback.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityFeedbackCreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityFeedback) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityFeedback',
+        http_method='POST',
+        method_id='apigee.organizations.securityFeedback.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['securityFeedbackId'],
+        relative_path='v1/{+parent}/securityFeedback',
+        request_field='googleCloudApigeeV1SecurityFeedback',
+        request_type_name='ApigeeOrganizationsSecurityFeedbackCreateRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityFeedback',
+        supports_download=False,
+    )
+
+    def Delete(self, request, global_params=None):
+      r"""Deletes a specific feedback report. Used for "undo" of a feedback submission.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityFeedbackDeleteRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleProtobufEmpty) The response message.
+      """
+      config = self.GetMethodConfig('Delete')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Delete.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityFeedback/{securityFeedbackId}',
+        http_method='DELETE',
+        method_id='apigee.organizations.securityFeedback.delete',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityFeedbackDeleteRequest',
+        response_type_name='GoogleProtobufEmpty',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Gets a specific customer feedback report.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityFeedbackGetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityFeedback) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityFeedback/{securityFeedbackId}',
+        http_method='GET',
+        method_id='apigee.organizations.securityFeedback.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityFeedbackGetRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityFeedback',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""Lists all feedback reports which have already been submitted.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityFeedbackListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSecurityFeedbackResponse) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityFeedback',
+        http_method='GET',
+        method_id='apigee.organizations.securityFeedback.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['filter', 'pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityFeedback',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityFeedbackListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSecurityFeedbackResponse',
+        supports_download=False,
+    )
+
   class OrganizationsSecurityProfilesEnvironmentsService(base_api.BaseApiService):
     """Service class for the organizations_securityProfiles_environments resource."""
 
@@ -8432,6 +8698,124 @@ class ApigeeV1(base_api.BaseApiClient):
         request_field='googleCloudApigeeV1SecurityProfile',
         request_type_name='ApigeeOrganizationsSecurityProfilesPatchRequest',
         response_type_name='GoogleCloudApigeeV1SecurityProfile',
+        supports_download=False,
+    )
+
+  class OrganizationsSecurityProfilesV2Service(base_api.BaseApiService):
+    """Service class for the organizations_securityProfilesV2 resource."""
+
+    _NAME = 'organizations_securityProfilesV2'
+
+    def __init__(self, client):
+      super(ApigeeV1.OrganizationsSecurityProfilesV2Service, self).__init__(client)
+      self._upload_configs = {
+          }
+
+    def Create(self, request, global_params=None):
+      r"""Create a security profile v2.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityProfilesV2CreateRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityProfileV2) The response message.
+      """
+      config = self.GetMethodConfig('Create')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Create.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityProfilesV2',
+        http_method='POST',
+        method_id='apigee.organizations.securityProfilesV2.create',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['securityProfileV2Id'],
+        relative_path='v1/{+parent}/securityProfilesV2',
+        request_field='googleCloudApigeeV1SecurityProfileV2',
+        request_type_name='ApigeeOrganizationsSecurityProfilesV2CreateRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityProfileV2',
+        supports_download=False,
+    )
+
+    def Get(self, request, global_params=None):
+      r"""Get a security profile v2.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityProfilesV2GetRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityProfileV2) The response message.
+      """
+      config = self.GetMethodConfig('Get')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Get.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityProfilesV2/{securityProfilesV2Id}',
+        http_method='GET',
+        method_id='apigee.organizations.securityProfilesV2.get',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1/{+name}',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityProfilesV2GetRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityProfileV2',
+        supports_download=False,
+    )
+
+    def List(self, request, global_params=None):
+      r"""List security profiles v2.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityProfilesV2ListRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1ListSecurityProfilesV2Response) The response message.
+      """
+      config = self.GetMethodConfig('List')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    List.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityProfilesV2',
+        http_method='GET',
+        method_id='apigee.organizations.securityProfilesV2.list',
+        ordered_params=['parent'],
+        path_params=['parent'],
+        query_params=['pageSize', 'pageToken'],
+        relative_path='v1/{+parent}/securityProfilesV2',
+        request_field='',
+        request_type_name='ApigeeOrganizationsSecurityProfilesV2ListRequest',
+        response_type_name='GoogleCloudApigeeV1ListSecurityProfilesV2Response',
+        supports_download=False,
+    )
+
+    def Patch(self, request, global_params=None):
+      r"""Update a security profile V2.
+
+      Args:
+        request: (ApigeeOrganizationsSecurityProfilesV2PatchRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (GoogleCloudApigeeV1SecurityProfileV2) The response message.
+      """
+      config = self.GetMethodConfig('Patch')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    Patch.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1/organizations/{organizationsId}/securityProfilesV2/{securityProfilesV2Id}',
+        http_method='PATCH',
+        method_id='apigee.organizations.securityProfilesV2.patch',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=['updateMask'],
+        relative_path='v1/{+name}',
+        request_field='googleCloudApigeeV1SecurityProfileV2',
+        request_type_name='ApigeeOrganizationsSecurityProfilesV2PatchRequest',
+        response_type_name='GoogleCloudApigeeV1SecurityProfileV2',
         supports_download=False,
     )
 

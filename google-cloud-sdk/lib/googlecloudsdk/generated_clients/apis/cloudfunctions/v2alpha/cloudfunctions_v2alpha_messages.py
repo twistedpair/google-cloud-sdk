@@ -163,7 +163,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -792,6 +796,8 @@ class Function(_messages.Message):
     buildpackStack: Specifies a Google provided Buildpack Stack -- pair of
       base images (for building and runtime) that include a curated set of
       pre-installed packages.
+    createTime: Output only. The create timestamp of a Cloud Function. This is
+      only applicable to 2nd Gen functions.
     description: User-provided description of a function.
     environment: Describe whether the function is 1st Gen or 2nd Gen.
     eventTrigger: An Eventarc trigger managed by Google Cloud Functions that
@@ -871,19 +877,20 @@ class Function(_messages.Message):
 
   buildConfig = _messages.MessageField('BuildConfig', 1)
   buildpackStack = _messages.StringField(2)
-  description = _messages.StringField(3)
-  environment = _messages.EnumField('EnvironmentValueValuesEnum', 4)
-  eventTrigger = _messages.MessageField('EventTrigger', 5)
-  kmsKeyName = _messages.StringField(6)
-  labels = _messages.MessageField('LabelsValue', 7)
-  name = _messages.StringField(8)
-  satisfiesPzs = _messages.BooleanField(9)
-  serviceConfig = _messages.MessageField('ServiceConfig', 10)
-  state = _messages.EnumField('StateValueValuesEnum', 11)
-  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 12, repeated=True)
-  updateTime = _messages.StringField(13)
-  upgradeInfo = _messages.MessageField('UpgradeInfo', 14)
-  url = _messages.StringField(15)
+  createTime = _messages.StringField(3)
+  description = _messages.StringField(4)
+  environment = _messages.EnumField('EnvironmentValueValuesEnum', 5)
+  eventTrigger = _messages.MessageField('EventTrigger', 6)
+  kmsKeyName = _messages.StringField(7)
+  labels = _messages.MessageField('LabelsValue', 8)
+  name = _messages.StringField(9)
+  satisfiesPzs = _messages.BooleanField(10)
+  serviceConfig = _messages.MessageField('ServiceConfig', 11)
+  state = _messages.EnumField('StateValueValuesEnum', 12)
+  stateMessages = _messages.MessageField('GoogleCloudFunctionsV2alphaStateMessage', 13, repeated=True)
+  updateTime = _messages.StringField(14)
+  upgradeInfo = _messages.MessageField('UpgradeInfo', 15)
+  url = _messages.StringField(16)
 
 
 class GenerateDownloadUrlRequest(_messages.Message):

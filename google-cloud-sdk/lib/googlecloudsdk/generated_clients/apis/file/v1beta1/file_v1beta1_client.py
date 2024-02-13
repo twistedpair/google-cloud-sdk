@@ -627,6 +627,33 @@ class FileV1beta1(base_api.BaseApiClient):
         supports_download=False,
     )
 
+    def PromoteReplica(self, request, global_params=None):
+      r"""Promote an standby instance (replica).
+
+      Args:
+        request: (FileProjectsLocationsInstancesPromoteReplicaRequest) input message
+        global_params: (StandardQueryParameters, default: None) global arguments
+      Returns:
+        (Operation) The response message.
+      """
+      config = self.GetMethodConfig('PromoteReplica')
+      return self._RunMethod(
+          config, request, global_params=global_params)
+
+    PromoteReplica.method_config = lambda: base_api.ApiMethodInfo(
+        flat_path='v1beta1/projects/{projectsId}/locations/{locationsId}/instances/{instancesId}:promoteReplica',
+        http_method='POST',
+        method_id='file.projects.locations.instances.promoteReplica',
+        ordered_params=['name'],
+        path_params=['name'],
+        query_params=[],
+        relative_path='v1beta1/{+name}:promoteReplica',
+        request_field='promoteReplicaRequest',
+        request_type_name='FileProjectsLocationsInstancesPromoteReplicaRequest',
+        response_type_name='Operation',
+        supports_download=False,
+    )
+
     def Restore(self, request, global_params=None):
       r"""Restores an existing instance's file share from a backup. The capacity of the instance needs to be equal to or larger than the capacity of the backup (and also equal to or larger than the minimum capacity of the tier).
 

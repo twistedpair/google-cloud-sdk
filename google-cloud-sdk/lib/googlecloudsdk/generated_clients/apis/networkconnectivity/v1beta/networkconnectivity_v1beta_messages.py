@@ -129,6 +129,10 @@ class GoogleCloudNetworkconnectivityV1betaAcceptHubSpokeResponse(_messages.Messa
 class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages.Message):
   r"""Message describing CustomHardwareLinkAttachment object
 
+  Enums:
+    LinkTypeValueValuesEnum: Required. The type of custom hardware link
+      attachment.
+
   Messages:
     LabelsValue: Optional. User-defined labels.
 
@@ -136,12 +140,29 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
     createTime: Output only. Time when the CustomHardwareLinkAttachment was
       created.
     labels: Optional. User-defined labels.
+    linkType: Required. The type of custom hardware link attachment.
     name: Identifier. The name of a CustomHardwareLinkAttachment. Format: `pro
       jects/{project}/locations/{location}/customHardwareLinkAttachments/{cust
       om_hardware_link_attachment}`.
+    network: The name of the VPC network for this custom hardware link
+      attachment. Format: `projects/{project}/global/networks/{network}`
+    project: The consumer project where custom hardware instance are created.
+      Format: `projects/{project}`
     updateTime: Output only. Time when the CustomHardwareLinkAttachment was
       updated.
   """
+
+  class LinkTypeValueValuesEnum(_messages.Enum):
+    r"""Required. The type of custom hardware link attachment.
+
+    Values:
+      LINK_TYPE_UNSPECIFIED: An invalid type as the default case.
+      REGULAR: Regular traffic type.
+      ULL: Ultra-low latency traffic type.
+    """
+    LINK_TYPE_UNSPECIFIED = 0
+    REGULAR = 1
+    ULL = 2
 
   @encoding.MapUnrecognizedFields('additionalProperties')
   class LabelsValue(_messages.Message):
@@ -169,8 +190,11 @@ class GoogleCloudNetworkconnectivityV1betaCustomHardwareLinkAttachment(_messages
 
   createTime = _messages.StringField(1)
   labels = _messages.MessageField('LabelsValue', 2)
-  name = _messages.StringField(3)
-  updateTime = _messages.StringField(4)
+  linkType = _messages.EnumField('LinkTypeValueValuesEnum', 3)
+  name = _messages.StringField(4)
+  network = _messages.StringField(5)
+  project = _messages.StringField(6)
+  updateTime = _messages.StringField(7)
 
 
 class GoogleCloudNetworkconnectivityV1betaLinkedInterconnectAttachments(_messages.Message):
@@ -754,7 +778,11 @@ class GoogleIamV1Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('GoogleTypeExpr', 1)

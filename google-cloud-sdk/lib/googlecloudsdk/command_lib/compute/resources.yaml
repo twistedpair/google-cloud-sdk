@@ -196,6 +196,16 @@ storage_pool:
     attribute_name: storage_pool
     help: The name of the Google Compute Engine storage pool.
 
+storage_pool_type:
+  name: storage pool type
+  collection: compute.storagePoolTypes
+  attributes:
+  - *compute_project
+  - *zone
+  - parameter_name: storagePoolType
+    attribute_name: storage_pool_type
+    help: The name of the Google Compute Engine storage pool type.
+
 machine_image:
   name: machine image
   collection: compute.machineImages

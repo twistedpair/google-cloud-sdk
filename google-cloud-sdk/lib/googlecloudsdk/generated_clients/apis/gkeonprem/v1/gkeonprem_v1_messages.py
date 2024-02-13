@@ -2460,7 +2460,11 @@ class Binding(_messages.Message):
       example, `deleted:principal://iam.googleapis.com/locations/global/workfo
       rcePools/my-pool-id/subject/my-subject-attribute-value`.
     role: Role that is assigned to the list of `members`, or principals. For
-      example, `roles/viewer`, `roles/editor`, or `roles/owner`.
+      example, `roles/viewer`, `roles/editor`, or `roles/owner`. For an
+      overview of the IAM roles and permissions, see the [IAM
+      documentation](https://cloud.google.com/iam/docs/roles-overview). For a
+      list of the available pre-defined roles, see
+      [here](https://cloud.google.com/iam/docs/understanding-roles).
   """
 
   condition = _messages.MessageField('Expr', 1)
@@ -6588,13 +6592,15 @@ class VmwareDataplaneV2Config(_messages.Message):
     advancedNetworking: Enable advanced networking which requires
       dataplane_v2_enabled to be set true.
     dataplaneV2Enabled: Enables Dataplane V2.
+    forwardMode: Configure ForwardMode for Dataplane v2.
     windowsDataplaneV2Enabled: Enable Dataplane V2 for clusters with Windows
       nodes.
   """
 
   advancedNetworking = _messages.BooleanField(1)
   dataplaneV2Enabled = _messages.BooleanField(2)
-  windowsDataplaneV2Enabled = _messages.BooleanField(3)
+  forwardMode = _messages.StringField(3)
+  windowsDataplaneV2Enabled = _messages.BooleanField(4)
 
 
 class VmwareDhcpIpConfig(_messages.Message):
@@ -6739,8 +6745,8 @@ class VmwareNetworkConfig(_messages.Message):
       assigned an RFC1918 IPv4 address from these ranges. Only a single range
       is supported. This field cannot be changed after creation.
     staticIpConfig: Configuration settings for a static IP configuration.
-    vcenterNetwork: Output only. vcenter_network specifies vCenter network
-      name. Inherited from the admin cluster.
+    vcenterNetwork: vcenter_network specifies vCenter network name. Inherited
+      from the admin cluster.
   """
 
   controlPlaneV2Config = _messages.MessageField('VmwareControlPlaneV2Config', 1)

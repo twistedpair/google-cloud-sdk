@@ -35,15 +35,15 @@ class OperationsClient(object):
       Described audit operation resource.
     """
     service = (
-        self.client.folders_locations_operations
+        self.client.folders_locations_operationIds
         if is_parent_folder
-        else self.client.projects_locations_operations
+        else self.client.projects_locations_operationIds
     )
 
     req = (
-        self.messages.AuditmanagerFoldersLocationsOperationsGetRequest()
+        self.messages.AuditmanagerFoldersLocationsOperationIdsGetRequest()
         if is_parent_folder
-        else self.messages.AuditmanagerProjectsLocationsOperationsGetRequest()
+        else self.messages.AuditmanagerProjectsLocationsOperationIdsGetRequest()
     )
 
     req.name = name

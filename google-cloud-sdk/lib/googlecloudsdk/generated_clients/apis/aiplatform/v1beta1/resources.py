@@ -276,6 +276,25 @@ class Collections(enum.Enum):
       ['name'],
       True
   )
+  PROJECTS_LOCATIONS_EVALUATIONTASKS = (
+      'projects.locations.evaluationTasks',
+      'projects/{projectsId}/locations/{locationsId}/evaluationTasks/'
+      '{evaluationTasksId}',
+      {},
+      ['projectsId', 'locationsId', 'evaluationTasksId'],
+      True
+  )
+  PROJECTS_LOCATIONS_EVALUATIONTASKS_OPERATIONS = (
+      'projects.locations.evaluationTasks.operations',
+      '{+name}',
+      {
+          '':
+              'projects/{projectsId}/locations/{locationsId}/evaluationTasks/'
+              '{evaluationTasksId}/operations/{operationsId}',
+      },
+      ['name'],
+      True
+  )
   PROJECTS_LOCATIONS_EXAMPLESTORES = (
       'projects.locations.exampleStores',
       'projects/{projectsId}/locations/{locationsId}/exampleStores/'

@@ -17,6 +17,7 @@ from collections import OrderedDict
 import os
 import re
 from typing import Dict, Mapping, MutableMapping, MutableSequence, Optional, Iterable, Iterator, Sequence, Tuple, Type, Union, cast
+import warnings
 
 from googlecloudsdk.generated_clients.gapic_clients.storage_v2 import gapic_version as package_version
 
@@ -3635,6 +3636,9 @@ class StorageClient(metaclass=StorageClientMeta):
                 the secret for an HMAC will be returned.
 
         """
+        warnings.warn("StorageClient.create_hmac_key is deprecated",
+            DeprecationWarning)
+
         # Create or coerce a protobuf request object.
         # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
@@ -3744,6 +3748,9 @@ class StorageClient(metaclass=StorageClientMeta):
             metadata (Sequence[Tuple[str, str]]): Strings which should be
                 sent along with the request as metadata.
         """
+        warnings.warn("StorageClient.delete_hmac_key is deprecated",
+            DeprecationWarning)
+
         # Create or coerce a protobuf request object.
         # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
@@ -3858,6 +3865,9 @@ class StorageClient(metaclass=StorageClientMeta):
                 information other than the secret.
 
         """
+        warnings.warn("StorageClient.get_hmac_key is deprecated",
+            DeprecationWarning)
+
         # Create or coerce a protobuf request object.
         # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
@@ -3971,6 +3981,9 @@ class StorageClient(metaclass=StorageClientMeta):
                 automatically.
 
         """
+        warnings.warn("StorageClient.list_hmac_keys is deprecated",
+            DeprecationWarning)
+
         # Create or coerce a protobuf request object.
         # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.
@@ -4098,6 +4111,9 @@ class StorageClient(metaclass=StorageClientMeta):
                 information other than the secret.
 
         """
+        warnings.warn("StorageClient.update_hmac_key is deprecated",
+            DeprecationWarning)
+
         # Create or coerce a protobuf request object.
         # Quick check: If we got a request object, we should *not* have
         # gotten any keyword arguments that map to the request.

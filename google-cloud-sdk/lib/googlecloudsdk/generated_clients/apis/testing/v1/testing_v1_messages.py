@@ -1137,6 +1137,21 @@ class ManualSharding(_messages.Message):
   testTargetsForShard = _messages.MessageField('TestTargetsForShard', 1, repeated=True)
 
 
+class MatrixErrorDetail(_messages.Message):
+  r"""Describes a single error or issue with a matrix.
+
+  Fields:
+    message: Output only. A human-readable message about how the error in the
+      TestMatrix. Expands on the `reason` field with additional details and
+      possible options to fix the issue.
+    reason: Output only. The reason for the error. This is a constant value in
+      UPPER_SNAKE_CASE that identifies the cause of the error.
+  """
+
+  message = _messages.StringField(1)
+  reason = _messages.StringField(2)
+
+
 class Metadata(_messages.Message):
   r"""A tag within a manifest.
   https://developer.android.com/guide/topics/manifest/meta-data-element.html
@@ -1790,6 +1805,10 @@ class TestMatrix(_messages.Message):
   Fields:
     clientInfo: Information about the client which invoked the test.
     environmentMatrix: Required. The devices the tests are being executed on.
+    extendedInvalidMatrixDetails: Output only. Details about why a matrix was
+      deemed invalid. If multiple checks can be safely performed, they will be
+      reported but no assumptions should be made about the length of this
+      list.
     failFast: If true, only a single attempt at most will be made to run each
       execution/shard in the matrix. Flaky test attempts are not affected.
       Normally, 2 or more attempts are made if a potential infrastructure
@@ -2010,17 +2029,18 @@ class TestMatrix(_messages.Message):
 
   clientInfo = _messages.MessageField('ClientInfo', 1)
   environmentMatrix = _messages.MessageField('EnvironmentMatrix', 2)
-  failFast = _messages.BooleanField(3)
-  flakyTestAttempts = _messages.IntegerField(4, variant=_messages.Variant.INT32)
-  invalidMatrixDetails = _messages.EnumField('InvalidMatrixDetailsValueValuesEnum', 5)
-  outcomeSummary = _messages.EnumField('OutcomeSummaryValueValuesEnum', 6)
-  projectId = _messages.StringField(7)
-  resultStorage = _messages.MessageField('ResultStorage', 8)
-  state = _messages.EnumField('StateValueValuesEnum', 9)
-  testExecutions = _messages.MessageField('TestExecution', 10, repeated=True)
-  testMatrixId = _messages.StringField(11)
-  testSpecification = _messages.MessageField('TestSpecification', 12)
-  timestamp = _messages.StringField(13)
+  extendedInvalidMatrixDetails = _messages.MessageField('MatrixErrorDetail', 3, repeated=True)
+  failFast = _messages.BooleanField(4)
+  flakyTestAttempts = _messages.IntegerField(5, variant=_messages.Variant.INT32)
+  invalidMatrixDetails = _messages.EnumField('InvalidMatrixDetailsValueValuesEnum', 6)
+  outcomeSummary = _messages.EnumField('OutcomeSummaryValueValuesEnum', 7)
+  projectId = _messages.StringField(8)
+  resultStorage = _messages.MessageField('ResultStorage', 9)
+  state = _messages.EnumField('StateValueValuesEnum', 10)
+  testExecutions = _messages.MessageField('TestExecution', 11, repeated=True)
+  testMatrixId = _messages.StringField(12)
+  testSpecification = _messages.MessageField('TestSpecification', 13)
+  timestamp = _messages.StringField(14)
 
 
 class TestSetup(_messages.Message):

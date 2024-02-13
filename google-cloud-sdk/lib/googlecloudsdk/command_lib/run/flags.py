@@ -587,7 +587,7 @@ def AddVolumesFlags(parser, release_track):
       metavar='KEY=VALUE',
       help=(
           'Adds a volume to the Cloud Run resource. To add more than one '
-          'volume, specify this flag mulitple times.'
+          'volume, specify this flag multiple times.'
           ' Volumes must have a `name` and `type` key. '
           'Only certain values are supported for `type`. Depending on the '
           'provided type, other keys will be required. The following types '
@@ -1327,7 +1327,10 @@ def AddDefaultUrlFlag(parser):
   parser.add_argument(
       '--default-url',
       action=arg_parsers.StoreTrueFalseAction,
-      help='toggles the default url for a run service.',
+      help=(
+          'Toggles the default url for a run service. This is enabled by'
+          ' default if not specified.'
+      ),
   )
 
 

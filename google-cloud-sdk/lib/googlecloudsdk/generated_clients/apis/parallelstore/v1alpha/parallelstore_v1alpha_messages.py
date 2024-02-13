@@ -26,58 +26,6 @@ class Empty(_messages.Message):
 
 
 
-class ExportDataRequest(_messages.Message):
-  r"""Message representing the request exporting data from Cloud Storage to
-  parallelstore.
-
-  Fields:
-    destinationGcsUri: URI to a Cloud Storage object in format: 'gs:///'.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    sourcePath: Optional. Root directory path to the Paralellstore filesystem,
-      starting with '/'.
-  """
-
-  destinationGcsUri = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-  sourcePath = _messages.StringField(3)
-
-
-class ImportDataRequest(_messages.Message):
-  r"""Message representing the request importing data from parallelstore to
-  Cloud Storage.
-
-  Fields:
-    destinationPath: Root directory path to the Paralellstore filesystem,
-      starting with '/.
-    requestId: Optional. An optional request ID to identify requests. Specify
-      a unique request ID so that if you must retry your request, the server
-      will know to ignore the request if it has already been completed. The
-      server will guarantee that for at least 60 minutes since the first
-      request. For example, consider a situation where you make an initial
-      request and t he request times out. If you make the request again with
-      the same request ID, the server can check if original operation with the
-      same request ID was received, and if so, will ignore the second request.
-      This prevents clients from accidentally creating duplicate commitments.
-      The request ID must be a valid UUID with the exception that zero UUID is
-      not supported (00000000-0000-0000-0000-000000000000).
-    sourceGcsUri: URI to a Cloud Storage object in format: 'gs:///'.
-  """
-
-  destinationPath = _messages.StringField(1)
-  requestId = _messages.StringField(2)
-  sourceGcsUri = _messages.StringField(3)
-
-
 class Instance(_messages.Message):
   r"""A Parallelstore instance.
 
@@ -534,19 +482,6 @@ class ParallelstoreProjectsLocationsInstancesDeleteRequest(_messages.Message):
   requestId = _messages.StringField(2)
 
 
-class ParallelstoreProjectsLocationsInstancesExportDataRequest(_messages.Message):
-  r"""A ParallelstoreProjectsLocationsInstancesExportDataRequest object.
-
-  Fields:
-    exportDataRequest: A ExportDataRequest resource to be passed as the
-      request body.
-    name: Required. Name of the resource.
-  """
-
-  exportDataRequest = _messages.MessageField('ExportDataRequest', 1)
-  name = _messages.StringField(2, required=True)
-
-
 class ParallelstoreProjectsLocationsInstancesGetRequest(_messages.Message):
   r"""A ParallelstoreProjectsLocationsInstancesGetRequest object.
 
@@ -556,19 +491,6 @@ class ParallelstoreProjectsLocationsInstancesGetRequest(_messages.Message):
   """
 
   name = _messages.StringField(1, required=True)
-
-
-class ParallelstoreProjectsLocationsInstancesImportDataRequest(_messages.Message):
-  r"""A ParallelstoreProjectsLocationsInstancesImportDataRequest object.
-
-  Fields:
-    importDataRequest: A ImportDataRequest resource to be passed as the
-      request body.
-    name: Required. Name of the resource.
-  """
-
-  importDataRequest = _messages.MessageField('ImportDataRequest', 1)
-  name = _messages.StringField(2, required=True)
 
 
 class ParallelstoreProjectsLocationsInstancesListRequest(_messages.Message):

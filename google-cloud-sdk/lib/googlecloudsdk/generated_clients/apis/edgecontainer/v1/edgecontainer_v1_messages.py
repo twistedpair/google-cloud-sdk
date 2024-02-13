@@ -1196,9 +1196,11 @@ class MaintenanceEvent(_messages.Message):
     Values:
       TYPE_UNSPECIFIED: Unspecified.
       USER_INITIATED_UPGRADE: Upgrade initiated by users.
+      GOOGLE_DRIVEN_UPGRADE: Upgrade driven by Google.
     """
     TYPE_UNSPECIFIED = 0
     USER_INITIATED_UPGRADE = 1
+    GOOGLE_DRIVEN_UPGRADE = 2
 
   createTime = _messages.StringField(1)
   endTime = _messages.StringField(2)

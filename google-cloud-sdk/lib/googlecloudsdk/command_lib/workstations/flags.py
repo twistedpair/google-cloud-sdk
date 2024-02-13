@@ -33,42 +33,63 @@ def AddAsyncFlag(parser):
   base.ASYNC_FLAG.AddToParser(parser)
 
 
-def LocationsAttributeConfig(location_fallthrough=False):
+def LocationsAttributeConfig(
+    location_fallthrough=False, global_fallthrough=False
+):
   """Create a location attribute in resource argument.
 
   Args:
     location_fallthrough: If set, enables fallthroughs for the location
       attribute.
+    global_fallthrough: If set, enables global fallthroughs for the location
+      attribute.
 
   Returns:
     Location resource argument parameter config
   """
-  fallthroughs = (
-      [deps.PropertyFallthrough(properties.VALUES.workstations.region)]
-      if location_fallthrough
-      else []
-  )
+  fallthroughs = []
+  if location_fallthrough:
+    fallthroughs.append(
+        deps.PropertyFallthrough(properties.VALUES.workstations.region)
+    )
+  if global_fallthrough:
+    fallthroughs.append(
+        deps.Fallthrough(
+            lambda: '-', hint='default is all regions'
+        )
+    )
   return concepts.ResourceParameterAttributeConfig(
       name='region',
       fallthroughs=fallthroughs,
-      help_text='The location for the {resource}.',
+      help_text='The region for the {resource}.',
   )
 
 
-def ClustersAttributeConfig(cluster_fallthrough=False):
+def ClustersAttributeConfig(
+    cluster_fallthrough=False, global_fallthrough=False
+):
   """Create a cluster attribute in resource argument.
 
   Args:
     cluster_fallthrough: If set, enables fallthroughs for the cluster attribute.
+    global_fallthrough: If set, enables global fallthroughs for the cluster
+      attribute.
 
   Returns:
     Cluster resource argument parameter config
   """
-  fallthroughs = (
-      [deps.PropertyFallthrough(properties.VALUES.workstations.cluster)]
-      if cluster_fallthrough
-      else []
-  )
+  fallthroughs = []
+  if cluster_fallthrough:
+    fallthroughs.append(
+        deps.PropertyFallthrough(properties.VALUES.workstations.cluster)
+    )
+  if global_fallthrough:
+    fallthroughs.append(
+        deps.Fallthrough(
+            lambda: '-',
+            hint='default is all clusters',
+        )
+    )
   return concepts.ResourceParameterAttributeConfig(
       name='cluster',
       fallthroughs=fallthroughs,
@@ -76,20 +97,30 @@ def ClustersAttributeConfig(cluster_fallthrough=False):
   )
 
 
-def ConfigsAttributeConfig(config_fallthrough=False):
+def ConfigsAttributeConfig(config_fallthrough=False, global_fallthrough=False):
   """Create a config attribute in resource argument.
 
   Args:
-    config_fallthrough: If set, enables fallthroughs for the config attribute.
+    config_fallthrough: If set, enables fallthroughs for the config attribute
+      using the value set in workstations/config.
+    global_fallthrough: If set, enables global fallthroughs for the config
+      attribute.
 
   Returns:
     Config resource argument parameter config
   """
-  fallthroughs = (
-      [deps.PropertyFallthrough(properties.VALUES.workstations.config)]
-      if config_fallthrough
-      else []
-  )
+  fallthroughs = []
+  if config_fallthrough:
+    fallthroughs.append(
+        deps.PropertyFallthrough(properties.VALUES.workstations.config)
+    )
+  if global_fallthrough:
+    fallthroughs.append(
+        deps.Fallthrough(
+            lambda: '-',
+            hint='default is all configs',
+        )
+    )
   return concepts.ResourceParameterAttributeConfig(
       name='config',
       fallthroughs=fallthroughs,
@@ -109,15 +140,23 @@ def WorkstationsAttributeConfig():
   )
 
 
-def AddConfigResourceArg(parser, api_version='v1beta', flag_anchor=False):
+def AddConfigResourceArg(
+    parser, api_version='v1beta', flag_anchor=False, global_fallthrough=False
+):
   """Create a config resource argument."""
   spec = concepts.ResourceSpec(
       'workstations.projects.locations.workstationClusters.workstationConfigs',
       resource_name='config',
       api_version=api_version,
-      workstationConfigsId=ConfigsAttributeConfig(),
-      workstationClustersId=ClustersAttributeConfig(cluster_fallthrough=True),
-      locationsId=LocationsAttributeConfig(location_fallthrough=True),
+      workstationConfigsId=ConfigsAttributeConfig(
+          global_fallthrough=global_fallthrough
+      ),
+      workstationClustersId=ClustersAttributeConfig(
+          cluster_fallthrough=True, global_fallthrough=global_fallthrough
+      ),
+      locationsId=LocationsAttributeConfig(
+          location_fallthrough=True, global_fallthrough=global_fallthrough
+      ),
       projectsId=concepts.DEFAULT_PROJECT_ATTRIBUTE_CONFIG,
       disable_auto_completers=False,
   )
@@ -638,3 +677,36 @@ def AddReplicaZones(parser):
       metavar='REPLICA_ZONES',
       type=arg_parsers.ArgList(),
       help=help_text)
+
+
+def AddDisableSSHToVM(parser, use_default=True):
+  """Adds a --disable-ssh-to-vm flag to the given parser."""
+  help_text = """\
+  Default value is False.
+  If set, workstations will disable SSH connections to the root VM."""
+  parser.add_argument(
+      '--disable-ssh-to-vm',
+      action='store_true',
+      default=False if use_default else False,
+      help=help_text,
+  )
+
+
+def AddEnableSSHToVM(parser, use_default=True):
+  """Adds a --enable-ssh-to-vm flag to the given parser."""
+  help_text = """\
+  Default value is False.
+  If set, workstations will enable SSH connections to the root VM."""
+  group = parser.add_mutually_exclusive_group()
+  group.add_argument(
+      '--disable-ssh-to-vm',
+      action='store_true',
+      default=False if use_default else False,
+      help=help_text,
+  )
+  group.add_argument(
+      '--enable-ssh-to-vm',
+      action='store_true',
+      default=False if use_default else False,
+      help=help_text,
+  )
